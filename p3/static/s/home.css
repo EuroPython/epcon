@@ -1,0 +1,155 @@
+
+/* ---------------------------------------------------
+=intro
+----------------------------------------------------- */
+
+
+#intro {
+	
+	/* background: transparent url(../i/bg-intro.gif) top center no-repeat;
+	*/
+	background: transparent url(../i/bg-intro.png) top center no-repeat;
+	
+		
+	height: 340px;
+	
+	margin: 0 0 20px 0;
+	
+}
+
+
+#intro p {
+	color: #dfeaf0;
+	
+	font: bold italic 14px/20px Constantia, Georgia, "Lucida Bright", "Times New Roman", serif;		
+		
+	width: 580px;	
+	padding: 20px 15px 0 15px;
+	
+	text-shadow: #2e111f 1px 1px 2px;
+}
+
+/* ---------------------------------------------------
+=box
+----------------------------------------------------- */
+
+.box {
+	min-height: 330px;
+}
+
+.box {
+	
+	background: transparent url(../i/bg-box.gif) bottom center no-repeat;
+	
+}
+
+.more {
+	
+	/*text-align: right;
+	*/
+	
+	margin: 20px 0 0 0;
+}
+
+.more img {
+	
+	
+}
+
+.more a {
+	border: none;
+	
+}
+
+.more a:hover {
+	border: none;
+	background: transparent;
+}
+
+
+
+
+#ipsum h2,
+#quotes h2,
+#blog h2 {
+	height: 52px;
+	
+	background: transparent url(../i/bg-h-empty.jpg) top left no-repeat;
+	
+	text-indent: -999em;
+	
+}
+
+#ipsum h2 {
+
+	background-image: url(../i/bg-h-ipsum.jpg);
+	
+}
+
+#quotes h2 {
+
+	background-image: url(../i/bg-h-quotes.jpg);
+	
+}
+
+#blog h2 {
+
+	background-image: url(../i/bg-h-blog.jpg);
+	
+}
+
+
+
+#quotes {
+
+	
+}
+
+#quotes ul {
+	
+	list-style: none;
+}
+
+
+#quotes q {
+	
+	font: bold italic 18px/28px Constantia, Georgia, "Lucida Bright", "Times New Roman", serif;		
+	
+	color: #5595a3;
+	
+}
+
+#quotes p {
+	
+	margin: 10px 0 0 0;
+	
+	color: #2a445e; 
+	
+	
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+		
+	
+	/*float: right;
+	*/
+}
+
+
+#quotes span {
+	
+	display: block;
+	
+	color: #487e8a;
+	
+	font: normal 12px/20px Constantia, Georgia, "Lucida Bright", "Times New Roman", serif;		
+
+}
+#quotes img {
+	
+	float: left;
+	
+	margin: 0 10px 0 0;
+
+}
+
+
+

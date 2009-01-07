@@ -1,0 +1,249 @@
+
+
+
+.entry {
+	padding: 20px 15px;
+	
+	background: #fff url(../i/bg-page.jpg) bottom left no-repeat;
+
+}
+
+
+.entry img {
+	display: block;
+}
+
+
+
+.entry h1 {
+	color: #610831;
+		
+	margin: 0 0 30px 0;
+}
+
+.entry p, 
+.entry dl, 
+.entry ul, 
+.entry ol,
+.entry table {
+	margin-bottom: 10px;
+}
+
+.entry  p.subtitle {
+	color: #a68311;
+	
+	font: italic bold 13px/20px Constantia, Georgia, "Lucida Bright", "Times New Roman", serif;
+	
+	margin: 0 0 10px 0;
+	
+	
+}
+
+.entry sup {
+	
+}
+
+
+.entry h2,
+.entry h3,
+.entry h4,
+.entry h5,
+.entry h6 {
+	
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	
+	margin: 20px 0 10px 0;
+		
+	border: none;
+	
+	text-transform: none;
+	
+	padding: 0;
+
+	color: #000;	
+}
+
+
+/* first  h2 */
+.entry h2:first-child {
+	margin-top: 0;
+}
+	
+	
+.entry h3,
+.entry h4,
+.entry h5,
+.entry h6 {
+	
+	color: #000;	
+	text-transform: none;
+	
+}
+
+
+
+
+/*
+
+.entry b,
+.entry strong {
+	font-weight: bold;
+
+}
+
+
+
+.entry i,
+.entry em {
+	font-style: italic;
+}
+*/
+
+
+.entry ul,
+.entry ol,
+.entry dl {
+	margin: .8em 0 .8em 0;	
+	/*margin: .8em 0 .8em 0;	*/
+}
+
+
+.entry dl {
+	margin-left: 0;	
+}
+
+
+
+
+.entry ul {
+	list-style: outside square;
+}
+
+
+.entry ol {
+	list-style: outside lower-alpha;
+}
+
+.entry dt {
+	font-weight: bold;
+}
+
+
+.entry dd {
+	margin: 0 0 0 1.6em;	
+}
+
+
+
+.entry blockquote {
+	margin: .8em 0 .8em 0;	
+	
+	/*padding: 0 1.6em 0 1.6em;
+	*/
+	
+	font-style: italic;
+	
+	color: #A72020;
+
+
+}
+
+
+.entry blockquote i,
+.entry blockquote em {
+	font-style: normal;
+}
+
+
+
+
+.entry table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+
+.entry caption {
+	text-align: center;	
+	font-style: italic;
+	
+	caption-side: bottom;
+	
+	margin: 0 0 .8em 0;
+}
+
+.entry table th,
+.entry table td {	
+	
+	padding: 0 2px;
+}
+
+.entry table tr.odd {	
+	background: #eee;
+	background: #FFFED9;
+}
+
+
+.entry table th {
+	font-weight: bold;
+}
+
+.entry table thead tr {
+	
+}
+
+
+
+.entry hr {
+  clear: both;
+  width: 100%; 
+    
+  height: 2px;
+
+  margin: 20px 0 20px 0; 
+
+  background: #ccc;
+  width: 140px;
+
+  visibility: visible;
+
+  /* IE */
+  _margin: -7px 0 41px 0; 
+  
+
+}
+
+
+
+
+/* ---------------------------------------------------
+=sidebar
+----------------------------------------------------- */
+
+
+#sidebar {
+	
+	
+}
+
+
+#sidebar h2,
+#sidebar h3,
+#sidebar h4,
+#sidebar h5,
+#sidebar h6 {
+	
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	
+	margin: 20px 0 10px 0;
+		
+	border: none;
+	
+	text-transform: uppercase;
+	
+	padding: 0;
+	
+	border-bottom: none;
+	
+}
+
