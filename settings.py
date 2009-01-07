@@ -27,6 +27,12 @@ TIME_ZONE = 'Europe/Rome'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'it-it'
 
+ugettext = lambda s: s
+LANGUAGES = (
+    ('it', ugettext('Italiano')),
+    ('en', ugettext('English')),
+)
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -57,10 +63,16 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'pages.context_processors.media',
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'pages.middleware.CurrentSiteMiddleware',
 )
 
 ROOT_URLCONF = 'pycon_site.urls'
@@ -85,6 +97,15 @@ INSTALLED_APPS = (
 
 # pycon3 static files, enabled only if debug is True
 P3_STATIC_DIR = ''
+
+DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
+
+PAGE_TEMPLATES = (
+    ('p3/index.html', 'homepage'),
+    ('p3/content.html', 'content page'),
+)
+
+PAGE_UNIQUE_SLUG_REQUIRED = True
 
 try:
     from settings_locale import *
