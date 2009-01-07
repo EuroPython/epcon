@@ -1,4 +1,5 @@
 {% extends "p3/base.html" %}
+{% load pages_tags %}
 {% block MAIN_CONTENT %}
 <!--
 #############
@@ -8,8 +9,7 @@
 <div class="column span-12">
             
     <div id="intro">
-        <p>{Intro} La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere&nbsp;insieme.
-        </p>                
+        <p>{% placeholder mission with markItUpMarkdown %}</p>
     <!-- /intro -->
     </div>   
     
@@ -20,10 +20,10 @@
         
             <h2>Ipsum</h2>
 
-<p>{Marketing stuff} Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi.</p>
+            <p>{% placeholder text with markItUpMarkdown as text %} {{ text|linebreaks }}</p>
 
             <div class="more">
-                <a href="./sample-page.html"><img src="./i/more-button-1.gif" alt="More"  width="100" height="30" /></a>
+                <a href="./sample-page.html"><img src="/static/p3/i/more-button-1.gif" alt="More"  width="100" height="30" /></a>
             </div>
             
         <!-- /box -->
@@ -42,7 +42,7 @@
 <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. (...)</p>
                                          
                <div class="more">
-                <a href="./sample-page.html"><img src="./i/more-button-2.gif" alt="Continua" width="100" height="30"/></a>
+                <a href="./sample-page.html"><img src="/static/p3/i/more-button-2.gif" alt="Continua" width="100" height="30"/></a>
             </div>
                                     
         <!-- /box -->
@@ -64,31 +64,26 @@
                 <li class="clear">                    
                     <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;
                     </q>
-                    <p><img src="./i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span>
+                    <p><img src="/static/p3/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span>
                     </p>                    
                 </li>
                 
                 <li class="clear">
                     <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;
                     </q>
-                    <p><img src="./i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span>
+                    <p><img src="/static/p3/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span>
                     </p>                    
                 </li>
 
                 <li class="clear">
                     <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;                    
                     </q>
-                    <p><img src="./i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
+                    <p><img src="/static/p3/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
                     </p>                    
                 </li>
 
             </ul>
                         
-            <!-- <div class="more">
-                <a href="./sample-page.html"><img src="./i/more-button-1.gif" alt="More"  width="100" height="30" /></a>
-            </div>
-            -->
-            
         <!-- /box -->
         </div>        
                 
