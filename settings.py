@@ -103,6 +103,7 @@ INSTALLED_APPS = (
 
 # pycon3 static files, enabled only if debug is True
 P3_STATIC_DIR = ''
+P3_STUFF_DIR = ''
 
 DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
 

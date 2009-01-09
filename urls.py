@@ -12,6 +12,9 @@ urlpatterns = patterns('',
 )
 if settings.DEBUG:
     urlpatterns += patterns('',
+        (r'^static/stuff/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.P3_STUFF_DIR, 'show_indexes': True}
+        ),
         (r'^static/p3/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.P3_STATIC_DIR, 'show_indexes': True}
         ),
