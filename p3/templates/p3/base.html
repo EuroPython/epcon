@@ -48,9 +48,9 @@
     <div class="column span-10  last">
     
         <ul id="nav" class="clear">
-            <li id="li-schedule" class="current"><a href="./sample-page.html">Programma</a></li>
-            <li id="li-where"><a href="./sample-page.html" title="">Dove</a></li>
-            <li id="li-speaker"><a href="./sample-page.html" title="">Speaker</a></li>
+            <li id="li-schedule" class="current"><a href="/pycon3/programma">Programma</a></li>
+            <li id="li-where"><a href="/pycon3/dove" title="">Dove</a></li>
+            <li id="li-speaker"><a href="/pycon3/relatori" title="">Speaker</a></li>
             <li id="li-sponsor"><a href="./sample-page.html" title="">Sponsor</a></li>            
             
             <!-- text -->
@@ -81,25 +81,29 @@ SPONSOR
             <h2>I nostri sponsor</h2>
             
             <dl>
-                <dt>Platinum
-                </dt>
-                <dd><a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
+                {% comment %}
+                <dt>Platinum</dt>
+                <dd>
+                  <a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
                 </dd>
-                <dd><a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
+                {% endcomment %}
+
+                <dt>Gold</dt>
+                <dd>
+                  <a href="http://www.develer.com/">
+                    <img src="/static/stuff/p3/sponsor/develer.png" alt="develer" width="120" height="70" />
+                  </a>
+                  <a href="http://linkgroup.it/">
+                    <img src="/static/stuff/p3/sponsor/linkit.png" alt="link it" width="120" height="70" />
+                  </a>
                 </dd>
 
-                <dt>Gold
-                </dt>
-                <dd><a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
+                {% comment %}
+                <dt>Silver</dt>
+                <dd>
+                  <a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
                 </dd>
-
-                <dt>Silver
-                </dt>
-                <dd><a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
-                </dd>
-                <dd><a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
-                </dd>
-                
+                {% endcomment %}
             </dl>
                                 
         <!-- /sponsor -->

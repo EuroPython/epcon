@@ -1,5 +1,6 @@
 ﻿{% extends "p3/base.html" %}
 {% load pages_tags %}
+{% load markup %}
 {% block MAIN_CONTENT %}
 <div class="column span-12">
 
@@ -9,15 +10,15 @@
 
             <h1>{% show_content current_page "title" %}</h1>
             
-            <p class="subtitle">
-              {% placeholder subtitle with markItUpMarkdown as text%}
-              {{ text|linebreaks }}
-            </p>
+            <div class="subtitle">
+              {% placeholder subtitle with markItUpMarkdown as text %}
+              {{ text|markdown }}
+            </div>
 
-            <p>
-              {% placeholder text with markItUpMarkdown as text%}
-              {{ text|linebreaks }}
-            </p>
+            <div>
+              {% placeholder text with markItUpMarkdown as text %}
+              {{ text|markdown }}
+            </div>
             
         <!-- /entry -->
         </div>  

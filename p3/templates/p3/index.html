@@ -1,5 +1,6 @@
 {% extends "p3/base.html" %}
 {% load pages_tags %}
+{% load markup %}
 {% block MAIN_CONTENT %}
 <!--
 #############
@@ -20,10 +21,12 @@
         
             <h2>Ipsum</h2>
 
-            <p>{% placeholder text with markItUpMarkdown as text %} {{ text|linebreaks }}</p>
+            <p>{% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}</p>
 
             <div class="more">
-                <a href="./sample-page.html"><img src="/static/p3/i/more-button-1.gif" alt="More"  width="100" height="30" /></a>
+                <a href="/pycon3/conferenza">
+                  <img src="/static/p3/i/more-button-1.gif" alt="More"  width="100" height="30" />
+                </a>
             </div>
             
         <!-- /box -->
