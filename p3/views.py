@@ -1,4 +1,5 @@
-from django.shortcuts import render_to_response
+from pages.views import details
+
 def root(request):
-    return render_to_response('p3/index.html')
+    return details(request)
     
