@@ -67,6 +67,7 @@ a {
 
 a:hover {
 	color: #E0EBF1;
+	color: #fff;
 	background: #2a445e;
 		
 	border-bottom: 1px solid #72C5D6;
@@ -118,12 +119,10 @@ hr {
 	
 	list-style: none;
 	
-	background: transparent url(../i/bg-menu.gif) 375px 0 no-repeat;	
+	
 	
 	
 }
-
-
 
 #nav li {
 
@@ -136,7 +135,9 @@ hr {
 
 
 #nav li.sep {
-	margin-left: 25px;	
+	padding-left: 20px;	
+	
+	background: transparent url(../i/bg-menu.gif) center left no-repeat;	
 }
 
 
@@ -150,55 +151,68 @@ hr {
 
 /* gfx */
 	
-#nav #li-schedule,
-#nav #li-where,
-#nav #li-speaker,
-#nav #li-sponsor {
-	margin-right: 0;
+#nav .big {
+
+	margin: 15px 4px 0 0;
 }
 
-#nav #li-schedule a,
-#nav #li-where a,
-#nav #li-speaker a,
-#nav #li-sponsor a {
-		
-	height: 59px;
-	padding: 0;
+#nav .big a {
 
-	display: block;
-	
-	text-indent: -999em;
+	padding: 0 4px;
+
+	display: block;	
 	
 	border: none;
 	
-}
-
-#li-sponsor a {
+	background: #72C5D6 url(../i/bg-menu-li.gif) center left no-repeat;	
 	
-	width: 96px;
-	background: transparent url(../i/bg-menu-sponsor.gif) center left no-repeat;	
-}
-
-
-#li-speaker a {
+	text-transform: uppercase;
 	
-	width: 96px;
-	background: transparent url(../i/bg-menu-speaker.gif) center left no-repeat;	
+	border: 1px solid  #56a6b8;
+	
+	font: bold 14px/28px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
 }
 
 
-#li-where a {
+/*
+#nav .big a + a {
+	background-position: 50px 14px;
+}
+
+#nav .big a + a + a {
+	background-position: 100px 14px;
+}
+*/
+
+
+#nav .big a:hover,
+#nav .current a {
 	
-	width: 66px;
-	background: transparent  url(../i/bg-menu-where.gif) center left no-repeat;	
+	background: #fff;	
+	color: #2a445e;	
+	
+	border: 1px solid  #fff;
 }
 
 
 
-#li-schedule.current a {
+#nav2 {
 	
-	width: 115px;
-	background: transparent url(../i/bg-menu-schedule-curr.gif) center left no-repeat;	
+	list-style: none;
+	
+	margin: 0 0 20px 0;
+	
+	
+}
+
+#nav2 li {
+	
+	display: inline;
+	
+	padding: 0 10px 0 0;
+	
+	
 }
 
 
@@ -466,6 +480,10 @@ hr {
 	color: #487e8a;
 }
 
+#footer a:hover {
+	color: #fff;
+}
+
 #footer p {
 
 	font-size: 12px;
@@ -474,6 +492,11 @@ hr {
 #cc {
 	margin: 20px 0 0 0;
 }
+
+#xkcd {
+
+}
+
 
 #xkcd a,
 #cc a {

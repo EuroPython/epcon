@@ -1,4 +1,4 @@
-{% extends "p3/base.html" %}
+﻿{% extends "p3/base.html" %}
 {% load pages_tags %}
 {% load markup %}
 {% block MAIN_CONTENT %}
@@ -10,10 +10,72 @@
 <div class="column span-12">
             
     <div id="intro">
-        <p>{% placeholder mission with markItUpMarkdown %}</p>
+        <p>{% placeholder mission with markItUpMarkdown %}</p>                
+        <img src="/static/p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />        
+        <map name="gallery">
+         <area shape="poly"  coords="50,50,25" href="" />
+         <area shape="poly" coords="50,50,100,100" href="/" />
+         <area shape="poly" coords="0,0,100,100" href="/docs" />
+        </map>    
     <!-- /intro -->
     </div>   
-    
+
+    <div class="clear">
+
+        <div class="column span-6">
+     
+            <div id="guido">                                                
+                    <p>
+                        Questa edizione di PyCon Italia sarà arricchita dalla presenza di un ospite d&#8217;eccezione: <b>Guido van Rossum</b>, 
+                        l&#8217;ideatore di Python, che terrà un keynote su gli ultimi sviluppi del linguaggio.
+                    </p>            
+            <!-- /guido -->
+            </div>  
+
+        <!-- /column -->
+
+        </div>   
+
+        <div class="column span-6 last">
+     
+            <div id="cal" class="_">
+                
+                <h2>Calendario</h2>
+                                                
+                <div class="clear">
+
+                    <div id="upcoming">
+                        <span class="d">19</span><span class="m">Feb</span>
+
+                        <p>Pellentesque habitant morbi tristique</p>
+                    <!-- /upcoming -->
+                    </div>
+
+                    <div id="others">
+                        <ul>
+                            <li><span class="d">28</span><span class="m">Feb</span> Pellentesque habitant morbi tristique
+                            </li>
+
+                            <li><span class="d">22</span><span class="m">Mar</span> Pellentesque habitant morbi tristique
+                            </li>
+                            <li><span class="d">15</span><span class="m">Apr</span> Pellentesque habitant morbi tristique
+                            </li>
+                        </ul>
+
+                    <!-- /others -->
+                    </div>
+
+                </div>
+                        
+            <!-- /box -->
+            </div>  
+
+        <!-- /column -->
+        </div>   
+
+    <!-- /clear -->
+    </div>
+
     <div class="column span-4">
  
 
