@@ -30,5 +30,6 @@ class DeadlineContent(models.Model):
     Testo, multilingua, di una deadline
     """
     deadline = models.ForeignKey(Deadline)
-    language = models.CharField(max_length = 3, blank = False)
+    language = models.CharField(max_length = 3)
     body = models.TextField()
+
