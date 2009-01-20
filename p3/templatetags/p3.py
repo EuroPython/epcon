@@ -5,6 +5,7 @@ from django import template
 from django.conf import settings
 
 from p3 import models
+from pages import models as PagesModels
 
 register = template.Library()
 
@@ -38,3 +39,29 @@ def latest_news(parser, token):
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     var_name = contents[-1]
     return LatestNewsNode(limit, var_name)
+
+class NaviPages(template.Node):
+    def __init__(self, page_type, var_name):
+        self.page_type = page_type
+        self.var_name = var_name
+
+    def render(self, context):
+        request = context['request']
+        site = request.site
+        if self.page_type == 'main':
+            query = PagesModels.Page.objects.navigation(site)[1:5]
+        else:
+            query = PagesModels.Page.objects.navigation(site)[5:]
+        context[self.var_name] = query
+        return ''
+
+def navi_pages(parser, token):
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    return NaviPages('main' if tag_name == 'navi_main_pages' else 'others', var_name)
+
+register.tag('navi_main_pages', navi_pages)
+register.tag('navi_others_pages', navi_pages)
