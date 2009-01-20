@@ -1,6 +1,7 @@
 ﻿{% extends "p3/base.html" %}
 {% load pages_tags %}
 {% load markup %}
+{% load p3 %}
 {% block MAIN_CONTENT %}
 <!--
 #############
@@ -43,28 +44,29 @@
                 <h2>Calendario</h2>
                                                 
                 <div class="clear">
+                    {% latest_news 5 as news %}
 
+                    {% with news.0 as upcoming %}
                     <div id="upcoming">
-                        <span class="d">19</span><span class="m">Feb</span>
-
-                        <p>Pellentesque habitant morbi tristique</p>
-                    <!-- /upcoming -->
+                        <span class="d">{{ upcoming.0|date:"d" }}</span>
+                        <span class="m">{{ upcoming.0|date:"M" }}</span>
+                        <p>{{ upcoming.1|safe }}</p>
                     </div>
+                    {% endwith %}
 
+                    {% with news|slice:"1:" as others %}
                     <div id="others">
                         <ul>
-                            <li><span class="d">28</span><span class="m">Feb</span> Pellentesque habitant morbi tristique
+                            {% for n in others %}
+                            <li>
+                              <span class="d">{{ n.0|date:"d" }}</span>
+                              <span class="m">{{ n.0|date:"M" }}</span>
+                              {{ n.1|safe }}
                             </li>
-
-                            <li><span class="d">22</span><span class="m">Mar</span> Pellentesque habitant morbi tristique
-                            </li>
-                            <li><span class="d">15</span><span class="m">Apr</span> Pellentesque habitant morbi tristique
-                            </li>
+                            {% endfor %}
                         </ul>
-
-                    <!-- /others -->
                     </div>
-
+                    {% endwith %}
                 </div>
                         
             <!-- /box -->
