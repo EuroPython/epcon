@@ -38,14 +38,13 @@
         </div>   
 
         <div class="column span-6 last">
-     
+            {% latest_news 5 as news %}
+            {% if news %}
             <div id="cal" class="_">
                 
                 <h2>Calendario</h2>
                                                 
                 <div class="clear">
-                    {% latest_news 5 as news %}
-
                     {% with news.0 as upcoming %}
                     <div id="upcoming">
                         <span class="d">{{ upcoming.0|date:"d" }}</span>
@@ -69,9 +68,8 @@
                     {% endwith %}
                 </div>
                         
-            <!-- /box -->
             </div>  
-
+            {% endif %}
         <!-- /column -->
         </div>   
 
