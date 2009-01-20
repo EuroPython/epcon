@@ -96,11 +96,16 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.markup',
-    'p3',
     'tagging',
     'pages',
-    'mptt'
+    'mptt',
+    'p3',
+    'microblog',
 )
+
+## used by the blog
+#AKISMET_KEY = '56c34997206c'
+#FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
 
 # pycon3 static files, enabled only if debug is True
 P3_STATIC_DIR = ''

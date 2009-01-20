@@ -8,6 +8,7 @@ from pages.urls import urlpatterns
 
 urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
+    (r'^blog/', include('microblog.urls')),
 ) + urlpatterns
 
 if settings.DEBUG:
