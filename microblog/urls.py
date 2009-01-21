@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf.urls.defaults import *
-from microblog import views, models
+from microblog import views, models, feeds
 
 urlpatterns = patterns('',
     url(
@@ -17,5 +17,6 @@ urlpatterns = patterns('',
         name = 'microblog-post-detail'
     ),
     (r'^comments/', include('django.contrib.comments.urls')),
+    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'latest': feeds.LatestPosts}}),
 )
 
