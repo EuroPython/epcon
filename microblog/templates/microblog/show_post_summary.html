@@ -9,6 +9,6 @@ Template utilizzato dal tag show_post_summary
   <p class="metadata">
     <b>{{ post.author.first_name }}</b>
     {{ post.date|timesince }} |
-    <a title="Permalink a questo articolo" href="/blog/2008/07/17/disponibili-le-slide-dei-talk/">permalink</a>
+    <a title="Permalink a questo articolo" href="{{ content.get_absolute_url }}">permalink</a>
   </p>
 </div>

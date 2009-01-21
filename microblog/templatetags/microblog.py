@@ -24,3 +24,11 @@ def show_post_summary(context, post):
         'post': post,
         'content': content
     }
+
+
+@register.inclusion_tag('microblog/show_post_detail.html')
+def show_post_detail(content):
+    return {
+        'post': content.post,
+        'content': content
+    }
