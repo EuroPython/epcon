@@ -75,8 +75,6 @@ class LastBlogPost(template.Node):
     def render(self, context):
         post = BlogModels.Post.objects.latest()
         lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
-        print lang
-        print type(post.postcontent_set)
         context[self.var_name] = post
         context[self.var_name + '_content'] = post.content(lang)
         return ''
