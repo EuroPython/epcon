@@ -103,8 +103,7 @@
 .entry ul,
 .entry ol,
 .entry dl {
-	margin: .8em 0 .8em 0;	
-	/*margin: .8em 0 .8em 0;	*/
+	margin: 10px 13px;
 }
 
 
