@@ -7,6 +7,14 @@
 </head>
 <body>
   <h1>Posts list</h1>
+  <form action="/i18n/setlang/" method="post">
+    <select name="language">
+      {% for lang in LANGUAGES %}
+      <option value="{{ lang.0 }}">{{ lang.1 }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Go" />
+  </form>
   <ul>
     {% for post in object_list %}
       <li>

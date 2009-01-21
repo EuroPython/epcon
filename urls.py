@@ -9,6 +9,7 @@ from pages.urls import urlpatterns
 urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
     (r'^blog/', include('microblog.urls')),
+    (r'^i18n/', include('django.conf.urls.i18n')),
 ) + urlpatterns
 
 if settings.DEBUG:
