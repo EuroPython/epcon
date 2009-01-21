@@ -1,0 +1,12 @@
+{% extends "p3/content.html" %}
+{% load microblog %}
+{% block PAGE_ENTRY %}
+  <h1>PyconItalia Blog</h1>
+  <ul>
+    {% for post in object_list %}
+      <li>
+        {% show_post_summary post %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
