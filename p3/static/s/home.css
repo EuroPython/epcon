@@ -129,10 +129,9 @@
 
 
 #others {
-	
 	float: right;
-	
 	width: 190px;
+    margin-top: -10px;
 }
 
 #others ul {
