@@ -16,6 +16,6 @@ urlpatterns = patterns('',
         'microblog.views.post_detail',
         name = 'microblog-post-detail'
     ),
+    (r'^comments/', include('django.contrib.comments.urls')),
 )
-
 
