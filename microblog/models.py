@@ -1,4 +1,6 @@
+# -*- coding: UTF-8 -*-
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 import tagging
 import tagging.fields
@@ -18,6 +20,29 @@ class Post(models.Model):
     class Meta:
         ordering = ('-date',)
         get_latest_by = 'date'
+
+    def content(self, lang, fallback=True):
+        """
+        Ritorna il PostContent nella lingua specificata.
+        Se il PostContent non esiste e fallback è False viene sollevata
+        l'eccezione ObjectDoesNotExist. Se fallback è True viene prima
+        ricercato il PostContent nella lingua di default del sito, se non
+        esiste viene ritornato il primo PostContent esistente, se non esiste
+        neanche questo viene sollevata l'eccezione ObjectDoesNotExist.
+        """
+        contents = dict((c.language, c) for c in self.postcontent_set.all())
+        if not contents:
+            raise PostContent.DoesNotExist()
+        try:
+            return contents[lang]
+        except KeyError:
+            if not fallback:
+                raise PostContent.DoesNotExist()
+
+        try:
+            return contents[settings.LANGUAGES[0][0]]
+        except KeyError:
+            return contents.values()[0]
 
 class PostContent(models.Model):
     post = models.ForeignKey(Post)
