@@ -74,6 +74,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -97,6 +98,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.markup',
     'django.contrib.comments',
+    'django.contrib.redirects',
     'tagging',
     'pages',
     'mptt',
@@ -120,6 +122,10 @@ PAGE_TEMPLATES = (
 )
 
 PAGE_UNIQUE_SLUG_REQUIRED = True
+
+MICROBLOG_LINK = 'http://www.pycon.it'
+MICROBLOG_TITLE = 'PyconItalia blog'
+MICROBLOG_DESCRIPTION = 'ultime news da PyconItalia'
 
 try:
     from settings_locale import *
