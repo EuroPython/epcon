@@ -1,0 +1,54 @@
+{% load comments %}
+{% comment %}
+Template utilizzato dal tag show_post_detail
+{% endcomment %}
+<div class="microblog post-detail">
+  <h2>{{ content.headline }}</h2>
+  <div class="summary">
+    {{ content.summary|safe }}
+  </div>
+  {% if content.body %}
+  <div class="body">
+    {{ content.body|safe }}
+  </div>
+  {% endif %}
+  <p class="metadata">
+    Pubblicato da <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
+  </p>
+  {% if post.allow_comments %}
+    {% get_comment_list for post as users_comments %}
+    {% if not users_comments %}
+      <h3>Nessun commento inserito</h3>
+    {% else %}
+      <h3>Commenti ({{ users_comments|length }})</h3>
+    {% endif %}
+    <ol class="comments">
+      {% for c in users_comments %}
+        <li class="comment" id="microblog-comment-{{ c.id }}">
+          <div class="metadata">
+            {% with c.userinfo as info %}
+              {% if info.url %}
+              <strong><a href="{{ info.url }}">{{ info.name }}</a></strong>
+              {% else %}
+              <strong>{{ info.name }}</strong>
+              {% endif %}
+              , 
+              <span class="date">
+                <a title="Permalink a questo commento" href="#microblog-comment-{{ c.id}}">
+                  {{ c.submit_date|date:"d F Y" }}
+                </a>
+                alle {{ c.submit_date|date:"H:i" }}
+              </span>
+            {% endwith %}
+          </div>
+          <div class="body">
+            {{ c.comment }}
+          </div>
+        </li>
+      {% endfor %}
+  </ol>
+  <div class="comments-form">
+    {% render_comment_form for post %}
+  </div>
+  {% endif %}
+</div>
