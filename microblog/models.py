@@ -27,3 +27,13 @@ class PostContent(models.Model):
     summary = models.TextField()
     body = models.TextField()
 
+    @models.permalink
+    def get_absolute_url(self):
+        date = self.post.date
+        return ('microblog-post-detail', (), {
+            'year': str(date.year),
+            'month': str(date.month).zfill(2),
+            'day': str(date.day).zfill(2),
+            'slug': self.slug
+        })
+

@@ -3,13 +3,19 @@ from django.conf.urls.defaults import *
 from microblog import views, models
 
 urlpatterns = patterns('',
-    (
-        r'^$', 'django.views.generic.list_detail.object_list',
+    url(
+        r'^$',
+        'django.views.generic.list_detail.object_list',
         {
             'queryset': models.Post.objects.all()
-        }
+        },
+        name = 'microblog-full-list'
     ),
-    (r'^(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\w{1,2})/(?P<slug>[^/]+)/?$', views.post),
+    url(
+        r'^(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\w{1,2})/(?P<slug>[^/]+)/?$',
+        'microblog.views.post_detail',
+        name = 'microblog-post-detail'
+    ),
 )
 
 
