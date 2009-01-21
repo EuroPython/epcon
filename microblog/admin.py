@@ -10,7 +10,19 @@ import models
 class PostAdmin(admin.ModelAdmin):
     
     date_hierarchy = 'date'
-    list_display = ('date', 'author', 'status')
+    list_display = ('headline', 'date', 'author', 'status')
+
+    def headline(self, obj):
+        contents = dict((c.language, c) for c in obj.postcontent_set.all())
+        for l, lname in settings.LANGUAGES:
+            try:
+                content = contents[l]
+            except KeyError:
+                continue
+            if content.headline:
+                return content.headline
+        else:
+            return '[No headline]'
 
     def get_fieldsets(self, request, obj=None, **kwargs):
         fieldsets = [
