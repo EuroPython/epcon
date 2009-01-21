@@ -3,37 +3,30 @@
 {% load p3 pages_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml" lang="it">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>PyCon Italia Tre, Firenze 8-9-10 Maggio 2009</title>
-<meta name="description" content="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>PyCon Italia Tre, Firenze 8-9-10 Maggio 2009</title>
+  <meta name="description" content="" />
 
-<link rel="shortcut icon" href="/static/p3/favicon.ico" type="image/vnd.microsoft.icon" />
-<link rel="icon" href="/static/p3/favicon.png" type="image/png" />
+  <link rel="shortcut icon" href="/static/p3/favicon.ico" type="image/vnd.microsoft.icon" />
+  <link rel="icon" href="/static/p3/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="/static/p3/s/site.css" type="text/css" media="screen" />  
+  <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest" />
 
-<link rel="stylesheet" href="/static/p3/s/site.css" type="text/css" media="screen" />  
+  <script type="text/javascript" src="/static/p3/j/jquery-1.2.6.pack.js"></script>
+  <script type="text/javascript" src="/static/p3/j/jquery-cycle-lite.min.js"></script>
 
-<!--
-<link rel="alternate" type="application/atom+xml" title="Ultimi post" href="./feed/" />
--->
+  <script type="text/javascript">
 
+   $(document).ready(function(){ 
+      $('#quotes ul').cycle({
+          delay: 20000, 
+          speed: 500, 
+          pause: 1
+      })
+   });
 
-<script type="text/javascript" src="/static/p3/j/jquery-1.2.6.pack.js"></script>
-<script type="text/javascript" src="/static/p3/j/jquery-cycle-lite.min.js"></script>
-
-<script type="text/javascript">
-
- $(document).ready(function(){ 
-    $('#quotes ul').cycle({
-        delay:  6000, 
-        speed:  500, 
-        pause: 1
-    })
- });
-
-</script>
-
+  </script>
 </head>
-
 <body id="s-home">
 <div class="hidden"><a href="#main">Salta ai contenuti</a></div>    
 
