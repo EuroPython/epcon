@@ -7,8 +7,34 @@ from django.conf import settings
 
 import models
 
+class PostForm(forms.ModelForm):
+    def clean(self):
+        data = self.cleaned_data
+        # mi assicuro che se una lingua è stata utilizzata i campi
+        # headline, slug e summary devono essere riempiti
+        # inoltre mi assicuro che almeno una lingua sia stata usata
+        valid_langs = []
+        language_fields = 'headline', 'slug', 'summary', 'body'
+        needed_fields = set(('headline', 'slug', 'summary'))
+        for l, lname in settings.LANGUAGES:
+            lfield = []
+            for fname in language_fields:
+                key = fname + '_' + l
+                if data[key]:
+                    lfield.append(fname)
+            if lfield:
+                if needed_fields.intersection(set(lfield)) != needed_fields:
+                    raise forms.ValidationError('Se utilizzi una lingua i campi "headline", "slug" e "summary" sono obbligatori')
+                else:
+                    valid_langs.append(l)
+
+        if not valid_langs:
+            raise forms.ValidationError('Devi usare almeno una lingua')
+            
+        return data
+
 class PostAdmin(admin.ModelAdmin):
-    
+    form = PostForm
     date_hierarchy = 'date'
     list_display = ('headline', 'date', 'author', 'status')
 
