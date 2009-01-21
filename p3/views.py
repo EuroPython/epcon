@@ -1,5 +1,2 @@
-from pages.views import details
+# -*- coding: UTF-8 -*-
 
-def root(request):
-    return details(request)
-    
