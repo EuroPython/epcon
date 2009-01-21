@@ -184,30 +184,19 @@
 }
 
 .more {
-	
-	/*text-align: right;
-	*/
-	
+	text-align: right;
 	margin: 20px 0 0 0;
 }
 
 .more img {
-	
-	
 }
 
 .more a {
-	border: none;
-	
+    font-weight: bold;
 }
 
 .more a:hover {
-	border: none;
-	background: transparent;
 }
-
-
-
 
 #ipsum h2,
 #quotes h2,

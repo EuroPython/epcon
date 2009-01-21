@@ -6,6 +6,7 @@ from django.conf import settings
 
 from p3 import models
 from pages import models as PagesModels
+from microblog import models as BlogModels
 
 register = template.Library()
 
@@ -13,6 +14,7 @@ class LatestNewsNode(template.Node):
     def __init__(self, limit, var_name):
         self.limit = limit
         self.var_name = var_name
+
     def render(self, context):
         query = models.Deadline.objects.valid_news()
         if self.limit:
@@ -65,3 +67,25 @@ def navi_pages(parser, token):
 
 register.tag('navi_main_pages', navi_pages)
 register.tag('navi_others_pages', navi_pages)
+
+class LastBlogPost(template.Node):
+    def __init__(self, var_name):
+        self.var_name = var_name
+
+    def render(self, context):
+        post = BlogModels.Post.objects.latest()
+        lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
+        print lang
+        print type(post.postcontent_set)
+        context[self.var_name] = post
+        context[self.var_name + '_content'] = post.content(lang)
+        return ''
+        
+@register.tag
+def last_blog_post(parser, token):
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    return LastBlogPost(var_name)
