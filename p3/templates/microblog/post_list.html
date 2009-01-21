@@ -1,4 +1,4 @@
-{% extends "p3/content.html" %}
+{% extends "p3/content-2col.html" %}
 {% load microblog %}
 {% block PAGE_ENTRY %}
   <h1>PyconItalia Blog</h1>
@@ -9,4 +9,10 @@
       </li>
     {% endfor %}
   </ul>
+{% endblock %}
+{% block PAGE_SIDEBAR %}
+  <div class="blog-feed">
+    <img src="/static/p3/feed.png" alt="" title="blog feed">
+    <a href="/blog/feeds/latest">Blog feed</a>
+  </div>
 {% endblock %}

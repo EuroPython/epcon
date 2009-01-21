@@ -246,3 +246,10 @@
 	
 }
 
+.blog-feed {
+    font-size: 2em;
+}
+
+.blog-feed a {
+    vertical-align: super;
+}
