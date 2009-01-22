@@ -47,6 +47,11 @@
                 <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
               </li>
             {% endfor %}
+              {% with request.META.PATH_INFO|slice:"1:5" as f %}
+              <li class="big {% ifequal f "blog" %}current{% endifequal %}">
+                <a href="/blog/">Blog</a>
+              </li>
+              {% endwith %}
             
             {% navi_others_pages as pages %}
             {% for p in pages %}
