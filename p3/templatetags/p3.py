@@ -90,3 +90,7 @@ def last_blog_post(parser, token):
 @register.inclusion_tag('p3/box_pycon_italia.html')
 def box_pycon_italia():
     return {}
+
+@register.inclusion_tag('p3/box_newsletter.html')
+def box_newsletter():
+    return {}

@@ -17,3 +17,14 @@
     cursor: pointer;
 }
 
+.newsletter form {
+    margin-top: 10px
+}
+
+.newsletter label {
+    display: inline;
+}
+
+.newsletter .google-link {
+    text-align: right;
+}
