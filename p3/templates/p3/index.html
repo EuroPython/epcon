@@ -12,7 +12,7 @@
             
     <div id="intro">
         <p>{% placeholder mission with markItUpMarkdown %}</p>                
-        <img src="/static/p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />                    
+        <img src="{{ MEDIA_URL }}p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />                    
         <!-- Beginning of Client Side Image Map -->
         <map name="gallery">
           <area shape="poly" coords="82,133,106,317,261,299,236,112,80,134,80,134" href="/pycon3/talk"  alt="Talk">
@@ -104,25 +104,25 @@
             <h2>Dicono di noi</h2>
           
             <ul>   
-                <li class="clear">                    
+                <li class="clear">
                     <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;
                     </q>
-                    <p><img src="/static/p3/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span>
-                    </p>                    
+                    <p><img src="{{ MEDIA_URL }}p3/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span>
+                    </p>
                 </li>
                 
                 <li class="clear">
                     <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;
                     </q>
-                    <p><img src="/static/p3/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span>
-                    </p>                    
+                    <p><img src="{{ MEDIA_URL }}p3/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span>
+                    </p>
                 </li>
 
                 <li class="clear">
                     <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;                    
                     </q>
-                    <p><img src="/static/p3/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
-                    </p>                    
+                    <p><img src="{{ MEDIA_URL }}p3/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
+                    </p>
                 </li>
 
             </ul>

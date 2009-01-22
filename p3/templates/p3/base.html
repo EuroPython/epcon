@@ -7,14 +7,14 @@
   <title>PyCon Italia Tre, Firenze 8-9-10 Maggio 2009</title>
   <meta name="description" content="" />
 
-  <link rel="shortcut icon" href="/static/p3/favicon.ico" type="image/vnd.microsoft.icon" />
-  <link rel="icon" href="/static/p3/favicon.png" type="image/png" />
-  <link rel="stylesheet" href="/static/p3/s/site.css" type="text/css" media="screen" />  
+  <link rel="shortcut icon" href="{{ MEDIA_URL }}p3/favicon.ico" type="image/vnd.microsoft.icon" />
+  <link rel="icon" href="{{ MEDIA_URL }}p3/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="{{ MEDIA_URL }}p3/s/site.css" type="text/css" media="screen" />  
   <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest" />
 
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js"></script>
-  <script type="text/javascript" src="/static/p3/j/jquery-cycle-lite.min.js"></script>
-  <script type="text/javascript" src="/static/p3/j/utils.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/jquery-cycle-lite.min.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/utils.js"></script>
 
   <script type="text/javascript">
 
@@ -31,12 +31,11 @@
 </head>
 <body id="s-home">
 <div class="hidden"><a href="#main">Salta ai contenuti</a></div>    
-
 <div id="header" class="container clear">
 
     <div class="column span-4">
         <div id="logo">
-            <a href="/"><img src="/static/p3/i/pycontre-logo.gif" alt="PyCon Italia Tre" width="220" height="60" /></a>
+            <a href="/"><img src="{{ MEDIA_URL }}p3/i/pycontre-logo.gif" alt="PyCon Italia Tre" width="220" height="60" /></a>
         </div>
     </div>
     
@@ -84,26 +83,26 @@ SPONSOR
                 {% comment %}
                 <dt>Platinum</dt>
                 <dd>
-                  <a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
+                  <a href="#"><img src="{{ MEDIA_URL }}p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
                 </dd>
                 {% endcomment %}
 
                 <dt>Gold</dt>
                 <dd>
                   <a href="http://www.develer.com/">
-                    <img src="/static/stuff/p3/sponsor/develer.png" alt="develer" width="120" height="70" />
+                    <img src="{{ MEDIA_URL }}stuff/p3/sponsor/develer.png" alt="develer" width="120" height="70" />
                   </a>
                 </dd>
                 <dd>
                   <a href="http://linkgroup.it/">
-                    <img src="/static/stuff/p3/sponsor/linkit.png" alt="link it" width="120" height="70" />
+                    <img src="{{ MEDIA_URL }}stuff/p3/sponsor/linkit.png" alt="link it" width="120" height="70" />
                   </a>
                 </dd>
 
                 {% comment %}
                 <dt>Silver</dt>
                 <dd>
-                  <a href="#"><img src="/static/p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
+                  <a href="#"><img src="{{ MEDIA_URL }}p3/i/sponsor/a.gif" alt="A" width="120" height="70" /></a>
                 </dd>
                 {% endcomment %}
             </dl>
@@ -142,8 +141,8 @@ SPONSOR
         </p>        
 
        <div id="cc">
-        <a href="http://creativecommons.org/licenses/by-nd/3.0/" rel="license"><img src="/static/p3/i/cc.gif" alt="Creative Commons License" /></a>&nbsp;
-        <a href="http://www.djangoproject.com/" rel=""><img src="/static/p3/i/django.gif" alt="A Django site" /></a>
+        <a href="http://creativecommons.org/licenses/by-nd/3.0/" rel="license"><img src="{{ MEDIA_URL }}p3/i/cc.gif" alt="Creative Commons License" /></a>&nbsp;
+        <a href="http://www.djangoproject.com/" rel=""><img src="{{ MEDIA_URL }}p3/i/django.gif" alt="A Django site" /></a>
        </div>
 
     <!-- /column -->
@@ -165,7 +164,7 @@ SPONSOR
 
     <div class="column span-3 last">
          <div id="xkcd">
-            <a href="http://xkcd.com/413/"><img src="/static/p3/i/pin.jpg" width="190" height="85" alt="Import Soul" /></a>
+            <a href="http://xkcd.com/413/"><img src="{{ MEDIA_URL }}p3/i/pin.jpg" width="190" height="85" alt="Import Soul" /></a>
          </div>        
     <!-- /column -->
     </div>   
