@@ -16,6 +16,7 @@ Template utilizzato dal tag show_post_detail
     Pubblicato da <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
   </p>
   {% if post.allow_comments %}
+    <a name="comments"></a>
     {% get_comment_list for post as users_comments %}
     {% if not users_comments %}
       <h3>Nessun commento inserito</h3>

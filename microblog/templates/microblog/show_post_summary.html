@@ -1,14 +1,22 @@
+{% load comments %}
 {% comment %}
 Template utilizzato dal tag show_post_summary
 {% endcomment %}
 <div class="microblog post-summary">
-  <h2>{{ content.headline }}</h2>
+  <h2><a title="Permalink a questo articolo" href="{{ content.get_absolute_url }}">{{ content.headline }}</a></h2>
   <div class="summary">
     {{ content.summary|safe }}
   </div>
   <p class="metadata">
     <b>{{ post.author.first_name }}</b>
     {{ post.date|timesince }} |
-    <a title="Permalink a questo articolo" href="{{ content.get_absolute_url }}">permalink</a>
+    {% if content.body %}
+      <a title="Dettagli articolo" href="{{ content.get_absolute_url }}">Continua</a>
+    {% else %}
+      {% get_comment_count for post as count %}
+      <a title="Commenti articolo" href="{{ content.get_absolute_url }}#comments">
+        Commenti ({{ count }})
+      </a>
+    {% endif %}
   </p>
 </div>
