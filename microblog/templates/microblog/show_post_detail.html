@@ -1,4 +1,5 @@
 {% load comments %}
+{% load microblog %}
 {% comment %}
 Template utilizzato dal tag show_post_detail
 {% endcomment %}
@@ -15,6 +16,7 @@ Template utilizzato dal tag show_post_detail
   <p class="metadata">
     Pubblicato da <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
   </p>
+  {% show_social_networks content %}
   {% if post.allow_comments %}
     <a name="comments"></a>
     {% get_comment_list for post as users_comments %}

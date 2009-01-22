@@ -7,6 +7,7 @@ register = template.Library()
 
 @register.inclusion_tag('microblog/show_post_summary.html', takes_context=True)
 def show_post_summary(context, post):
+    request = context['request']
     lang = context['LANGUAGE_CODE']
     contents = dict((c.language, c) for c in post.postcontent_set.all())
     try:
@@ -22,14 +23,30 @@ def show_post_summary(context, post):
             raise ValueError('There is no a valid content (in any language)')
     return {
         'post': post,
-        'content': content
+        'content': content,
+        'MEDIA_URL': context['MEDIA_URL'],
+        'request': request,
     }
 
-@register.inclusion_tag('microblog/show_post_detail.html')
-def show_post_detail(content):
+@register.inclusion_tag('microblog/show_post_detail.html', takes_context=True)
+def show_post_detail(context, content):
+    request = context['request']
     return {
         'post': content.post,
-        'content': content
+        'content': content,
+        'MEDIA_URL': context['MEDIA_URL'],
+        'request': request,
+    }
+
+@register.inclusion_tag('microblog/show_social_networks.html', takes_context=True)
+def show_social_networks(context, content):
+    request = context['request']
+    return {
+        'post': content.post,
+        'content': content,
+        'content_url': 'http://%s%s' % (request.site.domain, content.get_absolute_url()),
+        'MEDIA_URL': context['MEDIA_URL'],
+        'request': request,
     }
 
 class PostContent(template.Node):

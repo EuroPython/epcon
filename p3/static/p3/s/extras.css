@@ -28,3 +28,25 @@
 .newsletter .google-link {
     text-align: right;
 }
+
+.post-detail h1 {
+    margin: 0 0 20px 0;
+}
+
+.post-detail p {
+	margin-bottom: 10px;
+}
+
+.post-detail .social-networks {
+    margin: 10px;
+}
+
+.post-detail .social-networks a {
+    margin: 0 3px;
+    text-decoration: none;
+    border: 0;
+}
+
+.post-detail .social-networks a:hover {
+    background: none;
+}
