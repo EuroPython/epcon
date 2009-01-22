@@ -128,7 +128,9 @@
 
 .box {
 	
-	background: transparent url(../i/bg-box.gif) bottom center no-repeat;
+	/* background: transparent url(../i/bg-box.gif) bottom center no-repeat;
+	*/
+	background: transparent url(../i/bg-box-2.gif) top right no-repeat;
 	
 }
 
