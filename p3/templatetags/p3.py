@@ -51,10 +51,7 @@ class NaviPages(template.Node):
         request = context['request']
         site = request.site
         query = PagesModels.Page.objects.navigation(site).order_by('tree_id', 'lft')
-        if self.page_type == 'main':
-            query = query[1:4]
-        else:
-            query = query[4:]
+        query = query.filter(tags__contains = self.page_type)
         context[self.var_name] = query
         return ''
 
@@ -64,10 +61,11 @@ def navi_pages(parser, token):
     if contents[-2] != 'as':
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     var_name = contents[-1]
-    return NaviPages('main' if tag_name == 'navi_main_pages' else 'others', var_name)
+    return NaviPages(tag_name.split('_')[1], var_name)
 
-register.tag('navi_main_pages', navi_pages)
-register.tag('navi_others_pages', navi_pages)
+register.tag('navi_menu1_pages', navi_pages)
+register.tag('navi_menu2_pages', navi_pages)
+register.tag('navi_menu3_pages', navi_pages)
 
 class LastBlogPost(template.Node):
     def __init__(self, var_name):
