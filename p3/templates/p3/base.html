@@ -55,7 +55,7 @@
             
             {% navi_others_pages as pages %}
             {% for p in pages %}
-              <li class="{% if forloop.first %}sep{% endif %} {% ifequal current_page p %}current{% endifequal %}">
+              <li class="{% if forloop.first %}_{% endif %}{% ifequal current_page p %}current{% endifequal %}">
                 <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
               </li>
             {% endfor %}
@@ -166,7 +166,7 @@ SPONSOR
 
     <div class="column span-3 last">
          <div id="xkcd">
-            <a href="http://xkcd.com/413/"><img src="/static/p3/i/pin.jpg" alt="Import Soul" /></a>
+            <a href="http://xkcd.com/413/"><img src="/static/p3/i/pin.jpg" width="190" height="85" alt="Import Soul" /></a>
          </div>        
     <!-- /column -->
     </div>   

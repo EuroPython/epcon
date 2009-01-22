@@ -129,16 +129,17 @@ hr {
 	
 	float: left;
 	
-	margin: 0 10px 0 0;
+	margin: 0 0 0 10px;
 	
 }
 
-
+/*
 #nav li.sep {
 	padding-left: 20px;	
 	
 	background: transparent url(../i/bg-menu.gif) center left no-repeat;	
 }
+*/
 
 
 #nav li a {
@@ -231,7 +232,7 @@ hr {
 ----------------------------------------------------- */
 
 #header {
-	margin-top: 40px;
+	margin-top: 20px;
 	margin-bottom: 40px;
 }
 
@@ -496,7 +497,7 @@ hr {
 }
 
 #xkcd {
-
+	text-align: right;
 }
 
 

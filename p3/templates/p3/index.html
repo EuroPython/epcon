@@ -101,6 +101,7 @@
       <div id="blog" class="box">
         <h2>Dal blog</h2>
         {% last_blog_post as post %}
+        <h3>{{ post_content.headline }}</h3>
         <p>{{ post_content.summary|truncatewords_html:50|safe }}</p>
         <div class="more">
           <a href="{{ post_content.get_absolute_url }}">Continua &rarr;</a>
