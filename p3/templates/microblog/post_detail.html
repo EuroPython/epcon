@@ -1,8 +1,17 @@
 {% extends "p3/content.html" %}
 {% load microblog %}
+
 {% block PAGE_ENTRY %}
-  {% show_post_detail content %}
+  
+    <div id="page">                        
+                                
+    {% show_post_detail content %}
+   
+    <!-- /page -->
+    </div>  
+  
 {% endblock %}
+
 {% block PAGE_SIDEBAR %}
   <div class="blog-feed">
     <img src="/static/p3/feed.png" alt="" title="blog feed">

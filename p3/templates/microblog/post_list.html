@@ -1,15 +1,27 @@
 {% extends "p3/content.html" %}
 {% load microblog %}
+
 {% block PAGE_ENTRY %}
-  <h1>PyconItalia Blog</h1>
-  <ul>
-    {% for post in object_list %}
-      <li>
-        {% show_post_summary post %}
-      </li>
-    {% endfor %}
-  </ul>
+    
+    <div id="page">                        
+    
+        <div id="page-title">
+            <h1>PyCon Italia Blog</h1>             
+        </div>            
+            
+        <ul class="archive">
+        {% for post in object_list %}
+          <li>
+            {% show_post_summary post %}
+          </li>
+        {% endfor %}
+        </ul>    
+        
+    <!-- /page -->
+    </div>  
+    
 {% endblock %}
+
 {% block PAGE_SIDEBAR %}
   <div class="blog-feed">
     <img src="/static/p3/feed.png" alt="" title="blog feed">

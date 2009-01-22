@@ -266,20 +266,13 @@ hr {
 	margin-bottom: 40px; 
 }
 
-
-
-
-
-
-
-
-
-
+/*
 .meta {
 	color: #666;
 	
 	font-size: 12px;
 }
+*/
 
 .pending-moderation {
 	border-left: 2px solid #A72020;
@@ -303,103 +296,35 @@ hr {
 	
 }
 
+
 .archive li {
-	color: #666;
-	
-	
-}
-
-.article-list {
-	list-style: none
-
-}
-
-
-.article-list li {
-	margin: 0 0 .8em 0;
+	margin: 0 0 10px 0;
 
 }
 
 
 
-.section h2 {
-
-	
-	margin: 0 0 .8em 0;
-	padding: 0 0 .8em 0;
-	
-	border-bottom: 1px solid #aaa;
-	
-	color: #666;
-	
-	
-}
-
-
-
-
-.section h2 a {
-
-
-	border-bottom: none;	
-	color: #666;
-	
-	
-}
-
-#blogroll ul,
-#related ul,
-#latest ul {
-	list-style: none;
-}
-
-
-#blogroll li,
-#related li,
-#latest li {
-	margin: 0 0 .8em 0;
-}
-
-
-
-#latest p {
-	display: line;
-}
-
-
-#me {
-	
-	margin: 0 0 .8em 0;
-}
-
-
-/*
-#post .entry {
-	
-	margin: .8em 0 .8em 0;
-}
-*/
 
 #comments  {
 	
-	margin: 3.2em 0 0 0;
+	margin: 40px 0 0 0;
 }
 
 
 #comment-list li {
-    margin: 0 0 1.6em 0;
+    margin: 0 0 20px 0;
     
     
 }
 
 #add-comment {
 	
-	margin: 3.2em 0 0 0;
+	margin: 40px 0 0 0;
 }
 
 
 #trackback {
-	margin: 3.2em 0 0 0;
+	margin: 40px 0 0 0;
 	
 	color: #666;
 }
@@ -504,3 +429,6 @@ hr {
 	border-bottom: none;
 
 }
+
+
+

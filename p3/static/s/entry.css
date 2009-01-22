@@ -1,10 +1,44 @@
 
 
+/* ---------------------------------------------------
+=page
+----------------------------------------------------- */
 
-.entry {
+#page {
 	padding: 20px 15px;
 	
 	background: #fff url(../i/bg-page.jpg) bottom right no-repeat;
+
+}
+
+
+
+#page-title {
+	
+	margin: 0 0 20px 0;
+}
+
+#page-title div {
+	color: #a68311;
+	
+	font: italic bold 13px/20px Constantia, Georgia, "Lucida Bright", "Times New Roman", serif;
+
+}
+
+
+#page h1 {
+	color: #610831;
+
+}
+
+
+/* ---------------------------------------------------
+=entry
+----------------------------------------------------- */
+
+
+
+.entry {
 
 }
 
@@ -15,10 +49,6 @@
 
 
 
-.entry h1 {
-	color: #610831;
-
-}
 
 .entry p, 
 .entry dl, 
@@ -29,12 +59,6 @@
 }
 
 
-.entry .subtitle p {
-	color: #a68311;
-	
-	font: italic bold 13px/20px Constantia, Georgia, "Lucida Bright", "Times New Roman", serif;
-	margin: 0 0 15px 0;	
-}
 
 .entry sup {
 	

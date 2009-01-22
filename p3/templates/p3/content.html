@@ -5,22 +5,28 @@
 {% block MAIN_CONTENT %}
 <div class="column span-12">
     <div class="column {% block PAGE__CLASS_MAIN_COLUMN %}span-8{% endblock %}">
-        <a name="top"></a>
-        <div class="entry">
-            {% block PAGE_ENTRY %}
-            <h1>{% show_content current_page "title" %}</h1>
+        <a name="top"></a>        
+        
+        {% block PAGE_ENTRY %}                        
+            <div id="page">                        
             
-            <div class="subtitle">
-              {% placeholder subtitle with markItUpMarkdown as text %}
-              {{ text|markdown }}
-            </div>
-
-            <div>
-              {% placeholder text with markItUpMarkdown as text %}
-              {{ text|markdown }}
-            </div>
-            {% endblock %}
-        </div>  
+                <div id="page-title">
+                    <h1>{% show_content current_page "title" %}
+                    </h1>                    
+                    <div>
+                      {% placeholder subtitle with markItUpMarkdown as text %}
+                      {{ text|markdown }}
+                    </div>
+                </div>            
+                
+                <div class="entry">
+                    {% placeholder text with markItUpMarkdown as text %}
+                    {{ text|markdown }}                
+                </div>            
+                
+            <!-- /page -->
+            </div>  
+        {% endblock %}
     </div>   
     {% block PAGE__AFTER_MAIN_COLUMN %}
     <div class="column span-4 last">
