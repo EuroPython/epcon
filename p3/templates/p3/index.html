@@ -13,11 +13,14 @@
     <div id="intro">
         <p>{% placeholder mission with markItUpMarkdown %}</p>                
         <img src="/static/p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />        
+        
+        <!--
         <map name="gallery">
          <area shape="poly"  coords="50,50,25" href="" />
          <area shape="poly" coords="50,50,100,100" href="/" />
          <area shape="poly" coords="0,0,100,100" href="/docs" />
         </map>    
+        -->
     <!-- /intro -->
     </div>   
 
@@ -81,13 +84,13 @@
 
     <div class="column span-4">
 
-        <div id="ipsum" class="box">
+        <div id="extra" class="box">
             <h2>Ipsum</h2>
             <p>{% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}</p>
             <div class="more">
-                <a href="/pycon3/conferenza">Continua</a>
+                <a href="/pycon3/conferenza">Continua &rarr;</a>
             </div>
-            <hr />
+ 
         </div>  
 
     <!-- /column -->
@@ -100,7 +103,7 @@
         {% last_blog_post as post %}
         <p>{{ post_content.summary|truncatewords_html:50|safe }}</p>
         <div class="more">
-          <a href="{{ post_content.get_absolute_url }}">Continua sul blog</a>
+          <a href="{{ post_content.get_absolute_url }}">Continua &rarr;</a>
         </div>
       </div>  
     </div>   

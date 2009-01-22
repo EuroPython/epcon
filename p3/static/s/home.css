@@ -73,15 +73,17 @@
 	height: 30px;
 	
 
-	padding: 10px 0 0 15px;
+	color: #610831;
+	
+		
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	letter-spacing: 1px;
+
+
+	padding: 10px 0 0 10px;
 
 	text-transform: uppercase;
 	
-	color: #610831;
-	
-	font-size: 14px;
-	letter-spacing: 1px;
-
 }
 
 
@@ -184,35 +186,61 @@
 }
 
 .more {
-	text-align: right;
+	
+	height: 30px;
+	
+	background: #610831 url(../i/bg-button-l.gif) left center no-repeat;
+	
 	margin: 20px 0 0 0;
-}
-
-.more img {
+	
+	width: 150px;
 }
 
 .more a {
-    font-weight: bold;
+
+	
+	padding: 5px 0 0 10px;
+	
+	background: transparent url(../i/bg-button-r.gif) right center no-repeat;
+
+	color: #c09917;
+
+
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	
+	text-transform: uppercase;
+	
+	vertical-align: middle;
+	
+	
+	display: block;
+	
+	border: none;
+		
 }
 
-.more a:hover {
-}
 
-#ipsum h2,
+
+
+#extra h2,
 #quotes h2,
 #blog h2 {
-	height: 52px;
+	height: 30px;
 	
-	background: transparent url(../i/bg-h-empty.jpg) top left no-repeat;
+	background: transparent url(../i/bg-h-extra.jpg) top left no-repeat;
 	
-	text-indent: -999em;
+	margin: 0 0 10px 0;
 	
-}
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	letter-spacing: 1px;
 
-#ipsum h2 {
+	color: #610831;
 
-	background-image: url(../i/bg-h-ipsum.jpg);
-	
+	padding: 10px 0 0 10px;
+
+	text-transform: uppercase;
+
 }
 
 #quotes h2 {
