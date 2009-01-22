@@ -1,18 +1,13 @@
 @import './reset.css';
 @import './grid.css';
 @import './form.css';
-
 /*@import './screen.css' screen, projection;
 */
 @import './screen.css';
 
-
 /*@import './print.css' print;
 */
-
 @import './entry.css';
-/*@import './page.css';
-*/
 @import './home.css';
 
 

@@ -45,21 +45,20 @@
                 
                 <h2>Calendario</h2>
                                                 
-                <div class="clear">
+        
                     {% with news as others %}
                     <div id="others">
                         <ul>
                             {% for n in others %}
                             <li>
-                              <span class="d">{{ n.0|date:"d" }}</span>
-                              <span class="m">{{ n.0|date:"M" }}</span>
+                              <span>{{ n.0|date:"d" }}&nbsp;{{ n.0|date:"M" }}</span>
                               {{ n.1|safe }}
                             </li>
                             {% endfor %}
                         </ul>
                     </div>
                     {% endwith %}
-                </div>
+
                         
             </div>  
             {% endif %}

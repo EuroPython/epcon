@@ -106,27 +106,17 @@
 }
 
 
-#others span.d,
-#others span.m {
+#others span {
 
-	background: #2a445e;
-	color: #72c5d6;
-	
-	padding: 0 2px;
-	
-
-}
-
-#others span.d {
-
-	font-weight: bold;
-	
 	background: #610831;
 	color: #dfeaf0;
 		
-	padding: 0 2px;
+	padding: 0 2px;;
 	
+
 }
+
+
 
 /* ---------------------------------------------------
 =box
