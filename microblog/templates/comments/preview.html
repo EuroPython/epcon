@@ -26,7 +26,12 @@
           {% if field.errors %} class="error"{% endif %}
           {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
           {% if field.errors %}{{ field.errors }}{% endif %}
-          {{ field.label_tag }} {{ field }}
+          {% ifequal field.name "email" %}
+            <label for="{{ field.auto_id }}">{{ field.label }} (non verrà reso pubblico)</label>
+          {% else %}
+            {{ field.label_tag }}
+          {% endifequal %}
+          {{ field }}
         </p>
       {% endif %}
     {% endfor %}
