@@ -50,10 +50,11 @@ class NaviPages(template.Node):
     def render(self, context):
         request = context['request']
         site = request.site
+        query = PagesModels.Page.objects.navigation(site).order_by('tree_id', 'lft')
         if self.page_type == 'main':
-            query = PagesModels.Page.objects.navigation(site)[1:5]
+            query = query[1:4]
         else:
-            query = PagesModels.Page.objects.navigation(site)[5:]
+            query = query[4:]
         context[self.var_name] = query
         return ''
 
