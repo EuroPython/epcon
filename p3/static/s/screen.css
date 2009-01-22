@@ -164,7 +164,9 @@ hr {
 	
 	border: none;
 	
-	background: #72C5D6 url(../i/bg-menu-li.gif) center left no-repeat;	
+/*	background: #72C5D6 url(../i/bg-menu-li.gif) center left no-repeat;	
+*/
+	background: #72C5D6;	
 	
 	text-transform: uppercase;
 	

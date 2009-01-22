@@ -13,11 +13,14 @@
     <div id="intro">
         <p>{% placeholder mission with markItUpMarkdown %}</p>                
         <img src="/static/p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />        
+        
+        <!--
         <map name="gallery">
          <area shape="poly"  coords="50,50,25" href="" />
          <area shape="poly" coords="50,50,100,100" href="/" />
          <area shape="poly" coords="0,0,100,100" href="/docs" />
         </map>    
+        -->
     <!-- /intro -->
     </div>   
 
@@ -81,7 +84,7 @@
 
     <div class="column span-4">
 
-        <div id="ipsum" class="box">
+        <div id="extra" class="box">
             <h2>Ipsum</h2>
             <p>{% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}</p>
             <div class="more">
