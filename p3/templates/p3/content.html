@@ -4,7 +4,7 @@
 
 {% block MAIN_CONTENT %}
 <div class="column span-12">
-    <div class="column {% block PAGE__CLASS_MAIN_COLUMN %}span-12 last{% endblock %}">
+    <div class="column {% block PAGE__CLASS_MAIN_COLUMN %}span-8{% endblock %}">
         <div class="entry">
             {% block PAGE_ENTRY %}
             <h1>{% show_content current_page "title" %}</h1>
@@ -21,6 +21,16 @@
             {% endblock %}
         </div>  
     </div>   
-    {% block PAGE__AFTER_MAIN_COLUMN %}{% endblock %}
+    {% block PAGE__AFTER_MAIN_COLUMN %}
+    <div class="column span-4 last">
+        <div id="sidebar">
+            {% block PAGE_SIDEBAR %}
+            {% comment %}
+            sidebar - usare dei <p> e degli <h2> per i titoli
+            {% endcomment %}
+            {% endblock %}
+        </div>
+    </div>
+    {% endblock %}
 </div>   
 {% endblock %}
