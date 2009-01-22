@@ -55,7 +55,7 @@
             
             {% navi_others_pages as pages %}
             {% for p in pages %}
-              <li class="{% if forloop.first %}sep{% endif %}{% ifequal current_page p %}current{% endifequal %}">
+              <li class="{% if forloop.first %}sep{% endif %} {% ifequal current_page p %}current{% endifequal %}">
                 <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
               </li>
             {% endfor %}
