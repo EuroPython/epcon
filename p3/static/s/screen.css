@@ -66,12 +66,9 @@ a {
 }
 
 a:hover {
-	color: #E0EBF1;
 	color: #fff;
 	background: #2a445e;
-		
 	border-bottom: 1px solid #72C5D6;
-
 }
 
 

@@ -249,3 +249,7 @@
 .blog-feed a {
     vertical-align: super;
 }
+
+.toggle {
+    cursor: pointer;
+}
