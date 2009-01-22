@@ -46,15 +46,7 @@
                 <h2>Calendario</h2>
                                                 
                 <div class="clear">
-                    {% with news.0 as upcoming %}
-                    <div id="upcoming">
-                        <span class="d">{{ upcoming.0|date:"d" }}</span>
-                        <span class="m">{{ upcoming.0|date:"M" }}</span>
-                        <p>{{ upcoming.1|safe }}</p>
-                    </div>
-                    {% endwith %}
-
-                    {% with news|slice:"1:" as others %}
+                    {% with news as others %}
                     <div id="others">
                         <ul>
                             {% for n in others %}

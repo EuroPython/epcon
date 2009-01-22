@@ -57,10 +57,11 @@
 	
 	background: #adc9d2 url(../i/bg-cal.jpg) top left no-repeat;
 	
-	height: 220px;
-
+	
 	margin: 0 0 30px 0;
 	
+	min-height: 220px;
+	_height: 220px;
 	
 }
 
@@ -87,53 +88,10 @@
 }
 
 
-#upcoming {
-	
-	text-align: center;
-	
-	float: left;
-	
-	width: 190px;
-	margin: 40px 20px 0 0;
-	
-	
-}
 
 
-#upcoming span.d,
-#upcoming span.m {
-	font-size: 24px;
-	
-	background: #2a445e;
-	color: #72c5d6;
-	
-	padding: 0 4px;
-	
-}
-#upcoming span.d {
-
-	font-weight: bold;
-	
-	background: #610831;
-	color: #dfeaf0;
-	
-	padding: 0 4px;
-}
-
-#upcoming p {
-	
-	margin: 10px 0 0 0;
-	
-	font-weight: bold;
-	font-size: 14px;
-}
-
-
-
-#others {
-	float: right;
-	width: 190px;
-    margin-top: -10px;
+#others {	
+	padding: 15px 15px 0 15px;
 }
 
 #others ul {
@@ -151,7 +109,6 @@
 #others span.d,
 #others span.m {
 
-	
 	background: #2a445e;
 	color: #72c5d6;
 	
