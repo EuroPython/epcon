@@ -97,13 +97,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.markup',
-    'django.contrib.comments',
     'django.contrib.redirects',
     'tagging',
     'pages',
     'mptt',
     'p3',
     'microblog',
+    'django.contrib.comments',
 )
 
 ## used by the blog
