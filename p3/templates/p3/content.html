@@ -1,6 +1,7 @@
 ﻿{% extends "p3/base.html" %}
 {% load pages_tags %}
 {% load markup %}
+{% load p3 %}
 
 {% block MAIN_CONTENT %}
 <div class="column span-12">
@@ -35,6 +36,7 @@
             {% endcomment %}
             {% placeholder right-column parsed %}
             {% endblock %}
+            {% box_newsletter %}
         </div>
     </div>
     {% endblock %}
