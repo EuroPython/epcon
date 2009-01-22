@@ -88,3 +88,7 @@ def last_blog_post(parser, token):
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     var_name = contents[-1]
     return LastBlogPost(var_name)
+
+@register.inclusion_tag('p3/box_pycon_italia.html')
+def box_pycon_italia():
+    return {}
