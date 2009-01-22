@@ -110,10 +110,6 @@ INSTALLED_APPS = (
 #AKISMET_KEY = '56c34997206c'
 #FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
 
-# pycon3 static files, enabled only if debug is True
-P3_STATIC_DIR = ''
-P3_STUFF_DIR = ''
-
 DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
 
 PAGE_TEMPLATES = (
@@ -127,6 +123,11 @@ PAGE_UNIQUE_SLUG_REQUIRED = True
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconItalia blog'
 MICROBLOG_DESCRIPTION = 'ultime news da PyconItalia'
+
+# se si vuole far servire a django i file statici
+# popolare questo dizionario con coppie
+# nome app -> static dir
+STATIC_DIRS = {}
 
 try:
     from settings_locale import *
