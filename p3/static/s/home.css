@@ -186,19 +186,42 @@
 }
 
 .more {
-	text-align: right;
+	
+	height: 30px;
+	
+	background: #610831 url(../i/bg-button-l.gif) left center no-repeat;
+	
 	margin: 20px 0 0 0;
-}
-
-.more img {
+	
+	width: 150px;
 }
 
 .more a {
-    font-weight: bold;
+
+	
+	padding: 5px 0 0 10px;
+	
+	background: transparent url(../i/bg-button-r.gif) right center no-repeat;
+
+	color: #c09917;
+
+
+	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	
+	text-transform: uppercase;
+	
+	vertical-align: middle;
+	
+	
+	display: block;
+	
+	border: none;
+		
 }
 
-.more a:hover {
-}
+
+
 
 #extra h2,
 #quotes h2,

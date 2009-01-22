@@ -88,9 +88,9 @@
             <h2>Ipsum</h2>
             <p>{% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}</p>
             <div class="more">
-                <a href="/pycon3/conferenza">Continua</a>
+                <a href="/pycon3/conferenza">Continua &rarr;</a>
             </div>
-            <hr />
+ 
         </div>  
 
     <!-- /column -->
@@ -103,7 +103,7 @@
         {% last_blog_post as post %}
         <p>{{ post_content.summary|truncatewords_html:50|safe }}</p>
         <div class="more">
-          <a href="{{ post_content.get_absolute_url }}">Continua sul blog</a>
+          <a href="{{ post_content.get_absolute_url }}">Continua &rarr;</a>
         </div>
       </div>  
     </div>   
