@@ -61,3 +61,28 @@
     color: #900;
     font-family: Monospace;
 }
+
+.post-summary .metadata {
+    margin-top: 15px;
+}
+
+.post-summary li {
+    margin-bottom: 5px;
+}
+
+ul.archive > li {
+    margin: 25px 0;
+}
+
+.microblog .comments-form, .microblog .comments {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.microblog ul, .microblog ol {
+    margin-left: 20px;
+}
+
+.microblog .comments li {
+    margin-bottom: 15px;
+}
