@@ -22,7 +22,10 @@ class LatestNewsNode(template.Node):
         lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
         news = []
         for n in query:
-            contents = n.deadlinecontent_set.get(language = lang)
+            try:
+                contents = n.deadlinecontent_set.get(language = lang)
+            except models.DeadlineContent.DoesNotExist:
+                continue
             news.append((n.date, contents.body))
         context[self.var_name] = news
         return ""
