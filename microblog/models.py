@@ -30,7 +30,7 @@ class Post(models.Model):
         esiste viene ritornato il primo PostContent esistente, se non esiste
         neanche questo viene sollevata l'eccezione ObjectDoesNotExist.
         """
-        contents = dict((c.language, c) for c in self.postcontent_set.all())
+        contents = dict((c.language, c) for c in self.postcontent_set.exclude(headline=''))
         if not contents:
             raise PostContent.DoesNotExist()
         try:
