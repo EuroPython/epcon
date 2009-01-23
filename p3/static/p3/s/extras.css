@@ -18,15 +18,21 @@
 }
 
 .newsletter form {
-    margin-top: 10px
+    margin-top: 10px;
+    width: 220px;
 }
 
 .newsletter label {
     display: inline;
 }
 
+.newsletter label input {
+    width: 120px;
+}
+
 .newsletter .google-link {
     text-align: right;
+    width: 220px;
 }
 
 .post-detail h1 {
