@@ -7,6 +7,10 @@ import tagging.fields
 
 POST_STATUS = (('P', 'Pubblicato'), ('D', 'Bozza'))
 
+class PostManager(models.Manager):
+    def published(self):
+        return self.all().filter(status = 'P').order_by('-date')
+
 class Post(models.Model):
     date = models.DateTimeField(db_index=True)
     author = models.ForeignKey(User)
@@ -14,12 +18,17 @@ class Post(models.Model):
     allow_comments = models.BooleanField()
     tags = tagging.fields.TagField()
 
+    objects = PostManager()
+
     def __unicode__(self):
         return "Post of %s on %s" % (self.author, self.date)
 
     class Meta:
         ordering = ('-date',)
         get_latest_by = 'date'
+
+    def is_published(self):
+        return self.status == 'P'
 
     def content(self, lang, fallback=True):
         """
