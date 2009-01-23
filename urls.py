@@ -7,9 +7,11 @@ admin.autodiscover()
 import pages.urls
 
 urlpatterns = patterns('',
+    (r'^$', 'p3.views.root'),
     (r'^admin/(.*)', admin.site.root),
     (r'^blog/', include('microblog.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
+    (r'^pycon3/', include('pages.urls')),
 )
 
 if settings.DEBUG:
@@ -23,4 +25,4 @@ if settings.DEBUG:
         ))
     urlpatterns += patterns('', *args)
 
-urlpatterns = urlpatterns + pages.urls.urlpatterns
+urlpatterns = urlpatterns
