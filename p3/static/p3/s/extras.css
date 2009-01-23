@@ -56,3 +56,8 @@
 .post-detail .social-networks a:hover {
     background: none;
 }
+
+.microblog .draft {
+    color: #900;
+    font-family: Monospace;
+}
