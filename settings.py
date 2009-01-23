@@ -9,8 +9,8 @@ ADMINS = (
     ('manlio', 'manlio.perillo@gmail.com')
 )
 
-
 MANAGERS = ADMINS
+SERVER_EMAIL = 'wtf@python.it'
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'db/p3.db'     # Or path to database file if using sqlite3.
