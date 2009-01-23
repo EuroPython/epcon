@@ -137,7 +137,7 @@
 
 
 .entry ol {
-	list-style: outside lower-alpha;
+	list-style: outside decimal;
 }
 
 .entry dt {
