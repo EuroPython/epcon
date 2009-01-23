@@ -51,12 +51,13 @@ Template utilizzato dal tag show_post_detail
             {% endwith %}
           </div>
           <div class="body">
-            <pre>{{ c.comment }}</pre>
+            <blockquote>{{ c.comment|linebreaksbr }}</blockquote>
           </div>
         </li>
       {% endfor %}
   </ol>
   <div class="comments-form">
+    <h3>Aggiungi un commento</h3>
     {% render_comment_form for post %}
   </div>
   {% endif %}
