@@ -39,7 +39,7 @@ class LatestPosts(Feed):
 
     def items(self, obj):
         l = self.languages[obj]
-        return models.PostContent.objects.all().filter(language = l).order_by('-post__date')[:10]
+        return models.PostContent.objects.all().filter(language = l, post__status = 'P').order_by('-post__date')[:10]
 
     def item_pubdate(self, obj):
         return obj.post.date

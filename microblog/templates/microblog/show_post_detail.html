@@ -3,8 +3,14 @@
 {% comment %}
 Template utilizzato dal tag show_post_detail
 {% endcomment %}
+{% if content %}
 <div class="microblog post-detail">
-  <h1>{{ content.headline }}</h1>
+  <h1>
+    {% if not post.is_published %}
+    <span class="draft">[DRAFT]</span>
+    {% endif %}
+    {{ content.headline }}
+  </h1>
   <div class="summary">
     {{ content.summary|safe }}
   </div>
@@ -55,3 +61,4 @@ Template utilizzato dal tag show_post_detail
   </div>
   {% endif %}
 </div>
+{% endif %}

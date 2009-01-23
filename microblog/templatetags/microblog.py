@@ -8,6 +8,8 @@ register = template.Library()
 @register.inclusion_tag('microblog/show_post_summary.html', takes_context=True)
 def show_post_summary(context, post):
     request = context['request']
+    if context['user'].is_anonymous() and not post.is_published():
+        return {}
     lang = context['LANGUAGE_CODE']
     contents = dict((c.language, c) for c in post.postcontent_set.all())
     try:
@@ -31,6 +33,8 @@ def show_post_summary(context, post):
 @register.inclusion_tag('microblog/show_post_detail.html', takes_context=True)
 def show_post_detail(context, content):
     request = context['request']
+    if context['user'].is_anonymous() and not content.post.is_published():
+        return {}
     return {
         'post': content.post,
         'content': content,

@@ -2,8 +2,14 @@
 {% comment %}
 Template utilizzato dal tag show_post_summary
 {% endcomment %}
+{% if content %}
 <div class="microblog post-summary">
-  <h2><a title="Permalink a questo articolo" href="{{ content.get_absolute_url }}">{{ content.headline }}</a></h2>
+  <h2>
+    {% if not post.is_published %}
+    <span class="draft">[DRAFT]</span>
+    {% endif %}
+    <a title="Permalink a questo articolo" href="{{ content.get_absolute_url }}">{{ content.headline }}</a>
+  </h2>
   <div class="summary">
     {{ content.summary|safe }}
   </div>
@@ -20,3 +26,4 @@ Template utilizzato dal tag show_post_summary
     {% endif %}
   </p>
 </div>
+{% endif %}
