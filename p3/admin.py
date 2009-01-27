@@ -7,6 +7,26 @@ import models
 
 class DeadlineAdmin(admin.ModelAdmin):
 
+    list_display = ('date', 'text', 'isValid')
+
+    def text(self, obj):
+        contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
+        for l, lname in settings.LANGUAGES:
+            try:
+                content = contents[l]
+            except KeyError:
+                continue
+            if content.body:
+                return content.body
+        else:
+            return '[No Body]'
+    text.short_description = 'testo'
+    text.allow_tags = True
+
+    def isValid(self, obj):
+        return not obj.isExpired()
+    isValid.boolean = True
+
     # Nella pagina per la creazione/modifica di una deadline voglio mostrare
     # una textarea per ogni lingua abilitata nei settings. Per fare questo
     # ridefinisco due metodi di ModelAdmin:
