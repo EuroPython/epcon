@@ -1,4 +1,4 @@
-﻿{% extends "p3/base.html" %}
+{% extends "p3/base.html" %}
 {% load pages_tags %}
 {% load markup %}
 {% load p3 %}
@@ -13,14 +13,12 @@
     <div id="intro">
         <p>{% placeholder mission with markItUpMarkdown %}</p>                
         <img src="{{ MEDIA_URL }}p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />                    
-        <!-- Beginning of Client Side Image Map -->
-        <map name="gallery">
-          <area shape="poly" coords="82,133,106,317,261,299,236,112,80,134,80,134" href="/pycon3/talk"  alt="Talk">
-          <area shape="poly" coords="262,122,253,241,263,298,250,302,400,314,414,134,261,122" href="/pycon3/incontri"  alt="Networking">
-          <area shape="poly" coords="403,126,407,132,414,131,409,212,415,307,568,299,555,117,405,127" href="/pycon3/pyevents"  alt="PyEvents">
-          <area shape="poly" coords="559,131,562,196,569,297,564,299,566,313,716,308,711,126,559,130" href="/pycon3/lavoro"  alt="Recruiting">
-        </map>
-        <!-- End of Client Side Image Map -->    
+        <map name="gallery" id="gallery">
+          <area shape="poly" coords="82,133,106,317,261,299,236,112,80,134,80,134" href="/pycon3/talk"  alt="Talk" />
+          <area shape="poly" coords="262,122,253,241,263,298,250,302,400,314,414,134,261,122" href="/pycon3/incontri"  alt="Networking" />
+          <area shape="poly" coords="403,126,407,132,414,131,409,212,415,307,568,299,555,117,405,127" href="/pycon3/pyevents"  alt="PyEvents" />
+          <area shape="poly" coords="559,131,562,196,569,297,564,299,566,313,716,308,711,126,559,130" href="/pycon3/lavoro"  alt="Recruiting" />
+        </map>        
     <!-- /intro -->
     </div>   
 
@@ -72,7 +70,9 @@
 
         <div id="extra" class="box">
             <h2>Pycon Tre</h2>
-            <p>{% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}</p>
+            
+            {% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}
+            
             <div class="more">
                 <a href="/pycon3/conferenza">Continua &rarr;</a>
             </div>
@@ -88,7 +88,9 @@
         <h2>Dal blog</h2>
         {% last_blog_post as post %}
         <h3>{{ post_content.headline }}</h3>
-        <p>{{ post_content.summary|truncatewords_html:50|safe }}</p>
+        
+        {{ post_content.summary|truncatewords_html:50|safe }}
+        
         <div class="more">
           <a href="{{ post_content.get_absolute_url }}">Continua &rarr;</a>
         </div>
