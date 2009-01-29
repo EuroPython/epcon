@@ -32,13 +32,8 @@
   
 -------------------------------------------------------------- */
 
-body { 
-  text-align: center; /* IE6 Fix */
-}
-
 /* A container should group all your columns. */
 .container {
-  text-align: left;
   position: relative;
   padding: 0;
   margin: 0 auto;   /* Centers layout */

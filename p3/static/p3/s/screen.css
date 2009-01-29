@@ -246,6 +246,23 @@ hr {
 }
 
 
+#lang {
+	/* Position *relative* to 
+	its container */
+	position: absolute;
+	
+	top: -20px;
+	right: 0;
+	
+	background: #B1CEDA;
+	
+	padding: 2px 4px;
+	
+	font-size: 12px;
+}
+
+
+
 
 /* ---------------------------------------------------
 =main
