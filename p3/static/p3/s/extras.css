@@ -70,6 +70,10 @@
     margin-bottom: 5px;
 }
 
+.post-summary .continue {
+    margin-left: 10px;
+}
+
 ul.archive > li {
     margin: 25px 0;
 }

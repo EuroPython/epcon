@@ -35,15 +35,23 @@
 <div id="header" class="container clear">
 
     <div id="lang">
-        <b>Italiano</b> | <a href="#">English</a>
-        <!--
-        <a href="#">Italiano</a> | <b>English</b>
-        -->
+        <form action="/i18n/setlang/" method="post">
+            <fieldset>
+            <select name="language">
+                {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %}selected="selected"{% endifequal %}>{{ lang.1 }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Go" />
+            </fieldset>
+        </form>
     </div>
 
     <div class="column span-4">
         <div id="logo">
-            <a href="/"><img src="{{ MEDIA_URL }}p3/i/pycontre-logo.gif" alt="PyCon Italia Tre" width="220" height="60" /></a>
+            <a href="/">
+                <img src="{{ MEDIA_URL }}p3/i/pycontre-logo.gif" alt="PyCon Italia Tre" width="220" height="60" />
+            </a>
         </div>
     </div>
     

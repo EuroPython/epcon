@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import
+import re
 from django import template
 from microblog import models
 
@@ -83,3 +84,23 @@ def get_post_content(parser, token):
     except ValueError:
         raise template.TemplateSyntaxError("%r tag's argument should be an integer" % contents[0])
     return PostContent(arg, var_name)
+
+
+last_close = re.compile(r'(</[^>]+>)$')
+
+@register.filter
+def prepare_summary(postcontent):
+    """
+    Aggiunge al summary il link continua che punta al body del post
+    """
+    if not postcontent.body:
+        return postcontent.summary
+    summary = postcontent.summary
+    link = '<span class="continue"> <a href="%s">[Continua]</a></span>' % postcontent.get_absolute_url()
+    match = last_close.search(summary)
+    if match:
+        match = match.group(1)
+        summary = summary[:-len(match)] + link + summary[-len(match):]
+    else:
+        summary += link
+    return summary
