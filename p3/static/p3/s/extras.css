@@ -90,3 +90,17 @@ ul.archive > li {
 .microblog .comments li {
     margin-bottom: 15px;
 }
+
+.microblog .preview li {
+    list-style: none;
+}
+
+.microblog ul.preview {
+    margin: 0;
+}
+
+.microblog .preview #preview-comment {
+    border-left: 6px solid #487E8A;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}

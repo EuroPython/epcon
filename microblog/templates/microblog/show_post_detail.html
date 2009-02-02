@@ -55,11 +55,31 @@ Template utilizzato dal tag show_post_detail
           </div>
         </li>
       {% endfor %}
-  </ol>
+    </ol>
+  {% ifnotequal options "no-comment-form" %}
   <div class="comments-form">
     <h3>Aggiungi un commento</h3>
-    {% render_comment_form for post %}
+    {% get_comment_form for post as form %}
+    <form action="{% comment_form_target %}#preview-comment" method="post">
+        {% for field in form %}
+        {% if field.is_hidden %}
+          {{ field }}
+        {% else %}
+          <p
+            {% if field.errors %} class="error"{% endif %}
+            {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
+            {% if field.errors %}{{ field.errors }}{% endif %}
+            {{ field.label_tag }} {{ field }}
+          </p>
+        {% endif %}
+        {% endfor %}
+        <p class="submit">
+            <input type="submit" name="post" class="submit-post" value="Post">
+            <input type="submit" name="preview" class="submit-post" value="Preview">
+        </p>
+    </form>
   </div>
+  {% endifnotequal %}
   {% endif %}
 </div>
 {% endif %}
