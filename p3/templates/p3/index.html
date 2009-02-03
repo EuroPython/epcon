@@ -1,7 +1,5 @@
 {% extends "p3/base.html" %}
-{% load pages_tags %}
-{% load markup %}
-{% load p3 %}
+{% load pages_tags markup conference microblog %}
 {% block MAIN_CONTENT %}
 <!--
 #############
@@ -37,7 +35,7 @@
         </div>   
 
         <div class="column span-6 last">
-            {% latest_news 5 as news %}
+            {% latest_deadlines 5 as news %}
             {% if news %}
             <div id="cal" class="_">
                 

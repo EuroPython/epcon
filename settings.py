@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     'tagging',
     'pages',
     'mptt',
+    'conference',
     'p3',
     'microblog',
     'django.contrib.comments',

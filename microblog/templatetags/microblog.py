@@ -2,9 +2,30 @@
 from __future__ import absolute_import
 import re
 from django import template
+from django.conf import settings
 from microblog import models
 
 register = template.Library()
+
+class LastBlogPost(template.Node):
+    def __init__(self, var_name):
+        self.var_name = var_name
+
+    def render(self, context):
+        post = models.Post.objects.published()[0]
+        lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
+        context[self.var_name] = post
+        context[self.var_name + '_content'] = post.content(lang)
+        return ''
+        
+@register.tag
+def last_blog_post(parser, token):
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    return LastBlogPost(var_name)
 
 @register.inclusion_tag('microblog/show_post_summary.html', takes_context=True)
 def show_post_summary(context, post):
