@@ -60,22 +60,27 @@
         <ul id="nav" class="clear">
             {% navi_menu1_pages as pages %}
             {% for p in pages %}
-              <li class="big {% ifequal current_page p %}current{% endifequal %}">
-                <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
-              </li>
+                <li class="big {% ifequal current_page p %}current{% endifequal %}">
+                    <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
+                </li>
             {% endfor %}
-              {% with request.META.PATH_INFO|slice:"1:5" as f %}
-              <li class="big {% ifequal f "blog" %}current{% endifequal %}">
-                <a href="/blog/">Blog</a>
-              </li>
-              {% endwith %}
+
+            {% with request.META.PATH_INFO|slice:"1:5" as f %}
+                <li class="big {% ifequal f "blog" %}current{% endifequal %}">
+                    <a href="/blog/">Blog</a>
+                </li>
+            {% endwith %}
             
             {% navi_menu2_pages as pages %}
             {% for p in pages %}
-              <li class="{% if forloop.first %}_{% endif %}{% ifequal current_page p %}current{% endifequal %}">
-                <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
-              </li>
+                <li class="{% if forloop.first %}_{% endif %}{% ifequal current_page p %}current{% endifequal %}">
+                    <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
+                </li>
             {% endfor %}
+                <li>
+                    <div id="habla_available_div"><a href="#" onclick="habla_window.show()">Chat!</a></div>
+                    <div id="habla_unavailable_div"><a href="#" title="Nessun operatore disponibile">Chat</a></div>
+                </li>
         </ul>
         
     </div>
@@ -184,5 +189,11 @@ try {
 var pageTracker = _gat._getTracker("UA-1860245-1");
 pageTracker._trackPageview();
 } catch(err) {}</script>
+<script type="text/javascript" src="http://static.hab.la/js/wc.js"></script>
+<script type="text/javascript"> 
+    config = new hbl.hwindow.config();
+    config.vars["start_hidden"] = 1;
+    wc_init("1697-27511707-10-9357", config);
+</script>
 </body>
 </html>

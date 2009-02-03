@@ -104,3 +104,21 @@ ul.archive > li {
     padding-left: 20px;
     padding-bottom: 20px;
 }
+
+#habla_available_div {
+    display: none;
+}
+
+#habla_unavailable_div {
+    display: none;
+}
+
+#habla_unavailable_div a {
+    cursor: default;
+    border: 0;
+    color: gray;
+}
+
+#habla_unavailable_div a:hover {
+    background-color: transparent;
+}
