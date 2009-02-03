@@ -12,7 +12,10 @@ class LastBlogPost(template.Node):
         self.var_name = var_name
 
     def render(self, context):
-        post = models.Post.objects.published()[0]
+        try:
+            post = models.Post.objects.published()[0]
+        except IndexError:
+            return ''
         lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
         context[self.var_name] = post
         context[self.var_name + '_content'] = post.content(lang)
