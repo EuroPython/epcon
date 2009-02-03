@@ -95,7 +95,18 @@ class PostContent(template.Node):
         except template.VariableDoesNotExist:
             pid = None
         if pid:
-            content = models.PostContent.objects.get(id = pid)
+            dlang = settings.LANGUAGES[0][0]
+            lang = context.get('LANGUAGE_CODE', dlang)
+            contents = dict((c.language, c) for c in models.PostContent.objects.filter(post = pid))
+            for l in (lang, dlang) + tuple(contents.keys()):
+                try:
+                    content = contents[l]
+                except KeyError:
+                    continue
+                if content.body:
+                    break
+            else:
+                content = None
         else:
             content = None
         context[self.var_name] = content
