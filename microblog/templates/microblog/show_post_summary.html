@@ -17,7 +17,7 @@ Template utilizzato dal tag show_post_summary
         <b>{{ post.author.first_name }}</b>
         {{ post.date|timesince }} |
         {% get_comment_count for post as count %}
-        <a title="Commenti articolo" href="{{ content.get_absolute_url }}#comments">
+        <a title="Commenti articolo" href="{{ content.get_absolute_url }}#last-comment">
             Commenti ({{ count }})
         </a>
     </p>

@@ -34,7 +34,7 @@ Template utilizzato dal tag show_post_detail
     <ol class="comments">
       {% for c in users_comments %}
         <li class="comment" id="microblog-comment-{{ c.id }}">
-          <div class="metadata">
+          <div class="metadata" {% if forloop.last %}id="last-comment"{% endif %}>
             {% with c.userinfo as info %}
               {% if info.url %}
               <strong><a href="{{ info.url }}">{{ info.name }}</a></strong>
