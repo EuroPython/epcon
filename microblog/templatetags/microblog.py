@@ -8,27 +8,38 @@ from microblog import models
 register = template.Library()
 
 class LastBlogPost(template.Node):
-    def __init__(self, var_name):
+    def __init__(self, limit, var_name):
         self.var_name = var_name
+        self.limit = limit
 
     def render(self, context):
-        try:
-            post = models.Post.objects.published()[0]
-        except IndexError:
-            return ''
+        query = models.Post.objects.published()
+        if self.limit:
+            query = query[:self.limit]
         lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
-        context[self.var_name] = post
-        context[self.var_name + '_content'] = post.content(lang)
+        posts = [ (p, p.content(lang)) for p in query ]
+        context[self.var_name] = posts
         return ''
         
 @register.tag
 def last_blog_post(parser, token):
     contents = token.split_contents()
     tag_name = contents[0]
-    if contents[-2] != 'as':
+    limit = None
+    try:
+        if contents[1] != 'as':
+            try:
+                limit = int(contents[1])
+            except (ValueError, TypeError):
+                raise template.TemplateSyntaxError("%r tag argument should be an integer" % tag_name)
+        else:
+            limit = None
+        if contents[-2] != 'as':
+            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+        var_name = contents[-1]
+    except IndexError:
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    var_name = contents[-1]
-    return LastBlogPost(var_name)
+    return LastBlogPost(limit, var_name)
 
 @register.inclusion_tag('microblog/show_post_summary.html', takes_context=True)
 def show_post_summary(context, post):
