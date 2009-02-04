@@ -20,7 +20,7 @@ Template utilizzato dal tag show_post_detail
   </div>
   {% endif %}
   <p class="metadata">
-    Pubblicato da <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
+    <span>Pubblicato da</span> <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
   </p>
   {% show_social_networks content %}
   {% if post.allow_comments %}
