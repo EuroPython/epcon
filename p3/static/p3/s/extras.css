@@ -1,7 +1,4 @@
 
-/* ---------------------------------------------------
-=extras
------------------------------------------------------ */
 
 
 
@@ -34,6 +31,13 @@
     text-align: right;
     width: 220px;
 }
+
+
+/* ---------------------------------------------------
+=blog
+----------------------------------------------------- */
+
+
 
 .post-detail h1 {
     margin: 0 0 20px 0;
@@ -78,6 +82,7 @@ ul.archive > li {
     margin: 25px 0;
 }
 
+
 .microblog .comments-form, .microblog .comments {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -105,20 +110,48 @@ ul.archive > li {
     padding-bottom: 20px;
 }
 
+/* ---------------------------------------------------
+=habla
+----------------------------------------------------- */
+
 #habla_available_div {
     display: none;
+	
+	
 }
 
 #habla_unavailable_div {
     display: none;
+
 }
 
-#habla_unavailable_div a {
+#nav #habla_unavailable_div a {
     cursor: default;
     border: 0;
-    color: gray;
+	
+	color: #B3CEDA;
+ 
+ 	padding-left: 24px;
+	background: transparent url(../i/chat-empty.gif) center left no-repeat;
 }
 
-#habla_unavailable_div a:hover {
+
+#nav  #habla_unavailable_div a:hover {
     background-color: transparent;
 }
+
+
+#nav  #habla_available_div  a {
+
+	padding-left: 24px;
+	background: transparent url(../i/chat-full.gif) center left no-repeat;
+	
+}
+
+
+#nav  #habla_available_div  a:hover {
+
+	background: #2a445e url(../i/chat-full.gif) center left no-repeat;
+	
+}
+
