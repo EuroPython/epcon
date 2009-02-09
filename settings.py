@@ -133,6 +133,9 @@ MICROBLOG_DESCRIPTION = 'ultime news da PyconItalia'
 # nome app -> static dir
 STATIC_DIRS = {}
 
+# directory dove memorizzare la roba dei vari pycon
+STUFF_DIR = None
+
 try:
     from settings_locale import *
 except ImportError:
