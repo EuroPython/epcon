@@ -136,6 +136,8 @@ STATIC_DIRS = {}
 # directory dove memorizzare la roba dei vari pycon
 STUFF_DIR = None
 
+SESSION_COOKIE_NAME = 'pycon_sessionid'
+
 try:
     from settings_locale import *
 except ImportError:
