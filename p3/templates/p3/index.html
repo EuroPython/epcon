@@ -84,7 +84,8 @@
     <div class="column span-4">
       <div id="blog" class="box">
         <h2>Dal blog</h2>
-        {% last_blog_post as post %}
+        {% last_blog_post 1 as posts %}
+        {% with posts.0.1 as post_content %}
         <h3>{{ post_content.headline }}</h3>
         
         {{ post_content.summary|truncatewords_html:50|safe }}
@@ -92,6 +93,7 @@
         <div class="more">
           <a href="{{ post_content.get_absolute_url }}">Continua &rarr;</a>
         </div>
+        {% endwith %}
       </div>  
     </div>   
 
