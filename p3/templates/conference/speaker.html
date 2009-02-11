@@ -1,0 +1,22 @@
+{% extends "p3/content.html" %}
+{% block PAGE_ENTRY %}
+<div class="speaker">
+    <div class="cbox">
+        <img src="{{ MEDIA_URL }}stuff/speaker/{{ speaker.immagine }}" alt="{{ speaker.nome }}" />
+        <h2>Lo speaker</h2>
+        <h3>{{ speaker.nome }}{% if speaker.provenienza %} ({{ speaker.provenienza }}){% endif %}</h3>
+        <div>{{ speaker.attivita }}{% if speaker.settore %} / {{ speaker.settore }}{% endif %}</div>
+        {% if speaker.homepage %}
+            <a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>
+        {% endif %}
+    </div>
+    <div class="cbox">
+    {% for b in speaker.bios.all %}
+        {% ifequal b.language LANGUAGE_CODE %}
+            <h2>Presentazione</h2>
+            <p>{{ b.body|safe }}</p>
+        {% endifequal %}
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}
