@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     (r'^blog/', include('microblog.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^pycon3/', include('pages.urls')),
+    (r'^conference/', include('conference.urls')),
 )
 
 if settings.DEBUG:

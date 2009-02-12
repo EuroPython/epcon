@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
+from __future__ import absolute_import
+
 from django import forms
 from django.contrib import admin
 from django.conf import settings
 
-import models
+from conference import models
 
 class DeadlineAdmin(admin.ModelAdmin):
 
@@ -68,3 +70,67 @@ class DeadlineAdmin(admin.ModelAdmin):
             instance.save()
 
 admin.site.register(models.Deadline, DeadlineAdmin)
+
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+
+class MultiLingualAdminContent(admin.ModelAdmin):
+    
+    def _get_relation_field(self):
+        for name, f in self.model.__dict__.items():
+            if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
+                yield name
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(MultiLingualAdminContent, self).get_form(request, obj, **kwargs)
+        for field_name in self._get_relation_field():
+            if obj:
+                contents =  dict((c.language, c.body) for c in getattr(obj, field_name).all())
+            for l, _ in settings.LANGUAGES:
+                text = forms.CharField(widget = forms.Textarea, required = False)
+                if obj:
+                    text.initial = contents.get(l, '')
+                form.base_fields['%s_%s' % (field_name, l)] = text
+        return form
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        data = form.cleaned_data
+        for field_name in self._get_relation_field():
+            if change:
+                contents =  dict((c.language, c) for c in getattr(obj, field_name).all())
+            for l, _ in settings.LANGUAGES:
+                key =  '%s_%s' % (field_name, l)
+                if change:
+                    try:
+                        instance = contents[l]
+                    except KeyError:
+                        instance = models.MultilingualContent()
+                else:
+                    instance = models.MultilingualContent()
+                if not instance.id:
+                    instance.content_object = obj
+                    instance.language = l
+                    instance.content = field_name
+                instance.body = data.get(key, '')
+                instance.save()
+
+class SpeakerAdmin(MultiLingualAdminContent):
+    prepopulated_fields = {"slug": ("nome",)}
+    list_display = ('avatar', 'nome', 'slug')
+    list_display_links = ('nome', )
+
+    def avatar(self, obj):
+        if obj.immagine:
+            h = '<img src="%s" alt="%s" height="32" />'
+            return h % (obj.immagine.url, obj.slug)
+        else:
+            return ''
+    avatar.allow_tags = True
+
+admin.site.register(models.Speaker, SpeakerAdmin)
+
+class TalkAdmin(MultiLingualAdminContent):
+    prepopulated_fields = {"slug": ("titolo",)}
+
+admin.site.register(models.Talk, TalkAdmin)

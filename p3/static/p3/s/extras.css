@@ -155,3 +155,20 @@ ul.archive > li {
 	
 }
 
+
+/* ---------------------------------------------------
+=speaker
+----------------------------------------------------- */
+
+.speaker .cbox h2 {
+    margin: 10px 0 5px 0;
+}
+
+.speaker .cbox h3 {
+    margin: 10px 0 5px 0;
+}
+
+.speaker .cbox img {
+    float: left;
+    margin: 0 15px 15px 0;
+}

@@ -104,25 +104,54 @@ register.tag('navi_menu1_pages', navi_pages)
 register.tag('navi_menu2_pages', navi_pages)
 register.tag('navi_menu3_pages', navi_pages)
 
-# TODO: spostare in microblog
-#from microblog import models as BlogModels
-#class LastBlogPost(template.Node):
-#    def __init__(self, var_name):
-#        self.var_name = var_name
-#
-#    def render(self, context):
-#        post = BlogModels.Post.objects.published()[0]
-#        lang = context.get('LANGUAGE_CODE', settings.LANGUAGES[0][0])
-#        context[self.var_name] = post
-#        context[self.var_name + '_content'] = post.content(lang)
-#        return ''
-#        
-#@register.tag
-#def last_blog_post(parser, token):
-#    contents = token.split_contents()
-#    tag_name = contents[0]
-#    if contents[-2] != 'as':
-#        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-#    var_name = contents[-1]
-#    return LastBlogPost(var_name)
-#
+@register.tag
+def stuff_info(parser, token):
+    """
+    {% stuff_info "file_path"|variable [as var] %}
+    ritorna il mimetype e la dimensione del file specificato (il file deve
+    risidere all'interno della dir "stuff")
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    try:
+        fpath = contents[1]
+    except IndexError:
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    if len(contents) > 2:
+        if len(contents) != 4 or contents[-2] != 'as':
+            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+        var_name = contents[-1]
+    else:
+        var_name = None
+
+    class StuffInfoNode(template.Node):
+        def __init__(self, fpath, var_name):
+            print 'xxx', fpath, type(fpath)
+            if fpath.startswith('"') and fpath.endswith('"'):
+                self.fpath = fpath[1:-1]
+            else:
+                self.fpath = template.Variable(fpath)
+            self.var_name = var_name
+        def render(self, context):
+            try:
+                fpath = self.fpath.resolve(context)
+            except AttributeError:
+                fpath = self.fpath
+            try:
+                fpath = fpath.path
+            except AttributeError:
+                fpath = os.path.join(settings.STUFF_DIR, fpath)
+            try:
+                stat = os.stat(fpath)
+            except (AttributeError, OSError), e:
+                fsize = ftype = None
+            else:
+                fsize = stat.st_size
+                ftype = mimetypes.guess_type(fpath)[0]
+            if self.var_name:
+                context[self.var_name] = (ftype, fsize)
+                return ''
+            else:
+                return "(%s %s)" % (ftype, fsize)
+            
+    return StuffInfoNode(fpath, var_name)
