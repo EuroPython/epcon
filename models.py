@@ -111,3 +111,7 @@ class Talk(models.Model):
     def __unicode__(self):
         return self.titolo
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('conference-talk', (), { 'slug': self.slug })
+
