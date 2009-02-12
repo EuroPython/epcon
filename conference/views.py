@@ -8,3 +8,9 @@ def speaker(request, slug):
     return render_to_response(
         'conference/speaker.html', { 'speaker': spk },
         context_instance = RequestContext(request))
+
+def talk(request, slug):
+    tlk = get_object_or_404(models.Talk, slug = slug)
+    return render_to_response(
+        'conference/talk.html', { 'talk': tlk },
+        context_instance = RequestContext(request))

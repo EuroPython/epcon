@@ -51,13 +51,13 @@ from django.core.files.storage import FileSystemStorage
 
 # definisco uno storage custom perché non uso MEDIA_DIR per memorizzare la
 # roba sotto stuff
-fs = FileSystemStorage(
-    location = settings.STUFF_DIR,
-    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/')
+fs_speaker = FileSystemStorage(
+    location = os.path.join(settings.STUFF_DIR, 'speaker'),
+    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/speaker/')
 )
 
 def _speaker_image_path(instance, filename):
-    return os.path.join('speaker', instance.slug + os.path.splitext(filename)[1].lower())
+    return instance.slug + os.path.splitext(filename)[1].lower()
 
 class Speaker(models.Model):
     nome = models.CharField('nome e cognome speaker', max_length = 100)
@@ -66,7 +66,7 @@ class Speaker(models.Model):
     attivita = models.CharField(max_length = 50, blank = True)
     settore = models.CharField(max_length = 50, blank = True)
     provenienza = models.CharField(max_length = 100, blank = True)
-    immagine = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs)
+    immagine = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
     bios = generic.GenericRelation(MultilingualContent)
 
     class Meta:
@@ -90,8 +90,13 @@ TALK_LANGUAGES = (
     ('en', 'Inglese'),
 )
 
+fs_slides = FileSystemStorage(
+    location = os.path.join(settings.STUFF_DIR, 'slides'),
+    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/slides/')
+)
+
 def _talk_slides_path(instance, filename):
-    return os.path.join('slides', instance.slug + os.path.splitext(filename)[1].lower())
+    return instance.slug + os.path.splitext(filename)[1].lower()
 
 class Talk(models.Model):
     titolo = models.CharField('titolo del talk', max_length = 100)
@@ -100,7 +105,7 @@ class Talk(models.Model):
     durata = models.IntegerField(choices = TALK_DURATION)
     lingua = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
-    slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs)
+    slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs_slides)
     video = models.URLField(verify_exists = False, blank = True)
 
     def __unicode__(self):
