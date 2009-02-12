@@ -49,15 +49,15 @@ class MultilingualContent(models.Model):
 import urlparse
 from django.core.files.storage import FileSystemStorage
 
-# definisco uno storage custom perché non uso MEDIA_DIR per memorizzare lo
-# stuff
+# definisco uno storage custom perché non uso MEDIA_DIR per memorizzare la
+# roba sotto stuff
 fs = FileSystemStorage(
-    location = os.path.join(settings.STUFF_DIR, 'speaker'),
-    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/speaker/')
+    location = settings.STUFF_DIR,
+    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/')
 )
 
 def _speaker_image_path(instance, filename):
-    return instance.slug + os.path.splitext(filename)[1]
+    return os.path.join('speaker', instance.slug + os.path.splitext(filename)[1])
 
 class Speaker(models.Model):
     nome = models.CharField('nome e cognome speaker', max_length = 100)
@@ -86,6 +86,9 @@ TALK_LANGUAGES = (
     ('en', 'Inglese'),
 )
 
+def _talk_slides_path(instance, filename):
+    return os.path.join('slides', instance.slug + os.path.splitext(filename)[1])
+
 class Talk(models.Model):
     titolo = models.CharField('titolo del talk', max_length = 100)
     slug = models.SlugField()
@@ -93,6 +96,8 @@ class Talk(models.Model):
     durata = models.IntegerField(choices = TALK_DURATION)
     lingua = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
+    slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs)
+    video = models.URLField(verify_exists = False, blank = True)
 
     def __unicode__(self):
         return self.titolo
