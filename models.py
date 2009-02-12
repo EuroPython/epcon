@@ -57,7 +57,7 @@ fs = FileSystemStorage(
 )
 
 def _speaker_image_path(instance, filename):
-    return os.path.join('speaker', instance.slug + os.path.splitext(filename)[1])
+    return os.path.join('speaker', instance.slug + os.path.splitext(filename)[1].lower())
 
 class Speaker(models.Model):
     nome = models.CharField('nome e cognome speaker', max_length = 100)
@@ -87,7 +87,7 @@ TALK_LANGUAGES = (
 )
 
 def _talk_slides_path(instance, filename):
-    return os.path.join('slides', instance.slug + os.path.splitext(filename)[1])
+    return os.path.join('slides', instance.slug + os.path.splitext(filename)[1].lower())
 
 class Talk(models.Model):
     titolo = models.CharField('titolo del talk', max_length = 100)
