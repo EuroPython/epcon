@@ -21,6 +21,12 @@
             ({{ info.0 }} {{ info.1|filesizeformat }})
         </div>
         {% endif %}
+        {% if talk.video %}
+        <div>
+            <span class="toggle">È possibile vedere in streaming il video del talk</span>
+            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="392" id="viddler_a03f1cbf"><param name="wmode" value="transparent" /><param name="movie" value="http://www.viddler.com/player/a03f1cbf/" /><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="true" /><embed src="http://www.viddler.com/player/a03f1cbf/" width="437" height="392" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_a03f1cbf" wmode="transparent"></embed></object>
+        </div>
+        {% endif %}
     </div>
     <div class="cbox">
     {% for b in talk.abstracts.all %}
