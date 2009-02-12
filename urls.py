@@ -2,6 +2,6 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
-    (r'^speakers/(?P<slug>.*)', 'conference.views.speaker'),
+    url(r'^speakers/(?P<slug>.*)', 'conference.views.speaker', name = 'conference-speaker'),
 )
 
