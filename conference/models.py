@@ -75,6 +75,10 @@ class Speaker(models.Model):
     def __unicode__(self):
         return self.nome
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('conference-speaker', (), { 'slug': self.slug })
+
 TALK_DURATION = (
     (30, '30 minuti'),
     (45, '45 minuti'),
