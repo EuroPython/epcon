@@ -1,0 +1,15 @@
+﻿{% extends "p3/content.html" %}
+
+{% block PAGE__CLASS_MAIN_COLUMN %}span-12 last{% endblock %}
+
+{% block PAGE_ENTRY %}                            
+    <!-- <div id="page">                                        
+        Questo DIV aggiunge ai suoi contenuti il fondo bianco 
+        con la l'effetto graffiato e un padding.
+        </div>      
+    -->    
+    {% placeholder text with markItUpMarkdown as text %}
+    {{ text|markdown }}         
+{% endblock %}
+
+{% block PAGE__AFTER_MAIN_COLUMN %}{% endblock %}

@@ -120,6 +120,7 @@ PAGE_TEMPLATES = (
     ('p3/index.html', 'homepage'),
     ('p3/content.html', 'content page'),
     ('p3/content-1col.html', 'content page (una colonna)'),
+    ('p3/content-assopy.html', 'assopy page (una colonna)'),
 )
 
 PAGE_UNIQUE_SLUG_REQUIRED = True
