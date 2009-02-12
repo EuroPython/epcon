@@ -69,6 +69,9 @@ class Speaker(models.Model):
     immagine = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs)
     bios = generic.GenericRelation(MultilingualContent)
 
+    class Meta:
+        ordering = ['nome']
+
     def __unicode__(self):
         return self.nome
 
