@@ -129,3 +129,8 @@ class SpeakerAdmin(MultiLingualAdminContent):
     avatar.allow_tags = True
 
 admin.site.register(models.Speaker, SpeakerAdmin)
+
+class TalkAdmin(MultiLingualAdminContent):
+    prepopulated_fields = {"slug": ("titolo",)}
+
+admin.site.register(models.Talk, TalkAdmin)

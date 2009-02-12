@@ -72,3 +72,25 @@ class Speaker(models.Model):
     def __unicode__(self):
         return self.nome
 
+TALK_DURATION = (
+    (30, '30 minuti'),
+    (45, '45 minuti'),
+    (60, '60 minuti'),
+    (90, '90 minuti'),
+)
+TALK_LANGUAGES = (
+    ('it', 'Italiano'),
+    ('en', 'Inglese'),
+)
+
+class Talk(models.Model):
+    titolo = models.CharField('titolo del talk', max_length = 100)
+    slug = models.SlugField()
+    speaker = models.ForeignKey(Speaker)
+    durata = models.IntegerField(choices = TALK_DURATION)
+    lingua = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
+    abstracts = generic.GenericRelation(MultilingualContent)
+
+    def __unicode__(self):
+        return self.titolo
+
