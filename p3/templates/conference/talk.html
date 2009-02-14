@@ -1,12 +1,28 @@
 {% extends "p3/content.html" %}
 {% load conference %}
+
 {% block PAGE_ENTRY %}
-<div class="talk">
-    <h1>{{ talk.titolo }} <span style="font-size: 0.4em">(TODO: applicare classe in funzione della track)</span></h1>
-    <div class="cbox">
-        <h2>Il talk</h2>
-        <div><strong>sab 10 mag / 09:00</strong> nella track <em>Diffondere Python</em></div>
-        <div>Durata: {{ talk.durata }} minuti</div>
+
+
+
+
+<div id="page">                        
+    <div id="page-title">
+        <h1>{{ talk.titolo }}         
+        <!-- <span style="font-size: 0.4em">(TODO: applicare classe in funzione della track)</span> -->
+        </h1>
+        <div>                    
+            {% if speaker.provenienza %} {{ speaker.provenienza }}{% endif %} | {{ speaker.attivita }}{% if speaker.settore %} / {{ speaker.settore }}{% endif %} | {% if speaker.homepage %}<a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
+        </div>
+    </div>            
+    
+    <div id="talk" class="entry">
+    
+        <strong>sab 10 mag / 09:00</strong> nella track <em>Diffondere Python</em>
+        
+        <div>Durata: {{ talk.durata }} minuti
+        </div>
+        
         {% with talk.speaker as spk %}
         <div>
             Speaker: <a href="{{ spk.get_absolute_url }}">{{ spk.nome}}</a>
@@ -27,14 +43,22 @@
             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="392" id="viddler_a03f1cbf"><param name="wmode" value="transparent" /><param name="movie" value="http://www.viddler.com/player/a03f1cbf/" /><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="true" /><embed src="http://www.viddler.com/player/a03f1cbf/" width="437" height="392" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_a03f1cbf" wmode="transparent"></embed></object>
         </div>
         {% endif %}
-    </div>
-    <div class="cbox">
-    {% for b in talk.abstracts.all %}
-        {% ifequal b.language LANGUAGE_CODE %}
-            <h2>Abstract</h2>
-            <p>{{ b.body|safe }}</p>
-        {% endifequal %}
-    {% endfor %}
-    </div>
-</div>
+
+        {% for b in talk.abstracts.all %}
+            {% ifequal b.language LANGUAGE_CODE %}
+                <h2>Abstract</h2>
+                <p>{{ b.body|safe }}</p>
+            {% endifequal %}
+        {% endfor %}
+    
+    </div>            
+    
+<!-- /page -->
+</div>  
+
+
+
+
+
+
 {% endblock %}
