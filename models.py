@@ -4,6 +4,9 @@ import os.path
 from django.conf import settings
 from django.db import models
 
+import tagging
+from tagging.fields import TagField
+
 class DeadlineManager(models.Manager):
     def valid_news(self):
         today = datetime.date.today()
@@ -115,3 +118,56 @@ class Talk(models.Model):
     def get_absolute_url(self):
         return ('conference-talk', (), { 'slug': self.slug })
 
+fs_logo = FileSystemStorage(
+    location = os.path.join(settings.STUFF_DIR, 'sponsor'),
+    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/sponsor/')
+)
+
+def _sponsor_logo_path(instance, filename):
+    return instance.slug + os.path.splitext(filename)[1].lower()
+
+class Sponsor(models.Model):
+    """
+
+    """
+    sponsor = models.CharField(max_length = 100, help_text = 'nome dello sponsor')
+    slug = models.SlugField()
+    url = models.URLField(verify_exists = False, blank = True)
+    logo = models.ImageField(
+        upload_to = _sponsor_logo_path, blank = True, storage = fs_logo,
+        help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
+    )
+    conferenze = TagField()
+    tags = TagField()
+
+    def __unicode__(self):
+        return self.sponsor
+
+
+class Schedule(models.Model):
+    conferenza = models.CharField(help_text = 'nome della conferenza', max_length = 50)
+    data = models.DateField()
+
+class Track(models.Model):
+    schedule = models.ForeignKey(Schedule)
+    track = models.CharField('nome track', max_length = 20)
+    titolo = models.TextField('titolo della track', help_text = 'HTML supportato')
+
+    def __unicode__(self):
+        return self.track
+
+class Event(models.Model):
+    """
+    """
+    schedule = models.ForeignKey(Schedule)
+    talk = models.ForeignKey(Talk, blank = True)
+    custom = models.TextField(blank = True)
+    ora_inizio = models.TimeField()
+    track = TagField(help_text = 'Inserire uno o più nomi di track, oppure "keynote"')
+    sponsor = models.ForeignKey(Sponsor, blank = True)
+
+    def __unicode__(self):
+        if self.talk:
+            return self.talk
+        else:
+            return self.custom
