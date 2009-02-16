@@ -134,3 +134,24 @@ class TalkAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("titolo",)}
 
 admin.site.register(models.Talk, TalkAdmin)
+
+class SponsorAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("sponsor",)}
+
+admin.site.register(models.Sponsor, SponsorAdmin)
+
+class TrackInlineAdmin(admin.TabularInline):
+    model = models.Track
+    extra = 1
+
+class EventInlineAdmin(admin.TabularInline):
+    model = models.Event
+
+class ScheduleAdmin(admin.ModelAdmin):
+    list_display = ('conferenza', 'data')
+    inlines = [
+        TrackInlineAdmin,
+        EventInlineAdmin
+    ]
+
+admin.site.register(models.Schedule, ScheduleAdmin)
