@@ -141,7 +141,7 @@ class Sponsor(models.Model):
     def __unicode__(self):
         return self.sponsor
 
-class SponsrIncome(models.Model):
+class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor)
     conference = models.CharField(max_length = 20)
     income = models.PositiveIntegerField()
