@@ -116,14 +116,14 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 instance.save()
 
 class SpeakerAdmin(MultiLingualAdminContent):
-    prepopulated_fields = {"slug": ("nome",)}
-    list_display = ('avatar', 'nome', 'slug')
-    list_display_links = ('nome', )
+    prepopulated_fields = {"slug": ("name",)}
+    list_display = ('avatar', 'name', 'slug')
+    list_display_links = ('name', )
 
     def avatar(self, obj):
-        if obj.immagine:
+        if obj.image:
             h = '<img src="%s" alt="%s" height="32" />'
-            return h % (obj.immagine.url, obj.slug)
+            return h % (obj.image.url, obj.slug)
         else:
             return ''
     avatar.allow_tags = True
@@ -131,7 +131,7 @@ class SpeakerAdmin(MultiLingualAdminContent):
 admin.site.register(models.Speaker, SpeakerAdmin)
 
 class TalkAdmin(MultiLingualAdminContent):
-    prepopulated_fields = {"slug": ("titolo",)}
+    prepopulated_fields = {"slug": ("title",)}
 
 admin.site.register(models.Talk, TalkAdmin)
 
@@ -148,7 +148,7 @@ class EventInlineAdmin(admin.TabularInline):
     model = models.Event
 
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('conferenza', 'data')
+    list_display = ('conference', 'date')
     inlines = [
         TrackInlineAdmin,
         EventInlineAdmin
