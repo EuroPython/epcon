@@ -158,6 +158,7 @@ class TrackInlineAdmin(admin.TabularInline):
 
 class EventInlineAdmin(admin.TabularInline):
     model = models.Event
+    extra = 2
 
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('conference', 'date')
