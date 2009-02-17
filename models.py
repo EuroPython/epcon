@@ -125,7 +125,10 @@ fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 
 class Sponsor(models.Model):
     """
-
+    Attraverso l'elenco di SponsorIncome un'istanza di Sponsor è collegata
+    con le informazioni riguardanti tutte le sponsorizzazioni fatte.
+    Sempre in SponsorIncome la conferenza è indicata, come in altri posti,
+    con una chiave alfanumerica non collegata a nessuna tabella.
     """
     sponsor = models.CharField(max_length = 100, help_text = 'nome dello sponsor')
     slug = models.SlugField()
@@ -148,6 +151,17 @@ class SponsorIncome(models.Model):
         ordering = ['conference']
 
 class Schedule(models.Model):
+    """
+    Direttamente dentro lo schedule abbiamo l'indicazione della conferenza,
+    una campo alfanumerico libero, e il giorno a cui si riferisce.
+
+    Attraverso le ForeignKey lo schedule è collegato alle track e agli
+    eventi.
+
+    Questi ultimi possono essere dei talk o degli eventi "custom", come la
+    pyBirra, e sono collegati alle track in modalità "weak", atraverso un
+    tagfield.
+    """
     conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
     date = models.DateField()
 
@@ -161,8 +175,6 @@ class Track(models.Model):
         return self.track
 
 class Event(models.Model):
-    """
-    """
     schedule = models.ForeignKey(Schedule)
     talk = models.ForeignKey(Talk, blank = True, null = True)
     custom = models.TextField(blank = True)
