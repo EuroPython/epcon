@@ -118,13 +118,20 @@ class Talk(models.Model):
     def get_absolute_url(self):
         return ('conference-talk', (), { 'slug': self.slug })
 
-fs_logo = FileSystemStorage(
-    location = os.path.join(settings.STUFF_DIR, 'sponsor'),
-    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/sponsor/')
-)
+def _build_fs_stuff(subdir):
+    fs = FileSystemStorage(
+        location = os.path.join(settings.STUFF_DIR, 'sponsor'),
+        base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/sponsor/')
+    )
 
-def _sponsor_logo_path(instance, filename):
-    return instance.slug + os.path.splitext(filename)[1].lower()
+    def build_path(instance, filename):
+        fname = instance.slug + os.path.splitext(filename)[1].lower()
+        fs.delete(fname)
+        return fname
+
+    return fs, build_path
+
+fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 
 class Sponsor(models.Model):
     """
@@ -134,7 +141,7 @@ class Sponsor(models.Model):
     slug = models.SlugField()
     url = models.URLField(verify_exists = False, blank = True)
     logo = models.ImageField(
-        upload_to = _sponsor_logo_path, blank = True, storage = fs_logo,
+        upload_to = _sponsor_logo_path, blank = True, storage = fs_sponsor_logo,
         help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
 
