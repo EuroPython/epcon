@@ -141,7 +141,14 @@ class SponsorIncomeInlineAdmin(admin.TabularInline):
 
 class SponsorAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("sponsor",)}
+    list_display = ('sponsor', 'url', 'conferences')
     inlines = [ SponsorIncomeInlineAdmin ]
+
+    def conferences(self, obj):
+        """
+        Elenca le conferenze sponsorizzate dallo sponsor
+        """
+        return ', '.join(s.conference for s in obj.sponsorincome_set.all())
 
 admin.site.register(models.Sponsor, SponsorAdmin)
 
