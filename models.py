@@ -155,6 +155,7 @@ class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length = 20)
     title = models.TextField('titolo della track', help_text = 'HTML supportato')
+    translate = models.BooleanField(default = False)
 
     def __unicode__(self):
         return self.track
@@ -163,15 +164,18 @@ class Event(models.Model):
     """
     """
     schedule = models.ForeignKey(Schedule)
-    talk = models.ForeignKey(Talk, blank = True)
+    talk = models.ForeignKey(Talk, blank = True, null = True)
     custom = models.TextField(blank = True)
     start_time = models.TimeField()
     track = TagField(help_text = 'Inserire uno o più nomi di track, oppure "keynote"')
-    sponsor = models.ForeignKey(Sponsor, blank = True)
+    sponsor = models.ForeignKey(Sponsor, blank = True, null = True)
+
+    class Meta:
+        ordering = ['start_time']
 
     def __unicode__(self):
         if self.talk:
-            return self.talk
+            return str(self.talk)
         else:
             return self.custom
 
