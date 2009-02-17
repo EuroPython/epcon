@@ -1,11 +1,6 @@
 {% extends "p3/base.html" %}
-{% load pages_tags markup conference microblog %}
+{% load pages_tags markup conference microblog i18n %}
 {% block MAIN_CONTENT %}
-<!--
-#############
-12 COLS LEFT
-#############
--->
 <div class="column span-12">
             
     <div id="intro">
@@ -24,13 +19,7 @@
 
         <div class="column span-6">
             <div id="guido">                                                
-                <p>
-                    Questa edizione di PyCon Italia sarà arricchita
-                    dalla presenza di un ospite d&#8217;eccezione:
-                    <b><a href="http://it.wikipedia.org/wiki/Guido_van_Rossum">Guido van Rossum</a></b>,
-                    l&#8217;ideatore di Python, che terrà un keynote
-                    sulla nascita del linguaggio.
-                </p>            
+                <p>{% trans "saluto di guido in homepage" %}</p>            
             </div>  
         </div>   
 
@@ -39,7 +28,7 @@
             {% if news %}
             <div id="cal" class="_">
                 
-                <h2>Calendario</h2>
+                <h2>{% trans "Calendario" %}</h2>
                                                 
         
                     {% with news as others %}
@@ -67,12 +56,12 @@
     <div class="column span-4">
 
         <div id="extra" class="box">
-            <h2>Pycon Tre</h2>
+            <h2>{% trans "Pycon Tre" %}</h2>
             
             {% placeholder text with markItUpMarkdown as text %} {{ text|markdown }}
             
             <div class="more">
-                <a href="/pycon3/conferenza">Continua &rarr;</a>
+                <a href="/pycon3/conferenza">{% trans "Continua" %} &rarr;</a>
             </div>
  
         </div>  
@@ -83,7 +72,7 @@
 
     <div class="column span-4">
       <div id="blog" class="box">
-        <h2>Dal blog</h2>
+        <h2>{% trans "Dal blog" %}</h2>
         {% last_blog_post 1 as posts %}
         {% with posts.0.1 as post_content %}
         <h3>{{ post_content.headline }}</h3>
@@ -91,7 +80,7 @@
         {{ post_content.summary|truncatewords_html:50|safe }}
         
         <div class="more">
-          <a href="{{ post_content.get_absolute_url }}">Continua &rarr;</a>
+          <a href="{{ post_content.get_absolute_url }}">{% trans "Continua" %} &rarr;</a>
         </div>
         {% endwith %}
       </div>  
@@ -103,7 +92,7 @@
     
         <div id="quotes" class="box">
             
-            <h2>Dicono di noi</h2>
+            <h2>{% trans "Dicono di noi" %}</h2>
           
             <ul>   
                 <li class="clear">
@@ -136,10 +125,5 @@
     <!-- /column-->
     </div>
 
-<!--
-#############
-/12 COLS LEFT
-#############
--->
 </div>   
 {% endblock %}

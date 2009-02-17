@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load conference pages_tags %}
+{% load conference pages_tags i18n %}
 <html xmlns="http://www.w3.org/1999/xhtml" lang="it">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -98,7 +98,7 @@ SPONSOR
     <div class="column span-2 last">
 
         <div id="sponsor">        
-            <h2>I nostri sponsor</h2>
+            <h2>{% trans "I nostri sponsor" %}</h2>
             <dl>
                 <dt></dt>
                 <dd>
@@ -160,11 +160,11 @@ SPONSOR
     
     <div class="column span-3">
         <p>
-            <b>Progetto grafico</b><br />
+            <b>{% trans "Progetto grafico" %}</b><br />
             <a href="http://passiomatic.com/">Andrea &ldquo;deelan&rdquo; Peltrin</a>
         </p>
         <p>
-            <b>Sistema di registrazione</b><br />
+            <b>{% trans "Sistema di registrazione" %}</b><br />
             <a href="http://www.softwell.it/">Softwell</a>
         </p>
     <!-- /column -->
