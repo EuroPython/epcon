@@ -110,6 +110,7 @@ class Talk(models.Model):
     abstracts = generic.GenericRelation(MultilingualContent)
     slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs_slides)
     video = models.URLField(verify_exists = False, blank = True)
+    tags = TagField()
 
     def __unicode__(self):
         return self.title
@@ -154,8 +155,11 @@ class SponsorIncome(models.Model):
     income = models.PositiveIntegerField()
     tags = TagField()
 
+    class Meta:
+        ordering = ['conference']
+
 class Schedule(models.Model):
-    conference = models.CharField(help_text = 'nome della conferenza', max_length = 50)
+    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
     date = models.DateField()
 
 class Track(models.Model):
