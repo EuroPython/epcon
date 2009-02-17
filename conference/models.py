@@ -137,11 +137,15 @@ class Sponsor(models.Model):
         upload_to = _sponsor_logo_path, blank = True, storage = fs_logo,
         help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
-    conferences = TagField()
-    tags = TagField()
 
     def __unicode__(self):
         return self.sponsor
+
+class SponsrIncome(models.Model):
+    sponsor = models.ForeignKey(Sponsor)
+    conference = models.CharField(max_length = 20)
+    income = models.PositiveIntegerField()
+    tags = TagField()
 
 class Schedule(models.Model):
     conference = models.CharField(help_text = 'nome della conferenza', max_length = 50)
