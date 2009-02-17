@@ -63,20 +63,20 @@ def _speaker_image_path(instance, filename):
     return instance.slug + os.path.splitext(filename)[1].lower()
 
 class Speaker(models.Model):
-    nome = models.CharField('nome e cognome speaker', max_length = 100)
+    name = models.CharField('nome e cognome speaker', max_length = 100)
     slug = models.SlugField()
     homepage = models.URLField(verify_exists = False, blank = True)
-    attivita = models.CharField(max_length = 50, blank = True)
-    settore = models.CharField(max_length = 50, blank = True)
-    provenienza = models.CharField(max_length = 100, blank = True)
-    immagine = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
+    activity = models.CharField(max_length = 50, blank = True)
+    industry = models.CharField(max_length = 50, blank = True)
+    location = models.CharField(max_length = 100, blank = True)
+    image = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
     bios = generic.GenericRelation(MultilingualContent)
 
     class Meta:
-        ordering = ['nome']
+        ordering = ['name']
 
     def __unicode__(self):
-        return self.nome
+        return self.name
 
     @models.permalink
     def get_absolute_url(self):
@@ -102,17 +102,17 @@ def _talk_slides_path(instance, filename):
     return instance.slug + os.path.splitext(filename)[1].lower()
 
 class Talk(models.Model):
-    titolo = models.CharField('titolo del talk', max_length = 100)
+    title = models.CharField('titolo del talk', max_length = 100)
     slug = models.SlugField()
     speaker = models.ForeignKey(Speaker)
-    durata = models.IntegerField(choices = TALK_DURATION)
-    lingua = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
+    duration = models.IntegerField(choices = TALK_DURATION)
+    language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
     slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs_slides)
     video = models.URLField(verify_exists = False, blank = True)
 
     def __unicode__(self):
-        return self.titolo
+        return self.title
 
     @models.permalink
     def get_absolute_url(self):
@@ -137,21 +137,20 @@ class Sponsor(models.Model):
         upload_to = _sponsor_logo_path, blank = True, storage = fs_logo,
         help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
-    conferenze = TagField()
+    conferences = TagField()
     tags = TagField()
 
     def __unicode__(self):
         return self.sponsor
 
-
 class Schedule(models.Model):
-    conferenza = models.CharField(help_text = 'nome della conferenza', max_length = 50)
-    data = models.DateField()
+    conference = models.CharField(help_text = 'nome della conferenza', max_length = 50)
+    date = models.DateField()
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length = 20)
-    titolo = models.TextField('titolo della track', help_text = 'HTML supportato')
+    title = models.TextField('titolo della track', help_text = 'HTML supportato')
 
     def __unicode__(self):
         return self.track
@@ -162,7 +161,7 @@ class Event(models.Model):
     schedule = models.ForeignKey(Schedule)
     talk = models.ForeignKey(Talk, blank = True)
     custom = models.TextField(blank = True)
-    ora_inizio = models.TimeField()
+    start_time = models.TimeField()
     track = TagField(help_text = 'Inserire uno o più nomi di track, oppure "keynote"')
     sponsor = models.ForeignKey(Sponsor, blank = True)
 
@@ -171,3 +170,4 @@ class Event(models.Model):
             return self.talk
         else:
             return self.custom
+
