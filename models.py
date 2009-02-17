@@ -54,13 +54,21 @@ from django.core.files.storage import FileSystemStorage
 
 # definisco uno storage custom perché non uso MEDIA_DIR per memorizzare la
 # roba sotto stuff
-fs_speaker = FileSystemStorage(
-    location = os.path.join(settings.STUFF_DIR, 'speaker'),
-    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/speaker/')
-)
 
-def _speaker_image_path(instance, filename):
-    return instance.slug + os.path.splitext(filename)[1].lower()
+def _build_fs_stuff(subdir):
+    fs = FileSystemStorage(
+        location = os.path.join(settings.STUFF_DIR, 'sponsor'),
+        base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/sponsor/')
+    )
+
+    def build_path(instance, filename):
+        fname = instance.slug + os.path.splitext(filename)[1].lower()
+        fs.delete(fname)
+        return fname
+
+    return fs, build_path
+
+fs_speaker, _speaker_image_path = _build_fs_stuff('sponsor')
 
 class Speaker(models.Model):
     name = models.CharField('nome e cognome speaker', max_length = 100)
@@ -93,13 +101,7 @@ TALK_LANGUAGES = (
     ('en', 'Inglese'),
 )
 
-fs_slides = FileSystemStorage(
-    location = os.path.join(settings.STUFF_DIR, 'slides'),
-    base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/slides/')
-)
-
-def _talk_slides_path(instance, filename):
-    return instance.slug + os.path.splitext(filename)[1].lower()
+fs_slides, _talk_slides_path = _build_fs_stuff('slides')
 
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length = 100)
@@ -118,19 +120,6 @@ class Talk(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('conference-talk', (), { 'slug': self.slug })
-
-def _build_fs_stuff(subdir):
-    fs = FileSystemStorage(
-        location = os.path.join(settings.STUFF_DIR, 'sponsor'),
-        base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/sponsor/')
-    )
-
-    def build_path(instance, filename):
-        fname = instance.slug + os.path.splitext(filename)[1].lower()
-        fs.delete(fname)
-        return fname
-
-    return fs, build_path
 
 fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 
