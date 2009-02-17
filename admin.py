@@ -135,8 +135,13 @@ class TalkAdmin(MultiLingualAdminContent):
 
 admin.site.register(models.Talk, TalkAdmin)
 
+class SponsorIncomeInlineAdmin(admin.TabularInline):
+    model = models.SponsorIncome
+    extra = 1
+
 class SponsorAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("sponsor",)}
+    inlines = [ SponsorIncomeInlineAdmin ]
 
 admin.site.register(models.Sponsor, SponsorAdmin)
 
