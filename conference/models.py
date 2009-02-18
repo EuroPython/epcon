@@ -57,8 +57,8 @@ from django.core.files.storage import FileSystemStorage
 
 def _build_fs_stuff(subdir):
     fs = FileSystemStorage(
-        location = os.path.join(settings.STUFF_DIR, 'sponsor'),
-        base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/sponsor/')
+        location = os.path.join(settings.STUFF_DIR, subdir),
+        base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/%s/' % subdir)
     )
 
     def build_path(instance, filename):
