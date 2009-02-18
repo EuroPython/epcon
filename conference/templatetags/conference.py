@@ -126,7 +126,6 @@ def stuff_info(parser, token):
 
     class StuffInfoNode(template.Node):
         def __init__(self, fpath, var_name):
-            print 'xxx', fpath, type(fpath)
             if fpath.startswith('"') and fpath.endswith('"'):
                 self.fpath = fpath[1:-1]
             else:
@@ -155,3 +154,108 @@ def stuff_info(parser, token):
                 return "(%s %s)" % (ftype, fsize)
             
     return StuffInfoNode(fpath, var_name)
+
+@register.tag
+def conference_speakers(parser, token):
+    """
+    {% conference_speakers [ conference ] as var %}
+    inserisce in var l'elenco degli speaker (opzionalmente è possibile
+    filtrare per conferenza).
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    if len(contents) > 3:
+        conference = contents[1]
+        raise template.TemplateSyntaxError("conference params not yet supported")
+    else:
+        conference = None
+    
+    class SpeakersNode(template.Node):
+        def __init__(self, conference, var_name):
+            self.var_name = var_name
+            if conference:
+                if conference.startswith('"') and conference.endswith('"'):
+                    self.conference = conference[1:-1]
+                else:
+                    self.conference = template.Variable(conference)
+            else:
+                self.conference = None
+        def render(self, context):
+            speakers = models.Speaker.objects.all()
+            context[self.var_name] = speakers
+            return ''
+    return SpeakersNode(conference, var_name)
+
+@register.tag
+def conference_talks(parser, token):
+    """
+    {% conference_talks [ speaker ] [ conference ] as var %}
+    inserisce in var l'elenco dei talk (opzionalmente è possibile
+    filtrare per speaker e conferenza).
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    contents = contents[1:-2]
+
+    speaker = conference = None
+    if contents:
+        speaker = contents.pop(0)
+    if contents:
+        conference = contents.pop(0)
+    
+    class TalksNode(template.Node):
+        def __init__(self, speaker, conference, var_name):
+            self.var_name = var_name
+            self.speaker = self._set_var(speaker)
+            self.conference = self._set_var(conference)
+        
+        def _set_var(self, v):
+            if not v:
+                return v
+            if v.startswith('"') and v.endswith('"'):
+                return v[1:-1]
+            else:
+                return template.Variable(v)
+
+        def _get_var(self, v, context):
+            try:
+                return v.resolve(context)
+            except AttributeError:
+                return v
+
+        def render(self, context):
+            talks = models.Talk.objects.all()
+            speaker = self._get_var(self.speaker, context)
+            conference = self._get_var(self.conference, context)
+            if speaker:
+                talks = talks.filter(speaker = speaker)
+            context[self.var_name] = talks
+            return ''
+    return TalksNode(speaker, conference, var_name)
+
+@register.filter
+def split(value, arg):
+    return value.split(arg)
+
+@register.filter
+def splitonspace(value):
+    return value.split(' ')
+
+@register.filter
+def splitbysize(value, arg):
+    from itertools import izip
+    def grouper(n, iterable, fillvalue=None):
+        "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+        args = [iter(iterable)] * n
+        return list(izip(*args))
+    arg = int(arg)
+    value = list(value)
+    if len(value) % arg:
+        value += [ None ] * (arg - (len(value) % arg))
+    return grouper(arg, value)
