@@ -68,7 +68,7 @@ def _build_fs_stuff(subdir):
 
     return fs, build_path
 
-fs_speaker, _speaker_image_path = _build_fs_stuff('sponsor')
+fs_speaker, _speaker_image_path = _build_fs_stuff('speaker')
 
 class Speaker(models.Model):
     name = models.CharField('nome e cognome speaker', max_length = 100)
