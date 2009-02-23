@@ -99,8 +99,18 @@ SPONSOR
 
         <div id="sponsor">        
             <h2>{% trans "I nostri sponsor" %}</h2>
+            {% conference_sponsor "pycon3" as sponsor %}
             <dl>
                 <dt></dt>
+                {% comment %}
+                {% for s in sponsor %}
+                <dd>
+                    <a href="{{ s.url }}">
+                        <img src="{{ MEDIA_URL }}stuff/sponsor/{{ s.logo }}" alt="{{ s.sponsor }}" width="120" height="70" />
+                    </a>
+                </dd>
+                {% endfor %}
+                {% endcomment %}
                 <dd>
                   <a href="http://www.os3.it/">
                     <img src="{{ MEDIA_URL }}stuff/pycon3/sponsor/os3.png" alt="os3" width="120" height="70" />
@@ -114,6 +124,11 @@ SPONSOR
                 <dd>
                   <a href="http://linkgroup.it/">
                     <img src="{{ MEDIA_URL }}stuff/pycon3/sponsor/linkit.png" alt="link it" width="120" height="70" />
+                  </a>
+                </dd>
+                <dd>
+                  <a href="http://www.bettersoftware.it/">
+                    <img src="{{ MEDIA_URL }}stuff/sponsor/bettersoftware.png" alt="bettersoftware" width="120" height="70" />
                   </a>
                 </dd>
             </dl>
