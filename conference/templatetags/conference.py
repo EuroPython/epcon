@@ -189,6 +189,22 @@ def conference_speakers(parser, token):
             return ''
     return SpeakersNode(conference, var_name)
 
+class TNode(template.Node):
+    def _set_var(self, v):
+        if not v:
+            return v
+        if v.startswith('"') and v.endswith('"'):
+            return v[1:-1]
+        else:
+            return template.Variable(v)
+
+    def _get_var(self, v, context):
+        try:
+            return v.resolve(context)
+        except AttributeError:
+            return v
+
+
 @register.tag
 def conference_talks(parser, token):
     """
@@ -209,26 +225,12 @@ def conference_talks(parser, token):
     if contents:
         conference = contents.pop(0)
     
-    class TalksNode(template.Node):
+    class TalksNode(TNode):
         def __init__(self, speaker, conference, var_name):
             self.var_name = var_name
             self.speaker = self._set_var(speaker)
             self.conference = self._set_var(conference)
         
-        def _set_var(self, v):
-            if not v:
-                return v
-            if v.startswith('"') and v.endswith('"'):
-                return v[1:-1]
-            else:
-                return template.Variable(v)
-
-        def _get_var(self, v, context):
-            try:
-                return v.resolve(context)
-            except AttributeError:
-                return v
-
         def render(self, context):
             talks = models.Talk.objects.all()
             speaker = self._get_var(self.speaker, context)
@@ -259,3 +261,34 @@ def splitbysize(value, arg):
     if len(value) % arg:
         value += [ None ] * (arg - (len(value) % arg))
     return grouper(arg, value)
+
+@register.tag
+def conference_sponsor(parser, token):
+    """
+    {% conference_sponsor [ conference ] as var %}
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    contents = contents[1:-2]
+
+    conference = None
+    if contents:
+        conference = contents.pop(0)
+
+    class SponsorNode(TNode):
+        def __init__(self, conference, var_name):
+            self.var_name = var_name
+            self.conference = self._set_var(conference)
+
+        def render(self, context):
+            sponsor = models.Sponsor.objects.all()
+            conference = self._get_var(self.conference, context)
+            if conference:
+                sponsor = sponsor.filter(sponsorincome__conference = conference)
+                sponsor = sponsor.order_by('-sponsorincome__income', 'sponsor')
+            context[self.var_name] = sponsor
+            return ''
+    return SponsorNode(conference, var_name)
