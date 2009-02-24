@@ -21,7 +21,10 @@ class LatestPosts(Feed):
                 except KeyError:
                     raise FeedDoesNotExist()
         self.languages = D((l, l) for l, n in settings.LANGUAGES)
-        self.languages[None] = settings.LANGUAGES[0][0]
+        try:
+            self.languages[None] = settings.MICROBLOG_DEFAULT_LANGUAGE
+        except AttributeError:
+            self.languages[None] = settings.LANGUAGES[0][0]
 
     def get_object(self, lang_code):
         if not lang_code:
@@ -39,7 +42,10 @@ class LatestPosts(Feed):
 
     def items(self, obj):
         l = self.languages[obj]
-        return models.PostContent.objects.all().filter(language = l, post__status = 'P').order_by('-post__date')[:10]
+        return models.PostContent.objects.all().\
+            filter(language = l, post__status = 'P').\
+            exclude(headline = '').\
+            order_by('-post__date')[:10]
 
     def item_pubdate(self, obj):
         return obj.post.date
