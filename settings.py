@@ -128,6 +128,7 @@ PAGE_UNIQUE_SLUG_REQUIRED = True
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconItalia blog'
 MICROBLOG_DESCRIPTION = 'ultime news da PyconItalia'
+MICROBLOG_DEFAULT_LANGUAGE = 'it'
 
 # se si vuole far servire a django i file statici
 # popolare questo dizionario con coppie
