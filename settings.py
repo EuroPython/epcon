@@ -140,6 +140,11 @@ STUFF_DIR = None
 
 SESSION_COOKIE_NAME = 'pycon_sessionid'
 
+GNR_CONFERENCE = {
+    'src': 'http://assopy.pycon.it/conference/',
+    'size': (780, 480),
+}
+
 try:
     from settings_locale import *
 except ImportError:
