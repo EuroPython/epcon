@@ -65,7 +65,7 @@ class Resize(object):
                 raise ValueError('invalid action: %s' % action)
             except TypeError:
                 raise ValueError('invalid params for action: %s' % action)
-        img.save(dst)
+        img.save(dst, 'JPEG')
 
     def box(self, img, size):
         size = map(float, size.split('x'))
