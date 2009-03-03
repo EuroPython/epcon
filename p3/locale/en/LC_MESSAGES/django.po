@@ -18,7 +18,7 @@ msgstr ""
 
 #: templates/p3/base.html:101
 msgid "I nostri sponsor"
-msgstr "Our sponsor"
+msgstr "Our sponsors"
 
 #: templates/p3/base.html:163
 msgid "Progetto grafico"
