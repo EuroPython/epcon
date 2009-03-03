@@ -8,7 +8,8 @@ import pages.urls
 
 urlpatterns = patterns('',
     (r'^$', 'p3.views.root'),
-    (r'^pycon3/__assopy-dev/$', 'conference.views.genro_wrapper'),
+    (r'^pycon3/assopy/$', 'conference.views.genro_wrapper'),
+    #(r'^pycon3/__assopy-dev/$', 'conference.views.genro_wrapper'),
     (r'^admin/(.*)', admin.site.root),
     (r'^blog/', include('microblog.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
