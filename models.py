@@ -3,9 +3,13 @@ import datetime
 import os.path
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
 
 import tagging
 from tagging.fields import TagField
+
+import conference
+import subprocess
 
 class DeadlineManager(models.Manager):
     def valid_news(self):
@@ -140,6 +144,15 @@ class Sponsor(models.Model):
 
     def __unicode__(self):
         return self.sponsor
+
+def postSaveSponsorHandler(sender, **kwargs):
+    tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
+    null = open('/dev/null')
+    p = subprocess.Popen(
+        [tool, settings.STUFF_DIR],
+        close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.communicate()
+post_save.connect(postSaveSponsorHandler, sender=Sponsor)
 
 class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor)
