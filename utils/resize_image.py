@@ -65,7 +65,7 @@ class Resize(object):
                 raise ValueError('invalid action: %s' % action)
             except TypeError:
                 raise ValueError('invalid params for action: %s' % action)
-        img.save(dst, 'JPEG')
+        img.save(dst, 'JPEG', quality=90)
 
     def box(self, img, size):
         size = map(float, size.split('x'))
@@ -102,7 +102,7 @@ def resize_dir(cfg, src, dst):
         spath = os.path.join(src, fname)
         if not os.path.isfile(spath):
             continue
-        dpath = os.path.join(dst, fname)
+        dpath = os.path.join(dst, os.path.splitext(fname)[0] + '.jpg')
         if not options.all:
             if os.path.isfile(dpath):
                 sstat = os.stat(spath)
