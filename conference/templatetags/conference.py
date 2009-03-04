@@ -250,6 +250,10 @@ def splitonspace(value):
     return value.split(' ')
 
 @register.filter
+def image_resized(value):
+    return 'resized/' + os.path.splitext(str(value))[0] + '.jpg'
+
+@register.filter
 def splitbysize(value, arg):
     from itertools import izip
     def grouper(n, iterable, fillvalue=None):

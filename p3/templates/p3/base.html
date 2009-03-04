@@ -105,7 +105,7 @@ SPONSOR
                 {% for s in sponsor %}
                 <dd>
                     <a href="{{ s.url }}">
-                        <img src="{{ MEDIA_URL }}stuff/sponsor/resized/{{ s.logo }}" alt="{{ s.sponsor }}" width="120" height="70" />
+                        <img src="{{ SPONSOR_LOGO_URL }}{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="120" height="70" />
                     </a>
                 </dd>
                 {% endfor %}

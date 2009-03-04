@@ -74,6 +74,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'pages.context_processors.media',
+    'conference.context_processors.stuff',
 )
 
 MIDDLEWARE_CLASSES = (
