@@ -1,7 +1,3 @@
-
-
-
-
 .blog-feed {
     font-size: 2em;
 }
@@ -171,4 +167,10 @@ ul.archive > li {
 .speaker .cbox img {
     float: left;
     margin: 0 15px 15px 0;
+}
+
+.genro-message {
+    text-align: center;
+    font-size: 1.2em;
+    margin: 4px 0;
 }

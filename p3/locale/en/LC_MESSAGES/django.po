@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-18 00:08+0100\n"
+"POT-Creation-Date: 2009-03-04 17:39+0100\n"
 "PO-Revision-Date: 2009-02-17 23:54+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -16,15 +16,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: templates/conference/genro_wrapper.html:5
+msgid "genro-account"
+msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
+
+#: templates/conference/genro_wrapper.html:6
+msgid "genro-problem"
+msgstr "If you have any problems please contact us via <a onclick=\"habla_window.show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+
 #: templates/p3/base.html:101
 msgid "I nostri sponsor"
 msgstr "Our sponsors"
 
-#: templates/p3/base.html:163
+#: templates/p3/base.html:156
 msgid "Progetto grafico"
 msgstr "Graphic design"
 
-#: templates/p3/base.html:167
+#: templates/p3/base.html:160
 msgid "Sistema di registrazione"
 msgstr "Accounting system"
 
