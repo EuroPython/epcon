@@ -186,6 +186,9 @@ class Track(models.Model):
     order = models.PositiveIntegerField('ordine', default = 0)
     translate = models.BooleanField(default = False)
 
+    class Meta:
+        ordering = ['order']
+
     def __unicode__(self):
         return self.track
 
