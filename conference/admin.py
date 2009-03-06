@@ -132,6 +132,10 @@ admin.site.register(models.Speaker, SpeakerAdmin)
 
 class TalkAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("title",)}
+    list_display = ('title', '_speakers')
+    
+    def _speakers(self, obj):
+        return ' ,'.join((s.name for s in obj.speakers.all()))
 
 admin.site.register(models.Talk, TalkAdmin)
 
