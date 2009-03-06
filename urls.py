@@ -4,5 +4,6 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('',
     url(r'^speakers/(?P<slug>.*)', 'conference.views.speaker', name = 'conference-speaker'),
     url(r'^talks/(?P<slug>.*)', 'conference.views.talk', name = 'conference-talk'),
+    url(r'^schedule/(?P<conference>.*)/(?P<slug>.*)', 'conference.views.schedule', name = 'conference-schedule'),
 )
 

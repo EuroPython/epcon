@@ -18,6 +18,12 @@ def talk(request, slug):
         'conference/talk.html', { 'talk': tlk },
         context_instance = RequestContext(request))
 
+def schedule(request, conference, slug):
+    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
+    return render_to_response(
+        'conference/schedule.html', { 'schedule': sch },
+        context_instance = RequestContext(request))
+
 def genro_wrapper(request):
     """
     mostra in un iframe l'applicazione conference di genropy

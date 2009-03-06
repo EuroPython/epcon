@@ -10,6 +10,8 @@ from django.conf import settings
 from conference import models
 from pages import models as PagesModels
 
+from tagging.models import Tag
+
 mimetypes.init()
 
 register = template.Library()
@@ -240,6 +242,44 @@ def conference_talks(parser, token):
             context[self.var_name] = talks
             return ''
     return TalksNode(speaker, conference, var_name)
+
+@register.inclusion_tag('conference/render_schedule.html')
+def render_schedule(schedule):
+    """
+    {% render_schedule schedule %}
+    """
+    import collections
+
+    events = list(schedule.event_set.all().order_by('start_time'))
+    START = events[0].start_time
+    TIME_STEP = 15
+    tracks = dict( (t.track, ix) for ix, t in enumerate(schedule.track_set.all()) )
+    timetable = collections.defaultdict(lambda: [ None ] * len(tracks) )
+    for e in events:
+        row = timetable[e.start_time]
+        event = {
+            'time': e.start_time,
+            'text': '',
+            'time_slots': 1,
+            'tracks_spawn': 1,
+        }
+        if e.talk:
+            event['text'] = e.talk.title
+        else:
+            event['text'] = e.custom
+        etracks = [ tracks.get(t.name) for t in Tag.objects.get_for_object(e) ]
+        if None in etracks:
+            # l'evento è di tipo speciale (keynote/break/altro)
+            # lo spalmo su tutte le track
+            event['tracks_spawn'] = len(tracks)
+            row[0] = event
+        else:
+            # questo codice non gestisce talk in track non adiacenti
+            event['tracks_spawn'] = len(etracks)
+            row[etracks[0]] = event
+    from pprint import pprint
+    pprint(dict(timetable))
+    return {'schedule': schedule}
 
 @register.filter
 def split(value, arg):

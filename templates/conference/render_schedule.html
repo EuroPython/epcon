@@ -1,0 +1,11 @@
+<table class="schedule">
+    <caption>{{ schedule.date|date:"l d F Y" }}</caption>
+    <thead>
+        <tr>
+            <th class="hhmm">&nbsp;</th>
+            {% for t in schedule.track_set.all %}
+            <th class="track t-{{ track }}">{{ t.title|safe }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+</table>
