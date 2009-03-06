@@ -161,7 +161,7 @@ class EventInlineAdmin(admin.TabularInline):
     extra = 2
 
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'date')
+    list_display = ('conference', 'slug', 'date')
     inlines = [
         TrackInlineAdmin,
         EventInlineAdmin

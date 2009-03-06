@@ -172,10 +172,11 @@ class Schedule(models.Model):
     eventi.
 
     Questi ultimi possono essere dei talk o degli eventi "custom", come la
-    pyBirra, e sono collegati alle track in modalità "weak", atraverso un
+    pyBirra, e sono collegati alle track in modalità "weak", attraverso un
     tagfield.
     """
     conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
+    slug = models.SlugField()
     date = models.DateField()
 
 class Track(models.Model):
