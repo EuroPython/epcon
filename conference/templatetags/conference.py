@@ -238,7 +238,7 @@ def conference_talks(parser, token):
             speaker = self._get_var(self.speaker, context)
             conference = self._get_var(self.conference, context)
             if speaker:
-                talks = talks.filter(speaker = speaker)
+                talks = talks.filter(speakers = speaker)
             context[self.var_name] = talks
             return ''
     return TalksNode(speaker, conference, var_name)
