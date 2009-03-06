@@ -205,7 +205,7 @@ class Event(models.Model):
 
     def __unicode__(self):
         if self.talk:
-            return self.talk
+            return self.talk.title
         else:
             return self.custom
 
