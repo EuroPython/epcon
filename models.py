@@ -183,6 +183,7 @@ class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length = 20)
     title = models.TextField('titolo della track', help_text = 'HTML supportato')
+    order = models.PositiveIntegerField('ordine', default = 0)
     translate = models.BooleanField(default = False)
 
     def __unicode__(self):
