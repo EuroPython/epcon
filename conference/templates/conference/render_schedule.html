@@ -8,4 +8,26 @@
             {% endfor %}
         </tr>
     </thead>
+    <tbody>
+    {% for t, row in timetable %}
+    {% if not t%}
+        <tr><td> </td></tr>
+    {% else %}
+        <tr class="{{ row.class }}">
+            <td class="hhmm"><strong>{{ t|time:"H" }}</strong>:{{ t|time:"i" }}</td>
+            {% for e in row.events %}
+            {% if e %}
+            <td rowspan="{{ e.time_slots }}" colspan="{{ e.tracks }}">
+                {% if e.talk %}
+                <a href="{{ e.talk.get_absolute_url }}">{{ e.text }}</a>
+                {% else %}
+                <span>{{ e.text }}</span>
+                {% endif %}
+            </td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+    {% endif %}
+    {% endfor %}
+    </tbody>
 </table>

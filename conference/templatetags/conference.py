@@ -250,36 +250,74 @@ def render_schedule(schedule):
     """
     import collections
 
-    events = list(schedule.event_set.all().order_by('start_time'))
-    START = events[0].start_time
     TIME_STEP = 15
     tracks = dict( (t.track, ix) for ix, t in enumerate(schedule.track_set.all()) )
-    timetable = collections.defaultdict(lambda: [ None ] * len(tracks) )
-    for e in events:
+    timetable = collections.defaultdict(lambda: { 'class': [], 'events': [ None ] * len(tracks)} )
+    prow = [ None ] * len(tracks)
+    def fillTT(event, prev):
+        if not prev:
+            return
+        start = prev['time']
+        end = event['time']
+        t = end.hour * 60 + end.minute - ( start.hour * 60 + start.minute)
+        prev['time_slots'] = t / TIME_STEP
+            
+    for e in schedule.event_set.all().order_by('start_time'):
         row = timetable[e.start_time]
         event = {
             'time': e.start_time,
             'text': '',
             'time_slots': 1,
-            'tracks_spawn': 1,
+            'tracks': 1,
+            'talk': None,
         }
         if e.talk:
             event['text'] = e.talk.title
+            event['time_slots'] = e.talk.duration / TIME_STEP
+            event['talk'] = e.talk
         else:
             event['text'] = e.custom
-        etracks = [ tracks.get(t.name) for t in Tag.objects.get_for_object(e) ]
+        etags = [ t.name for t in Tag.objects.get_for_object(e) ]
+        if 'end' in etags:
+            row['class'].append('end')
+            etags.remove('end')
+            endEvent = True
+        else:
+            endEvent = False
+        etracks = [ tracks.get(t) for t in etags ]
         if None in etracks:
             # l'evento è di tipo speciale (keynote/break/altro)
             # lo spalmo su tutte le track
-            event['tracks_spawn'] = len(tracks)
-            row[0] = event
+            event['tracks'] = len(tracks)
+            row['events'][0] = event
+            map(lambda p: fillTT(event, p), prow)
+            prow = [ event ] * len(tracks)
         else:
             # questo codice non gestisce talk in track non adiacenti
-            event['tracks_spawn'] = len(etracks)
-            row[etracks[0]] = event
-    from pprint import pprint
-    pprint(dict(timetable))
-    return {'schedule': schedule}
+            event['tracks'] = len(etracks)
+            fillTT(event, prow[etracks[0]])
+            row['events'][etracks[0]] = prow[etracks[0]] = event
+        if endEvent:
+            prow = [ None ] * len(tracks)
+
+    timetable = sorted(timetable.items())
+    offset = 0
+    for ix, v in list(enumerate(timetable[:-1])):
+        t, row = v
+        row['class'] = ' '.join(row['class'])
+        if 'end' in row['class']:
+            continue
+        next = timetable[ix+1+offset][0]
+        delta = next.hour * 60 + next.minute - (t.hour * 60 + t.minute)
+        steps = delta / TIME_STEP
+        for x in range(steps - 1):
+            timetable.insert(ix+1+offset, (None, None))
+        offset += steps - 1
+        
+    return {
+        'schedule': schedule,
+        'timetable': timetable,
+    }
 
 @register.filter
 def split(value, arg):
