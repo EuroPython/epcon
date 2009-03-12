@@ -125,6 +125,9 @@ class Talk(models.Model):
     def get_absolute_url(self):
         return ('conference-talk', (), { 'slug': self.slug })
 
+    def get_event(self):
+        return self.event_set.all()[0]
+
 fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 
 class Sponsor(models.Model):
@@ -208,4 +211,14 @@ class Event(models.Model):
             return self.talk.title
         else:
             return self.custom
+
+    def get_track(self):
+        """
+        ritorna la prima istanza di track tra quelle specificate o None se l'evento
+        è di tipo speciale
+        """
+        dbtracks = dict( (t.track, t) for t in self.schedule.track_set.all())
+        for t in tagging.models.Tag.objects.get_for_object(self):
+            if t.name in dbtracks:
+                return dbtracks[t.name]
 

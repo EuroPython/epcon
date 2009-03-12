@@ -9,7 +9,10 @@
     
     <div id="talk" class="entry">
     
-        <strong>sab 10 mag / 09:00</strong> nella track <em>Diffondere Python</em>
+    {% with talk.get_event as e %}
+        {% with e.get_track as track %}
+        <strong>{{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}</strong>
+        nella track <em>{{ e.get_track.title }}</em>
         
         <div>Durata: {{ talk.duration }} minuti</div>
         
@@ -19,18 +22,17 @@
             {% if spk.homepage %}[<a href="{{ spk.homepage }}">{{ spk.homepage }}</a>]{% endif %}
         </div>
         {% endfor %}
-        <div>Lingua: {{ talk.language|upper }}</div>
+        <div>
+            Lingua: {{ talk.language|upper }}
+            {% if track.translate %}<strong>Traduzione simultanea disponibile</strong>{% endif %}
+        </div>
+        {% endwith %}
+    {% endwith %}
         {% if talk.slides %}
         <div>
             {% stuff_info talk.slides as info %}
             Sono disponibili le <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">slide del talk</a>
             ({{ info.0 }} {{ info.1|filesizeformat }})
-        </div>
-        {% endif %}
-        {% if talk.video %}
-        <div>
-            <span class="toggle">È possibile vedere in streaming il video del talk</span>
-            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="392" id="viddler_a03f1cbf"><param name="wmode" value="transparent" /><param name="movie" value="http://www.viddler.com/player/a03f1cbf/" /><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="true" /><embed src="http://www.viddler.com/player/a03f1cbf/" width="437" height="392" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_a03f1cbf" wmode="transparent"></embed></object>
         </div>
         {% endif %}
 
@@ -40,9 +42,19 @@
                 <p>{{ b.body|safe }}</p>
             {% endifequal %}
         {% endfor %}
+
+        {% if talk.video %}
+        <div>
+            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="500" height="438" id="viddler_a03f1cbf">
+                <param name="wmode" value="transparent" />
+                <param name="movie" value="http://www.viddler.com/player/a03f1cbf/" />
+                <param name="allowScriptAccess" value="always" />
+                <param name="allowFullScreen" value="true" />
+                <embed src="http://www.viddler.com/player/a03f1cbf/" width="500" height="438" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_a03f1cbf" wmode="transparent"></embed>
+            </object>
+        </div>
+        {% endif %}
     
     </div>            
-    
-<!-- /page -->
 </div>  
 {% endblock %}

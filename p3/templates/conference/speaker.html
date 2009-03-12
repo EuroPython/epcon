@@ -5,12 +5,12 @@
     <div id="page-title">
         <h1>{{ speaker.name }}</h1>
         <div>                    
-            {% if speaker.location %} {{ speaker.location }}{% endif %} | {{ speaker.activity }}{% if speaker.industry %} / {{ speaker.industry }}{% endif %} | {% if speaker.homepage %}<a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
+            {% if speaker.location %}{{ speaker.location }}{% endif %} | {{ speaker.activity }}{% if speaker.industry %} / {{ speaker.industry }}{% endif %} | {% if speaker.homepage %}<a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
         </div>
     </div>            
     
     <div id="speaker" class="entry">
-        <div class="picture"><img src="{{ MEDIA_URL }}stuff/speaker/{{ speaker.image }}" alt="{{ speaker.name }}" />
+        <div class="picture"><img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
         </div>
         
         {% for b in speaker.bios.all %}
