@@ -251,7 +251,8 @@ def render_schedule(schedule):
     import collections
 
     TIME_STEP = 15
-    tracks = dict( (t.track, ix) for ix, t in enumerate(schedule.track_set.all()) )
+    dbtracks = schedule.track_set.all()
+    tracks = dict( (t.track, ix) for ix, t in enumerate(dbtracks) )
     timetable = collections.defaultdict(lambda: { 'class': [], 'events': [ None ] * len(tracks)} )
     prow = [ None ] * len(tracks)
     def fillTT(event, prev):
@@ -269,7 +270,7 @@ def render_schedule(schedule):
             'text': '',
             'time_slots': 1,
             'tracks': 1,
-            'tags': [ t.name for t in Tag.objects.get_for_object(e) ],
+            'tags': [],
             'talk': None,
         }
         if e.talk:
@@ -278,38 +279,46 @@ def render_schedule(schedule):
             event['talk'] = e.talk
         else:
             event['text'] = e.custom
-        if 'end' in event['tags']:
+        etags = [ t.name for t in Tag.objects.get_for_object(e) ]
+        if 'end' in etags:
             row['class'].append('end')
-            event['tags'].remove('end')
+            etags.remove('end')
             endEvent = True
         else:
             endEvent = False
-        etracks = [ tracks.get(t) for t in event['tags'] ]
+        etracks = sorted([ tracks.get(t) for t in etags ])
         if None in etracks:
             # l'evento è di tipo speciale (keynote/break/altro)
             # lo spalmo su tutte le track
             event['tracks'] = len(tracks)
+            # riporto tutti i tag che non sono track
+            event['tags'] = [ t for t in etags if t not in tracks ]
             row['events'][0] = event
             map(lambda p: fillTT(event, p), prow)
-            prow = [ event ] * len(tracks)
+            prow = [ event, None, None ]
         else:
             # questo codice non gestisce talk in track non adiacenti
             event['tracks'] = len(etracks)
+            # riporto come tag il nome della prima track utilizzata
+            event['tags'] = [ dbtracks[etracks[0]].track ]
             fillTT(event, prow[etracks[0]])
             row['events'][etracks[0]] = prow[etracks[0]] = event
         if endEvent:
             prow = [ None ] * len(tracks)
 
+    row['class'].append('end')
+
     timetable = sorted(timetable.items())
     offset = 0
     for ix, v in list(enumerate(timetable[:-1])):
         t, row = v
-        row['class'] = ' '.join(row['class'])
         if 'end' in row['class']:
-            continue
-        next = timetable[ix+1+offset][0]
-        delta = next.hour * 60 + next.minute - (t.hour * 60 + t.minute)
-        steps = delta / TIME_STEP
+            # padding
+            steps = 4
+        else:
+            next = timetable[ix+1+offset][0]
+            delta = next.hour * 60 + next.minute - (t.hour * 60 + t.minute)
+            steps = delta / TIME_STEP
         for x in range(steps - 1):
             timetable.insert(ix+1+offset, (None, None))
         offset += steps - 1
