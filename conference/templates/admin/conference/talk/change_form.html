@@ -1,0 +1,24 @@
+{% extends "admin/change_form.html" %}
+{% block extrahead %}
+{{ block.super }}
+{% comment %}
+intercetto l'evento onblur nel campo video per appliccare una regexp
+sul contenuto
+{% endcomment %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        /*
+         * il blob html copiato da viddler è più lungo dei 200 caratteri previsti
+         * dal talk; rilasso il vincolo della lunghezza massima e applico una regexp
+         * per estrarre la sola url (così ho anche un feedback visivo)
+         */
+        var video_check = /http:\/\/www\.viddler\.com\/player\/[^\/]+\/?/;
+        $('#id_video').attr('maxlength', '20000').blur(function() {
+            var m = video_check.exec(this.value);
+            if(m)
+                this.value = m[0];
+        });
+    });
+</script>
+{% endblock %}

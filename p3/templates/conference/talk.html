@@ -47,10 +47,10 @@
         <div>
             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="500" height="438" id="viddler_a03f1cbf">
                 <param name="wmode" value="transparent" />
-                <param name="movie" value="http://www.viddler.com/player/a03f1cbf/" />
+                <param name="movie" value="{{ talk.video }}" />
                 <param name="allowScriptAccess" value="always" />
                 <param name="allowFullScreen" value="true" />
-                <embed src="http://www.viddler.com/player/a03f1cbf/" width="500" height="438" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_a03f1cbf" wmode="transparent"></embed>
+                <embed src="{{ talk.video }}" width="500" height="438" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_a03f1cbf" wmode="transparent"></embed>
             </object>
         </div>
         {% endif %}

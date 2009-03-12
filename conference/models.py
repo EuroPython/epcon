@@ -115,7 +115,7 @@ class Talk(models.Model):
     language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
     slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs_slides)
-    video = models.URLField(verify_exists = False, blank = True)
+    video = models.CharField(max_length = 200, blank = True)
     tags = TagField()
 
     def __unicode__(self):
