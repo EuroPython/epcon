@@ -7,6 +7,8 @@ from django.conf import settings
 
 from conference import models
 
+import re
+
 class DeadlineAdmin(admin.ModelAdmin):
 
     list_display = ('date', 'text', 'isValid')
@@ -130,9 +132,28 @@ class SpeakerAdmin(MultiLingualAdminContent):
 
 admin.site.register(models.Speaker, SpeakerAdmin)
 
+class TalkAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Talk
+
+    # per semplificare l'inserimento del video permetto all'utente di inserire
+    # il blob html che copia da viddler e da li estraggo la url che mi
+    # interessa
+    video_check = re.compile(r'http://www\.viddler\.com/player/[^/]+/?')
+
+    def clean_video(self):
+        match = self.video_check.search(self.cleaned_data['video'])
+        if match:
+            self.cleaned_data['video'] = match.group(0)
+        else:
+            self.cleaned_data['video'] = ''
+        return self.cleaned_data['video']
+
 class TalkAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("title",)}
     list_display = ('title', '_speakers')
+
+    form = TalkAdminForm
     
     def _speakers(self, obj):
         return ' ,'.join((s.name for s in obj.speakers.all()))
