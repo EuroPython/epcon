@@ -269,6 +269,7 @@ def render_schedule(schedule):
             'text': '',
             'time_slots': 1,
             'tracks': 1,
+            'tags': [ t.name for t in Tag.objects.get_for_object(e) ],
             'talk': None,
         }
         if e.talk:
@@ -277,14 +278,13 @@ def render_schedule(schedule):
             event['talk'] = e.talk
         else:
             event['text'] = e.custom
-        etags = [ t.name for t in Tag.objects.get_for_object(e) ]
-        if 'end' in etags:
+        if 'end' in event['tags']:
             row['class'].append('end')
-            etags.remove('end')
+            event['tags'].remove('end')
             endEvent = True
         else:
             endEvent = False
-        etracks = [ tracks.get(t) for t in etags ]
+        etracks = [ tracks.get(t) for t in event['tags'] ]
         if None in etracks:
             # l'evento è di tipo speciale (keynote/break/altro)
             # lo spalmo su tutte le track

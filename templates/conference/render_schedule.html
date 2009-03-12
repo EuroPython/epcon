@@ -4,7 +4,7 @@
         <tr>
             <th class="hhmm">&nbsp;</th>
             {% for t in schedule.track_set.all %}
-            <th class="track t-{{ track }}">{{ t.title|safe }}</th>
+            <th class="track t-{{ t.track }}">{{ t.title|safe }}</th>
             {% endfor %}
         </tr>
     </thead>
@@ -17,9 +17,14 @@
             <td class="hhmm"><strong>{{ t|time:"H" }}</strong>:{{ t|time:"i" }}</td>
             {% for e in row.events %}
             {% if e %}
-            <td rowspan="{{ e.time_slots }}" colspan="{{ e.tracks }}">
+            <td class="track {% for t in e.tags %} t-{{ t }}{% endfor %}" rowspan="{{ e.time_slots }}" colspan="{{ e.tracks }}">
                 {% if e.talk %}
                 <a href="{{ e.talk.get_absolute_url }}">{{ e.text }}</a>
+                di
+                {% for s in e.talk.speakers.all %}
+                    <a href="{{ s.get_absolute_url }}">{{ s.name }}</a>
+                    {% if not forloop.last %} e {% endif %}
+                {% endfor %}
                 {% else %}
                 <span>{{ e.text }}</span>
                 {% endif %}
