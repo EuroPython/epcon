@@ -1,0 +1,73 @@
+.schedule {
+    border: collapse;
+    margin: 20px 0;
+}
+
+.schedule caption {
+    color: #3272A6;
+    font-weight: bold;
+}
+
+.schedule td, .schedule th {
+    text-align: center;
+    line-height: 20px;
+    padding: 0.35em;
+}
+
+.schedule th {
+    color: white;
+    font-weight: bold;
+}
+
+.schedule td {
+    color: #666;
+}
+
+.schedule td a {
+    color: #224F73;
+}
+
+.schedule td a:hover {
+    background: #FFE566;
+}
+
+.schedule .track {
+    width: 30%;
+}
+
+.schedule td.hhmm, .schedule td.track {
+    border-top: 1px solid #AAA;
+}
+
+.schedule th.t-scoprire {
+    background: #7EA663;
+}
+
+.schedule td.t-scoprire {
+    background: #D5F2C2;
+    border-color: #A8BF99;
+}
+
+.schedule th.t-diffondere {
+    background: #4279A6;
+}
+
+.schedule td.t-diffondere {
+    background: #C2DCF2;
+    border-color: #6CA8D9;
+}
+
+.schedule th.t-imparare {
+    background: #A65E53;
+}
+
+.schedule td.t-imparare {
+    background: #F2DDDA;
+    border-color: #D98E82;
+}
+
+.schedule td.t-special, .schedule td.t-break {
+    background: #EEE;
+    font-style: italic;
+    vertical-align: middle;
+}
