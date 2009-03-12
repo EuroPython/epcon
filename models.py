@@ -118,6 +118,9 @@ class Talk(models.Model):
     video = models.CharField(max_length = 200, blank = True)
     tags = TagField()
 
+    class Meta:
+        ordering = ['title']
+
     def __unicode__(self):
         return self.title
 

@@ -151,12 +151,20 @@ class TalkAdminForm(forms.ModelForm):
 
 class TalkAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("title",)}
-    list_display = ('title', '_speakers')
+    list_display = ('title', '_speakers', '_slides', '_video')
 
     form = TalkAdminForm
     
     def _speakers(self, obj):
-        return ' ,'.join((s.name for s in obj.speakers.all()))
+        return ', '.join((s.name for s in obj.speakers.all()))
+
+    def _slides(self, obj):
+        return bool(obj.slides)
+    _slides.boolean = True
+
+    def _video(self, obj):
+        return bool(obj.video)
+    _video.boolean = True
 
 admin.site.register(models.Talk, TalkAdmin)
 
