@@ -317,15 +317,45 @@ def render_schedule(schedule):
             if not p['talk']:
                 p['time_slots'] = slots
             elif p['time_slots'] < slots:
-                # intervengo solo se il time_slots del talk è minore di slots,
-                # in caso contrario spero che l'html si incasini per
-                # costringere l'operatore a sistemare la cosa.
+                # se time_slots è minore del previsto "paddo" con un evento vuoto
                 premature_end = minutes(p['time']) + p['talk'].duration
                 nh = premature_end / 60
                 nm = premature_end - nh * 60
                 new_start = time(hour = nh, minute = nm)
                 empty = timetable[new_start]['events']
                 empty[ix] = prow[ix] = eevent(new_start)
+            elif p['time_slots'] > slots and c:
+                # se time_slots è maggiore ho due possibilità:
+                # 1. se l'evento corrente è marcato come "overlap" lo inserisco
+                # in mezzo a p, spostando parte di p dopo c
+                # 2. se c non è "overlap" lascio le cose come stanno, l'html
+                # che ne risulterà sarà senza dubbio incasinato e l'operatore
+                # gestirà a mano la situazione
+                overlap = None
+                for t in c['tags']:
+                    if t.startswith('overlap'):
+                        try:
+                            overlap = int(t.split('-', 1)[1])
+                        except IndexError:
+                            overlap = 15
+                        except ValueError:
+                            pass
+                        else:
+                            c['tags'].remove(t)
+                        break
+                if overlap:
+                    dslots = p['time_slots'] - slots
+                    p['time_slots'] = slots
+                    c_end = minutes(c['time']) + overlap
+                    nh = c_end / 60
+                    nm = c_end - nh * 60
+                    new_start = time(hour = nh, minute = nm)
+                    empty = timetable[new_start]['events']
+                    empty[ix] = dict(p)
+                    empty[ix]['time'] = new_start
+                    empty[ix]['time_slots'] = dslots
+                    row = list(row)
+                    row[ix] = empty[ix]
 
             # c può essere None perché suo fratello copre più track oppure
             # perché c'è un buco nello schedule.
