@@ -248,88 +248,111 @@ def render_schedule(schedule):
     """
     {% render_schedule schedule %}
     """
-    import collections
+    from collections import defaultdict
     from datetime import time
 
     TIME_STEP = 15
-    dbtracks = schedule.track_set.all()
-    tracks = dict( (t.track, ix) for ix, t in enumerate(dbtracks) )
-    timetable = collections.defaultdict(lambda: { 'class': [], 'events': [ None ] * len(tracks)} )
-    prow = [ None ] * len(tracks)
-    def fillTT(event, ix):
-        prev = prow[ix]
-        if not prev:
-            return
-        start = prev['time']
-        end = event['time']
-        t = end.hour * 60 + end.minute - ( start.hour * 60 + start.minute)
-        slots = t / TIME_STEP
-        if prev['talk'] and prev['time_slots'] != slots:
-            next = start.hour * 60 + start.minute + prev['talk'].duration
-            h = next / 60
-            m = next - h * 60
-            start = time(hour = h, minute = m)
-            empty = timetable[start]
-            empty['events'][ix] = prow[ix] = { 'time': start, 'text': '', 'tracks': 1, 'time_slots': 1 }
-            print 'hey!', ix, prow
-        else:
-            prev['time_slots'] = slots
-            
-    from pprint import pprint
-    for e in schedule.event_set.all().order_by('start_time'):
-        row = timetable[e.start_time]
-        event = {
-            'time': e.start_time,
-            'text': '',
-            'time_slots': 1,
-            'tracks': 1,
-            'tags': [],
-            'talk': None,
-        }
-        if e.talk:
-            event['text'] = e.talk.title
-            event['time_slots'] = e.talk.duration / TIME_STEP
-            event['talk'] = e.talk
-        else:
-            event['text'] = e.custom
-        etags = [ t.name for t in Tag.objects.get_for_object(e) ]
-        if 'end' in etags:
-            row['class'].append('end')
-            etags.remove('end')
-            endEvent = True
-        else:
-            endEvent = False
-        etracks = sorted([ tracks.get(t) for t in etags ])
-        if None in etracks:
-            print event['text'], pprint(prow)
-            # l'evento è di tipo speciale (keynote/break/altro)
-            # lo spalmo su tutte le track
-            event['tracks'] = len(tracks)
-            # riporto tutti i tag che non sono track
-            event['tags'] = [ t for t in etags if t not in tracks ]
-            row['events'][0] = event
-            for x in range(len(prow)):
-                fillTT(event, x)
-            prow = [ event, None, None ]
-        else:
-            # questo codice non gestisce talk in track non adiacenti
-            event['tracks'] = len(etracks)
-            # riporto come tag il nome della prima track utilizzata
-            event['tags'] = [ dbtracks[etracks[0]].track ]
-            fillTT(event, etracks[0])
-            row['events'][etracks[0]] = prow[etracks[0]] = event
-        if endEvent:
-            prow = [ None ] * len(tracks)
+    dbtracks = dict((t.track, (ix, t)) for ix, t in enumerate(schedule.track_set.all()))
+    _itracks = dict(dbtracks.values())
+    dbevents = defaultdict(list)
+    for e in schedule.event_set.all():
+        dbevents[e.start_time].append(e)
 
-    row['class'].append('end')
-    pprint(dict(timetable))
+    eevent = lambda t: { 'time': t, 'title': '', 'track_slots': 1, 'time_slots': 1, 'talk': None, 'tags': [] }
 
+    # riorganizzo in timetable la struttra degli evento dello schedule passato
+    # per renderli semplici da maneggiare al template. Ogni entry di timetable
+    # rappresenta una riga della tabella HTML
+    timetable = defaultdict(lambda: { 'class': [], 'events': [ None ] * len(dbtracks)} )
+    prow = [ None ] * len(dbtracks)
+    for rtime, events in sorted(dbevents.items()):
+        row = timetable[rtime]['events']
+        end = False
+        for e in events:
+            event = eevent(e.start_time)
+            if e.talk:
+                event['title'] = e.talk.title
+                event['time_slots'] = e.talk.duration / TIME_STEP
+                event['talk'] = e.talk
+            else:
+                event['title'] = e.custom
+            # row ha tanti elementi quante sono le track dello schedule
+            # devo inserire event nel punto giusto
+            tags = set( t.name for t in Tag.objects.get_for_object(e) )
+            if 'end' in tags:
+                end = True
+                tags.remove('end')
+
+            # tracks è una lista, ordinata, con gli indici numerici (riferiti a
+            # dbtracks) delle track interessate dall'evento.
+            tracks = sorted([ dbtracks.get(t, [None])[0] for t in tags ])
+            if None in tracks:
+                # l'evento fa riferimento a delle track speciali (come il
+                # coffee break o la registrazione), per adesso tratto tutte gli
+                # eventi speciali nello stesso modo (lo spalmo tutte le track
+                # disponibili) un estensione utile potrebbe essere quella di
+                # dare significati diversi alle varie track speciali e cambiare
+                # il comportamento di conseguenza.
+                event['track_slots'] = len(dbtracks)
+                event['tags'] = [ t for t in tags if t not in dbtracks ]
+                row[0] = event
+            else:
+                # per il momento non supporto il caso di un evento associato a
+                # track non adiacenti.
+                event['track_slots'] = len(tracks)
+                ex = tracks[0]
+                event['tags'] = [ _itracks[ex].track ]
+                row[ex] = event
+
+        # ho inserito una nuova riga nella timetable, ho abbastanza
+        # informazioni per controllare la riga precedente (prow) e allungare i
+        # tempi degli eventi che non hanno un indicazione della durata
+        minutes = lambda t: t.hour * 60 + t.minute
+        for ix, t in enumerate(zip(prow, row)):
+            p, c = t
+            if not p:
+                continue
+            diff = minutes(rtime) - minutes(p['time'])
+            slots = diff / TIME_STEP
+            if not p['talk']:
+                p['time_slots'] = slots
+            elif p['time_slots'] < slots:
+                # intervengo solo se il time_slots del talk è minore di slots,
+                # in caso contrario spero che l'html si incasini per
+                # costringere l'operatore a sistemare la cosa.
+                premature_end = minutes(p['time']) + p['talk'].duration
+                nh = premature_end / 60
+                nm = premature_end - nh * 60
+                new_start = time(hour = nh, minute = nm)
+                empty = timetable[new_start]['events']
+                empty[ix] = prow[ix] = eevent(new_start)
+
+            # c può essere None perché suo fratello copre più track oppure
+            # perché c'è un buco nello schedule.
+            if not c and ix and row[ix-1] and row[ix-1]['track_slots'] == 1:
+                # *potrebbe* essere un buco nello schedule, per esserne certo
+                # devo verificare che il corrispondente evento in prow non
+                # abbia un time_slots maggiore di slots
+                brother = row[ix-1]
+                if not p or p['time_slots'] <= slots:
+                    row[ix] = eevent(rtime)
+                    row[ix]['time_slots'] = brother['time_slots']
+        if end:
+            timetable[rtime]['class'].append('end')
+            prow = [ None ] * len(dbtracks)
+        else:
+            prow = list(row)
+    timetable[rtime]['class'].append('end')
+
+    # trasformo il dizionario in una lista ordinata, più semplice da gestire
+    # per il template e la riempio di "filler" per proporzionare le varie fasce
+    # di eventi (altro lavoro in meno per il template).
     timetable = sorted(timetable.items())
     offset = 0
     for ix, v in list(enumerate(timetable[:-1])):
         t, row = v
         if 'end' in row['class']:
-            # padding
+            # padding arbitrario
             steps = 4
         else:
             next = timetable[ix+1+offset][0]
