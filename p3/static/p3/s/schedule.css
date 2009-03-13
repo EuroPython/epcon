@@ -1,6 +1,7 @@
 .schedule {
     border: collapse;
     margin: 20px 0;
+    width: 100%;
 }
 
 .schedule caption {
@@ -64,6 +65,20 @@
 .schedule td.t-imparare {
     background: #F2DDDA;
     border-color: #D98E82;
+}
+
+.schedule .t-apertura {
+    width: 90%;
+}
+
+.schedule th.t-apertura {
+    background: #FFF02A;
+    color: black;
+}
+
+.schedule td.t-apertura {
+    background: #FFF4BF;
+    border-color: #A8BF99;
 }
 
 .schedule td.t-special, .schedule td.t-break {
