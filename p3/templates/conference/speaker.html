@@ -10,8 +10,11 @@
     </div>            
     
     <div id="speaker" class="entry">
-        <div class="picture"><img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
+        {% if speaker.image %}
+        <div class="picture">
+            <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
         </div>
+        {% endif %}
         
         {% for b in speaker.bios.all %}
             {% ifequal b.language LANGUAGE_CODE %}
