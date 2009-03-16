@@ -479,3 +479,34 @@ def conference_sponsor(parser, token):
             context[self.var_name] = sponsor
             return ''
     return SponsorNode(conference, var_name)
+
+@register.tag
+def render_page_template(parser, token):
+    contents = token.split_contents()
+    try:
+        tag_name, arg = contents[0:2]
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag needs at least two arguments" % contents[0])
+    if len(contents) > 2:
+        if contents[-2] != 'as':
+            raise template.TemplateSyntaxError("%r tag had invalid arguments" % contents[0])
+        var_name = contents[-1]
+    else:
+        var_name = None
+
+    class TemplateRenderer(template.Node):
+        def __init__(self, arg, var_name):
+            self.arg = template.Variable(arg)
+            self.var_name = var_name
+
+        def render(self, context):
+            tpl = self.arg.resolve(context)
+            t = template.Template(tpl)
+            data = t.render(context)
+            if self.var_name:
+                context[self.var_name] = data
+                return ''
+            else:
+                return data
+            
+    return TemplateRenderer(arg, var_name)
