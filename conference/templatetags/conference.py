@@ -309,6 +309,10 @@ def render_schedule(schedule):
         # informazioni per controllare la riga precedente (prow) e allungare i
         # tempi degli eventi che non hanno un indicazione della durata
         minutes = lambda t: t.hour * 60 + t.minute
+        def m2time(m):
+            nh = m / 60
+            nm = m - nh * 60
+            return time(hour = nh, minute = nm)
         for ix, t in enumerate(zip(prow, row)):
             p, c = t
             if not p:
@@ -320,46 +324,56 @@ def render_schedule(schedule):
             elif p['time_slots'] < slots:
                 # se time_slots è minore del previsto "paddo" con un evento vuoto
                 premature_end = minutes(p['time']) + p['talk'].duration
-                nh = premature_end / 60
-                nm = premature_end - nh * 60
-                new_start = time(hour = nh, minute = nm)
+                new_start = m2time(premature_end)
                 empty = timetable[new_start]['events']
                 empty[ix] = prow[ix] = eevent(new_start)
-            elif p['time_slots'] > slots and c:
-                # se time_slots è maggiore ho due possibilità:
-                # 1. se l'evento corrente è marcato come "overlap" lo inserisco
-                # in mezzo a p, spostando parte di p dopo c
-                # 2. se c non è "overlap" lascio le cose come stanno, l'html
-                # che ne risulterà sarà senza dubbio incasinato e l'operatore
-                # gestirà a mano la situazione
-                overlap = None
-                for t in c['tags']:
-                    if t.startswith('overlap'):
-                        try:
-                            overlap = int(t.split('-', 1)[1])
-                        except IndexError:
-                            overlap = 15
-                        except ValueError:
-                            pass
-                        else:
-                            c['tags'].remove(t)
+            elif c:
+                # qui devo gestire il caso in cui gli event nella riga superiore abbiano
+                # allocati più solt temporali di quelli individuati
+                for x in range(c['track_slots']):
+                    pc = prow[ix+x]
+                    if pc and pc['time_slots'] > slots:
+                        overlap_needed = ix + x
                         break
-                if overlap:
-                    dslots = p['time_slots'] - slots
-                    p['time_slots'] = slots
-                    c_end = minutes(c['time']) + overlap
-                    nh = c_end / 60
-                    nm = c_end - nh * 60
-                    new_start = time(hour = nh, minute = nm)
-                    empty = timetable[new_start]['events']
-                    n = dict(p)
-                    n['time'] = new_start
-                    n['time_slots'] = dslots
-                    n['title'] = '<strong>%s</strong><br/>(seconda parte)' % (escape(p['title']),)
-                    n['talk'] = None
-                    empty[ix] = n
-                    row = list(row)
-                    row[ix] = empty[ix]
+                else:
+                    overlap_needed = None
+                if overlap_needed is not None:
+                    # se time_slots è maggiore ho due possibilità:
+                    # 1. se l'evento corrente è marcato come "overlap" lo inserisco
+                    # in mezzo a p, spostando parte di p dopo c
+                    # 2. se c non è "overlap" lascio le cose come stanno, l'html
+                    # che ne risulterà sarà senza dubbio incasinato e l'operatore
+                    # gestirà a mano la situazione
+                    overlap = None
+                    for t in c['tags']:
+                        if t.startswith('overlap'):
+                            try:
+                                overlap = int(t.split('-', 1)[1])
+                            except IndexError:
+                                overlap = 15
+                            except ValueError:
+                                pass
+                            else:
+                                c['tags'].remove(t)
+                            break
+                    if overlap:
+                        pix = overlap_needed
+                        pc = prow[pix]
+                        dslots = pc['time_slots'] - slots
+                        pc['time_slots'] = slots
+                        # devo calcolare il tempo di inizio della seconda parte del talk,
+                        # che equivale a: inizio_overlap + tempo_overlap
+                        c_end = minutes(c['time']) + overlap
+                        new_start = m2time(c_end)
+                        empty = timetable[new_start]['events']
+                        n = dict(pc)
+                        n['time'] = new_start
+                        n['time_slots'] = dslots
+                        n['title'] = '<strong>%s</strong><br/>(seconda parte)' % (escape(pc['title']),)
+                        n['talk'] = None
+                        empty[pix] = n
+                        row = list(row)
+                        row[pix] = empty[pix]
 
             # c può essere None perché suo fratello copre più track oppure
             # perché c'è un buco nello schedule.
