@@ -252,6 +252,15 @@ def render_schedule(schedule):
     from collections import defaultdict
     from datetime import time
 
+    if isinstance(schedule, int):
+        schedule = models.Schedule.objects.get(pk = schedule)
+    elif isinstance(schedule, basestring):
+        try:
+            c, s = schedule.split('/') 
+        except ValueError:
+            raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
+        schedule = models.Schedule.objects.get(conference = c, slug = s)
+
     TIME_STEP = 15
     dbtracks = dict((t.track, (ix, t)) for ix, t in enumerate(schedule.track_set.all()))
     _itracks = dict(dbtracks.values())
