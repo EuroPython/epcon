@@ -70,12 +70,15 @@ class Resize(object):
     def box(self, img, size):
         size = map(float, size.split('x'))
         iw, ih = img.size
-        if iw > ih:
+        rw = iw / size[0]
+        rh = ih / size[1]
+        if rw > rh:
             nw = size[0]
             nh = ih * nw / iw
         else:
             nh = size[1]
             nw = iw * nh / ih
+        print "%.2fx%.2f -> %.2fx%.2f" % (iw, ih, nw, nh)
         return img.resize((int(nw), int(nh)), Image.ANTIALIAS)
 
     def canvas(self, img, size, bg):
