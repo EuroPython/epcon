@@ -149,6 +149,9 @@ class Sponsor(models.Model):
         help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
 
+    class Meta:
+        ordering = ['sponsor']
+
     def __unicode__(self):
         return self.sponsor
 
