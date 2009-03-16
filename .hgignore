@@ -4,3 +4,4 @@ Thumbs.db
 settings_locale.py
 p3.db
 *.mo
+stuff/sponsor/resized/*
