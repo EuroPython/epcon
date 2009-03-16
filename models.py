@@ -99,6 +99,7 @@ TALK_DURATION = (
     (45, '45 minuti'),
     (60, '60 minuti'),
     (90, '90 minuti'),
+    (120, '120 minuti'),
 )
 TALK_LANGUAGES = (
     ('it', 'Italiano'),
