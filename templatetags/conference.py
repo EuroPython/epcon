@@ -6,6 +6,7 @@ import os.path
 import re
 from django import template
 from django.conf import settings
+from django.utils.html import escape
 
 from conference import models
 from pages import models as PagesModels
@@ -351,9 +352,12 @@ def render_schedule(schedule):
                     nm = c_end - nh * 60
                     new_start = time(hour = nh, minute = nm)
                     empty = timetable[new_start]['events']
-                    empty[ix] = dict(p)
-                    empty[ix]['time'] = new_start
-                    empty[ix]['time_slots'] = dslots
+                    n = dict(p)
+                    n['time'] = new_start
+                    n['time_slots'] = dslots
+                    n['title'] = '<strong>%s</strong><br/>(seconda parte)' % (escape(p['title']),)
+                    n['talk'] = None
+                    empty[ix] = n
                     row = list(row)
                     row[ix] = empty[ix]
 
