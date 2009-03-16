@@ -78,7 +78,6 @@ class Resize(object):
         else:
             nh = size[1]
             nw = iw * nh / ih
-        print "%.2fx%.2f -> %.2fx%.2f" % (iw, ih, nw, nh)
         return img.resize((int(nw), int(nh)), Image.ANTIALIAS)
 
     def canvas(self, img, size, bg):
