@@ -1,7 +1,5 @@
 ﻿{% extends "p3/base.html" %}
-{% load pages_tags %}
-{% load markup %}
-{% load p3 %}
+{% load pages_tags markup p3 conference %}
 
 {% block MAIN_CONTENT %}
 <div class="column span-12">
@@ -20,7 +18,8 @@
                 
                 <div class="entry">
                     {% placeholder text with markItUpMarkdown as text %}
-                    {{ text|markdown }}                
+                    {% render_page_template text as m %}
+                    {{ m|markdown }}
                 </div>            
                 
             <!-- /page -->

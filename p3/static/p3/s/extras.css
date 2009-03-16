@@ -174,3 +174,15 @@ ul.archive > li {
     font-size: 1.2em;
     margin: 4px 0;
 }
+
+.sponsor-list.flat {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sponsor-list.flat li {
+    margin-right: 20px;
+    margin-bottom: 5px;
+    float: left;
+}

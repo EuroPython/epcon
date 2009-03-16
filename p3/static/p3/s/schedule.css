@@ -1,87 +1,91 @@
-.schedule {
+table.schedule {
     border: collapse;
     margin: 20px 0;
     width: 100%;
 }
 
-.schedule caption {
+table.schedule caption {
+    caption-side: top;
+}
+
+table.schedule caption {
     color: #3272A6;
     font-weight: bold;
 }
 
-.schedule td, .schedule th {
+table.schedule td, table.schedule th {
     text-align: center;
     line-height: 20px;
     padding: 0.35em;
 }
 
-.schedule th {
+table.schedule th {
     color: white;
     font-weight: bold;
 }
 
-.schedule td {
+table.schedule td {
     color: #666;
 }
 
-.schedule td a {
+table.schedule td a {
     color: #224F73;
 }
 
-.schedule td a:hover {
+table.schedule td a:hover {
     background: #FFE566;
 }
 
-.schedule .track {
+table.schedule .track {
     width: 30%;
 }
 
-.schedule td.hhmm, .schedule td.track {
+table.schedule td.hhmm, table.schedule td.track {
     border-top: 1px solid #AAA;
 }
 
-.schedule th.t-scoprire {
+table.schedule th.t-scoprire {
     background: #7EA663;
 }
 
-.schedule td.t-scoprire {
+table.schedule td.t-scoprire {
     background: #D5F2C2;
     border-color: #A8BF99;
 }
 
-.schedule th.t-diffondere {
+table.schedule th.t-diffondere {
     background: #4279A6;
 }
 
-.schedule td.t-diffondere {
+table.schedule td.t-diffondere {
     background: #C2DCF2;
     border-color: #6CA8D9;
 }
 
-.schedule th.t-imparare {
+table.schedule th.t-imparare {
     background: #A65E53;
 }
 
-.schedule td.t-imparare {
+table.schedule td.t-imparare {
     background: #F2DDDA;
     border-color: #D98E82;
 }
 
-.schedule .t-apertura {
+table.schedule .t-apertura {
     width: 90%;
 }
 
-.schedule th.t-apertura {
+table.schedule th.t-apertura {
     background: #FFF02A;
     color: black;
 }
 
-.schedule td.t-apertura {
+table.schedule td.t-apertura {
     background: #FFF4BF;
     border-color: #A8BF99;
 }
 
-.schedule td.t-special, .schedule td.t-break {
+table.schedule td.t-special, table.schedule td.t-break {
     background: #EEE;
     font-style: italic;
     vertical-align: middle;
