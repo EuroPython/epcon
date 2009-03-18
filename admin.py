@@ -201,3 +201,19 @@ class ScheduleAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(models.Schedule, ScheduleAdmin)
+
+class HotelAdmin(admin.ModelAdmin):
+    list_display = ('name', '_contacts', 'affiliated', 'visible')
+    search_fields = [ 'name' ]
+
+    def _contacts(self, obj):
+        h = ""
+        if obj.email:
+            h += '<a href="mailto:%s">%s</a> ' % (obj.email, obj.email)
+        if obj.telephone:
+            h+= obj.telephone
+        return h
+    _contacts.allow_tags = True
+    _contacts.short_description = 'Contatti'
+
+admin.site.register(models.Hotel, HotelAdmin)
