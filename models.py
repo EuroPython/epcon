@@ -226,3 +226,20 @@ class Event(models.Model):
             if t.name in dbtracks:
                 return dbtracks[t.name]
 
+class Hotel(models.Model):
+    """
+    Gli hotel permettono di tenere traccia dei posti convenzionati e non dove
+    trovare alloggio durante la conferenza.
+    """
+    name = models.CharField('nome dell\'hotel', max_length = 100)
+    telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
+    email = models.EmailField('email', blank = True)
+    availability = models.CharField('Disponibilità', max_length = 50, blank = True)
+    price = models.CharField('Prezzo', max_length = 50, blank = True)
+    note = models.TextField('note', blank = True)
+    affiliated = models.BooleanField('convenzionato', default = False)
+    visible = models.BooleanField('visibile', default = True)
+    modified = models.DateField(auto_now = True)
+
+    class Meta:
+        ordering = [ 'name' ]
