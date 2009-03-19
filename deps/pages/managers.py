@@ -11,9 +11,12 @@ from pages import settings
 class PageManager(models.Manager):
 
     def on_site(self, site=None):
-        if hasattr(site, 'domain'):
-            return self.filter(**{'sites__domain__exact': site.domain})
+        # non mi servono i siti multipli, e cmq sites__domain__exact fa
+        # piu' danni che altro
         return self
+#        if hasattr(site, 'domain'):
+#            return self.filter(**{'sites__domain__exact': site.domain})
+#        return self
 
     def root(self, site=None):
         """
