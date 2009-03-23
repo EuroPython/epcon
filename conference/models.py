@@ -173,6 +173,37 @@ class SponsorIncome(models.Model):
     class Meta:
         ordering = ['conference']
 
+fs_mediapartner_logo, _mediapartner_logo_path = _build_fs_stuff('media-partner')
+
+class MediaPartner(models.Model):
+    """
+    I media partner sono degli sponsor che non pagano ma che offrono visibilità
+    di qualche tipo.
+    """
+    partner = models.CharField(max_length = 100, help_text = 'nome del media partner')
+    slug = models.SlugField()
+    url = models.URLField(verify_exists = False, blank = True)
+    logo = models.ImageField(
+        upload_to = _mediapartner_logo_path, blank = True, storage = fs_mediapartner_logo,
+        help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
+    )
+
+    class Meta:
+        ordering = ['partner']
+
+    def __unicode__(self):
+        return self.partner
+
+post_save.connect(postSaveSponsorHandler, sender=MediaPartner)
+
+class MediaPartnerConference(models.Model):
+    partner = models.ForeignKey(MediaPartner)
+    conference = models.CharField(max_length = 20)
+    tags = TagField()
+
+    class Meta:
+        ordering = ['conference']
+
 class Schedule(models.Model):
     """
     Direttamente dentro lo schedule abbiamo l'indicazione della conferenza,

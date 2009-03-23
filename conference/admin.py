@@ -185,6 +185,23 @@ class SponsorAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Sponsor, SponsorAdmin)
 
+class MediaPartnerConferenceInlineAdmin(admin.TabularInline):
+    model = models.MediaPartnerConference
+    extra = 1
+
+class MediaPartnerAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("partner",)}
+    list_display = ('partner', 'url', 'conferences')
+    inlines = [ MediaPartnerConferenceInlineAdmin ]
+
+    def conferences(self, obj):
+        """
+        Elenca le conferenze a cui il partner ha partecipato
+        """
+        return ', '.join(s.conference for s in obj.mediapartnerconference_set.all())
+
+admin.site.register(models.MediaPartner, MediaPartnerAdmin)
+
 class TrackInlineAdmin(admin.TabularInline):
     model = models.Track
     extra = 1
