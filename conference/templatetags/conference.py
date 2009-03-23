@@ -11,7 +11,7 @@ from django.utils.html import escape
 from conference import models
 from pages import models as PagesModels
 
-from tagging.models import Tag
+from tagging.models import Tag, TaggedItem
 
 mimetypes.init()
 
@@ -222,27 +222,34 @@ def conference_talks(parser, token):
     var_name = contents[-1]
     contents = contents[1:-2]
 
-    speaker = conference = None
+    speaker = conference = tags = None
     if contents:
         speaker = contents.pop(0)
     if contents:
         conference = contents.pop(0)
+    if contents:
+        tags = contents.pop(0)
+
     
     class TalksNode(TNode):
-        def __init__(self, speaker, conference, var_name):
+        def __init__(self, speaker, conference, tags, var_name):
             self.var_name = var_name
             self.speaker = self._set_var(speaker)
             self.conference = self._set_var(conference)
+            self.tags = self._set_var(tags)
         
         def render(self, context):
             talks = models.Talk.objects.all()
             speaker = self._get_var(self.speaker, context)
+            tags = self._get_var(self.tags, context)
             conference = self._get_var(self.conference, context)
             if speaker:
                 talks = talks.filter(speakers = speaker)
+            if tags:
+                talks = TaggedItem.objects.get_by_model(talks, tags)
             context[self.var_name] = talks
             return ''
-    return TalksNode(speaker, conference, var_name)
+    return TalksNode(speaker, conference, tags, var_name)
 
 @register.inclusion_tag('conference/render_schedule.html')
 def render_schedule(schedule):
