@@ -5,6 +5,7 @@ import os
 import os.path
 import re
 from django import template
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.html import escape
 
@@ -554,3 +555,45 @@ def render_page_template(parser, token):
                 return data
             
     return TemplateRenderer(arg, var_name)
+
+@register.tag
+def conference_multilingual_attribute(parser, token):
+    """
+    {% conference_multilingual_attribute object attribute [as var] %}
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    try:
+        instance, attribute = contents[1:3]
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    if contents[-2] == 'as':
+        var_name = contents[-1]
+    else:
+        var_name = None
+
+    class AttributeNode(TNode):
+        def __init__(self, instance, attribute, var_name):
+            self.var_name = var_name
+            self.instance = self._set_var(instance)
+            self.attribute = self._set_var(attribute)
+        
+        def render(self, context):
+            instance = self._get_var(self.instance, context)
+            attribute = self._get_var(self.attribute, context)
+            try:
+                query = getattr(instance, attribute)
+            except AttributeError:
+                return ''
+
+            try:
+                value = query.get(language = context['LANGUAGE_CODE'])
+            except ObjectDoesNotExist:
+                value = None
+            if self.var_name:
+                context[self.var_name] = value
+                return ''
+            else:
+                return value
+    return AttributeNode(instance, attribute, var_name)
+
