@@ -18,6 +18,16 @@ def talk(request, slug):
         'conference/talk.html', { 'talk': tlk },
         context_instance = RequestContext(request))
 
+def talk_report(request):
+    conference = request.GET.get('conference')
+    tags = request.GET.getlist('tag')
+    return render_to_response(
+        'conference/talk_report.html', {
+            'conference': conference,
+            'tags': tags,
+        },
+        context_instance = RequestContext(request))
+
 def schedule(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
     return render_to_response(
