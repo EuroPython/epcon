@@ -481,6 +481,37 @@ def conference_sponsor(parser, token):
     return SponsorNode(conference, var_name)
 
 @register.tag
+def conference_mediapartner(parser, token):
+    """
+    {% conference_mediapartner [ conference ] as var %}
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    contents = contents[1:-2]
+
+    conference = None
+    if contents:
+        conference = contents.pop(0)
+
+    class MediaPartnerNode(TNode):
+        def __init__(self, conference, var_name):
+            self.var_name = var_name
+            self.conference = self._set_var(conference)
+
+        def render(self, context):
+            partner = models.MediaPartner.objects.all()
+            conference = self._get_var(self.conference, context)
+            if conference:
+                partner = partner.filter(mediapartnerconference__conference = conference)
+            partner = partner.order_by('partner')
+            context[self.var_name] = partner
+            return ''
+    return MediaPartnerNode(conference, var_name)
+
+@register.tag
 def render_page_template(parser, token):
     contents = token.split_contents()
     try:
