@@ -8,6 +8,7 @@ def stuff(request):
     return {
         'STUFF_URL': stuff,
         'SPONSOR_LOGO_URL': '%ssponsor/' % stuff,
+        'MEDIAPARTNER_LOGO_URL': '%smedia-partner/' % stuff,
         'SPEAKER_FACE_URL': '%sspeaker/' % stuff,
         'SLIDE_FILE_URL': '%sslides/' % stuff,
     }
