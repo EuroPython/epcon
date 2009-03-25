@@ -1,9 +1,10 @@
+{% load i18n %}
 <table class="hotels">
     <thead>
         <tr>
-            <th>Nome</th>
-            <th>Posti liberi</th>
-            <th>Prezzo</th>
+            <th>{% trans "Nome" %}</th>
+            <th>{% trans "Posti liberi" %}</th>
+            <th>{% trans "Prezzo" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -28,12 +29,12 @@
         <tr class="note">
             <td colspan="3">
                 {% if h.affiliated %}
-                <p class="affiliated">
-                    Hotel convenzionato.<br />
-                    Specificare <strong>associazione Python Italia APS conferenza 08/05/09</strong>
-                </p>
+                <p class="affiliated">{% trans "affiliated" %}</p>
                 {% endif %}
                 {{ h.note|safe }}
+                <p class="last-contact">
+                    {% blocktrans with h.modified|date:"d F" as d %}Contattato il {{ d }}{% endblocktrans %}
+                </p>
             </td>
         </tr>
     {% endfor %}
