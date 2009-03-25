@@ -196,6 +196,10 @@ ul.archive > li {
     text-align: justify;
 }
 
+.hotels tr.note p {
+    margin: 5px 0;
+}
+
 .hotels td {
     border-bottom: 1px solid #ccc;
 }
@@ -203,3 +207,11 @@ ul.archive > li {
 .hotels .affiliated {
     background: #fe0;
 }
+
+.hotels .last-contact {
+    margin: 0 !important;
+    text-align: right;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
