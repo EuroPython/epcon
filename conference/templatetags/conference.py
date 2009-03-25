@@ -597,3 +597,38 @@ def conference_multilingual_attribute(parser, token):
                 return value
     return AttributeNode(instance, attribute, var_name)
 
+@register.tag
+def conference_hotels(parser, token):
+    """
+    {% conference_hotels as var %} 
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    try:
+        if contents[1] != 'as':
+            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+        var_name = contents[2]
+    except IndexError:
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+
+    class HotelsNode(TNode):
+        def __init__(self, var_name):
+            self.var_name = var_name
+        
+        def render(self, context):
+            query = models.Hotel.objects.filter(visible = True).order_by('-modified', 'name')
+            if self.var_name:
+                context[self.var_name] = query
+                return ''
+            else:
+                return value
+    return HotelsNode(var_name)
+
+@register.inclusion_tag('conference/render_hotels.html')
+def render_hotels(hotels):
+    """
+    {% render_schedule hotels %}
+    """
+    return {
+        'hotels': hotels,
+    }

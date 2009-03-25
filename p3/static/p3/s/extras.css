@@ -186,3 +186,20 @@ ul.archive > li {
     margin-bottom: 5px;
     float: left;
 }
+
+.hotels tr.info td {
+    background: #E5F4FF;
+}
+
+.hotels tr.note td {
+    padding: 5px 0 20px 20px;
+    text-align: justify;
+}
+
+.hotels td {
+    border-bottom: 1px solid #ccc;
+}
+
+.hotels .affiliated {
+    background: #fe0;
+}
