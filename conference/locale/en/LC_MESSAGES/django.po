@@ -31,7 +31,7 @@ msgstr "Price"
 #: templates/conference/render_hotels.html:32
 msgid "affiliated"
 msgstr ""
-"Affiliated hotel.<br />Please specify <strong>Python Italia association "
+"Affiliated hotel.<br />Please specify <strong>Python Italia "
 "conference of 08/05/09</strong>"
 
 #: templates/conference/render_hotels.html:36
