@@ -267,6 +267,7 @@ class Hotel(models.Model):
     """
     name = models.CharField('nome dell\'hotel', max_length = 100)
     telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
+    url = models.URLField(verify_exists = False, blank = True)
     email = models.EmailField('email', blank = True)
     availability = models.CharField('Disponibilità', max_length = 50, blank = True)
     price = models.CharField('Prezzo', max_length = 50, blank = True)
@@ -277,3 +278,4 @@ class Hotel(models.Model):
 
     class Meta:
         ordering = [ 'name' ]
+
