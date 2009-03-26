@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from os.path import join
 from django.conf import settings
 from django.forms import TextInput, Textarea
@@ -5,10 +6,10 @@ from django.utils.safestring import mark_safe
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-from pages.settings import PAGES_MEDIA_URL
-from pages.models import Page, tagging
+from pages.settings import PAGES_MEDIA_URL, PAGE_TAGGING
+from pages.models import Page
 
-if tagging:
+if PAGE_TAGGING:
     from tagging.models import Tag
     from django.utils import simplejson
 
@@ -55,7 +56,32 @@ class RichTextarea(Textarea):
         return rendered + mark_safe(render_to_string(
             'admin/pages/page/widgets/richtextarea.html', context))
 
+class TinyMCE(Textarea):
+
+    class Media:
+        js = [join(PAGES_MEDIA_URL, path) for path in (
+            'tiny_mce/tiny_mce.js',
+        )]
+
+    def __init__(self, language=None, attrs=None):
+        self.language = language or settings.LANGUAGE_CODE[:2]
+        self.attrs = {'class': 'tinymce'}
+        if attrs:
+            self.attrs.update(attrs)
+        super(TinyMCE, self).__init__(attrs)
+
+    def render(self, name, value, attrs=None):
+        rendered = super(TinyMCE, self).render(name, value, attrs)
+        context = {
+            'name': name,
+            'language': self.language,
+            'PAGES_MEDIA_URL': PAGES_MEDIA_URL,
+        }
+        return rendered + mark_safe(render_to_string(
+            'admin/pages/page/widgets/tinymce.html', context))
+
 class WYMEditor(Textarea):
+
     class Media:
         js = [join(PAGES_MEDIA_URL, path) for path in (
             'javascript/jquery.js',
@@ -73,6 +99,7 @@ class WYMEditor(Textarea):
     def render(self, name, value, attrs=None):
         rendered = super(WYMEditor, self).render(name, value, attrs)
         context = {
+            'page_list':Page.objects.all().order_by('tree_id'),
             'name': name,
             'language': self.language,
             'PAGES_MEDIA_URL': PAGES_MEDIA_URL,

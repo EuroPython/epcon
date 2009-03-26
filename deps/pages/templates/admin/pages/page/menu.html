@@ -1,17 +1,19 @@
-{% load pages_tags i18n adminmedia %}
+{% load pages_tags i18n adminmedia cache %}
 
 {% if has_permission %}
-<tr id="page-row-{{ page.id }}" class="child-of-{{ page.parent.id }}">
-<td {% if level %}style="padding-left:{{level}}em"{% endif %}>
-    <span id="move-target-{{ page.id }}" class="move-target-container" style="display:none;float:right">
-        <a href="#" class="move-target left"><img alt="" src="{% admin_media_prefix %}img/admin/arrow-up.gif"/></a> |
-        <a href="#" class="move-target right"><img alt="" src="{% admin_media_prefix %}img/admin/arrow-down.gif"/></a></a> |
-        <a href="#" class="move-target first-child">↘</a>
+<tr id="page-row-{{ page.id }}" class="child-of-{{ page.parent_id }}">
+<td style="padding-left:{{ page.margin_level }}em">
+    <span id="move-target-{{ page.id }}" class="move-target-container">
+        <a href="#" class="move-target left" title="{% trans "as left sibling"%}"><img alt="" src="{% admin_media_prefix %}img/admin/arrow-up.gif"/></a> |
+        <a href="#" class="move-target right" title="{% trans "as right sibling"%}"><img alt="" src="{% admin_media_prefix %}img/admin/arrow-down.gif"/></a></a> |
+        <a href="#" class="move-target first-child" title="{% trans "as child"%}">↘</a>
     </span>
-    <a href="#" {% ifequal 0 page.children.all.count %}style="display: none"{% endifequal %} id="c{{ page.id }}" class="collapse">
-        <span class="collapsed">+</span>
-        <span>-</span>
+    {% if page.children.count %}
+    <a href="#" class="expand-collapse {% if expanded %}expanded{% endif %}" id="c{{ page.id }}">
+        <span class="expand">+</span>
+        <span class="collapse">-</span>
     </a>
+    {% endif %} 
     <a href="{{ url }}{{ page.id }}/" class="changelink" style="margin-right:1em;">{% show_content page "slug" %}</a>
 </td>
 <td>
@@ -40,16 +42,18 @@
 {% endifequal %}
 </td>
 <td>
-{{ page.get_template }}
+    {{ page.get_template }}
 </td>
 <td>
-{% firstof page.author.get_full_name page.author.first_name page.author.username %}
+{% cache 10000 page_author page.author_id %}
+    {% firstof page.author.get_full_name page.author.first_name page.author.username %}
+{% endcache %}
 </td>
 </tr>
 {% endif %}
 
-{% if children.count %}
-{% for child in children %}
-    {% pages_admin_menu child url level %}
-{% endfor %}
+{% if expanded %}
+    {% for child in page.children.all %}
+        {% pages_admin_menu child url level %}
+    {% endfor %}
 {% endif %}

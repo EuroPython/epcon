@@ -1,28 +1,27 @@
+# -*- coding: utf-8 -*-
 import itertools
 from datetime import datetime
-
-from django.db import models
+from django.db import models, connection
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db.models import Q
-
+from django.core.cache import cache
 from pages import settings
 
 class PageManager(models.Manager):
-
-    def on_site(self, site=None):
-        # non mi servono i siti multipli, e cmq sites__domain__exact fa
-        # piu' danni che altro
+    
+    def on_site(self, site_id=None):
+        if settings.PAGE_USE_SITE_ID:
+            if not site_id:
+                site_id = settings.SITE_ID
+            return self.filter(sites=site_id)
         return self
-#        if hasattr(site, 'domain'):
-#            return self.filter(**{'sites__domain__exact': site.domain})
-#        return self
 
-    def root(self, site=None):
+    def root(self):
         """
         Return a queryset with pages that don't have parents, a.k.a. root.
         """
-        return self.on_site(site).filter(parent__isnull=True)
+        return self.filter(parent__isnull=True)
 
     def valid_targets(self, page_id, request, perms, page=None):
         """
@@ -40,36 +39,40 @@ class PageManager(models.Manager):
         else:
             return self.exclude(id__in=exclude_list)
 
-    def navigation(self, site=None):
-        return self.root(site).filter(status=self.model.PUBLISHED)
+    def navigation(self):
+        return self.on_site().filter(status=self.model.PUBLISHED).filter(parent__isnull=True)
 
-    def hidden(self, site=None):
-        return self.on_site(site).filter(status=self.model.HIDDEN)
+    def hidden(self):
+        return self.on_site().filter(status=self.model.HIDDEN)
 
-    def published(self, site=None):
-        pub = itertools.chain(
-            self.on_site(site).filter(status=self.model.PUBLISHED),
-            self.hidden(site)
-        )
+    def filter_published(self, queryset):
+        """Resuable filter for published page"""
+        if settings.PAGE_USE_SITE_ID:
+            queryset = queryset.filter(sites=settings.SITE_ID)
+
+        queryset = queryset.filter(status=self.model.PUBLISHED)
 
         if settings.PAGE_SHOW_START_DATE:
-            pub = pub.filter(publication_date__lte=datetime.now())
+            queryset = queryset.filter(publication_date__lte=datetime.now())
 
         if settings.PAGE_SHOW_END_DATE:
-            pub = pub.filter(
+            queryset = queryset.filter(
                 Q(publication_end_date__gt=datetime.now()) |
                 Q(publication_end_date__isnull=True)
             )
-        return pub
+        return queryset
 
-    def drafts(self, site=None):
-        pub = self.on_site(site).filter(status=self.model.DRAFT)
+    def published(self):
+        return self.filter_published(self)
+
+    def drafts(self):
+        pub = self.on_site().filter(status=self.model.DRAFT)
         if settings.PAGE_SHOW_START_DATE:
             pub = pub.filter(publication_date__gte=datetime.now())
         return pub
 
-    def expired(self, site=None):
-        return self.on_site(site).filter(
+    def expired(self):
+        return self.on_site().filter(
             publication_end_date__lte=datetime.now())
 
 class ContentManager(models.Manager):
@@ -115,43 +118,63 @@ class ContentManager(models.Manager):
             pass
         content = self.create(page=page, language=language, body=body, type=cnttype)
 
-    def get_content(self, page, language, cnttype, language_fallback=False,
-            latest_by='creation_date'):
+    def get_content(self, page, language, ctype, language_fallback=False):
         """
         Gets the latest content for a particular page and language. Falls back
         to another language if wanted.
         """
-        try:
-            content = self.filter(language=language, page=page,
-                                        type=cnttype).latest(latest_by)
-            return content.body
-        except self.model.DoesNotExist:
-            pass
-        if language_fallback:
-            try:
-                content = self.filter(page=page, type=cnttype).latest(latest_by)
-                return content.body
-            except self.model.DoesNotExist:
-                pass
-        return None
+        PAGE_CONTENT_DICT_KEY = "page_content_dict_%d_%s"
+        if not language:
+            language = settings.PAGE_DEFAULT_LANGUAGE
 
-    def get_page_slug(self, slug, site=None, latest_by='creation_date'):
+        content_dict = cache.get(PAGE_CONTENT_DICT_KEY % (page.id, ctype))
+        #content_dict = None
+
+        if not content_dict:
+            content_dict = {}
+            for lang in settings.PAGE_LANGUAGES:
+                try:
+                    content = self.filter(language=lang[0], type=ctype, page=page).latest()
+                    content_dict[lang[0]] = content.body
+                except self.model.DoesNotExist:
+                    content_dict[lang[0]] = ''
+            cache.set(PAGE_CONTENT_DICT_KEY % (page.id, ctype), content_dict)
+        
+        if content_dict[language]:
+            return content_dict[language]
+
+        if language_fallback:
+            for lang in settings.PAGE_LANGUAGES:
+                if content_dict[lang[0]]:
+                    return content_dict[lang[0]]
+        return ''
+
+    def get_content_slug_by_slug(self, slug):
         """
-        Returns the latest slug for the given slug and checks if it's available 
-        on the current site.
+        Returns the latest Content slug object that match the given slug for
+        the current site domain.
         """
-        if not site:
-            site = Site.objects.get_current()
+        content = self.filter(type='slug', body=slug)
+        if settings.PAGE_USE_SITE_ID:
+            content = content.filter(page__sites__id=settings.SITE_ID)
         try:
-            content = self.filter(
-                type='slug',
-                body=slug,
-                page__sites__domain=site.domain,
-            ).select_related('page').latest(latest_by)
+           content = content.latest('creation_date')
         except self.model.DoesNotExist:
             return None
         else:
             return content
+
+    def get_page_ids_by_slug(self, slug):
+        """
+        Return all the page id according to a slug
+        """
+        sql = '''SELECT pages_content.page_id, MAX(pages_content.creation_date)
+            FROM pages_content WHERE (pages_content.type = %s AND pages_content.body =%s)
+            GROUP BY pages_content.page_id'''
+            
+        cursor = connection.cursor()
+        cursor.execute(sql, ('slug', slug, ))
+        return [c[0] for c in cursor.fetchall()]
 
 class PagePermissionManager(models.Manager):
     

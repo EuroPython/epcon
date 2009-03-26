@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 from django import template
-from django.core.cache import cache
 from django.utils.safestring import SafeUnicode, mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.template import Template, TemplateSyntaxError
 from django.conf import settings as global_settings
+import urllib
 
 from pages import settings
 from pages.models import Content, Page
@@ -13,16 +14,12 @@ register = template.Library()
 
 PLACEHOLDER_ERROR = _("[Placeholder %(name)s had syntax error: %(error)s]")
 
-def get_page_children_for_site(page, site):
-    return page.get_children().filter(sites__domain=site.domain)
-
 def pages_menu(context, page, url='/'):
     """render a nested list of all children of the pages"""
     request = context['request']
-    site = request.site
-    children = get_page_children_for_site(page, site)
+    site_id = None
+    children = page.get_children_for_frontend()
     PAGE_CONTENT_CACHE_DURATION = settings.PAGE_CONTENT_CACHE_DURATION
-    lang = get_language_from_request(request)
     if 'current_page' in context:
         current_page = context['current_page']
     return locals()
@@ -34,8 +31,7 @@ def pages_sub_menu(context, page, url='/'):
     render a nested list of all root's children pages"""
     root = page.get_root()
     request = context['request']
-    site = request.site
-    children = get_page_children_for_site(page, site)
+    children = page.get_children_for_frontend()
     if 'current_page' in context:
         current_page = context['current_page']
     return locals()
@@ -45,15 +41,16 @@ pages_sub_menu = register.inclusion_tag('pages/sub_menu.html',
 def pages_admin_menu(context, page, url='/admin/pages/page/', level=None):
     """Render the admin table of pages"""
     request = context['request']
-    site = request.site
-    children = get_page_children_for_site(page, site)
+    
+    if "tree_expanded" in request.COOKIES:
+        cookie_string = urllib.unquote(request.COOKIES['tree_expanded'])
+        if cookie_string:
+            ids = [int(id) for id in urllib.unquote(request.COOKIES['tree_expanded']).split(',')]
+            if page.id in ids:
+                expanded = True
+    
     has_permission = page.has_page_permission(request)
-    # level is used to add a left margin on table row
-    if has_permission:
-        if level is None:
-            level = 0
-        else:
-            level = level+3
+
     return locals()
 pages_admin_menu = register.inclusion_tag('admin/pages/page/menu.html',
                                           takes_context=True)(pages_admin_menu)
@@ -61,6 +58,28 @@ pages_admin_menu = register.inclusion_tag('admin/pages/page/menu.html',
 def has_permission(page, request):
     return page.has_page_permission(request)
 register.filter(has_permission)
+
+def get_content(context, page, content_type, lang):
+    request = context.get('request', False)
+    if not request or not page:
+        return ''
+    if lang is None:
+        if 'lang' in context:
+            lang = context['lang']
+        else:
+            lang = get_language_from_request(context['request'], page)
+
+    # if the page is a SafeUnicode, try to use it like a slug
+    if isinstance(page, SafeUnicode):
+        c = Content.objects.filter(type='slug', lang=lang, body=page)
+        if len(c):
+            page = c[0].page
+        else:
+            ''
+    c = Content.objects.get_content(page, lang, content_type, True)
+    if c:
+        return c
+    return ''
 
 def show_content(context, page, content_type, lang=None):
     """Display a content type from a page.
@@ -76,31 +95,58 @@ def show_content(context, page, content_type, lang=None):
     args -- content_type used by a placeholder
     lang -- the wanted language (default None, use the request object to know)
     """
-    request = context.get('request', False)
-    if not request or not page:
-        return {'content':''}
-    # if the page is a SafeUnicode, try to use it like a slug
-    if isinstance(page, SafeUnicode):
-        c = Content.objects.filter(type='slug', body=page)
-        if len(c):
-            page = c[0].page
-        else:
-            return {'content':''}
-    if lang is None:
-        lang = get_language_from_request(context['request'])
-    if hasattr(settings, 'PAGE_CONTENT_CACHE_DURATION'):
-        key = 'content_cache_pid:'+str(page.id)+'_l:'+str(lang)+'_type:'+str(content_type)
-        c = cache.get(key)
-        if not c:
-            c = Content.objects.get_content(page, lang, content_type, True)
-            cache.set(key, c, settings.PAGE_CONTENT_CACHE_DURATION)
-    else:
-        c = Content.objects.get_content(page, lang, content_type, True)
-    if c:
-        return {'content':c}
-    return {'content':''}
+    return {'content':get_content(context, page, content_type, lang)}
 show_content = register.inclusion_tag('pages/content.html',
                                       takes_context=True)(show_content)
+
+class GetContentNode(template.Node):
+    def __init__(self, page, content_type, varname, lang):
+        self.page = page
+        self.content_type = content_type
+        self.varname = varname
+        self.lang = lang
+    def render(self, context):
+        if self.lang is None:
+            lang = None
+        else:
+            lang = self.lang.resolve(context)
+        context[self.varname] = get_content(context,
+            self.page.resolve(context),
+            self.content_type.resolve(context),
+            lang)
+        return ''
+
+def do_get_content(parser, token):
+    """Store a content type from a page into a context variable.
+
+    eg: {% get_content page_object "title" as content %}
+
+    You can also use the slug of a page
+
+    eg: {% get_content "my-page-slug" "title" as content %}
+
+    Syntax: {% get_content page type [lang] as name %}
+    Arguments:
+    page -- the page object
+    type -- content_type used by a placeholder
+    name -- name of the context variable to store the content in
+    lang -- the wanted language (default None, use the request object to know)
+    """
+    bits = token.split_contents()
+    if not 5 <= len(bits) <= 6:
+        raise TemplateSyntaxError('%r expects 4 or 5 arguments' % bits[0])
+    if bits[-2] != 'as':
+        raise TemplateSyntaxError(
+            '%r expects "as" as the second last argument' % bits[0])
+    page = parser.compile_filter(bits[1])
+    content_type = parser.compile_filter(bits[2])
+    varname = bits[-1]
+    lang = None
+    if len(bits) == 6:
+        lang = parser.compile_filter(bits[3])
+    return GetContentNode(page, content_type, varname, lang)
+do_get_content = register.tag('get_content', do_get_content)
+ 
 
 def show_absolute_url(context, page, lang=None):
     """Show the url of a page in the right language
@@ -118,23 +164,15 @@ def show_absolute_url(context, page, lang=None):
     request = context.get('request', False)
     # if the page is a SafeUnicode, try to use it like a slug
     if isinstance(page, SafeUnicode):
-        c = Content.objects.filter(type='slug', body=page)
-        if len(c):
-            page = c[0].page
-        else:
-            page = None
+        page = get_page_from_slug(slug, request)
     if not request or not page:
         return {'content':''}
     if lang is None:
-        lang = get_language_from_request(context['request'])
-    if hasattr(settings, 'PAGE_CONTENT_CACHE_DURATION'):
-        key = 'page_url_pid:'+str(page.id)+'_l:'+str(lang)+'_type:absolute_url'
-        url = cache.get(key)
-        if not url:
-            url = page.get_absolute_url(language=lang)
-            cache.set(key, url, settings.PAGE_CONTENT_CACHE_DURATION)
-    else:
-        url = page.get_absolute_url(language=lang)
+        if 'lang' in context:
+            lang = context['lang']
+        else:
+            lang = get_language_from_request(context['request'], page)
+    url = page.get_absolute_url(language=lang)
     if url:
         return {'content':url}
     return {'content':''}
@@ -291,9 +329,13 @@ class PlaceholderNode(template.Node):
     def render(self, context):
         if not 'request' in context or not self.page in context:
             return ''
-        language = get_language_from_request(context['request'])
+
+        if 'lang' in context:
+            lang = context['lang']
+        else:
+            lang = get_language_from_request(context['request'], context[self.page])
         request = context['request']
-        content = Content.objects.get_content(context[self.page], language,
+        content = Content.objects.get_content(context[self.page], lang,
                                               self.name, True)
         if not content:
             return ''

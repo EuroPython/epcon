@@ -83,7 +83,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'pages.middleware.CurrentSiteMiddleware',
 )
 
 ROOT_URLCONF = 'pycon_site.urls'
@@ -115,6 +114,7 @@ INSTALLED_APPS = (
 #AKISMET_KEY = '56c34997206c'
 #FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
 
+PAGE_USE_SITE_ID = False
 DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
 
 PAGE_TEMPLATES = (
@@ -124,7 +124,9 @@ PAGE_TEMPLATES = (
     ('p3/content-assopy.html', 'assopy page (una colonna)'),
 )
 
-PAGE_UNIQUE_SLUG_REQUIRED = True
+PAGE_DEFAULT_LANGUAGE = 'it'
+
+PAGE_UNIQUE_SLUG_REQUIRED = False
 
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconItalia blog'

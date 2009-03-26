@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from os.path import join
 from inspect import isclass, getmembers
 
@@ -11,28 +12,33 @@ from django.http import HttpResponseRedirect
 from django.contrib.admin.util import unquote
 
 from pages import settings
-from pages.models import Page, Content, tagging
-from pages.views import details
+from pages.models import Page, Content
 from pages.utils import get_template_from_request, has_page_add_permission, \
     get_language_from_request
 
 from pages.admin import widgets
+from pages.utils import get_placeholders
 from pages.admin.forms import PageForm
-from pages.admin.utils import get_placeholders
-from pages.admin.views import traduction, get_content, valid_targets_list, \
+from pages.admin.utils import get_connected_models
+from pages.admin.views import traduction, get_content, sub_menu, \
     change_status, modify_content
 
 class PageAdmin(admin.ModelAdmin):
+
     form = PageForm
     exclude = ['author', 'parent']
     # these mandatory fields are not versioned
     mandatory_placeholders = ('title', 'slug')
-    general_fields = ['title', 'slug', 'status', 'sites']
+    general_fields = ['title', 'slug', 'status', 'target', 'position']
+
+    # TODO: find solution to do this dynamically
+    #if getattr(settings, 'PAGE_USE_SITE_ID'):
+    general_fields.append('sites')
     insert_point = general_fields.index('status') + 1
-    
+
     if settings.PAGE_TAGGING:
         general_fields.insert(insert_point, 'tags')
-    
+
     # Add support for future dating and expiration based on settings.
     if settings.PAGE_SHOW_END_DATE:
         general_fields.insert(insert_point, 'publication_end_date')
@@ -54,7 +60,7 @@ class PageAdmin(admin.ModelAdmin):
             'description': _('Note: This page reloads if you change the selection'),
         }),
     )
-        
+
     class Media:
         css = {
             'all': [join(settings.PAGES_MEDIA_URL, path) for path in (
@@ -85,8 +91,8 @@ class PageAdmin(admin.ModelAdmin):
             page_id, action, content_id, language_id = url.split('/')
             return modify_content(request, unquote(page_id),
                                     unquote(content_id), unquote(language_id))
-        elif url.endswith('/valid-targets-list'):
-            return valid_targets_list(request, unquote(url[:-19]))
+        elif url.endswith('/sub-menu'):
+            return sub_menu(request, unquote(url[:-9]))
         elif url.endswith('/move-page'):
             return self.move_page(request, unquote(url[:-10]))
         elif url.endswith('/change-status'):
@@ -108,26 +114,29 @@ class PageAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         """
-        Move the page in the tree if neccesary and save every placeholder
+        Move the page in the tree if necessary and save every placeholder
         Content object.
         """
-        obj.save()
+
         language = form.cleaned_data['language']
-        target = request.GET.get('target', None)
-        position = request.GET.get('position', None)
-        if target is not None and position is not None:
+        target = form.data.get('target', None)
+        position = form.data.get('position', None)
+        obj.save()
+
+        if target and position:
             try:
                 target = self.model.objects.get(pk=target)
             except self.model.DoesNotExist:
                 pass
             else:
+                target.invalidate()
                 obj.move_to(target, position)
 
         for mandatory_placeholder in self.mandatory_placeholders:
             Content.objects.set_or_create_content(obj, language,
                 mandatory_placeholder, form.cleaned_data[mandatory_placeholder])
 
-        for placeholder in get_placeholders(request, obj.get_template()):
+        for placeholder in get_placeholders(obj.get_template()):
             if placeholder.name in form.cleaned_data:
                 if change:
                     if placeholder.name not in self.mandatory_placeholders:
@@ -143,23 +152,36 @@ class PageAdmin(admin.ModelAdmin):
                     Content.objects.set_or_create_content(obj, language,
                         placeholder.name, form.cleaned_data[placeholder.name])
 
+        obj.invalidate()
+
     def get_fieldsets(self, request, obj=None):
         """
         Add fieldsets of placeholders to the list of already existing
         fieldsets.
-        """
+         """
+        additional_fieldsets = []
+
         placeholder_fieldsets = []
         template = get_template_from_request(request, obj)
-        for placeholder in get_placeholders(request, template):
+        for placeholder in get_placeholders(template):
             if placeholder.name not in self.mandatory_placeholders:
                 placeholder_fieldsets.append(placeholder.name)
 
-        if self.declared_fieldsets:
-            given_fieldsets = list(self.declared_fieldsets)
-        else:
-            form = self.get_form(request, obj)
-            given_fieldsets = [(_('content'), {'fields': form.base_fields.keys()})]
-        return given_fieldsets + [(_('content'), {'fields': placeholder_fieldsets})]
+        additional_fieldsets.append((_('Content'), {'fields': placeholder_fieldsets}))
+
+        # deactived for now, create bugs with page with same slug title
+        connected_fieldsets = []
+        if obj:
+            for mod in get_connected_models():
+                for field_name, real_field_name, field in mod['fields']:
+                    connected_fieldsets.append(field_name)
+
+                additional_fieldsets.append((_('Create a new linked ' +
+                    mod['model_name']), {'fields': connected_fieldsets}))
+
+        given_fieldsets = list(self.declared_fieldsets)
+
+        return given_fieldsets + additional_fieldsets
 
     def save_form(self, request, form, change):
         """
@@ -172,14 +194,19 @@ class PageAdmin(admin.ModelAdmin):
             instance.author = request.user
         return instance
 
-    def get_widget(self, request, name):
+    def get_widget(self, request, name, fallback=Textarea):
         """
         Given the request and name of a placeholder return a Widget subclass
         like Textarea or TextInput.
         """
-        widget = dict(getmembers(widgets, isclass)).get(name, Textarea)
+        if name and '.' in name:
+            module_name, class_name = name.rsplit('.', 1)
+            module = __import__(module_name, {}, {}, [class_name])
+            widget = getattr(module, class_name, fallback)
+        else:
+            widget = dict(getmembers(widgets, isclass)).get(name, fallback)
         if not isinstance(widget(), Widget):
-            widget = Textarea
+            widget = fallback
         return widget
 
     def get_form(self, request, obj=None, **kwargs):
@@ -190,7 +217,7 @@ class PageAdmin(admin.ModelAdmin):
         form = super(PageAdmin, self).get_form(request, obj, **kwargs)
 
         language = get_language_from_request(request, obj)
-        form.base_fields['language'].initial = force_unicode(language)
+        form.base_fields['language'].initial = language
         if obj:
             initial_slug = obj.slug(language=language, fallback=False)
             initial_title = obj.title(language=language, fallback=False)
@@ -205,7 +232,32 @@ class PageAdmin(admin.ModelAdmin):
             form.base_fields['template'].choices = template_choices
             form.base_fields['template'].initial = force_unicode(template)
 
-        for placeholder in get_placeholders(request, template):
+        # handle most of the logic of connected models
+
+        if obj:
+            for mod in get_connected_models():
+                model = mod['model']
+                attributes = {'page': obj.id}
+                validate_field = True
+
+                if request.POST:
+                    for field_name, real_field_name, field in mod['fields']:
+                        if field_name in request.POST and request.POST[field_name]:
+                            attributes[real_field_name] = request.POST[field_name]
+
+                    if len(attributes) > 1:
+                        connected_form = mod['form'](attributes)
+                        if connected_form.is_valid():
+                            connected_form.save()
+                    else:
+                        validate_field = False
+
+                for field_name, real_field_name, field in mod['fields']:
+                    form.base_fields[field_name] = field
+                    if not validate_field:
+                        form.base_fields[field_name].required = False
+
+        for placeholder in get_placeholders(template):
             widget = self.get_widget(request, placeholder.widget)()
             if placeholder.parsed:
                 help_text = _('Note: This field is evaluated as template code.')
@@ -222,6 +274,7 @@ class PageAdmin(admin.ModelAdmin):
             else:
                 form.base_fields[name].initial = initial
                 form.base_fields[name].help_text = help_text
+
         return form
 
     def change_view(self, request, object_id, extra_context=None):
@@ -238,7 +291,7 @@ class PageAdmin(admin.ModelAdmin):
         else:
             template = get_template_from_request(request, obj)
             extra_context = {
-                'placeholders': get_placeholders(request, template),
+                'placeholders': get_placeholders(template),
                 'language': get_language_from_request(request),
                 'traduction_language': settings.PAGE_LANGUAGES,
                 'page': obj,
@@ -293,7 +346,6 @@ class PageAdmin(admin.ModelAdmin):
         """
         Move the page to the requested target, at the given position
         """
-        context = {}
         page = Page.objects.get(pk=page_id)
 
         target = request.POST.get('target', None)
@@ -302,13 +354,18 @@ class PageAdmin(admin.ModelAdmin):
             try:
                 target = self.model.objects.get(pk=target)
             except self.model.DoesNotExist:
-                context.update({'error': _('Page could not been moved.')})
+                pass
+                # TODO: should use the django message system
+                # to display this message
+                # _('Page could not been moved.')
             else:
+                page.invalidate()
+                target.invalidate()
                 page.move_to(target, position)
                 return self.list_pages(request,
                     template_name='admin/pages/page/change_list_table.html')
-        context.update(extra_context or {})
         return HttpResponseRedirect('../../')
+
 admin.site.register(Page, PageAdmin)
 
 class ContentAdmin(admin.ModelAdmin):

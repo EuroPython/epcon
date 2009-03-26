@@ -1,5 +1,4 @@
 {% load mptt_tags %}
-{% full_tree_for_model pages.Page as pages %}
 <script type="text/javascript">
     jQuery('#id_{{ name }}').wymeditor({
         lang: '{{ language }}',
@@ -37,8 +36,8 @@
                  + "<div class='row'>"
                  + "<label>Page</label>"
                  + "<select class='wym_select_page_link'>"
-                 {% for page in pages %}
-                 + "<option value='{{ page.get_absolute_url }}'>{{ page.get_ancestors|tree_path:" > " }}{% if page.get_ancestors %} > {% endif %}{{ page }}</option>"
+                 {% for page in page_list %}
+                 + "<option value='{{ page.get_absolute_url }}'>{{ page.with_level }}</option>"
                  {% endfor %}
                  + "</select>"
                  + "</div>"
@@ -73,6 +72,6 @@
                     wym.insert('<a href="' + href + '" title="' + title + '">' + title + '</a>');
                     wdw.close();
                 });
-        },
+        }
     });
     </script>

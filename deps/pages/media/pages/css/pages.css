@@ -4,8 +4,17 @@
     padding-left:1.5em;
 }
 
-.change-list .table-selected tr {
-    background:#ffffd0;
+.change-list .move-target-container{
+    display:none;
+    float:right;
+}
+
+.change-list .table-selected .move-target-container{
+    display:block;
+}
+
+.change-list .table-selected .selected .move-target-container{
+    display:none;
 }
 
 .change-list tr.selected {
@@ -14,6 +23,11 @@
 
 .change-list table tr.target {
     background:#fff;
+}
+
+.change-list table td input{
+    margin-top:-1px;
+    margin-bottom:1px;
 }
 
 .placeholder-row textarea, .placeholder-row input {
@@ -46,26 +60,36 @@
     overflow:hidden;
 }
 
-a.collapse span{
+.expand-collapse span{
     font-family: monospace;
+    font-size:16px;
+    margin:2px 4px;
 }
 
-a.collapse span.collapsed{
+.expand-collapse .collapse {
     display: none;
 }
 
-a.collapsed span{
-    display: none;
-}
-
-a.collapsed span.collapsed{
+.expand-collapse .expand {
     display: inline;
 }
 
+.expanded .collapse {
+    display: inline;
+}
+
+.expanded .expand {
+    display: none;
+}
+
 .sidebar {
-    width: 30em;
+    width: 24em;
     float: left;
     margin-right: 1em;
+}
+
+.sidebar div.description {
+    margin: 5px;
 }
 
 .clear {
