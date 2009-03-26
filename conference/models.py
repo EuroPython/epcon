@@ -111,6 +111,7 @@ fs_slides, _talk_slides_path = _build_fs_stuff('slides')
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length = 100)
     slug = models.SlugField()
+    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
     speakers = models.ManyToManyField(Speaker)
     duration = models.IntegerField(choices = TALK_DURATION)
     language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
