@@ -151,7 +151,9 @@ class TalkAdminForm(forms.ModelForm):
 
 class TalkAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("title",)}
-    list_display = ('title', '_speakers', '_slides', '_video')
+    list_display = ('title', 'conference', '_speakers', 'duration', '_slides', '_video')
+    list_filter = ('conference', )
+    search_fields = ('title',)
 
     form = TalkAdminForm
     
