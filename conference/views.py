@@ -84,6 +84,7 @@ def talk_admin_upload(request):
     for tlk in tree.findall('talk'):
         T = {
             'title': tlk.find('title').text,
+            'conference': tlk.find('conference').text,
             'duration': int(tlk.find('duration').text),
             'language': 'en' if (tlk.find('language').text or '').startswith('en') else 'it',
             'tags': tlk.find('tags').text or '',
@@ -99,6 +100,7 @@ def talk_admin_upload(request):
             talk = models.Talk()
             talk.title = T['title']
             talk.slug = T['slug']
+        talk.conference = T['conference']
         talk.duration = T['duration']
         talk.language = T['language']
         abstracts = dict((b.language, b) for b in talk.abstracts.all())
