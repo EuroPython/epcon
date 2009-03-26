@@ -124,7 +124,7 @@ class Talk(models.Model):
         ordering = ['title']
 
     def __unicode__(self):
-        return self.title
+        return '%s [%s]' % (self.title, self.conference)
 
     @models.permalink
     def get_absolute_url(self):
