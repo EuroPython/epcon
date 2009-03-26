@@ -210,7 +210,7 @@ class TrackInlineAdmin(admin.TabularInline):
 
 class EventInlineAdmin(admin.TabularInline):
     model = models.Event
-    extra = 2
+    extra = 3
 
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('conference', 'slug', 'date')
