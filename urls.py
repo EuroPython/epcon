@@ -1,4 +1,3 @@
-import conference.monkeypatch
 from django.conf.urls.defaults import *
 from django.conf import settings
 
@@ -9,14 +8,15 @@ admin.autodiscover()
 import pages.urls
 
 urlpatterns = patterns('',
-    (r'^$', 'p3.views.root'),
+    #(r'^$', 'p3.views.root'),
     (r'^pycon3/assopy/$', 'conference.views.genro_wrapper'),
     #(r'^pycon3/__assopy-dev/$', 'conference.views.genro_wrapper'),
     (r'^admin/(.*)', admin.site.root),
     (r'^blog/', include('microblog.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
-    (r'^pycon3/', include('pages.urls')),
+    #(r'^pycon3/', include('pages.urls')),
     (r'^conference/', include('conference.urls')),
+    (r'', include('conference.pages_urls')),
 )
 
 if settings.DEBUG:
