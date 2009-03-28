@@ -25,7 +25,6 @@ def get_page_ids_by_slug(slug, parents=None):
         '''
         sql = sql % ','.join(map(str, parents))
         
-    print sql, slug
     cursor = connection.cursor()
     cursor.execute(sql, (slug, ))
     return [(c[0], c[1]) for c in cursor.fetchall()]
@@ -71,7 +70,6 @@ def details(request, slug=None, lang=None):
     if not current_page:
         raise Http404
     elif isinstance(current_page, basestring):
-        print 'fooooooo', current_page
         return HttpResponseRedirect(current_page)
 
     if not current_page.calculated_status in (Page.PUBLISHED, Page.HIDDEN):
