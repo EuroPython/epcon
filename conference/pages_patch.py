@@ -2,7 +2,7 @@
 import pages.utils
 from pages import settings
 from django.db import models, connection
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 
 def get_page_ids_by_slug(slug, parents=None):
     """
