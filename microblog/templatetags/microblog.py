@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import re
 from django import template
 from django.conf import settings
+from django.contrib.sites.models import Site
 from microblog import models
 
 register = template.Library()
@@ -82,10 +83,11 @@ def show_post_detail(context, content, options=None):
 @register.inclusion_tag('microblog/show_social_networks.html', takes_context=True)
 def show_social_networks(context, content):
     request = context['request']
+    site = Site.objects.get_current()
     return {
         'post': content.post,
         'content': content,
-        'content_url': 'http://%s%s' % (request.site.domain, content.get_absolute_url()),
+        'content_url': 'http://%s%s' % (site.domain, content.get_absolute_url()),
         'MEDIA_URL': context['MEDIA_URL'],
         'request': request,
     }
