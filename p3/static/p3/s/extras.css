@@ -215,3 +215,9 @@ ul.archive > li {
     font-style: italic;
 }
 
+.welcome-non-italian {
+    text-align: center;
+    font-size: 120%;
+    position: relative;
+    top: -30px;
+}
