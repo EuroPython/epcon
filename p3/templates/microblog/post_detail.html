@@ -1,6 +1,7 @@
 {% extends "p3/content.html" %}
 {% load microblog %}
 
+{% block PAGE_TITLE %}{{ content.headline }} &mdash; {% endblock %}
 {% block PAGE_ENTRY %}
     <div id="page">
       {% show_post_detail content %}
