@@ -1,11 +1,15 @@
 {% extends "p3/content.html" %}
+{% load conference %}
 {% block PAGE_TITLE %}{{ speaker.name }} &mdash; {% endblock %}
 {% block PAGE_ENTRY %}
 <div id="page">                        
     <div id="page-title">
         <h1>{{ speaker.name }}</h1>
         <div>                    
-            {% if speaker.location %}{{ speaker.location }}{% endif %} | {{ speaker.activity }}{% if speaker.industry %} / {{ speaker.industry }}{% endif %} | {% if speaker.homepage %}<a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
+            {% if speaker.location %}{{ speaker.location }}{% endif %}
+            {% if speaker.activity %}| {{ speaker.activity }}{% endif %}
+            {% if speaker.industry %}/ {{ speaker.industry }}{% endif %}
+            {% if speaker.homepage %}<br /><a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
         </div>
     </div>            
     
@@ -16,12 +20,9 @@
         </div>
         {% endif %}
         
-        {% for b in speaker.bios.all %}
-            {% ifequal b.language LANGUAGE_CODE %}
-                <h2>Presentazione</h2>
-                <p>{{ b.body|safe }}</p>
-            {% endifequal %}
-        {% endfor %}
+        {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
+        <h2>Presentazione</h2>
+        <p>{{ b.body|safe }}</p>
     </div>            
     
 <!-- /page -->
