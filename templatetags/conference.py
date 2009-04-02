@@ -558,7 +558,7 @@ def render_page_template(parser, token):
 @register.tag
 def conference_multilingual_attribute(parser, token):
     """
-    {% conference_multilingual_attribute object attribute [as var] %}
+    {% conference_multilingual_attribute object attribute [as var] [fallback lang|any] %}
     """
     contents = token.split_contents()
     tag_name = contents[0]
@@ -566,35 +566,59 @@ def conference_multilingual_attribute(parser, token):
         instance, attribute = contents[1:3]
     except ValueError:
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    if contents[-2] == 'as':
-        var_name = contents[-1]
+    contents = contents[3:]
+    if contents and contents[0] == 'as':
+        var_name = contents[1]
+        contents = contents[2:]
     else:
         var_name = None
 
+    if contents and contents[0] == 'fallback':
+        fallback = contents[1]
+        contents = contents[2:]
+    else:
+        fallback = None
+
+    if contents:
+        raise template.TemplateSyntaxError("%r had too many arguments" % tag_name)
+
     class AttributeNode(TNode):
-        def __init__(self, instance, attribute, var_name):
+        def __init__(self, instance, attribute, var_name, fallback):
             self.var_name = var_name
             self.instance = self._set_var(instance)
             self.attribute = self._set_var(attribute)
+            self.fallback = self._set_var(fallback)
         
         def render(self, context):
             instance = self._get_var(self.instance, context)
             attribute = self._get_var(self.attribute, context)
+            fallback = self._get_var(self.fallback, context)
             try:
                 query = getattr(instance, attribute)
             except AttributeError:
                 return ''
 
+            contents = dict((c.language, c) for c in query.all() if c.body)
+            print contents, fallback
             try:
-                value = query.get(language = context['LANGUAGE_CODE'])
-            except ObjectDoesNotExist:
-                value = None
+                value = contents[context['LANGUAGE_CODE']]
+            except KeyError:
+                if fallback is None or not contents:
+                    value = None
+                elif fallback != 'any':
+                    value = contents.get(fallback)
+                else:
+                    dlang = settings.LANGUAGES[0][0]
+                    if dlang in contents:
+                        value = contents[dlang]
+                    else:
+                        value = contents.values()[0]
             if self.var_name:
                 context[self.var_name] = value
                 return ''
             else:
-                return value
-    return AttributeNode(instance, attribute, var_name)
+                return value.body
+    return AttributeNode(instance, attribute, var_name, fallback)
 
 @register.tag
 def conference_hotels(parser, token):
