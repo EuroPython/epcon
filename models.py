@@ -280,3 +280,9 @@ class Hotel(models.Model):
     class Meta:
         ordering = [ 'name' ]
 
+class DidYouKnow(models.Model):
+    """
+    Lo sai che?
+    """
+    visible = models.BooleanField('visible', default = True)
+    messages = generic.GenericRelation(MultilingualContent)

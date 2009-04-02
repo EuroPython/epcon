@@ -236,3 +236,18 @@ class HotelAdmin(admin.ModelAdmin):
     _contacts.short_description = 'Contatti'
 
 admin.site.register(models.Hotel, HotelAdmin)
+
+class DidYouKnowAdmin(MultiLingualAdminContent):
+    list_display = ('_message', 'visible')
+    
+    def _message(self, o):
+        messages = dict( (c.language, c) for c in o.messages.all() if c.body)
+        try:
+            return messages[settings.LANGUAGES[0][0]].body
+        except KeyError:
+            if messages:
+                return messages.values()[0].body
+            else:
+                return ''
+
+admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
