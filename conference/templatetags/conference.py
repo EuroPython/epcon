@@ -599,7 +599,6 @@ def conference_multilingual_attribute(parser, token):
                 return ''
 
             contents = dict((c.language, c) for c in query.all() if c.body)
-            print contents, fallback
             try:
                 value = contents[context['LANGUAGE_CODE']]
             except KeyError:
