@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-04 17:39+0100\n"
+"POT-Creation-Date: 2009-04-02 22:09+0200\n"
 "PO-Revision-Date: 2009-02-17 23:54+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -22,21 +22,28 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 
 #: templates/conference/genro_wrapper.html:6
 msgid "genro-problem"
-msgstr "If you have any problems please contact us via <a onclick=\"habla_window.show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+msgstr ""
+"If you have any problems please contact us via <a onclick=\"habla_window.show"
+"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
+"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
-#: templates/p3/base.html:101
+#: templates/p3/base.html:105
 msgid "I nostri sponsor"
 msgstr "Our sponsors"
 
-#: templates/p3/base.html:156
+#: templates/p3/base.html:160
 msgid "Progetto grafico"
 msgstr "Graphic design"
 
-#: templates/p3/base.html:160
+#: templates/p3/base.html:164
 msgid "Sistema di registrazione"
 msgstr "Accounting system"
 
-#: templates/p3/index.html:22
+#: templates/p3/box_didyouknow.html:4
+msgid "Lo sai che"
+msgstr "Did you know?"
+
+#: templates/p3/index.html:24
 msgid "saluto di guido in homepage"
 msgstr ""
 "This year's PyCon Italy will have an exceptional guest in <b><a href="
@@ -44,22 +51,22 @@ msgstr ""
 "author of the language, who will give a Keynote about the latest "
 "developments of the language."
 
-#: templates/p3/index.html:31
+#: templates/p3/index.html:33
 msgid "Calendario"
 msgstr "Calendar"
 
-#: templates/p3/index.html:59
+#: templates/p3/index.html:61
 msgid "Pycon Tre"
 msgstr "Pycon Tre"
 
-#: templates/p3/index.html:64 templates/p3/index.html.py:83
+#: templates/p3/index.html:66 templates/p3/index.html.py:85
 msgid "Continua"
 msgstr "Continue"
 
-#: templates/p3/index.html:75
+#: templates/p3/index.html:77
 msgid "Dal blog"
 msgstr "The blog"
 
-#: templates/p3/index.html:95
+#: templates/p3/index.html:97
 msgid "Dicono di noi"
 msgstr "About us"

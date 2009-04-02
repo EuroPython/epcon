@@ -9,6 +9,7 @@ from django.conf import settings
 
 from p3 import models
 from pages import models as PagesModels
+from conference import models as ConferenceModels
 
 mimetypes.init()
 
@@ -47,3 +48,11 @@ def box_download(fname, label=None):
         'fsize': fsize,
         'ftype': ftype,
     }
+
+@register.inclusion_tag('p3/box_didyouknow.html')
+def box_didyouknow():
+    try:
+        d = ConferenceModels.DidYouKnow.objects.order_by('?')[0]
+    except IndexError:
+        d = None
+    return { 'd': d }
