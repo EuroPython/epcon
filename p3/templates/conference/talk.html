@@ -37,12 +37,9 @@
         </div>
         {% endif %}
 
-        {% for b in talk.abstracts.all %}
-            {% ifequal b.language LANGUAGE_CODE %}
-                <h2>Abstract</h2>
-                <p>{{ b.body|safe }}</p>
-            {% endifequal %}
-        {% endfor %}
+        <h2>Abstract</h2>
+        {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
+        <p>{{ ab.body|safe }}</p>
 
         {% if talk.video %}
         <div>
