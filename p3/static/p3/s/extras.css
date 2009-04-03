@@ -221,3 +221,19 @@ ul.archive > li {
     position: relative;
     top: -30px;
 }
+
+.side-box {
+    padding:3px;
+}
+
+.did-you-know {
+    background-color: #2a445e;
+    color: #fff;
+    padding: 0 5px 10px 5px;
+    margin-bottom:5px;
+}
+
+.did-you-know a {
+    color: #fff;
+    font-style: italic;
+}
