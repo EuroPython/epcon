@@ -49,10 +49,13 @@ def box_download(fname, label=None):
         'ftype': ftype,
     }
 
-@register.inclusion_tag('p3/box_didyouknow.html')
-def box_didyouknow():
+@register.inclusion_tag('p3/box_didyouknow.html', takes_context = True)
+def box_didyouknow(context):
     try:
         d = ConferenceModels.DidYouKnow.objects.order_by('?')[0]
     except IndexError:
         d = None
-    return { 'd': d }
+    return {
+        'd': d,
+        'LANGUAGE_CODE': context.get('LANGUAGE_CODE'),
+    }
