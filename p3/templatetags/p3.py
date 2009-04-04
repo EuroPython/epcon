@@ -23,8 +23,8 @@ def box_pycon_italia():
 def box_newsletter():
     return {}
 
-@register.inclusion_tag('p3/box_download.html')
-def box_download(fname, label=None):
+@register.inclusion_tag('p3/box_download.html', takes_context = True)
+def box_download(context, fname, label=None):
     if '..' in fname:
         raise template.TemplateSyntaxError("file path cannot contains ..")
     if fname.startswith('/'):
@@ -32,18 +32,16 @@ def box_download(fname, label=None):
     if label is None:
         label = os.path.basename(fname)
     try:
-        fpath = os.path.join(settings.P3_STUFF_DIR, fname)
-        print fpath
+        fpath = os.path.join(settings.STUFF_DIR, fname)
         stat = os.stat(fpath)
     except (AttributeError, OSError), e:
-        print e
         fsize = ftype = None
     else:
         fsize = stat.st_size
         ftype = mimetypes.guess_type(fpath)[0]
         
     return {
-        'url': settings.MEDIA_URL + 'p3/stuff/' + fname,
+        'url': context['STUFF_URL'] + fname,
         'label': label,
         'fsize': fsize,
         'ftype': ftype,
