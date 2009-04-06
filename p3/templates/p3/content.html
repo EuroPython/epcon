@@ -28,13 +28,15 @@
     {% block PAGE__AFTER_MAIN_COLUMN %}
     <div class="column span-4 last">
         <div id="sidebar">
+            {% block PAGE_SIDEBAR_TOP %}
+            {% box_didyouknow %}
+            {% endblock %}
             {% block PAGE_SIDEBAR %}
             {% comment %}
             sidebar - usare dei <p> e degli <h2> per i titoli
             {% endcomment %}
             {% placeholder right-column parsed %}
             {% endblock %}
-            {% box_didyouknow %}
             {% box_newsletter %}
         </div>
     </div>
