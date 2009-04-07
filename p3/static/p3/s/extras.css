@@ -259,3 +259,16 @@ ul.archive > li {
 #hotels-map {
     margin: 20px 0;
 }
+
+.simple-two-columns hr {
+    visibility: hidden;
+}
+
+.simple-two-columns .simple-column {
+    float: left;
+    width: 48%;
+}
+
+.simple-two-columns .simple-column:first-child {
+    margin-right: 20px;
+}
