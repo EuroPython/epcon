@@ -9,4 +9,4 @@ def root(request):
 
 def gmap(request):
     return render_to_response(
-        'p3/gmap.js',{}, context_instance = RequestContext(request), mimetype = 'text/javascript')
+        'p3/gmap.jhtml',{}, context_instance = RequestContext(request), mimetype = 'text/javascript')
