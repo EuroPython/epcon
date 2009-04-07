@@ -10,6 +10,8 @@ from django.template.defaultfilters import slugify
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
+import simplejson
+
 class HttpResponseRedirectSeeOther(HttpResponseRedirect):
     status_code = 303
 
@@ -141,3 +143,24 @@ def genro_wrapper(request):
         'conference/genro_wrapper.html', conf,
         context_instance = RequestContext(request))
 
+def hotels(request):
+    """
+    ritorna un json con gli hotel inseriti
+    """
+    hotels = []
+    for h in models.Hotel.objects.filter(visible = True):
+        hotels.append({
+            'name': h.name,
+            'telephone': h.telephone,
+            'url': h.url,
+            'email': h.email,
+            'availability': h.availability,
+            'price': h.price,
+            'note': h.note,
+            'affiliated': h.affiliated,
+            'lng': h.lng,
+            'lat': h.lat,
+            'modified': h.modified.isoformat()
+        })
+
+    return HttpResponse(simplejson.dumps(hotels), content_type="text/javascript")
