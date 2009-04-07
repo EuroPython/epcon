@@ -256,18 +256,11 @@
 #sidebar h4,
 #sidebar h5,
 #sidebar h6 {
-	
 	font: bold 14px/20px Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	
-	margin: 20px 0 10px 0;
-		
+	margin: 0 0 10px 0;
 	border: none;
-	
 	text-transform: uppercase;
-	
 	padding: 0;
-	
 	border-bottom: none;
-	
 }
 

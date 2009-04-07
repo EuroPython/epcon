@@ -1,5 +1,6 @@
 .blog-feed {
     font-size: 2em;
+    margin-bottom: 10px;
 }
 
 .blog-feed a {
@@ -224,16 +225,32 @@ ul.archive > li {
 
 .side-box {
     padding:3px;
+    margin-bottom: 10px;
 }
 
 .did-you-know {
     background-color: #2a445e;
     color: #fff;
     padding: 0 5px 10px 5px;
-    margin-bottom:5px;
 }
 
 .did-you-know a {
     color: #fff;
     font-style: italic;
+}
+
+.info-hotel, .info-hotel th {
+    font-size: 12px !important;
+}
+
+.info-hotel h1 {
+    font-size: 14px !important;
+}
+
+.info-hotel th {
+    text-align: right;
+}
+
+#hotels-map {
+    margin: 20px 0;
 }
