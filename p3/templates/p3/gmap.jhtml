@@ -40,7 +40,7 @@ function initGMAP(mapId, show, zoom) {
         map.addOverlay(marker);
         var d = '';
         d += '<div class="info-hotel">';
-        d += '<h1>' + this.name + ' <a href="#h-' + this.id + '">&rarr;</a></h1>';
+        d += '<h1>' + this.name + ' <a href="/pycon3/dove/#h-' + this.id + '">&rarr;</a></h1>';
         d += '<table>';
         if(this.telephone)
             d += '<tr><th>{% trans "telefono" %}:</th><td>' + this.telephone + '</td></tr>';
