@@ -10,6 +10,7 @@ import pages.urls
 urlpatterns = patterns('',
     #(r'^$', 'p3.views.root'),
     (r'^pycon3/assopy/$', 'conference.views.genro_wrapper'),
+    (r'^pycon3/gmap.js$', 'p3.views.gmap'),
     #(r'^pycon3/__assopy-dev/$', 'conference.views.genro_wrapper'),
     (r'^admin/(.*)', admin.site.root),
     (r'^blog/', include('microblog.urls')),
