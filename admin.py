@@ -222,8 +222,9 @@ class ScheduleAdmin(admin.ModelAdmin):
 admin.site.register(models.Schedule, ScheduleAdmin)
 
 class HotelAdmin(admin.ModelAdmin):
-    list_display = ('name', '_contacts', 'affiliated', 'visible')
-    search_fields = [ 'name' ]
+    list_display = ('name', '_contacts', 'address', 'affiliated', 'visible')
+    list_filter = ('visible', 'affiliated' )
+    search_fields = [ 'name', 'address' ]
 
     def _contacts(self, obj):
         h = ""
