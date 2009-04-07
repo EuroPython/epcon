@@ -9,6 +9,7 @@ import tagging
 from tagging.fields import TagField
 
 import conference
+import conference.gmap
 import subprocess
 
 class DeadlineManager(models.Manager):
@@ -275,13 +276,37 @@ class Hotel(models.Model):
     note = models.TextField('note', blank = True)
     affiliated = models.BooleanField('convenzionato', default = False)
     visible = models.BooleanField('visibile', default = True)
-    address = models.CharField('indirizzo', max_length = 200, blank = True)
-    lng = models.FloatField('longitudine', blank = True)
-    lat = models.FloatField('latitudine', blank = True)
+    address = models.CharField('indirizzo', max_length = 200, default = '', blank = True)
+    lng = models.FloatField('longitudine', default = 0.0, blank = True)
+    lat = models.FloatField('latitudine', default = 0.0, blank = True)
     modified = models.DateField(auto_now = True)
 
     class Meta:
         ordering = [ 'name' ]
+
+    def __unicode__(self):
+        return self.name
+
+try:
+    assert settings.GOOGLE_MAPS_CONFERENCE['key']
+except (AttributeError, KeyError, AssertionError):
+    pass
+else:
+    def postSaveHotelHandler(sender, **kwargs):
+        query = sender.objects.exclude(address = '').filter(lng = 0.0).filter(lat = 0.0)
+        for obj in query:
+            data = conference.gmap.geocode(
+                obj.address,
+                settings.GOOGLE_MAPS_CONFERENCE['key'],
+                settings.GOOGLE_MAPS_CONFERENCE.get('country')
+            )
+            if data['Status']['code'] == 200:
+                point = data['Placemark'][0]['Point']['coordinates']
+                lng, lat = point[0:2]
+                obj.lng = lng
+                obj.lat = lat
+                obj.save()
+    post_save.connect(postSaveHotelHandler, sender=Hotel)
 
 class DidYouKnow(models.Model):
     """

@@ -148,6 +148,14 @@ GNR_CONFERENCE = {
     'size': (780, 480),
 }
 
+GOOGLE_MAPS_CONFERENCE = {
+    # chiave info@pycon.it per http://localhost
+    # 'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSCRpOQNQwH5i15toJmp6eLWzSKPg',
+    # chiave info@pycon.it per http://pycon.it
+    'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
+    'country': 'it',
+}
+
 try:
     from settings_locale import *
 except ImportError:
