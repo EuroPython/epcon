@@ -57,3 +57,7 @@ def box_didyouknow(context):
         'd': d,
         'LANGUAGE_CODE': context.get('LANGUAGE_CODE'),
     }
+
+@register.inclusion_tag('p3/box_googlemaps.html', takes_context = True)
+def box_googlemaps(context):
+    return {}

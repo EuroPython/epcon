@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load conference pages_tags i18n %}
+{% load conference pages_tags i18n tagging_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml" lang="it">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -15,6 +15,23 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/jquery-cycle-lite.min.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/utils.js"></script>
+
+    {% if current_page %}
+        {% tags_for_object current_page as ptags %}
+        {% for t in ptags %}
+            {% ifequal t.name "google-maps" %}
+    <script type="text/javascript" src="http://www.google.com/jsapi?key={{ GOOGLE_MAPS_KEY }}"></script>
+    <script type="text/javascript">
+        google.load("maps", "2", { "other_params": "sensor=false" });
+        $(document).ready(function() {
+            $(document).unload(function() { google.maps.Unload() });
+            $('.automap').each(function() { initGMAP(this.id); });
+        });
+    </script>
+    <script type="text/javascript" src="/pycon3/gmap.js"></script>
+            {% endifequal %}
+        {% endfor %}
+    {% endif %}
 
   <script type="text/javascript">
 

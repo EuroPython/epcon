@@ -240,6 +240,7 @@ ul.archive > li {
 }
 
 .info-hotel, .info-hotel th {
+    font-weight: bold !important;
     font-size: 12px !important;
 }
 
@@ -249,6 +250,10 @@ ul.archive > li {
 
 .info-hotel th {
     text-align: right;
+}
+
+.info-hotel td {
+    text-align: left;
 }
 
 #hotels-map {

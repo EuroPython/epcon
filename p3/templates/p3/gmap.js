@@ -1,8 +1,10 @@
-// Call this function when the page has been loaded
-function initGMAP(mapId, show) {
+{% load i18n %}
+function initGMAP(mapId, show, zoom) {
     if(!show) {
         show = [ 'conference', 'special', 'hotel', 'hotel_conv' ];
     }
+    if(!zoom)
+        zoom = 15;
     var places = [
         {
             'name': 'Hotel Laurus',
@@ -18,9 +20,8 @@ function initGMAP(mapId, show) {
     var hotelCIcon = new GIcon(G_DEFAULT_ICON);
     hotelCIcon.image = "{{ MEDIA_URL }}p3/i/marker_hotel_conv.png";
 
-    $(document).unload(function() { google.maps.Unload() });
     var map = new google.maps.Map2(document.getElementById(mapId));
-    map.setCenter(places[0]['coordinate'], 15);
+    map.setCenter(places[0]['coordinate'], zoom);
     map.setUIToDefault();
     function addConferencePlaceMarker() {
         if($.inArray(this.type, show) == -1)
@@ -42,7 +43,7 @@ function initGMAP(mapId, show) {
         d += '<h1>' + this.name + ' <a href="#h-' + this.id + '">&rarr;</a></h1>';
         d += '<table>';
         if(this.telephone)
-            d += '<tr><th>Telefono:</th><td>' + this.telephone + '</td></tr>';
+            d += '<tr><th>{% trans "telefono" %}:</th><td>' + this.telephone + '</td></tr>';
         if(this.email)
             d += '<tr><th>Email:</th><td><a href="mailto:' + this.email+ '">' + this.email + '</a></td></tr>';
         if(this.url)
