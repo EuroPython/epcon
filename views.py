@@ -150,6 +150,7 @@ def hotels(request):
     hotels = []
     for h in models.Hotel.objects.filter(visible = True):
         hotels.append({
+            'id': h.id,
             'name': h.name,
             'telephone': h.telephone,
             'url': h.url,
