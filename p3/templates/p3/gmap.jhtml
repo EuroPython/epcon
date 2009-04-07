@@ -45,10 +45,10 @@ function initGMAP(mapId, show, zoom) {
         if(this.telephone)
             d += '<tr><th>{% trans "telefono" %}:</th><td>' + this.telephone + '</td></tr>';
         if(this.email)
-            d += '<tr><th>Email:</th><td><a href="mailto:' + this.email+ '">' + this.email + '</a></td></tr>';
+            d += '<tr><th>{% trans "email" %}:</th><td><a href="mailto:' + this.email+ '">' + this.email + '</a></td></tr>';
         if(this.url)
-            d += '<tr><th>Sito web:</th><td><a href="' + this.url+ '">' + this.url + '</a></td></tr>';
-        d += '<tr><th>Prezzo:</th><td>' + this.price + '</td></tr>';
+            d += '<tr><th>{% trans "sito" %}:</th><td><a href="' + this.url+ '">' + this.url + '</a></td></tr>';
+        d += '<tr><th>{% trans "prezzo" %}:</th><td>' + this.price + '</td></tr>';
         d += '</table>';
         d += '<br /><br />';
         d += '</div>';

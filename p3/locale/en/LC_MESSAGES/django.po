@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-02 22:09+0200\n"
+"POT-Creation-Date: 2009-04-07 15:55+0200\n"
 "PO-Revision-Date: 2009-02-17 23:54+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -27,21 +27,37 @@ msgstr ""
 "(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
 "\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
-#: templates/p3/base.html:105
+#: templates/p3/base.html:122
 msgid "I nostri sponsor"
 msgstr "Our sponsors"
 
-#: templates/p3/base.html:160
+#: templates/p3/base.html:177
 msgid "Progetto grafico"
 msgstr "Graphic design"
 
-#: templates/p3/base.html:164
+#: templates/p3/base.html:181
 msgid "Sistema di registrazione"
 msgstr "Accounting system"
 
 #: templates/p3/box_didyouknow.html:4
 msgid "Lo sai che"
 msgstr "Did you know?"
+
+#: templates/p3/gmap.jhtml:46
+msgid "telefono"
+msgstr "Telephone"
+
+#: templates/p3/gmap.jhtml:48
+msgid "email"
+msgstr "Email"
+
+#: templates/p3/gmap.jhtml:50
+msgid "sito"
+msgstr "Web site"
+
+#: templates/p3/gmap.jhtml:51
+msgid "prezzo"
+msgstr "Price"
 
 #: templates/p3/index.html:24
 msgid "saluto di guido in homepage"
