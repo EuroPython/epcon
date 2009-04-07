@@ -10,7 +10,7 @@
     <tbody>
     {% for h in hotels %}
         <tr class="info">
-            <td>
+            <td id="h-{{ h.id }}">
                 {% if h.url %}
                 <a href="{{ h.url }}">{{ h.name }}</a>
                 {% else %}
