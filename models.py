@@ -275,6 +275,9 @@ class Hotel(models.Model):
     note = models.TextField('note', blank = True)
     affiliated = models.BooleanField('convenzionato', default = False)
     visible = models.BooleanField('visibile', default = True)
+    address = models.CharField('indirizzo', max_length = 200, blank = True)
+    lng = models.FloatField('longitudine', blank = True)
+    lat = models.FloatField('latitudine', blank = True)
     modified = models.DateField(auto_now = True)
 
     class Meta:
