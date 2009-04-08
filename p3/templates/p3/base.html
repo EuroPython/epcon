@@ -52,8 +52,10 @@
 </head>
 <body id="s-home">
 <div class="hidden"><a href="#main">Salta ai contenuti</a></div>    
-
 <div id="header" class="container clear">
+    {% if HIGHLIGHT %}
+    <div id="highlight-message">{{ HIGHLIGHT|safe }}</div>
+    {% endif %}
 
     <div id="lang">
         <form action="/i18n/setlang/" method="post">

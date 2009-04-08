@@ -217,10 +217,12 @@ ul.archive > li {
 }
 
 .welcome-non-italian {
-    text-align: center;
-    font-size: 120%;
-    position: relative;
-    top: -30px;
+    font-size: 1.2em;
+    position: absolute;
+    top: -120px;
+    left: 280px;
+    height: 24px;
+    padding: 2px;
 }
 
 .side-box {
@@ -271,4 +273,22 @@ ul.archive > li {
 
 .simple-two-columns .simple-column:first-child {
     margin-right: 20px;
+}
+
+#highlight-message {
+    font-size: 1.2em;
+    font-family: Calibri,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: #2A445E;
+    background: #fc0;
+    text-align: center;
+    height: 24px;
+    padding: 2px;
+    position: absolute;
+    top: 60px;
+    left: 0px;
+    right: 145px;
+}
+
+#highlight-message strong {
+    font-size: 1.2em;
 }
