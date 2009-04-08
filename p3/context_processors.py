@@ -1,4 +1,5 @@
 from datetime import date
+from django.utils.translation import ugettext_lazy as _
 
 def highlight(request):
     """
@@ -8,10 +9,10 @@ def highlight(request):
     t = deadline - date.today()
 
     if t.days > 0:
-        msg = "Mancano solo *%d giorni* alla fine dell'Early Bird."
-        msg = (msg % t.days).replace('*', '<strong>', 1).replace('*', '</strong>')
+        msg = _("Mancano solo *%(days)d giorni* alla fine dell'Early Bird.")
+        msg = (msg % {'days': t.days}).replace('*', '<strong>', 1).replace('*', '</strong>')
     elif t.days == 0:
-        msg = "L'Early Bird finisce oggi!"
+        msg = _("L'Early Bird finisce oggi!")
     else:
         msg = None
         
