@@ -5,10 +5,15 @@ HOST = 'localhost'
 DBNAME = 'assopy09'
 USER = 'assopy'
 PASSWORD = 'assopy'
+SPEAKER_IMG = '/home/assopy/genro/data/sites/assopy09/data/speakers'
 
 import sys
 import psycopg2
 from xml.etree import cElementTree as ET
+import os.path
+import zipfile
+
+_speakers = []
 
 def list_talk():
     query = """
@@ -33,9 +38,13 @@ def extract_talk(id):
         WHERE t.id=%s
     """
     qspk = """
-        SELECT crd.first_name, crd.www, spk.activity, spk.area, crd.city, crd.state, spk.resume, spk.resume_en, crd.last_name, crd.card_name
+        SELECT crd.first_name, crd.www, spk.activity, spk.area,
+            crd.city, crd.state, spk.resume, spk.resume_en, crd.last_name, crd.card_name,
+            usr.username
         FROM conference.conference_speaker spk INNER JOIN conference.conference_card crd
             ON spk.card_id = crd.id
+        INNER JOIN adm.adm_user usr
+            ON spk.user_id = usr.id
         WHERE spk.id=%s
     """
     cursor.execute(qtalk, (id,))
@@ -58,6 +67,7 @@ def extract_talk(id):
             name += ' ' + speaker[8]
         if not name:
             name = speaker[9]
+        _speakers.append(speaker[10])
         ET.SubElement(S, 'name').text = enc(name)
         ET.SubElement(S, 'homepage').text = enc(speaker[1])
         ET.SubElement(S, 'activity').text = enc(speaker[2])
@@ -85,3 +95,14 @@ try:
         cursor.close()
 finally:
     conn.close()
+
+if SPEAKER_IMG:
+    if os.path.exists('speakers.zip'):
+        print >> sys.stderr, "speakers.zip already exists"
+        sys.exit(1)
+    zip = zipfile.ZipFile('speakers.zip', 'w')
+    for img in _speakers:
+        fpath = os.path.join(SPEAKER_IMG, img, '_speakerimg.jpg')
+        if os.path.exists(fpath):
+            zip.write(fpath, os.path.basename(fpath))
+    zip.close()
