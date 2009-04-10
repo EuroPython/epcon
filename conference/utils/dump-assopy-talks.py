@@ -67,7 +67,7 @@ def extract_talk(id):
             name += ' ' + speaker[8]
         if not name:
             name = speaker[9]
-        _speakers.append(speaker[10])
+        _speakers.append((speaker[10], name))
         ET.SubElement(S, 'name').text = enc(name)
         ET.SubElement(S, 'homepage').text = enc(speaker[1])
         ET.SubElement(S, 'activity').text = enc(speaker[2])
@@ -101,8 +101,10 @@ if SPEAKER_IMG:
         print >> sys.stderr, "speakers.zip already exists"
         sys.exit(1)
     zip = zipfile.ZipFile('speakers.zip', 'w')
-    for img in _speakers:
+    for img, name in _speakers:
+        if not name:
+            continue
         fpath = os.path.join(SPEAKER_IMG, img, '_speakerimg.jpg')
         if os.path.exists(fpath):
-            zip.write(fpath, img + '.jpg')
+            zip.write(fpath, name + '.jpg')
     zip.close()
