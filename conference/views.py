@@ -1,8 +1,14 @@
 # -*- coding: UTF-8 -*-
+from __future__ import with_statement
+import os.path
 import urllib
+import zipfile
+import tempfile
+from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
 from django.db import transaction
+from django.core.files.base import File
 from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
@@ -36,6 +42,25 @@ def talk_report(request):
             'tags': tags,
         },
         context_instance = RequestContext(request))
+
+@staff_member_required
+@transaction.commit_on_success
+def speaker_admin_image_upload(request):
+    if request.method != 'POST':
+        raise Http404()
+    raw = []
+    map(raw.append, request.FILES['zip'].chunks())
+    zip = zipfile.ZipFile(StringIO(''.join(raw)), 'r')
+    for name in zip.namelist():
+        slug = slugify(os.path.splitext(name)[0])
+        try:
+            speaker = models.Speaker.objects.get(slug = slug)
+        except models.Speaker.DoesNotExist:
+            continue
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(zip.read(name))
+            f.seek(0)
+            speaker.image.save('f', File(f))
 
 @staff_member_required
 @transaction.commit_on_success
