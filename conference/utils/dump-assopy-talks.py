@@ -104,5 +104,5 @@ if SPEAKER_IMG:
     for img in _speakers:
         fpath = os.path.join(SPEAKER_IMG, img, '_speakerimg.jpg')
         if os.path.exists(fpath):
-            zip.write(fpath, os.path.basename(fpath))
+            zip.write(fpath, img + '.jpg')
     zip.close()
