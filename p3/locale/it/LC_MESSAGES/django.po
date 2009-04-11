@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-08 17:19+0200\n"
+"POT-Creation-Date: 2009-04-11 22:33+0200\n"
 "PO-Revision-Date: 2009-02-17 23:54+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -22,8 +22,12 @@ msgid "Mancano solo *%(days)d giorni* alla fine dell'Early Bird."
 msgstr "Mancano solo *%(days)d giorni* alla fine dell'Early Bird."
 
 #: context_processors.py:15
-msgid "L'Early Bird finisce oggi!"
-msgstr "L'Early Bird finisce oggi!"
+msgid "L'Early Bird finisce *domani*!"
+msgstr "L'Early Bird finisce *domani*!"
+
+#: context_processors.py:17
+msgid "L'Early Bird finisce *oggi*!"
+msgstr "L'Early Bird finisce *oggi*!"
 
 #: templates/conference/genro_wrapper.html:5
 msgid "genro-account"
