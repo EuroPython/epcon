@@ -9,5 +9,6 @@ urlpatterns = patterns('',
     url(r'^talks/(?P<slug>.*)', 'conference.views.talk', name = 'conference-talk'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>.*)', 'conference.views.schedule', name = 'conference-schedule'),
     url(r'^hotels/', 'conference.views.hotels', name = 'conference-hotels'),
+    url(r'^sponsors/(?P<sponsor>.*)/', 'conference.views.sponsor', name = 'conference-sponsor'),
 )
 
