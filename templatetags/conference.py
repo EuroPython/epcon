@@ -251,8 +251,8 @@ def conference_talks(parser, token):
             return ''
     return TalksNode(speaker, conference, tags, var_name)
 
-@register.inclusion_tag('conference/render_schedule.html')
-def render_schedule(schedule):
+@register.inclusion_tag('conference/render_schedule.html', takes_context = True)
+def render_schedule(context, schedule):
     """
     {% render_schedule schedule %}
     """
@@ -275,7 +275,7 @@ def render_schedule(schedule):
     for e in schedule.event_set.all():
         dbevents[e.start_time].append(e)
 
-    eevent = lambda t: { 'time': t, 'title': '', 'track_slots': 1, 'time_slots': 1, 'talk': None, 'tags': [] }
+    eevent = lambda t: { 'time': t, 'title': '', 'track_slots': 1, 'time_slots': 1, 'talk': None, 'tags': [], 'sponsor': None }
 
     # riorganizzo in timetable la struttra degli evento dello schedule passato
     # per renderli semplici da maneggiare al template. Ogni entry di timetable
@@ -291,6 +291,8 @@ def render_schedule(schedule):
                 event['title'] = e.talk.title
                 event['time_slots'] = e.talk.duration / TIME_STEP
                 event['talk'] = e.talk
+                if e.sponsor:
+                    event['sponsor'] = e.sponsor.slug
             else:
                 event['title'] = e.custom
             # row ha tanti elementi quante sono le track dello schedule
@@ -429,6 +431,7 @@ def render_schedule(schedule):
     return {
         'schedule': schedule,
         'timetable': timetable,
+        'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
     }
 
 @register.filter
