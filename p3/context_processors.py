@@ -21,7 +21,6 @@ def highlight(request):
         
     if msg:
         msg = msg.replace('*', '<strong>', 1).replace('*', '</strong>')
-        msg = '<a href="/pycon3/registrazione/">' + msg + '</a>'
     else:
         msg = ''
 
@@ -31,4 +30,6 @@ def highlight(request):
         m2 = m2 % {'seat': 420 - attendee} 
         m2 = m2.replace('*', '<strong>', 1).replace('*', '</strong>')
         msg += ' ' + m2
+    if msg:
+        msg = '<a href="/pycon3/registrazione/">' + msg + '</a>'
     return { 'HIGHLIGHT': msg }

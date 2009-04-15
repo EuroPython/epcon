@@ -32,7 +32,7 @@ msgstr "Late Bird fee ends *today*!"
 #: context_processors.py:30
 #, python-format
 msgid "Ci sono ancora *%(seat)d* posti disponibili"
-msgstr "Available seats: *%(seat)d*!"
+msgstr "Available seats: *%(seat)d!*"
 
 #: templates/conference/genro_wrapper.html:5
 msgid "genro-account"
