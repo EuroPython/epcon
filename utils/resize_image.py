@@ -79,17 +79,38 @@ class Resize(object):
         img.save(dst, 'JPEG', quality=90)
 
     def alphacolor(self, img):
+        """
+        Se l'immagine non ha già un canale alpha valido ne crea uno rendendo
+        trasparente il colore del pixel in alto a sinistra.
+        """
         band = img.split()[-1]
         colors = set(band.getdata())
         if len(colors) > 1:
             return img
         color = img.getpixel((0, 0))
         data = []
+        TRANSPARENT = 0
+        OPAQUE = 255
         for i in img.getdata():
             if i == color:
-                data.append(0)
+                data.append(TRANSPARENT)
             else:
-                data.append(255)
+                data.append(OPAQUE)
+        img = img.copy()
+        band.putdata(data)
+        img.putalpha(band)
+        return img
+
+    def blend(self, img, perc):
+        """
+        rende l'immagine trasparente
+        """
+        perc = float(perc)
+        if perc == 1:
+            # completamente opaca
+            return img
+        band = img.split()[-1]
+        data = [ int(i * perc) for i in band.getdata() ]
         img = img.copy()
         band.putdata(data)
         img.putalpha(band)
