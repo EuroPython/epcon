@@ -87,6 +87,8 @@ def speaker_admin_image_upload(request):
             f.write(zip.read(name))
             f.seek(0)
             speaker.image.save('f', File(f))
+    request.user.message_set.create(message = 'avatar aggiornati')
+    return HttpResponseRedirectSeeOther(request.META.get('HTTP_REFERER', '/'))
 
 @staff_member_required
 @transaction.commit_on_success
@@ -145,8 +147,10 @@ def talk_admin_upload(request):
         for ab in tlk.findall('abstract'):
             T['ab_' + ab.get('lang')] = ab.text or ''
         T['slug'] = slugify(T['title'])
-        spk = slugify(tlk.find('speaker/name').text)
-        speaker = models.Speaker.objects.get(slug = spk)
+        speakers = []
+        for spk in tlk.findall('speaker/name'):
+            spk = slugify(spk.text)
+            speakers.append(models.Speaker.objects.get(slug = spk))
         try:
             talk = models.Talk.objects.get(slug = T['slug'])
         except models.Talk.DoesNotExist:
@@ -158,7 +162,7 @@ def talk_admin_upload(request):
         talk.language = T['language']
         abstracts = dict((b.language, b) for b in talk.abstracts.all())
         talk.save()
-        talk.speakers = [ speaker ]
+        talk.speakers = speakers
         talk.save()
         for l in ('it', 'en'):
             try:
