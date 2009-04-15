@@ -26,6 +26,7 @@ table.schedule th {
 
 table.schedule td {
     color: #666;
+    height: 22px;
 }
 
 table.schedule td a {
