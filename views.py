@@ -17,9 +17,35 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 
 import simplejson
+from decorator import decorator
 
 class HttpResponseRedirectSeeOther(HttpResponseRedirect):
     status_code = 303
+
+def json(f):
+    """
+    decoratore da applicare ad una vista per serializzare in json il risultato.
+    """
+    if settings.DEBUG:
+        ct = 'text/plain'
+        j = lambda d: simplejson.dumps(d, indent = 2)
+    else:
+        ct = 'application/json'
+        j = simplejson.dumps
+    def wrapper(func, *args, **kw):
+        try:
+            result = func(*args, **kw)
+        except Exception, e:
+            result = j(str(e))
+            status = 500
+        else:
+            if isinstance(result, HttpResponse):
+                return result
+            else:
+                result = j(result)
+                status = 200
+        return HttpResponse(content = result, content_type = ct, status = status)
+    return decorator(wrapper, f)
 
 def speaker(request, slug):
     spk = get_object_or_404(models.Speaker, slug = slug)
@@ -168,6 +194,7 @@ def genro_wrapper(request):
         'conference/genro_wrapper.html', conf,
         context_instance = RequestContext(request))
 
+@json
 def hotels(request):
     """
     ritorna un json con gli hotel inseriti
@@ -189,4 +216,17 @@ def hotels(request):
             'modified': h.modified.isoformat()
         })
 
-    return HttpResponse(simplejson.dumps(hotels), content_type="text/javascript")
+    return hotels
+
+@json
+def sponsor(request, sponsor):
+    """
+    ritorna i dati dello sponsor richiesto
+    """
+    sponsor = get_object_or_404(models.Sponsor, slug = sponsor)
+    return {
+        'sponsor': sponsor.sponsor,
+        'slug': sponsor.slug,
+        'url': sponsor.url
+    }
+
