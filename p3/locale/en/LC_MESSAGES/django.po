@@ -19,15 +19,15 @@ msgstr ""
 #: context_processors.py:13
 #, python-format
 msgid "Mancano *%(days)d giorni* alla fine del Late Bird."
-msgstr "Late Bird fee ends in *%(days)d days*."
+msgstr "Subscriptions ends in *%(days)d days*."
 
 #: context_processors.py:16
 msgid "Il Late Bird finisce *domani*!"
-msgstr "Late Bird fee ends *tomorrow*!"
+msgstr "Subscriptions ends *tomorrow*!"
 
 #: context_processors.py:18
 msgid "Il Late Bird finisce *oggi*!"
-msgstr "Late Bird fee ends *today*!"
+msgstr "Subscriptions ends *today*!"
 
 #: context_processors.py:30
 #, python-format
