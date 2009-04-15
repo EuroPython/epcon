@@ -93,5 +93,6 @@ table.schedule td.t-special, table.schedule td.t-break {
 }
 
 table.schedule td.sponsored-event {
+    background: #D5F2C2;
     font-weight: bold;
 }

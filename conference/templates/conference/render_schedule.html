@@ -17,7 +17,7 @@
             <td class="hhmm"><strong>{{ t|time:"H" }}</strong>:{{ t|time:"i" }}</td>
             {% for e in row.events %}
             {% if e %}
-            <td class="track {% for t in e.tags %} t-{{ t }}{% endfor %}{% if e.sponsor %} sponsored-event{% endif %}" rowspan="{{ e.time_slots }}" colspan="{{ e.track_slots }}" {% if e.sponsor %}style="background: #D5F2C2 url({{ SPONSOR_LOGO_URL }}stamp/{{ e.sponsor}}.jpg) 50% 50% no-repeat;"{% endif %}>
+            <td class="track {% for t in e.tags %} t-{{ t }}{% endfor %}{% if e.sponsor %} sponsored-event{% endif %}" rowspan="{{ e.time_slots }}" colspan="{{ e.track_slots }}" {% if e.sponsor %}style="background: url({{ SPONSOR_LOGO_URL }}stamp/{{ e.sponsor}}.jpg) 50% 50% no-repeat;"{% endif %}>
                 {% if e.talk %}
                 <a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a>
                 <br /> di
