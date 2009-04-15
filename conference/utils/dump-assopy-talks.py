@@ -114,7 +114,11 @@ if SPEAKER_IMG:
     for img, name in _speakers:
         if not name:
             continue
-        fpath = os.path.join(SPEAKER_IMG, img, '_speakerimg.jpg')
-        if os.path.exists(fpath):
-            zip.write(fpath, name + '.jpg')
+        sdir = os.path.join(SPEAKER_IMG, img)
+        if not os.path.isdir(sdir):
+            continue
+        for f in os.listdir(sdir):
+            if f.startswith('_speakerimg'):
+                fpath = os.path.join(sdir, f)
+                zip.write(fpath, name + os.path.splitext(f)[1])
     zip.close()
