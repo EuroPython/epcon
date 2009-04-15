@@ -91,3 +91,7 @@ table.schedule td.t-special, table.schedule td.t-break {
     font-style: italic;
     vertical-align: middle;
 }
+
+table.schedule td.sponsored-event {
+    font-weight: bold;
+}
