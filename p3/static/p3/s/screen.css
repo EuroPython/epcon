@@ -350,16 +350,18 @@ hr {
 =sponsor
 ----------------------------------------------------- */
 
-#sponsor  {
-	
-	
+#sponsor {
 }
 
-#sponsor  h2 {
+#media-partner {
+    margin-top: 20px;
+}
+
+.sponsor-like  h2 {
 	color: #5595A3;
 }
 
-#sponsor dt {
+.sponsor-like dt {
 	margin: 20px 0 0 0;
 	padding: 5px 0 5px 15px;
 	
@@ -377,18 +379,18 @@ hr {
 	
 }
 
-#sponsor dd {
+.sponsor-like dd {
 	border-bottom: 3px solid #a4d6e0;
 
 }
 
-#sponsor img,
-#sponsor a {
+.sponsor-like img,
+.sponsor-like a {
 	display: block;
 		
 }
 
-#sponsor a {
+.sponsor-like a {
 	border: none;
 	
 }

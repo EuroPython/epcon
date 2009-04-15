@@ -120,7 +120,7 @@ SPONSOR
 -->
     <div class="column span-2 last">
 
-        <div id="sponsor">        
+        <div id="sponsor" class="sponsor-like">
             <h2>{% trans "I nostri sponsor" %}</h2>
             {% conference_sponsor "pycon3" as sponsor %}
             <dl>
@@ -134,6 +134,22 @@ SPONSOR
                 {% endfor %}
             </dl>
         </div>
+        {% conference_mediapartner "pycon3" as partner %}
+        {% if partner %}
+        <div id="media-partner" class="sponsor-like">
+            <h2>Media partner</h2>
+            <dl>
+                <dt></dt>
+                {% for s in partner %}
+                <dd>
+                    <a href="{{ s.url }}">
+                        <img src="{{ MEDIAPARTNER_LOGO_URL }}{{ s.logo|image_resized }}" alt="{{ s.partner }}" width="120" height="70" />
+                    </a>
+                </dd>
+                {% endfor %}
+            </dl>
+        </div>
+        {% endif %}
 
     <!-- /column-->                
     </div>   
