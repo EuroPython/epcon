@@ -114,6 +114,7 @@ class Talk(models.Model):
     slug = models.SlugField()
     conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
     speakers = models.ManyToManyField(Speaker)
+    additional_speakers = models.ManyToManyField(Speaker, related_name = 'additional_speakers')
     duration = models.IntegerField(choices = TALK_DURATION)
     language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
@@ -133,6 +134,9 @@ class Talk(models.Model):
 
     def get_event(self):
         return self.event_set.all()[0]
+
+    def get_all_speakers(self):
+        return list(self.speakers.all()) + list(self.additional_speakers.all())
 
 fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 

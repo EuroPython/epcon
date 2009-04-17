@@ -147,10 +147,15 @@ def talk_admin_upload(request):
         for ab in tlk.findall('abstract'):
             T['ab_' + ab.get('lang')] = ab.text or ''
         T['slug'] = slugify(T['title'])
-        speakers = []
-        for spk in tlk.findall('speaker/name'):
-            spk = slugify(spk.text)
-            speakers.append(models.Speaker.objects.get(slug = spk))
+        main_speakers = []
+        additional_speakers = []
+        for spk in tlk.findall('speaker'):
+            if spk.get('type') == 'main':
+                s = main_speakers
+            else:
+                s = additional_speakers
+            slug = slugify(spk.find('name').text)
+            s.append(models.Speaker.objects.get(slug = slug))
         try:
             talk = models.Talk.objects.get(slug = T['slug'])
         except models.Talk.DoesNotExist:
@@ -162,7 +167,8 @@ def talk_admin_upload(request):
         talk.language = T['language']
         abstracts = dict((b.language, b) for b in talk.abstracts.all())
         talk.save()
-        talk.speakers = speakers
+        talk.speakers = main_speakers
+        talk.additional_speakers = additional_speakers
         talk.save()
         for l in ('it', 'en'):
             try:
