@@ -95,6 +95,9 @@ class Speaker(models.Model):
     def get_absolute_url(self):
         return ('conference-speaker', (), { 'slug': self.slug })
 
+    def get_all_talks(self):
+        return list(self.talk_set.all()) + list(self.additional_speakers.all())
+
 TALK_DURATION = (
     (30, '30 minuti'),
     (45, '45 minuti'),
@@ -133,7 +136,10 @@ class Talk(models.Model):
         return ('conference-talk', (), { 'slug': self.slug })
 
     def get_event(self):
-        return self.event_set.all()[0]
+        try:
+            return self.event_set.all()[0]
+        except IndexError:
+            return None
 
     def get_all_speakers(self):
         return list(self.speakers.all()) + list(self.additional_speakers.all())
