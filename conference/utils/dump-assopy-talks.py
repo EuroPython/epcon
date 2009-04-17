@@ -66,12 +66,12 @@ def extract_talk(id):
             x = ' '.join(args)
             return x.strip()
 
-        for sid in (talk[6], talk[8]):
+        for sid, type in ((talk[6], 'main'), (talk[8], 'additional')):
             if not sid:
                 continue
             cursor.execute(qspk, (sid, ))
             speaker = cursor.fetchall()[0]
-            S = ET.SubElement(T, 'speaker')
+            S = ET.SubElement(T, 'speaker', {'type': type})
             name = merge(speaker[0], speaker[8])
             if not name:
                 name = merge(speaker[11], speaker[12])

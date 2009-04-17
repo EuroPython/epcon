@@ -154,11 +154,17 @@ class TalkAdmin(MultiLingualAdminContent):
     list_display = ('title', 'conference', '_speakers', 'duration', '_slides', '_video')
     list_filter = ('conference', )
     search_fields = ('title',)
+    ordering = ('-conference', 'title')
 
     form = TalkAdminForm
     
     def _speakers(self, obj):
-        return ', '.join((s.name for s in obj.speakers.all()))
+        main = ', '.join((s.name for s in obj.speakers.all()))
+        additional = ','.join((s.name for s in obj.additional_speakers.all()))
+        if additional:
+            return '%s [%s]' % (main, additional)
+        else:
+            return main
 
     def _slides(self, obj):
         return bool(obj.slides)
