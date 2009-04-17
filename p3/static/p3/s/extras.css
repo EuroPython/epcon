@@ -292,3 +292,13 @@ ul.archive > li {
 #highlight-message strong {
     font-size: 1.2em;
 }
+
+.speaker-talks dt {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.speaker-talks dd {
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
