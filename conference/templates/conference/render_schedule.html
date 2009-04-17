@@ -21,7 +21,7 @@
                 {% if e.talk %}
                 <a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a>
                 <br /> di
-                {% for s in e.talk.speakers.all %}
+                {% for s in e.talk.get_all_speakers %}
                     <a href="{{ s.get_absolute_url }}">{{ s.name }}</a>
                     {% if not forloop.last %} e {% endif %}
                 {% endfor %}
