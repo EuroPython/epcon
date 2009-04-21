@@ -72,6 +72,8 @@ Date: %(date)s
 server = smtplib.SMTP(SERVER)
 try:
     for email, username in data['data']:
+        if not email or not username:
+            continue
         body = BODY % { 'email': email, 'username': username }
         paragraphs = map(lambda p: textwrap.wrap(p, width=72), body.split('\n\n'))
         paragraphs = map(lambda l: '\n'.join(l), paragraphs)
