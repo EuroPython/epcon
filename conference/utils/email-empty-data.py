@@ -65,6 +65,8 @@ To: %%s
 Subject: %(subject)s
 Reply-To: %(reply)s 
 Date: %(date)s
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 %%s
 """ % { 'from': FROM, 'subject': SUBJECT, 'reply': REPLYTO, 'date': now.strftime('%a, %d %b %Y %H:%M:%S %z') }
