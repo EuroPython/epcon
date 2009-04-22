@@ -14,11 +14,13 @@
     </div>            
     
     <div id="speaker" class="entry">
-        {% if speaker.image %}
         <div class="picture">
+            {% if speaker.image %}
             <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
+            {% else %}
+            <img src="{{ MEDIA_URL }}p3/i/anonymous.png" alt="{{ speaker.name }}" width="200"/>
+            {% endif %}
         </div>
-        {% endif %}
         
         {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
         <h2>Presentazione</h2>
