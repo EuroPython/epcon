@@ -11,6 +11,18 @@ function initGMAP(mapId, show, zoom) {
             'description': '<p>L\'Hotel Laurus ospita i tre giorni della conferenza</p>',
             'coordinate': new google.maps.LatLng(43.7734241, 11.2526663),
             'type': 'conference'
+        },
+        {
+            'name': 'Williams',
+            'description': '<p>Il pub <strong>Williams</strong> ci ospiterà per la PyBirra</p>',
+            'coordinate': new google.maps.LatLng(43.7676679, 11.261409),
+            'type': 'conference'
+        },
+        {
+            'name': 'Trattoria Zazà',
+            'description': '<p>La <strong>trattoria Zazà</strong> dove ci ritroveremo per la PyFiorentina</p>',
+            'coordinate': new google.maps.LatLng(43.7765079, 11.2544709),
+            'type': 'conference'
         }
     ];
     var pyconIcon = new GIcon(G_DEFAULT_ICON);
