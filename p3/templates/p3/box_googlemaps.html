@@ -1,8 +1,8 @@
 <div class="side-box google-map">
   <h2>PyCon Map</h2>
-  <div id="mini-map" style="width: 250px; height: 250px"></div>
+  <div id="mini-map-{{ rand }}" class="mini-map" style="width: 250px; height: 250px"></div>
   <script type="text/javascript">
-  $(document).ready(function() { initGMAP('mini-map', ['conference', 'hotel_conv'], 13); });
+  $(document).ready(function() { initGMAP('mini-map-{{ rand }}', [ {{ what|safe }} ], {{ zoom }}); });
   </script>
 </div>
 

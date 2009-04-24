@@ -4,6 +4,8 @@ import mimetypes
 import os
 import os.path
 import re
+import random
+import sys
 from collections import defaultdict
 from django import template
 from django.conf import settings
@@ -60,8 +62,14 @@ def box_didyouknow(context):
     }
 
 @register.inclusion_tag('p3/box_googlemaps.html', takes_context = True)
-def box_googlemaps(context):
-    return {}
+def box_googlemaps(context, what='', zoom=13):
+    what = ','.join([ "'%s'" % w for w in what.split(',') ])
+    print what
+    return {
+        'rand': random.randint(0, sys.maxint - 1),
+        'what': what,
+        'zoom': zoom
+    }
 
 @register.inclusion_tag('p3/box_speaker_talks.html', takes_context = True)
 def box_speaker_talks(context, speaker):
