@@ -32,9 +32,29 @@ function initGMAP(mapId, show, zoom) {
     var hotelCIcon = new GIcon(G_DEFAULT_ICON);
     hotelCIcon.image = "{{ MEDIA_URL }}p3/i/marker_hotel_conv.png";
 
-    var map = new google.maps.Map2(document.getElementById(mapId));
+    var mapEl = $('#' + mapId);
+    var map = new google.maps.Map2(mapEl.get(0));
     map.setCenter(places[0]['coordinate'], zoom);
     map.setUIToDefault();
+    if(mapEl.width() < 300) {
+        /*
+         * se la mappa è piccola riduco il testo del footer (con le indicazioni
+         * del copyright) perché altrimenti sfonda il bordo della mappa
+         */
+        function reduceFontText() {
+            $('#' + mapId + ' div span').each(function() {
+                var s = $(this);
+                if(s.text().indexOf('Map data') != -1) {
+                    s.parent().css('font-size', '9px');
+                }
+            });
+        }
+        /*
+         * ritardo l'esecuzione perché in questo momento gli elementi che sto
+         * cercando non sono stati creati.
+         */
+        setTimeout(reduceFontText, 500);
+    }
     function addConferencePlaceMarker() {
         if($.inArray(this.type, show) == -1)
             return;
