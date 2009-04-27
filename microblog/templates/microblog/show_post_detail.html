@@ -37,7 +37,7 @@ Template utilizzato dal tag show_post_detail
           <div class="metadata" {% if forloop.last %}id="last-comment"{% endif %}>
             {% with c.userinfo as info %}
               {% if info.url %}
-              <strong><a href="{{ info.url }}">{{ info.name }}</a></strong>
+              <strong><a href="{{ info.url }}" rel="nofollow">{{ info.name }}</a></strong>
               {% else %}
               <strong>{{ info.name }}</strong>
               {% endif %}
@@ -51,7 +51,7 @@ Template utilizzato dal tag show_post_detail
             {% endwith %}
           </div>
           <div class="body">
-            <blockquote>{{ c.comment|linebreaksbr }}</blockquote>
+            {{ c.comment|linebreaksbr }}
           </div>
         </li>
       {% endfor %}
@@ -63,7 +63,7 @@ Template utilizzato dal tag show_post_detail
     <form action="{% comment_form_target %}#preview-comment" method="post">
         {% for field in form %}
         {% if field.is_hidden %}
-          {{ field }}
+          <div>{{ field }}</div>
         {% else %}
           <p
             {% if field.errors %} class="error"{% endif %}
@@ -74,8 +74,8 @@ Template utilizzato dal tag show_post_detail
         {% endif %}
         {% endfor %}
         <p class="submit">
-            <input type="submit" name="post" class="submit-post" value="Post">
-            <input type="submit" name="preview" class="submit-post" value="Preview">
+            <input type="submit" name="post" class="submit-post" value="Post" />
+            <input type="submit" name="preview" class="submit-post" value="Preview" />
         </p>
     </form>
   </div>
