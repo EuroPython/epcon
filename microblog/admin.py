@@ -115,7 +115,7 @@ class PostAdmin(admin.ModelAdmin):
             if change:
                 try:
                     instance = models.PostContent.objects.get(post = obj, language = l)
-                except models.DeadlineContent.DoesNotExist:
+                except models.PostContent.DoesNotExist:
                     instance = models.PostContent()
             else:
                 instance = models.PostContent()
