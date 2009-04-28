@@ -47,10 +47,14 @@ Content-Transfer-Encoding: 8bit
 %%s
 """ % { 'from': FROM, 'subject': SUBJECT, 'reply': REPLYTO, 'date': now.strftime('%a, %d %b %Y %H:%M:%S %z') }
 
+skip_email = []
 server = smtplib.SMTP(SERVER)
 try:
     for email, username in data['data']:
         if not email or not username:
+            continue
+        if email in skip_email:
+            print email, '(skipped)'
             continue
         body = BODY % { 'email': email, 'username': username }
         paragraphs = map(lambda p: textwrap.wrap(p, width=72), body.split('\n\n'))
