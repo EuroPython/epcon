@@ -110,7 +110,13 @@ TALK_LANGUAGES = (
     ('en', 'Inglese'),
 )
 
+VIDEO_TYPE = (
+    ('viddler_oembed', 'Viddler (oEmbed)'),
+    ('download', 'Download'),
+)
+
 fs_slides, _talk_slides_path = _build_fs_stuff('slides')
+fs_videos, _talk_videos_path = _build_fs_stuff('videos')
 
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length = 100)
@@ -122,7 +128,9 @@ class Talk(models.Model):
     language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
     slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs_slides)
-    video = models.CharField(max_length = 200, blank = True)
+    video_type = models.CharField(max_length = 30, choices = VIDEO_TYPE, blank = True)
+    video_url = models.TextField(blank = True)
+    video_file = models.FileField(upload_to = _talk_videos_path, blank = True, storage = fs_videos)
     tags = TagField()
 
     class Meta:
