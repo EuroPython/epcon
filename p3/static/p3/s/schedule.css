@@ -37,8 +37,16 @@ table.schedule td a:hover {
     background: #FFE566;
 }
 
-table.schedule .track {
+table.schedule.tracks-3 .track {
     width: 30%;
+}
+
+table.schedule.tracks-2 .track {
+    width: 45%;
+}
+
+table.schedule.tracks-1 .track {
+    width: 90%;
 }
 
 table.schedule td.hhmm, table.schedule td.track {
@@ -70,10 +78,6 @@ table.schedule th.t-imparare {
 table.schedule td.t-imparare {
     background: #F2DDDA;
     border-color: #D98E82;
-}
-
-table.schedule .t-apertura {
-    width: 90%;
 }
 
 table.schedule th.t-apertura {
