@@ -4,9 +4,12 @@ import mimetypes
 import os
 import os.path
 import re
+import httplib2
+import simplejson
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.template import defaultfilters
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
@@ -659,10 +662,6 @@ def render_hotels(hotels):
         'hotels': hotels,
     }
 
-import httplib2
-import simplejson
-import re
-
 @register.filter
 def embed_video(value, args=None):
     """
@@ -711,6 +710,20 @@ def embed_video(value, args=None):
             opts['width'] = w
             opts['height'] = h
         attrs = [ '%s="%s"' % x for x in opts.items() ]
-        html = "<div><video %s></video><a href=\"%s\">Download</a></div>" % (' '.join(attrs), value.video_file.url)
+
+        fpath = os.path.join(settings.STUFF_DIR, 'videos', value.video_file.name)
+        print fpath
+        try:
+            stat = os.stat(fpath)
+        except (AttributeError, OSError), e:
+            fsize = ftype = None
+        else:
+            fsize = stat.st_size
+            ftype = mimetypes.guess_type(fpath)[0]
+        html = """
+            <div>
+                <video %s></video>
+                <a href="%s">download video (%s %s)</a></div>
+            """ % (' '.join(attrs), value.video_file.url, ftype, defaultfilters.filesizeformat(fsize))
     return mark_safe(html)
     
