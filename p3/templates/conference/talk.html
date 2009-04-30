@@ -42,7 +42,8 @@
         <p>{{ ab.body|safe }}</p>
 
         {% if talk.video_type %}
-        <div>
+        <h2>Video</h2>
+        <div class="video-embedded">
             {{ talk|embed_video:"500,438" }}
         </div>
         {% endif %}
