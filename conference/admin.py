@@ -171,7 +171,7 @@ class TalkAdmin(MultiLingualAdminContent):
     _slides.boolean = True
 
     def _video(self, obj):
-        return bool(obj.video)
+        return bool(obj.video_type) and (bool(obj.video_url) or bool(obj.video_file))
     _video.boolean = True
 
 admin.site.register(models.Talk, TalkAdmin)
