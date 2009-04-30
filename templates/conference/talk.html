@@ -19,8 +19,12 @@
             <td>{% if talk.slides %}<a href="{{ MEDIA_URL }}stuff/slides/{{ talk.slides }}">{{ talk.slides }}</a>{% endif %}</td>
         </tr>
         <tr>
-            <th>video</th>
-            <td>{{ talk.video }}</td>
+            <th>video type</th>
+            <td>{{ talk.video_type }}</td>
+        </tr>
+        <tr>
+            <th>video url</th>
+            <td>{{ talk.video_url }}</td>
         </tr>
         {% for b in talk.abstracts.all %}
         <tr>

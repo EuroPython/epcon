@@ -8,6 +8,7 @@ from django import template
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 from conference import models
 from pages import models as PagesModels
@@ -657,3 +658,59 @@ def render_hotels(hotels):
     return {
         'hotels': hotels,
     }
+
+import httplib2
+import simplejson
+import re
+
+@register.filter
+def embed_video(value, args=None):
+    """
+    {{ talk|embed_video:"width,height" }}
+    """
+    tmap = {
+        'viddler_oembed': ('oEmbed', 'http://lab.viddler.com/services/oembed/'),
+        'download': ('download', None),
+    }
+    if args:
+        w, h = map(int, args.split(','))
+    else:
+        w = h = None
+    vtype, burl = tmap.get(value.video_type, 'download')
+    if vtype == 'oEmbed':
+        http = httplib2.Http()
+        url = burl + '?url=' + value.video_url + '&format=json'
+        if w and h:
+            url += '&width=%s&height=%s&maxwidth=%s&maxheight=%s' % (w, h, w, h)
+        try:
+            response, content = http.request(url)
+            data = simplejson.loads(content)
+        except:
+            # Qualsiasi cosa succeda, che non riesca a connettermi a burl o che
+            # non possa decodificare content preferisco non mostrare il video
+            # che causare un error 500.
+            # Per la cronaca .loads solleva TypeError se content non è né un
+            # stringa né un buffer e ValueError se content non è un json
+            # valido.
+            return ""
+
+        html = data['html']
+        # Se voglio forzare la larghezza e l'altezza a w e h posso usare queste
+        # regexp; viddler ad esempio utilizza i valori richiesti via url come
+        # hint (ne onora uno ma l'altro viene modificato per non deformare il
+        # video).
+        #if w and h:
+        #    html = re.sub('width=\W*"\d+"', 'width="%s"' % w, html)
+        #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
+    else:
+        opts = {
+            'controls': 'true',
+            'src': value.video_file.url,
+        }
+        if w and h:
+            opts['width'] = w
+            opts['height'] = h
+        attrs = [ '%s="%s"' % x for x in opts.items() ]
+        html = "<div><video %s></video><a href=\"%s\">Download</a></div>" % (' '.join(attrs), value.video_file.url)
+    return mark_safe(html)
+    
