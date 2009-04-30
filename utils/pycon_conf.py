@@ -11,7 +11,7 @@ hai acquistato almeno un biglietto per PyCon Tre.
 Ci risulta che uno o più biglietti associati al tuo account "%(username)s"
 sono stati regolarmente acquistati, ma non sono stati ancora compilati.
 
-E' molto importante che compili il biglietto inserendo il nome e cognome 
+E' molto importante che compili il biglietto entro le ore 12 del 5 maggio, inserendo il nome e cognome 
 della persona che parteciperà e i giorni di presenza. Puoi farlo 
 entrando in AssoPy usando il tuo username "%(username)s":
 http://www.pycon.it/pycon3/assopy/
@@ -31,7 +31,7 @@ bought at least a ticket for PyCon Italia 2009.
 One or more tickets linked to your account "%(username)s" were correctly
 bought, but have not yet been filled in.
 
-It is important to fill in information for each ticket, by specifying
+It is important to fill in information for each ticket by 12PM on 5th May, by specifying
 name and surname, and days of presence of each person. You can do it by
 logging in into AssoPy using your username "%(username)s":
 http://www.pycon.it/pycon3/assopy/
