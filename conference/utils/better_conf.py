@@ -11,7 +11,7 @@ utenti che hanno acquistato un biglietto per Better Software 2009.
 Ci risulta che uno o più biglietti associati al tuo account "%(username)s" non
 sono stati ancora compilati con i dati personali del partecipante.
 
-E' molto importante che compili il biglietto entro il 29 aprile inserendo il nome e cognome
+E' molto importante che compili il biglietto oggi inserendo il nome e cognome
 della persona che parteciperà e i giorni di presenza in conferenza. 
 
 Puoi farlo entrando direttamente sul gestionale della conferenza usando
