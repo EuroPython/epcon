@@ -86,7 +86,8 @@ def speaker_admin_image_upload(request):
         with tempfile.NamedTemporaryFile() as f:
             f.write(zip.read(name))
             f.seek(0)
-            speaker.image.save('f', File(f))
+            iname = os.path.join(slug, os.path.splitext(name)[1])
+            speaker.image.save(iname, File(f))
     request.user.message_set.create(message = 'avatar aggiornati')
     return HttpResponseRedirectSeeOther(request.META.get('HTTP_REFERER', '/'))
 
