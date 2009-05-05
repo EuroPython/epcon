@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-15 16:15+0200\n"
+"POT-Creation-Date: 2009-05-05 21:44+0200\n"
 "PO-Revision-Date: 2009-02-17 23:54+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -16,18 +16,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: context_processors.py:13
+#: context_processors.py:14
 #, python-format
-msgid "Mancano *%(days)d giorni* alla fine del Late Bird."
-msgstr "Mancano *%(days)d giorni* alla fine delle iscrizioni."
+msgid "Mancano *%(days)d giorni* all'inizio della conferenza."
+msgstr "Mancano *%(days)d giorni* all'inizio della conferenza."
 
-#: context_processors.py:16
-msgid "Il Late Bird finisce *domani*!"
-msgstr "Le iscrizioni si chiudono *domani*!"
+#: context_processors.py:17
+msgid "La conferenza inizia *domani*!"
+msgstr "La conferenza inizia *domani*!"
 
-#: context_processors.py:18
-msgid "Il Late Bird finisce *oggi*!"
-msgstr "Le iscrizioni si chiudono *oggi*!"
+#: context_processors.py:19
+msgid "La conferenza è in fase di svolgimento!"
+msgstr "La conferenza è in corso!"
 
 #: context_processors.py:30
 #, python-format
@@ -61,19 +61,23 @@ msgstr "Sistema di registrazione"
 msgid "Lo sai che"
 msgstr "Lo sai che?"
 
-#: templates/p3/gmap.jhtml:46
+#: templates/p3/box_speaker_talks.html:3
+msgid "I suoi talk"
+msgstr "I talk"
+
+#: templates/p3/gmap.jhtml:78
 msgid "telefono"
 msgstr "Telefono"
 
-#: templates/p3/gmap.jhtml:48
+#: templates/p3/gmap.jhtml:80
 msgid "email"
 msgstr "Email"
 
-#: templates/p3/gmap.jhtml:50
+#: templates/p3/gmap.jhtml:82
 msgid "sito"
 msgstr "Sito web"
 
-#: templates/p3/gmap.jhtml:51
+#: templates/p3/gmap.jhtml:83
 msgid "prezzo"
 msgstr "Prezzo"
 
@@ -104,3 +108,4 @@ msgstr "Dal blog"
 #: templates/p3/index.html:97
 msgid "Dicono di noi"
 msgstr "Dicono di noi"
+
