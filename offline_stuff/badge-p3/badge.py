@@ -14,42 +14,86 @@ FONTS = [
     'TradeGothicLTStd-Bold.otf'
 ]
 
-iFontFirstName = ImageFont.truetype(FONTS[0], 100)
-iFontCaption = ImageFont.truetype(FONTS[0], 50)
+iFontFirstName = ImageFont.truetype(FONTS[0], 160)
+iFontSmallFirstName = ImageFont.truetype(FONTS[0], 110)
+iFontCaption = ImageFont.truetype(FONTS[0], 70)
 
 data = simplejson.loads(urllib2.urlopen(URL).read())
 print data['total'], 'attendees'
 
 groups = {
     'staff': [],
-    'attendees': [],
+    'attendee': [],
 }
 
 images = {
-    'staff': Image.open('staff.jpg'),
-    'd6': Image.open('attendee-6.jpg'),
-    'd7': Image.open('attendee-7.jpg'),
-    'd67': Image.open('attendee-6-7.jpg'),
+    'staff': Image.open('staff.tif'),
+    'attendee': Image.open('attendee.tif'),
 }
 
-def getImage(a):
-    """
-    ritorna l'immagine adatta a seconda del partecipante
-    """
-    pass
+logos = {
+    'python': Image.open('logo.png'),
+    'qui': Image.open('qui.png'),
+    'quo': Image.open('quo.png'),
+    'qua': Image.open('qua.png'),
+    'perl': Image.open('perl.png'),
+    'java': Image.open('java.png'),
+}
+
+staff_people = (
+    "Giovanni Bajo",
+    "Marco Beri",
+    "Michele Bertoldi",
+    "Enrico Franchi",
+    "Alan Franzoni",
+    "Nicola Larosa",
+    "Lorenzo Mancini",
+    "Alex Martelli",
+    "Stefano Masini",
+    "C8E Carlo Miron",
+    "David Mugnai",
+    "Lawrence Oluyede",
+    "Francesco Pallanti",
+    "Manlio Perillo",
+    "Fabio Pliger",
+    "Giovanni Porcari",
+    "Michele Simionato",
+    "Daniele Varrazzo",
+    "Valentino Volonghi",
+    "Simone Zinanni",
+)
+
+def select_logo(a):
+    name = a['first_name'] + ' ' + a['last_name']
+    if name == 'Nicola Larosa':
+        return logos['qua']
+    elif name == 'Marco Beri':
+        return logos['qui']
+    elif name == 'C8E Carlo Miron':
+        return logos['quo']
+    elif name == 'Guido van Rossum':
+        return logos['perl']
+    elif name == 'Emanuele Gesuato':
+        # prima che me lo chiediate, no! non lo so chi sia,
+        # so solo che ha messo java developer come caption 
+        # per il badge.
+        return logos['java']
+    else:
+        return logos['python']
 
 for a in sorted(data['data'], key = lambda x: x['last_name'] + x['first_name']):
-    if a['first_name'] + ' ' + a['last_name'] in ('Simone Zinanni', 'Giovanni Bajo', 'Francesco Pallanti', 'Alessia Donzelli'):
+    if a['first_name'] + ' ' + a['last_name'] in staff_people:
         t = 'staff'
-    elif a['days'] == '0':
-        t = 'd6'
-    elif a['days'] == '1':
-        t = 'd7'
-    elif a['days'] == '0,1':
-        t = 'd67'
     else:
-        continue
+        t = 'attendee'
     groups[t].append(a)
+
+groups['staff'].append({
+    'first_name': 'Simone',
+    'last_name': 'Zinanni',
+    'badge_caption': 'CEO, Develer Srl',
+    'python_experience': 1,
+})
 
 for k,v in groups.items():
     print len(v), k
@@ -72,44 +116,66 @@ def wrap_text(font, text, width):
             lines.append(word)
     return map(lambda x: x.strip(), lines)
 
-BADGE_WIDTH = 1240
-BADGE_HEIGHT = 942
-BADGE_OFFSET_Y = 238
+BADGE_WIDTH = 1772 / 2
+BADGE_HEIGHT = 1300
+BADGE_OFFSET_X = 23
+BADGE_OFFSET_Y = 22
 
-def draw_info(d, ix, first_name, last_name, caption, company):
-    color = 0, 0, 0
-    x, y = 92, ix * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 220
+def draw_info(i, ix, first_name, last_name, caption, experience, logo):
+    if ix <= 1:
+        row = 0
+    else:
+        row = 1
+
+    if ix % 2 == 0:
+        col = 0
+    else:
+        col = 1
+
+    d = ImageDraw.Draw(i)
+    if iFontFirstName.getsize(first_name.upper())[0] > BADGE_WIDTH - 64 or iFontFirstName.getsize(last_name)[0] > BADGE_WIDTH - 64:
+        fontName = iFontSmallFirstName
+        fontOffset = 110
+    else:
+        fontName = iFontFirstName
+        fontOffset = 160
+    color = 102, 0, 40
+    x, y = 32 + col * (2 * BADGE_WIDTH + BADGE_OFFSET_X), row * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 440
     for c in 0, 1:
-        d.text((x + c * BADGE_WIDTH, y), first_name.upper(), font = iFontFirstName, fill = color) 
-    x, y = 92, ix * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 330
+        cx = x + c * BADGE_WIDTH
+        d.text((cx, y), first_name.upper(), font = fontName, fill = color) 
+
+    x, y = 32 + col * (2 * BADGE_WIDTH + BADGE_OFFSET_X), row * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 440 + fontOffset
     for c in 0, 1:
-        d.text((x + c * BADGE_WIDTH, y), last_name, font = iFontLastName, fill = color) 
+        cx = x + c * BADGE_WIDTH
+        d.text((cx, y), last_name, font = fontName, fill = color) 
 
-    if company:
-        color = 98, 156, 190
-        x, y = 92, ix * (BADGE_HEIGHT + BADGE_OFFSET_Y ) + 440
+    if caption and caption.lower() not in ('sig', 'sig.', 'ing', 'ing.', 'mr', 'mr.'):
+        color = 50, 61, 89
+        x, y = 32 + col * (2 * BADGE_WIDTH + BADGE_OFFSET_X), row * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 760
         for c in 0, 1:
-            d.text((x + c * BADGE_WIDTH, y), company, font = iFontCaption, fill = color) 
-
-    if caption:
-        color = 98, 156, 190
-        x, y = 92, ix * (BADGE_HEIGHT + BADGE_OFFSET_Y ) + 520
-        for c in 0, 1:
-            lines = wrap_text(iFontCaption, caption, BADGE_WIDTH - (98 + 250))
+            cx = x + c * BADGE_WIDTH
+            lines = wrap_text(iFontCaption, caption, BADGE_WIDTH - 64)
             cy = y
             for l in lines:
-                d.text((x + c * BADGE_WIDTH, cy), l, font = iFontCaption, fill = color) 
+                d.text((cx, cy), l, font = iFontCaption, fill = color) 
                 cy += iFontCaption.getsize(l)[1] + 8
+    if experience:
+        x, y = 32 + col * (2 * BADGE_WIDTH + BADGE_OFFSET_X), row * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 945
+        for c in 0, 1:
+            ex = cx = x + c * BADGE_WIDTH
+            for p in range(experience):
+                i.paste(logo.copy(), (ex, y))
+                ex += logo.size[0] + 5
 
 for t, attendees in groups.items():
-    print '%s:' % t, (len(attendees) / 3) + 1, 'pages'
+    print '%s:' % t, (len(attendees) / 4) + 1, 'pages'
     count = 1
-    for block in grouper(3, attendees):
+    for block in grouper(4, attendees):
         print '\t page', count
         i = images[t].copy()
-        d = ImageDraw.Draw(i)
         for ix, a in enumerate(filter(None, block)):
-            draw_info(d, ix, a['first_name'], a['last_name'], a['badge_caption'], a['company_name'])
+            draw_info(i, ix, a['first_name'], a['last_name'], a['badge_caption'], a['python_experience'], select_logo(a))
         i.save('%s-%d.tif' % (t, count))
         count += 1
-    
+
