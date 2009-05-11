@@ -5,81 +5,73 @@ Template utilizzato dal tag show_post_detail
 {% endcomment %}
 {% if content %}
 <div class="microblog post-detail">
-  <h1>
-    {% if not post.is_published %}
-    <span class="draft">[DRAFT]</span>
+    <h1>
+        {% if not post.is_published %}
+        <span class="draft">[DRAFT]</span>
+        {% endif %}
+        {{ content.headline }}
+    </h1>
+    <div class="summary">{{ content.summary|safe }}</div>
+    {% if content.body %}
+    <div class="body">{{ content.body|safe }}</div>
     {% endif %}
-    {{ content.headline }}
-  </h1>
-  <div class="summary">
-    {{ content.summary|safe }}
-  </div>
-  {% if content.body %}
-  <div class="body">
-    {{ content.body|safe }}
-  </div>
-  {% endif %}
-  <p class="metadata">
-    <span>Pubblicato da</span> <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
-  </p>
-  {% show_social_networks content %}
-  {% if post.allow_comments %}
+    <p class="metadata">
+        <span>Pubblicato da</span> <b>{{ post.author.first_name }}</b> il {{ post.date|date:"d F Y" }}
+    </p>
+    {% show_social_networks content %}
     <a name="comments"></a>
+
     {% get_comment_list for post as users_comments %}
     {% if not users_comments %}
-      <h3>Nessun commento inserito</h3>
+    <h3>Nessun commento inserito</h3>
     {% else %}
-      <h3>Commenti ({{ users_comments|length }})</h3>
-    {% endif %}
+    <h3>Commenti ({{ users_comments|length }})</h3>
     <ol class="comments">
-      {% for c in users_comments %}
+        {% for c in users_comments %}
         <li class="comment" id="microblog-comment-{{ c.id }}">
-          <div class="metadata" {% if forloop.last %}id="last-comment"{% endif %}>
+            <div class="metadata" {% if forloop.last %}id="last-comment"{% endif %}>
             {% with c.userinfo as info %}
-              {% if info.url %}
-              <strong><a href="{{ info.url }}" rel="nofollow">{{ info.name }}</a></strong>
-              {% else %}
-              <strong>{{ info.name }}</strong>
-              {% endif %}
-              , 
-              <span class="date">
-                <a title="Permalink a questo commento" href="#microblog-comment-{{ c.id}}">
-                  {{ c.submit_date|date:"d F Y" }}
-                </a>
-                alle {{ c.submit_date|date:"H:i" }}
-              </span>
+            {% if info.url %}
+                <strong><a href="{{ info.url }}" rel="nofollow">{{ info.name }}</a></strong>
+            {% else %}
+                <strong>{{ info.name }}</strong>
+            {% endif %}
+            , 
+            <span class="date">
+                <a title="Permalink a questo commento" href="#microblog-comment-{{ c.id}}">{{ c.submit_date|date:"d F Y" }}</a> alle {{ c.submit_date|date:"H:i" }}
+            </span>
             {% endwith %}
           </div>
-          <div class="body">
-            {{ c.comment|linebreaksbr }}
-          </div>
+          <div class="body">{{ c.comment|linebreaksbr }}</div>
         </li>
-      {% endfor %}
-    </ol>
-  {% ifnotequal options "no-comment-form" %}
-  <div class="comments-form">
-    <h3>Aggiungi un commento</h3>
-    {% get_comment_form for post as form %}
-    <form action="{% comment_form_target %}#preview-comment" method="post">
-        {% for field in form %}
-        {% if field.is_hidden %}
-          <div>{{ field }}</div>
-        {% else %}
-          <p
-            {% if field.errors %} class="error"{% endif %}
-            {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
-            {% if field.errors %}{{ field.errors }}{% endif %}
-            {{ field.label_tag }} {{ field }}
-          </p>
-        {% endif %}
         {% endfor %}
-        <p class="submit">
-            <input type="submit" name="post" class="submit-post" value="Post" />
-            <input type="submit" name="preview" class="submit-post" value="Preview" />
-        </p>
-    </form>
-  </div>
-  {% endifnotequal %}
-  {% endif %}
+    </ol>
+    {% endif %}
+    {% if post.allow_comments %}
+    {% ifnotequal options "no-comment-form" %}
+    <div class="comments-form">
+        <h3>Aggiungi un commento</h3>
+        {% get_comment_form for post as form %}
+        <form action="{% comment_form_target %}#preview-comment" method="post">
+            {% for field in form %}
+            {% if field.is_hidden %}
+                <div>{{ field }}</div>
+            {% else %}
+                <p
+                  {% if field.errors %} class="error"{% endif %}
+                  {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
+                  {% if field.errors %}{{ field.errors }}{% endif %}
+                  {{ field.label_tag }} {{ field }}
+                </p>
+            {% endif %}
+            {% endfor %}
+            <p class="submit">
+                <input type="submit" name="post" class="submit-post" value="Post" />
+                <input type="submit" name="preview" class="submit-post" value="Preview" />
+            </p>
+        </form>
+    </div>
+    {% endifnotequal %}
+    {% endif %}
 </div>
 {% endif %}
