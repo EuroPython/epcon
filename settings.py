@@ -120,6 +120,7 @@ DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
 
 PAGE_TEMPLATES = (
     ('p3/index.html', 'homepage'),
+    ('p3/index-simple.html', 'homepage (semplificata)'),
     ('p3/content.html', 'content page'),
     ('p3/content-1col.html', 'content page (una colonna)'),
     ('p3/content-assopy.html', 'assopy page (una colonna)'),
