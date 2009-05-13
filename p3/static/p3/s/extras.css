@@ -305,4 +305,9 @@ ul.archive > li {
 
 .homepage-text {
     margin-bottom: 20px;
+    font-size: 1.13em;
+}
+
+.homepage-text p {
+    margin: 13px 0;
 }
