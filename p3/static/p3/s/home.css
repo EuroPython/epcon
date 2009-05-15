@@ -207,13 +207,14 @@
 
 
 #quotes {
-
-	
 }
 
 #quotes ul {
-	
 	list-style: none;
+}
+
+#quotes li {
+	margin-bottom: 20px;
 }
 
 

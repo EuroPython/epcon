@@ -33,21 +33,6 @@
         {% endfor %}
     {% endif %}
 
-  <script type="text/javascript">
-
-   $(document).ready(function(){ 
-      $('#quotes ul').cycle({
-          delay: 5000, 
-          timeout: 10000, 
-          speed: 500, 
-          pause: 1
-      });
-      $('#lang select[name=language]').change(function() {
-        $('#lang form').submit();
-      });
-   });
-
-  </script>
   {% block EXTRA_HEAD %}{% endblock %}
 </head>
 <body id="s-home">

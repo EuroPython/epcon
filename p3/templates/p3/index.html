@@ -1,6 +1,21 @@
 {% extends "p3/base.html" %}
 {% load pages_tags markup conference microblog i18n %}
 {% block MAIN_CONTENT %}
+<script type="text/javascript">
+
+   $(document).ready(function(){ 
+      $('#quotes ul').cycle({
+          delay: 5000, 
+          timeout: 10000, 
+          speed: 500, 
+          pause: 1
+      });
+      $('#lang select[name=language]').change(function() {
+        $('#lang form').submit();
+      });
+   });
+
+</script>
 <div class="column span-12">
     {% ifnotequal request.LANGUAGE_CODE "it" %}
     <h2 class="welcome-non-italian"><a href="/pycon3/non-italians">Welcome non-italian speakers to PyconTre</a></h2>
