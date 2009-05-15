@@ -15,6 +15,8 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/jquery-cycle-lite.min.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/utils.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/sevenup.0.3.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}p3/j/sevenup_black.0.3.min.js"></script>
 
     {% if current_page %}
         {% tags_for_object current_page as ptags %}
@@ -33,7 +35,12 @@
         {% endfor %}
     {% endif %}
 
-  {% block EXTRA_HEAD %}{% endblock %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            sevenUp.plugin.black.test({showToAllBrowser: true}, null);
+        });
+    </script>
+    {% block EXTRA_HEAD %}{% endblock %}
 </head>
 <body id="s-home">
 <div class="hidden"><a href="#main">Salta ai contenuti</a></div>    
