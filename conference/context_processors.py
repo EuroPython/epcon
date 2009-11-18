@@ -1,10 +1,10 @@
-from django.conf import settings
+import settings
 
 def stuff(request):
     """
     Aggiunge le variabili relative alla STUFF directory
     """
-    stuff = '%sstuff/' % settings.MEDIA_URL
+    stuff = settings.CONFERENCE_STUFF_URL
     ctx = {
         'STUFF_URL': stuff,
         'SPONSOR_LOGO_URL': '%ssponsor/' % stuff,
@@ -12,8 +12,6 @@ def stuff(request):
         'SPEAKER_FACE_URL': '%sspeaker/' % stuff,
         'SLIDE_FILE_URL': '%sslides/' % stuff,
     }
-    try:
-        ctx['GOOGLE_MAPS_KEY'] = settings.GOOGLE_MAPS_CONFERENCE['key']
-    except (AttributeError, KeyError):
-        pass
+    if settings.CONFERENCE_GOOGLE_MAPS:
+        ctx['GOOGLE_MAPS_KEY'] = settings.CONFERENCE_GOOGLE_MAPS['key']
     return ctx

@@ -7,12 +7,13 @@ import re
 import httplib2
 import simplejson
 from django import template
+from django.conf import settings as dsettings
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
 from django.template import defaultfilters
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from conference import settings
 from conference import models
 from pages import models as PagesModels
 
@@ -39,7 +40,7 @@ class LatestDeadlinesNode(template.Node):
         if self.limit:
             query = query[:self.limit]
 
-        dlang = settings.LANGUAGES[0][0]
+        dlang = dsettings.LANGUAGES[0][0]
         lang = context.get('LANGUAGE_CODE', dlang)
         # le preferenze per la lingua sono:
         #   1. lingua scelta dall'utente
@@ -146,7 +147,7 @@ def stuff_info(parser, token):
             try:
                 fpath = fpath.path
             except AttributeError:
-                fpath = os.path.join(settings.STUFF_DIR, fpath)
+                fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, fpath)
             try:
                 stat = os.stat(fpath)
             except (AttributeError, OSError), e:
@@ -614,7 +615,7 @@ def conference_multilingual_attribute(parser, token):
                 elif fallback != 'any':
                     value = contents.get(fallback)
                 else:
-                    dlang = settings.LANGUAGES[0][0]
+                    dlang = dsettings.LANGUAGES[0][0]
                     if dlang in contents:
                         value = contents[dlang]
                     else:
@@ -711,8 +712,7 @@ def embed_video(value, args=None):
             opts['height'] = h
         attrs = [ '%s="%s"' % x for x in opts.items() ]
 
-        fpath = os.path.join(settings.STUFF_DIR, 'videos', value.video_file.name)
-        print fpath
+        fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.video_file.name)
         try:
             stat = os.stat(fpath)
         except (AttributeError, OSError), e:

@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
 import os.path
-from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 
@@ -9,6 +8,7 @@ import tagging
 from tagging.fields import TagField
 
 import conference
+import settings
 import conference.gmap
 import subprocess
 
@@ -62,8 +62,8 @@ from django.core.files.storage import FileSystemStorage
 
 def _build_fs_stuff(subdir):
     fs = FileSystemStorage(
-        location = os.path.join(settings.STUFF_DIR, subdir),
-        base_url = urlparse.urljoin(settings.MEDIA_URL, 'stuff/%s/' % subdir)
+        location = os.path.join(settings.CONFERENCE_STUFF_DIR, subdir),
+        base_url = urlparse.urljoin(settings.CONFERENCE_STUFF_URL, subdir)
     )
 
     def build_path(instance, filename):
@@ -179,7 +179,7 @@ def postSaveSponsorHandler(sender, **kwargs):
     tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
     null = open('/dev/null')
     p = subprocess.Popen(
-        [tool, settings.STUFF_DIR],
+        [tool, settings.CONFERENCE_STUFF_DIR],
         close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate()
 post_save.connect(postSaveSponsorHandler, sender=Sponsor)
@@ -306,8 +306,8 @@ class Hotel(models.Model):
         return self.name
 
 try:
-    assert settings.GOOGLE_MAPS_CONFERENCE['key']
-except (AttributeError, KeyError, AssertionError):
+    assert settings.CONFERENCE_GOOGLE_MAPS['key']
+except (KeyError, TypeError, AssertionError):
     pass
 else:
     def postSaveHotelHandler(sender, **kwargs):
@@ -315,8 +315,8 @@ else:
         for obj in query:
             data = conference.gmap.geocode(
                 obj.address,
-                settings.GOOGLE_MAPS_CONFERENCE['key'],
-                settings.GOOGLE_MAPS_CONFERENCE.get('country')
+                settings.CONFERENCE_GOOGLE_MAPS['key'],
+                settings.CONFERENCE_GOOGLE_MAPS.get('country')
             )
             if data['Status']['code'] == 200:
                 point = data['Placemark'][0]['Point']['coordinates']
