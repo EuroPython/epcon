@@ -250,6 +250,8 @@ def conference_talks(parser, token):
             conference = self._get_var(self.conference, context)
             if speaker:
                 talks = talks.filter(speakers = speaker)
+            if conference:
+                talks = talks.filter(conference = conference)
             if tags:
                 talks = TaggedItem.objects.get_by_model(talks, tags)
             context[self.var_name] = talks
