@@ -82,6 +82,8 @@ class Speaker(models.Model):
     activity = models.CharField(max_length = 50, blank = True)
     industry = models.CharField(max_length = 50, blank = True)
     location = models.CharField(max_length = 100, blank = True)
+    activity_homepage = models.URLField(verify_exists = False, blank = True)
+    twitter = models.CharField(max_length = 80, blank = True)
     image = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
     bios = generic.GenericRelation(MultilingualContent)
 
