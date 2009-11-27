@@ -235,7 +235,6 @@ def conference_talks(parser, token):
     if contents:
         tags = contents.pop(0)
 
-    
     class TalksNode(TNode):
         def __init__(self, speaker, conference, tags, var_name):
             self.var_name = var_name
@@ -251,7 +250,7 @@ def conference_talks(parser, token):
             if speaker:
                 talks = talks.filter(speakers = speaker)
             if conference:
-                talks = talks.filter(conference = conference)
+                talks = talks.filter(conference__in = conference)
             if tags:
                 talks = TaggedItem.objects.get_by_model(talks, tags)
             context[self.var_name] = talks
