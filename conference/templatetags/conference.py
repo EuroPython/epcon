@@ -250,6 +250,10 @@ def conference_talks(parser, token):
             if speaker:
                 talks = talks.filter(speakers = speaker)
             if conference:
+                try:
+                    iter(conference)
+                except TypeError:
+                    conference = [ conference ]
                 talks = talks.filter(conference__in = conference)
             if tags:
                 talks = TaggedItem.objects.get_by_model(talks, tags)
