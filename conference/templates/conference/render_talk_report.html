@@ -15,7 +15,7 @@
 
             {% conference_multilingual_attribute talk "abstracts" as abstract %}
             {{ abstract.body|striptags|truncatewords:40|safe }}
-                        
+
         </li>
         {% endfor %}
     </ul>
