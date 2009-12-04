@@ -261,6 +261,15 @@ def conference_talks(parser, token):
             return ''
     return TalksNode(speaker, conference, tags, var_name)
 
+@register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
+def render_talk_report(context, speaker, conference, tags):
+    context.update({
+        'speaker': speaker,
+        'conference': conference,
+        'tags': tags,
+    })
+    return context
+
 @register.inclusion_tag('conference/render_schedule.html', takes_context = True)
 def render_schedule(context, schedule):
     """
