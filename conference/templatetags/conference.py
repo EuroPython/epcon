@@ -14,6 +14,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 from conference import settings
+from conference.settings import CONFERENCE_MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
 from conference import models
 from pages import models as PagesModels
 
@@ -155,6 +156,7 @@ def stuff_info(parser, token):
             else:
                 fsize = stat.st_size
                 ftype = mimetypes.guess_type(fpath)[0]
+            ftype = mimetype_conversion_dict.get(ftype, ftype)
             if self.var_name:
                 context[self.var_name] = (ftype, fsize)
                 return ''
