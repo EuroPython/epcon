@@ -25,6 +25,11 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': os.path.join(path, k), 'show_indexes': True}
         ))
+    args.append((
+        r'^media/(?P<path>.*)$',
+        'django.views.static.serve',
+        {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+    ))
     urlpatterns += patterns('', *args)
 
 urlpatterns += patterns('', (r'', include('pages.urls')))

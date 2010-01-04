@@ -1,7 +1,11 @@
 # -*- coding: UTF-8 -*-
-from datetime import date
-from conference import assopy
+#from datetime import date
+#from conference import assopy
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+
+def static(request):
+    return { 'STATIC_URL': settings.STATIC_URL }
 
 def highlight(request):
     """
