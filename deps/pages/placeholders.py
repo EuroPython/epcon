@@ -130,33 +130,32 @@ class PlaceholderNode(template.Node):
 
     def render(self, context):
         """Output the content of the node in the template."""
-        if not self.page in context:
-            return ''
-        # current_page can be set to None
-        if not context[self.page]:
-            return ''
+        # current_page can not exists or be set to None
+        if not context.get(self.page, None):
+            content = ''
+        else:
+            lang = context.get('lang', settings.PAGE_DEFAULT_LANGUAGE)
+            content = Content.objects.get_content(context[self.page], lang,
+                                                  self.name, True)
+            if not content:
+                content = ''
+            elif self.parsed:
+                try:
+                    t = template.Template(content, name=self.name)
+                    content = mark_safe(t.render(context))
+                except template.TemplateSyntaxError, error:
+                    if global_settings.DEBUG:
+                        error = PLACEHOLDER_ERROR % {
+                            'name': self.name,
+                            'error': error,
+                        }
+                        if self.as_varname is None:
+                            return error
+                        context[self.as_varname] = error
+                        return ''
+                    else:
+                        return ''
 
-        lang = context.get('lang', settings.PAGE_DEFAULT_LANGUAGE)
-        content = Content.objects.get_content(context[self.page], lang,
-                                              self.name, True)
-        if not content:
-            return ''
-        if self.parsed:
-            try:
-                t = template.Template(content, name=self.name)
-                content = mark_safe(t.render(context))
-            except template.TemplateSyntaxError, error:
-                if global_settings.DEBUG:
-                    error = PLACEHOLDER_ERROR % {
-                        'name': self.name,
-                        'error': error,
-                    }
-                    if self.as_varname is None:
-                        return error
-                    context[self.as_varname] = error
-                    return ''
-                else:
-                    return ''
         if self.as_varname is None:
             return content
         context[self.as_varname] = content
