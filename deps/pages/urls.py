@@ -8,6 +8,13 @@ urlpatterns = patterns('',
     url(r'^$', details, name='pages-root'),
 )
 
-urlpatterns += patterns('',
-    url(r'^.*?/?(?P<slug>[-\w]+)/$', details, name='pages-details-by-slug'),
-)
+if settings.PAGE_USE_LANGUAGE_PREFIX:
+    urlpatterns += patterns('',
+        url(r'^(?P<lang>[-\w]+)/(?P<path>.*)$', details,
+            name='pages-details-by-path'),
+    )
+else:
+    urlpatterns += patterns('',
+        url(r'^(?P<path>.*)$', details,
+            name='pages-details-by-path'),
+    )

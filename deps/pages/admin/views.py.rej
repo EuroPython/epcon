@@ -1,0 +1,55 @@
+***************
+*** 8,14 ****
+  from pages.models import Page, Content
+  from pages.utils import get_placeholders
+  from pages.http import auto_render
+- from pages.admin.utils import set_body_pagelink, delete_body_pagelink_by_language
+  
+  def change_status(request, page_id):
+      """
+--- 8,14 ----
+  from pages.models import Page, Content
+  from pages.utils import get_placeholders
+  from pages.http import auto_render
++ #from pages.admin.utils import set_body_pagelink, delete_body_pagelink_by_language
+  
+  def change_status(request, page_id):
+      """
+***************
+*** 44,51 ****
+          page.invalidate()
+          # to update last modification date
+          page.save()
+-         if len(settings.PAGE_LINK_EDITOR) > 0:
+-             set_body_pagelink(page) # (extra) pagelink
+  
+          return HttpResponse('ok')
+      raise Http404
+--- 44,51 ----
+          page.invalidate()
+          # to update last modification date
+          page.save()
++         #if len(settings.PAGE_LINK_EDITOR) > 0:
++         #    set_body_pagelink(page) # (extra) pagelink
+  
+          return HttpResponse('ok')
+      raise Http404
+***************
+*** 54,61 ****
+  
+  def delete_content(request, page_id, language_id):
+      page = get_object_or_404(Page, pk=page_id)
+-     if settings.PAGE_LINK_EDITOR:
+-         delete_body_pagelink_by_language(page, language_id)
+      for c in Content.objects.filter(page=page,language=language_id):
+          c.delete()
+      
+--- 54,61 ----
+  
+  def delete_content(request, page_id, language_id):
+      page = get_object_or_404(Page, pk=page_id)
++     #if settings.PAGE_LINK_EDITOR:
++     #    delete_body_pagelink_by_language(page, language_id)
+      for c in Content.objects.filter(page=page,language=language_id):
+          c.delete()
+      

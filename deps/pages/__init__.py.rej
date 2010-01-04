@@ -1,0 +1,56 @@
+*************** class PageAdmin(admin.ModelAdmin):
+*** 37,42 ****
+      general_fields.append('sites')
+      insert_point = general_fields.index('status') + 1
+  
+      if settings.PAGE_TAGGING:
+          general_fields.insert(insert_point, 'tags')
+  
+--- 37,44 ----
+      general_fields.append('sites')
+      insert_point = general_fields.index('status') + 1
+  
++     inlines = []
++ 
+      if settings.PAGE_TAGGING:
+          general_fields.insert(insert_point, 'tags')
+  
+*************** class PageAdmin(admin.ModelAdmin):
+*** 76,86 ****
+              'javascript/pages_form.js',
+          )]
+  
+-     def __init__(self, *args, **kwds):
+-         for model, options in get_connected():
+-             self.inlines.append(make_inline_admin(model, options))
+-         return super(PageAdmin, self).__init__(*args, **kwds)
+- 
+      def __call__(self, request, url):
+          """
+          Delegate to the appropriate method, based on the URL.
+--- 78,83 ----
+              'javascript/pages_form.js',
+          )]
+  
+      def __call__(self, request, url):
+          """
+          Delegate to the appropriate method, based on the URL.
+*************** class PageAdmin(admin.ModelAdmin):
+*** 399,404 ****
+                      template_name='admin/pages/page/change_list_table.html')
+          return HttpResponseRedirect('../../')
+  
+  try:
+      admin.site.register(Page, PageAdmin)
+  except AlreadyRegistered:
+--- 396,405 ----
+                      template_name='admin/pages/page/change_list_table.html')
+          return HttpResponseRedirect('../../')
+  
++ 
++ for model, options in get_connected():
++     PageAdmin.inlines.append(make_inline_admin(model, options))
++ 
+  try:
+      admin.site.register(Page, PageAdmin)
+  except AlreadyRegistered:
