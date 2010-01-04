@@ -17,7 +17,6 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     #(r'^pycon3/', include('pages.urls')),
     (r'^conference/', include('conference.urls')),
-    (r'', include('conference.pages_urls')),
 )
 
 if settings.DEBUG:
@@ -31,4 +30,4 @@ if settings.DEBUG:
         ))
     urlpatterns += patterns('', *args)
 
-urlpatterns = urlpatterns
+urlpatterns += patterns('', (r'', include('pages.urls')))
