@@ -1,5 +1,0 @@
-{% extends "admin/change_list.html" %}
-{% block content %}
-<form enctype="multipart/form-data" action="{% url conference-talks-upload %}" method="post"><label for="txml">Upload talk XML</label><input id="txml" type="file" name="xml" /><input type="submit" value="invia" /></form>
-{{ block.super }}
-{% endblock %}
