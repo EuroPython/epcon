@@ -5,7 +5,23 @@ import sys
 import string
 import urllib2
 import re
-from itertools import izip_longest
+try:
+    from itertools import izip_longest
+except ImportError:
+    def izip_longest(*args, **kwds):
+        from itertools import repeat, chain, izip
+        # izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-
+        fillvalue = kwds.get('fillvalue')
+        def sentinel(counter = ([fillvalue]*(len(args)-1)).pop):
+            yield counter()         # yields the fillvalue, or raises IndexError
+        fillers = repeat(fillvalue)
+        iters = [chain(it, sentinel(), fillers) for it in args]
+        try:
+            for tup in izip(*iters):
+                yield tup
+        except IndexError:
+            pass
+
 import simplejson
 import Image, ImageFont, ImageDraw
 
@@ -18,7 +34,8 @@ iFontFirstName = ImageFont.truetype(FONTS[0], 160)
 iFontSmallFirstName = ImageFont.truetype(FONTS[0], 110)
 iFontCaption = ImageFont.truetype(FONTS[0], 70)
 
-data = simplejson.loads(urllib2.urlopen(URL).read())
+#data = simplejson.loads(urllib2.urlopen(URL).read())
+data = simplejson.loads(file('missing_attendees').read())
 print data['total'], 'attendees'
 
 groups = {
@@ -88,12 +105,36 @@ for a in sorted(data['data'], key = lambda x: x['last_name'] + x['first_name']):
         t = 'attendee'
     groups[t].append(a)
 
-groups['staff'].append({
-    'first_name': 'Simone',
-    'last_name': 'Zinanni',
-    'badge_caption': 'CEO, Develer Srl',
-    'python_experience': 1,
-})
+#groups['staff'].append({
+#    'first_name': 'Simone',
+#    'last_name': 'Zinanni',
+#    'badge_caption': 'CEO, Develer Srl',
+#    'python_experience': 1,
+#})
+#groups['attendee'].append({
+#    'first_name': 'Lorenzo',
+#    'last_name': 'Baglioni',
+#    'badge_caption': 'easy maker',
+#    'python_experience': 1,
+#})
+#groups['attendee'].append({
+#    'first_name': 'Rosy',
+#    'last_name': '',
+#    'badge_caption': 'hostess',
+#    'python_experience': -1,
+#})
+#groups['attendee'].append({
+#    'first_name': 'Luisa',
+#    'last_name': '',
+#    'badge_caption': 'hostess',
+#    'python_experience': -1,
+#})
+#groups['attendee'].append({
+#    'first_name': 'Michela',
+#    'last_name': '',
+#    'badge_caption': 'hostess',
+#    'python_experience': -1,
+#})
 
 for k,v in groups.items():
     print len(v), k
@@ -150,7 +191,7 @@ def draw_info(i, ix, first_name, last_name, caption, experience, logo):
         cx = x + c * BADGE_WIDTH
         d.text((cx, y), last_name, font = fontName, fill = color) 
 
-    if caption and caption.lower() not in ('sig', 'sig.', 'ing', 'ing.', 'mr', 'mr.'):
+    if caption and caption.lower() not in ('sig', 'sig.', 'ing', 'ing.', 'mr', 'mr.', 'mrs', 'mrs.'):
         color = 50, 61, 89
         x, y = 32 + col * (2 * BADGE_WIDTH + BADGE_OFFSET_X), row * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 760
         for c in 0, 1:
@@ -160,11 +201,11 @@ def draw_info(i, ix, first_name, last_name, caption, experience, logo):
             for l in lines:
                 d.text((cx, cy), l, font = iFontCaption, fill = color) 
                 cy += iFontCaption.getsize(l)[1] + 8
-    if experience:
+    if experience is not None and experience > -1:
         x, y = 32 + col * (2 * BADGE_WIDTH + BADGE_OFFSET_X), row * (BADGE_HEIGHT + BADGE_OFFSET_Y) + 945
         for c in 0, 1:
             ex = cx = x + c * BADGE_WIDTH
-            for p in range(experience):
+            for p in range(experience + 1):
                 i.paste(logo.copy(), (ex, y))
                 ex += logo.size[0] + 5
 
