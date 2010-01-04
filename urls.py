@@ -4,15 +4,12 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-
-import pages.urls
-
 urlpatterns = patterns('',
+    (r'^admin/', include(admin.site.urls)),
     #(r'^$', 'p3.views.root'),
     (r'^pycon3/assopy/$', 'conference.views.genro_wrapper'),
     (r'^pycon3/gmap.js$', 'p3.views.gmap'),
     #(r'^pycon3/__assopy-dev/$', 'conference.views.genro_wrapper'),
-    (r'^admin/(.*)', admin.site.root),
     (r'^blog/', include('microblog.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
     #(r'^pycon3/', include('pages.urls')),
