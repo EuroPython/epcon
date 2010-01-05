@@ -11,6 +11,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 SERVER_EMAIL = 'wtf@python.it'
+DEFAULT_FROM_EMAIL = 'site@pycon.it'
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'db/p3.db'     # Or path to database file if using sqlite3.
@@ -118,7 +119,6 @@ INSTALLED_APPS = (
 )
 
 ## used by the blog
-#AKISMET_KEY = '56c34997206c'
 #FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
 
 PAGE_USE_SITE_ID = False
@@ -140,6 +140,10 @@ MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconItalia blog'
 MICROBLOG_DESCRIPTION = 'ultime news da PyconItalia'
 MICROBLOG_DEFAULT_LANGUAGE = 'it'
+MICROBLOG_POST_LIST_PAGINATION = True
+MICROBLOG_POST_PER_PAGE = 10
+MICROBLOG_MODERATION_TYPE = 'akismet'
+MICROBLOG_AKISMET_KEY = '56c34997206c'
 
 # se si vuole far servire a django i file statici
 # popolare questo dizionario con coppie
