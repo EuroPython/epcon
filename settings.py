@@ -112,6 +112,9 @@ INSTALLED_APPS = (
     'p3',
     'microblog',
     'django.contrib.comments',
+    'hcomments',
+    'django_xmlrpc',
+    'pingback',
 )
 
 ## used by the blog
@@ -160,6 +163,10 @@ GOOGLE_MAPS_CONFERENCE = {
     'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
     'country': 'it',
 }
+
+DEFAULT_URL_PREFIX = 'http://www.pycon.it'
+PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
+COMMENTS_APP = 'hcomments'
 
 try:
     from settings_locale import *

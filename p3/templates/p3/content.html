@@ -3,43 +3,35 @@
 
 {% block MAIN_CONTENT %}
 <div class="column span-12">
-    <div class="column {% block PAGE__CLASS_MAIN_COLUMN %}span-8{% endblock %}">
-        {% block PAGE_ENTRY %}                        
-            <div id="page">                        
-            
-                <div id="page-title">
-                    <h1>{% show_content current_page "title" %}</h1>                    
-                    <div>
-                      {% placeholder subtitle with markItUpMarkdown as text %}
-                      {{ text|markdown }}
-                    </div>
-                </div>            
-                
-                <div class="entry">
-                    {% placeholder text with markItUpMarkdown as text %}
-                    {% render_page_template text as m %}
-                    {{ m|markdown }}
-                </div>            
-                
-            <!-- /page -->
-            </div>  
-        {% endblock %}
-    </div>   
-    {% block PAGE__AFTER_MAIN_COLUMN %}
-    <div class="column span-4 last">
-        <div id="sidebar">
-            {% block PAGE_SIDEBAR_TOP %}
-            {% box_didyouknow %}
-            {% endblock %}
-            {% block PAGE_SIDEBAR %}
-            {% comment %}
-            sidebar - usare dei <p> e degli <h2> per i titoli
-            {% endcomment %}
-            {% placeholder right-column parsed %}
-            {% endblock %}
-            {% box_newsletter %}
+    <div class="page clearfix{% block PAGE__CLASS %} border{% endblock %}">
+
+        <h1>{% show_content current_page "title" %}</h1>
+
+        <div class="column{% block PAGE__CLASS_MAIN_COLUMN %} span-8{% endblock %}">
+            <div class="page-summary">
+                {% placeholder subtitle with markItUpMarkdown as text %}
+                {{ text|markdown }}
+            </div>
+            <div class="cms">
+                {% placeholder text with markItUpMarkdown as text %}
+                {% render_page_template text as m %}
+                {{ m|markdown }}
+            </div>
         </div>
+
+        {% block PAGE__AFTER_MAIN_COLUMN %}
+        <div class="column span-4 last">
+            <div id="sidebar" class="cms">
+                {% block PAGE_SIDEBAR_TOP %}
+                {% box_didyouknow %}
+                {% endblock %}
+                {% block PAGE_SIDEBAR %}
+                {% placeholder right-column parsed %}
+                {% endblock %}
+                {% box_newsletter %}
+            </div>
+        </div>
+        {% endblock %}
     </div>
-    {% endblock %}
 </div>
 {% endblock %}

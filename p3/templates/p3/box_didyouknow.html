@@ -1,9 +1,8 @@
 {% load i18n conference %}
 {% if d %}
 <div class="side-box did-you-know">
-    <h2>{% trans "Lo sai che" %}</h2>
+    <h3>{% trans "Lo sai che" %}</h3>
     {% conference_multilingual_attribute d "messages" as msg fallback "any" %}
     <p>{{ msg.body|safe }}</p>
 </div>
 {% endif %}
-

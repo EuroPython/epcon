@@ -1,0 +1,55 @@
+<div class="social-networks clearfix">
+    <h3>Condividi questo post</h3>
+
+    <div class="column span-2">
+        <ul>
+            <li>
+                <!-- delicious  -->
+                <img src="{{ STATIC_URL }}p4/i/delicious-16x16.png" alt="Delicious"  width="16" height="16" />&nbsp;<a href="http://del.icio.us/post?v=4&amp;noui&amp;jump=close&amp;url={{ content_url|urlencode }}&amp;title={{ content.headline|urlencode }}" title="Delicious" onclick="window.open(this.href, 'sharer');return false;">Delicious</a>
+            </li>
+            <li>
+                <!-- digg.com -->
+                <img src="{{ STATIC_URL }}p4/i/digg-this-16x16.png" alt="digg" width="16" height="16" />&nbsp;<a href="http://digg.com/submit?phase=2&amp;url={{ content_url|urlencode }}&amp;title={{ content.headline|urlencode }}" onclick="window.open(this.href, 'sharer');return false;" title="digg">Digg this</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="column span-2">
+        <ul>
+            <li>
+                <!-- newsvine -->
+                <img src="{{ STATIC_URL }}p4/i/newsvine-16x16.png" alt="Newsvine" width="16" height="16" />&nbsp;<a href="http://www.newsvine.com/_tools/seed&amp;save?u={{ content_url|urlencode }}&amp;h={{ content.headline|urlencode }}" onclick="window.open(this.href, 'sharer');return false;" title="Newsvine">Newsvine</a>            
+            </li>
+            <li>
+                <!-- reddit.com -->
+                <img src="{{ STATIC_URL }}p4/i/reddit-16x16.png" alt="Reddit" width="16" height="16" />&nbsp;<a href="http://reddit.com/submit?url={{ content_url|urlencode }}&amp;title={{ content.headline|urlencode }}" onclick="window.open(this.href, 'sharer');return false;" title="Reddit">Reddit</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="column span-2">
+        <ul>
+            <li>
+                <!-- facebook -->
+                <img src="{{ STATIC_URL }}p4/i/facebook-16x16.png" alt="Facebook" width="16" height="16" />&nbsp;<a href="http://www.facebook.com/share.php?u={{ content_url|urlencode }}" title="Facebook" onclick="window.open(this.href,'sharer');return false;">Facebook</a>        
+            </li>
+            <li>
+                <!-- friendfeed -->
+                <img src="{{ STATIC_URL }}p4/i/friendfeed-16x16.png" alt="Friendfeed" width="16" height="16" />&nbsp;<a href="http://www.friendfeed.com/share?title={{ content.headline|urlencode }}&link={{ content_url|urlencode }}" title="Facebook" onclick="window.open(this.href,'sharer');return false;">Friendfeed</a>        
+            </li>
+        </ul>
+    </div>
+
+    <div class="column span-2 last">
+        <ul>
+            <li>
+                <!-- stumbleupon -->
+                <img src="{{ STATIC_URL }}p4/i/stumbleupon-16x16.png" alt="StumbleUpon" width="16" height="16" />&nbsp;<a href="http://www.stumbleupon.com/submit?url={{ content_url|urlencode }}&title={{ content.headline|urlencode }}" title="StumbleUpon" onclick="window.open(this.href,'sharer');return false;">StumbleUpon</a>        
+            </li>
+            <li>
+                <!-- twitter -->
+                <img src="{{ STATIC_URL }}p4/i/twitter-16x16.png" alt="Twitter" width="16" height="16" />&nbsp;<a href="http://twitter.com/home?status={{ content.headline|urlencode }}+{{ content_url|urlencode }}" title="Twitter" onclick="window.open(this.href,'sharer');return false;">Twitter</a>        
+            </li>
+        </ul>
+    </div>
+</div>

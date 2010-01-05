@@ -1,0 +1,6 @@
+{% extends "microblog/post_list.html" %}
+{% load microblog %}
+{% block PAGE_TITLE %}{{ category.name }} &mdash; Better Software Blog{% endblock %}
+{% block BLOG_HEADER %}
+  <h1>{{ category.post_set.count }} posts in "{{ category.name }}"</h1>
+{% endblock %}

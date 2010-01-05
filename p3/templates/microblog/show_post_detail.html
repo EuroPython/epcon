@@ -1,0 +1,14 @@
+{% load i18n microblog tagging_tags %}
+
+{% if content %}
+    {% trackback_rdf content %}
+
+    <div class="page-summary">{{ content.summary|safe }}</div>
+
+    {% if content.body %}
+        <div class="cms">{{ content.body|safe }}</div>
+    {% endif %}
+
+    {% show_social_networks content %}
+    
+{% endif %}

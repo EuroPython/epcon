@@ -1,0 +1,21 @@
+{% load i18n %}
+{% if reactions %}
+<div id="reactions">
+    <h3>{% trans "Reazioni" %}</h3>
+    <ol>
+    {% for r in reactions %}
+        <li>
+            {% if r.excerpt %}
+            <div class="excerpt">{{ r.excerpt }}</div>
+            {% endif %}
+            <div class="metadata">
+                <span class="date">{{ r.date|date:"d F Y" }}</span> da
+                <a href="{{ r.url }}" rel="nofollow">{% if r.blog_name %}{{ r.blog_name }}{% else %}{{ r.url }}{% endif %}</a>.
+            </div>
+        </li>
+    {% endfor %}
+    </ol>
+</div>
+
+{% endif %}
+

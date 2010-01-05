@@ -1,17 +1,117 @@
-{% extends "p3/content.html" %}
-{% load microblog p3 %}
-
-{% block PAGE_TITLE %}{{ content.headline }} &mdash; {% endblock %}
-{% block PAGE_ENTRY %}
-    <div id="page">
-      {% show_post_detail content %}
-    </div>
+{% extends "microblog/base.html" %}
+{% load i18n microblog tagging_tags %}
+{% block PAGE_TITLE %}{{ content.headline }} &mdash; PyCon Italia Blog{% endblock %}
+{% block PAGE_DESCRIPTION %}
+    <meta name="keywords" content="{{ content.post.tags }}" />
+    <meta name="description" content="{{ content.summary|striptags }}" />
+{% endblock %}
+{% block EXTRA_HEAD %}
+    <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
+    <script type="text/javascript">//<![CDATA[
+        $(function() {
+            hcomments.comments({
+                'form': $('#add-comment form'),
+                'wrapper': $('#comments ol'),
+                'comments': $('#comments li'),
+                'remove': "{% url hcomments-delete-comment %}"
+            });
+            hcomments.onCommentModerated = function(comment) {
+                var e = comment ? comment : $('.form-box');
+                var msg = $('<div class="comment-moderated">{% trans "Lo staff sta controllando il tuo commento, a breve verrà pubblicato." %}</div>');
+                e.prepend(msg)
+                setTimeout(function() {
+                    $('.comment-moderated', e).remove();
+                }, 10000);
+                $('.form-box form').get(0).reset();
+            }
+        });
+    //]]></script>
+{% endblock %}
+{% block BLOG_HEADER %}
+    <h1>
+        {% if not post.is_published %}
+            <span class="draft"><strong>[Draft]</strong></span>
+        {% endif %}
+        {{ content.headline }}
+    </h1>
 {% endblock %}
 
-{% block PAGE_SIDEBAR_TOP %}
-  <div class="blog-feed">
-    <img src="{{ MEDIA_URL }}p3/feed.png" alt="" title="blog feed" />
-    <a href="http://feeds.feedburner.com/pyconit">Blog feed</a>
-  </div>
-  {% box_didyouknow %}
+{% block BLOG_CONTENT %}
+    <div class="blog-post">
+        {% show_post_detail content %}
+    </div>
+
+    {% show_post_comments content.post %}
+
+    {% show_reactions_list content %}
+
+    {% if post.allow_comments %}
+        {% load comments %}
+        <div id="add-comment">
+            <h3>Aggiungi un commento</h3>
+            <p class="notice">
+                {% trans "Per evitare spam nei blog post, i commenti degli utenti sono moderati dallo staff della conferenza." %}
+            </p>
+            <div class="form-box">
+                {% get_comment_form for post as form %}
+                <form action="{% comment_form_target %}#preview-comment" method="post">
+                    <div class="clearfix">
+                        <div class="column" style="float: left; width: 310px; margin: 0 10px 0 0">
+                            <fieldset>
+                                {% with form.comment as field %}
+                                <div class="field {% if field.errors %}error{% endif %}">
+                                  {% if field.errors %}{{ field.errors }}{% endif %}
+                                  {{ field.label_tag }} {{ field }}
+                                </div>
+                                {% endwith %}
+                            </fieldset>
+                        </div>
+                        <div class="column" style="float: left; width: 180px;">
+                            <fieldset>
+                                {% for field in form %}
+                                    {% ifnotequal field.name "comment" %}
+                                    {% if field.is_hidden %}
+                                        {{ field }}
+                                    {% else %}
+                                        <div class="field {% if field.errors %}error{% endif %}" {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
+                                          {% if field.errors %}{{ field.errors }}{% endif %}
+                                          {{ field.label_tag }} {{ field }}
+                                        </div>
+                                    {% endif %}
+                                    {% endifnotequal %}
+                                {% endfor %}
+                            </fieldset>
+                        </div>
+                    </div><!-- /clearfix -->
+                    <fieldset class="border">
+                        <button type="submit" class="ok">{% trans "Post comment" %}</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block BLOG_POST_INFO %}
+
+<div id="blog-post-info">
+    <dl>
+        <dt>{% trans "Scritto da" %}</dt>
+        <dd>{{ content.post.author.first_name }}</dd>
+
+        <dt>{% trans "Data" %}</dt>
+        <dd>{{ content.post.date|date:"d F Y" }}</dd>
+
+        <dt>{% trans "Categoria" %}</dt>
+        <dd><a href="{% url microblog-category category=post.category.name %}">{{ content.post.category.name }}</a></dd>
+
+        {% if content.post.tags %}
+        {% tags_for_object content.post as tags %}
+        <dt>{% trans "Tag" %}</dt>
+        <dd>{% for t in tags %}<a class="tag" href="{% url microblog-tag tag=t.name %}">{{ t.name }}</a>{% endfor %}</dd>
+        {% endif %}
+    </dl>
+</div>
+
 {% endblock %}

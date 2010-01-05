@@ -1,15 +1,12 @@
 <div class="side-box download">
-  <h2>Download</h2>
-  <p>
-    <a href="{{ url }}">{{ label }}</a>
-  </p>
-  <p class="file-info">
-    {% if ftype %}
-    <span class="file-type">{{ ftype }}</span>
-    {% endif %}
-    {% if fsize %}
-    <span class="file-size">{{ fsize|filesizeformat }}</span>
-    {% endif %}
-  </p>
+    <h3>Download</h3>
+    <p><a href="{{ url }}">{{ label }}</a></p>
+    <p class="file-info">
+        {% if ftype %}
+        <span class="file-type">{{ ftype }}</span>
+        {% endif %}
+        {% if fsize %}
+        <span class="file-size">{{ fsize|filesizeformat }}</span>
+        {% endif %}
+    </p>
 </div>
-

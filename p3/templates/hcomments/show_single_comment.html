@@ -1,0 +1,20 @@
+{% load i18n hcomments_tags %}
+<li id="comment-{{ c.id }}" class="comment-level-{{ c.level }}{% if owner %} user-comment{% endif %} clearfix">
+    <div class="gravatar"><img src="{{ c.user_email|gravatar:"default=identicon,size=40" }}" alt="Gravatar" /></div>
+
+    <div class="body">
+    
+        {{ c.comment|linebreaksbr }}
+        
+        <div class="metadata" {% if forloop.last %}id="last-comment"{% endif %}>
+            {% if c.userinfo.url %}
+                <strong><a href="{{ c.userinfo.url }}" rel="nofollow">{{ c.user_name }}</a></strong>,&nbsp;
+            {% else %}
+                <strong>{{ c.user_name }}</strong>,&nbsp;
+            {% endif %}
+                <span class="date">{{ c.submit_date|date:"d F Y" }}</span>&nbsp;<a class="permalink" title="{% trans "Permalink a questo commento" %}" href="#comment-{{ c.id}}">#</a>
+        </div>
+            
+    </div>
+    
+</li>

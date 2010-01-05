@@ -1,0 +1,6 @@
+{% extends "microblog/post_list.html" %}
+{% load i18n microblog %}
+{% block PAGE_TITLE %}{% trans "Archivio" %} {{ year }} &mdash; Better Software Blog{% endblock %}
+{% block BLOG_HEADER %}
+  <h1>{{ posts.count }} posts in {{ year }}</h1>
+{% endblock %}

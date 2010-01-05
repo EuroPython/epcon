@@ -1,25 +1,31 @@
-{% extends "p3/content.html" %}
-{% load microblog p3 %}
+{% extends "microblog/base.html" %}
+{% load i18n microblog %}
 
-{% block PAGE_ENTRY %}
-    <div id="page">
-        <div id="page-title">
-            <h1>PyCon Italia Blog</h1>
-        </div>
-        <ul class="archive">
-        {% for post in object_list %}
-          <li>
-            {% show_post_summary post %}
-          </li>
-        {% endfor %}
-        </ul>
-    </div>
+{% block BLOG_HEADER %}
+  <h1>{% trans "Archivio Blog" %}</h1>
 {% endblock %}
 
-{% block PAGE_SIDEBAR_TOP %}
-  <div class="blog-feed">
-    <img src="{{ MEDIA_URL }}p3/feed.png" alt="" title="blog feed" />
-    <a href="http://feeds.feedburner.com/pyconit">Blog feed</a>
-  </div>
-  {% box_didyouknow %}
+{% block BLOG_CONTENT %}
+    <ul class="blog-archive">
+    {% for post in posts.object_list %}
+        <li>{% show_post_summary post %}</li>
+    {% empty %}
+        <li><i>{% trans "Nessun post trovato." %}</i></li>
+    {% endfor %}
+    </ul>
+    {% ifnotequal posts.paginator.num_pages 1 %}
+    <div class="pager">
+        {% if posts.has_previous %}
+            <span class="p"><a href="?page={{ posts.previous_page_number }}">&larr; Precedente</a></span>  
+        {% else %}
+            <span class="p">&nbsp;</span>
+        {% endif %}
+            <span>Pagina <b>{{ posts.number }}</b> di {{ posts.paginator.num_pages }}</span>
+        {% if posts.has_next %}
+            <span class="n"><a href="?page={{ posts.next_page_number }}">Successiva &rarr;</a></span>
+        {% else %}
+            <span class="p">&nbsp;</span>
+        {% endif %}
+    </div>
+    {% endifnotequal %}
 {% endblock %}

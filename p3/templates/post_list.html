@@ -1,0 +1,25 @@
+{% extends "p3/content.html" %}
+{% load microblog p3 %}
+
+{% block PAGE_ENTRY %}
+    <div id="page">
+        <div id="page-title">
+            <h1>PyCon Italia Blog</h1>
+        </div>
+        <ul class="archive">
+        {% for post in object_list %}
+          <li>
+            {% show_post_summary post %}
+          </li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% block PAGE_SIDEBAR_TOP %}
+  <div class="blog-feed">
+    <img src="{{ MEDIA_URL }}p3/feed.png" alt="" title="blog feed" />
+    <a href="http://feeds.feedburner.com/pyconit">Blog feed</a>
+  </div>
+  {% box_didyouknow %}
+{% endblock %}

@@ -1,13 +1,12 @@
 {% load i18n %}
 <div class="side-box speaker-talks">
-    <h2>{% trans "I suoi talk" %}</h2>
+    <h3>{% trans "I suoi talk" %}</h3>
     <dl>
-    {% for conference, talks in talks %}
-    <dt>{{ conference }}</dt>
-    {% for t in talks %}
-    <dd><a href="{{ t.get_absolute_url }}">{{ t.title }}</a></dd>
-    {% endfor %}
-    {% endfor %}
+        {% for conference, talks in talks %}
+        <dt>{{ conference }}</dt>
+        {% for t in talks %}
+        <dd><a href="{{ t.get_absolute_url }}">{{ t.title }}</a></dd>
+        {% endfor %}
+        {% endfor %}
     </dl>
 </div>
-

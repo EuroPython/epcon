@@ -6,14 +6,13 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
-    #(r'^$', 'p3.views.root'),
     (r'^pycon3/assopy/$', 'conference.views.genro_wrapper'),
     (r'^pycon3/gmap.js$', 'p3.views.gmap'),
-    #(r'^pycon3/__assopy-dev/$', 'conference.views.genro_wrapper'),
-    (r'^blog/', include('microblog.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
-    #(r'^pycon3/', include('pages.urls')),
+    (r'^blog/', include('microblog.urls')),
     (r'^conference/', include('conference.urls')),
+    (r'^comments/', include('django.contrib.comments.urls')),
+    (r'^hcomments/', include('hcomments.urls')),
 )
 
 if settings.DEBUG:
@@ -25,10 +24,11 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': os.path.join(path, k), 'show_indexes': True}
         ))
+    from conference.settings import CONFERENCE_STUFF_URL, CONFERENCE_STUFF_DIR
     args.append((
-        r'^media/(?P<path>.*)$',
+        r'^%s(?P<path>.*)$' % CONFERENCE_STUFF_URL[1:],
         'django.views.static.serve',
-        {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+        {'document_root': CONFERENCE_STUFF_DIR, 'show_indexes': True}
     ))
     urlpatterns += patterns('', *args)
 
