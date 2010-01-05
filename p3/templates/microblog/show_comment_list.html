@@ -1,9 +1,0 @@
-{% load i18n hcomments_tags %}
-<div id="comments">
-    <h3>{{ comments|length }} {% trans "Commenti" %} <span>&mdash; <a href="#add-comment">{% trans "Aggiungi Commento" %}</a></span></h3>
-    <ol>
-        {% for c in comments %}
-        {% show_single_comment c %}
-        {% endfor %}
-    </ol>
-</div>

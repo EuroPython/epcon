@@ -1,0 +1,6 @@
+{% load hcomments_tags %}
+<ol>
+    {% for c in comments %}
+    {% show_single_comment c %}
+    {% endfor %}
+</ol>

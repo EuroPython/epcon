@@ -1,2 +1,8 @@
-{% load hcomments_tags %}
-{% show_comment_list post %}
+{% load i18n hcomments_tags %}
+{% get_comment_list post as comments %}
+<div id="comments">
+    <h3>{{ comments|length }} {% trans "Commenti" %} {% if post.allow_comments %}<span> &mdash; <a href="#add-comment">{% trans "Aggiungi Commento" %}</a></span>{% endif %}</h3>
+    <ol>
+        {% show_comment_list post %}
+    </ol>
+</div>

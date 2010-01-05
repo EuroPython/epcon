@@ -7,6 +7,7 @@
 {% endblock %}
 {% block EXTRA_HEAD %}
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
+    {% if post.allow_comments %}
     <script type="text/javascript">//<![CDATA[
         $(function() {
             hcomments.comments({
@@ -26,6 +27,7 @@
             }
         });
     //]]></script>
+    {% endif %}
 {% endblock %}
 {% block BLOG_HEADER %}
     <h1>
