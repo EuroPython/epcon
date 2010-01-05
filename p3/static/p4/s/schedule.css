@@ -1,0 +1,199 @@
+#day02,
+#day01 {
+
+    
+}
+
+#day02 p,
+#day01 p {
+    margin: 0 0 30px 0;
+    
+}
+
+
+table.schedule {
+	border-collapse: collapse;
+	width: auto;
+
+    margin: 0 0 30px 0;
+
+    color: #4e69b2;
+    
+    background: #161e33;
+    border: 10px solid #161e33;
+}
+
+.schedule caption {
+	text-align: center;	
+    text-transform: capitalize;
+	
+	caption-side: top;
+
+	font: bold 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+
+    color: #fff;
+    color: #E3DCFA;
+	
+	margin: 0 0 20px 0;
+}
+
+
+
+.schedule thead th {
+	font-weight: bold;
+	border-bottom: 5px solid #4e69b2;	
+		
+	padding: 0 0 5px 0;
+}
+
+.schedule thead th.t-auditorium {
+    color: #D7CEF5;
+	border-bottom-color: #c0b8db;	
+}
+
+
+.schedule thead th.t-workshop {
+    color: #9dcc4f;
+	border-bottom-color: #90b357;	
+}
+
+
+
+.schedule thead th.hhmm {
+	border-bottom-width: 1px;		
+}
+
+
+.schedule tbody td {
+	padding: 5px 20px 20px 0;	
+}
+
+
+/* talk title */
+.schedule h3 {
+	
+	font: bold 14px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+	
+	margin: 0 0 5px 0;
+	text-transform: none;
+		
+}
+
+/* talk speaker(s) */
+.schedule .s a {
+	color: #8396cc;
+	border-bottom: 1px solid #8396cc;
+	
+}
+
+ 
+.schedule td.track {
+	font-size: 13px;
+	
+	background: transparent url(../i/bg-empty-track.png) bottom left;	
+	
+	
+}
+
+.schedule td.hhmm {
+
+    color: #8396CC;
+    border-top: 1px solid #435a99;
+
+    text-shadow: #0d1529 1px 1px 1px;   	
+    
+}
+
+.schedule td.hhmm span {
+
+    font-size: 16px;    
+}
+
+
+
+.schedule td.t-auditorium {
+
+	background: none;	
+    border-top: 3px solid #c0b8db;
+}
+
+/* continu'd */
+.schedule td.t-auditorium .c  {
+    color: #D7CEF5;
+}
+
+.schedule td.t-auditorium h3 a {
+    color: #D7CEF5;
+    border-bottom: 1px solid #D7CEF5;
+}
+
+
+
+.schedule td.t-workshop {
+
+	background: none;
+    border-top: 3px solid #90b357;
+
+}
+
+/* continu'd */
+.schedule td.t-workshop .c  {
+    color: #9dcc4f;
+}
+
+.schedule td.t-workshop h3 a {
+    color: #9dcc4f;
+    border-bottom: 1px solid #9dcc4f;
+}
+
+
+
+.schedule td.t-special, 
+.schedule td.t-break {
+
+/* 	background: none; */
+
+
+    border-top: 3px solid #435a99;
+    
+    vertical-align: middle;
+    text-align: center;
+
+    text-transform: uppercase;
+
+    letter-spacing: 2px;
+    
+    color: #6980c2;
+    
+    text-shadow: #0d1529 1px 1px 1px;   
+    
+	padding: 5px 0;
+	    
+}
+
+.schedule .sponsored-talk {
+    text-transform: uppercase;
+    
+    font-size: 12px;
+    
+    margin: 5px 0 0 0;
+}
+
+
+
+.schedule .sponsored-talk a {
+	color: #8396cc;
+	border-bottom: 1px solid #8396cc;
+
+}
+
+
+
+.schedule .sponsored-talk a:hover,
+.schedule td.t-workshop h3 a:hover,
+.schedule td.t-auditorium h3 a:hover,
+.schedule .s a:hover {
+	color: #fff;
+	border-bottom-color: #fff;
+	
+}

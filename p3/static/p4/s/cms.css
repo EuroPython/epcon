@@ -1,0 +1,264 @@
+/* ============================================== */
+/* ! Custom styles for text pulled from the CMS   */
+/* ============================================== */
+
+
+.cms img {
+	display: block;	
+/* 	border: 1px solid white; */
+
+    margin: 20px auto;
+}
+
+
+.cms p, 
+.cms dl, 
+.cms ul, 
+.cms ol,
+.cms table {
+	margin-bottom: 20px;
+}
+
+.cms p {
+	margin-bottom: 10px;
+}
+
+
+.cms h2 {
+	
+/* 	font: normal 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
+	
+	margin: 30px 0 10px 0;
+	text-transform: none;
+
+    color: #9dcc4f;	
+
+}
+
+
+.cms h3,
+.cms h4,
+.cms h5,
+.cms h6 {
+	
+/* 	font: bold 14px/20px  "Museo Sans", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
+	
+	margin: 20px 0 10px 0;
+		
+	text-transform: uppercase;
+		
+}
+
+/* first  h2 and h3 (sidebar) */
+.cms h3:first-child,
+.cms h2:first-child {
+	margin-top: 0;
+}
+
+
+.cms li {
+
+/*     font-size: 13px; */
+/*     color: #d7cef5; */
+    
+	margin: 0 0 5px 20px;
+}
+
+.cms dl {
+	margin-left: 20px;
+}
+
+
+.cms ul {
+	list-style: outside square  url(../i/bullet-arr.png);
+}
+
+
+.cms ol {
+	list-style: outside decimal;
+}
+
+.cms dd {
+	margin-bottom: 20px;	
+}
+
+
+
+
+
+
+
+.cms blockquote {
+	margin: 10px 0 10px 0;	
+	
+	font-style: italic;
+	
+}
+
+
+.cms blockquote i,
+.cms blockquote em {
+	font-style: normal;
+}
+
+
+
+
+.cms table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+
+.cms caption {
+	text-align: center;	
+/* 	font-style: italic; */
+	
+	caption-side: bottom;
+	
+	margin: 10px 0 0 0;
+}
+
+
+.cms table th,
+.cms table td {	
+	
+	padding: 2px;
+	
+}
+
+
+
+.cms table th {
+	font-weight: bold;
+
+	border-bottom: 2px solid #4e69b2;	
+}
+
+
+
+
+
+.cms pre
+.cms code {	
+	background: #eee;
+	
+	padding: 5px;
+	
+	font: normal 12px/20px Consolas, "Courier New", "Lucida Console", monospace;
+	
+	margin: 0 0 20px 0;
+		
+	display: block;
+	
+}
+
+
+.cms hr {
+  clear: both;
+  width: 100%; 
+    
+  height: 2px;
+
+  margin: 20px 0 20px 0; 
+
+  background: transparent url(../i/bg-sep.png) center left repeat-x;
+
+  visibility: visible;
+
+  /* IE */
+  _margin: -7px 0 13px 0; 
+  
+}
+
+
+
+
+
+
+
+
+/* ============ */
+/* ! img-desc   */
+/* ============ */
+
+cms .img-desc {
+    margin: 0 0 20px 0;
+}
+
+cms .img-desc object,
+cms .img-desc img {
+    float: left;
+ 
+    margin: 0 20px 0 0;   
+}
+
+
+cms .img-desc p {
+    font-size: 13px;
+/*     color: #d7cef5; */
+}
+
+
+/* ============== */
+/* ! highlights   */
+/* ============== */
+
+
+.cms .highlights {
+
+    padding: 10px;
+    border: 2px solid #4e69b2;
+    
+    margin: 30px 0;
+    
+    
+/*     background: #fff url(../i/bg-highlights.png) bottom left repeat-x; */
+    background: #384b80;    
+}
+
+
+.cms .highlights h4 {
+    
+    margin-top: 0;
+    
+    color: #9dcc4f;
+
+    text-transform: none;
+    font-size: 14px;
+    
+}
+
+/*
+.copy .highlights ul {
+    list-style: outside circle url(../i/bullet-arr.png);
+
+}
+*/
+
+/* ======== */
+/* ! note   */
+/* ======== */
+
+.cms .note {
+
+    padding: 10px;
+    background: #384b80;
+    
+    margin: 20px 0;
+
+}
+
+
+/* =========== */
+/* ! automap   */
+/* =========== */
+
+
+.cms .automap  {
+    margin: 30px 0;
+    border: 5px solid #384b80;
+}
+
+
+

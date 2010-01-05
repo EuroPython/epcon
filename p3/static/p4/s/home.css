@@ -1,0 +1,428 @@
+
+body#home{
+	background: transparent url(../i/bg-bulb.jpg) top center no-repeat;	
+}
+
+
+
+#big-logo  {
+
+	margin: 0 0 20px -5px;
+	padding: 240px 0 0 0;
+	_margin-left: 0;
+	
+}
+
+#big-logo img {
+	display: block;
+}
+
+
+
+#home #header {
+    
+    background: transparent url(../i/bg-header.jpg) 400px 0 no-repeat;
+
+}
+
+#home #sponsor {
+    margin-top: 0;
+}
+
+
+/* ========= */
+/* ! intro   */
+/* ========= */
+
+#intro {
+
+    
+/*     background: transparent url(../i/bg-intro.png) 270px bottom no-repeat; */
+    
+}
+
+
+#intro h1 {
+
+/*     font: normal 24px/30px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
+	
+    margin: 0 0 20px 0;	
+	text-shadow: #0e1529 1px 1px 1px; 
+	   
+}
+
+
+#intro p {
+    color: #D7CEF5;
+    
+}
+
+#intro p:first-line {
+    font-weight: bold;    
+}
+
+
+/* =========== */
+/* ! section   */
+/* =========== */
+
+
+.section  {
+/*     background: transparent url(../i/bg-border.png) top left no-repeat; */
+    
+/*     padding: 15px 0 0 0; */
+}
+
+.section h2 {
+
+    font: normal 21px/30px  "League Gothic", "Arial Narrow", sans-serif;
+    	
+    color: #96204B;
+    
+    margin: 0 0 20px 0;
+
+	text-transform: uppercase;
+	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px; 	
+}
+
+
+/* ======= */
+/* ! cal   */
+/* ======= */
+
+
+
+#cal {
+    background: #384b80  url(../i/bg-cal.png) left center no-repeat;
+    
+    height: 50px;
+}
+
+#cal h3 {
+    float: left;
+    width: 50px;
+    
+    text-align: center;
+    
+    color: #d7cef5;
+    
+    font: normal 14px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;    
+    
+    text-transform: uppercase;
+    
+    text-shadow: #222c4d 1px 1px 1px;  
+    
+    
+    padding: 5px 0 0 0;
+}
+
+#cal h3 span {
+
+    text-transform: none;
+    font: normal 20px/20px  "Museo Sans", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;    
+    color: #9dcc4f;
+    
+}
+
+
+
+#cal div {
+    float: left;
+    width: 470px;
+
+    margin: 0 0 0 20px; 
+}
+
+
+
+#cal h4 {
+    color: #ece9f5;
+    font-size: 16px;
+    
+    padding: 5px 0 0 0;
+    
+}
+
+#cal div p {
+    font-size: 13px;
+    
+}
+
+/* ========== */
+/* ! signup   */
+/* ========== */
+
+
+#signup-button {
+    background: transparent  url(../i/bg-register.png) left center no-repeat;
+
+}
+
+#submit-button a,
+#signup-button a {
+    font-size: 16px;
+    font-weight: bold;
+       
+    text-transform: uppercase;
+    padding:  15px 0 15px 80px;
+    
+	text-shadow: #33421a 1px 1px 2px; 
+	
+	border: none;   
+	
+	color: #fff;
+	display: block;
+	
+
+/* 	font-weight: bold; */
+}
+
+#submit-button {
+    background: transparent  url(../i/bg-submit.png) left center no-repeat;
+    height: 50px;
+}
+
+#submit-button a {
+    text-transform: uppercase;
+    padding:  15px 0 15px 0;
+    
+    font-size: 14px;
+    
+    text-align: center;
+    
+    
+}
+
+
+
+
+/* =========== */
+/* ! speaker   */
+/* =========== */
+
+
+#speakers .speaker  {
+    margin: 0 0 20px 0;
+    
+    background: #222d4d;
+    background: rgba(34, 45, 77, .8);
+}
+
+/* second row */
+#speakers .speaker.second  {
+    margin-bottom: 0;
+}
+
+#speakers .speaker .summary {
+    float: left;
+    width: 280px;
+}
+
+#speakers .speaker .summary h4 {
+    font-size: 12px;
+    
+    text-transform: uppercase;
+    color: #9dcc4f;
+    
+    margin: 5px 0 0 0;
+    
+}
+
+#speakers .speaker .summary h3 {
+    font: bold 16px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    
+}
+
+#speakers .speaker .summary h3 a {
+    color: #ece9f5;    
+}
+
+
+#speakers .speaker .summary p {
+    color: #d7cef5;
+    
+    margin: 15px 0 0 0;
+}
+
+
+#speakers .speaker .picture {
+
+    margin: 0 10px 0 0;
+    
+    float: left;
+    width: 100px;
+
+    border: 5px solid #ece9f5;
+    
+}
+
+#speakers .speaker .picture a {
+    border: none;
+}
+
+#speakers .speaker .picture a,
+#speakers .speaker .picture img {
+    display: block;
+}
+
+
+
+#speakers-temp {
+
+}
+
+#speakers-temp  h3 {
+    font-size: 12px;
+    
+    text-transform: uppercase;
+/*     color: #9dcc4f; */
+    
+    margin: 0 0 10px 0;
+    
+}
+
+#speakers-temp  p {
+    color: #d7cef5;
+    
+    margin: 0 0 10px 0;
+    
+    
+}
+
+
+
+/* ======== */
+/* ! blog   */
+/* ======== */
+
+
+#blog-latest p {
+
+}
+
+#blog-latest p.meta {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+
+    color: #d7cef5;
+
+}
+
+/*
+
+#blog-latest p.meta a {
+    color: #d7cef5;
+}
+
+#blog-latest p.meta a:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+*/
+
+#blog-latest h3 {
+
+    font: bold 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+}
+
+
+#blog-latest h3 a {
+    color: #ece9f5;
+/*     border-bottom-color: #b1c2f0; */
+    
+}
+
+#blog-latest h3 a:hover {
+    color: #9dcc4f;
+    border-bottom-color: #9dcc4f;
+    
+}
+
+
+#blog-latest .more {
+ 
+ 
+    margin: 20px 0 0 0;   
+    padding: 1px 0;
+
+    width: 120px;
+
+    text-align: center;
+    background: #384b80;
+    
+    text-transform: uppercase;
+}
+
+#blog-latest .more a {
+    color: #d7cef5;
+    border: none;
+    
+    font-size: 13px;
+}
+
+#blog-latest .more a:hover {
+    color: #fff;
+}
+
+/* =========== */
+/* ! twitter   */
+/* =========== */
+
+
+#twitter {
+
+}
+
+#twitter #latest-tweet {
+    background: #222d4d url(../i/bg-twitter.png) bottom center no-repeat;
+    padding: 15px;
+    
+    color: #d7cef5;
+    
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    border-radius: 5px;    
+    
+    min-height: 120px;
+    _height: 120px;
+    
+}
+
+/*
+#twitter a {
+    color: #fff;
+}
+*/
+
+
+#twitter h2 {
+    font: bold 21px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    color: #9dcc4f;
+    margin: 0 0 20px 0;
+}
+
+
+#twitter #follow-us {
+    background: transparent url(../i/bg-twitter-follow-us.png) top left no-repeat;
+    min-height: 100px;
+    _height: 100px;    
+}
+
+
+#twitter #follow-us p {
+    margin: 0 0 0 110px;
+
+    text-align: center;    
+    padding: 25px 0 0 0; 
+}
+#twitter #follow-us a  {
+    display: inline-block;
+    
+    margin: 0 0 5px 0;
+}
+
+
+#twitter #follow-us p span {
+    color: #4E69B2;
+    font-size: 13px;
+}
