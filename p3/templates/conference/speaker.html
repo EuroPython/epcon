@@ -1,9 +1,11 @@
-{% extends "p3/content.html" %}
+{% extends "p3/base.html" %}
 {% load conference p3 %}
+
 {% block PAGE_TITLE %}{{ speaker.name }} &mdash; {% endblock %}
-{% block PAGE_ENTRY %}
-<div id="page">                        
-    <div id="page-title">
+{% block MAIN_CONTENT %}
+<div class="column span-12">
+    <div class="page clearfix border">
+
         <h1>{{ speaker.name }}</h1>
         <div>                    
             {% if speaker.location %}{{ speaker.location }}{% endif %}
@@ -11,24 +13,26 @@
             {% if speaker.industry %}/ {{ speaker.industry }}{% endif %}
             {% if speaker.homepage %}<br /><a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
         </div>
-    </div>            
-    
-    <div id="speaker" class="entry">
-        <div class="picture">
-            {% if speaker.image %}
-            <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
-            {% else %}
-            <img src="{{ MEDIA_URL }}p3/i/anonymous.png" alt="{{ speaker.name }}" width="200"/>
-            {% endif %}
+
+        <div class="column span-8">
+            <div class="conference speaker">
+                <div class="picture">
+                    {% if speaker.image %}
+                    <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
+                    {% else %}
+                    <img src="{{ MEDIA_URL }}p3/i/anonymous.png" alt="{{ speaker.name }}" width="200"/>
+                    {% endif %}
+                </div>
+                {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
+                <h2>Presentazione</h2>
+                <p>{{ b.body|safe }}</p>
+            </div>
         </div>
-        
-        {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
-        <h2>Presentazione</h2>
-        <p>{{ b.body|safe }}</p>
-        <hr />
-    </div>            
+        <div class="column span-4 last">
+            <div id="sidebar" class="conference speaker">
+                {% box_speaker_talks speaker %}
+            </div>
+        </div>
+    </div>
 </div>  
-{% endblock %}
-{% block PAGE_SIDEBAR %}
-{% box_speaker_talks speaker %}
 {% endblock %}

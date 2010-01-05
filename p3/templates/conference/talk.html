@@ -1,52 +1,57 @@
-{% extends "p3/content.html" %}
+{% extends "p3/base.html" %}
 {% load conference %}
 
 {% block PAGE_TITLE %}{{ talk.title }} &mdash; {% endblock %}
-{% block PAGE_ENTRY %}
-<div id="page">                        
-    <div id="page-title">
+{% block MAIN_CONTENT %}
+<div class="column span-12">
+    <div class="page clearfix border">
+
         <h1>{{ talk.title }}</h1>
-    </div>            
-    
-    <div id="talk" class="entry">
-    
-    {% with talk.get_event as e %}
-        {% with e.get_track as track %}
-        <strong>{{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}</strong>
-        nella track <em>{{ e.get_track.title }}</em>
-        
-        <div>Durata: {{ talk.duration }} minuti</div>
-        
-        {% for spk in talk.get_all_speakers %}
-        <div>
-            Speaker: <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
-            {% if spk.homepage %}[<a href="{{ spk.homepage }}">{{ spk.homepage }}</a>]{% endif %}
-        </div>
-        {% endfor %}
-        <div>
-            Lingua: {{ talk.language|upper }}
-            {% if track.translate %}<strong>Traduzione simultanea disponibile</strong>{% endif %}
-        </div>
-        {% endwith %}
-    {% endwith %}
-        {% if talk.slides %}
-        <div>
-            {% stuff_info talk.slides as info %}
-            Sono disponibili le <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">slide del talk</a>
-            ({{ info.0 }} {{ info.1|filesizeformat }})
-        </div>
-        {% endif %}
 
-        <h2>Abstract</h2>
-        {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-        <p>{{ ab.body|safe }}</p>
+        <div class="column span-8">
+            <div class="conference talk">
+                <h2>Abstract</h2>
+                {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
+                <p>{{ ab.body|safe }}</p>
 
-        {% if talk.video_type %}
-        <h2>Video</h2>
-        <div class="video-embedded">
-            {{ talk|embed_video:"500,438" }}
+                {% if talk.video_type %}
+                <h2>Video</h2>
+                <div class="video-embedded">
+                    {{ talk|embed_video:"500,438" }}
+                </div>
+                {% endif %}
+            </div>
         </div>
-        {% endif %}
-    </div>            
+        <div class="column span-4 last">
+            <div id="sidebar" class="conference talk">
+                {% with talk.get_event as e %}
+                {% with e.get_track as track %}
+                <strong>{{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}</strong>
+                nella track <em>{{ e.get_track.title }}</em>
+                
+                <div>Durata: {{ talk.duration }} minuti</div>
+                
+                {% for spk in talk.get_all_speakers %}
+                <div>
+                    Speaker: <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+                    {% if spk.homepage %}[<a href="{{ spk.homepage }}">{{ spk.homepage }}</a>]{% endif %}
+                </div>
+                {% endfor %}
+                <div>
+                    Lingua: {{ talk.language|upper }}
+                    {% if track.translate %}<strong>Traduzione simultanea disponibile</strong>{% endif %}
+                </div>
+                {% endwith %}
+                {% endwith %}
+                {% if talk.slides %}
+                <div>
+                    {% stuff_info talk.slides as info %}
+                    Sono disponibili le <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">slide del talk</a>
+                    ({{ info.0 }} {{ info.1|filesizeformat }})
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>  
 {% endblock %}
