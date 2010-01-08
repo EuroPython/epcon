@@ -436,26 +436,6 @@ a.tag:hover {
     border: none;
 }
 
-/*
-#top-of-page {
-
-    text-align: center;
-    
-    background: transparent url(../i/bg-sep.png) center left repeat-x;
-}
-
-#top-of-page a {
-    border: none;
-}
-
-
-#top-of-page span {
-
-    background: #222d4d;
-    
-    padding: 3px 10px;
-}
-*/
 
 #footer li.sep {
     margin: 20px 0 0 0;
@@ -489,20 +469,21 @@ a.tag:hover {
 */
 
 
-/*
-#credits span {
-	font-family: "League Gothic", "Arial Narrow", sans-serif;
-	
-	font-size: 16px;
-}
-*/
-
-
-
-#elsewhere,
 #footer-nav {
     margin: 0 0 20px 0;
 }
+
+
+
+#elsewhere {
+
+    margin: 0 0 20px 0;
+    padding: 0 0 20px 0;
+
+    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
+}
+
+
 
 #footer-nav ul {
 
@@ -944,10 +925,12 @@ a.tag:hover {
 
 #media-partner {
 
+    padding: 0 0 20px 0;
     margin: 0 0 20px 0;
 
-/*     background: #1f2b2b; */
-/*     padding: 5px; */
+    margin: 0 0 20px 0;
+
+    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
     
 }
 
