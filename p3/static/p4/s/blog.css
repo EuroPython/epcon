@@ -33,6 +33,11 @@
     margin-right: 10px;
 }
 
+#comments .gravatar img {
+    border: 2px solid #61613F;
+}
+
+
 #comments .body {
     margin-left: 50px;
     font-size: 13px;

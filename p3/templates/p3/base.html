@@ -33,7 +33,8 @@
             {% endifequal %}
         {% endfor %}
     {% endif %}
-    <script type="text/javascript">//<![CDATA[
+    <script type="text/javascript">
+    //<![CDATA[
         $(function() {
             $('.lang-selector').click(function(e) {
                 e.preventDefault();
@@ -43,7 +44,8 @@
                 return false;
             });
         });
-    //]]></script>
+    //]]>
+    </script>
     {% block EXTRA_HEAD %}{% endblock %}
 </head>
 <body id="s-home">
@@ -80,7 +82,7 @@
     <div id="header">
         <div class="container clearfix">
             <div id="logo">
-                <a href="/"><img src="{{ STATIC_URL }}p4/i/pycon-logo.png" alt="Pycon Quattro Italia" height="265" width="280" /></a>
+                <a href="/" title="PyCon Quattro Home"><img src="{{ STATIC_URL }}p4/i/pycon-logo.png" alt="Pycon Quattro Italia" height="265" width="280" /></a>
             </div>
 
             <div class="column span-9 prepend-3 last">
@@ -133,47 +135,49 @@
             </div>
             {% endif %}
 
-            <div class="column span-4">
-                {% navi_menu3_pages as pages %}
-                <div id="footer-nav">
-                    <h4>PyCon Quattro</h4>
-                    <ul>
-                        {% for p in pages %}
-                        <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
-                        {% endfor %}
-                        <li class="sep">Edizioni precedenti: <a href="/pycon1/">Uno</a>, <a href="/pycon2/">Due</a>, <a href="/pycon3/">Tre</a></li>
-                    </ul>
-                </div>
+            {% navi_menu3_pages as pages %}
+            <div id="footer-nav">
+                <h4>PyCon Quattro</h4>
+                <ul>
+                    {% for p in pages %}
+                    <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
+                    {% endfor %}
+<!--                         <li class="sep">Edizioni precedenti: <a href="/pycon1/">Uno</a>, <a href="/pycon2/">Due</a>, <a href="/pycon3/">Tre</a></li> -->
+                </ul>
             </div>
 
-            <div class="column span-4">
-                <div id="elsewhere">
-                    <h4>Ci trovi anche su&hellip;</h4>
-                    <ul>
-                        <li><img src="{{ STATIC_URL }}p4/i/twitter-16x16.png" alt="Twitter" width="16" height="16"/><a href="https://twitter.com/better_software">Twitter</a></li>
 
-                        <li><img src="{{ STATIC_URL }}p4/i/facebook-16x16.png" alt="Facebook" width="16" height="16"/><a href="http://www.facebook.com/pages/Firenze-Italy/Better-Software/182344021338">Facebook</a></li>
-                        <li><img src="{{ STATIC_URL }}p4/i/linkedin-16x16.png" alt="LinkedIn" width="16" height="16"/><a href="http://www.linkedin.com/groups?about=&amp;gid=1790402&amp;trk=anet_ug_grppro">LinkedIn</a></li>
-                    </ul>
-                </div>
+            <div id="elsewhere">
+                <h4>Ci trovi anche su&hellip;</h4>
+                <ul>
+                    <li><img src="{{ STATIC_URL }}p4/i/twitter-16x16.png" alt="Twitter" width="16" height="16"/><a href="http://twitter.com/pyconit">Twitter</a></li>
+
+                    <li><img src="{{ STATIC_URL }}p4/i/facebook-16x16.png" alt="Facebook" width="16" height="16"/><a href="http://www.facebook.com/group.php?gid=92045427216">Facebook</a></li>
+<!--                     <li><img src="{{ STATIC_URL }}p4/i/linkedin-16x16.png" alt="LinkedIn" width="16" height="16"/><a href="http://www.linkedin.com/groups?about=&amp;gid=1790402&amp;trk=anet_ug_grppro">LinkedIn</a></li> -->
+                </ul>
             </div>
 
-            <div class="column span-6 last">
-                <div id="credits">
-                    <h4>Credits</h4>
-                    <p>Copyright &copy; 2007&ndash;2010 Python Italia,<br />with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
 
-                    <p><span>CF 94144670489, P. IVA 05753460483</span></p>
-
-                    <dl>
-                        <dt>Accounting System</dt><dd><a href="http://www.softwell.it/">Softwell</a></dd>
-                        <dt>Progetto grafico</dt><dd><a href="http://passiomatic.com/">Andrea Peltrin</a></dd>
-
-                    </dl>
-
-                    <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15_grey.gif" alt="A Django site." title="A Django site." /></a></div>
-                </div>
+            <div class="column span-7 append-1">
+                <h4>Credits</h4>
+                <p>Copyright &copy; 2007&ndash;2010 Python Italia, with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
+                <p>CF 94144670489, P. IVA 05753460483</p>
             </div>
+            
+            <div class="column span-2">
+                <h4>Accounting System</h4>                    
+                <p><a href="http://www.softwell.it/">Softwell</a></p>                    
+            </div>
+
+            <div class="column span-2 last">
+                <h4>Progetto grafico</h4>
+                <p><a href="http://passiomatic.com/">Andrea Peltrin</a></p>
+            </div>
+
+            <hr />
+
+            <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15.gif"  alt="A Django site." title="A Django site." /></a</div>
+            
         </div><!-- container -->
     </div><!-- /footer -->
 
