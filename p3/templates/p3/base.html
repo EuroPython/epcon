@@ -62,20 +62,19 @@
                     <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
                 </li>
                 {% endfor %}
-
                 {% with request.META.PATH_INFO|slice:"1:5" as f %}
                 <li class="{% ifequal f "blog" %}current{% endifequal %}">
                     <a href="/blog/">Blog</a>
                 </li>
                 {% endwith %}
 
-                <li>
+                <li id="li-chat">
                     <div id="habla_available_div"><a href="#" onclick="habla_window.show()">Chat!</a></div>
                     <div id="habla_unavailable_div"><a href="#" title="Nessun operatore disponibile">Chat</a></div>
                 </li>
                 {% for l in LANGUAGES %}{% ifnotequal LANGUAGE_CODE l.0 %}<li id="li-lang"><a href="#" id="l-{{l.0}}" class="lang-selector">{{ l.1 }}</a></li>{% endifnotequal %}{% endfor %}
             </ul>
-            <form id="change-language" action="/i18n/setlang/" method="post"><input type="hidden" name="language" value="" /></form>
+            <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><input type="hidden" name="language" value="" /></form>
         </div>
     </div> 
     <div id="header">
@@ -172,7 +171,7 @@
 
                     </dl>
 
-                    <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15_grey.gif" border="0" alt="A Django site." title="A Django site." /></a></div>
+                    <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15_grey.gif" alt="A Django site." title="A Django site." /></a></div>
                 </div>
             </div>
         </div><!-- container -->
