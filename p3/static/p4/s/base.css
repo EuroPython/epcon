@@ -178,10 +178,10 @@ a.tag:hover {
 
 #nav {
 
-	background: #4d5e5e url(../i/bg-nav.jpg) top center repeat-x;
+	background: transparent url(../i/bg-nav.jpg) top center repeat-x;
 	
-	min-height: 90px;
-	_height: 90px;
+	min-height: 60px;
+	_height: 60px;
 		
 }
 
@@ -307,10 +307,10 @@ a.tag:hover {
     margin: 0 0 40px 0;
 
 
-    background: transparent url(../i/bg-header.jpg) top center repeat-x;
+    background: transparent url(../i/bg-header.jpg) bottom center repeat-x;
     
-    min-height: 150px;
-    _height: 150px;
+    min-height: 180px;
+    _height: 180px;
     
 }
 
@@ -322,7 +322,7 @@ a.tag:hover {
 
     position: absolute;
     left: -80px; 
-    top: -90px;
+    top: -60px;
 	
 }
 
@@ -345,7 +345,7 @@ a.tag:hover {
 
 #when-where h2 {
 
-    margin: 10px 0 0 0;
+    margin: 40px 0 0 0;
 
     font-size: 24px;
     line-height: 30px;
@@ -949,48 +949,35 @@ a.tag:hover {
 
     margin: 0 0 20px 0;
 
-    padding: 0 0 20px 0;
-/*     background:  transparent  url(../i/bg-sep.png) bottom left repeat-x; */
+    background: #1f2b2b;
+    padding: 5px;
+    
 }
 
 #sponsor h3,
 #media-partner h3 {
     font-size: 18px;
     text-transform: uppercase;
- 
-    
+     
     color: #61613f;
-/*     color: #fff; */
-      
-/*     margin: 0 0 10px 0; */
 }
 
-/*
 #media-partner h3 {
-    padding: 0;   
+    color: #B1C4C4;
+}
 
+#media-partner .ad,
+#sponsor .ad {    
+    margin: 10px 0 0 0;
 }
 
 #media-partner .ad {
 
     float: left;
-    margin: 0 20px 0 0;
-}
-*/
-
-/*
-#media-partner .ad,
-#sponsor .ad{
-    opacity: .7;
-
+    margin-right: 20px;
 }
 
-#media-partner:hover .ad,
-#sponsor:hover .ad {
 
-    opacity: 1.0;
-}
-*/
 
 #sponsor {
     background: #c4c3a3;
@@ -1008,9 +995,6 @@ a.tag:hover {
 
 
 
-#sponsor .ad {    
-    margin: 10px 0 0 0;
-}
 
 /*
 #sponsor-wanted {
