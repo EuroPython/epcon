@@ -24,16 +24,14 @@ body {
 		
     background: #dfe2d2 url(../i/bg-body.jpg) top left repeat;
     
-	font: normal 14px/20px  Georgia, serif;
+	font: normal 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
 	color: #0f2424;
 }
 
 
 h1, h2, h3, h4, h5, h6 {
 
-	font-family: "League Gothic", "Arial Narrow", sans-serif;
-	font-weight: normal;
-	
+	font: normal 14px/20px "League Gothic", "Arial Narrow", sans-serif;	
 }
 
 
@@ -385,25 +383,46 @@ a.tag:hover {
     
     margin: 60px 0 0 0;
 
-	font-size: 13px;
+	font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
 }
+
 
 
 #footer h4 {
 
-/*     color: #b1c4c4; */
     margin: 0 0 5px 0;
     
     text-transform: uppercase;
     
     font-size: 18px;
-/*     line-height: 30px; */
     
-/*     font-weight: normal; */ 
+    letter-spacing: 1px;
     text-shadow: #1a2b2b 1px 1px 1px;   
-    
+        
+}
+
+#media-partner {
+
+    padding: 0 0 20px 0;
+    margin: 0 0 20px 0;
+
+    margin: 0 0 20px 0;
+
+    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
     
 }
+
+#media-partner .ad {
+
+    margin: 10px 0 0 0;
+
+
+    float: left;
+    margin-right: 20px;
+    
+    border: 5px solid #617878;
+}
+
 
 
 #footer  a  {
@@ -430,6 +449,8 @@ a.tag:hover {
 
 #django-badge {
     margin: 20px 0 0 0;
+    
+    text-align: right;
 }
 
 #django-badge a {
@@ -517,7 +538,7 @@ a.tag:hover {
 .page-summary {
 
     color: #4d5e5f;
-	font: bold italic 18px/30px  Georgia, serif;
+	font: bold italic 18px/30px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
 	
 	margin: 0 0 20px 0;
 
@@ -553,8 +574,8 @@ a.tag:hover {
 #sidebar {
 	color: #383829;
 
-	font-size: 13px;
-	line-height: 18px;
+	font: normal 13px/18px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+
 }
 
 #sidebar h3 {
@@ -922,41 +943,16 @@ a.tag:hover {
     border: none;
 }
 
-
-#media-partner {
-
-    padding: 0 0 20px 0;
-    margin: 0 0 20px 0;
-
-    margin: 0 0 20px 0;
-
-    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
-    
-}
-
-#sponsor h3,
-#media-partner h3 {
+#sponsor h4 {
     font-size: 18px;
     text-transform: uppercase;
-     
+         
     color: #61613f;
 }
 
-#media-partner h3 {
-    color: #B1C4C4;
-}
 
-#media-partner .ad,
 #sponsor .ad {    
     margin: 10px 0 0 0;
-}
-
-#media-partner .ad {
-
-    float: left;
-    margin-right: 20px;
-    
-    border: 5px solid #617878;
 }
 
 
@@ -968,13 +964,6 @@ a.tag:hover {
     /* push down to page body copy */
     margin: 65px 0 0 0;
 }
-
-/*
-#sponsor h3  {
-    margin: 0 0 10px 0;
-}
-*/
-
 
 
 

@@ -102,7 +102,7 @@
             {% block MAIN_CONTENT %}{% endblock %}
             <div class="column span-2 last">
                 <div id="sponsor">
-                    <h3>{% trans "I nostri sponsor" %}</h3>
+                    <h4>{% trans "I nostri sponsor" %}</h4>
                     {% conference_sponsor "pycon3" as sponsor %}
                     {% for s in sponsor %}
                     <div class="ad">
@@ -124,7 +124,7 @@
             {% conference_mediapartner "pycon3" as partner %}
             {% if partner %}
             <div id="media-partner" class="clearfix">
-                <h3>{% trans "Media partner" %}</h3>
+                <h4>{% trans "Media partner" %}</h4>
                 {% for s in partner %}
                 <div class="ad">
                     <a href="{{ s.url }}">
