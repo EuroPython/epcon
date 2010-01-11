@@ -338,12 +338,10 @@ a.tag:hover {
 
 #when-where  {
 
-
+    margin: 20px 0 0 0;
 }
 
 #when-where h2 {
-
-    margin: 40px 0 0 0;
 
     font-size: 24px;
     line-height: 30px;

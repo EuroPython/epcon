@@ -3,10 +3,10 @@
 {% block MAIN_CONTENT %}
 <div class="span-12">
     {% ifnotequal request.LANGUAGE_CODE "it" %}
-    <h2 class="welcome-non-italian"><a href="/pycon3/non-italians">Welcome non-italian speakers to PyconTre</a></h2>
+        <h2 class="welcome-non-italian"><a href="/pycon3/non-italians">Welcome non-italian speakers to PyconTre</a></h2>
     {% endifnotequal %}
     <div id="intro">
-        <p>{% placeholder mission with markItUpMarkdown %}</p>                
+        <!-- <p>{% placeholder mission with markItUpMarkdown %}</p> -->                
 <!--
         <img src="{{ MEDIA_URL }}p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />                    
         <map name="gallery" id="gallery">
