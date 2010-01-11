@@ -235,28 +235,37 @@ a.tag:hover {
 }
 */
 
-#nav #li-lang a:hover,
 #nav li a:hover {
 	color: #fff;	
 }
 
 #nav li.current a {
     color: #fff;
-    
     border-bottom: 3px solid #839191;    
 }
 
 
 
+#nav #li-chat a {
+    background: transparent url(../i/bg-li-chat.png) center center no-repeat;
+    
+/*     padding: 5px  5px 10px 5px;     */
+}
+
 #nav #li-lang {
-
+    float: right;
 }
 
-#nav #li-chat{
-/*     background: transparent url(../i/bg-li-chat.png) center center no-repeat; */
+#nav #li-lang #l-it {
+    background: transparent url(../i/bg-li-it.png) bottom center no-repeat;
+    
 }
 
+#nav #li-lang #l-en {
+    background: transparent url(../i/bg-li-en.png) bottom center no-repeat;    
+}
 
+/*
 
 #nav #li-current-user {
         
@@ -294,6 +303,7 @@ a.tag:hover {
 
 
 }
+*/
 
 
 /* ========== */
