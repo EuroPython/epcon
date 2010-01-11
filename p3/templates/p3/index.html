@@ -1,31 +1,33 @@
 {% extends "p3/base.html" %}
 {% load pages_tags markup conference microblog i18n %}
 {% block MAIN_CONTENT %}
-<div class="column span-12">
+<div class="span-12">
     {% ifnotequal request.LANGUAGE_CODE "it" %}
     <h2 class="welcome-non-italian"><a href="/pycon3/non-italians">Welcome non-italian speakers to PyconTre</a></h2>
     {% endifnotequal %}
     <div id="intro">
         <p>{% placeholder mission with markItUpMarkdown %}</p>                
+<!--
         <img src="{{ MEDIA_URL }}p3/i/gallery.jpg" width="820" height="340" alt="*" usemap="#gallery" />                    
         <map name="gallery" id="gallery">
           <area shape="poly" coords="82,133,106,317,261,299,236,112,80,134,80,134" href="/pycon3/talk"  alt="Talk" />
           <area shape="poly" coords="262,122,253,241,263,298,250,302,400,314,414,134,261,122" href="/pycon3/incontri"  alt="Networking" />
           <area shape="poly" coords="403,126,407,132,414,131,409,212,415,307,568,299,555,117,405,127" href="/pycon3/pyevents"  alt="PyEvents" />
           <area shape="poly" coords="559,131,562,196,569,297,564,299,566,313,716,308,711,126,559,130" href="/pycon3/lavoro"  alt="Recruiting" />
-        </map>        
+        </map>   
+-->     
     <!-- /intro -->
     </div>   
 
-    <div class="clear">
+    <div class="clearfix">
 
-        <div class="column span-6">
+        <div class="span-6">
             <div id="guido">                                                
                 <p>{% trans "saluto di guido in homepage" %}</p>            
             </div>  
         </div>   
 
-        <div class="column span-6 last">
+        <div class="span-6 last">
             {% latest_deadlines 5 as news %}
             {% if news %}
             <div id="cal" class="_">
@@ -55,7 +57,7 @@
     <!-- /clear -->
     </div>
 
-    <div class="column span-4">
+    <div class="span-4">
 
         <div id="extra" class="box">
             <h2>{% trans "Pycon Tre" %}</h2>
@@ -72,7 +74,7 @@
     </div>   
 
 
-    <div class="column span-4">
+    <div class="span-4">
       <div id="blog" class="box">
         <h2>{% trans "Dal blog" %}</h2>
         {% last_blog_post 1 as posts %}
@@ -90,28 +92,28 @@
 
 
 
-    <div class="column span-4 last">
+    <div class="span-4 last">
     
         <div id="quotes" class="box">
             
             <h2>{% trans "Dicono di noi" %}</h2>
           
             <ul>   
-                <li class="clear">
+                <li class="clearfix">
                     <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;
                     </q>
                     <p><img src="{{ MEDIA_URL }}p3/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span>
                     </p>
                 </li>
                 
-                <li class="clear">
+                <li class="clearfix">
                     <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;
                     </q>
                     <p><img src="{{ MEDIA_URL }}p3/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span>
                     </p>
                 </li>
 
-                <li class="clear">
+                <li class="clearfix">
                     <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;                    
                     </q>
                     <p><img src="{{ MEDIA_URL }}p3/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
