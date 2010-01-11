@@ -1,33 +1,17 @@
 
-body#home{
-	background: transparent url(../i/bg-bulb.jpg) top center no-repeat;	
+
+#welcome-non-italian {
+    margin: 0 0 40px 0;
 }
 
+/* ========== */
+/* ! splash   */
+/* ========== */
 
-
-#big-logo  {
-
-	margin: 0 0 20px -5px;
-	padding: 240px 0 0 0;
-	_margin-left: 0;
-	
+#splash {
+    margin: 0 0 40px 0;	
 }
 
-#big-logo img {
-	display: block;
-}
-
-
-
-#home #header {
-    
-    background: transparent url(../i/bg-header.jpg) 400px 0 no-repeat;
-
-}
-
-#home #sponsor {
-    margin-top: 0;
-}
 
 
 /* ========= */
@@ -36,29 +20,78 @@ body#home{
 
 #intro {
 
-    
-/*     background: transparent url(../i/bg-intro.png) 270px bottom no-repeat; */
-    
-}
-
-
-#intro h1 {
-
-/*     font: normal 24px/30px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
-	
+    padding: 0 0 20px 0;
     margin: 0 0 20px 0;	
-	text-shadow: #0e1529 1px 1px 1px; 
-	   
+    
+    background: transparent url(../i/bg-sep.png) bottom left  repeat-x;
+    
 }
 
 
 #intro p {
-    color: #D7CEF5;
+
+
+	font: bold  18px/30px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+    color: #4d5e5f;
+    
+	text-shadow: rgba(228, 245, 245, 0.75) 1px 1px 1px; 
+	   
+}
+
+/* ========== */
+/* ! quotes   */
+/* ========== */
+
+#quotes {
+    padding: 0 0 20px 0;
+    margin: 0 0 20px 0;	
+    
+    background: transparent url(../i/bg-sep.png) bottom left  repeat-x;
     
 }
 
-#intro p:first-line {
-    font-weight: bold;    
+#quotes q {
+
+    background: transparent  url(../i/bg-quotes.png) bottom left no-repeat;
+
+	font: italic 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+	color: #0f2424;
+		    
+	text-shadow: rgba(228, 245, 245, 0.75) 1px 1px 1px;  
+
+    display: block;
+
+    margin: 0 0 10px 0;
+    padding: 0 0 20px 0;
+
+    min-height: 120px;
+    _height: 120px;
+}
+
+#quotes p {
+
+    
+    font-weight: bold;
+    color: #0F2424;
+
+}
+
+
+#quotes p img {
+    float: left;    
+    margin: 0 10px 0 0;
+}
+
+
+
+#quotes p span {
+
+    color: #78764C;
+
+    font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+    
+    display: block;
+    
 }
 
 
@@ -79,7 +112,7 @@ body#home{
     	
     color: #96204B;
     
-    margin: 0 0 20px 0;
+    margin: 0 0 10px 0;
 
 	text-transform: uppercase;
 	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px; 	
@@ -196,98 +229,7 @@ body#home{
 
 
 
-/* =========== */
-/* ! speaker   */
-/* =========== */
 
-
-#speakers .speaker  {
-    margin: 0 0 20px 0;
-    
-    background: #222d4d;
-    background: rgba(34, 45, 77, .8);
-}
-
-/* second row */
-#speakers .speaker.second  {
-    margin-bottom: 0;
-}
-
-#speakers .speaker .summary {
-    float: left;
-    width: 280px;
-}
-
-#speakers .speaker .summary h4 {
-    font-size: 12px;
-    
-    text-transform: uppercase;
-    color: #9dcc4f;
-    
-    margin: 5px 0 0 0;
-    
-}
-
-#speakers .speaker .summary h3 {
-    font: bold 16px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-    
-}
-
-#speakers .speaker .summary h3 a {
-    color: #ece9f5;    
-}
-
-
-#speakers .speaker .summary p {
-    color: #d7cef5;
-    
-    margin: 15px 0 0 0;
-}
-
-
-#speakers .speaker .picture {
-
-    margin: 0 10px 0 0;
-    
-    float: left;
-    width: 100px;
-
-    border: 5px solid #ece9f5;
-    
-}
-
-#speakers .speaker .picture a {
-    border: none;
-}
-
-#speakers .speaker .picture a,
-#speakers .speaker .picture img {
-    display: block;
-}
-
-
-
-#speakers-temp {
-
-}
-
-#speakers-temp  h3 {
-    font-size: 12px;
-    
-    text-transform: uppercase;
-/*     color: #9dcc4f; */
-    
-    margin: 0 0 10px 0;
-    
-}
-
-#speakers-temp  p {
-    color: #d7cef5;
-    
-    margin: 0 0 10px 0;
-    
-    
-}
 
 
 
@@ -374,6 +316,7 @@ body#home{
 }
 
 #twitter #latest-tweet {
+/*
     background: #222d4d url(../i/bg-twitter.png) bottom center no-repeat;
     padding: 15px;
     
@@ -385,6 +328,7 @@ body#home{
     
     min-height: 120px;
     _height: 120px;
+*/
     
 }
 
@@ -396,16 +340,20 @@ body#home{
 
 
 #twitter h2 {
+/*
     font: bold 21px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     color: #9dcc4f;
     margin: 0 0 20px 0;
+*/
 }
 
 
 #twitter #follow-us {
+/*
     background: transparent url(../i/bg-twitter-follow-us.png) top left no-repeat;
     min-height: 100px;
-    _height: 100px;    
+    _height: 100px;  
+*/  
 }
 
 
