@@ -2,8 +2,21 @@
 
 #welcome-non-italian {
 /*     margin: 0 0 40px 0; */
-    height: 125px;
+    min-height: 130px;        
+    _height: 130px;
+
+    
 }
+
+#welcome-non-italian  p{
+    
+    background: transparent url(../i/bg-non-italian.png) center left no-repeat;    
+    padding: 20px 0 20px 60px;
+    
+    
+}
+
+
 
 /* ========== */
 /* ! splash   */
@@ -24,7 +37,7 @@
     padding: 0 0 20px 0;
     margin: 0 0 20px 0;	
     
-    background: transparent url(../i/bg-sep.png) bottom left  repeat-x;
+/*     background: transparent url(../i/bg-sep.png) bottom left  repeat-x; */
     
 }
 
@@ -35,7 +48,7 @@
 	font: bold  18px/30px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
     color: #4d5e5f;
     
-	text-shadow: rgba(228, 245, 245, 0.75) 1px 1px 1px; 
+	text-shadow: rgba(228, 245, 245, 0.95) 1px 1px 1px; 
 	   
 }
 
@@ -47,7 +60,7 @@
     padding: 0 0 20px 0;
     margin: 0 0 20px 0;	
     
-    background: transparent url(../i/bg-sep.png) bottom left  repeat-x;
+/*     background: transparent url(../i/bg-sep.png) bottom left  repeat-x; */
     
 }
 
@@ -127,60 +140,48 @@
 
 
 #cal {
-    background: #384b80  url(../i/bg-cal.png) left center no-repeat;
+    background: transparent url(../i/bg-cal.png) left center no-repeat;    
+
+    padding: 35px 0 0 0;    
+        
+    min-height: 80px;
+    _height: 80px;
     
-    height: 50px;
 }
 
 #cal h3 {
     float: left;
-    width: 50px;
+    width: 90px;
+    
+    padding: 0 0 0 20px;
+/*     margin: 0 5px 0 0; */
     
     text-align: center;
+
+    font: normal 21px/24px  "League Gothic", "Arial Narrow", sans-serif;        
+    text-transform: uppercase;    
     
-    color: #d7cef5;
+    text-shadow: #1a2b2b 1px 1px 1px;  
     
-    font: normal 14px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;    
+
+    color: #F5FECA;    
+
     
-    text-transform: uppercase;
-    
-    text-shadow: #222c4d 1px 1px 1px;  
-    
-    
-    padding: 5px 0 0 0;
 }
 
 #cal h3 span {
 
+    font-size: 24px;
+
     text-transform: none;
-    font: normal 20px/20px  "Museo Sans", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;    
-    color: #9dcc4f;
-    
+    color: #96204B;
 }
 
-
-
-#cal div {
-    float: left;
-    width: 470px;
-
-    margin: 0 0 0 20px; 
+#cal p {
+    float: right;
+    width: 290px;    
 }
 
-
-
-#cal h4 {
-    color: #ece9f5;
-    font-size: 16px;
-    
-    padding: 5px 0 0 0;
-    
-}
-
-#cal div p {
-    font-size: 13px;
-    
-}
 
 /* ========== */
 /* ! signup   */

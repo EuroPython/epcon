@@ -322,6 +322,13 @@ a.tag:hover {
     
 }
 
+/*
+#home #header {
+
+    margin-bottom: 20px;
+}
+*/
+
 #header .container {
     position: relative;
 }
@@ -456,13 +463,21 @@ a.tag:hover {
 
 
 #django-badge {
-    margin: 20px 0 0 0;
+/*     margin: 20px 0 0 0; */
     
-    text-align: right;
+    text-align: right;    
+    
+    background: transparent url(../i/bg-django.jpg) center right no-repeat;
+   padding: 20px 0 15px 0;
+    
 }
 
 #django-badge a {
     border: none;
+}
+
+#django-badge a img {
+    vertical-align: middle;
 }
 
 
@@ -471,8 +486,7 @@ a.tag:hover {
 }
 
 
-#elsewhere img,
-#top-of-page img {
+#elsewhere img {
     vertical-align: middle;
     margin: 0 5px 0 0;
     

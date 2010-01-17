@@ -1,16 +1,51 @@
 {% extends "p3/base.html" %}
 {% load pages_tags markup conference microblog i18n %}
+
+{% block BODY_ID %}home{% endblock %}
+
 {% block MAIN_CONTENT %}
-<div style="background: transparent url({{ STATIC_URL }}p4/i/home-splash-1.jpg) top left no-repeat" class="span-12">
+<div style="background: transparent url({{ STATIC_URL }}p4/i/home-splash-1.jpg) top right no-repeat" class="span-12">
+
+
+    <div class="clearfix">
+
+        {% latest_deadlines 1 as deadlines %}
+        {% if deadlines %}    
+            <div class="span-6">
+                <div id="cal" class="clearfix">                                                        
+                    {% for deadline in deadlines %}
+                        <h3><span>{{ deadline.0|date:"d" }}</span><br />{{ deadline.0|date:"M" }}</h3>
+                        <p>{{ deadline.1|safe }}<br /><span class="more"><a href="#">{% trans "Vedi tutte le scadenze &rarr;" %}</a></span></p>
+                    {% endfor %}                                
+                <!--  /cal -->
+                </div>  
+            </div>               
+        {% endif %}
+
+        <div class="span-6 last">
+            <div id="welcome-non-italian">            
+            {% ifnotequal request.LANGUAGE_CODE "it" %}    
+                <p><a href="/pycon3/non-italians">Welcome non-italian speakers to PyCon Quattro</a></p>
+            {%else%}
+                &nbsp; <!-- Placeholder. Do not remove or universe will collapse -->
+            {% endifnotequal %}
+            </div>            
+        </div>                  
+        
+    <!-- /clearfix -->
+    </div>
     
-    {% ifnotequal request.LANGUAGE_CODE "it" %}
-        <div id="welcome-non-italian">
-            <p><a href="/pycon3/non-italians">Welcome non-italian speakers to PyCon Quattro</a></p>
-        </div>    
-    {% endifnotequal %}
     
     <div id="splash">
-        <img src="{{ STATIC_URL }}p4/i/home-splash-2.jpg" width="820" height="350" alt="*" />  
+        <img src="{{ STATIC_URL }}p4/i/home-splash-2.jpg" width="820" height="375" alt="*" />          
+<!--
+        <ul>
+            <li><a href="#">Talk</a></li>
+            <li><a href="#">Networking</a></li>        
+            <li><a href="#">PyEvents</a></li>        
+            <li><a href="#">Recruiting</a></li>
+        </ul>
+-->
     <!-- /splash -->
     </div>   
 
@@ -40,51 +75,12 @@
     </div>
                     
 
-    <div class="clearfix">
 
-
-<!--
-        <div class="span-6 last">
-            {% latest_deadlines 1 as deadlines %}
-            {% if deadlines %}
-            <div id="cal" class="_">
-                
-                <h2>{% trans "Calendario" %}</h2>
-                                                
-                {% with deadlines as others %}
-                <div id="others">
-                    <ul>
-                        {% for n in others %}
-                        <li>
-                          <span>{{ n.0|date:"d" }}&nbsp;{{ n.0|date:"M" }}</span>
-                          {{ n.1|safe }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endwith %}                        
-            </div>  
-            {% endif %}
-        </div>   
--->
-
-    <!-- /clear -->
-    </div>
 
     <div id="quotes" class="section clearfix">
 
         <h2>{% trans "Dicono di noi" %}</h2>
             
-        <div class="span-4">
-
-            <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;                    
-            </q>
-            <p  class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
-            </p>
-                                                                                               
-        <!-- /column-->
-        </div>
-
         <div class="span-4">
                   
             <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;
@@ -95,6 +91,16 @@
         <!-- /column-->
         </div>
 
+        <div class="span-4">
+
+            <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;                    
+            </q>
+            <p  class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
+            </p>
+                                                                                               
+        <!-- /column-->
+        </div>
+        
         <div class="span-4 last">
             
             <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;
@@ -110,7 +116,7 @@
     </div>        
 
 
-    <div class="span-6">
+    <div class="span-8">
       <div id="blog" class="section">
         <h2>{% trans "Dal blog" %}</h2>
         
@@ -120,27 +126,24 @@
 
         {% get_post_comment_count post_content as comments %}
         <p class="meta">{% trans "Scritto da" %} <b>{{ post_content.author.first_name }}</b> {% trans "il" %} {{ post_content.post.date|date:"j b Y" }} &mdash; <a href="{{ post_content.get_absolute_url }}#comments">{% trans "Commenti" %} ({{ comments }})</a></p>
-
+                
+        {{ post_content.summary|truncatewords_html:30|safe }}
         
-<!--         {{ post_content.summary|truncatewords_html:50|safe }} -->
-        
-<!--
         <div class="more">
           <a href="{{ post_content.get_absolute_url }}">{% trans "Continua" %} &rarr;</a>
         </div>
--->
         {% endwith %}
       </div>  
     </div>   
 
-    <div class="span-6 last">
+    <div class="span-4 last">
       <div id="twitter" class="section">
         <h2>{% trans "Twitter" %}</h2>
         {% last_blog_post 1 as posts %}
         {% with posts.0.1 as post_content %}
         <h3>{{ post_content.headline }}</h3>
         
-<!--         {{ post_content.summary|truncatewords_html:50|safe }} -->
+        {{ post_content.summary|truncatewords_html:50|safe }}
         
         {% endwith %}
       </div>  

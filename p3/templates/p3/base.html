@@ -48,7 +48,7 @@
     </script>
     {% block EXTRA_HEAD %}{% endblock %}
 </head>
-<body id="s-home">
+<body id="{% block BODY_ID %}page{% endblock %}">
     <div id="pre-header">      
         <!--[if lte IE 6]>
         <div id="please-upgrade">
@@ -177,7 +177,7 @@
 
             <hr />
 
-            <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15.gif"  alt="A Django site." title="A Django site." /></a</div>
+            <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15.gif"  height="15" alt="A Django site." title="A Django site." /></a</div>
             
         </div><!-- container -->
     </div><!-- /footer -->
