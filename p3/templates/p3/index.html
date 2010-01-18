@@ -15,7 +15,8 @@
                 <div id="cal" class="clearfix">                                                        
                     {% for deadline in deadlines %}                        
                         <h3><span>{{ deadline.0|date:"d" }}</span><br />{{ deadline.0|date:"M" }}</h3>
-                        <p>Calendario<br />{{ deadline.1|safe }}<br /><span class="more"><a href="#">{% trans "Vedi tutte le scadenze &rarr;" %}</a></span></p>
+<!--                         <h2>{% trans "Calendario" %}</h2> -->
+                        <p>{{ deadline.1|safe }}<br /><span class="more"><a href="#">{% trans "Vedi tutte le scadenze &rarr;" %}</a></span></p>
                     {% endfor %}                                
                 <!--  /cal -->
                 </div>  
@@ -125,7 +126,8 @@
                 {% get_post_comment_count post as comments %}
                 <p class="metadata">{% trans "Scritto da" %} <b>{{ post.author.first_name }}</b> {% trans "il" %} {{ post_content.post.date|date:"j b Y" }} &mdash; <a href="{{ post_content.get_absolute_url }}#comments">{% trans "Commenti" %} ({{ comments }})</a></p>
     
-                {{ post_content.body|striptags|truncatewords:40|safe  }}
+                <p>{{ post_content.body|striptags|truncatewords:40|safe  }}</p>
+                
                 <a href="{{ post_content.get_absolute_url }}">{% trans "Continua &rarr;" %}</a>
     
                 <div class="more">

@@ -57,8 +57,7 @@
 /* ========== */
 
 #quotes {
-    padding: 0 0 20px 0;
-    margin: 0 0 20px 0;	
+    margin: 0 0 40px 0;	
     
 /*     background: transparent url(../i/bg-sep.png) bottom left  repeat-x; */
     
@@ -115,9 +114,8 @@
 
 
 .section  {
-/*     background: transparent url(../i/bg-border.png) top left no-repeat; */
-    
-/*     padding: 15px 0 0 0; */
+
+
 }
 
 .section h2 {
@@ -142,7 +140,7 @@
 #cal {
     background: transparent url(../i/bg-cal.png) left center no-repeat;    
 
-    padding: 35px 0 0 0;    
+    padding: 30px 0 0 0;    
         
     min-height: 80px;
     _height: 80px;
@@ -150,11 +148,12 @@
 }
 
 #cal h3 {
+
     float: left;
     width: 90px;
     
     padding: 0 0 0 20px;
-/*     margin: 0 5px 0 0; */
+    margin: 0 10px 0 0;
     
     text-align: center;
 
@@ -163,11 +162,19 @@
     
     text-shadow: #1a2b2b 1px 1px 1px;  
     
-
     color: #9fc4c4;    
-
     
 }
+
+/*
+#cal h2 {
+    font: normal 18px/20px  "League Gothic", "Arial Narrow", sans-serif;        
+    color: #96204B;    
+    
+    text-transform: uppercase; 
+    
+}
+*/
 
 #cal h3 span {
 
@@ -180,9 +187,32 @@
 
 #cal p {
     float: right;
-    width: 290px;    
+    width: 350px;    
 }
 
+
+#cal p .more {
+
+    padding: 1px 2px;
+/*     text-transform: uppercase; */
+
+    margin: 5px 0 0 0;
+    display: inline-block;
+    
+    background: #C4C3A3;
+    
+}
+
+#cal p .more a {
+
+
+
+    border: none;    
+    font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+        
+}
+
+    
 
 /* ========== */
 /* ! signup   */
@@ -281,21 +311,21 @@
 #blog-latest .more {
  
  
+ 
     margin: 20px 0 0 0;   
-    padding: 1px 0;
+    padding: 1px 2px;
 
     width: 120px;
 
     text-align: center;    
-    text-transform: uppercase;
+/*     text-transform: uppercase; */
     
     background: #C4C3A3;
 }
 
 #blog-latest .more a {
 
-    border: none;
-    
+    border: none;    
     font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
         
 }
