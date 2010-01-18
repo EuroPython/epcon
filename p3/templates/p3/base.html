@@ -71,7 +71,7 @@
                 {% endwith %}
 
                 <li id="li-chat">
-                    <div id="habla_available_div"><a href="#" onclick="habla_window.show()">Chat!</a></div>
+                    <div id="habla_available_div" class="hidden"><a href="#" onclick="habla_window.show()">Chat</a></div>
                     <div id="habla_unavailable_div"><a href="#" title="Nessun operatore disponibile">Chat</a></div>
                 </li>
                 {% for l in LANGUAGES %}{% ifnotequal LANGUAGE_CODE l.0 %}<li id="li-lang"><a href="#" id="l-{{l.0}}" class="lang-selector">{{ l.1 }}</a></li>{% endifnotequal %}{% endfor %}

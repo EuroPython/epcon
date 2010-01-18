@@ -164,17 +164,18 @@
     text-shadow: #1a2b2b 1px 1px 1px;  
     
 
-    color: #F5FECA;    
+    color: #9fc4c4;    
 
     
 }
 
 #cal h3 span {
 
-    font-size: 24px;
-
+	font: bold italic 24px/24px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
     text-transform: none;
-    color: #96204B;
+/*     color: #96204B; */
+
+    color: #F5FECA;  
 }
 
 #cal p {

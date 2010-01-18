@@ -250,11 +250,28 @@ a.tag:hover {
     background: transparent url(../i/bg-li-chat.png) center center no-repeat;
     
 /*     padding: 5px  5px 10px 5px;     */
+
 }
+
+
+#nav #li-chat #habla_unavailable_div a {
+    background-image: url(../i/bg-li-chat-nope.png);
+    text-decoration: line-through;
+    
+    color: #B1C4C4;
+    cursor: default;
+    
+}
+
+
+
 
 #nav #li-lang {
     float: right;
 }
+
+
+
 
 #nav #li-lang #l-it {
     background: transparent url(../i/bg-li-it.png) bottom center no-repeat;
