@@ -11,7 +11,7 @@
 #welcome-non-italian  p{
     
     background: transparent url(../i/bg-non-italian.png) center left no-repeat;    
-    padding: 20px 0 20px 60px;
+    padding: 10px 0 10px 60px;
     
     
 }
@@ -245,42 +245,36 @@
 
 }
 
-#blog-latest p.meta {
+#blog-latest p.metadata {
     margin: 0 0 5px 0;
     font-size: 13px;
 
-    color: #d7cef5;
+    color: #474727;
 
 }
 
-/*
 
-#blog-latest p.meta a {
-    color: #d7cef5;
+#blog-latest p.metadata a {
+    color: #474727;
+    border-bottom-color: #7a7a5c;    
 }
 
-#blog-latest p.meta a:hover {
-    color: #fff;
-    border-bottom-color: #fff;
+#blog-latest p.metadata a:hover {
+    color: #630b2b;
+    border-bottom-color: #9babab;
 }
-*/
 
 #blog-latest h3 {
-
-    font: bold 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    font: normal 21px/30px  "League Gothic", "Arial Narrow", sans-serif;         
 }
 
 
 #blog-latest h3 a {
-    color: #ece9f5;
-/*     border-bottom-color: #b1c2f0; */
+
     
 }
 
 #blog-latest h3 a:hover {
-    color: #9dcc4f;
-    border-bottom-color: #9dcc4f;
-    
 }
 
 
@@ -292,21 +286,22 @@
 
     width: 120px;
 
-    text-align: center;
-    background: #384b80;
-    
+    text-align: center;    
     text-transform: uppercase;
+    
+    background: #C4C3A3;
 }
 
 #blog-latest .more a {
-    color: #d7cef5;
+
     border: none;
     
-    font-size: 13px;
+    font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+        
 }
 
 #blog-latest .more a:hover {
-    color: #fff;
+/*     color: #fff; */
 }
 
 /* =========== */
@@ -374,6 +369,6 @@
 
 
 #twitter #follow-us p span {
-    color: #4E69B2;
+    color: #78764C;
     font-size: 13px;
 }

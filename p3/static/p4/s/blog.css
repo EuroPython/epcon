@@ -26,6 +26,16 @@
     font-size: 13px;	
 }
 
+.blog-archive p.metadata a {
+    color: #474727;
+    border-bottom-color: #7a7a5c;    
+}
+
+.blog-archive p.metadata a:hover {
+    color: #630b2b;
+    border-bottom-color: #9babab;
+}
+
 
 
 #comments .gravatar {
@@ -103,16 +113,6 @@
 }
 
 
-.blog-archive h2 a {
-/*     color: #ece9f5; */
-/*     border-bottom-color: #b1c2f0; */
-    
-}
-
-.blog-archive h2 a:hover {
-    color: #9dcc4f;
-    border-bottom-color: #9dcc4f;
-}
 
 /*
 #add-comment .form-box {

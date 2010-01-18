@@ -26,7 +26,8 @@
                 $('.form-box form').get(0).reset();
             }
         });
-    //]]></script>
+    //]]>
+    </script>
     {% endif %}
 {% endblock %}
 {% block BLOG_HEADER %}
@@ -103,11 +104,11 @@
         <dd>{{ content.post.author.first_name }}</dd>
 
         <dt>{% trans "Data" %}</dt>
-        <dd>{{ content.post.date|date:"d F Y" }}</dd>
-
+        <dd>{{ content.post.date|date:"d F Y" }}</dd>         
+<!--
         <dt>{% trans "Categoria" %}</dt>
         <dd><a href="{% url microblog-category category=post.category.name %}">{{ content.post.category.name }}</a></dd>
-
+-->
         {% if content.post.tags %}
         {% tags_for_object content.post as tags %}
         <dt>{% trans "Tag" %}</dt>

@@ -15,17 +15,21 @@
             {% block BLOG_POST_INFO %}{% endblock %}
 
             <div id="blog-archives-browser">
-                {% category_list as categories %}
+<!--
+                {% category_list as categories %}                
                 {% if categories %}
-                <h3>{% trans "Categorie" %}</h3>
-                <ul>
-                    {% for c in categories %}
-                    <li><a href="{% url microblog-category category=c.name %}">{{ c.name }}</a> ({{ c.count }})</li>
-                    {% endfor %}
-                </ul>
+                    <h3>{% trans "Categorie" %}</h3>
+                    <ul>
+                        {% for c in categories %}
+                        <li><a href="{% url microblog-category category=c.name %}">{{ c.name }}</a> ({{ c.count }})</li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
-                <h3>Archivio Mensile</h3>
+-->
+                
+                <h3>{% trans "Archivio Mensile" %}</h3>
 
+                <!-- ??? -->
                 <ul>
                     <li><a href="./blog-archive.html">Maggio 2009</a> (3)</li>
                     <li><a href="./blog-archive.html">Giugno 2009</a> (5)</li>

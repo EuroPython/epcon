@@ -31,7 +31,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 
-	font: normal 14px/20px "League Gothic", "Arial Narrow", sans-serif;	
+	font: normal 16px/20px "League Gothic", "Arial Narrow", sans-serif;	
 }
 
 
@@ -72,21 +72,21 @@ a:visited {
 	color: #0f2424;	
 	text-decoration: none;	
 	
-	border-bottom: 1px solid #8aabab;
+	border-bottom: 2px solid #4c5e5e;
 	
 }
 
+/*
 a:visited {
 	
 	border-bottom-style: dotted;
 }
-
-/*
-a:hover {
-	color: #fff;
-	border-bottom-color: #fff;
-}
 */
+
+a:hover {
+	color: #630b2b;
+	border-bottom-color: #9babab;
+}
 
 
 a.tag {
