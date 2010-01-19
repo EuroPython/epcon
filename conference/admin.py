@@ -87,7 +87,9 @@ class MultiLingualAdminContent(admin.ModelAdmin):
         form = super(MultiLingualAdminContent, self).get_form(request, obj, **kwargs)
         for field_name in self._get_relation_field():
             if obj:
-                contents =  dict((c.language, c.body) for c in getattr(obj, field_name).all())
+                contents =  dict(
+                    (c.language, c.body) for c in getattr(obj, field_name).all() if c.content == field_name
+                )
             for l, _ in settings.LANGUAGES:
                 text = forms.CharField(widget = forms.Textarea, required = False)
                 if obj:
@@ -100,7 +102,9 @@ class MultiLingualAdminContent(admin.ModelAdmin):
         data = form.cleaned_data
         for field_name in self._get_relation_field():
             if change:
-                contents =  dict((c.language, c) for c in getattr(obj, field_name).all())
+                contents =  dict(
+                    (c.language, c) for c in getattr(obj, field_name).all() if c.content == field_name
+                )
             for l, _ in settings.LANGUAGES:
                 key =  '%s_%s' % (field_name, l)
                 if change:

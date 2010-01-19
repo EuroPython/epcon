@@ -86,6 +86,7 @@ class Speaker(models.Model):
     twitter = models.CharField(max_length = 80, blank = True)
     image = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
     bios = generic.GenericRelation(MultilingualContent)
+    ad_hoc_description = generic.GenericRelation(MultilingualContent, related_name = 'ad_hoc_description_set', verbose_name='descrizione ad hoc')
 
     class Meta:
         ordering = ['name']
