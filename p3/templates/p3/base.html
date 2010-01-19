@@ -104,7 +104,7 @@
             <div class="column span-2 last">
                 <div id="sponsor">
                     <h4>{% trans "I nostri sponsor" %}</h4>
-                    {% conference_sponsor "pycon3" as sponsor %}
+                    {% conference_sponsor "pycon4" as sponsor %}
                     {% for s in sponsor %}
                     <div class="ad">
                         <a href="{{ s.url }}">
@@ -122,7 +122,7 @@
 
     <div id="footer" style="clear: both">
         <div class="container clearfix">
-            {% conference_mediapartner "pycon3" as partner %}
+            {% conference_mediapartner "pycon4" as partner %}
             {% if partner %}
             <div id="media-partner" class="clearfix">
                 <h4>{% trans "Media partner" %}</h4>
