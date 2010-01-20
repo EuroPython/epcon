@@ -278,10 +278,10 @@ def conference_talks(parser, token):
                 except TypeError:
                     conference = [ conference ]
                 talks = talks.filter(conference__in = conference)
-            if self.random:
-                talks = talks.order_by('?')
             if tags:
                 talks = TaggedItem.objects.get_by_model(talks, tags)
+            if self.random:
+                talks = list(talks.order_by('?'))
             context[self.var_name] = talks
             return ''
 
