@@ -168,36 +168,52 @@ def stuff_info(parser, token):
 @register.tag
 def conference_speakers(parser, token):
     """
-    {% conference_speakers [ conference ] as var %}
+    {% conference_speakers [ conference ] [ limit num ] [ "random" ] as var %}
     inserisce in var l'elenco degli speaker (opzionalmente è possibile
     filtrare per conferenza).
     """
     contents = token.split_contents()
-    tag_name = contents[0]
+    tag_name = contents.pop(0)
     if contents[-2] != 'as':
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     var_name = contents[-1]
-    if len(contents) > 3:
-        conference = contents[1]
-        raise template.TemplateSyntaxError("conference params not yet supported")
-    else:
-        conference = None
+    contents = contents[:-2]
     
-    class SpeakersNode(template.Node):
-        def __init__(self, conference, var_name):
+    conference = None
+    limit = None
+    random = False
+    while contents:
+        item = contents.pop(0)
+        if item == 'limit':
+            limit = int(contents.pop(0))
+        elif item == '"random"':
+            random = True
+        elif conference is None:
+            conference = item
+        else:
+            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+
+    class SpeakersNode(TNode):
+        def __init__(self, conference, limit, random, var_name):
             self.var_name = var_name
             if conference:
-                if conference.startswith('"') and conference.endswith('"'):
-                    self.conference = conference[1:-1]
-                else:
-                    self.conference = template.Variable(conference)
+                self.conference = self._set_var(conference)
             else:
                 self.conference = None
+            self.limit = limit
+            self.random = random
         def render(self, context):
             speakers = models.Speaker.objects.all()
-            context[self.var_name] = speakers
+            conference = self._get_var(self.conference, context)
+            if self.conference:
+                speakers = speakers.filter(talk__conference=conference)
+            if self.random:
+                speakers = speakers.order_by('?')
+            if self.limit:
+                speakers = speakers[:self.limit]
+            context[self.var_name] = list(speakers)
             return ''
-    return SpeakersNode(conference, var_name)
+    return SpeakersNode(conference, limit, random, var_name)
 
 class TNode(template.Node):
     def _set_var(self, v):
@@ -218,7 +234,7 @@ class TNode(template.Node):
 @register.tag
 def conference_talks(parser, token):
     """
-    {% conference_talks [ speaker ] [ conference ] as var %}
+    {% conference_talks [ speaker ] [ conference ] [ "random" ] [ tags ] as var %}
     inserisce in var l'elenco dei talk (opzionalmente è possibile
     filtrare per speaker e conferenza).
     """
@@ -230,19 +246,24 @@ def conference_talks(parser, token):
     contents = contents[1:-2]
 
     speaker = conference = tags = None
+    random = False
+
     if contents:
         speaker = contents.pop(0)
     if contents:
         conference = contents.pop(0)
     if contents:
+        random = contents.pop(0) == '"random"'
+    if contents:
         tags = contents.pop(0)
 
     class TalksNode(TNode):
-        def __init__(self, speaker, conference, tags, var_name):
+        def __init__(self, speaker, conference, tags, random, var_name):
             self.var_name = var_name
             self.speaker = self._set_var(speaker)
             self.conference = self._set_var(conference)
             self.tags = self._set_var(tags)
+            self.random = random
         
         def render(self, context):
             talks = models.Talk.objects.all()
@@ -257,11 +278,14 @@ def conference_talks(parser, token):
                 except TypeError:
                     conference = [ conference ]
                 talks = talks.filter(conference__in = conference)
+            if self.random:
+                talks = talks.order_by('?')
             if tags:
                 talks = TaggedItem.objects.get_by_model(talks, tags)
             context[self.var_name] = talks
             return ''
-    return TalksNode(speaker, conference, tags, var_name)
+
+    return TalksNode(speaker, conference, tags, random, var_name)
 
 @register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
 def render_talk_report(context, speaker, conference, tags):
@@ -622,7 +646,7 @@ def conference_multilingual_attribute(parser, token):
             except AttributeError:
                 return ''
 
-            contents = dict((c.language, c) for c in query.all() if c.body)
+            contents = dict((c.language, c) for c in query.all() if (c.body and c.content == attribute))
             try:
                 value = contents[context['LANGUAGE_CODE']]
             except KeyError:
@@ -640,7 +664,8 @@ def conference_multilingual_attribute(parser, token):
                 context[self.var_name] = value
                 return ''
             else:
-                return value.body
+                return value.body if value else ''
+                
     return AttributeNode(instance, attribute, var_name, fallback)
 
 @register.tag
