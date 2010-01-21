@@ -1,5 +1,10 @@
 {% extends "p3/base.html" %}
 {% load pages_tags markup conference microblog i18n %}
+
+{% block EXTRA_HEAD %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}p4/s/home.css" type="text/css" media="screen" />
+{% endblock %}
+
 {% block MAIN_CONTENT %}
 <div class="column span-12">
     <div id="intro">

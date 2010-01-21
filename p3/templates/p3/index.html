@@ -3,6 +3,11 @@
 
 {% block BODY_ID %}home{% endblock %}
 
+{% block EXTRA_HEAD %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}p4/s/home.css" type="text/css" media="screen" />
+{% endblock %}
+    
+
 {% block MAIN_CONTENT %}
 <div style="background: transparent url({{ STATIC_URL }}p4/i/home-splash-1.jpg) top right no-repeat" class="span-12">
 

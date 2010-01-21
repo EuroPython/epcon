@@ -10,6 +10,10 @@
     margin: 20px auto;
 }
 
+.cms img.noborder {
+	border: none;
+}
+
 
 .cms p, 
 .cms dl, 
@@ -26,13 +30,16 @@
 
 .cms h2 {
 	
-/* 	font: normal 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
-	
 	margin: 30px 0 10px 0;
 	text-transform: none;
 
-    color: #9dcc4f;	
+    font-size: 21px;
+    
+    color: #96204B;
+    
+/*     text-shadow: rgba(27,46,46,.75) 1px 1px 1px; */
 
+/*     text-transform: uppercase; */
 }
 
 
@@ -40,8 +47,6 @@
 .cms h4,
 .cms h5,
 .cms h6 {
-	
-/* 	font: bold 14px/20px  "Museo Sans", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
 	
 	margin: 20px 0 10px 0;
 		
@@ -85,13 +90,11 @@
 
 
 
-
-
-
 .cms blockquote {
-	margin: 10px 0 10px 0;	
+	margin: 10px 20px 10px 20px;	
 	
-	font-style: italic;
+    font: normal 12px/20px "Helvetica Neue",Tahoma,Arial,Helvetica,"DejaVu Sans Condensed",sans-serif;
+    color: #383829;
 	
 }
 
@@ -107,21 +110,28 @@
 .cms table {
 	border-collapse: collapse;
 	width: 100%;
+	
+	
 }
 
 
-.cms caption {
-	text-align: center;	
-/* 	font-style: italic; */
-	
+.cms table caption {
+    font: italic 14px/20px "Helvetica Neue",Tahoma,Arial,Helvetica,"DejaVu Sans Condensed",sans-serif;	
 	caption-side: bottom;
 	
-	margin: 10px 0 0 0;
+	margin: 20px 0 0 0;
+	
+    text-align: center;
+
+    color: #383829;
 }
 
 
 .cms table th,
 .cms table td {	
+
+    font: normal 14px/20px "Helvetica Neue",Tahoma,Arial,Helvetica,"DejaVu Sans Condensed",sans-serif;	
+
 	
 	padding: 2px;
 	
@@ -130,8 +140,9 @@
 
 
 .cms table th {
-	font-weight: bold;
 
+    font-weight: bold;
+        
 	border-bottom: 2px solid #4e69b2;	
 }
 
@@ -196,7 +207,6 @@ cms .img-desc img {
 
 cms .img-desc p {
     font-size: 13px;
-/*     color: #d7cef5; */
 }
 
 

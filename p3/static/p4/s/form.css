@@ -82,17 +82,13 @@ label span {
 input, 
 select, 
 textarea {        
+
+	color: #0f2424;
+		
+	font: normal 12px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+
 	padding: 2px 2px;
-
-/* 	font: normal 14px/20px Georgia, serif; */
-
 	background: #fff;
-
-}
-
-select {
-	padding: 2px 2px;
-	
 }
 
 textarea {		
@@ -105,8 +101,6 @@ input[type='password'],
 textarea,
 select {    
 	border: 2px solid #4c5e5e;
-
-
 }
 
 .error input[type='text'],
@@ -154,7 +148,7 @@ button {
 
  	cursor: pointer;
 	
-    font: normal 18px/20px "League Gothic", "Arial Narrow", sans-serif;    
+	font: bold 12px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
 
 	text-transform: uppercase;
 
@@ -170,10 +164,16 @@ button {
 	border-radius: 4px;
 	
 	padding: 5px 10px;	
-	/* IE */
-	*padding: 4px 8px;
+}
+
+button.mini {
+
+	
+	padding: 2px 7px;	
 	
 }
+
+
 
 
 

@@ -76,13 +76,6 @@ a:visited {
 	
 }
 
-/*
-a:visited {
-	
-	border-bottom-style: dotted;
-}
-*/
-
 a:hover {
 	color: #630b2b;
 	border-bottom-color: #9babab;
@@ -382,7 +375,7 @@ a.tag:hover {
     
     color: #4d5f5f;
     
-    text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px;
+/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
 }
 
 
@@ -395,7 +388,10 @@ a.tag:hover {
     
     color: #78764c;
     
-    text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px;
+/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
+    
+/* 	text-shadow: #4d6161 1px 1px 1px; */
+    
 }
 
 
@@ -625,6 +621,26 @@ a.tag:hover {
 }
 
 
+#sidebar .section {
+    margin: 0 0 20px 0;
+}
+
+
+#sidebar .newsletter .google {
+    margin: 10px 0 0 0;
+
+}
+
+#sidebar .newsletter .google a {
+    color: #61613F;
+    border-bottom-color: #61613F;
+}
+
+
+#sidebar .newsletter .google a:hover {
+	color: #630b2b;
+	border-bottom-color: #9babab;
+}
 
 
 

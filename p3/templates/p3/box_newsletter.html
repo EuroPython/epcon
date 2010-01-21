@@ -1,13 +1,12 @@
-<div class="side-box newsletter">
+<div class="section newsletter">
     <h3>Newsletter</h3>
     <p>Se vuoi essere informato sulle prossime edizioni di PyCon e sulle altre attività dell'associazione iscriviti alla newsletter:</p>
     <form action="http://groups.google.com/group/python-italia-aps/boxsubscribe">
         <div>
-            <label>Email: <input type="text" name="email" /></label>
-            <input type="submit" name="sub" value="Iscriviti" />
+            <label class="inline"><input type="text" name="email"  onfocus="if(this.value=='Your email address') {this.value=''; return true;}" value="Your email address" size="20"/></label>&nbsp;<button type="submit" value="" class="mini">Iscriviti</button>
         </div>
     </form>
-    <div class="google-link">
-        <a href="http://groups.google.com/group/python-italia-aps">powered by google groups</a>
+    <div class="google">
+        <a href="http://groups.google.com/group/python-italia-aps">Powered by Google Groups</a>
     </div>
 </div>
