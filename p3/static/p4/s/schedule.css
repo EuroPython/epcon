@@ -1,79 +1,68 @@
-#day02,
-#day01 {
-
-    
-}
-
-#day02 p,
-#day01 p {
-    margin: 0 0 30px 0;
-    
-}
-
-
 table.schedule {
 	border-collapse: collapse;
-	width: auto;
+	width: 100%;
 
-    margin: 0 0 30px 0;
+    margin: 0 0 40px 0;
 
-    color: #4e69b2;
+    border: 10px solid #ebead8;
+    background: #ebead8;
     
-    background: #161e33;
-    border: 10px solid #161e33;
 }
 
-.schedule caption {
-	text-align: center;	
+table.schedule caption {
+	text-align: left;	
     text-transform: capitalize;
 	
 	caption-side: top;
 
-	font: bold 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-
-    color: #fff;
-    color: #E3DCFA;
+	font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;	
 	
 	margin: 0 0 20px 0;
-}
+	
+	color: #96204B;
 
+}
 
 
 .schedule thead th {
-	font-weight: bold;
-	border-bottom: 5px solid #4e69b2;	
-		
+	border-bottom: 5px solid #4D5E5F;			
 	padding: 0 0 5px 0;
+
+	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
 }
 
-.schedule thead th.t-auditorium {
-    color: #D7CEF5;
-	border-bottom-color: #c0b8db;	
+.schedule thead th.t-scoprire {
+    border-bottom-color: #749091;	
 }
 
+.schedule thead th.t-diffondere {
 
-.schedule thead th.t-workshop {
-    color: #9dcc4f;
-	border-bottom-color: #90b357;	
+    border-bottom-color: #96204B;	
 }
 
+.schedule thead th.t-imparare {
+    border-bottom-color: #94946f;	
+}
 
 
 .schedule thead th.hhmm {
-	border-bottom-width: 1px;		
+	border-bottom-width: 1px;			
+
+
 }
 
 
 .schedule tbody td {
 	padding: 5px 20px 20px 0;	
+
 }
 
 
 /* talk title */
 .schedule h3 {
 	
-	font: bold 14px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-	
+	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+			
 	margin: 0 0 5px 0;
 	text-transform: none;
 		
@@ -81,69 +70,93 @@ table.schedule {
 
 /* talk speaker(s) */
 .schedule .s a {
-	color: #8396cc;
-	border-bottom: 1px solid #8396cc;
-	
+	color: #5e5c32;
+    border-bottom-color:#9BABAB;	
 }
 
- 
-.schedule td.track {
-	font-size: 13px;
-	
-	background: transparent url(../i/bg-empty-track.png) bottom left;	
-	
-	
-}
 
 .schedule td.hhmm {
-
-    color: #8396CC;
-    border-top: 1px solid #435a99;
-
-    text-shadow: #0d1529 1px 1px 1px;   	
-    
+	font: normal 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+	
+    border-top: 1px solid #749091;	    	
 }
 
 .schedule td.hhmm span {
-
     font-size: 16px;    
 }
 
 
-
-.schedule td.t-auditorium {
-
-	background: none;	
-    border-top: 3px solid #c0b8db;
+ 
+.schedule td.track {
+	font-size: 13px;	
+	
+	background: transparent url(../i/bg-empty-track.png) bottom left;	
 }
 
-/* continu'd */
-.schedule td.t-auditorium .c  {
-    color: #D7CEF5;
+
+
+
+.schedule td.t-apertura {
+
+    background: none;
+    border-top: 3px solid #4D5E5F;
 }
 
-.schedule td.t-auditorium h3 a {
+
+.schedule td.t-scoprire  {
+
+    background: none;
+    border-top: 3px solid #749091;	
+
+}
+
+/* cont'd */
+.schedule td.t-scoprire  .c  {
+/*     color: #D7CEF5; */
+}
+
+.schedule td.t-scoprire  h3 a {
+/*
     color: #D7CEF5;
     border-bottom: 1px solid #D7CEF5;
+*/
 }
 
 
 
-.schedule td.t-workshop {
+.schedule td.t-diffondere {
 
-	background: none;
-    border-top: 3px solid #90b357;
+    background: none;
+    border-top: 3px solid #96204B;	
 
 }
 
-/* continu'd */
-.schedule td.t-workshop .c  {
-    color: #9dcc4f;
+/* cont'd */
+.schedule td.t-diffondere .c  {
+/*     color: #9dcc4f; */
 }
 
-.schedule td.t-workshop h3 a {
-    color: #9dcc4f;
+.schedule td.t-diffondere h3 a {
+
+}
+
+
+.schedule td.t-imparare {
+
+    background: none;
+    border-top: 3px solid #94946f;	
+}
+
+/* cont'd */
+.schedule td.t-imparare .c  {
+/*     color: #9dcc4f; */
+}
+
+.schedule td.t-imparare h3 a {
+ /*
+   color: #9dcc4f;
     border-bottom: 1px solid #9dcc4f;
+*/
 }
 
 
@@ -151,10 +164,7 @@ table.schedule {
 .schedule td.t-special, 
 .schedule td.t-break {
 
-/* 	background: none; */
-
-
-    border-top: 3px solid #435a99;
+    border-top: 3px solid #679191;
     
     vertical-align: middle;
     text-align: center;
@@ -163,11 +173,10 @@ table.schedule {
 
     letter-spacing: 2px;
     
-    color: #6980c2;
+    color: #435e5e;
     
-    text-shadow: #0d1529 1px 1px 1px;   
     
-	padding: 5px 0;
+	padding: 0;
 	    
 }
 
@@ -182,8 +191,10 @@ table.schedule {
 
 
 .schedule .sponsored-talk a {
+/*
 	color: #8396cc;
 	border-bottom: 1px solid #8396cc;
+*/
 
 }
 
@@ -193,7 +204,9 @@ table.schedule {
 .schedule td.t-workshop h3 a:hover,
 .schedule td.t-auditorium h3 a:hover,
 .schedule .s a:hover {
+/*
 	color: #fff;
 	border-bottom-color: #fff;
+*/
 	
 }
