@@ -117,23 +117,6 @@ a.tag:hover {
 
 
 
-
-/* ============= */
-/* ! structure   */
-/* ============= */
-
-
-/*
-#wrapper {
-    
-    width: 960px;
-
-    margin: 0 auto 40px auto;
-}
-*/
-
-
-
 /* ============== */
 /* ! pre-header   */
 /* ============== */
@@ -208,10 +191,7 @@ a.tag:hover {
 	display: block;
 
 	text-shadow: #1b2e2e 1px 1px 2px;
-	
-	min-height: 40px;
-	/* IE */
-	_height: 40px;
+
 }
 
 
@@ -230,7 +210,11 @@ a.tag:hover {
     background: transparent url(../i/bg-li-chat.png) center center no-repeat;
     
     text-align: center;
-    
+
+	min-height: 40px;
+	/* IE */
+	_height: 40px;
+		    
     min-width: 55px;
     /* IE */
     _width: 55px;
@@ -248,12 +232,6 @@ a.tag:hover {
 
 #nav #li-lang {
     float: right;
-}
-
-#nav #li-lang a {
-	min-height: inherit;
-	/* IE */
-	_height: auto;
 }
 
 #nav #li-lang #l-it {

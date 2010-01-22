@@ -68,9 +68,9 @@
     background: transparent  url(../i/bg-quotes.png) bottom left no-repeat;
 
 	font: italic 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
-	color: #0f2424;
+	color: #454424;
 		    
-	text-shadow: rgba(228, 245, 245, 0.75) 1px 1px 1px;  
+/* 	text-shadow: rgba(228, 245, 245, 0.75) 1px 1px 1px;   */
 
     display: block;
 
