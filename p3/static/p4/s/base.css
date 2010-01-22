@@ -173,6 +173,8 @@ a.tag:hover {
 	background: #4d5f5f url(../i/bg-nav.jpg) top center repeat-x;
 	
 	min-height: 60px;
+	
+	/* IE */
 	_height: 60px;
 		
 }
@@ -196,38 +198,22 @@ a.tag:hover {
 	
     margin: 0 30px 0 0;
 
-    
-
 }
-
-
-/*
-#nav li.current {
-	background: transparent url(../i/bg-nav-li-curr.png) top center no-repeat;
-}
-*/
-
-
-
 
 #nav li a {
 
 	color: #f5feca;
-/* 	padding: 10px 0 10px 0; */
 
 	border: none;	
 	display: block;
 
 	text-shadow: #1b2e2e 1px 1px 2px;
+	
+	min-height: 40px;
+	/* IE */
+	_height: 40px;
 }
 
-/*
-#nav #li-lang a {
-    color: #222d4d;
-	text-shadow: none;
-	   
-}
-*/
 
 #nav li a:hover {
 	color: #fff;	
@@ -243,8 +229,11 @@ a.tag:hover {
 #nav #li-chat a {
     background: transparent url(../i/bg-li-chat.png) center center no-repeat;
     
-/*     padding: 5px  5px 10px 5px;     */
-
+    text-align: center;
+    
+    min-width: 55px;
+    /* IE */
+    _width: 55px;
 }
 
 
@@ -253,18 +242,13 @@ a.tag:hover {
     text-decoration: line-through;
     
     color: #B1C4C4;
-    cursor: default;
-    
+    cursor: default;   
 }
-
-
 
 
 #nav #li-lang {
     float: right;
 }
-
-
 
 
 #nav #li-lang #l-it {
@@ -276,45 +260,7 @@ a.tag:hover {
     background: transparent url(../i/bg-li-en.png) bottom center no-repeat;    
 }
 
-/*
 
-#nav #li-current-user {
-        
-
-	padding: 10px 0 19px 0;
-
-    float: right;	
-	margin-right: 0;	
-
-    text-transform: none;
-    
-    font-size: 14px;    
-	
-    margin-right: 0;	
-    
-    color: #bbdb88;
-	
-}
-
-#nav #li-current-user a {
-
-
-    padding: 0;
-	border-bottom: 1px solid #bdeb73;
-
-    text-shadow: none;
-
-	display: inline;
-}
-
-#nav #li-current-user a:hover {
-
-    color: #fff;
-	border-bottom: 1px solid #fff;
-
-
-}
-*/
 
 
 /* ========== */
@@ -387,7 +333,7 @@ a.tag:hover {
     font-weight: bold;
     font-style: italic;
     
-    color: #78764c;
+    color: #5e5d3b;
     
 /*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
     
