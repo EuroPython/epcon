@@ -250,6 +250,11 @@ a.tag:hover {
     float: right;
 }
 
+#nav #li-lang a {
+	min-height: inherit;
+	/* IE */
+	_height: auto;
+}
 
 #nav #li-lang #l-it {
     background: transparent url(../i/bg-li-it.png) bottom center no-repeat;
