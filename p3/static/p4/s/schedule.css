@@ -28,7 +28,13 @@ table.schedule caption {
 	border-bottom: 5px solid #4D5E5F;			
 	padding: 0 0 5px 0;
 
-	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+	font: bold 13px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+
+    text-transform: uppercase;
+	
+/* 	color: #365757; */
+
+    letter-spacing: 1px;
 }
 
 .schedule thead th.t-scoprire {
