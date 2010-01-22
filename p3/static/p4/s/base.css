@@ -615,9 +615,8 @@ a.tag:hover {
 
 #sidebar h3 {
     font-size: 18px;
-/*     color: #ece9f5; */
-    text-transform: uppercase;
-
+    color: #4D5E5F;
+    text-transform: uppercase;   
 }
 
 
@@ -642,6 +641,29 @@ a.tag:hover {
 	border-bottom-color: #9babab;
 }
 
+
+
+#sidebar .cal ul {
+    list-style: none;
+    margin: 0;
+}
+
+#sidebar .cal li {
+
+    margin: 0 0 10px 0;        
+}
+
+#sidebar .cal h4 {
+    margin: 0;
+}
+
+#sidebar .cal h4 span {
+    color: #96204B;
+}
+
+#sidebar .cal p {
+    margin: 0;
+}
 
 
 
@@ -909,77 +931,6 @@ a.tag:hover {
 }
 
 
-
-/* ======= */
-/* ! cal   */
-/* ======= */
-
-
-#deadlines {
-    list-style: none;
-    margin: 0;
-}
-
-#deadlines p {
-    margin: 0;
-}
-
-#deadlines li {
-
-    /* IE */
-    background: #222d4d url(../i/bg-cal.png) left center no-repeat;
-    /* rest of the world */
-    background-color: rgba(34, 45, 77, .8);
-
-    margin: 0 0 10px 0;        
-}
-
-
-/* reset value on hover */
-#deadlines li:hover {
-    opacity: 1.0 !important;
-}
-
-
-#deadlines h3 {
-    float: left;
-    width: 50px;
-    margin: 0;
-    
-/*     text-align: center; */
-    
-    color: #d7cef5;
-    
-    font: normal 13px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;    
-    
-/*     text-transform: uppercase; */
-    
-    text-shadow: #222c4d 1px 1px 1px;  
-    
-    padding: 10px 0 10px 5px;
-    
-}
-
-#deadlines h3 span {
-
-    text-transform: none;
-    color: #9dcc4f;
-
-    font-family: "Museo Sans";
-
-}
-
-
-
-#deadlines div {
-    float: left;
-    width: 470px;
-
-    margin: 0 0 0 15px; 
-
-    padding: 10px 0;
-
-}
 
 
 
