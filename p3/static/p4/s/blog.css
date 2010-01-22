@@ -191,7 +191,8 @@
 
 .social-networks {
 	margin: 20px 0;
-	font-size: 12px;
+	font: normal 12px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+	
 	
 	padding: 5px 0 0 0;
 	background: #C4C3A3 url(../i/bg-social-networks.jpg) top right no-repeat;
