@@ -11,16 +11,22 @@ table.schedule {
 
 table.schedule caption {
 	text-align: left;	
-    text-transform: capitalize;
+/*     text-transform: capitalize; */
+    text-transform: uppercase;
 	
 	caption-side: top;
 
 	font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;	
 	
-	margin: 0 0 20px 0;
+	margin: 0 0 25px 0;
+/*     padding: 0 0 5px 0; */
 	
 	color: #96204B;
 
+	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px; 
+
+	background:  transparent url(../i/bg-section-h2.png) bottom left no-repeat;
+		
 }
 
 
