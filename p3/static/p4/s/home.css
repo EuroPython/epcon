@@ -23,10 +23,51 @@
 /* ========== */
 
 #splash {
-/*     margin: 0 0 40px 0;	 */
+    position: relative;
+}
+
+#splash h3 {
+
+    position: absolute;
+    
+    top: 120px;
+    left: 535px;
+    
+    text-indent: -999em;
+    background: transparent url(../i/splash-h3-it.png) top left no-repeat;
+    
+    height: 35px;
+    width: 210px;
+}
+
+#splash ul {
+    position: absolute;
+    
+    top: 150px;
+    left: 535px;
+    
+    list-style: none;
 }
 
 
+#splash a {
+    border: none;
+    opacity: .8;
+    
+    display: block;    
+    
+   -webkit-transition: opacity .2s ease; 
+}
+
+#splash a:hover {
+    opacity: 1;
+    
+    
+}
+
+#splash img {
+    display: block;
+}
 
 /* ========= */
 /* ! intro   */
