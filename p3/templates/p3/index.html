@@ -6,120 +6,90 @@
 {% block EXTRA_HEAD %}
     <link rel="stylesheet" href="{{ STATIC_URL }}p4/s/home.css" type="text/css" media="screen" />
 {% endblock %}
-    
 
 {% block MAIN_CONTENT %}
 <div style="background: transparent url({{ STATIC_URL }}p4/i/home-splash-1.jpg) top right no-repeat" class="span-12">
 
-
     <div class="clearfix">
 
         {% latest_deadlines 1 as deadlines %}
-        {% if deadlines %}    
-            <div class="span-7">
-                <div id="cal" class="clearfix">                                                        
-                    {% for deadline in deadlines %}                        
-                        <h3><span>{{ deadline.0|date:"d" }}</span><br />{{ deadline.0|date:"M" }}</h3>
-<!--                         <h2>{% trans "Calendario" %}</h2> -->
-                        <p>{{ deadline.1|safe }}<br /><span class="more"><a href="#">{% trans "Vedi tutte le scadenze &rarr;" %}</a></span></p>
-                    {% endfor %}                                
-                <!--  /cal -->
-                </div>  
-            </div>               
+        {% if deadlines %}
+        <div class="span-7">
+            <div id="cal" class="clearfix">
+                {% for deadline in deadlines %}
+                    <h3><span>{{ deadline.0|date:"d" }}</span><br />{{ deadline.0|date:"M" }}</h3>
+                    <p>{{ deadline.1|safe }}<br /><span class="more"><a href="#">{% trans "Vedi tutte le scadenze &rarr;" %}</a></span></p>
+                {% endfor %}
+            </div>
+        </div>
         {% endif %}
 
         <div class="span-5 last">
-            <div id="welcome-non-italian">            
-            {% ifnotequal request.LANGUAGE_CODE "it" %}    
-                <p><a href="/pycon3/non-italians">Welcome non-italian speakers to<br />PyCon Quattro</a></p>
+            <div id="welcome-non-italian">
+            {% ifnotequal request.LANGUAGE_CODE "it" %}
+                <p><a href="/pycon4/non-italians">Welcome non-italian speakers to<br />PyCon Quattro</a></p>
             {%else%}
-                &nbsp; <!-- Placeholder. Do not remove or universe will collapse -->
+                &nbsp; {% comment %}Placeholder. Do not remove or universe will collapse{% endcomment %}
             {% endifnotequal %}
-            </div>            
-        </div>                  
-        
+            </div>
+        </div>
+
     <!-- /clearfix -->
     </div>
-    
-    
+
     <div id="splash">
-        <img src="{{ STATIC_URL }}p4/i/home-splash-2.jpg" width="820" height="375" alt="" />         
+        <img src="{{ STATIC_URL }}p4/i/home-splash-2.jpg" width="820" height="375" alt="" />
         <h3>PyCon in breve:</h3>
         <ul>
-            <li><a href="#"><img src="{{ STATIC_URL }}p4/i/splash-talk.png" alt="Talk" width="210" height="35" /></a></li>
-            <li><a href="#"><img src="{{ STATIC_URL }}p4/i/splash-networking.png" alt="Networking" width="210" height="35" /></a></li>        
-            <li><a href="#"><img src="{{ STATIC_URL }}p4/i/splash-recruiting.png" alt="Recruiting" width="210" height="30" /></a></li>            
-            <li><a href="#"><img src="{{ STATIC_URL }}p4/i/splash-pyevents.png" alt="PyEvents" width="210" height="35" /></a></li>        
+            <li><a href="http://www.pycon.it/pycon4/talk/"><img src="{{ STATIC_URL }}p4/i/splash-talk.png" alt="Talk" width="210" height="35" /></a></li>
+            <li><a href="http://www.pycon.it/pycon4/incontri/"><img src="{{ STATIC_URL }}p4/i/splash-networking.png" alt="Networking" width="210" height="35" /></a></li>
+            <li><a href="http://www.pycon.it/pycon4/lavoro/"><img src="{{ STATIC_URL }}p4/i/splash-recruiting.png" alt="Recruiting" width="210" height="30" /></a></li>
+            <li><a href="http://www.pycon.it/pycon4/eventi/"><img src="{{ STATIC_URL }}p4/i/splash-pyevents.png" alt="PyEvents" width="210" height="35" /></a></li>
         </ul>
     <!-- /splash -->
-    </div>   
-
+    </div>
 
     <div id="intro" class="clearfix">
 
         <div class="span-6">
             <p>
-                Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language.          
-                            
+                Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language.
     <!--             {% placeholder text with markItUpMarkdown as text %} {{ text|markdown }} -->
-                
             </p>
         <!-- /column -->
         </div>   
-    
+
         <div class="span-6 last">
             <p>
-                We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world.            
+                We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world.
                 <!-- {% placeholder text with markItUpMarkdown as text %} {{ text|markdown }} -->
-                
             </p>
         <!-- /column -->
-        </div>   
-
+        </div>
 <!--     /intro     -->
     </div>
-                    
-
-
 
     <div id="quotes" class="section clearfix">
 
         <h2>{% trans "Dicono di noi" %}</h2>
-            
+
         <div class="span-4">
-                  
-            <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;
-            </q>
-            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span>
-            </p>
-                    
-        <!-- /column-->
+            <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;</q>
+            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span></p>
         </div>
 
         <div class="span-4">
-
-            <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;                    
-            </q>
-            <p  class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span>
-            </p>
-                                                                                               
-        <!-- /column-->
+            <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;</q>
+            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span></p>
         </div>
-        
+
         <div class="span-4 last">
-            
-            <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;
-            </q>
-            <p  class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span>
-            </p>
-        
-        <!-- /column-->
+            <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;</q>
+            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span></p>
         </div>
-
 
     <!-- /quotes -->
-    </div>        
-
+    </div>
 
      <div class="column span-8">
         <div id="blog-latest" class="section">
@@ -129,11 +99,11 @@
                 <h3><a href="{{ post_content.get_absolute_url }}">{{ post_content.headline }}</a></h3>
                 {% get_post_comment_count post as comments %}
                 <p class="metadata">{% trans "Scritto da" %} <b>{{ post.author.first_name }}</b> {% trans "il" %} {{ post_content.post.date|date:"j b Y" }} &mdash; <a href="{{ post_content.get_absolute_url }}#comments">{% trans "Commenti" %} ({{ comments }})</a></p>
-    
+
                 <p>{{ post_content.body|striptags|truncatewords:40|safe  }}</p>
-                
+
                 <a href="{{ post_content.get_absolute_url }}">{% trans "Continua &rarr;" %}</a>
-    
+
                 <div class="more">
                     <a href="/blog/">{% trans "Archivio blog" %}</a>
                 </div>
@@ -143,13 +113,13 @@
 
     <div class="column span-4 last">
         <!--  box_latest_tweets  -->
-        
+
         <div id="twitter">
             <div id="latest-tweet" class="section">
             <h2>Da Twitter</h2>
-            
+
             <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam sit amet elit vitae arcu interdum ullamcorper. </p>
-            
+
             </div>
             <div id="follow-us">
                 <p><a href="http://twitter.com/better_software">{% trans "Seguici su Twitter" %}</a><br/>
@@ -157,9 +127,8 @@
             </div>
         </div>
 
-
     </div> 
-    
+
 <!-- /span-12     -->
 </div>   
 {% endblock %}
