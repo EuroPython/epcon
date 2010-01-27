@@ -337,7 +337,7 @@ def render_schedule(context, schedule):
                 event['time_slots'] = e.talk.duration / TIME_STEP
                 event['talk'] = e.talk
                 if e.sponsor:
-                    event['sponsor'] = e.sponsor.slug
+                    event['sponsor'] = e.sponsor
             else:
                 event['title'] = e.custom
             # row ha tanti elementi quante sono le track dello schedule
