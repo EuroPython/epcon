@@ -390,44 +390,29 @@
 }
 
 #twitter #latest-tweet {
-/*
-    background: #222d4d url(../i/bg-twitter.png) bottom center no-repeat;
-    padding: 15px;
+    background: transparent url(../i/bg-twitter.png) top center no-repeat;
+    padding: 10px;
     
-    color: #d7cef5;
+/*     color: #d7cef5; */
     
-    -moz-border-radius: 5px; 
-    -webkit-border-radius: 5px;
-    border-radius: 5px;    
-    
-    min-height: 120px;
-    _height: 120px;
-*/
+    min-height: 135px;
+    _height: 135px;
     
 }
 
-/*
-#twitter a {
-    color: #fff;
-}
-*/
 
 
 #twitter h2 {
-/*
-    font: bold 21px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-    color: #9dcc4f;
-    margin: 0 0 20px 0;
-*/
+    background: none;
+    
+    margin: 0;
 }
 
 
 #twitter #follow-us {
-/*
     background: transparent url(../i/bg-twitter-follow-us.png) top left no-repeat;
-    min-height: 100px;
-    _height: 100px;  
-*/  
+    min-height: 90px;
+    _height: 90px;    
 }
 
 
