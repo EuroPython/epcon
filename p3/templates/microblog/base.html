@@ -1,6 +1,6 @@
 {% extends "p3/base.html" %}
 {% load i18n microblog %}
-{% block PAGE_TITLE %}Pycon Italia Blog {% endblock %}
+{% block PAGE_TITLE %}Pycon Italia Blog{% endblock %}
 {% block MAIN_CONTENT %}
 <div class="column span-12">
     <div class="page border clearfix">
@@ -15,7 +15,7 @@
             {% block BLOG_POST_INFO %}{% endblock %}
 
             <div id="blog-archives-browser">
-<!--
+                {% comment %}
                 {% category_list as categories %}                
                 {% if categories %}
                     <h3>{% trans "Categorie" %}</h3>
@@ -25,15 +25,14 @@
                         {% endfor %}
                     </ul>
                 {% endif %}
--->
+                {% endcomment %}
                 
                 <h3>{% trans "Archivio Mensile" %}</h3>
-
-                <!-- ??? -->
+                {% month_list as months %}
                 <ul>
-                    <li><a href="./blog-archive.html">Maggio 2009</a> (3)</li>
-                    <li><a href="./blog-archive.html">Giugno 2009</a> (5)</li>
-                    <li><a href="./blog-archive.html">Novembre 2009</a> (2)</li>
+                    {% for d, count in months %}
+                    <li><a href="{% url microblog-list-by-month year=d.year month=d.month %}">{{ d|date:"F Y" }}</a> ({{ count }})</li>
+                    {% endfor %}
                 </ul>
 
             </div>
