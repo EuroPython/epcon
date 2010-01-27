@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load pages_tags markup conference microblog i18n %}
+{% load pages_tags markup conference microblog i18n p3 %}
 
 {% block BODY_ID %}home{% endblock %}
 
@@ -112,21 +112,7 @@
     </div>
 
     <div class="column span-4 last">
-        <!--  box_latest_tweets  -->
-
-        <div id="twitter">
-            <div id="latest-tweet" class="section">
-            <h2>Da Twitter</h2>
-
-            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam sit amet elit vitae arcu interdum ullamcorper. </p>
-
-            </div>
-            <div id="follow-us">
-                <p><a href="http://twitter.com/better_software">{% trans "Seguici su Twitter" %}</a><br/>
-                <span>({% trans "già siamo in" %} 999!)</span></p>
-            </div>
-        </div>
-
+        {% box_latest_tweets %}
     </div> 
 
 <!-- /span-12     -->

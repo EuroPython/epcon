@@ -1,0 +1,14 @@
+{% load i18n p3 %}
+<div id="twitter">
+    <div id="latest-tweet" class="section">
+    <h2>{% trans "Da Twitter" %}</h2>
+    {% latest_tweets 1 as tweets %}
+    {% for tweet in tweets %}
+    <p>{{ tweet|convert_links }}</p>
+    {% endfor %}
+    </div>
+    <div id="follow-us">
+        <p><a href="http://twitter.com/better_software">{% trans "Seguici su Twitter" %}</a><br />
+        <span>({% trans "siamo già in" %} {{ tweets.0.followers_count }}!)</span></p>
+    </div>
+</div>
