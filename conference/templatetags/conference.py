@@ -230,7 +230,6 @@ class TNode(template.Node):
         except AttributeError:
             return v
 
-
 @register.tag
 def conference_talks(parser, token):
     """
@@ -252,8 +251,9 @@ def conference_talks(parser, token):
         speaker = contents.pop(0)
     if contents:
         conference = contents.pop(0)
-    if contents:
-        random = contents.pop(0) == '"random"'
+    if contents and contents[0] == 'random':
+        contents.pop(0)
+        random = True
     if contents:
         tags = contents.pop(0)
 
