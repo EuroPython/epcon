@@ -75,6 +75,14 @@ def _build_fs_stuff(subdir):
 
 fs_speaker, _speaker_image_path = _build_fs_stuff('speaker')
 
+def postSaveResizeImageHandler(sender, **kwargs):
+    tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
+    null = open('/dev/null')
+    p = subprocess.Popen(
+        [tool, settings.CONFERENCE_STUFF_DIR],
+        close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.communicate()
+
 class Speaker(models.Model):
     name = models.CharField('nome e cognome speaker', max_length = 100)
     slug = models.SlugField()
@@ -100,6 +108,8 @@ class Speaker(models.Model):
 
     def get_all_talks(self):
         return list(self.talk_set.all()) + list(self.additional_speakers.all())
+
+post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
 TALK_DURATION = (
     (30, '30 minuti'),
@@ -178,14 +188,7 @@ class Sponsor(models.Model):
     def __unicode__(self):
         return self.sponsor
 
-def postSaveSponsorHandler(sender, **kwargs):
-    tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
-    null = open('/dev/null')
-    p = subprocess.Popen(
-        [tool, settings.CONFERENCE_STUFF_DIR],
-        close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    p.communicate()
-post_save.connect(postSaveSponsorHandler, sender=Sponsor)
+post_save.connect(postSaveResizeImageHandler, sender=Sponsor)
 
 class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor)
@@ -217,7 +220,7 @@ class MediaPartner(models.Model):
     def __unicode__(self):
         return self.partner
 
-post_save.connect(postSaveSponsorHandler, sender=MediaPartner)
+post_save.connect(postSaveResizeImageHandler, sender=MediaPartner)
 
 class MediaPartnerConference(models.Model):
     partner = models.ForeignKey(MediaPartner)
