@@ -251,7 +251,7 @@ def conference_talks(parser, token):
         speaker = contents.pop(0)
     if contents:
         conference = contents.pop(0)
-    if contents and contents[0] == 'random':
+    if contents and 'random' in contents[0]:
         contents.pop(0)
         random = True
     if contents:
@@ -273,9 +273,7 @@ def conference_talks(parser, token):
             if speaker:
                 talks = talks.filter(speakers = speaker)
             if conference:
-                try:
-                    iter(conference)
-                except TypeError:
+                if not isinstance(conference, (list, tuple)):
                     conference = [ conference ]
                 talks = talks.filter(conference__in = conference)
             if tags:
