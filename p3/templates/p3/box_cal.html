@@ -1,25 +1,11 @@
-<div  class="section cal">                                                                                                                               
+<div class="section cal">
     <h3>Calendario</h3>
-    
     <ul>                                
+        {% for d in deadlines %}
         <li> 
-            <h4><span>1</span> Feb</h4>
-            <p>Lorem ipsum dolor sit amet, <a href="#">consectetuer adipiscing elit</a>. Augue neque tempor enim, et mattis justo nibh eu elit.</p>
+            <h4><span>{{ d.0.date|date:"j" }}</span> {{ d.0.date|date:"M" }}</h4>
+            <p>{{ d.1.body|safe }}</p>
         </li>
-        <li> 
-            <h4><span>28</span> Mar</h4>
-            <p>Nullam ultrices, nisi quis scelerisque convallis, augue neque tempor enim, et mattis justo nibh eu elit.</p>
-        </li>
-        
-        <li> 
-            <h4><span>15</span> Apr</h4>
-            <p>Etiam sit amet elit vitae arcu interdum ullamcorper. Et mattis justo nibh eu elit.</p>
-        </li>
-        
-        <li> 
-            <h4><span>5</span> Mag</h4>
-            <p>Nullam ultrices, et mattis justo nibh eu elit.</p>
-        </li>                                                                                                
+        {% endfor %}
     </ul>                                                            
-<!-- /cal -->
 </div>

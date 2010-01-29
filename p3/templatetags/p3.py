@@ -31,6 +31,13 @@ def box_pycon_italia():
 def box_newsletter():
     return {}
 
+@register.inclusion_tag('p3/box_cal.html', takes_context = True)
+def box_cal(context):
+    deadlines = ConferenceModels.Deadline.objects.valid_news()
+    return {
+        'deadlines': [ (d, d.content(context['LANGUAGE_CODE'])) for d in deadlines ]
+    }
+
 @register.inclusion_tag('p3/box_download.html', takes_context = True)
 def box_download(context, fname, label=None):
     if '..' in fname:
