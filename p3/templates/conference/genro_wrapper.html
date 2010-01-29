@@ -1,7 +1,9 @@
-{% extends "p3/content-1col.html" %}
+{% extends "p3/base.html" %}
 {% load i18n %}
-{% block PAGE_ENTRY %}
+{% block MAIN_CONTENT %}
+<div class="column span-12">
     <iframe width="{{ size.0 }}" height="{{ size.1 }}" src="{{ src }}" allowtransparency="true" frameborder="0"></iframe>
     <p class="genro-message">{% trans "genro-account" %}</p>
     <p class="genro-message">{% trans "genro-problem" %}</p>
+</div>
 {% endblock %}
