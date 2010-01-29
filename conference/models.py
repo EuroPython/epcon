@@ -35,6 +35,24 @@ class Deadline(models.Model):
        today = datetime.date.today()
        return today > self.date
 
+    def content(self, lang, fallback=True):
+        """
+        Ritorna il DeadlineContent nella lingua specificata.  Se il
+        DeadlineContent non esiste e fallback è False viene sollevata
+        l'eccezione ObjectDoesNotExist. Se fallback è True viene ritornato il
+        primo DeadlineContent disponibile.
+        """
+        contents = dict((c.language, c) for c in self.deadlinecontent_set.exclude(body=''))
+        if not contents:
+            raise DeadlineContent.DoesNotExist()
+        try:
+            return contents[lang]
+        except KeyError:
+            if not fallback:
+                raise DeadlineContent.DoesNotExist()
+
+        return contents.values()[0]
+
 class DeadlineContent(models.Model):
     """
     Testo, multilingua, di una deadline
