@@ -18,7 +18,7 @@
             <div id="cal" class="clearfix">
                 {% for deadline in deadlines %}
                     <h3><span>{{ deadline.0|date:"d" }}</span><br />{{ deadline.0|date:"M" }}</h3>
-                    <p>{{ deadline.1|safe }}</p>
+                    <p>{{ deadline.1|safe }}<br /><span class="more"><a href="/pycon4/conferenza">{% trans "Vedi tutte le scadenze &rarr;" %}</a></span></p>
                 {% endfor %}
             </div>
         </div>
