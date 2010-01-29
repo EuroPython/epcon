@@ -48,7 +48,7 @@ def details(request, path=None, lang=None):
     if path:
         current_page = Page.objects.from_path(path, lang, exclude_drafts=exclude_drafts)
     elif pages:
-        current_page = Page.objects.published().order_by("tree_id")[0]
+        current_page = pages[0]
 
     # if no pages has been found, we will try to find it via an Alias
     if not current_page:
