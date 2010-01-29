@@ -128,9 +128,7 @@
                 <h4>{% trans "Media partner" %}</h4>
                 {% for s in partner %}
                 <div class="ad">
-                    <a href="{{ s.url }}">
-                        <img src="{{ MEDIAPARTNER_LOGO_URL }}{{ s.logo|image_resized }}" alt="{{ s.partner }}" width="110" height="70" />
-                    </a>
+                    <a href="{{ s.url }}"><img src="{{ MEDIAPARTNER_LOGO_URL }}{{ s.logo|image_resized }}" alt="{{ s.partner }}" width="110" height="70" /></a>
                 </div>
                 {% endfor %}
             </div>
@@ -143,10 +141,8 @@
                     {% for p in pages %}
                     <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
                     {% endfor %}
-<!--                         <li class="sep">Edizioni precedenti: <a href="/pycon1/">Uno</a>, <a href="/pycon2/">Due</a>, <a href="/pycon3/">Tre</a></li> -->
                 </ul>
             </div>
-
 
             <div id="elsewhere">
                 <h4>Ci trovi anche su&hellip;</h4>
@@ -154,10 +150,11 @@
                     <li><img src="{{ STATIC_URL }}p4/i/twitter-16x16.png" alt="Twitter" width="16" height="16"/><a href="http://twitter.com/pyconit">Twitter</a></li>
 
                     <li><img src="{{ STATIC_URL }}p4/i/facebook-16x16.png" alt="Facebook" width="16" height="16"/><a href="http://www.facebook.com/group.php?gid=92045427216">Facebook</a></li>
-<!--                     <li><img src="{{ STATIC_URL }}p4/i/linkedin-16x16.png" alt="LinkedIn" width="16" height="16"/><a href="http://www.linkedin.com/groups?about=&amp;gid=1790402&amp;trk=anet_ug_grppro">LinkedIn</a></li> -->
+                     {% comment %}
+                     <li><img src="{{ STATIC_URL }}p4/i/linkedin-16x16.png" alt="LinkedIn" width="16" height="16"/><a href="http://www.linkedin.com/groups?about=&amp;gid=1790402&amp;trk=anet_ug_grppro">LinkedIn</a></li>
+                     {% endcomment %}
                 </ul>
             </div>
-
 
             <div class="column span-7 append-1">
                 <h4>Credits</h4>
@@ -177,8 +174,7 @@
 
             <hr />
 
-            <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15.gif"  height="15" alt="A Django site." title="A Django site." /></a</div>
-            
+            <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15.gif"  height="15" alt="A Django site." title="A Django site." /></a></div>
         </div><!-- container -->
     </div><!-- /footer -->
 
