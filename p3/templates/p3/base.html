@@ -77,7 +77,7 @@
                 </li>
                 {% for l in LANGUAGES %}{% ifnotequal LANGUAGE_CODE l.0 %}<li id="li-lang"><a href="#" id="l-{{l.0}}" class="lang-selector">{{ l.1 }}</a></li>{% endifnotequal %}{% endfor %}
             </ul>
-            <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><input type="hidden" name="language" value="" /></form>
+            <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><div style="display: inline;"><input type="hidden" name="language" value="" /></div></form>
         </div>
     </div> 
     <div id="header">
