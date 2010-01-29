@@ -27,14 +27,13 @@
                 {% endif %}
                 {% endcomment %}
                 
-                <h3>{% trans "Archivio Mensile" %}</h3>
-                {% month_list as months %}
+                <h3>{% trans "Archivio" %}</h3>
+                {% year_list as years %}
                 <ul>
-                    {% for d, count in months %}
-                    <li><a href="{% url microblog-list-by-month year=d.year month=d.month %}">{{ d|date:"F Y" }}</a> ({{ count }})</li>
+                    {% for d, count in years %}
+                    <li><a href="{% url microblog-list-by-year year=d %}">{{ d }}</a> ({{ count }})</li>
                     {% endfor %}
                 </ul>
-
             </div>
         </div>
     </div>
