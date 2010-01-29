@@ -95,7 +95,7 @@ class PageManager(models.Manager):
         return self.on_site().filter(
             publication_end_date__lte=datetime.now())
 
-    def from_path(self, complete_path, lang, exclude_drafts=True):
+    def from_path(self, complete_path, lang, exclude_drafts=True, check_other_languages=False):
         """Return a :class:`Page <pages.models.Page>` according to
         the page's path."""
         from pages.models import Content, Page
@@ -108,6 +108,10 @@ class PageManager(models.Manager):
         for page in pages_list:
             if page.get_url(lang) == complete_path:
                 return page
+            elif check_other_languages:
+                for l in settings.PAGE_LANGUAGES:
+                    if page.get_url(l[0]) == complete_path:
+                        return page.get_url(lang)
         return None
 
 class ContentManager(models.Manager):

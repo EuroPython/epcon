@@ -1,5 +1,5 @@
 """Default example views"""
-from django.http import Http404, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.contrib.sites.models import SITE_CACHE
 from pages import settings
@@ -46,7 +46,9 @@ def details(request, path=None, lang=None):
 
     exclude_drafts = not(request.user.is_authenticated() and request.user.is_staff)
     if path:
-        current_page = Page.objects.from_path(path, lang, exclude_drafts=exclude_drafts)
+        current_page = Page.objects.from_path(path, lang, exclude_drafts=exclude_drafts, check_other_languages=True)
+        if current_page and not isinstance(current_page, Page):
+            return HttpResponseRedirect(current_page)
     elif pages:
         current_page = pages[0]
 
