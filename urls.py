@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
-    (r'^pycon3/assopy/$', 'conference.views.genro_wrapper'),
+    (r'^assopy/$', 'conference.views.genro_wrapper'),
     (r'^pycon3/gmap.js$', 'p3.views.gmap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^blog/', include('microblog.urls')),
