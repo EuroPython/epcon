@@ -105,14 +105,9 @@ class PageManager(models.Manager):
         pages_list = self.on_site().filter(id__in=page_ids)
         if exclude_drafts:
             pages_list = pages_list.exclude(status=Page.DRAFT)
-        current_page = None
-        if len(pages_list) == 1:
-            return pages_list[0]
-        # more than one page matching the slug, let's use the full url
-        if len(pages_list) > 1:
-            for page in pages_list:
-                if page.get_url(lang) == complete_path:
-                    return page
+        for page in pages_list:
+            if page.get_url(lang) == complete_path:
+                return page
         return None
 
 class ContentManager(models.Manager):
