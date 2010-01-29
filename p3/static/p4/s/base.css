@@ -584,7 +584,8 @@ a.tag:hover {
 }
 
 #sidebar .cal h4 {
-    margin: 0;
+    float: left;
+    margin: 0 10px 0 0;
 }
 
 #sidebar .cal h4 span {
