@@ -6,6 +6,7 @@ from pages import settings
 from pages.models import Page, Content, PageAlias
 from pages.http import auto_render, get_language_from_request
 from pages.http import get_slug_and_relative_path
+from django.core.urlresolvers import reverse
 
 def details(request, path=None, lang=None):
     """This view get the root pages for navigation
@@ -48,7 +49,7 @@ def details(request, path=None, lang=None):
     if path:
         current_page = Page.objects.from_path(path, lang, exclude_drafts=exclude_drafts, check_other_languages=True)
         if current_page and not isinstance(current_page, Page):
-            return HttpResponseRedirect(current_page)
+            return HttpResponseRedirect(reverse('pages-root') + current_page)
     elif pages:
         current_page = pages[0]
 
