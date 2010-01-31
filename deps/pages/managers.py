@@ -105,12 +105,17 @@ class PageManager(models.Manager):
         pages_list = self.on_site().filter(id__in=page_ids)
         if exclude_drafts:
             pages_list = pages_list.exclude(status=Page.DRAFT)
+        def cmp(a):
+            if a == complete_path or (complete_path.endswith('/') and a == complete_path[:-1]):
+                return True
+            else:
+                return False
         for page in pages_list:
-            if page.get_url(lang) == complete_path:
+            if cmp(page.get_url(lang)):
                 return page
             elif check_other_languages:
                 for l in settings.PAGE_LANGUAGES:
-                    if page.get_url(l[0]) == complete_path:
+                    if cmp(page.get_url(l[0])):
                         return page.get_url(lang)
         return None
 
