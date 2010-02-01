@@ -52,11 +52,6 @@
         {% load comments %}
         <div id="add-comment">
             <h3>Aggiungi un commento</h3>
-<!--
-            <p class="notice">
-                {% trans "Per evitare spam nei blog post, i commenti degli utenti sono moderati dallo staff della conferenza." %}
-            </p>
--->
             <div class="form-box">
                 {% get_comment_form for post as form %}
                 <form action="{% comment_form_target %}#preview-comment" method="post">
