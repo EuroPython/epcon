@@ -107,10 +107,10 @@
 
         <dt>{% trans "Data" %}</dt>
         <dd>{{ content.post.date|date:"d F Y" }}</dd>         
-<!--
+{% comment %}
         <dt>{% trans "Categoria" %}</dt>
         <dd><a href="{% url microblog-category category=post.category.name %}">{{ content.post.category.name }}</a></dd>
--->
+{% endcomment %}
         {% if content.post.tags %}
         {% tags_for_object content.post as tags %}
         <dt>{% trans "Tag" %}</dt>
