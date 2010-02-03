@@ -356,3 +356,4 @@ class DidYouKnow(models.Model):
     """
     visible = models.BooleanField('visible', default = True)
     messages = generic.GenericRelation(MultilingualContent)
+
