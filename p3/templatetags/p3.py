@@ -65,7 +65,7 @@ def box_download(context, fname, label=None):
 @register.inclusion_tag('p3/box_didyouknow.html', takes_context = True)
 def box_didyouknow(context):
     try:
-        d = ConferenceModels.DidYouKnow.objects.order_by('?')[0]
+        d = ConferenceModels.DidYouKnow.objects.filter(visible = True).order_by('?')[0]
     except IndexError:
         d = None
     return {
