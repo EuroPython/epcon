@@ -36,10 +36,7 @@
     font-size: 21px;
     
     color: #96204B;
-    
-/*     text-shadow: rgba(27,46,46,.75) 1px 1px 1px; */
 
-/*     text-transform: uppercase; */
 }
 
 
@@ -49,7 +46,10 @@
 .cms h6 {
 	
 	margin: 20px 0 10px 0;
-		
+
+
+    font-size: 18px;
+    		
 	text-transform: uppercase;
 		
 }
@@ -111,12 +111,18 @@
 	border-collapse: collapse;
 	width: 100%;
 	
-	
+
+    margin: 20px 0;
+
+    border: 10px solid #ebead8;
+    background: #ebead8;    
+    	
 }
 
 
 .cms table caption {
-    font: italic 14px/20px "Helvetica Neue",Tahoma,Arial,Helvetica,"DejaVu Sans Condensed",sans-serif;	
+
+    font-style: italic;
 	caption-side: bottom;
 	
 	margin: 20px 0 0 0;
@@ -130,10 +136,8 @@
 .cms table th,
 .cms table td {	
 
-    font: normal 14px/20px "Helvetica Neue",Tahoma,Arial,Helvetica,"DejaVu Sans Condensed",sans-serif;	
+	padding: 5px 10px 5px 0;
 
-	
-	padding: 2px;
 	
 }
 
@@ -141,10 +145,23 @@
 
 .cms table th {
 
-    font-weight: bold;
-        
-	border-bottom: 2px solid #4e69b2;	
+	font: bold 13px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    border-bottom: 5px solid #94946F;
+    
+    padding-top: 0;
+	
 }
+
+.cms table td {	
+
+    border-bottom: 1px dotted #94946F;
+	
+}
+
 
 
 

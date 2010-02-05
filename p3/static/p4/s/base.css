@@ -903,6 +903,26 @@ a.tag:hover {
 }
 
 
+#legacy-sponsor {
+
+
+}
+
+#legacy-sponsor ul {
+    list-style: none;
+}
+
+#legacy-sponsor li {
+ 
+    margin: 0 20px 10px 0;
+    float: left;
+}
+
+
+#legacy-sponsor img {
+    margin: 0;
+}
+
 
 /*
 #sponsor-wanted {
