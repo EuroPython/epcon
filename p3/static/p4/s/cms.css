@@ -167,6 +167,9 @@
 .cms table tr.note td {
     font-style: italic;
     color: #383829;
+    
+    padding-left: 20px;
+    font-size: 13px;
 }
 
 
