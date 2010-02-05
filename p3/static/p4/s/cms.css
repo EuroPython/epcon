@@ -173,6 +173,15 @@
     border: none;
 }
 
+.cms .hotels tr.affiliated {
+    color: #96204B;
+}
+
+.cms .hotels tr.affiliated a:link,
+.cms .hotels tr.affiliated a:visited {
+    color: #96204B;
+}
+
 .cms .hotels tr.info td {
 
     border-top: 3px solid #94946F;
@@ -192,7 +201,7 @@
     font-style: italic;
     color: #383829;
     
-    padding: 5px 5px 10px 20px;
+    padding: 5px 10px 5px 20px;
     font-size: 13px;
 
     border-top: 1px dotted #94946F;
