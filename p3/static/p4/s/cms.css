@@ -164,20 +164,49 @@
 }
 
 
-.cms table tr.note td {
-    font-style: italic;
-    color: #383829;
-    
-    padding-left: 20px;
-    font-size: 13px;
+/* ============== */
+/* ! where page   */
+/* ============== */
+
+
+.cms .hotels th {
+    border: none;
+}
+
+.cms .hotels tr.info td {
+
+    border-top: 3px solid #94946F;
+    padding: 10px 10px 10px 0;
+}
+
+.cms .hotels tr.info td h4 {
+	
+	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+			
+	margin: 0 0 5px 0;
+	text-transform: none;
 }
 
 
-.cms table tr.note td p.last-contact {
+.cms .hotels tr.note td {
+    font-style: italic;
+    color: #383829;
+    
+    padding: 5px 5px 10px 20px;
+    font-size: 13px;
+
+    border-top: 1px dotted #94946F;
+}
+
+
+.cms .hotels tr.note td p.last-contact {
     margin-bottom: 0;
 }
 
 
+/* ================ */
+/* ! preformatted   */
+/* ================ */
 
 
 
