@@ -27,7 +27,7 @@
         <div class="span-5 last">
             <div id="welcome-non-italian">
             {% ifnotequal request.LANGUAGE_CODE "it" %}
-                <p><a href="/pycon4/non-italians">Welcome non-italian speakers to<br />PyCon Quattro</a></p>
+                <p><a href="/non-italians">Welcome non-italian speakers to<br />PyCon Quattro</a></p>
             {%else%}
                 &nbsp; {% comment %}Placeholder. Do not remove or universe will collapse{% endcomment %}
             {% endifnotequal %}
