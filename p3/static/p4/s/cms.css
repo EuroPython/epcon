@@ -239,13 +239,15 @@
 .cms .info-hotel th, 
 .cms .info-hotel td {
     font-size: 13px;
+    padding:3px 0 3px 0;    
+    
 }
 
 .cms .info-hotel th  {
     border-bottom: 1px dotted #94946F;
     
     text-transform: capitalize;    
-    padding:5px 10px 5px 0;    
+    padding-right: 10px;    
     
 }
 
