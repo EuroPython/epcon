@@ -293,8 +293,40 @@
 }
 
 
+/* ================== */
+/* ! call-to-action   */
+/* ================== */
 
+.call-to-action {
+    margin: 20px auto;
+    
+    text-align: center;
+}
 
+.call-to-action a {
+
+    border: none;
+	background: #94946F;
+	color: #fff;
+	
+    font: bold 14px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+
+	
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+	padding: 5px 10px;	
+	
+/*     text-align:center;	 */
+		
+}
+
+.call-to-action a:hover {
+
+	background: #fff;
+    color: #96204B;	
+}
 
 
 

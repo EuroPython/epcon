@@ -933,37 +933,6 @@ a.tag:hover {
 }
 */
 
-/* ======= */
-/* ! CFP   */
-/* ======= */
-
-
-#proposals {
-/*     list-style: outside square */
-
-    font-size: 13px;
-}
-
-
-.call-to-action a {
-
-    font: bold 13px/20px "Museo Sans", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-
-
-    border: none;
-	background: #222d4d;
-	
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	
-	padding: 3px 10px;	
-}
-
-#proposals li {
-
-	margin: 0 0 10px 20px;
-}
 
 
 
