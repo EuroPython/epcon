@@ -451,7 +451,8 @@ def render_schedule(context, schedule):
             prow = [ None ] * len(dbtracks)
         else:
             prow = list(row)
-    timetable[rtime]['class'].append('end')
+    if timetable:
+        timetable[rtime]['class'].append('end')
 
     # trasformo il dizionario in una lista ordinata, più semplice da gestire
     # per il template e la riempio di "filler" per proporzionare le varie fasce
