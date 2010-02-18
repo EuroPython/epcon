@@ -168,7 +168,7 @@ class Talk(models.Model):
         ordering = ['title']
 
     def __unicode__(self):
-        return '%s [%s]' % (self.title, self.conference)
+        return '(%s) %s [%s]' % (self.duration, self.title, self.conference)
 
     @models.permalink
     def get_absolute_url(self):
@@ -290,7 +290,7 @@ class Event(models.Model):
 
     def __unicode__(self):
         if self.talk:
-            return self.talk.title
+            return '%s - %smin' % (self.talk.title, self.talk.duration)
         else:
             return self.custom
 
