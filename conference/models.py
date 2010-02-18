@@ -130,6 +130,8 @@ class Speaker(models.Model):
 post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
 TALK_DURATION = (
+    (5, '5 minuti'),
+    (15, '15 minuti'),
     (30, '30 minuti'),
     (45, '45 minuti'),
     (60, '60 minuti'),
