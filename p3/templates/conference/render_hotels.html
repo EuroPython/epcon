@@ -1,0 +1,36 @@
+{% load i18n %}
+<table class="hotels">
+    <thead>
+        <tr>
+            <th>{% trans "Nome" %}</th>
+            <th>{% trans "Posti liberi" %}</th>
+            <th>{% trans "Prezzo" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for h in hotels %}
+        <tr class="info{% if h.affiliated %} affiliated{% endif %}">
+            <td id="h-{{ h.id }}">
+                <h4>{% if h.url %}<a href="{{ h.url }}">{{ h.name }}</a>{% else %}{{ h.name }}{% endif %}{% if h.affiliated %} ({% trans "affiliated" %}){% endif %}</h4>
+                {% if h.telephone %}
+                <div>{{ h.telephone }}</div>
+                {% endif %}
+                {% if h.email %}
+                <div><a href="mailto:{{ h.email }}">{{ h.email }}</a></div>
+                {% endif %}
+            </td>
+            <td>{{ h.availability }}</td>
+            <td>{{ h.price }}</td>
+        </tr>
+        <tr class="note">
+            <td colspan="3">
+                {{ h.note|safe }}
+                <p class="last-contact">
+                    {% blocktrans with h.modified|date:"d F" as d %}Contattato il {{ d }}{% endblocktrans %}
+                </p>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
