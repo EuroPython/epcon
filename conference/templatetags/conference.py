@@ -512,7 +512,7 @@ def splitbysize(value, arg):
 @register.tag
 def conference_sponsor(parser, token):
     """
-    {% conference_sponsor [ conference ] as var %}
+    {% conference_sponsor [conference [[exclude] tag]] as var %}
     """
     contents = token.split_contents()
     tag_name = contents[0]
@@ -522,23 +522,47 @@ def conference_sponsor(parser, token):
     contents = contents[1:-2]
 
     conference = None
-    if contents:
+    include_tag = None
+    exclude_tag = None
+
+    lc = len(contents)
+    if 0 < lc <= 3:
         conference = contents.pop(0)
+        if lc == 2:
+            include_tag = contents.pop(0)
+        elif lc ==3:
+            if contents[0] != 'exclude':
+                raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+            else:
+                contents.pop(0)
+                exclude_tag = contents.pop(0)
+    elif lc:
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
 
     class SponsorNode(TNode):
-        def __init__(self, conference, var_name):
+        def __init__(self, conference, include_tag, exclude_tag, var_name):
             self.var_name = var_name
             self.conference = self._set_var(conference)
+            self.include_tag = self._set_var(include_tag)
+            self.exclude_tag = self._set_var(exclude_tag)
 
         def render(self, context):
             sponsor = models.Sponsor.objects.all()
             conference = self._get_var(self.conference, context)
             if conference:
                 sponsor = sponsor.filter(sponsorincome__conference = conference)
-                sponsor = sponsor.order_by('-sponsorincome__income', 'sponsor')
+            include_tag = self._get_var(self.include_tag, context)
+            if include_tag:
+                q = TaggedItem.objects.get_by_model(models.SponsorIncome, include_tag)
+                sponsor = sponsor.filter(sponsorincome__in = q)
+            exclude_tag = self._get_var(self.exclude_tag, context)
+            if exclude_tag:
+                q = TaggedItem.objects.get_by_model(models.SponsorIncome, exclude_tag)
+                sponsor = sponsor.exclude(sponsorincome__in = q)
+            sponsor = sponsor.order_by('-sponsorincome__income', 'sponsor')
             context[self.var_name] = sponsor
             return ''
-    return SponsorNode(conference, var_name)
+    return SponsorNode(conference, include_tag, exclude_tag, var_name)
 
 @register.tag
 def conference_mediapartner(parser, token):
