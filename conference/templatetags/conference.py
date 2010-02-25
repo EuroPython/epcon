@@ -466,8 +466,11 @@ def render_schedule(context, schedule):
             steps = 4
         else:
             next = timetable[ix+1+offset][0]
-            delta = next.hour * 60 + next.minute - (t.hour * 60 + t.minute)
-            steps = delta / TIME_STEP
+            if next:
+                delta = next.hour * 60 + next.minute - (t.hour * 60 + t.minute)
+                steps = delta / TIME_STEP
+            else:
+                steps = 1
         for x in range(steps - 1):
             timetable.insert(ix+1+offset, (None, None))
         offset += steps - 1
