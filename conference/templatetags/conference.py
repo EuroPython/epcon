@@ -294,28 +294,15 @@ def render_talk_report(context, speaker, conference, tags):
     })
     return context
 
-@register.inclusion_tag('conference/render_schedule.html', takes_context = True)
-def render_schedule(context, schedule):
-    """
-    {% render_schedule schedule %}
-    """
+def schedule_context(schedule):
     from collections import defaultdict
     from datetime import time
-
-    if isinstance(schedule, int):
-        schedule = models.Schedule.objects.get(pk = schedule)
-    elif isinstance(schedule, basestring):
-        try:
-            c, s = schedule.split('/') 
-        except ValueError:
-            raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
-        schedule = models.Schedule.objects.get(conference = c, slug = s)
 
     TIME_STEP = 15
     dbtracks = dict((t.track, (ix, t)) for ix, t in enumerate(schedule.track_set.all()))
     _itracks = dict(dbtracks.values())
     dbevents = defaultdict(list)
-    for e in schedule.event_set.all():
+    for e in schedule.event_set.select_related('talk', 'sponsor__sponsorincome_set'):
         dbevents[e.start_time].append(e)
 
     eevent = lambda t: { 'time': t, 'title': '', 'track_slots': 1, 'time_slots': 1, 'talk': None, 'tags': [], 'sponsor': None }
@@ -390,7 +377,7 @@ def render_schedule(context, schedule):
                 empty[ix] = prow[ix] = eevent(new_start)
             elif c:
                 # qui devo gestire il caso in cui gli event nella riga superiore abbiano
-                # allocati più solt temporali di quelli individuati
+                # allocati più slot temporali di quelli individuati
                 for x in range(c['track_slots']):
                     pc = prow[ix+x]
                     if pc and pc['time_slots'] > slots:
@@ -474,12 +461,67 @@ def render_schedule(context, schedule):
         for x in range(steps - 1):
             timetable.insert(ix+1+offset, (None, None))
         offset += steps - 1
-        
+
+    return timetable
+
+@register.inclusion_tag('conference/render_schedule.html', takes_context = True)
+def render_schedule(context, schedule):
+    """
+    {% render_schedule schedule %}
+    """
+    if isinstance(schedule, int):
+        schedule = models.Schedule.objects.get(pk = schedule)
+    elif isinstance(schedule, basestring):
+        try:
+            c, s = schedule.split('/')
+        except ValueError:
+            raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
+        schedule = models.Schedule.objects.get(conference = c, slug = s)
+
     return {
         'schedule': schedule,
-        'timetable': timetable,
+        'timetable': schedule_context(schedule),
         'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
     }
+
+@register.tag
+def conference_schedule(parser, token):
+    """
+    {% conference_schedule conference schedule as var %}
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    try:
+        conference = contents[1]
+        schedule = contents[2]
+        var_name = contents[4]
+    except IndexError:
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+
+    class ScheduleNode(TNode):
+        def __init__(self, conference, schedule, var_name):
+            self.var_name = var_name
+            self.conference = self._set_var(conference)
+            self.schedule = self._set_var(schedule)
+
+        def render(self, context):
+            schedule = models.Schedule.objects.get(
+                conference = self._get_var(self.conference, context),
+                slug = self._get_var(self.schedule, context),
+            )
+            context[self.var_name] = schedule_context(schedule)
+            return ''
+
+    return ScheduleNode(conference, schedule, var_name)
+
+@register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
+def render_talk_report(context, speaker, conference, tags):
+    context.update({
+        'speaker': speaker,
+        'conference': conference,
+        'tags': tags,
+    })
+    return context
 
 @register.filter
 def split(value, arg):
@@ -724,7 +766,7 @@ def conference_hotels(parser, token):
 @register.inclusion_tag('conference/render_hotels.html')
 def render_hotels(hotels):
     """
-    {% render_schedule hotels %}
+    {% render_hotels hotels %}
     """
     return {
         'hotels': hotels,

@@ -192,6 +192,14 @@ def schedule(request, conference, slug):
         'conference/schedule.html', { 'schedule': sch },
         context_instance = RequestContext(request))
 
+def schedule_xml(request, conference, slug):
+    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
+    return render_to_response(
+        'conference/schedule.xml', { 'schedule': sch },
+        context_instance = RequestContext(request),
+        mimetype = 'text/xml',
+    )
+
 def genro_wrapper(request):
     """
     mostra in un iframe l'applicazione conference di genropy
