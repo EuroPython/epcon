@@ -15,7 +15,18 @@
                 {% if event.talk %}
                 <talk url="{{ DEFAULT_URL_PREFIX }}{{ event.talk.get_absolute_url }}">
                     {% for spk in event.talk.get_all_speakers %}
-                    <speaker url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" name="{{ spk.name }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image }}" />
+                    <speaker name="{{ spk.name }}" url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image }}" homepage="{{ spk.homepage }}" twitter="{{ spk.twitter }}">
+                            <activity url="{{ spk.activity_homepage }}">{{ spk.activity }}</activity>
+                            {% if spk.industry %}
+                            <industry>{{ spk.industry }}</industry>
+                            {% endif %}
+                            {% if spk.location %}
+                            <location>{{ spk.location }}</location>
+                            {% endif %}
+                            {% for b in spk.bios.all %}
+                            <{{ b.content }} lang="{{ b.language }}">{{ b.body|striptags }}</{{ b.content }}>
+                            {% endfor %}
+                    </speaker>
                     {% endfor %}
                     {% for b in event.talk.abstracts.all %}
                     <abstract lang="{{ b.language }}">{{ b.body|striptags }}</abstract>
@@ -30,3 +41,4 @@
     {% endfor %}
 </schedule>
 {% endspaceless %}
+

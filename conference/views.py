@@ -7,14 +7,16 @@ import tempfile
 from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
-from django.db import transaction
-from django.core.files.base import File
+
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.files.base import File
+from django.db import transaction
+from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
-from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib.admin.views.decorators import staff_member_required
 
 import simplejson
 from decorator import decorator
@@ -196,6 +198,16 @@ def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
     return render_to_response(
         'conference/schedule.xml', { 'schedule': sch },
+        context_instance = RequestContext(request),
+        mimetype = 'text/xml',
+    )
+
+def schedule_speakers_xml(request, conference, slug):
+    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
+    query = Q(talk__event__schedule = sch) | Q(additional_speakers__event__schedule = sch)
+    speakers = models.Speaker.objects.filter(query)
+    return render_to_response(
+        'conference/schedule_speakers.xml', { 'schedule': sch, 'speakers': speakers },
         context_instance = RequestContext(request),
         mimetype = 'text/xml',
     )
