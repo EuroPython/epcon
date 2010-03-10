@@ -15,7 +15,7 @@
                 {% if event.talk %}
                 <talk url="{{ DEFAULT_URL_PREFIX }}{{ event.talk.get_absolute_url }}">
                     {% for spk in event.talk.get_all_speakers %}
-                    <speaker url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" name="{{ spk.name }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image }}" />
+                    <speaker url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" name="{{ spk.name }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image|image_resized }}" />
                     {% endfor %}
                     {% for b in event.talk.abstracts.all %}
                     <abstract lang="{{ b.language }}">{{ b.body|striptags }}</abstract>
