@@ -214,24 +214,19 @@
 
 
 .cms .info-hotel {
-
 }
 
 .cms .info-hotel h1 {
     background: none;
     margin: 0 0 10px 0;
     padding: 0;
-   
 	font: bold 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
-	   
     text-shadow: none;
-    
 }
 
 .cms .info-hotel table {
     background: #fff;
     border: none;
-    
     margin: 0;
     width: auto;
 }
@@ -239,16 +234,13 @@
 .cms .info-hotel th, 
 .cms .info-hotel td {
     font-size: 13px;
-    padding:3px 0 3px 0;    
-    
+    padding: 3px 0 3px 0;
 }
 
 .cms .info-hotel th  {
     border-bottom: 1px dotted #94946F;
-    
     text-transform: capitalize;    
     padding-right: 10px;    
-    
 }
 
 
