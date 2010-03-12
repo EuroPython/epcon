@@ -65,25 +65,14 @@
     </div>
 
     <div id="quotes" class="section clearfix">
-
         <h2>{% trans "Dicono di noi" %}</h2>
-
-        <div class="span-4">
-            <q>&ldquo;PyCon Italia is a great way to meet the top coders in Italy, talk with major vendors, and either recruit or be recruited.&rdquo;</q>
-            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-raymond.jpg" width="40" height="40" alt="*" />Raymond Hettinger <span>Python&#8217;s Core developer</span></p>
+        {% conference_quotes limit 3 as quotes %}
+        {% for quote in quotes %}
+        <div class="span-4{% if forloop.last %} last{% endif %}">
+            <q>&ldquo;{{ quote.text }}&rdquo;</q>
+            <p class="clearfix">{% if quote.image %}<img src="{{ QUOTE_FACE_URL }}{{ quote.image }}" width="40" height="40" alt="{{ quote.who }}" />{% endif %}{{ quote.who }}<span>{{ quote.activity }}</span></p>
         </div>
-
-        <div class="span-4">
-            <q>&ldquo;The conference locations were great, the organizers went above and beyond to make things run smoothly, and the food truly transcended the conference food that I'm used to.&rdquo;</q>
-            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-brian.jpg" width="40" height="40" alt="*" />Brian Fitzpatrick <span>Google Inc.</span></p>
-        </div>
-
-        <div class="span-4 last">
-            <q>&ldquo;PyCon Italia is the conference closest and dearest to my heart out of the many I regularly attend.&rdquo;</q>
-            <p class="clearfix"><img src="{{ STATIC_URL }}p4/i/q-alex.jpg" width="40" height="40" alt="*" />Alex Martelli <span>Google Inc.</span></p>
-        </div>
-
-    <!-- /quotes -->
+        {% endfor %}
     </div>
 
      <div class="column span-8">
