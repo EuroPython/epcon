@@ -15,6 +15,11 @@ urlpatterns = patterns('',
     (r'^hcomments/', include('hcomments.urls')),
 )
 
+if 'rosetta' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        url(r'^rosetta/', include('rosetta.urls')),
+    )
+
 if settings.DEBUG:
     import os.path
     args = []

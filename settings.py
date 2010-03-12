@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'hcomments',
     'django_xmlrpc',
     'pingback',
+    'rosetta',
 )
 
 ## used by the blog
