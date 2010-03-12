@@ -78,14 +78,17 @@ from django.core.files.storage import FileSystemStorage
 # definisco uno storage custom perché non uso MEDIA_DIR per memorizzare la
 # roba sotto stuff
 
-def _build_fs_stuff(subdir):
+def _build_fs_stuff(subdir, attr=None):
     fs = FileSystemStorage(
         location = os.path.join(settings.CONFERENCE_STUFF_DIR, subdir),
         base_url = urlparse.urljoin(settings.CONFERENCE_STUFF_URL, subdir)
     )
 
+    if attr is None:
+        attr = lambda i: i.slug
+
     def build_path(instance, filename):
-        fname = instance.slug + os.path.splitext(filename)[1].lower()
+        fname = attr(instance) + os.path.splitext(filename)[1].lower()
         fs.delete(fname)
         return fname
 
