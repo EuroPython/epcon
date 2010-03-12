@@ -835,4 +835,31 @@ def embed_video(value, args=None):
                 <a href="%s">download video (%s %s)</a></div>
             """ % (' '.join(attrs), value.video_file.url, ftype, defaultfilters.filesizeformat(fsize))
     return mark_safe(html)
+
+@register.tag
+def conference_quotes(parser, token):
+    """
+    {% conference_quotes [ limit num ] as var %}
+    """
+    contents = token.split_contents()
+    tag_name = contents.pop(0)
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    contents = contents[:-2]
     
+    if contents:
+        contents.pop(0)
+        limit = int(contents.pop(0))
+
+    class QuotesNode(TNode):
+        def __init__(self, limit, var_name):
+            self.var_name = var_name
+            self.limit = limit
+        def render(self, context):
+            quotes = models.Quote.objects.order_by('?')
+            if self.limit:
+                quotes = quotes[:self.limit]
+            context[self.var_name] = list(quotes)
+            return ''
+    return QuotesNode(limit, var_name)
