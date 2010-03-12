@@ -2,112 +2,229 @@
 # Copyright (C) 2009 Python Italia.
 # This file is distributed under the same license as the p3 package.
 # dvd <dvd@gnx.it>, 2009.
-#
-#, fuzzy
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-05 21:44+0200\n"
-"PO-Revision-Date: 2009-02-17 23:54+0100\n"
-"Last-Translator: dvd <dvd@gnx.it>\n"
+"POT-Creation-Date: 2010-03-12 10:01+0100\n"
+"PO-Revision-Date: 2010-03-12 10:03\n"
+"Last-Translator: David Mugnai <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Translated-Using: django-rosetta 0.5.3\n"
 
-#: context_processors.py:14
-#, python-format
-msgid "Mancano *%(days)d giorni* all'inizio della conferenza."
-msgstr "The conference starts in *%(days)d days*."
-
-#: context_processors.py:17
-msgid "La conferenza inizia *domani*!"
-msgstr "The conference starts *tomorrow*!"
-
-#: context_processors.py:19
-msgid "La conferenza è in fase di svolgimento!"
-msgstr "The conference is being!"
-
-#: context_processors.py:30
-#, python-format
-msgid "Ci sono ancora *%(seat)d* posti disponibili"
-msgstr "Available seats: *%(seat)d!*"
-
-#: templates/conference/genro_wrapper.html:5
+#: templates/conference/genro_wrapper.html:6
 msgid "genro-account"
 msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 
-#: templates/conference/genro_wrapper.html:6
+#: templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
-msgstr ""
-"If you have any problems please contact us via <a onclick=\"habla_window.show"
-"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
-"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+msgstr "If you have any problems please contact us via <a onclick=\"habla_window.show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
-#: templates/p3/base.html:124
+#: templates/conference/render_hotels.html:5
+msgid "Nome"
+msgstr ""
+
+#: templates/conference/render_hotels.html:6
+msgid "Posti liberi"
+msgstr ""
+
+#: templates/conference/render_hotels.html:7
+#, fuzzy
+msgid "Prezzo"
+msgstr "Price"
+
+#: templates/conference/render_hotels.html:14
+msgid "affiliated"
+msgstr ""
+
+#: templates/conference/render_hotels.html:29
+#, python-format
+msgid "Contattato il %(d)s"
+msgstr ""
+
+#: templates/conference/render_schedule.html:33
+msgid "sponsorizzato da"
+msgstr ""
+
+#: templates/hcomments/show_single_comment.html:15
+msgid "Permalink a questo commento"
+msgstr ""
+
+#: templates/microblog/base.html:21
+msgid "Categorie"
+msgstr ""
+
+#: templates/microblog/base.html:30 templates/microblog/list_by_year.html:3
+msgid "Archivio"
+msgstr ""
+
+#: templates/microblog/post_detail.html:21
+msgid "Lo staff sta controllando il tuo commento, a breve verrà pubblicato."
+msgstr ""
+
+#: templates/microblog/post_detail.html:87
+msgid "Post comment"
+msgstr ""
+
+#: templates/microblog/post_detail.html:100 templates/p3/index.html:96
+msgid "Scritto da"
+msgstr ""
+
+#: templates/microblog/post_detail.html:103
+msgid "Data"
+msgstr ""
+
+#: templates/microblog/post_detail.html:106
+msgid "Categoria"
+msgstr ""
+
+#: templates/microblog/post_detail.html:111
+msgid "Tag"
+msgstr ""
+
+#: templates/microblog/post_list.html:5
+msgid "Archivio Blog"
+msgstr ""
+
+#: templates/microblog/post_list.html:13
+msgid "Nessun post trovato."
+msgstr ""
+
+#: templates/microblog/show_post_comments.html:4 templates/p3/index.html:96
+#, fuzzy
+msgid "Commenti"
+msgstr "Continue"
+
+#: templates/microblog/show_post_comments.html:4
+msgid "Aggiungi Commento"
+msgstr ""
+
+#: templates/microblog/show_post_summary.html:11
+#, python-format
+msgid ""
+"\n"
+"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s &mdash;\n"
+"        "
+msgstr ""
+
+#: templates/microblog/show_reactions_list.html:4
+msgid "Reazioni"
+msgstr ""
+
+#: templates/p3/base.html:92
+msgid "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme."
+msgstr ""
+
+#: templates/p3/base.html:106
 msgid "I nostri sponsor"
 msgstr "Our sponsors"
 
-#: templates/p3/base.html:195
-msgid "Progetto grafico"
-msgstr "Graphic design"
+#: templates/p3/base.html:128
+msgid "Media partner"
+msgstr ""
 
-#: templates/p3/base.html:199
-msgid "Sistema di registrazione"
-msgstr "Accounting system"
+#: templates/p3/box_cal.html:3
+msgid "Calendario"
+msgstr "Calendar"
 
 #: templates/p3/box_didyouknow.html:4
 msgid "Lo sai che"
 msgstr "Did you know?"
 
+#: templates/p3/box_latest_tweets.html:4
+msgid "Da Twitter"
+msgstr ""
+
+#: templates/p3/box_latest_tweets.html:11
+msgid "Seguici su Twitter"
+msgstr ""
+
+#: templates/p3/box_latest_tweets.html:12
+msgid "siamo già in"
+msgstr ""
+
 #: templates/p3/box_speaker_talks.html:3
 msgid "I suoi talk"
 msgstr "The talks"
 
-#: templates/p3/gmap.jhtml:78
-msgid "telefono"
-msgstr "Telephone"
-
-#: templates/p3/gmap.jhtml:80
-msgid "email"
-msgstr "Email"
-
-#: templates/p3/gmap.jhtml:82
-msgid "sito"
-msgstr "Web site"
-
-#: templates/p3/gmap.jhtml:83
-msgid "prezzo"
-msgstr "Price"
-
-#: templates/p3/index.html:24
-msgid "saluto di guido in homepage"
-msgstr ""
-"This year's PyCon Italy will have an exceptional guest in <b><a href="
-"\"http://en.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></b>, "
-"author of the language, who will give a Keynote about the latest "
-"developments of the language."
-
-#: templates/p3/index.html:33
-msgid "Calendario"
-msgstr "Calendar"
-
-#: templates/p3/index.html:61
-msgid "Pycon Tre"
-msgstr "Pycon Tre"
-
-#: templates/p3/index.html:66 templates/p3/index.html.py:85
-msgid "Continua"
-msgstr "Continue"
-
-#: templates/p3/index.html:77
+#: templates/p3/index-simple.html:32
 msgid "Dal blog"
 msgstr "The blog"
 
-#: templates/p3/index.html:97
+#: templates/p3/index-simple.html:40
+msgid "Continua"
+msgstr "Continue"
+
+#: templates/p3/index-simple.html:52 templates/p3/index.html:69
 msgid "Dicono di noi"
 msgstr "About us"
+
+#: templates/p3/index.html:21
+msgid "Vedi tutte le scadenze &rarr;"
+msgstr "All the deadlines &rarr;"
+
+#: templates/p3/index.html:55
+msgid "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
+msgstr ""
+
+#: templates/p3/index.html:62
+msgid "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world."
+msgstr ""
+
+#: templates/p3/index.html:91
+#, fuzzy
+msgid "Dal Blog"
+msgstr "The blog"
+
+#: templates/p3/index.html:96
+msgid "il"
+msgstr ""
+
+#: templates/p3/index.html:100
+#, fuzzy
+msgid "Continua &rarr;"
+msgstr "Continue"
+
+#: templates/p3/index.html:103
+msgid "Archivio blog"
+msgstr ""
+
+#~ msgid "Mancano *%(days)d giorni* all'inizio della conferenza."
+#~ msgstr "The conference starts in *%(days)d days*."
+
+#~ msgid "La conferenza inizia *domani*!"
+#~ msgstr "The conference starts *tomorrow*!"
+
+#~ msgid "La conferenza è in fase di svolgimento!"
+#~ msgstr "The conference is being!"
+
+#~ msgid "Ci sono ancora *%(seat)d* posti disponibili"
+#~ msgstr "Available seats: *%(seat)d!*"
+
+#~ msgid "Progetto grafico"
+#~ msgstr "Graphic design"
+
+#~ msgid "Sistema di registrazione"
+#~ msgstr "Accounting system"
+
+#~ msgid "telefono"
+#~ msgstr "Telephone"
+
+#~ msgid "email"
+#~ msgstr "Email"
+
+#~ msgid "sito"
+#~ msgstr "Web site"
+
+#~ msgid "saluto di guido in homepage"
+#~ msgstr "This year's PyCon Italy will have an exceptional guest in <b><a href=\"http://en.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></b>, author of the language, who will give a Keynote about the latest developments of the language."
+
+#~ msgid "Pycon Tre"
+#~ msgstr "Pycon Tre"
 
 #~ msgid "Il Late Bird finisce *oggi*!"
 #~ msgstr "Subscriptions ends *today*!"
