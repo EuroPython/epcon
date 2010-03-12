@@ -262,3 +262,11 @@ class DidYouKnowAdmin(MultiLingualAdminContent):
                 return ''
 
 admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
+
+class QuoteAdmin(MultiLingualAdminContent):
+    list_display = ('who', 'conference', '_text')
+    
+    def _text(self, o):
+        return o.text[:80]
+
+admin.site.register(models.Quote, QuoteAdmin)

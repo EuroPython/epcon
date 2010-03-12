@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import datetime
 import os.path
+from django.template.defaultfilters import slugify
 from django.db import models
 from django.db.models.signals import post_save
 
@@ -361,4 +362,15 @@ class DidYouKnow(models.Model):
     """
     visible = models.BooleanField('visible', default = True)
     messages = generic.GenericRelation(MultilingualContent)
+
+fs_quote, _quote_image_path = _build_fs_stuff('quote', attr=lambda i: slugify(i.who))
+class Quote(models.Model):
+    who = models.CharField(max_length = 100)
+    conference = models.CharField(max_length = 20)
+    text = models.TextField()
+    activity = models.CharField(max_length = 50, blank = True)
+    image = models.ImageField(upload_to = _quote_image_path, blank = True, storage = fs_quote)
+
+    class Meta:
+        ordering = ['conference', 'who']
 
