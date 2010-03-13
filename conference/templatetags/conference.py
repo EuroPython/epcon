@@ -814,7 +814,7 @@ def embed_video(value, args=None):
     else:
         opts = {
             'controls': 'true',
-            'src': value.video_file.url,
+            'src': settings.CONFERENCE_STUFF_URL + 'videos/' + value.video_file.name,
         }
         if w and h:
             opts['width'] = w
@@ -833,7 +833,7 @@ def embed_video(value, args=None):
             <div>
                 <video %s></video>
                 <a href="%s">download video (%s %s)</a></div>
-            """ % (' '.join(attrs), value.video_file.url, ftype, defaultfilters.filesizeformat(fsize))
+            """ % (' '.join(attrs), settings.CONFERENCE_STUFF_URL + 'videos/' + value.video_file.name, ftype, defaultfilters.filesizeformat(fsize))
     return mark_safe(html)
 
 @register.tag
