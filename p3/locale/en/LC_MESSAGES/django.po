@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-12 10:01+0100\n"
-"PO-Revision-Date: 2010-03-12 10:03\n"
-"Last-Translator: David Mugnai <dvd@gnx.it>\n"
+"PO-Revision-Date: 2010-03-12 12:00\n"
+"Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,41 +26,40 @@ msgstr "If you have any problems please contact us via <a onclick=\"habla_window
 
 #: templates/conference/render_hotels.html:5
 msgid "Nome"
-msgstr ""
+msgstr "Name"
 
 #: templates/conference/render_hotels.html:6
 msgid "Posti liberi"
-msgstr ""
+msgstr "Free seats"
 
 #: templates/conference/render_hotels.html:7
-#, fuzzy
 msgid "Prezzo"
 msgstr "Price"
 
 #: templates/conference/render_hotels.html:14
 msgid "affiliated"
-msgstr ""
+msgstr "affiliated"
 
 #: templates/conference/render_hotels.html:29
 #, python-format
 msgid "Contattato il %(d)s"
-msgstr ""
+msgstr "Updated in %(d)s"
 
 #: templates/conference/render_schedule.html:33
 msgid "sponsorizzato da"
-msgstr ""
+msgstr "sponsorized by"
 
 #: templates/hcomments/show_single_comment.html:15
 msgid "Permalink a questo commento"
-msgstr ""
+msgstr "Permalink this"
 
 #: templates/microblog/base.html:21
 msgid "Categorie"
-msgstr ""
+msgstr "Categories"
 
 #: templates/microblog/base.html:30 templates/microblog/list_by_year.html:3
 msgid "Archivio"
-msgstr ""
+msgstr "Archive"
 
 #: templates/microblog/post_detail.html:21
 msgid "Lo staff sta controllando il tuo commento, a breve verrà pubblicato."
@@ -68,40 +67,39 @@ msgstr ""
 
 #: templates/microblog/post_detail.html:87
 msgid "Post comment"
-msgstr ""
+msgstr "Post comment"
 
 #: templates/microblog/post_detail.html:100 templates/p3/index.html:96
 msgid "Scritto da"
-msgstr ""
+msgstr "Written by"
 
 #: templates/microblog/post_detail.html:103
 msgid "Data"
-msgstr ""
+msgstr "Date"
 
 #: templates/microblog/post_detail.html:106
 msgid "Categoria"
-msgstr ""
+msgstr "Category"
 
 #: templates/microblog/post_detail.html:111
 msgid "Tag"
-msgstr ""
+msgstr "Tag"
 
 #: templates/microblog/post_list.html:5
 msgid "Archivio Blog"
-msgstr ""
+msgstr "Blog's archive"
 
 #: templates/microblog/post_list.html:13
 msgid "Nessun post trovato."
-msgstr ""
+msgstr "No post found."
 
 #: templates/microblog/show_post_comments.html:4 templates/p3/index.html:96
-#, fuzzy
 msgid "Commenti"
-msgstr "Continue"
+msgstr "Comments"
 
 #: templates/microblog/show_post_comments.html:4
 msgid "Aggiungi Commento"
-msgstr ""
+msgstr "Add a comment"
 
 #: templates/microblog/show_post_summary.html:11
 #, python-format
@@ -110,14 +108,16 @@ msgid ""
 "        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s &mdash;\n"
 "        "
 msgstr ""
+"\n"
+"Written by <b>%(first_name)s %(last_name)s</b>  the %(post_date)s &mdash;"
 
 #: templates/microblog/show_reactions_list.html:4
 msgid "Reazioni"
-msgstr ""
+msgstr "Reactions"
 
 #: templates/p3/base.html:92
 msgid "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme."
-msgstr ""
+msgstr "The Italian conference on Python programming language where developers, companies and universities meet to learn, work and grow up together."
 
 #: templates/p3/base.html:106
 msgid "I nostri sponsor"
@@ -125,7 +125,7 @@ msgstr "Our sponsors"
 
 #: templates/p3/base.html:128
 msgid "Media partner"
-msgstr ""
+msgstr "Media Partners"
 
 #: templates/p3/box_cal.html:3
 msgid "Calendario"
@@ -137,15 +137,15 @@ msgstr "Did you know?"
 
 #: templates/p3/box_latest_tweets.html:4
 msgid "Da Twitter"
-msgstr ""
+msgstr "From Twitter"
 
 #: templates/p3/box_latest_tweets.html:11
 msgid "Seguici su Twitter"
-msgstr ""
+msgstr "Follow us on Twitter"
 
 #: templates/p3/box_latest_tweets.html:12
 msgid "siamo già in"
-msgstr ""
+msgstr "we are just in"
 
 #: templates/p3/box_speaker_talks.html:3
 msgid "I suoi talk"
@@ -153,7 +153,7 @@ msgstr "The talks"
 
 #: templates/p3/index-simple.html:32
 msgid "Dal blog"
-msgstr "The blog"
+msgstr "From the blog"
 
 #: templates/p3/index-simple.html:40
 msgid "Continua"
@@ -169,29 +169,27 @@ msgstr "All the deadlines &rarr;"
 
 #: templates/p3/index.html:55
 msgid "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
-msgstr ""
+msgstr "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
 
 #: templates/p3/index.html:62
 msgid "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world."
-msgstr ""
+msgstr "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics in the Python world."
 
 #: templates/p3/index.html:91
-#, fuzzy
 msgid "Dal Blog"
-msgstr "The blog"
+msgstr "From the blog"
 
 #: templates/p3/index.html:96
 msgid "il"
-msgstr ""
+msgstr "the"
 
 #: templates/p3/index.html:100
-#, fuzzy
 msgid "Continua &rarr;"
-msgstr "Continue"
+msgstr "Continue &rarr;"
 
 #: templates/p3/index.html:103
 msgid "Archivio blog"
-msgstr ""
+msgstr "Blog archive"
 
 #~ msgid "Mancano *%(days)d giorni* all'inizio della conferenza."
 #~ msgstr "The conference starts in *%(days)d days*."
