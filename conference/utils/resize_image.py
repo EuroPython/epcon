@@ -124,7 +124,7 @@ class Resize(object):
         iw, ih = img.size
         rw = iw / size[0]
         rh = ih / size[1]
-        if rw > rh:
+        if size[1] == -1 or rw > rh:
             nw = size[0]
             nh = ih * nw / iw
         else:
