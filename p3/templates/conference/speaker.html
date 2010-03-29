@@ -4,32 +4,58 @@
 {% block PAGE_TITLE %}{{ speaker.name }} &mdash; {% endblock %}
 {% block MAIN_CONTENT %}
 <div class="column span-12">
-    <div class="page clearfix border">
-
+    <div id="speaker-page" class="page clearfix">
         <h1>{{ speaker.name }}</h1>
-        <div>                    
-            {% if speaker.location %}{{ speaker.location }}{% endif %}
-            {% if speaker.activity %}| {{ speaker.activity }}{% endif %}
-            {% if speaker.industry %}/ {{ speaker.industry }}{% endif %}
-            {% if speaker.homepage %}<br /><a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a>{% endif %}
-        </div>
 
-        <div class="column span-8">
-            <div class="conference speaker">
-                <div class="picture">
-                    {% if speaker.image %}
-                    <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="200"/>
-                    {% else %}
-                    <img src="{{ MEDIA_URL }}p3/i/anonymous.png" alt="{{ speaker.name }}" width="200"/>
-                    {% endif %}
-                </div>
-                {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
-                <h2>Presentazione</h2>
-                <p>{{ b.body|safe }}</p>
+        <div class="column span-2">
+            <div id="speaker-picture">
+                {% if speaker.image %}
+                <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="100" />
+                {% else %}
+                <img src="{{ MEDIA_URL }}p4/i/placeholder-speaker.jpg" alt="{{ speaker.name }}" width="100" />
+                {% endif %}
             </div>
         </div>
-        <div class="column span-4 last">
-            <div id="sidebar" class="conference speaker">
+
+        <div class="column span-8 last">
+
+            <div class="page-summary">
+                <p>
+                    {% if speaker.location %}{{ speaker.location }}{% endif %}
+                    {% if speaker.activity %}| {{ speaker.activity }}{% endif %}
+                    {% if speaker.industry %}/ {{ speaker.industry }}{% endif %}
+                </p>
+            </div> 
+
+            <div class="cms">
+                {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
+                <p>{{ b.body|safe }}</p>
+            </div>
+
+            <hr />
+
+            <div id="speaker-contacts" class="section">
+                <h2>Contatti</h2>
+
+                <dl class="clearfix">
+                    {% if speaker.twitter %}
+                    <dt>Twitter</dt>
+                    <dd><a href="http://twitter.com/{{ speaker.twitter }}">{{ speaker.twitter }}</a></dd>
+                    {% endif %}
+                    {% if speaker.homepage %}
+                    <dt>Sito personale</dt>
+                    <dd><a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a></dd>
+                    {% endif %}
+                    {% if speaker.activity_homepage %}
+                    <dt>Azienda</dt>
+                    <dd><a href="{{ speaker.activity_homepage }}">{% if speaker.activity %}{{ speaker.activity }}{% else %}{{ speaker.activity_homepage }}{% endif %}</a></dd>
+                    {% endif %}
+                </dl>
+            </div>
+
+            <hr />
+
+            <div id="speaker-talks" class="section last">
                 {% box_speaker_talks speaker %}
             </div>
         </div>
