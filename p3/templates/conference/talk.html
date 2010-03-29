@@ -1,58 +1,88 @@
 {% extends "p3/base.html" %}
-{% load conference %}
+{% load i18n conference %}
 
 {% block PAGE_TITLE %}{{ talk.title }} &mdash; {% endblock %}
 {% block MAIN_CONTENT %}
 <div class="column span-12">
-    <div class="page clearfix border">
+    <div id="talk-page" class="page border clearfix">
 
         <h1>{{ talk.title }}</h1>
 
+        {% with talk.get_event as e %}
+        {% with e.get_track as track %}
         <div class="column span-8">
-            <div class="conference talk">
-                <h2>Abstract</h2>
+
+            <div class="page-summary">
+                <p>
+                    <i>di</i>
+                    {% for spk in talk.get_all_speakers %}
+                    <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+                    {% if not forloop.last %}-{% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+
+            <div class="cms">
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
                 <p>{{ ab.body|safe }}</p>
+            </div>
 
-                {% if talk.video_type %}
+            <div class="when-where">
+                <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
+                {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> nella track <i>{{ e.get_track.title }}</i>.
+            </div>
+
+            <hr />
+
+            <div id="video" class="section">
                 <h2>Video</h2>
-                <div class="video-embedded">
-                    {{ talk|embed_video:"500,438" }}
-                </div>
-                {% endif %}
+                {{ talk|embed_video:"500,438" }}
             </div>
+
         </div>
+
         <div class="column span-4 last">
-            <div id="sidebar" class="conference talk">
-                {% with talk.get_event as e %}
-                {% with e.get_track as track %}
-                <div><strong>{{ e.schedule.conference|upper }}</strong></div>
-                <strong>{{ e.schedule.date|date:"D d b Y" }} / {{ e.start_time|time:"H:i" }}</strong>
-                nella track <em>{{ e.get_track.title }}</em>
-                
-                <div>Durata: {{ talk.duration }} minuti</div>
-                
-                {% for spk in talk.get_all_speakers %}
-                <div>
-                    Speaker: <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
-                    {% if spk.homepage %}[<a href="{{ spk.homepage }}">{{ spk.homepage }}</a>]{% endif %}
-                </div>
-                {% endfor %}
-                <div>
-                    Lingua: {{ talk.language|upper }}
-                    {% if track.translate %}<strong>Traduzione simultanea disponibile</strong>{% endif %}
-                </div>
-                {% endwith %}
-                {% endwith %}
+
+            <div class="details">
+
                 {% if talk.slides %}
-                <div>
+                <h3>Download</h3>
+                <div class="button download">
                     {% stuff_info talk.slides as info %}
-                    Sono disponibili le <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">slide del talk</a>
-                    ({{ info.0 }} {{ info.1|filesizeformat }})
+                    <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">Slide ({{ info.0 }}) &mdash; {{ info.1|filesizeformat }}</a>
                 </div>
                 {% endif %}
+
+                <hr />
+
+                <dl>
+                    <dt>{% trans "Lingu" %}a</dt>
+                    <dd>{{ talk.language|upper }}</dd>
+
+                    <dt>{% trans "Durata" %}</dt>
+                    <dd>{{ talk.duration }} {% trans "minuti" %}</dd>
+
+                    {% if track.translate %}
+                    <dt>{% trans "Traduzione simultanea" %}</dt>
+                    <dd>{% trans "disponibile" %}</dd>
+                    {% endif %}
+
+                    {% comment %}
+                    <dt>Tag</dt>
+                    <dd> 
+                        <a href="/conference/talks/report?tag=Crowdsourcing" class="tag">Crowdsourcing</a>
+                        <a href="/conference/talks/report?tag=LongTail" class="tag">LongTail</a>
+                        <a href="/conference/talks/report?tag=SocialNetwork" class="tag">SocialNetwork</a>
+                        <a href="/conference/talks/report?tag=Web2.0" class="tag">Web2.0</a>
+                    </dd>
+                    {% endcomment %}
+                </dl> 
             </div>
+
         </div>
+        {% endwith %}
+        {% endwith %}
+
     </div>
 </div>  
 {% endblock %}

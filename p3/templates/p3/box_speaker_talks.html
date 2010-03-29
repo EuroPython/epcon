@@ -1,12 +1,12 @@
 {% load i18n %}
 <div class="section speaker-talks">
-    <h3>{% trans "I suoi talk" %}</h3>
-    <dl>
-        {% for conference, talks in talks %}
-        <dt>{{ conference }}</dt>
+    <h2>{% trans "I suoi talk" %}</h2>
+    {% for conference, talks in talks %}
+    <h3>{{ conference }}</h3>
+    <ul>
         {% for t in talks %}
-        <dd><a href="{{ t.get_absolute_url }}">{{ t.title }}</a></dd>
+        <li><a href="{{ t.get_absolute_url }}">{{ t.title }}</a></li>
         {% endfor %}
-        {% endfor %}
-    </dl>
+    </ul>
+    {% endfor %}
 </div>
