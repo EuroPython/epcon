@@ -117,7 +117,8 @@ PAGE_CONTENT_REVISION_EXCLUDE_LIST = getattr(settings,
 PAGE_SANITIZE_USER_INPUT = getattr(settings, 'PAGE_SANITIZE_USER_INPUT', False)
 
 # URL that handles pages media and uses <MEDIA_ROOT>/pages by default.
-_media_url = getattr(settings, "STATIC_URL", settings.MEDIA_URL)
+#_media_url = getattr(settings, "STATIC_URL", settings.MEDIA_URL)
+_media_url = settings.MEDIA_URL
 PAGES_MEDIA_URL = getattr(settings, 'PAGES_MEDIA_URL', join(_media_url, 'pages/'))
 
 # Hide the slug's of the first root page ie: ``/home/`` becomes ``/``
