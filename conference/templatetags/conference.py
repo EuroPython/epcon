@@ -785,7 +785,7 @@ def embed_video(value, args=None):
         w, h = map(int, args.split(','))
     else:
         w = h = None
-    vtype, burl = tmap.get(value.video_type, 'download')
+    vtype, burl = tmap.get(value.video_type, tmap['download'])
     if vtype == 'oEmbed':
         http = httplib2.Http()
         url = burl + '?url=' + value.video_url + '&format=json'
