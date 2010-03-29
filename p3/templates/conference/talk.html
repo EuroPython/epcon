@@ -34,10 +34,12 @@
 
             <hr />
 
+            {% if talk.video_type %}
             <div id="video" class="section">
                 <h2>Video</h2>
                 {{ talk|embed_video:"500,438" }}
             </div>
+            {% endif %}
 
         </div>
 
