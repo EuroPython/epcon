@@ -10,7 +10,7 @@
         <div class="column span-2">
             <div id="speaker-picture">
                 {% if speaker.image %}
-                <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image }}" alt="{{ speaker.name }}" width="100" />
+                <img src="{{ SPEAKER_FACE_URL }}{{ speaker.image|image_resized }}" alt="{{ speaker.name }}" width="100" />
                 {% else %}
                 <img src="{{ MEDIA_URL }}p4/i/placeholder-speaker.jpg" alt="{{ speaker.name }}" width="100" />
                 {% endif %}
