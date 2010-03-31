@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load conference p3 %}
+{% load conference i18n p3 %}
 
 {% block PAGE_TITLE %}{{ speaker.name }} &mdash; {% endblock %}
 {% block MAIN_CONTENT %}
@@ -39,15 +39,15 @@
 
                 <dl class="clearfix">
                     {% if speaker.twitter %}
-                    <dt>Twitter</dt>
+                    <dt>{% trans "Twitter" %}</dt>
                     <dd><a href="http://twitter.com/{{ speaker.twitter }}">{{ speaker.twitter }}</a></dd>
                     {% endif %}
                     {% if speaker.homepage %}
-                    <dt>Sito personale</dt>
+                    <dt>{% trans "Sito personale" %}</dt>
                     <dd><a href="{{ speaker.homepage }}">{{ speaker.homepage }}</a></dd>
                     {% endif %}
                     {% if speaker.activity_homepage %}
-                    <dt>Azienda</dt>
+                    <dt>{% trans "Azienda" %}</dt>
                     <dd><a href="{{ speaker.activity_homepage }}">{% if speaker.activity %}{{ speaker.activity }}{% else %}{{ speaker.activity_homepage }}{% endif %}</a></dd>
                     {% endif %}
                 </dl>

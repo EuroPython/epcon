@@ -14,7 +14,7 @@
 
             <div class="page-summary">
                 <p>
-                    <i>di</i>
+                    <i>{% trans "di" %}</i>
                     {% for spk in talk.get_all_speakers %}
                     <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
                     {% if not forloop.last %}-{% endif %}
@@ -29,7 +29,7 @@
 
             <div class="when-where">
                 <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
-                {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> nella track <i>{{ e.get_track.title }}</i>.
+                {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> {% trans "nella track" %} <i>{{ e.get_track.title }}</i>.
             </div>
 
             <hr />
@@ -58,7 +58,7 @@
                 <hr />
 
                 <dl>
-                    <dt>{% trans "Lingu" %}a</dt>
+                    <dt>{% trans "Lingua" %}</dt>
                     <dd>{{ talk.language|upper }}</dd>
 
                     <dt>{% trans "Durata" %}</dt>
