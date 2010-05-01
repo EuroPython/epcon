@@ -56,6 +56,9 @@ table.schedule caption {
     border-bottom-color: #94946f;	
 }
 
+.schedule thead th.t-openspace {
+    border-bottom-color: #94946f;	
+}
 
 .schedule thead th.hhmm {
 	border-bottom-width: 1px;			
@@ -110,9 +113,15 @@ table.schedule caption {
 
 
 .schedule td.t-apertura {
-
+    text-align: center;
     background: none;
     border-top: 3px solid #4D5E5F;
+}
+
+.schedule td.t-openspace {
+    text-align: center;
+    background: none;
+    border-top: 3px solid #94946f;	
 }
 
 
