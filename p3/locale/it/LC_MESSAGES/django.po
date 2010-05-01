@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-12 10:01+0100\n"
-"PO-Revision-Date: 2010-03-15 12:45\n"
+"POT-Creation-Date: 2010-03-31 11:57+0200\n"
+"PO-Revision-Date: 2010-03-31 16:35\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -49,6 +49,46 @@ msgstr "Contattato il %(d)s"
 msgid "sponsorizzato da"
 msgstr "sponsorizzato da"
 
+#: templates/conference/speaker.html:42
+msgid "Twitter"
+msgstr "Twitter"
+
+#: templates/conference/speaker.html:46
+msgid "Sito personale"
+msgstr "Sito personale"
+
+#: templates/conference/speaker.html:50
+msgid "Azienda"
+msgstr "Azienda"
+
+#: templates/conference/talk.html:17
+msgid "di"
+msgstr "di"
+
+#: templates/conference/talk.html:32
+msgid "nella track"
+msgstr "nella track"
+
+#: templates/conference/talk.html:61
+msgid "Lingua"
+msgstr "Lingua"
+
+#: templates/conference/talk.html:64
+msgid "Durata"
+msgstr "Durata"
+
+#: templates/conference/talk.html:65
+msgid "minuti"
+msgstr "minuti"
+
+#: templates/conference/talk.html:68
+msgid "Traduzione simultanea"
+msgstr "Traduzione simultanea"
+
+#: templates/conference/talk.html:69
+msgid "disponibile"
+msgstr "disponibile"
+
 #: templates/hcomments/show_single_comment.html:15
 msgid "Permalink a questo commento"
 msgstr "Permalink a questo commento"
@@ -69,7 +109,7 @@ msgstr "Lo staff sta controllando il tuo commento, a breve verrà pubblicato."
 msgid "Post comment"
 msgstr "Lascia un commento"
 
-#: templates/microblog/post_detail.html:100 templates/p3/index.html:96
+#: templates/microblog/post_detail.html:100 templates/p3/index.html:85
 msgid "Scritto da"
 msgstr "Scritto da"
 
@@ -93,7 +133,7 @@ msgstr "Archivio Blog"
 msgid "Nessun post trovato."
 msgstr "Nessun post trovato."
 
-#: templates/microblog/show_post_comments.html:4 templates/p3/index.html:96
+#: templates/microblog/show_post_comments.html:4 templates/p3/index.html:85
 msgid "Commenti"
 msgstr "Commenti"
 
@@ -159,7 +199,7 @@ msgstr "Dal blog"
 msgid "Continua"
 msgstr "Continua"
 
-#: templates/p3/index-simple.html:52 templates/p3/index.html:69
+#: templates/p3/index-simple.html:52 templates/p3/index.html:68
 msgid "Dicono di noi"
 msgstr "Dicono di noi"
 
@@ -175,19 +215,19 @@ msgstr "Dopo il grande successo dell'ultima edizione, anche quest'anno vi aspett
 msgid "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world."
 msgstr "Ci aspettiamo più di 400 partecipanti tra aziende, professionisti e studenti che parteciperanno ai numerosi interventi sugli argomenti più attuali relativi al mondo Python."
 
-#: templates/p3/index.html:91
+#: templates/p3/index.html:80
 msgid "Dal Blog"
 msgstr "Dal Blog"
 
-#: templates/p3/index.html:96
+#: templates/p3/index.html:85
 msgid "il"
 msgstr "il"
 
-#: templates/p3/index.html:100
+#: templates/p3/index.html:89
 msgid "Continua &rarr;"
 msgstr "Continua &rarr;"
 
-#: templates/p3/index.html:103
+#: templates/p3/index.html:92
 msgid "Archivio blog"
 msgstr "Archivio blog"
 
