@@ -972,10 +972,9 @@ a.tag:hover {
     width: 30%;    
 }
 
-
-
-
-
-
-
-
+#donate-button {
+    float: left;
+    height: 100px;
+    margin: 0 10px 0 0;
+    padding: 0;
+}
