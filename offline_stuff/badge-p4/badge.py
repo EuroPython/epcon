@@ -89,6 +89,17 @@ staff_people = set(map(lambda x: x.lower(), (
 
 LOGO = {
     None: Image.open('logo.png'),
+    'lorenzo berni': Image.open('apple.png'),
+    'andrea righi': Image.open('bertos.png'),
+    'luca ottaviano': Image.open('bertos.png'),
+    'francesco sacchi': Image.open('bertos.png'),
+    'francesco pallanti': Image.open('croissant.png'),
+    'nicola larosa': Image.open('qua.png'),
+    'marco beri': Image.open('qui.png'),
+    'c8e carlo miron': Image.open('quo.png'),
+    'armin rigo': Image.open('pypy.png'),
+    'antonio cuni': Image.open('pypy.png'),
+    'lorenzo masini': Image.open('beer.png'),
 }
 
 colors = {
@@ -171,7 +182,7 @@ def draw_info(image, first_name, last_name, caption, python_experience, logo, co
         y -= h
         for c in 0, 1:
             cx = x + c * BADGE['width']
-            for _ in range(python_experience):
+            for _ in range(python_experience+1):
                 image.paste(logo, (cx, y))
                 cx += w +spacer
 
@@ -224,7 +235,7 @@ for t, data in groups.items():
     print '%s:' % t, pages, 'pages'
     color = colors.get(t, colors[None])
     count = 1
-    for block in grouper(BADGE_PER_PAGE, sorted(attendees, key = lambda x: x['last_name'])):
+    for block in grouper(BADGE_PER_PAGE, sorted(attendees, key = lambda x: x['last_name'].strip())):
         print '\t page', count
         images = []
         for ix, a in enumerate(block):
@@ -241,7 +252,7 @@ for t, data in groups.items():
                 else:
                     caption = None
                 python_experience = a['python_experience']
-                logo = LOGO.get('%s %s' % (first_name, last_name), LOGO.get(None))
+                logo = LOGO.get(('%s %s' % (first_name, last_name)).lower(), LOGO.get(None))
                 print '\t\t', first_name, last_name
             draw_info(i, first_name, last_name, caption, python_experience, logo, color['name'], color['info'])
             if RESIZE:
