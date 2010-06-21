@@ -212,6 +212,14 @@ def schedule_speakers_xml(request, conference, slug):
         mimetype = 'text/xml',
     )
 
+def talks_xml(request, conference):
+    talks = models.Talk.objects.filter(conference=conference)
+    return render_to_response(
+        'conference/talks.xml', { 'conference': conference, 'talks': talks },
+        context_instance = RequestContext(request),
+        mimetype = 'text/xml',
+    )
+
 def genro_wrapper(request):
     """
     mostra in un iframe l'applicazione conference di genropy
