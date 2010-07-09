@@ -13,3 +13,5 @@ CONFERENCE_MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYP
         'application/vnd.oasis.opendocument.presentation': 'ODP Document',
     }
 )
+
+CONFERENCE_VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)

@@ -812,28 +812,52 @@ def embed_video(value, args=None):
         #    html = re.sub('width=\W*"\d+"', 'width="%s"' % w, html)
         #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
     else:
-        opts = {
-            'controls': 'true',
-            'src': settings.CONFERENCE_STUFF_URL + 'videos/' + value.video_file.name,
-        }
-        if w and h:
-            opts['width'] = w
-            opts['height'] = h
-        attrs = [ '%s="%s"' % x for x in opts.items() ]
-
-        fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.video_file.name)
-        try:
-            stat = os.stat(fpath)
-        except (AttributeError, OSError), e:
-            fsize = ftype = None
+        src = fpath = None
+        if value.video_file or settings.CONFERENCE_VIDEO_DOWNLOAD_FALLBACK:
+            if value.video_file:
+                src = settings.CONFERENCE_STUFF_URL + 'videos/' + value.video_file.name
+                fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.video_file.name)
+            else:
+                for ext in ('.avi', '.mp4'):
+                    fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.slug + ext)
+                    print '->', fpath
+                    if os.path.exists(fpath):
+                        src = settings.CONFERENCE_STUFF_URL + 'videos/' + value.slug + ext
+                        break
+        if not src:
+            html = ''
         else:
-            fsize = stat.st_size
-            ftype = mimetypes.guess_type(fpath)[0]
-        html = """
-            <div>
-                <video %s></video>
-                <a href="%s">download video (%s %s)</a></div>
-            """ % (' '.join(attrs), settings.CONFERENCE_STUFF_URL + 'videos/' + value.video_file.name, ftype, defaultfilters.filesizeformat(fsize))
+            try:
+                stat = os.stat(fpath)
+            except (AttributeError, OSError), e:
+                finfo = ''
+            else:
+                fsize = stat.st_size
+                ftype = mimetypes.guess_type(fpath)[0]
+                finfo = ' (%s %s)' % (ftype, defaultfilters.filesizeformat(fsize))
+
+            opts = {
+                'controls': 'controls',
+                'class': 'projekktor',
+            }
+            if w and h:
+                opts['width'] = w
+                opts['height'] = h
+
+            data = {
+                'attrs': ' '.join('%s="%s"' % x for x in opts.items()),
+                'href': src,
+                'info': finfo,
+            }
+
+            html = """
+                <div>
+                    <video %(attrs)s>
+                        <source src="%(href)s" type="video/mp4" />
+                    </video>
+                    <a href="%(href)s">download video%(info)s</a>
+                </div>
+                """ % data
     return mark_safe(html)
 
 @register.tag
