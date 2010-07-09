@@ -820,7 +820,6 @@ def embed_video(value, args=None):
             else:
                 for ext in ('.avi', '.mp4'):
                     fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.slug + ext)
-                    print '->', fpath
                     if os.path.exists(fpath):
                         src = settings.CONFERENCE_STUFF_URL + 'videos/' + value.slug + ext
                         break
