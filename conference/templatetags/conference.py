@@ -852,7 +852,7 @@ def embed_video(value, args=None):
             html = """
                 <div>
                     <video %(attrs)s>
-                        <source src="%(href)s" type="video/mp4" />
+                        <source src="%(href)s" />
                     </video>
                     <a href="%(href)s">download video%(info)s</a>
                 </div>
