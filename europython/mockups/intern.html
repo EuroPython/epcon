@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+
+    <!--  <title>{% block TITLE_BLOCK %}{% endblock %} &mdash; EuroPython 2011: Florence, June 23&ndash;26</title>--> 
+    <title>Page title &mdash; EuroPython 2011</title>
+    
+    <link rel="icon" href="./static/i/favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="./static/i/favicon.ico" type="image/vnd.microsoft.icon" />
+
+    <link rel="stylesheet" href="./static/s/reset.css" type="text/css" media="all" />    
+    <link rel="stylesheet" href="./static/s/grid.css" type="text/css" media="screen, projection" />    
+    <link rel="stylesheet" href="./static/s/form.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="./static/s/base.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="./static/s/cms.css" type="text/css" media="screen, projection" />    
+
+<!--     <link rel="stylesheet" href="./static/s/mobile.css" type="text/css" media="screen, projection" />     -->
+        
+<!--[if lt IE 9]>
+    <script src="./static/j/html5.js"></script>
+    <link rel="stylesheet" href="./static/s/ie.css" type="text/css" media="screen, projection" />    
+<![endif]-->
+</head>
+<body>
+<!--[if lt IE 7]>
+<div class="please-upgrade">
+        Il tuo browser non è supportato. Sei pregato di aggiornare <a href="http://www.microsoft.com/windows/internet-explorer/"><b>Internet Explorer</b></a> o <a href="http://browsehappy.com/"><b>scegliere un browser alternativo</b></a>.
+</div>
+<![endif]-->
+<!-- {% block HEADER_BLOCK %} -->
+<header>
+    <nav  class="darker">
+        <div class="container clearfix">                    
+
+            <div class="span-8">
+                <ul>
+                    <li class="current"><a href="./index.html">Home</a></li>    
+                    <li><a href="./conference.html">The Conference</a></li>                        
+                    <li><a href="./where.html">Where</a></li>
+                    <li><a href="./blog.html">Blog</a></li>    
+                    <li><a href="./schedule.html">Schedule</a></li>                
+                </ul>        
+            </div>
+    
+            <div class="span-4 last">                        
+                <div class="user">
+                    Logged in as <b>Name Surname</b> &bull; <a href="#">Log out</a>
+                </div>
+            </div>
+                   
+        </div>        
+    </nav>
+
+    <div class="container clearfix">                    
+
+        <div class="span-6">
+            <div class="logo">
+                <a title="EuroPython home" href="./index.html"><img src="./static/i/europython-logo.png" alt="EuroPython 2011" title="" width="330" height="110" /></a>
+            </div>
+        </div>   
+
+        <div class="span-3">
+            <div class="buy badge">
+                <h5><a href="#">Buy Tickets</a></h5>
+                Starting from <b>99€</b>                         
+            </div>
+        </div>
+
+        <div class="span-3 last">
+            <div class="chat badge">
+                <h5><a href="#">Get Support</a></h5>
+                Chat with organizers                         
+            </div>
+        </div>
+        
+    
+    <!--     /container -->
+    </div>
+
+
+            
+</header>   
+
+<!-- {% endblock %}     -->
+
+
+<!-- <div class="page {% block PAGE_CLASS %}{% endblock %}"> -->
+<div class="page">
+    <div class="container clearfix">
+
+        <!--  page contents -->
+<!--         <div class="contents span-12"> -->
+
+<!--           {% block PAGE_BLOCK %} -->
+
+                <h1>{Title} Etiam sit amet elit vitae arcu interdum</h1>
+
+                <div class="page-summary">
+                {Summary} In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.
+                </div>
+
+                <div class="span-7 append-1">
+                
+                    <div class="cms">
+
+
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam <b>boldness sit amet elit vitae</b> arcu interdum ullamcorper. Nullam ultrices, nisi quis scelerisque convallis, augue neque tempor enim, et mattis justo nibh eu elit. <a href="#">{Sample link} Quisque ultrices gravida pede</a>. Mauris accumsan vulputate tellus. <i>Italicness phasellus condimentum</i> bibendum dolor. Mauris sed ipsum. Phasellus in diam. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo. Nam tincidunt rhoncus urna. Aliquam id massa ut nibh bibendum imperdiet. Curabitur neque mauris, porta vel, lacinia quis, placerat ultrices, orci.</p>
+
+                        <figure class="border">
+                            <img src="./static/i/sample-figure.jpg" alt="Sample figure" width="450" height="360" />
+                        </figure>
+
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam <b>boldness sit amet elit vitae</b> arcu interdum ullamcorper. Nullam ultrices, nisi quis scelerisque convallis, augue neque tempor enim, et mattis justo nibh eu elit. <a href="#">{Sample link} Quisque ultrices gravida pede</a>. Mauris accumsan vulputate tellus. <i>Italicness phasellus condimentum</i> bibendum dolor. Mauris sed ipsum. Phasellus in diam. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo. Nam tincidunt rhoncus urna. Aliquam id massa ut nibh bibendum imperdiet. Curabitur neque mauris, porta vel, lacinia quis, placerat ultrices, orci.</p>
+
+                        <blockquote>
+                            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam <b>boldness sit amet elit vitae</b> arcu interdum ullamcorper. Nullam ultrices, nisi quis scelerisque convallis, augue neque tempor enim, et mattis justo nibh eu elit.</p>
+                        </blockquote>
+
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p>
+                        
+                        <ul>
+                            <li>Sample list item 1.</li>
+                            <li>Etiam sit amet elit vitae arcu interdum ullamcorper. Phasellus in diam. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo.</li>
+                            <li>Nam tincidunt rhoncus urna.</li>                        
+                        </ul>
+
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p>
+
+
+<pre>
+<code>
+def make_hash(s):   
+   return md5.new(s).hexdigest()
+
+def fetch_url(url):
+        
+    # retrieve the page
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', FAKE_UA)]
+    
+    request = opener.open((url))
+    body = request.read()
+    request.close()
+
+    return body
+</code>    
+</pre>
+
+
+                        <h2>Sample h2 heading</h2>
+                        
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p>
+
+                                  
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>One</th>
+                                        <th>One</th>
+                                        <th>One</th>
+                                        <th>One</th>
+                                        <th>One</th>
+                                    </tr>            
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                    </tr>                        
+               
+                                    <tr>
+                                        <td>Nam tincidunt</td>
+                                        <td>Nam tincidunt</td>
+                                        <td>Nam tincidunt</td>
+                                        <td>Nam tincidunt</td>
+                                        <td>Nam tincidunt</td>
+                                    </tr> 
+                                    
+                                    <tr>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                        <td>Lorem ipsum</td>
+                                    </tr>                            
+                                </tbody>        
+                            </table>
+                       
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p>
+
+                        <div class="highlights">
+                         <h3>H3 Aenean vehicula posuere neque</h3>
+                          <ul>
+                           <li>Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim.</li>
+
+                           <li>Laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula.</li>
+                           
+                           <li>Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula.</li>
+                                                      
+                          </ul>
+                        </div>
+
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p>
+
+
+                    <!-- /cms -->
+                    </div>
+                
+                <!--  /span-7 -->
+                </div>
+
+                <div class="span-4 last">
+                    <aside>
+                        
+                        <div class="cms">
+                            <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p>                
+                            <h4>h4 Subsection</h4>
+                            
+                         <p>In lectus nisl, porttitor eget, fermentum et, viverra a, odio. Sed semper. Praesent vulputate nibh eget nisi. Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula. Aliquam lacus diam, ultricies vel, interdum eget, posuere non, tellus. Donec vel ligula. Sed felis.</p> 
+                         
+                            <ul>
+                               <li>Sed ligula. Aenean vehicula posuere neque. Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim.</li>
+    
+                               <li>Laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula.</li>
+                               
+                               <li>Nam nibh lectus, laoreet non, convallis sed, vulputate consectetuer, enim. Pellentesque arcu. Vestibulum consequat nisi a ipsum vulputate vehicula.</li>
+                                                      
+                            </ul>
+                             
+                        </div>
+                    
+                    </aside>
+                </div>
+                        
+<!--           {% endblock %}     -->            
+
+        <!--  /page contents -->            
+<!--         </div> -->
+
+    <!-- /container -->
+    </div>
+<!-- /page -->
+</div>
+
+
+
+
+<!-- {% block FOOTER_BLOCK %} -->
+
+<div class="sponsors">
+
+    <div class="container clearfix"> 
+        <h5>Our Sponsors</h5>
+        
+        <div class="ad">
+            <a href="#"><img src="static/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>  
+
+        <div class="ad">
+            <a href="#"><img src="static/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>  
+
+        <div class="ad">
+            <a href="#"><img src="static/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>  
+        
+        <div class="ad">
+            <a href="#"><img src="static/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>  
+
+        <div class="ad">
+            <a href="#"><img src="static/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>  
+
+        <div class="ad last">
+            <a href="#"><img src="static/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>  
+
+    </div>
+
+</div>
+
+<footer class="darker">
+    <div class="container clearfix">        
+
+
+            <div class="span-3">
+                <nav>
+<!--                     <h5><span>The</span> site</h5> -->
+                    <h5>&nbsp;</h5>
+                    <ul>
+                        <li><a href="./index.html">Home</a></li>
+
+                        <li><a href="./conference.html">The Conference</a></li>                        
+                        <li><a href="./where.html">Where</a></li>
+                        <li><a href="./blog.html">Blog</a></li>
+
+                        <li><a href="./schedule.html">Schedule</a></li>
+                        
+                        <li><a href="./intern.html">Contact</a></li>
+                        
+                    </ul>
+                </nav>
+            </div>
+
+
+            <div class="span-5">
+                <div class="twitter">
+                    <h5><span>Overheard on</span> Twitter</h5>
+                    <ul>
+                        <li>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit.</li>                        
+                        <li>Nam tincidunt @rhoncus urna. Aliquam id massa</li>
+                        <li>Quisque ultrices gravida pede. Mauris accumsan</li>                    
+                        <li>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit.</li>                        
+                        <li>Nam tincidunt @rhoncus urna. Aliquam id massa</li>                 
+                    </ul>
+                    <div class="">
+                        <a href="http://twitter.com/europython">Follow @europython on Twitter</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="span-4 last">
+                <div class="donate">
+                    <h5><span>Please</span> Donate</h5>
+                    
+                    <p>Help the Python Software Foundation... Phasellus condimentum bibendum dolor. Mauris sed ipsum. Phasellus in diam. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo.</p>
+                    
+                    <p class="we-accept">
+                        <img src="static/i/icon-visa.png" alt="icon-visa" width="32" height="32" />
+                        <img src="static/i/icon-mastercard.png" alt="icon-mastercard" width="32" height="32" />
+                        <img src="static/i/icon-amex.png" alt="icon-amex" width="32" height="32" />
+                        <img src="static/i/icon-paypal.png" alt="icon-paypal" width="32" height="32" />                    
+                    </p>
+                    
+                    <div class="button nut">
+                        <a href="#">Donate Now</a>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <hr />
+
+            <div class="span-8">
+
+                <div class="legalese">
+                    <p>&copy; 2007&ndash;2011 <a href="http://python.it/">Python Italia</a>, with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p> 
+                </div>
+
+            </div>
+
+            <div class="span-4 last">
+
+                <div class="feeds">
+                    <img src="./static/i/icon-feed.png" alt="" width="12" height="12" />&nbsp;<a href="#">Recent blog posts</a>
+                </div>
+
+            </div>
+                        
+<!--     /container -->
+    </div>    
+
+</footer>
+
+<!-- {% endblock %}   -->
+
+
+
+</body>
+</html>
+

@@ -1,0 +1,174 @@
+.form-box {
+	background: #fff;
+    padding: 10px;
+        
+	border: 1px solid #aba18f;
+}
+
+.form-box fieldset {
+}
+
+/*
+form p.tip {
+	font-size: 13px;
+}
+*/
+
+form .field {
+	margin: 0 0 10px 0;
+}
+
+
+
+fieldset {    
+}
+
+fieldset.border {
+	padding: 10px 0 0 0;
+/* 	border-top: 1px solid #384b80;	    */
+
+/*     background: transparent url(../i/bg-sep.png) top left repeat-x; */
+}
+
+
+
+legend {
+			
+	padding: 0 5px 0 0;	
+	color:#4e69b2;	
+	
+    /* IE */
+	background: transparent;
+			
+	/* IE 6-7 */
+	*margin: 0 0 0 -7px;	
+}
+
+
+label {
+    	
+	display: block; 
+
+    font-size: 13px;
+/* 	color: #d7cef5; */
+
+/*     text-transform: uppercase; */
+}
+
+label.inline {
+	display: inline; 
+    font-size: 14px;
+
+	color: #fff;
+    
+    text-transform: none;
+}
+
+
+label span {
+	color: #8396cc;
+    text-transform: none;
+
+}
+
+
+.error label {
+	color: #bf2640;
+	
+}
+
+
+input, 
+select, 
+textarea {        
+
+	color: #0f2424;
+		
+	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+
+	padding: 2px 2px;
+	background: #fff;
+}
+
+textarea {		
+	width: 95%;
+}
+
+
+input[type='text'], 
+input[type='password'], 
+textarea,
+select {    
+	border: 1px solid #aba18f;
+}
+
+.error input[type='text'],
+.error input[type='password'], 
+.error textarea,
+.error select 	
+{
+	border-color: #bf2640;
+	background: #fae6e9;
+}
+
+
+
+/*
+input[type='text']:focus, 
+input[type='password']:focus,
+select:focus,
+textarea:focus {    
+	background: #e1f1fa;
+	
+	border-color: #075982;
+}
+
+*/
+
+
+
+
+
+
+
+button {
+
+    cursor: pointer;
+
+    color: #fff;
+	
+	font: bold 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+    
+
+	background: #66b0bd url(../i/button-b.png) center top repeat-x;
+	padding: 5px 10px;	
+	
+    border: 1px solid #3d7e8a;
+		
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+    text-shadow: #316770 1px 1px 1px;
+	
+    -webkit-box-shadow: 0 1px 3px #7d6f60;
+	
+	
+}
+/*
+
+button.mini {
+
+	
+	padding: 2px 7px;	
+	
+}
+*/
+
+
+
+
+
+
+
+

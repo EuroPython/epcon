@@ -1,0 +1,1149 @@
+/*
+ * The fonts included are copyrighted by the vendor listed below.
+ *
+ * @vendor:     The League of Moveable Type
+ * @vendorurl:  http://www.theleagueofmoveabletype.com
+ * @licenseurl: http://www.fontsquirrel.com/license/League-Gothic
+ *
+ *
+ */
+
+@font-face {
+	font-family: 'League Gothic';
+	src: url('../f/League_Gothic.eot');
+	src: local('League Gothic Regular'), local('LeagueGothic'), url('../f/League_Gothic.woff') format('woff'), url('../f/League_Gothic.otf') format('opentype'), url('../f/League_Gothic.svg#LeagueGothic') format('svg');
+}
+
+/* ============== */
+/* ! start here   */
+/* ============== */
+
+body {
+		
+    background: #fcfad9 url(../i/body.png) top left repeat fixed;
+    
+	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+	color: #301d1d;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+
+	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;	
+	
+	text-transform: uppercase;
+}
+
+
+
+
+/*
+A HaRd challenge - styling an HR element
+
+"...in IE there’s two problems. For some annoying reason I can’t understand, 
+it adds 7 pixels (even number, right?) to the top and bottom margin."
+
+http://www.robertnyman.com/2007/03/09/a-hard-challenge-styling-an-hr-element/
+*/
+hr {
+  clear: both;
+  width: 100%; 
+    
+  height: 1px;
+  margin: 0 0 39px 0;
+  
+  /* IE 6-7 */
+  *margin: -7px 0 32px 0; 
+  
+  border: none;   
+  visibility: hidden;
+}
+
+
+.meta {
+    font-size: 12px;
+    color: #7d6f60;
+}
+
+.meta a {
+    color: #7d6f60;    
+    border-bottom-color: #7d6f60;
+}
+
+
+
+
+/* ========= */
+/* ! links   */
+/* ========= */
+
+a {
+
+	color: #0f2424;	
+	text-decoration: none;	
+	
+	border-bottom: 1px solid #0f2424;
+		
+}
+
+a:visited {
+    border-bottom-style: dotted;
+}
+
+a:hover {
+/* 	color: #66b0bd; */
+/* 	border-bottom-color: #9babab; */
+
+    -webkit-transition: color ease-out .2s;
+}
+
+.darker a {
+    color: #fcf8c0;
+	border-bottom-color: #7d6f60;
+}
+
+.darker a:hover {
+    color: #fff;
+	border-bottom-color: #fff;
+}
+
+
+a.tag {
+    background: #e3dfac;
+    padding: 1px 2px;
+        
+    margin: 0 5px 5px 0;
+	    
+    display: inline-block;
+
+    font-size: 12px;
+    
+    border: 1px solid #b0ab63;
+/*
+    border-bottom: 1px solid #b0ab63;
+    border-right: 1px solid #b0ab63;
+*/
+    
+    border-radius: 3px;
+    
+}
+
+a.tag:hover {
+    background-color:#fff;
+}
+
+/* ============= */
+/* ! utilities   */
+/* ============= */
+
+
+.hidden { display: none;}
+.block {display: block; }
+.invisible { visibility: hidden !important; }
+.clickable { cursor: pointer }
+
+
+
+
+/* ============== */
+/* ! pre-header   */
+/* ============== */
+
+
+
+#pre-header {
+
+    width: 100%;        
+}
+
+#please-upgrade  {
+
+
+	text-align: center;
+
+/* 	font-size: 13px; */
+
+	padding: 5px 0;
+	
+	color: #222d4d;
+	background: #FFF9B2;
+
+}
+
+#please-upgrade  a {
+    color: #222d4d;
+}
+
+
+/* ======= */
+/* ! nav   */
+/* ======= */
+
+header {
+
+/*     -webkit-transform: rotate(-1deg); */
+}
+
+
+header nav {
+    background: #301d1d;		
+}
+
+header .user {
+
+    text-align: right;
+    
+    font-size: 12px;
+    line-height: 30px;
+    
+    color: #aba18f;
+    
+        
+    padding: 5px 0;
+}
+
+/*
+header .user b {
+    color: #aba18f;
+}
+*/
+
+header nav ul {
+    list-style: none;
+    
+/*     width: 750px; */
+    margin: 0 auto;
+    
+/*     padding: 15px 0 0 210px; */
+}
+
+header nav li {
+
+    text-transform: uppercase;
+    
+    font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;    
+	float: left;
+
+/*     letter-spacing: 1px; */
+	
+    margin: 0 20px 0 0;
+    
+    padding: 5px 0;
+
+	text-shadow: #170b0b 1px 1px 1px;
+
+
+}
+
+header nav ul a {
+
+	border: none;	
+
+}
+
+header nav li.current a {
+    color: #9ae3f0;
+}
+
+
+/*
+
+header #li-chat a {
+    background: transparent url(../i/bg-li-chat.png) center center no-repeat;
+    
+    text-align: center;
+
+	min-height: 40px;
+	_height: 40px;
+		    
+    min-width: 55px;
+    _width: 55px;
+}
+
+
+header #li-chat #habla_unavailable_div a {
+    background-image: url(../i/bg-li-chat-nope.png);
+    text-decoration: line-through;
+    
+    color: #B1C4C4;
+    cursor: default;   
+}
+
+*/
+
+
+/*
+
+.badge {
+    text-align: center;
+    font-size: 12px;
+    
+    min-height: 140px;
+    
+}
+*/
+
+
+.badge {
+
+    color: #fff;
+
+	background: #66b0bd url(../i/button-b.png) center top repeat-x;
+	padding: 5px 10px;	
+	
+    border: 1px solid #3d7e8a;
+
+    
+    -webkit-box-shadow: 0 1px 3px #7d6f60;
+    		
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+
+/*     display: inline-block; */
+
+    margin: 40px 0 0 0;
+}
+
+.badge a {
+    border-bottom: none;
+}
+
+.badge a:hover {
+    color: #fff;
+}
+
+.badge h5 {
+/*     padding: 55px 0 0 0; */
+    line-height: 24px;
+    
+	text-shadow: rgba(100%, 100%, 100%, .7) 1px 1px 1px;
+	    
+}
+
+.badge.buy {
+/*     background: transparent url(../i/badge-buy-2.png) 20px center no-repeat; */
+}
+
+.badge.chat {
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+
+
+}
+
+
+
+/* ========== */
+/* ! header   */
+/* ========== */
+
+
+.logo  {
+/* 	font: normal 70px/48px "League Gothic", "Arial Narrow", sans-serif;     */
+	
+
+	margin: 20px 0 20px 0;
+}
+
+.logo a {
+	border: none;	
+}
+
+/*
+.logo span {
+
+	font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;        
+    display: block;
+	
+	text-transform: uppercase;
+    
+    color: #7d6f60;
+}
+
+*/
+
+
+
+#when-where  {
+
+    margin: 20px 0 0 0;
+}
+
+#when-where h2 {
+
+    font-size: 24px;
+    line-height: 30px;
+    
+    color: #4d5f5f;
+    
+/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
+}
+
+
+#when-where p {
+
+
+    font-size: 16px;
+    font-weight: bold;
+    font-style: italic;
+    
+    color: #5e5d3b;
+    
+/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
+    
+/* 	text-shadow: #4d6161 1px 1px 1px; */
+    
+}
+
+
+
+
+/* ========== */
+/* ! footer   */
+/* ========== */
+
+
+footer {
+    color: #aba18f;
+
+    /* make room for 'sponsors' band */     
+    padding: 40px 0 120px 0;    
+
+    border-top: 3px solid #aba18f;
+    background: #301d1d url(../i/footer.jpg) top left;
+    
+/*     margin: 60px 0 0 0; */
+
+/*     font-size: 12px; */
+}
+
+
+
+footer h5 {
+    color: #9ae3f0;
+
+
+    margin: 0 0 10px 0;
+    
+
+	text-shadow: #170b0b 1px 1px 1px;
+	
+	text-align: center;
+
+}
+
+footer h5 span {
+/*     text-transform: none; */
+    color: #aba18f;
+}
+
+
+footer ul {
+ 
+}
+
+footer p  {
+    margin: 0 0 5px 0;
+}
+
+
+
+/*
+footer li.sep {
+    margin: 20px 0 0 0;
+}
+*/
+
+
+/*
+elsewhere img {
+    vertical-align: middle;
+    margin: 0 5px 0 0;
+    
+}
+*/
+
+/*
+#newsletter-subscription {
+    margin: 20px 0 0 0;
+}
+
+#newsletter-subscription input {
+    border: 1px solid #222d4d; 
+    color: #d7cef5;
+    
+    background: #384b80;
+    _background: #384b80;
+    
+}
+#newsletter-subscription input:focus {
+    background: #fff;
+    color: #222d4d;
+}
+*/
+
+
+
+
+
+/*
+
+#elsewhere {
+
+    margin: 0 0 20px 0;
+    padding: 0 0 20px 0;
+
+    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
+}
+*/
+
+
+
+footer nav ul {
+    list-style: none; 
+}
+
+/*
+#elsewhere li,
+#footer-nav li {
+    display: inline;
+    
+    margin-right: 10px;
+}
+*/
+
+.feeds {
+
+}
+
+.feeds img {
+    vertical-align: middle;
+}
+
+.twitter {
+    
+}
+
+.twitter li {
+    margin: 0 0 10px 0;
+    
+    list-style: outside disc url(../i/icon-bird.png);
+}
+
+.we-accept {
+    text-align: center;
+    
+    margin: 10px 0 10px 0;
+}
+
+
+/* ========= */
+/* ! page    */
+/* ========= */
+
+
+.page {
+/*     min-height: 600px; */
+
+    margin: 0 0 60px 0;
+	
+}
+
+.page.border {
+    
+/*     background: transparent url(../i/bg-vsep.png) 540px 80px no-repeat; */
+
+}
+
+
+.page-summary {
+	
+	margin: 0 0 20px 0;
+    
+    font-size: 16px;
+    line-height: 30px;
+        
+    color: #635443;
+
+}
+
+
+.page h1  {
+
+	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;
+/* 	color: #96204b; */
+
+	margin: 30px 0 30px -20px;
+	
+/*     text-shadow: #161e33  1px 1px 1px;  */
+
+/* 	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px;  */
+	
+
+}
+
+
+/* =========== */
+/* ! sidebar   */
+/* =========== */
+
+
+
+#sidebar {
+	color: #383829;
+
+	font: normal 12px/18px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+
+}
+
+#sidebar h3 {
+    font-size: 18px;
+    color: #4D5E5F;
+    text-transform: uppercase;   
+}
+
+
+#sidebar .section {
+    margin: 0 0 20px 0;
+}
+
+
+#sidebar .newsletter .google {
+    margin: 10px 0 0 0;
+
+}
+
+#sidebar .newsletter .google a {
+    color: #61613F;
+    border-bottom-color: #61613F;
+}
+
+
+#sidebar .newsletter .google a:hover {
+	color: #630b2b;
+	border-bottom-color: #9babab;
+}
+
+
+
+#sidebar .cal ul {
+    list-style: none;
+    margin: 0;
+}
+
+#sidebar .cal li {
+
+    margin: 0 0 10px 0;        
+}
+
+#sidebar .cal h4 {
+    float: left;
+    margin: 0 10px 0 0;
+}
+
+#sidebar .cal h4 span {
+    color: #96204B;
+}
+
+#sidebar .cal p {
+    margin: 0;
+}
+
+
+
+/* =================== */
+/* ! speaker           */
+/* =================== */
+
+
+
+#speaker-page {
+
+    /* no sep */
+    background: transparent;
+
+}
+
+
+#speaker-page h1 {
+    margin-left: 140px;
+}
+
+#speaker-picture {
+
+    
+    float: left;
+    width: 100px;
+
+    border: 5px solid #4c5e5e;
+    
+}
+
+#speaker-picture img {
+    display: block;
+}
+
+#speaker-talks ul {
+
+    margin: 0  0 20px 0;
+}
+
+
+#speaker-talks h3 {
+    margin: 0 0 5px 0;
+/*     color: #D7CEF5; */
+    font-size: 18px;    
+
+
+    text-transform: uppercase;
+}
+
+#speaker-talks li {
+
+	margin: 0 0 0 20px;
+
+}
+
+#speaker-contacts dt {
+    float: left;
+    width: 140px;
+    
+    font: normal 18px/20px  "League Gothic", "Arial Narrow", sans-serif;    
+    
+    color: #4c5e5e;
+
+    padding: 0 0 10px 0;
+    margin: 0 0 10px 0;
+    
+    background: transparent url(../i/bg-sep.png) bottom left repeat-x;
+}
+
+#speaker-contacts dd {
+
+    background: transparent url(../i/bg-sep.png) bottom left repeat-x;
+
+    padding: 0 0 10px 0;
+    margin: 0 0 10px 0;
+
+}
+
+
+/* ======== */
+/* ! talk   */
+/* ======== */
+
+
+
+#speaker-page .details,
+#talk-page .details {
+
+    margin: 0 0 30px 0;
+
+	color: #383829;
+
+	font-size: 13px;
+	line-height: 18px;
+
+}
+
+
+#talk-page .page-summary {
+    font-style: normal;
+}
+
+#speaker-page .details h3,
+#talk-page .details h3  {
+
+    font-size: 18px;
+    text-transform: uppercase;
+
+    margin: 0 0 5px 0;
+}
+
+#speaker-page .details dt,
+#talk-page .details dt {
+
+    font-weight: bold;
+}
+
+
+#speaker-page .details dd,
+#talk-page .details dd {
+    margin: 0 0 10px 0;
+
+}
+
+
+#talk-page .when-where {
+    padding: 5px 5px 5px 35px;
+    background: #C4C3A3  url(../i/bg-when-where.png) 10px center no-repeat;
+
+/*     color: #ded8f7;    */
+    
+    margin: 0 0 20px 0;
+}
+
+#talk-year-filter {
+    background: #161e33;
+    padding: 5px;
+    
+    margin: 0 0 20px 0; 
+    
+    color: #d7cef5;
+}
+
+
+.talk-list {
+	list-style: none
+	
+}
+
+.talk-list li {
+	margin: 0 0 30px 0;
+
+}
+
+.talk-list h2 {
+    font: bold 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+}
+
+.talk-list h2 a {
+    color: #ece9f5;
+}
+
+
+
+.talk-list  h2 a:hover {
+    color: #9dcc4f;
+    border-bottom-color: #9dcc4f;
+}
+
+
+
+.talk-list .meta {
+    color: #D7CEF5;	
+	
+    margin: 5px 0 5px 0;
+    font-size: 13px;	
+    
+}
+
+.tag-cloud {
+    list-style: none;
+}
+
+.tag-cloud li {
+/*     margin: 0 0 5px 0; */
+    
+}
+
+
+.tag-cloud li.current a {
+    background: #9dcc4f;
+    color: #222d4d;
+    opacity: 1;
+
+}
+
+
+.tag-cloud .weight-1 {
+    opacity: .6;
+}
+
+.tag-cloud .weight-2 {
+    font-size: 1.1em;
+    line-height: 1.1;
+    opacity: .7;
+}
+
+.tag-cloud .weight-3 {
+    font-size: 1.2em;
+    line-height: 1.2;
+    opacity: .8;
+}
+
+.tag-cloud .weight-4 {
+    font-size: 1.3em;
+    line-height: 1.3;
+    opacity: .9;
+}
+
+.tag-cloud .weight-5 {
+    font-size: 1.4em;
+    line-height: 1.4;
+}
+
+.tag-cloud .weight-6 {
+    font-size: 1.5em;
+    line-height: 1.5;
+}
+
+.tag-cloud .weight-7 {
+    font-size: 1.6em;
+    line-height: 1.6;
+}
+
+.tag-cloud .weight-8 {
+    font-size: 1.7em;
+    line-height: 1.7;
+}
+
+.tag-cloud a.tag:hover {
+    opacity: 1;
+}
+
+
+.button {
+    text-align: center;
+}
+
+.button a {
+
+    color: #fff;
+
+	background: #66b0bd url(../i/button-b.png) center top repeat-x;
+	padding: 5px 10px;	
+	
+    border: 1px solid #3d7e8a;
+		
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+	
+	text-shadow: #316770 1px 1px 1px;
+	
+    display: inline-block;
+    
+    -webkit-box-shadow: 0 1px 3px #7d6f60;
+}
+
+
+
+.button.nut a {
+
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+
+    color: #301d1d;    
+
+	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;
+    
+
+}
+
+
+
+
+
+/* ====== */
+/* ! ad   */
+/* ====== */
+
+
+
+.ad img,
+.ad a {
+	display: block;    
+}
+
+.ad a {
+    border: none;
+}
+
+.sponsors h5 {
+    font-size: 18px;
+        
+    color: #aba18f;
+    text-align: center;
+    
+    margin: 5px 0 0 0;
+}
+
+.sponsors .ad {    
+    margin: 0 30px 0 0;
+    float: left;
+    
+}
+
+.sponsors .ad.last {    
+    margin-right: 0;
+}
+
+
+.sponsors {
+    background: transparent url(../i/sponsor.png) top left repeat-x;
+    padding: 5px 0;
+
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    z-index: 1;
+}
+
+
+
+
+/* ========= */
+/* ! pager   */
+/* ========= */
+
+
+.pager {
+    margin: 20px 0 0 0;
+    padding: 10px 0 0 0;
+    
+/*     color: #D7CEF5;	 */
+    
+    font-size: 13px;
+    
+/*     background:  transparent  url(../i/bg-sep.png) top left repeat-x;     */
+    
+}
+
+.pager span {
+    text-align: center;
+
+
+    display: inline-block;
+    width: 38%;
+}
+
+.pager span.p {
+    text-align: left;
+    width: 30%;
+
+}
+
+.pager span.n {
+    text-align: right;
+    width: 30%;    
+}
+
+
+
+/* ======== */
+/* ! home   */
+/* ======== */
+
+.page.home {
+/*     min-height: 600px; */
+
+    margin-bottom: 0;
+	
+}
+
+
+.intro {
+
+	font: normal 18px/30px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+	
+	margin: 20px 0 40px 0;
+}
+
+.home h2 {
+    text-align: center;    
+    
+    margin: 0 0 20px 0;
+    
+}
+
+section.speakers {
+    padding: 20px 0 0 0;
+}
+
+section.where h2,
+section.speakers h2 {
+
+	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;	
+    margin: 0 0 20px 0;
+    
+    letter-spacing: 1px;
+    
+/*     color: #66b0bd; */
+}
+
+section.where h2 span,
+section.speakers h2 span {
+
+    color: #66b0bd;
+}
+
+section h2 {
+
+    text-align: center;        
+    text-shadow: 1px 1px 1px rgba(100%, 100%, 100%, .85);
+
+}
+
+section.speakers h2 img {
+    vertical-align: top;
+}
+
+
+
+section.where,
+section.speakers {
+    margin: 0 0 40px 0;
+}
+
+section.speakers {
+    background: transparent url(../i/speakers.png)  center top repeat-x;
+    
+    min-height: 260px;
+    
+}
+
+section.where p,
+section.speakers p {
+    margin: 0 0 10px 0;
+
+}
+
+
+.home .blog ul {
+    list-style: outside disc url(../i/icon-post.png);
+}
+
+.home .blog li {
+    margin: 0 0 10px 0;
+}
+
+
+.home .blog h3 {
+    font: bold 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;    
+    text-transform: none;
+}
+
+
+.side-h2 h2 {
+/*     text-align: right;     */
+
+    margin: 0;
+
+    min-height: 110px; 
+    background: transparent url(../i/arrow-right.png) 50px bottom  no-repeat
+}
+
+.side-h2 h2 span {
+    color: #66b0bd;
+    font-size: 21px;
+}
+
+.home hr {
+
+    visibility: visible;
+    background: transparent url(../i/hr.png) center center repeat-x;
+
+    height: 40px;
+    margin: 0 0 40px 0;
+    
+    /* IE 6-7 */
+    *margin: -7px 0 40px 0; 
+    
+}
