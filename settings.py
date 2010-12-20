@@ -36,6 +36,7 @@ LANGUAGES = (
     ('it', ugettext('Italiano')),
     ('en', ugettext('English')),
 )
+PAGE_LANGUAGES = LANGUAGES
 
 SITE_ID = 1
 
