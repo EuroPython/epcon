@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'django.contrib.redirects',
     'tagging',
+    'taggit',
     'pages',
     'mptt',
     'conference',
