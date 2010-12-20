@@ -1085,12 +1085,28 @@ footer nav ul {
     
 }
 
-section.speakers-teaser {
+section.teaser {
     padding: 20px 0 0 0;
+    
 }
 
+.where p,
+.europython-is p {
+    
+    font-size: 16px;
+    line-height: 30px;
+            
+    color: #635443;    
+}
+
+
+.europython-is a {
+    font-weight: bold;
+}
+
+
 section.where h2,
-section.speakers-teaser h2 {
+section.teaser h2 {
 
 	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;	
     margin: 0 0 20px 0;
@@ -1101,7 +1117,7 @@ section.speakers-teaser h2 {
 }
 
 section.where h2 span,
-section.speakers-teaser h2 span {
+section.teaser h2 span {
 
     color: #4895a3;
 }
@@ -1113,26 +1129,26 @@ section h2 {
 
 }
 
-section.speakers-teaser h2 img {
+section.teaser h2 img {
     vertical-align: top;
 }
 
 
 
 section.where,
-section.speakers-teaser {
+section.teaser {
     margin: 0 0 40px 0;
 }
 
-section.speakers-teaser {
-    background: transparent url(../i/speakers.png)  center top repeat-x;
+section.teaser {
+    background: transparent url(../i/speakers-2.jpg)  center top repeat-x;
     
-    min-height: 260px;
+    min-height: 300px;
     
 }
 
 section.where p,
-section.speakers-teaser p {
+section.teaser p {
     margin: 0 0 10px 0;
 
 }
