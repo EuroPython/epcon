@@ -9,15 +9,16 @@ from django.utils.translation import ugettext_lazy as _
 
 from mptt.exceptions import InvalidMove
 
-__all__ = ('TreeNodeChoiceField', 'TreeNodePositionField', 'MoveNodeForm')
+__all__ = ('TreeNodeChoiceField', 'TreeNodeMultipleChoiceField', 'TreeNodePositionField', 'MoveNodeForm')
 
 # Fields ######################################################################
 
 class TreeNodeChoiceField(forms.ModelChoiceField):
     """A ModelChoiceField for tree nodes."""
-    def __init__(self, level_indicator=u'---', *args, **kwargs):
-        self.level_indicator = level_indicator
-        kwargs['empty_label'] = None
+    def __init__(self, *args, **kwargs):
+        self.level_indicator = kwargs.pop('level_indicator', u'---')
+        if kwargs.get('required', True) and not 'empty_label' in kwargs:
+            kwargs['empty_label'] = None
         super(TreeNodeChoiceField, self).__init__(*args, **kwargs)
 
     def label_from_instance(self, obj):
@@ -26,8 +27,22 @@ class TreeNodeChoiceField(forms.ModelChoiceField):
         generating option labels.
         """
         return u'%s %s' % (self.level_indicator * getattr(obj,
-                                                  obj._meta.level_attr),
+                                                  obj._mptt_meta.level_attr),
                            smart_unicode(obj))
+
+class TreeNodeMultipleChoiceField(TreeNodeChoiceField, forms.ModelMultipleChoiceField):
+    """A ModelMultipleChoiceField for tree nodes."""
+    
+    def __init__(self, *args, **kwargs):
+        self.level_indicator = kwargs.pop('level_indicator', u'---')
+        if kwargs.get('required', True) and not 'empty_label' in kwargs:
+            kwargs['empty_label'] = None
+        
+        # For some reason ModelMultipleChoiceField constructor passes kwargs
+        # as args to its super(), which causes 'multiple values for keyword arg'
+        # error sometimes. So we skip it (that constructor does nothing anyway!)
+        forms.ModelChoiceField.__init__(self, *args, **kwargs)
+
 
 class TreeNodePositionField(forms.ChoiceField):
     """A ChoiceField for specifying position relative to another node."""
@@ -95,7 +110,7 @@ class MoveNodeForm(forms.Form):
         position_choices = kwargs.pop('position_choices', None)
         level_indicator = kwargs.pop('level_indicator', None)
         super(MoveNodeForm, self).__init__(*args, **kwargs)
-        opts = node._meta
+        opts = node._mptt_meta
         if valid_targets is None:
             valid_targets = node._tree_manager.exclude(**{
                 opts.tree_id_attr: getattr(node, opts.tree_id_attr),
@@ -127,3 +142,20 @@ class MoveNodeForm(forms.Form):
             self.errors[NON_FIELD_ERRORS] = ErrorList(e)
             raise
 
+
+class MPTTAdminForm(forms.ModelForm):
+    """
+    A form which validates that the chosen parent for a node isn't one of
+    it's descendants.
+    """
+    def clean(self):
+        cleaned_data = super(MPTTAdminForm, self).clean()
+        opts = self._meta.model._mptt_meta
+        parent = cleaned_data.get(opts.parent_attr)
+        if self.instance and parent:
+            if parent.is_descendant_of(self.instance, include_self=True):
+                if opts.parent_attr not in self._errors:
+                    self._errors[opts.parent_attr] = forms.util.ErrorList()
+                self._errors[opts.parent_attr].append('Invalid parent')
+                del self.cleaned_data[opts.parent_attr]
+        return cleaned_data

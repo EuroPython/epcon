@@ -2,7 +2,15 @@
 A custom manager for working with trees of objects.
 """
 from django.db import connection, models, transaction
+from django.db.models import F, Max
 from django.utils.translation import ugettext as _
+
+try:
+    from django.db import connections, router
+except ImportError:
+    # multi db support was new in django 1.2
+    connections = None
+    router = None
 
 from mptt.exceptions import InvalidMove
 
@@ -29,23 +37,74 @@ CUMULATIVE_COUNT_SUBQUERY = """(
     )
 )"""
 
+
 class TreeManager(models.Manager):
     """
     A manager for working with trees of objects.
     """
-    def __init__(self, parent_attr, left_attr, right_attr, tree_id_attr,
-                 level_attr):
+    def __init__(self, mptt_opts):
         """
         Tree attributes for the model being managed are held as
         attributes of this manager for later use, since it will be using
         them a **lot**.
         """
         super(TreeManager, self).__init__()
-        self.parent_attr = parent_attr
-        self.left_attr = left_attr
-        self.right_attr = right_attr
-        self.tree_id_attr = tree_id_attr
-        self.level_attr = level_attr
+        self.parent_attr = mptt_opts.parent_attr
+        self.left_attr = mptt_opts.left_attr
+        self.right_attr = mptt_opts.right_attr
+        self.tree_id_attr = mptt_opts.tree_id_attr
+        self.level_attr = mptt_opts.level_attr
+    
+    def contribute_to_class(self, model, name):
+        super(TreeManager, self).contribute_to_class(model, name)
+        # Avoid calling "get_field_by_name()", which populates the related
+        # models cache and can cause circular imports in complex projects.
+        # Instead, find the tree_id field using "get_fields_with_model()".
+        [tree_field] = [fld for fld in model._meta.get_fields_with_model() if fld[0].name == self.tree_id_attr]
+        if tree_field[1]:
+            self.tree_model = tree_field[1]
+            self._base_manager = self.tree_model._tree_manager
+        else:
+            self.tree_model = model
+            self._base_manager = None
+    
+    def _translate_lookups(self, **lookups):
+        new_lookups = {}
+        for k, v in lookups.items():
+            parts = k.split('__')
+            new_parts = []
+            for part in parts:
+                new_parts.append(getattr(self, '%s_attr' % part, part))
+            new_lookups['__'.join(new_parts)] = v
+        return new_lookups
+    
+    def _mptt_filter(self, qs=None, **filters):
+        """
+        Like self.filter(), but translates name-agnostic filters for MPTT fields.
+        """
+        if self._base_manager:
+            return self._base_manager._mptt_filter(qs=qs, **filters)
+        
+        if qs is None:
+            qs = self.get_query_set()
+        return qs.filter(**self._translate_lookups(**filters))
+    
+    def _mptt_update(self, qs=None, **items):
+        """
+        Like self.update(), but translates name-agnostic MPTT fields.
+        """
+        if self._base_manager:
+            return self._base_manager._mptt_update(qs=qs, **items)
+        
+        if qs is None:
+            qs = self.get_query_set()
+        return qs.update(**self._translate_lookups(**items))
+    
+    def _get_connection(self, node):
+        if connections is None:
+            return connection
+        else:
+            return connections[router.db_for_write(node)]
 
     def add_related_count(self, queryset, rel_model, rel_field, count_attr,
                           cumulative=False):
@@ -73,23 +132,23 @@ class TreeManager(models.Manager):
            If ``True``, the count will be for each item and all of its
            descendants, otherwise it will be for each item itself.
         """
-        opts = self.model._meta
+        meta = self.model._meta
         if cumulative:
             subquery = CUMULATIVE_COUNT_SUBQUERY % {
                 'rel_table': qn(rel_model._meta.db_table),
                 'mptt_fk': qn(rel_model._meta.get_field(rel_field).column),
-                'mptt_table': qn(opts.db_table),
-                'mptt_pk': qn(opts.pk.column),
-                'tree_id': qn(opts.get_field(self.tree_id_attr).column),
-                'left': qn(opts.get_field(self.left_attr).column),
-                'right': qn(opts.get_field(self.right_attr).column),
+                'mptt_table': qn(self.tree_model._meta.db_table),
+                'mptt_pk': qn(meta.pk.column),
+                'tree_id': qn(meta.get_field(self.tree_id_attr).column),
+                'left': qn(meta.get_field(self.left_attr).column),
+                'right': qn(meta.get_field(self.right_attr).column),
             }
         else:
             subquery = COUNT_SUBQUERY % {
                 'rel_table': qn(rel_model._meta.db_table),
                 'mptt_fk': qn(rel_model._meta.get_field(rel_field).column),
-                'mptt_table': qn(opts.db_table),
-                'mptt_pk': qn(opts.pk.column),
+                'mptt_table': qn(self.tree_model._meta.db_table),
+                'mptt_pk': qn(meta.pk.column),
             }
         return queryset.extra(select={count_attr: subquery})
 
@@ -102,8 +161,7 @@ class TreeManager(models.Manager):
         return super(TreeManager, self).get_query_set().order_by(
             self.tree_id_attr, self.left_attr)
 
-    def insert_node(self, node, target, position='last-child',
-                    commit=False):
+    def insert_node(self, node, target, position='last-child', save=False):
         """
         Sets up the tree state for ``node`` (which has not yet been
         inserted into in the database) so it will be positioned relative
@@ -114,9 +172,13 @@ class TreeManager(models.Manager):
         A ``target`` of ``None`` indicates that ``node`` should be
         the last root node.
 
-        If ``commit`` is ``True``, ``node``'s ``save()`` method will be
+        If ``save`` is ``True``, ``node``'s ``save()`` method will be
         called before it is returned.
         """
+        
+        if self._base_manager:
+            return self._base_manager.insert_node(node, target, position=position, save=save)
+        
         if node.pk:
             raise ValueError(_('Cannot insert a node which has already been saved.'))
 
@@ -158,7 +220,7 @@ class TreeManager(models.Manager):
             setattr(node, self.tree_id_attr, tree_id)
             setattr(node, self.parent_attr, parent)
 
-        if commit:
+        if save:
             node.save()
         return node
 
@@ -181,6 +243,10 @@ class TreeManager(models.Manager):
         of a root node, as this is a special case due to our use of tree
         ids to order root nodes.
         """
+        
+        if self._base_manager:
+            return self._base_manager.move_node(node, target, position=position)
+        
         if target is None:
             if node.is_child_node():
                 self._make_child_root_node(node)
@@ -197,17 +263,63 @@ class TreeManager(models.Manager):
         """
         Returns the root node of the tree with the given id.
         """
-        return self.get(**{
-            self.tree_id_attr: tree_id,
-            '%s__isnull' % self.parent_attr: True,
-        })
+        if self._base_manager:
+            return self._base_manager.root_node(tree_id)
+        
+        return self._mptt_filter(tree_id=tree_id, parent__isnull=True).get()
 
     def root_nodes(self):
         """
         Creates a ``QuerySet`` containing root nodes.
         """
-        return self.filter(**{'%s__isnull' % self.parent_attr: True})
+        if self._base_manager:
+            return self._base_manager.root_nodes()
+        
+        return self._mptt_filter(parent__isnull=True)
 
+    def rebuild(self):
+        """
+        Rebuilds whole tree in database using `parent` link.
+        """
+        
+        if self._base_manager:
+            return self._base_manager.rebuild()
+        
+        opts = self.model._mptt_meta
+        
+        qs = self._mptt_filter(parent__isnull=True)
+        if opts.order_insertion_by:
+            qs = qs.order_by(*opts.order_insertion_by)
+        pks = qs.values_list('pk', flat=True)
+
+        idx = 0
+        for pk in pks:
+            idx += 1
+            self._rebuild_helper(pk, 1, idx)
+        transaction.commit_unless_managed()
+
+    def _rebuild_helper(self, pk, left, tree_id, level=0):
+        opts = self.model._mptt_meta
+        right = left + 1
+        
+        qs = self._mptt_filter(parent__pk=pk)
+        if opts.order_insertion_by:
+            qs = qs.order_by(*opts.order_insertion_by)
+        child_ids = qs.values_list('pk', flat=True)
+        
+        for child_id in child_ids:
+            right = self._rebuild_helper(child_id, right, tree_id, level+1)
+        
+        qs = self.model._default_manager.filter(pk=pk)
+        self._mptt_update(qs,
+            left=left,
+            right=right,
+            level=level,
+            tree_id=tree_id
+        )
+        
+        return right + 1
+            
     def _calculate_inter_tree_move_values(self, node, target, position):
         """
         Calculates values required when moving ``node`` relative to
@@ -258,28 +370,19 @@ class TreeManager(models.Manager):
         Creates space for a new tree by incrementing all tree ids
         greater than ``target_tree_id``.
         """
-        opts = self.model._meta
-        cursor = connection.cursor()
-        cursor.execute("""
-        UPDATE %(table)s
-        SET %(tree_id)s = %(tree_id)s + 1
-        WHERE %(tree_id)s > %%s""" % {
-            'table': qn(opts.db_table),
-            'tree_id': qn(opts.get_field(self.tree_id_attr).column),
-        }, [target_tree_id])
+        qs = self._mptt_filter(tree_id__gt=target_tree_id)
+        self._mptt_update(qs, tree_id=F(self.tree_id_attr) + 1)
 
     def _get_next_tree_id(self):
         """
         Determines the next largest unused tree id for the tree managed
         by this manager.
         """
-        opts = self.model._meta
-        cursor = connection.cursor()
-        cursor.execute('SELECT MAX(%s) FROM %s' % (
-            qn(opts.get_field(self.tree_id_attr).column),
-            qn(opts.db_table)))
-        row = cursor.fetchone()
-        return row[0] and (row[0] + 1) or 1
+        qs = self.get_query_set()
+        max_tree_id = qs.aggregate(Max(self.tree_id_attr)).values()[0]
+        
+        max_tree_id = max_tree_id or 0
+        return max_tree_id + 1
 
     def _inter_tree_move_and_close_gap(self, node, level_change,
             left_right_change, new_tree_id, parent_pk=None):
@@ -321,7 +424,7 @@ class TreeManager(models.Manager):
                     THEN %(new_parent)s
                 ELSE %(parent)s END
         WHERE %(tree_id)s = %%s""" % {
-            'table': qn(opts.db_table),
+            'table': qn(self.tree_model._meta.db_table),
             'level': qn(opts.get_field(self.level_attr).column),
             'left': qn(opts.get_field(self.left_attr).column),
             'tree_id': qn(opts.get_field(self.tree_id_attr).column),
@@ -347,7 +450,9 @@ class TreeManager(models.Manager):
         ]
         if parent_pk is not None:
             params.insert(-1, parent_pk)
-        cursor = connection.cursor()
+
+        cursor = self._get_connection(node).cursor()
+
         cursor.execute(inter_tree_move_query, params)
 
     def _make_child_root_node(self, node, new_tree_id=None):
@@ -364,7 +469,6 @@ class TreeManager(models.Manager):
         left = getattr(node, self.left_attr)
         right = getattr(node, self.right_attr)
         level = getattr(node, self.level_attr)
-        tree_id = getattr(node, self.tree_id_attr)
         if not new_tree_id:
             new_tree_id = self._get_next_tree_id()
         left_right_change = left - 1
@@ -379,6 +483,7 @@ class TreeManager(models.Manager):
         setattr(node, self.level_attr, 0)
         setattr(node, self.tree_id_attr, new_tree_id)
         setattr(node, self.parent_attr, None)
+        node._mptt_cached_fields[self.parent_attr] = None
 
     def _make_sibling_of_root_node(self, node, target, position):
         """
@@ -453,10 +558,11 @@ class TreeManager(models.Manager):
                     THEN %%s
                 ELSE %(tree_id)s + %%s END
             WHERE %(tree_id)s >= %%s AND %(tree_id)s <= %%s""" % {
-                'table': qn(opts.db_table),
+                'table': qn(self.tree_model._meta.db_table),
                 'tree_id': qn(opts.get_field(self.tree_id_attr).column),
             }
-            cursor = connection.cursor()
+
+            cursor = self._get_connection(node).cursor()
             cursor.execute(root_sibling_query, [tree_id, new_tree_id, shift,
                                                 lower_bound, upper_bound])
             setattr(node, self.tree_id_attr, new_tree_id)
@@ -480,12 +586,12 @@ class TreeManager(models.Manager):
                 ELSE %(right)s END
         WHERE %(tree_id)s = %%s
           AND (%(left)s > %%s OR %(right)s > %%s)""" % {
-            'table': qn(opts.db_table),
+            'table': qn(self.tree_model._meta.db_table),
             'left': qn(opts.get_field(self.left_attr).column),
             'right': qn(opts.get_field(self.right_attr).column),
             'tree_id': qn(opts.get_field(self.tree_id_attr).column),
         }
-        cursor = connection.cursor()
+        cursor = self._get_connection(self.model).cursor()
         cursor.execute(space_query, [target, size, target, size, tree_id,
                                      target, target])
 
@@ -498,8 +604,7 @@ class TreeManager(models.Manager):
         tree_id = getattr(node, self.tree_id_attr)
         target_tree_id = getattr(target, self.tree_id_attr)
 
-        if (getattr(node, self.tree_id_attr) ==
-            getattr(target, self.tree_id_attr)):
+        if tree_id == target_tree_id:
             self._move_child_within_tree(node, target, position)
         else:
             self._move_child_to_new_tree(node, target, position)
@@ -516,10 +621,6 @@ class TreeManager(models.Manager):
         left = getattr(node, self.left_attr)
         right = getattr(node, self.right_attr)
         level = getattr(node, self.level_attr)
-        target_left = getattr(target, self.left_attr)
-        target_right = getattr(target, self.right_attr)
-        target_level = getattr(target, self.level_attr)
-        tree_id = getattr(node, self.tree_id_attr)
         new_tree_id = getattr(target, self.tree_id_attr)
 
         space_target, level_change, left_right_change, parent = \
@@ -540,6 +641,7 @@ class TreeManager(models.Manager):
         setattr(node, self.level_attr, level - level_change)
         setattr(node, self.tree_id_attr, new_tree_id)
         setattr(node, self.parent_attr, parent)
+        node._mptt_cached_fields[self.parent_attr] = parent.pk
 
     def _move_child_within_tree(self, node, target, position):
         """
@@ -638,7 +740,7 @@ class TreeManager(models.Manager):
                   THEN %%s
                 ELSE %(parent)s END
         WHERE %(tree_id)s = %%s""" % {
-            'table': qn(opts.db_table),
+            'table': qn(self.tree_model._meta.db_table),
             'level': qn(opts.get_field(self.level_attr).column),
             'left': qn(opts.get_field(self.left_attr).column),
             'right': qn(opts.get_field(self.right_attr).column),
@@ -647,7 +749,7 @@ class TreeManager(models.Manager):
             'tree_id': qn(opts.get_field(self.tree_id_attr).column),
         }
 
-        cursor = connection.cursor()
+        cursor = self._get_connection(node).cursor()
         cursor.execute(move_subtree_query, [
             left, right, level_change,
             left, right, left_right_change,
@@ -663,6 +765,7 @@ class TreeManager(models.Manager):
         setattr(node, self.right_attr, new_right)
         setattr(node, self.level_attr, level - level_change)
         setattr(node, self.parent_attr, parent)
+        node._mptt_cached_fields[self.parent_attr] = parent.pk
 
     def _move_root_node(self, node, target, position):
         """
@@ -705,7 +808,7 @@ class TreeManager(models.Manager):
                 ELSE %(parent)s END
         WHERE %(left)s >= %%s AND %(left)s <= %%s
           AND %(tree_id)s = %%s""" % {
-            'table': qn(opts.db_table),
+            'table': qn(self.tree_model._meta.db_table),
             'level': qn(opts.get_field(self.level_attr).column),
             'left': qn(opts.get_field(self.left_attr).column),
             'right': qn(opts.get_field(self.right_attr).column),
@@ -713,7 +816,8 @@ class TreeManager(models.Manager):
             'parent': qn(opts.get_field(self.parent_attr).column),
             'pk': qn(opts.pk.column),
         }
-        cursor = connection.cursor()
+
+        cursor = self._get_connection(node).cursor()
         cursor.execute(move_tree_query, [level_change, left_right_change,
             left_right_change, new_tree_id, node.pk, parent.pk, left, right,
             tree_id])
@@ -725,3 +829,4 @@ class TreeManager(models.Manager):
         setattr(node, self.level_attr, level - level_change)
         setattr(node, self.tree_id_attr, new_tree_id)
         setattr(node, self.parent_attr, parent)
+        node._mptt_cached_fields[self.parent_attr] = parent.pk
