@@ -38,7 +38,7 @@
     word-spacing: 2px;
 */
     
-    color: #66b0bd;
+    color: #4895a3;
 }
 
 
@@ -65,9 +65,11 @@
 }
 
 
+/*
 .cms ul {
 	list-style: outside circle url(../i/bullet.png);
 }
+*/
 
 
 .cms ol {
@@ -124,7 +126,7 @@
 .cms table th {
 
 	font-weight: bold;
-    color: #66b0bd;
+    color: #4895a3;
 
     border-bottom-color: #7d6f60;
     
@@ -171,7 +173,7 @@
 
 .cms .highlights h3 {
     
-    color: #66b0bd;
+    color: #4895a3;
     margin: 0 0 10px 0; 
     font-size: 21px;
 
@@ -247,7 +249,7 @@ aside .cms {
 }
 
 aside .cms h4 {
-    color: #66b0bd;
+    color: #4895a3;
     margin: 0 0 10px 0; 
     font-size: 21px;
 
@@ -259,5 +261,5 @@ aside .cms li {
 }
 
 aside .cms ul {
-	list-style: outside circle url(../i/bullet-aside.png);
+/* 	list-style: outside circle url(../i/bullet-aside.png); */
 }

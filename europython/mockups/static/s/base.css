@@ -35,6 +35,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
+ul {
+	list-style: outside circle url(../i/bullet-aside.png);
+}
 
 
 /*
@@ -72,6 +75,64 @@ hr {
 
 
 
+.button {
+    text-align: center;
+}
+
+.button.mini {
+    text-align: left;
+}
+
+.button a {
+
+    color: #fff;
+
+	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+	padding: 5px 10px;	
+	
+    border: 1px solid #3d7e8a;
+		
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+	
+	text-shadow: #316770 1px 1px 1px;
+	
+    display: inline-block;
+    
+    -webkit-box-shadow: 0 1px 3px #7d6f60;
+}
+
+
+
+.button.nut a {
+
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+
+    color: #301d1d;    
+
+	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;
+    
+
+}
+
+.button.mini a {
+    padding: 2px 5px;
+
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+
+    color: #301d1d; 
+    
+	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
+
+    -webkit-box-shadow: 0 1px 2px #7d6f60;
+
+}
+
+
 
 /* ========= */
 /* ! links   */
@@ -91,7 +152,7 @@ a:visited {
 }
 
 a:hover {
-/* 	color: #66b0bd; */
+/* 	color: #4895a3; */
 /* 	border-bottom-color: #9babab; */
 
     -webkit-transition: color ease-out .2s;
@@ -288,7 +349,7 @@ header #li-chat #habla_unavailable_div a {
 
     color: #fff;
 
-	background: #66b0bd url(../i/button-b.png) center top repeat-x;
+	background: #4895a3 url(../i/button-b.png) center top repeat-x;
 	padding: 5px 10px;	
 	
     border: 1px solid #3d7e8a;
@@ -572,8 +633,7 @@ footer nav ul {
 
 .page h1  {
 
-	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;
-/* 	color: #96204b; */
+	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
 
 	margin: 30px 0 30px -20px;
 	
@@ -659,70 +719,76 @@ footer nav ul {
 
 
 
-#speaker-page {
-
-    /* no sep */
-    background: transparent;
-
-}
-
-
-#speaker-page h1 {
-    margin-left: 140px;
-}
-
-#speaker-picture {
-
-    
+.speaker-picture {
     float: left;
-    width: 100px;
+/*     width: 100px; */
 
-    border: 5px solid #4c5e5e;
+    border: 5px solid #aba18f;
     
+    margin: 100px 0 0 0;
 }
 
-#speaker-picture img {
-    display: block;
+.talk,
+.speaker  {
+    margin: 30px 0 0 0;
 }
 
-#speaker-talks ul {
 
+.talk h2,
+.speaker h2  {
+    text-align: left;
+    
+    margin: 0 0 20px -20px;
+}
+
+
+.speaker.talks li {
+    margin: 0  0 10px 0;
+}
+
+
+.speaker.talks ul {
     margin: 0  0 20px 0;
 }
 
-
-#speaker-talks h3 {
-    margin: 0 0 5px 0;
-/*     color: #D7CEF5; */
-    font-size: 18px;    
-
-
-    text-transform: uppercase;
+.speaker.talks li {
+    margin: 0  0 10px 0;
 }
 
-#speaker-talks li {
 
-	margin: 0 0 0 20px;
+.speaker.talks h3 {
+    margin: 0 0 10px 0;
 
+    color: #4895a3;
+/*     font: normal 18px/20px "League Gothic", "Arial Narrow", sans-serif;     */
+    
+    font: bold 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+
+    
+    
 }
 
-#speaker-contacts dt {
+
+.speaker.contacts dt {
     float: left;
     width: 140px;
     
-    font: normal 18px/20px  "League Gothic", "Arial Narrow", sans-serif;    
+    color: #4895a3;    
     
-    color: #4c5e5e;
+/*     font: normal 18px/20px "League Gothic", "Arial Narrow", sans-serif;     */
+    
+/*     text-transform: uppercase; */
+
+    font-weight: bold;
 
     padding: 0 0 10px 0;
     margin: 0 0 10px 0;
     
-    background: transparent url(../i/bg-sep.png) bottom left repeat-x;
 }
 
-#speaker-contacts dd {
+.speaker.contacts dd {
 
-    background: transparent url(../i/bg-sep.png) bottom left repeat-x;
+/*     background: transparent url(../i/bg-sep.png) bottom left repeat-x; */
 
     padding: 0 0 10px 0;
     margin: 0 0 10px 0;
@@ -736,54 +802,60 @@ footer nav ul {
 
 
 
-#speaker-page .details,
-#talk-page .details {
+
+.talk.details {
 
     margin: 0 0 30px 0;
 
 	color: #383829;
 
+/*
 	font-size: 13px;
 	line-height: 18px;
+*/
 
 }
 
 
-#talk-page .page-summary {
-    font-style: normal;
-}
 
-#speaker-page .details h3,
-#talk-page .details h3  {
-
-    font-size: 18px;
-    text-transform: uppercase;
-
-    margin: 0 0 5px 0;
-}
-
-#speaker-page .details dt,
-#talk-page .details dt {
-
+.talk.details dt {
     font-weight: bold;
 }
 
 
-#speaker-page .details dd,
-#talk-page .details dd {
-    margin: 0 0 10px 0;
 
+.talk.details dd {
+    margin: 0 0 10px 0;
 }
 
 
-#talk-page .when-where {
-    padding: 5px 5px 5px 35px;
-    background: #C4C3A3  url(../i/bg-when-where.png) 10px center no-repeat;
+.talk.when {
+    padding: 0 0 0 20px;
+    background: transparent  url(../i/icon-clock.png) left center no-repeat;
 
-/*     color: #ded8f7;    */
-    
     margin: 0 0 20px 0;
 }
+
+
+.talk.details {
+    color: #635443;	    
+	font-size: 12px;
+
+}
+
+.talk.details h4 {
+    color: #4895a3;
+    margin: 0 0 10px 0; 
+    font-size: 21px;
+
+}
+
+
+
+
+/*
+
+
 
 #talk-year-filter {
     background: #161e33;
@@ -793,7 +865,6 @@ footer nav ul {
     
     color: #d7cef5;
 }
-
 
 .talk-list {
 	list-style: none
@@ -835,7 +906,7 @@ footer nav ul {
 }
 
 .tag-cloud li {
-/*     margin: 0 0 5px 0; */
+
     
 }
 
@@ -894,46 +965,7 @@ footer nav ul {
     opacity: 1;
 }
 
-
-.button {
-    text-align: center;
-}
-
-.button a {
-
-    color: #fff;
-
-	background: #66b0bd url(../i/button-b.png) center top repeat-x;
-	padding: 5px 10px;	
-	
-    border: 1px solid #3d7e8a;
-		
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	
-	
-	text-shadow: #316770 1px 1px 1px;
-	
-    display: inline-block;
-    
-    -webkit-box-shadow: 0 1px 3px #7d6f60;
-}
-
-
-
-.button.nut a {
-
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
-	border-color: #aba18f;
-
-    color: #301d1d;    
-
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;
-    
-
-}
-
+*/
 
 
 
@@ -1053,12 +1085,28 @@ footer nav ul {
     
 }
 
-section.speakers {
+section.teaser {
     padding: 20px 0 0 0;
+    
 }
 
+.where p,
+.europython-is p {
+    
+    font-size: 16px;
+    line-height: 30px;
+            
+    color: #635443;    
+}
+
+
+.europython-is a {
+    font-weight: bold;
+}
+
+
 section.where h2,
-section.speakers h2 {
+section.teaser h2 {
 
 	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;	
     margin: 0 0 20px 0;
@@ -1069,9 +1117,9 @@ section.speakers h2 {
 }
 
 section.where h2 span,
-section.speakers h2 span {
+section.teaser h2 span {
 
-    color: #66b0bd;
+    color: #4895a3;
 }
 
 section h2 {
@@ -1081,26 +1129,26 @@ section h2 {
 
 }
 
-section.speakers h2 img {
+section.teaser h2 img {
     vertical-align: top;
 }
 
 
 
 section.where,
-section.speakers {
+section.teaser {
     margin: 0 0 40px 0;
 }
 
-section.speakers {
-    background: transparent url(../i/speakers.png)  center top repeat-x;
+section.teaser {
+    background: transparent url(../i/speakers-2.jpg)  center top repeat-x;
     
-    min-height: 260px;
+    min-height: 300px;
     
 }
 
 section.where p,
-section.speakers p {
+section.teaser p {
     margin: 0 0 10px 0;
 
 }
@@ -1131,7 +1179,7 @@ section.speakers p {
 }
 
 .side-h2 h2 span {
-    color: #66b0bd;
+    color: #4895a3;
     font-size: 21px;
 }
 
