@@ -11,11 +11,6 @@ r"""
 ...                       getattr(n, opts.left_attr), getattr(n, opts.right_attr)) \
 ...                      for n in nodes])
 
->>> import mptt
->>> mptt.register(Genre)
-Traceback (most recent call last):
-    ...
-AlreadyRegistered: The model Genre has already been registered.
 
 # Creation ####################################################################
 >>> action = Genre.objects.create(name='Action')
@@ -87,6 +82,113 @@ AlreadyRegistered: The model Genre has already been registered.
 >>> [item.name for item in drilldown_tree_for_node(platformer_3d)]
 [u'Action', u'Platformer', u'3D Platformer']
 
+# Forms #######################################################################
+>>> from mptt.forms import TreeNodeChoiceField, MoveNodeForm
+
+>>> f = TreeNodeChoiceField(queryset=Genre.tree.all())
+>>> print(f.widget.render("test", None))
+<select name="test">
+<option value="1"> Action</option>
+<option value="2">--- Platformer</option>
+<option value="3">------ 2D Platformer</option>
+<option value="4">------ 3D Platformer</option>
+<option value="5">------ 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="7">--- Action RPG</option>
+<option value="8">--- Tactical RPG</option>
+</select>
+
+>>> f = TreeNodeChoiceField(queryset=Genre.tree.all(), required=False)
+>>> print(f.widget.render("test", None))
+<select name="test">
+<option value="" selected="selected">---------</option>
+<option value="1"> Action</option>
+<option value="2">--- Platformer</option>
+<option value="3">------ 2D Platformer</option>
+<option value="4">------ 3D Platformer</option>
+<option value="5">------ 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="7">--- Action RPG</option>
+<option value="8">--- Tactical RPG</option>
+</select>
+
+>>> f = TreeNodeChoiceField(queryset=Genre.tree.all(), empty_label=u'None of the below')
+>>> print(f.widget.render("test", None))
+<select name="test">
+<option value="" selected="selected">None of the below</option>
+<option value="1"> Action</option>
+<option value="2">--- Platformer</option>
+<option value="3">------ 2D Platformer</option>
+<option value="4">------ 3D Platformer</option>
+<option value="5">------ 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="7">--- Action RPG</option>
+<option value="8">--- Tactical RPG</option>
+</select>
+
+>>> f = TreeNodeChoiceField(queryset=Genre.tree.all(), required=False, empty_label=u'None of the below')
+>>> print(f.widget.render("test", None))
+<select name="test">
+<option value="" selected="selected">None of the below</option>
+<option value="1"> Action</option>
+<option value="2">--- Platformer</option>
+<option value="3">------ 2D Platformer</option>
+<option value="4">------ 3D Platformer</option>
+<option value="5">------ 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="7">--- Action RPG</option>
+<option value="8">--- Tactical RPG</option>
+</select>
+
+>>> f = TreeNodeChoiceField(queryset=Genre.tree.all(), level_indicator=u'+--')
+>>> print(f.widget.render("test", None))
+<select name="test">
+<option value="1"> Action</option>
+<option value="2">+-- Platformer</option>
+<option value="3">+--+-- 2D Platformer</option>
+<option value="4">+--+-- 3D Platformer</option>
+<option value="5">+--+-- 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="7">+-- Action RPG</option>
+<option value="8">+-- Tactical RPG</option>
+</select>
+
+>>> form = MoveNodeForm(Genre.objects.get(pk=7))
+>>> print(form)
+<tr><th><label for="id_target">Target:</label></th><td><select id="id_target" name="target" size="10">
+<option value="1"> Action</option>
+<option value="2">--- Platformer</option>
+<option value="3">------ 2D Platformer</option>
+<option value="4">------ 3D Platformer</option>
+<option value="5">------ 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="8">--- Tactical RPG</option>
+</select></td></tr>
+<tr><th><label for="id_position">Position:</label></th><td><select name="position" id="id_position">
+<option value="first-child">First child</option>
+<option value="last-child">Last child</option>
+<option value="left">Left sibling</option>
+<option value="right">Right sibling</option>
+</select></td></tr>
+
+>>> form = MoveNodeForm(Genre.objects.get(pk=7), level_indicator=u'+--', target_select_size=5)
+>>> print(form)
+<tr><th><label for="id_target">Target:</label></th><td><select id="id_target" name="target" size="5">
+<option value="1"> Action</option>
+<option value="2">+-- Platformer</option>
+<option value="3">+--+-- 2D Platformer</option>
+<option value="4">+--+-- 3D Platformer</option>
+<option value="5">+--+-- 4D Platformer</option>
+<option value="6"> Role-playing Game</option>
+<option value="8">+-- Tactical RPG</option>
+</select></td></tr>
+<tr><th><label for="id_position">Position:</label></th><td><select name="position" id="id_position">
+<option value="first-child">First child</option>
+<option value="last-child">Last child</option>
+<option value="left">Left sibling</option>
+<option value="right">Right sibling</option>
+</select></td></tr>
+
 # TreeManager Methods #########################################################
 
 >>> Genre.tree.root_node(action.tree_id)
@@ -113,6 +215,12 @@ DoesNotExist: Genre matching query does not exist.
 [u'Platformer', u'2D Platformer', u'3D Platformer', u'4D Platformer']
 >>> [g.name for g in action.get_descendants(include_self=True)]
 [u'Action', u'Platformer', u'2D Platformer', u'3D Platformer', u'4D Platformer']
+>>> [g.name for g in action.get_leafnodes()]
+[u'2D Platformer', u'3D Platformer', u'4D Platformer']
+>>> [g.name for g in action.get_leafnodes(include_self=False)]
+[u'2D Platformer', u'3D Platformer', u'4D Platformer']
+>>> [g.name for g in action.get_leafnodes(include_self=True)]
+[u'2D Platformer', u'3D Platformer', u'4D Platformer']
 >>> action.get_descendant_count()
 4
 >>> action.get_previous_sibling()
@@ -142,6 +250,10 @@ False
 [u'2D Platformer', u'3D Platformer', u'4D Platformer']
 >>> [g.name for g in platformer.get_descendants(include_self=True)]
 [u'Platformer', u'2D Platformer', u'3D Platformer', u'4D Platformer']
+>>> [g.name for g in platformer.get_leafnodes()]
+[u'2D Platformer', u'3D Platformer', u'4D Platformer']
+>>> [g.name for g in platformer.get_leafnodes(include_self=True)]
+[u'2D Platformer', u'3D Platformer', u'4D Platformer']
 >>> platformer.get_descendant_count()
 3
 >>> platformer.get_previous_sibling()
@@ -169,6 +281,10 @@ False
 >>> [g.name for g in platformer_3d.get_descendants()]
 []
 >>> [g.name for g in platformer_3d.get_descendants(include_self=True)]
+[u'3D Platformer']
+>>> [g.name for g in platformer_3d.get_leafnodes()]
+[]
+>>> [g.name for g in platformer_3d.get_leafnodes(include_self=True)]
 [u'3D Platformer']
 >>> platformer_3d.get_descendant_count()
 0
@@ -851,7 +967,7 @@ InvalidMove: A node may not be made a sibling of itself.
 
 >>> r2 = Insert.objects.get(pk=r2.pk)
 >>> c1 = Insert()
->>> c1 = Insert.tree.insert_node(c1, r2, commit=True)
+>>> c1 = Insert.tree.insert_node(c1, r2, save=True)
 >>> print_tree_details([c1])
 4 2 2 1 2 3
 >>> print_tree_details(Insert.tree.all())
@@ -868,7 +984,7 @@ ValueError: Cannot insert a node which has already been saved.
 # First child
 >>> r2 = Insert.objects.get(pk=r2.pk)
 >>> c2 = Insert()
->>> c2 = Insert.tree.insert_node(c2, r2, position='first-child', commit=True)
+>>> c2 = Insert.tree.insert_node(c2, r2, position='first-child', save=True)
 >>> print_tree_details([c2])
 5 2 2 1 2 3
 >>> print_tree_details(Insert.tree.all())
@@ -881,7 +997,7 @@ ValueError: Cannot insert a node which has already been saved.
 # Left
 >>> c1 = Insert.objects.get(pk=c1.pk)
 >>> c3 = Insert()
->>> c3 = Insert.tree.insert_node(c3, c1, position='left', commit=True)
+>>> c3 = Insert.tree.insert_node(c3, c1, position='left', save=True)
 >>> print_tree_details([c3])
 6 2 2 1 4 5
 >>> print_tree_details(Insert.tree.all())
@@ -894,7 +1010,7 @@ ValueError: Cannot insert a node which has already been saved.
 
 # Right
 >>> c4 = Insert()
->>> c4 = Insert.tree.insert_node(c4, c3, position='right', commit=True)
+>>> c4 = Insert.tree.insert_node(c4, c3, position='right', save=True)
 >>> print_tree_details([c4])
 7 2 2 1 6 7
 >>> print_tree_details(Insert.tree.all())
@@ -909,7 +1025,7 @@ ValueError: Cannot insert a node which has already been saved.
 # Last child
 >>> r2 = Insert.objects.get(pk=r2.pk)
 >>> c5 = Insert()
->>> c5 = Insert.tree.insert_node(c5, r2, position='last-child', commit=True)
+>>> c5 = Insert.tree.insert_node(c5, r2, position='last-child', save=True)
 >>> print_tree_details([c5])
 8 2 2 1 10 11
 >>> print_tree_details(Insert.tree.all())
@@ -925,7 +1041,7 @@ ValueError: Cannot insert a node which has already been saved.
 # Left sibling of root
 >>> r2 = Insert.objects.get(pk=r2.pk)
 >>> r4 = Insert()
->>> r4 = Insert.tree.insert_node(r4, r2, position='left', commit=True)
+>>> r4 = Insert.tree.insert_node(r4, r2, position='left', save=True)
 >>> print_tree_details([r4])
 9 - 2 0 1 2
 >>> print_tree_details(Insert.tree.all())
@@ -942,7 +1058,7 @@ ValueError: Cannot insert a node which has already been saved.
 # Right sibling of root
 >>> r2 = Insert.objects.get(pk=r2.pk)
 >>> r5 = Insert()
->>> r5 = Insert.tree.insert_node(r5, r2, position='right', commit=True)
+>>> r5 = Insert.tree.insert_node(r5, r2, position='right', save=True)
 >>> print_tree_details([r5])
 10 - 4 0 1 2
 >>> print_tree_details(Insert.tree.all())
@@ -959,7 +1075,7 @@ ValueError: Cannot insert a node which has already been saved.
 
 # Last root
 >>> r6 = Insert()
->>> r6 = Insert.tree.insert_node(r6, None, commit=True)
+>>> r6 = Insert.tree.insert_node(r6, None, save=True)
 >>> print_tree_details([r6])
 11 - 6 0 1 2
 >>> print_tree_details(Insert.tree.all())

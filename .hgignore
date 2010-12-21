@@ -6,3 +6,5 @@ p3*.db
 *.mo
 stuff/sponsor/resized/*
 offline_stuff/*/output
+*.swp
+Session.vim

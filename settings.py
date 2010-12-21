@@ -36,6 +36,7 @@ LANGUAGES = (
     ('it', ugettext('Italiano')),
     ('en', ugettext('English')),
 )
+PAGE_LANGUAGES = LANGUAGES
 
 SITE_ID = 1
 
@@ -107,6 +108,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'django.contrib.redirects',
     'tagging',
+    'taggit',
     'pages',
     'mptt',
     'conference',
@@ -117,6 +119,7 @@ INSTALLED_APPS = (
     'django_xmlrpc',
     'pingback',
     'rosetta',
+    'south',
 )
 
 ## used by the blog

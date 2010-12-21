@@ -5,12 +5,18 @@ trees.
 from django import template
 from django.db.models import get_model
 from django.db.models.fields import FieldDoesNotExist
+from django.template import loader, Variable
 from django.utils.encoding import force_unicode
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from mptt.utils import tree_item_iterator, drilldown_tree_for_node
 
 register = template.Library()
+
+
+
+### ITERATIVE TAGS
 
 class FullTreeForModelNode(template.Node):
     def __init__(self, model, context_var):
@@ -51,7 +57,8 @@ class DrilldownTreeForNodeNode(template.Node):
         context[self.context_var] = drilldown_tree_for_node(*args)
         return ''
 
-def do_full_tree_for_model(parser, token):
+@register.tag
+def full_tree_for_model(parser, token):
     """
     Populates a template variable with a ``QuerySet`` containing the
     full tree for a given model.
@@ -74,6 +81,7 @@ def do_full_tree_for_model(parser, token):
         raise template.TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
     return FullTreeForModelNode(bits[1], bits[3])
 
+@register.tag('drilldown_tree_for_node')
 def do_drilldown_tree_for_node(parser, token):
     """
     Populates a template variable with the drilldown tree for a given
@@ -120,26 +128,27 @@ def do_drilldown_tree_for_node(parser, token):
     bits = token.contents.split()
     len_bits = len(bits)
     if len_bits not in (4, 8, 9):
-        raise TemplateSyntaxError(_('%s tag requires either three, seven or eight arguments') % bits[0])
+        raise template.TemplateSyntaxError(_('%s tag requires either three, seven or eight arguments') % bits[0])
     if bits[2] != 'as':
-        raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
+        raise template.TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
     if len_bits == 8:
         if bits[4] != 'count':
-            raise TemplateSyntaxError(_("if seven arguments are given, fourth argument to %s tag must be 'with'") % bits[0])
+            raise template.TemplateSyntaxError(_("if seven arguments are given, fourth argument to %s tag must be 'with'") % bits[0])
         if bits[6] != 'in':
-            raise TemplateSyntaxError(_("if seven arguments are given, sixth argument to %s tag must be 'in'") % bits[0])
+            raise template.TemplateSyntaxError(_("if seven arguments are given, sixth argument to %s tag must be 'in'") % bits[0])
         return DrilldownTreeForNodeNode(bits[1], bits[3], bits[5], bits[7])
     elif len_bits == 9:
         if bits[4] != 'cumulative':
-            raise TemplateSyntaxError(_("if eight arguments are given, fourth argument to %s tag must be 'cumulative'") % bits[0])
+            raise template.TemplateSyntaxError(_("if eight arguments are given, fourth argument to %s tag must be 'cumulative'") % bits[0])
         if bits[5] != 'count':
-            raise TemplateSyntaxError(_("if eight arguments are given, fifth argument to %s tag must be 'count'") % bits[0])
+            raise template.TemplateSyntaxError(_("if eight arguments are given, fifth argument to %s tag must be 'count'") % bits[0])
         if bits[7] != 'in':
-            raise TemplateSyntaxError(_("if eight arguments are given, seventh argument to %s tag must be 'in'") % bits[0])
+            raise template.TemplateSyntaxError(_("if eight arguments are given, seventh argument to %s tag must be 'in'") % bits[0])
         return DrilldownTreeForNodeNode(bits[1], bits[3], bits[6], bits[8], cumulative=True)
     else:
         return DrilldownTreeForNodeNode(bits[1], bits[3])
 
+@register.filter
 def tree_info(items, features=None):
     """
     Given a list of tree items, produces doubles of a tree item and a
@@ -175,6 +184,7 @@ def tree_info(items, features=None):
             kwargs['ancestors'] = True
     return tree_item_iterator(items, **kwargs)
 
+@register.filter
 def tree_path(items, separator=' :: '):
     """
     Creates a tree path represented by a list of ``items`` by joining
@@ -191,7 +201,95 @@ def tree_path(items, separator=' :: '):
     """
     return separator.join([force_unicode(i) for i in items])
 
-register.tag('full_tree_for_model', do_full_tree_for_model)
-register.tag('drilldown_tree_for_node', do_drilldown_tree_for_node)
-register.filter('tree_info', tree_info)
-register.filter('tree_path', tree_path)
+
+
+### RECURSIVE TAGS
+
+@register.filter
+def cache_tree_children(queryset):
+    """
+    Takes a list/queryset of model objects in MPTT left (depth-first) order,
+    and caches the children on each node so that no further queries are needed.
+    This makes it possible to have a recursively included template without worrying
+    about database queries.
+
+    Returns a list of top-level nodes.
+    """
+    
+    current_path = []
+    top_nodes = []
+    if queryset:
+        root_level = queryset[0].get_level()
+        for obj in queryset:
+            node_level = obj.get_level()
+            if node_level < root_level:
+                raise ValueError, "cache_tree_children was passed nodes in the wrong order!"
+            
+            obj._cached_children = []
+
+            while len(current_path) > node_level - root_level:
+                current_path.pop(-1)
+            
+            if node_level == root_level:
+                top_nodes.append(obj)
+            else:
+                current_path[-1]._cached_children.append(obj)
+            current_path.append(obj)
+    return top_nodes
+
+
+class RecurseTreeNode(template.Node):
+    def __init__(self, template_nodes, queryset_var):
+        self.template_nodes = template_nodes
+        self.queryset_var = queryset_var
+        
+    def _render_node(self, context, node):
+        bits = []
+        context.push()
+        for child in node.get_children():
+            context['node'] = child
+            bits.append(self._render_node(context, child))
+        context['node'] = node
+        context['children'] = mark_safe(u''.join(bits))
+        rendered = self.template_nodes.render(context)
+        context.pop()
+        return rendered
+    
+    def render(self, context):
+        queryset = self.queryset_var.resolve(context)
+        roots = cache_tree_children(queryset)
+        bits = [self._render_node(context, node) for node in roots]
+        return ''.join(bits)
+
+
+@register.tag
+def recursetree(parser, token):
+    """
+    Iterates over the nodes in the tree, and renders the contained block for each node.
+    This tag will recursively render children into the template variable {{ children }}.
+    Only one database query is required (children are cached for the whole tree)
+    
+    Usage:
+            <ul>
+                {% iteratetree nodes %}
+                    <li>
+                        {{ node.name }}
+                        {% if not node.is_leaf_node %}
+                            <ul>
+                                {{ children }}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% enditeratetree %}
+            </ul>
+    """
+    bits = token.contents.split()
+    if len(bits) != 2:
+        raise template.TemplateSyntaxError(_('%s tag requires a queryset') % bits[0])
+    
+    queryset_var = template.Variable(bits[1])
+    
+    template_nodes = parser.parse(('endrecursetree',))
+    parser.delete_first_token()
+    
+    return RecurseTreeNode(template_nodes, queryset_var)

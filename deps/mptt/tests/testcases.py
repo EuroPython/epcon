@@ -1,14 +1,21 @@
 import re
 
+# hack to make test run
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'mptt.tests.settings'
 from django.test import TestCase
 
 from mptt.exceptions import InvalidMove
-from mptt.tests import doctests
 from mptt.tests.models import Category, Genre
 
 def get_tree_details(nodes):
-    """Creates pertinent tree details for the given list of nodes."""
-    opts = nodes[0]._meta
+    """
+    Creates pertinent tree details for the given list of nodes.
+    The fields are:
+        id  parent_id  tree_id  level  left  right
+    """
+    
+    opts = nodes[0]._mptt_meta
     return '\n'.join(['%s %s %s %s %s %s' %
                       (n.pk, getattr(n, '%s_id' % opts.parent_attr) or '-',
                        getattr(n, opts.tree_id_attr), getattr(n, opts.level_attr),
@@ -25,6 +32,25 @@ def tree_details(text):
     the ``get_tree_details`` function.
     """
     return leading_whitespace_re.sub('', text)
+
+class DocTestTestCase(TestCase):
+
+    def test_run_doctest(self):
+        class DummyStream:
+            content = ""
+            def write(self, text):
+                self.content += text
+        dummy_stream = DummyStream()
+        import sys
+        before = sys.stdout
+        sys.stdout = dummy_stream
+        import doctest
+        doctest.testfile('doctests.txt')
+        sys.stdout = before
+        content = dummy_stream.content
+        if content:
+            print >>sys.stderr, content
+            self.fail()
 
 # genres.json defines the following tree structure
 #
@@ -178,6 +204,13 @@ class ReparentingTestCase(TestCase):
                                          9 - 2 0 1 6
                                          10 9 2 1 2 3
                                          11 9 2 1 4 5"""))
+        
+    def test_move_to(self):
+        rpg = Genre.objects.get(pk=9)
+        action = Genre.objects.get(pk=1)
+        rpg.move_to(action)
+        rpg.save()
+        self.assertEqual(rpg.parent, action)
 
     def test_invalid_moves(self):
         # A node may not be made a child of itself
@@ -215,16 +248,16 @@ class ReparentingTestCase(TestCase):
 class DeletionTestCase(TestCase):
     """
     Tests that the tree structure is maintained appropriately in various
-    deletion scenrios.
+    deletion scenarios.
     """
     fixtures = ['categories.json']
 
     def test_delete_root_node(self):
         # Add a few other roots to verify that they aren't affected
         Category(name='Preceding root').insert_at(Category.objects.get(id=1),
-                                                  'left', commit=True)
+                                                  'left', save=True)
         Category(name='Following root').insert_at(Category.objects.get(id=1),
-                                                  'right', commit=True)
+                                                  'right', save=True)
         self.assertEqual(get_tree_details(Category.tree.all()),
                          tree_details("""11 - 1 0 1 2
                                          1 - 2 0 1 20
