@@ -1,7 +1,12 @@
-import _base
 import new
+import re
 
+import _base
 from html5lib import ihatexml
+from html5lib import constants
+from html5lib.constants import namespaces
+
+tag_regexp = re.compile("{([^}]*)}(.*)")
 
 moduleCache = {}
 
@@ -19,20 +24,43 @@ def getETreeModule(ElementTreeImplementation, fullTree=False):
 def getETreeBuilder(ElementTreeImplementation, fullTree=False):
     ElementTree = ElementTreeImplementation
     class Element(_base.Node):
-        def __init__(self, name):
-            self._element = ElementTree.Element(name)
-            self.name = name
+        def __init__(self, name, namespace=None):
+            self._name = name
+            self._namespace = namespace
+            self._element = ElementTree.Element(self._getETreeTag(name,
+                                                                  namespace))
+            if namespace is None:
+                self.nameTuple = namespaces["html"], self._name
+            else:
+                self.nameTuple = self._namespace, self._name
             self.parent = None
             self._childNodes = []
             self._flags = []
+
+        def _getETreeTag(self, name, namespace):
+            if namespace is None:
+                etree_tag = name
+            else:
+                etree_tag = "{%s}%s"%(namespace, name)
+            return etree_tag
     
         def _setName(self, name):
-            self._element.tag = name
+            self._name = name
+            self._element.tag = self._getETreeTag(self._name, self._namespace)
         
         def _getName(self):
-            return self._element.tag
-    
+            return self._name
+        
         name = property(_getName, _setName)
+
+        def _setNamespace(self, namespace):
+            self._namespace = namespace
+            self._element.tag = self._getETreeTag(self._name, self._namespace)
+
+        def _getNamespace(self):
+            return self._namespace
+
+        namespace = property(_getNamespace, _setNamespace)
     
         def _getAttributes(self):
             return self._element.attrib
@@ -43,7 +71,11 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
             for key in self._element.attrib.keys():
                 del self._element.attrib[key]
             for key, value in attributes.iteritems():
-                self._element.set(key, value)
+                if isinstance(key, tuple):
+                    name = "{%s}%s"%(key[2], key[1])
+                else:
+                    name = key
+                self._element.set(name, value)
     
         attributes = property(_getAttributes, _setAttributes)
     
@@ -99,7 +131,7 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
                     self._element.text += data
     
         def cloneNode(self):
-            element = Element(self.name)
+            element = Element(self.name, self.namespace)
             for name, value in self.attributes.iteritems():
                 element.attributes[name] = value
             return element
@@ -188,9 +220,23 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
             elif type(element.tag) == type(ElementTree.Comment):
                 rv.append("|%s<!-- %s -->"%(' '*indent, element.text))
             else:
-                rv.append("|%s<%s>"%(' '*indent, element.tag))
+                nsmatch = tag_regexp.match(element.tag)
+
+                if nsmatch is None:
+                    name = element.tag
+                else:
+                    ns, name = nsmatch.groups()
+                    prefix = constants.prefixes[ns]
+                    name = "%s %s"%(prefix, name)
+                rv.append("|%s<%s>"%(' '*indent, name))
+
                 if hasattr(element, "attrib"):
                     for name, value in element.attrib.iteritems():
+                        nsmatch = tag_regexp.match(name)
+                        if nsmatch is not None:
+                            ns, name = nsmatch.groups()
+                            prefix = constants.prefixes[ns]
+                            name = "%s %s"%(prefix, name)
                         rv.append('|%s%s="%s"' % (' '*(indent+2), name, value))
                 if element.text:
                     rv.append("|%s\"%s\"" %(' '*(indent+2), element.text))

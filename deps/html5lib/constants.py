@@ -58,6 +58,8 @@ E = {
        _(u"Unexpected end of file. Expected attribute name instead."),
     "eof-in-attribute-name":
        _(u"Unexpected end of file in attribute name."),
+    "invalid-character-in-attribute-name":
+        _(u"Invalid chracter in attribute name"),
     "duplicate-attribute":
        _(u"Dropped duplicate attribute on tag."),
     "expected-end-of-tag-name-but-got-eof":
@@ -72,6 +74,10 @@ E = {
        _(u"Unexpected end of file in attribute value (')."),
     "eof-in-attribute-value-no-quotes":
        _(u"Unexpected end of file in attribute value."),
+    "unexpected-EOF-after-solidus-in-tag":
+        _(u"Unexpected end of file in tag. Expected >"),
+    "unexpected-character-after-soldius-in-tag":
+        _(u"Unexpected character after / in tag. Expected >"),
     "expected-dashes-or-doctype":
        _(u"Expected '--' or 'DOCTYPE'. Not found."),
     "incorrect-comment":
@@ -174,6 +180,8 @@ E = {
          u"table context caused voodoo mode."),
     "unexpected-hidden-input-in-table":
        _(u"Unexpected input with type hidden in table context."),
+    "unexpected-form-in-table":
+       _(u"Unexpected form in table context."),
     "unexpected-start-tag-implies-table-voodoo":
        _(u"Unexpected start tag (%(name)s) in "
          u"table context caused voodoo mode."),
@@ -250,121 +258,133 @@ E = {
        _(u"Unexpected end of file. Expected select content."),
     "eof-in-frameset":
        _(u"Unexpected end of file. Expected frameset content."),
+    "eof-in-script-in-script":
+       _(u"Unexpected end of file. Expected script content."),
+    "non-void-element-with-trailing-solidus":
+       _(u"Trailing solidus not allowed on element %(name)s"),
+    "unexpected-html-element-in-foreign-content":
+       _(u"Element %(name)s not allowed in a non-html context"),
+    "unexpected-end-tag-before-html":
+        _(u"Unexpected end tag (%(name)s) before html."),
     "XXX-undefined-error":
         (u"Undefined error (this sucks and should be fixed)"),
 }
 
-contentModelFlags = {
-    "PCDATA":0,
-    "RCDATA":1,
-    "CDATA":2,
-    "PLAINTEXT":3
+namespaces = {
+    "html":"http://www.w3.org/1999/xhtml",
+    "mathml":"http://www.w3.org/1998/Math/MathML",
+    "svg":"http://www.w3.org/2000/svg",
+    "xlink":"http://www.w3.org/1999/xlink",
+    "xml":"http://www.w3.org/XML/1998/namespace",
+    "xmlns":"http://www.w3.org/2000/xmlns/"
 }
 
 scopingElements = frozenset((
-    "applet",
-    "button",
-    "caption",
-    "html",
-    "marquee",
-    "object",
-    "table",
-    "td",
-    "th"
+    (namespaces["html"], "applet"),
+    (namespaces["html"], "button"),
+    (namespaces["html"], "caption"),
+    (namespaces["html"], "html"),
+    (namespaces["html"], "marquee"),
+    (namespaces["html"], "object"),
+    (namespaces["html"], "table"),
+    (namespaces["html"], "td"),
+    (namespaces["html"], "th"),
+    (namespaces["svg"], "foreignObject")
 ))
 
 formattingElements = frozenset((
-    "a",
-    "b",
-    "big",
-    "em",
-    "font",
-    "i",
-    "nobr",
-    "s",
-    "small",
-    "strike",
-    "strong",
-    "tt",
-    "u"
+    (namespaces["html"], "a"),
+    (namespaces["html"], "b"),
+    (namespaces["html"], "big"),
+    (namespaces["html"], "code"),
+    (namespaces["html"], "em"),
+    (namespaces["html"], "font"),
+    (namespaces["html"], "i"),
+    (namespaces["html"], "nobr"),
+    (namespaces["html"], "s"),
+    (namespaces["html"], "small"),
+    (namespaces["html"], "strike"),
+    (namespaces["html"], "strong"),
+    (namespaces["html"], "tt"),
+    (namespaces["html"], "u")
 ))
 
 specialElements = frozenset((
-    "address",
-    "area",
-    "article",
-    "aside",
-    "base",
-    "basefont",
-    "bgsound",
-    "blockquote",
-    "body",
-    "br",
-    "center",
-    "col",
-    "colgroup",
-    "command",
-    "datagrid",
-    "dd",
-    "details",
-    "dialog",
-    "dir",
-    "div",
-    "dl",
-    "dt",
-    "embed",
-    "event-source",
-    "fieldset",
-    "figure",
-    "footer",
-    "form",
-    "frame",
-    "frameset",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "head",
-    "header",
-    "hr",
-    "iframe",
+    (namespaces["html"], "address"),
+    (namespaces["html"], "area"),
+    (namespaces["html"], "article"),
+    (namespaces["html"], "aside"),
+    (namespaces["html"], "base"),
+    (namespaces["html"], "basefont"),
+    (namespaces["html"], "bgsound"),
+    (namespaces["html"], "blockquote"),
+    (namespaces["html"], "body"),
+    (namespaces["html"], "br"),
+    (namespaces["html"], "center"),
+    (namespaces["html"], "col"),
+    (namespaces["html"], "colgroup"),
+    (namespaces["html"], "command"),
+    (namespaces["html"], "datagrid"),
+    (namespaces["html"], "dd"),
+    (namespaces["html"], "details"),
+    (namespaces["html"], "dialog"),
+    (namespaces["html"], "dir"),
+    (namespaces["html"], "div"),
+    (namespaces["html"], "dl"),
+    (namespaces["html"], "dt"),
+    (namespaces["html"], "embed"),
+    (namespaces["html"], "event-source"),
+    (namespaces["html"], "fieldset"),
+    (namespaces["html"], "figure"),
+    (namespaces["html"], "footer"),
+    (namespaces["html"], "form"),
+    (namespaces["html"], "frame"),
+    (namespaces["html"], "frameset"),
+    (namespaces["html"], "h1"),
+    (namespaces["html"], "h2"),
+    (namespaces["html"], "h3"),
+    (namespaces["html"], "h4"),
+    (namespaces["html"], "h5"),
+    (namespaces["html"], "h6"),
+    (namespaces["html"], "head"),
+    (namespaces["html"], "header"),
+    (namespaces["html"], "hr"),
+    (namespaces["html"], "iframe"),
     # Note that image is commented out in the spec as "this isn't an
-    # element that can end up on the stack, so it doesn't matter"
-    "image", 
-    "img",
-    "input",
-    "isindex",
-    "li",
-    "link",
-    "listing",
-    "menu",
-    "meta",
-    "nav",
-    "noembed",
-    "noframes",
-    "noscript",
-    "ol",
-    "optgroup",
-    "option",
-    "p",
-    "param",
-    "plaintext",
-    "pre",
-    "script",
-    "section",
-    "select",
-    "spacer",
-    "style",
-    "tbody",
-    "textarea",
-    "tfoot",
-    "thead",
-    "title",
-    "tr",
-    "ul",
-    "wbr"
+    # element that can end up on the stack, so it doesn't matter,"
+    (namespaces["html"], "image"), 
+    (namespaces["html"], "img"),
+    (namespaces["html"], "input"),
+    (namespaces["html"], "isindex"),
+    (namespaces["html"], "li"),
+    (namespaces["html"], "link"),
+    (namespaces["html"], "listing"),
+    (namespaces["html"], "menu"),
+    (namespaces["html"], "meta"),
+    (namespaces["html"], "nav"),
+    (namespaces["html"], "noembed"),
+    (namespaces["html"], "noframes"),
+    (namespaces["html"], "noscript"),
+    (namespaces["html"], "ol"),
+    (namespaces["html"], "optgroup"),
+    (namespaces["html"], "option"),
+    (namespaces["html"], "p"),
+    (namespaces["html"], "param"),
+    (namespaces["html"], "plaintext"),
+    (namespaces["html"], "pre"),
+    (namespaces["html"], "script"),
+    (namespaces["html"], "section"),
+    (namespaces["html"], "select"),
+    (namespaces["html"], "spacer"),
+    (namespaces["html"], "style"),
+    (namespaces["html"], "tbody"),
+    (namespaces["html"], "textarea"),
+    (namespaces["html"], "tfoot"),
+    (namespaces["html"], "thead"),
+    (namespaces["html"], "title"),
+    (namespaces["html"], "tr"),
+    (namespaces["html"], "ul"),
+    (namespaces["html"], "wbr")
 ))
 
 spaceCharacters = frozenset((
@@ -857,6 +877,44 @@ entities = {
     "zwnj;": u"\u200C"
 }
 
+replacementCharacters = {
+    0x0:u"\uFFFD",
+    0x0d:u"\u000A",
+    0x80:u"\u20AC",
+    0x81:u"\u0081",
+    0x81:u"\u0081",
+    0x82:u"\u201A",
+    0x83:u"\u0192",
+    0x84:u"\u201E",
+    0x85:u"\u2026",
+    0x86:u"\u2020",
+    0x87:u"\u2021",
+    0x88:u"\u02C6",
+    0x89:u"\u2030",
+    0x8A:u"\u0160",
+    0x8B:u"\u2039",
+    0x8C:u"\u0152",
+    0x8D:u"\u008D",
+    0x8E:u"\u017D",
+    0x8F:u"\u008F",
+    0x90:u"\u0090",
+    0x91:u"\u2018",
+    0x92:u"\u2019",
+    0x93:u"\u201C",
+    0x94:u"\u201D",
+    0x95:u"\u2022",
+    0x96:u"\u2013",
+    0x97:u"\u2014",
+    0x98:u"\u02DC",
+    0x99:u"\u2122",
+    0x9A:u"\u0161",
+    0x9B:u"\u203A",
+    0x9C:u"\u0153",
+    0x9D:u"\u009D",
+    0x9E:u"\u017E",
+    0x9F:u"\u0178",
+}
+
 encodings = {
     '437': 'cp437',
     '850': 'cp850',
@@ -904,7 +962,7 @@ encodings = {
     'cpis': 'cp861',
     'csascii': 'ascii',
     'csbig5': 'big5',
-    'cseuckr': 'windows-949',
+    'cseuckr': 'cp949',
     'cseucpkdfmtjapanese': 'euc_jp',
     'csgb2312': 'gbk',
     'cshproman8': 'hp-roman8',
@@ -936,7 +994,7 @@ encodings = {
     'csisolatingreek': 'iso8859-7',
     'csisolatinhebrew': 'iso8859-8',
     'cskoi8r': 'koi8-r',
-    'csksc56011987': 'windows-949',
+    'csksc56011987': 'cp949',
     'cspc775baltic': 'cp775',
     'cspc850multilingual': 'cp850',
     'cspc862latinhebrew': 'cp862',
@@ -958,7 +1016,7 @@ encodings = {
     'ecma118': 'iso8859-7',
     'elot928': 'iso8859-7',
     'eucjp': 'euc_jp',
-    'euckr': 'windows-949',
+    'euckr': 'cp949',
     'extendedunixcodepackedformatforjapanese': 'euc_jp',
     'gb18030': 'gb18030',
     'gb2312': 'gbk',
@@ -1030,7 +1088,7 @@ encodings = {
     'isoir138': 'iso8859-8',
     'isoir144': 'iso8859-5',
     'isoir148': 'windows-1254',
-    'isoir149': 'windows-949',
+    'isoir149': 'cp949',
     'isoir157': 'iso8859-10',
     'isoir199': 'iso8859-14',
     'isoir226': 'iso8859-16',
@@ -1038,10 +1096,10 @@ encodings = {
     'isoir6': 'ascii',
     'koi8r': 'koi8-r',
     'koi8u': 'koi8-u',
-    'korean': 'windows-949',
-    'ksc5601': 'windows-949',
-    'ksc56011987': 'windows-949',
-    'ksc56011989': 'windows-949',
+    'korean': 'cp949',
+    'ksc5601': 'cp949',
+    'ksc56011987': 'cp949',
+    'ksc56011989': 'cp949',
     'l1': 'windows-1252',
     'l10': 'iso8859-16',
     'l2': 'iso8859-2',
@@ -1066,14 +1124,13 @@ encodings = {
     'r8': 'hp-roman8',
     'roman8': 'hp-roman8',
     'shiftjis': 'shift_jis',
-    'tis620': 'windows-874',
+    'tis620': 'cp874',
     'unicode11utf7': 'utf-7',
     'us': 'ascii',
     'usascii': 'ascii',
     'utf16': 'utf-16',
     'utf16be': 'utf-16-be',
     'utf16le': 'utf-16-le',
-    'utf7': 'utf-7',
     'utf8': 'utf-8',
     'windows1250': 'cp1250',
     'windows1251': 'cp1251',
@@ -1098,5 +1155,15 @@ tokenTypes = {
     "ParseError":7
 }
 
+tagTokenTypes = frozenset((tokenTypes["StartTag"], tokenTypes["EndTag"], 
+                           tokenTypes["EmptyTag"]))
+
+
+prefixes = dict([(v,k) for k,v in namespaces.iteritems()])
+prefixes["http://www.w3.org/1998/Math/MathML"] = "math"
+
 class DataLossWarning(UserWarning):
+    pass
+
+class ReparseException(Exception):
     pass

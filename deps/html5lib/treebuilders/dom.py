@@ -1,9 +1,12 @@
-import _base
+
 from xml.dom import minidom, Node, XML_NAMESPACE, XMLNS_NAMESPACE
 import new
-
 import re
-illegal_xml_chars = re.compile("[\x01-\x08\x0B\x0C\x0E-\x1F]")
+import weakref
+
+import _base
+from html5lib import constants, ihatexml
+from html5lib.constants import namespaces
 
 moduleCache = {}
 
@@ -26,26 +29,34 @@ def getDomBuilder(DomImplementation):
         def __iter__(self):
             return self.element.attributes.items().__iter__()
         def __setitem__(self, name, value):
-            value=illegal_xml_chars.sub(u'\uFFFD',value)
             self.element.setAttribute(name, value)
         def items(self):
-            return self.element.attributes.items()
+            return [(item[0], item[1]) for item in
+                     self.element.attributes.items()]
         def keys(self):
             return self.element.attributes.keys()
         def __getitem__(self, name):
             return self.element.getAttribute(name)
+
+        def __contains__(self, name):
+            if isinstance(name, tuple):
+                raise NotImplementedError
+            else:
+                return self.element.hasAttribute(name)
     
     class NodeBuilder(_base.Node):
         def __init__(self, element):
             _base.Node.__init__(self, element.nodeName)
             self.element = element
-    
+
+        namespace = property(lambda self:hasattr(self.element, "namespaceURI")
+                             and self.element.namespaceURI or None)
+
         def appendChild(self, node):
             node.parent = self
             self.element.appendChild(node.element)
     
         def insertText(self, data, insertBefore=None):
-            data=illegal_xml_chars.sub(u'\uFFFD',data)
             text = self.element.ownerDocument.createTextNode(data)
             if insertBefore:
                 self.element.insertBefore(text, insertBefore.element)
@@ -74,9 +85,16 @@ def getDomBuilder(DomImplementation):
         def setAttributes(self, attributes):
             if attributes:
                 for name, value in attributes.items():
-                    value=illegal_xml_chars.sub(u'\uFFFD',value)
-                    self.element.setAttribute(name, value)
-    
+                    if isinstance(name, tuple):
+                        if name[0] is not None:
+                            qualifiedName = (name[0] + ":" + name[1])
+                        else:
+                            qualifiedName = name[1]
+                        self.element.setAttributeNS(name[2], qualifiedName, 
+                                                    value)
+                    else:
+                        self.element.setAttribute(
+                            name, value)
         attributes = property(getAttributes, setAttributes)
     
         def cloneNode(self):
@@ -84,21 +102,38 @@ def getDomBuilder(DomImplementation):
     
         def hasContent(self):
             return self.element.hasChildNodes()
-    
+
+        def getNameTuple(self):
+            if self.namespace == None:
+                return namespaces["html"], self.name
+            else:
+                return self.namespace, self.name
+
+        nameTuple = property(getNameTuple)
+
     class TreeBuilder(_base.TreeBuilder):
         def documentClass(self):
             self.dom = Dom.getDOMImplementation().createDocument(None,None,None)
-            return self
+            return weakref.proxy(self)
     
-        def insertDoctype(self, name, publicId, systemId):
+        def insertDoctype(self, token):
+            name = token["name"]
+            publicId = token["publicId"]
+            systemId = token["systemId"]
+
             domimpl = Dom.getDOMImplementation()
             doctype = domimpl.createDocumentType(name, publicId, systemId)
             self.document.appendChild(NodeBuilder(doctype))
             if Dom == minidom:
                 doctype.ownerDocument = self.dom
     
-        def elementClass(self, name):
-            return NodeBuilder(self.dom.createElement(name))
+        def elementClass(self, name, namespace=None):
+            if namespace is None and self.defaultNamespace is None:
+                node = self.dom.createElement(name)
+            else:
+                node = self.dom.createElementNS(namespace, name)
+
+            return NodeBuilder(node)
             
         def commentClass(self, data):
             return NodeBuilder(self.dom.createComment(data))
@@ -119,7 +154,7 @@ def getDomBuilder(DomImplementation):
             return _base.TreeBuilder.getFragment(self).element
     
         def insertText(self, data, parent=None):
-            data=illegal_xml_chars.sub(u'\uFFFD',data)
+            data=data
             if parent <> self:
                 _base.TreeBuilder.insertText(self, data, parent)
             else:
@@ -156,9 +191,27 @@ def getDomBuilder(DomImplementation):
             elif element.nodeType == Node.TEXT_NODE:
                 rv.append("|%s\"%s\"" %(' '*indent, element.nodeValue))
             else:
-                rv.append("|%s<%s>"%(' '*indent, element.nodeName))
+                if (hasattr(element, "namespaceURI") and
+                    element.namespaceURI != None):
+                    name = "%s %s"%(constants.prefixes[element.namespaceURI],
+                                    element.nodeName)
+                else:
+                    name = element.nodeName
+                rv.append("|%s<%s>"%(' '*indent, name))
                 if element.hasAttributes():
-                    for name, value in element.attributes.items():
+                    i = 0
+                    attr = element.attributes.item(i)
+                    while attr:
+                        name = attr.nodeName
+                        value = attr.value
+                        ns = attr.namespaceURI
+                        if ns:
+                            name = "%s %s"%(constants.prefixes[ns], attr.localName)
+                        else:
+                            name = attr.nodeName
+                        i += 1
+                        attr = element.attributes.item(i)
+
                         rv.append('|%s%s="%s"' % (' '*(indent+2), name, value))
             indent += 2
             for child in element.childNodes:
@@ -182,12 +235,12 @@ def getDomBuilder(DomImplementation):
             attr = node.getAttributeNode(attrname)
             if (attr.namespaceURI == XMLNS_NAMESPACE or
                (attr.namespaceURI == None and attr.nodeName.startswith('xmlns'))):
-              prefix = (attr.localName != 'xmlns' and attr.localName or None)
+              prefix = (attr.nodeName != 'xmlns' and attr.nodeName or None)
               handler.startPrefixMapping(prefix, attr.nodeValue)
               prefixes.append(prefix)
               nsmap = nsmap.copy()
               nsmap[prefix] = attr.nodeValue
-              del attributes[(attr.namespaceURI, attr.localName)]
+              del attributes[(attr.namespaceURI, attr.nodeName)]
     
           # apply namespace declarations
           for attrname in node.attributes.keys():
@@ -195,8 +248,8 @@ def getDomBuilder(DomImplementation):
             if attr.namespaceURI == None and ':' in attr.nodeName:
               prefix = attr.nodeName.split(':')[0]
               if nsmap.has_key(prefix):
-                del attributes[(attr.namespaceURI, attr.localName)]
-                attributes[(nsmap[prefix],attr.localName)]=attr.nodeValue
+                del attributes[(attr.namespaceURI, attr.nodeName)]
+                attributes[(nsmap[prefix],attr.nodeName)]=attr.nodeValue
     
           # SAX events
           ns = node.namespaceURI or nsmap.get(None,None)
@@ -227,6 +280,7 @@ def getDomBuilder(DomImplementation):
         
     return locals()
 
-# XXX: Keep backwards compatibility with things that directly load classes/functions from this module
+# Keep backwards compatibility with things that directly load 
+# classes/functions from this module
 for key, value in getDomModule(minidom).__dict__.items():
 	globals()[key] = value
