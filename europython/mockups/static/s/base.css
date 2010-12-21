@@ -79,9 +79,11 @@ hr {
     text-align: center;
 }
 
+/*
 .button.mini {
     text-align: left;
 }
+*/
 
 .button a {
 
@@ -101,11 +103,13 @@ hr {
 	
     display: inline-block;
     
-    -webkit-box-shadow: 0 1px 3px #7d6f60;
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
 }
 
 
 
+/*
 .button.nut a {
 
 	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
@@ -117,6 +121,7 @@ hr {
     
 
 }
+*/
 
 .button.mini a {
     padding: 2px 5px;
@@ -128,7 +133,8 @@ hr {
     
 	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
 
-    -webkit-box-shadow: 0 1px 2px #7d6f60;
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
 
 }
 
@@ -184,7 +190,8 @@ a.tag {
     border-bottom: 1px solid #b0ab63;
     border-right: 1px solid #b0ab63;
 */
-    
+
+    -moz-border-radius: 3px;    
     border-radius: 3px;
     
 }
@@ -296,14 +303,13 @@ header nav li {
 
 }
 
-header nav ul a {
-
+header nav li a {
 	border: none;	
-
 }
 
 header nav li.current a {
     color: #9ae3f0;
+	border: none;	    
 }
 
 
@@ -333,29 +339,20 @@ header #li-chat #habla_unavailable_div a {
 */
 
 
-/*
+
 
 .badge {
+
     text-align: center;
-    font-size: 12px;
-    
-    min-height: 140px;
-    
-}
-*/
 
-
-.badge {
-
-    color: #fff;
-
-	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+	background: #4895a3 url(../i/badge-b.png) center top repeat-x;
 	padding: 5px 10px;	
 	
     border: 1px solid #3d7e8a;
-
     
-    -webkit-box-shadow: 0 1px 3px #7d6f60;
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
+
     		
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
@@ -368,30 +365,40 @@ header #li-chat #habla_unavailable_div a {
 }
 
 .badge a {
-    border-bottom: none;
+    border-bottom: none;	
+ 	text-shadow: #316770 1px 1px 1px;
+
+    color: #fff;
+     	   
+/* 	text-shadow: rgba(100%, 100%, 100%, .7) 1px 1px 1px;	     */
+    
 }
 
+/*
 .badge a:hover {
     color: #fff;
 }
+*/
 
-.badge h5 {
-/*     padding: 55px 0 0 0; */
-    line-height: 24px;
-    
-	text-shadow: rgba(100%, 100%, 100%, .7) 1px 1px 1px;
-	    
+.badge span {
+	text-shadow: rgba(100%, 100%, 100%, .6) 1px 1px 1px;	    
+
+ 	font: normal 24px/24px "League Gothic", "Arial Narrow", sans-serif;		
+	text-transform: uppercase;
+
+	color: #301d1d;	
+	display: block;
 }
 
-.badge.buy {
-/*     background: transparent url(../i/badge-buy-2.png) 20px center no-repeat; */
-}
 
 .badge.chat {
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	background: #aba190 url(../i/badge-n.png) center top repeat-x;
 	border-color: #aba18f;
+}
 
-
+.badge.chat a {
+ 	text-shadow: #634646 1px 1px 1px;	
+	
 }
 
 
@@ -1174,8 +1181,8 @@ section.teaser p {
 
     margin: 0;
 
-    min-height: 110px; 
-    background: transparent url(../i/arrow-right.png) 50px bottom  no-repeat
+    min-height: 100px; 
+    background: transparent url(../i/arrow-right.png) 40px bottom  no-repeat
 }
 
 .side-h2 h2 span {
