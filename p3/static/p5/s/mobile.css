@@ -1,0 +1,7 @@
+body {
+	
+	/* Yes, I'm using Helvetica as fallback 
+	font for iPad/iPhone before Verdana */
+	font: normal 14px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Helvetica Neue", Helvetica, Verdana, sans-serif;
+}
+
