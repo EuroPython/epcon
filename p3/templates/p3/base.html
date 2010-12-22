@@ -102,7 +102,11 @@
 
             <div class="span-4 last">
                 <div class="user">
-                    Logged in as <b>Name Surname</b> &bull; <a href="#">Log out</a>
+                    {% if request.user.is_authenticated %}
+                        Logged in as <b>{{ request.user.first_name }} {{ request.user.last_name }}</b> &bull; <a href="/logout/?next=/">Log out</a>
+                    {% else %}
+                        <a href="/accounts/login/?next=/">Log in</a>
+                    {% endif %}
                 </div>
             </div>
 
