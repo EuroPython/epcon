@@ -1,11 +1,12 @@
 {% extends "microblog/base.html" %}
 {% load i18n microblog tagging_tags %}
-{% block PAGE_TITLE %}{{ content.headline }} &mdash; PyCon Italia Blog{% endblock %}
+{% block PAGE_TITLE %}{{ content.headline }} &mdash; {% endblock %}
 {% block PAGE_DESCRIPTION %}
     <meta name="keywords" content="{{ content.post.tags }}" />
     <meta name="description" content="{{ content.summary|striptags }}" />
 {% endblock %}
 {% block EXTRA_HEAD %}
+    {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
     {% if post.allow_comments %}
     <script type="text/javascript">//<![CDATA[
@@ -101,7 +102,7 @@
         <dd>{{ content.post.author.first_name }}</dd>
 
         <dt>{% trans "Data" %}</dt>
-        <dd>{{ content.post.date|date:"d F Y" }}</dd>         
+        <dd>{{ content.post.date|date:"d F Y" }}</dd>
 {% comment %}
         <dt>{% trans "Categoria" %}</dt>
         <dd><a href="{% url microblog-category category=post.category.name %}">{{ content.post.category.name }}</a></dd>
