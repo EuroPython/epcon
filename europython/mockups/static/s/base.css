@@ -74,72 +74,6 @@ hr {
 }
 
 
-
-.button {
-    text-align: center;
-}
-
-/*
-.button.mini {
-    text-align: left;
-}
-*/
-
-.button a {
-
-    color: #fff;
-
-	background: #4895a3 url(../i/button-b.png) center top repeat-x;
-	padding: 5px 10px;	
-	
-    border: 1px solid #3d7e8a;
-		
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	
-	
-	text-shadow: #316770 1px 1px 1px;
-	
-    display: inline-block;
-    
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
-}
-
-
-
-/*
-.button.nut a {
-
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
-	border-color: #aba18f;
-
-    color: #301d1d;    
-
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;
-    
-
-}
-*/
-
-.button.mini a {
-    padding: 2px 5px;
-
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
-	border-color: #aba18f;
-
-    color: #301d1d; 
-    
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
-
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
-
-}
-
-
-
 /* ========= */
 /* ! links   */
 /* ========= */
@@ -200,6 +134,54 @@ a.tag:hover {
     background-color:#fff;
 }
 
+.button {
+    text-align: center;
+}
+
+/*
+.button.mini {
+    text-align: left;
+}
+*/
+
+.button a {
+
+    color: #fff;
+
+	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+	padding: 5px 10px;	
+	
+    border: 1px solid #3d7e8a;
+		
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+	
+	text-shadow: #316770 1px 1px 1px;
+	
+    display: inline-block;
+    
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
+}
+
+.button.mini a {
+    padding: 2px 5px;
+
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+
+    color: #301d1d; 
+    
+	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
+
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
+
+}
+
+
 /* ============= */
 /* ! utilities   */
 /* ============= */
@@ -210,35 +192,21 @@ a.tag:hover {
 .invisible { visibility: hidden !important; }
 .clickable { cursor: pointer }
 
+/* ================== */
+/* ! please-upgrade   */
+/* ================== */
 
-
-
-/* ============== */
-/* ! pre-header   */
-/* ============== */
-
-
-
-#pre-header {
-
-    width: 100%;        
-}
-
-#please-upgrade  {
-
+.please-upgrade  {
 
 	text-align: center;
-
-/* 	font-size: 13px; */
 
 	padding: 5px 0;
 	
 	color: #222d4d;
 	background: #FFF9B2;
-
 }
 
-#please-upgrade  a {
+.please-upgrade  a {
     color: #222d4d;
 }
 
@@ -248,10 +216,7 @@ a.tag:hover {
 /* ======= */
 
 header {
-
-/*     -webkit-transform: rotate(-1deg); */
 }
-
 
 header nav {
     background: #301d1d;		
@@ -264,8 +229,7 @@ header .user {
     font-size: 12px;
     line-height: 30px;
     
-    color: #aba18f;
-    
+    color: #aba18f;    
         
     padding: 5px 0;
 }
@@ -303,11 +267,11 @@ header nav li {
 
 }
 
-header nav li a {
+header nav.darker li a {
 	border: none;	
 }
 
-header nav li.current a {
+header nav.darker li.current a {
     color: #9ae3f0;
 	border: none;	    
 }
@@ -412,7 +376,7 @@ header #li-chat #habla_unavailable_div a {
 /* 	font: normal 70px/48px "League Gothic", "Arial Narrow", sans-serif;     */
 	
 
-	margin: 20px 0 20px 0;
+	margin: 20px 0 40px 0;
 }
 
 .logo a {
@@ -432,38 +396,6 @@ header #li-chat #habla_unavailable_div a {
 
 */
 
-
-
-#when-where  {
-
-    margin: 20px 0 0 0;
-}
-
-#when-where h2 {
-
-    font-size: 24px;
-    line-height: 30px;
-    
-    color: #4d5f5f;
-    
-/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
-}
-
-
-#when-where p {
-
-
-    font-size: 16px;
-    font-weight: bold;
-    font-style: italic;
-    
-    color: #5e5d3b;
-    
-/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
-    
-/* 	text-shadow: #4d6161 1px 1px 1px; */
-    
-}
 
 
 
@@ -642,7 +574,7 @@ footer nav ul {
 
 	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
 
-	margin: 30px 0 30px -20px;
+	margin: 0 0 30px -20px;
 	
 /*     text-shadow: #161e33  1px 1px 1px;  */
 
@@ -656,6 +588,7 @@ footer nav ul {
 /* ! sidebar   */
 /* =========== */
 
+/*
 
 
 #sidebar {
@@ -719,6 +652,7 @@ footer nav ul {
 }
 
 
+*/
 
 /* =================== */
 /* ! speaker           */
@@ -1082,7 +1016,7 @@ footer nav ul {
 
 	font: normal 18px/30px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
 	
-	margin: 20px 0 40px 0;
+	margin: 0 0 40px 0;
 }
 
 .home h2 {

@@ -161,24 +161,6 @@ div.colborder {
 */
 }
 
-/* Use this to create a horizontal ruler across a column. */
-hr {
-  background: #ddd; 
-  color: #ddd;
-  clear: both; 
-  float: none; 
-  width: 100%; 
-  height: .1em;
-  margin: 0 0 1.45em;
-  border: none; 
-}
-hr.space {
-  background: #fff;
-  color: #fff;
-}
-
-
-
 /*
 The New Clearfix Method
 http://perishablepress.com/press/2009/12/06/new-clearfix-hack/
