@@ -660,15 +660,18 @@ def render_page_template(parser, token):
             self.var_name = var_name
 
         def render(self, context):
-            tpl = self.arg.resolve(context)
-            t = template.Template(tpl)
-            data = t.render(context)
-            if self.var_name:
-                context[self.var_name] = data
+            try:
+                tpl = self.arg.resolve(context)
+                t = template.Template(tpl)
+                data = t.render(context)
+                if self.var_name:
+                    context[self.var_name] = data
+                    return ''
+                else:
+                    return data
+            except template.VariableDoesNotExist:
                 return ''
-            else:
-                return data
-            
+
     return TemplateRenderer(arg, var_name)
 
 @register.tag
