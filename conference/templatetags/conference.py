@@ -162,7 +162,7 @@ def stuff_info(parser, token):
                 return ''
             else:
                 return "(%s %s)" % (ftype, fsize)
-            
+
     return StuffInfoNode(fpath, var_name)
 
 @register.tag
@@ -178,7 +178,7 @@ def conference_speakers(parser, token):
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     var_name = contents[-1]
     contents = contents[:-2]
-    
+
     conference = None
     limit = None
     random = False
@@ -264,7 +264,7 @@ def conference_talks(parser, token):
             self.conference = self._set_var(conference)
             self.tags = self._set_var(tags)
             self.random = random
-        
+
         def render(self, context):
             talks = models.Talk.objects.all()
             speaker = self._get_var(self.speaker, context)
@@ -707,7 +707,7 @@ def conference_multilingual_attribute(parser, token):
             self.instance = self._set_var(instance)
             self.attribute = self._set_var(attribute)
             self.fallback = self._set_var(fallback)
-        
+
         def render(self, context):
             instance = self._get_var(self.instance, context)
             attribute = self._get_var(self.attribute, context)
@@ -736,13 +736,13 @@ def conference_multilingual_attribute(parser, token):
                 return ''
             else:
                 return value.body if value else ''
-                
+
     return AttributeNode(instance, attribute, var_name, fallback)
 
 @register.tag
 def conference_hotels(parser, token):
     """
-    {% conference_hotels as var %} 
+    {% conference_hotels as var %}
     """
     contents = token.split_contents()
     tag_name = contents[0]
@@ -756,7 +756,7 @@ def conference_hotels(parser, token):
     class HotelsNode(TNode):
         def __init__(self, var_name):
             self.var_name = var_name
-        
+
         def render(self, context):
             query = models.Hotel.objects.filter(visible = True).order_by('-modified', 'name')
             if self.var_name:
@@ -873,7 +873,7 @@ def conference_quotes(parser, token):
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     var_name = contents[-1]
     contents = contents[:-2]
-    
+
     if contents:
         contents.pop(0)
         limit = int(contents.pop(0))
