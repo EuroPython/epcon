@@ -2,12 +2,12 @@
 # Copyright (C) 2009 Python Italia.
 # This file is distributed under the same license as the p3 package.
 # dvd <dvd@gnx.it>, 2009.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-31 11:57+0200\n"
+"POT-Creation-Date: 2010-12-23 19:01+0100\n"
 "PO-Revision-Date: 2010-03-31 16:36\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -22,7 +22,10 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 
 #: templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
-msgstr "If you have any problems please contact us via <a onclick=\"habla_window.show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+msgstr ""
+"If you have any problems please contact us via <a onclick=\"habla_window.show"
+"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
+"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
 #: templates/conference/render_hotels.html:5
 msgid "Nome"
@@ -93,35 +96,39 @@ msgstr "available"
 msgid "Permalink a questo commento"
 msgstr "Permalink this"
 
-#: templates/microblog/base.html:21
+#: templates/microblog/base.html:35
 msgid "Categorie"
 msgstr "Categories"
 
-#: templates/microblog/base.html:30 templates/microblog/list_by_year.html:3
+#: templates/microblog/base.html:44 templates/microblog/list_by_year.html:3
 msgid "Archivio"
 msgstr "Archive"
 
-#: templates/microblog/post_detail.html:21
+#: templates/microblog/post_detail.html:22
 msgid "Lo staff sta controllando il tuo commento, a breve verrà pubblicato."
 msgstr "PyCon staff is reviewing you comment, shortly will be published"
 
-#: templates/microblog/post_detail.html:87
+#: templates/microblog/post_detail.html:55
+msgid "Aggiungi un commento"
+msgstr "Add a comment"
+
+#: templates/microblog/post_detail.html:88
 msgid "Post comment"
 msgstr "Post comment"
 
-#: templates/microblog/post_detail.html:100 templates/p3/index.html:85
+#: templates/microblog/post_detail.html:101 templates/p3/index.html:85
 msgid "Scritto da"
 msgstr "Written by"
 
-#: templates/microblog/post_detail.html:103
+#: templates/microblog/post_detail.html:104
 msgid "Data"
 msgstr "Date"
 
-#: templates/microblog/post_detail.html:106
+#: templates/microblog/post_detail.html:107
 msgid "Categoria"
 msgstr "Category"
 
-#: templates/microblog/post_detail.html:111
+#: templates/microblog/post_detail.html:112
 msgid "Tag"
 msgstr "Tag"
 
@@ -133,7 +140,8 @@ msgstr "Blog's archive"
 msgid "Nessun post trovato."
 msgstr "No post found."
 
-#: templates/microblog/show_post_comments.html:4 templates/p3/index.html:85
+#: templates/microblog/show_post_comments.html:4
+#: templates/microblog/show_post_summary.html:16 templates/p3/index.html:85
 msgid "Commenti"
 msgstr "Comments"
 
@@ -145,7 +153,8 @@ msgstr "Add a comment"
 #, python-format
 msgid ""
 "\n"
-"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s &mdash;\n"
+"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s "
+"&mdash;\n"
 "        "
 msgstr ""
 "\n"
@@ -155,17 +164,9 @@ msgstr ""
 msgid "Reazioni"
 msgstr "Reactions"
 
-#: templates/p3/base.html:92
-msgid "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme."
-msgstr "The Italian conference on Python programming language where developers, companies and universities meet to learn, work and grow up together."
-
-#: templates/p3/base.html:106
-msgid "I nostri sponsor"
-msgstr "Our sponsors"
-
-#: templates/p3/base.html:128
-msgid "Media partner"
-msgstr "Media Partners"
+#: templates/microblog/show_social_networks.html:4
+msgid "Condividi questo post"
+msgstr "Share this post"
 
 #: templates/p3/box_cal.html:3
 msgid "Calendario"
@@ -208,12 +209,24 @@ msgid "Vedi tutte le scadenze &rarr;"
 msgstr "All the deadlines &rarr;"
 
 #: templates/p3/index.html:55
-msgid "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
-msgstr "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
+msgid ""
+"Following the great success of the last year we will waiting for you at "
+"PyCon Italy, the biggest national conference in Europe dedicated to the "
+"Python programming language."
+msgstr ""
+"Following the great success of the last year we will waiting for you at "
+"PyCon Italy, the biggest national conference in Europe dedicated to the "
+"Python programming language."
 
 #: templates/p3/index.html:62
-msgid "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world."
-msgstr "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics in the Python world."
+msgid ""
+"We expect more than 400 visitors among companies, professionals and "
+"hobbystis that will have a chance to attend to numerous talks about the most "
+"up to date topics  in the Python world."
+msgstr ""
+"We expect more than 400 visitors among companies, professionals and "
+"hobbystis that will have a chance to attend to numerous talks about the most "
+"up to date topics in the Python world."
 
 #: templates/p3/index.html:80
 msgid "Dal Blog"
@@ -230,6 +243,35 @@ msgstr "Continue &rarr;"
 #: templates/p3/index.html:92
 msgid "Archivio blog"
 msgstr "Blog archive"
+
+#~ msgid "Aggiungi un commentoddddddddd"
+#~ msgstr "Add a comment"
+
+#, fuzzy
+#~ msgid "Comments"
+#~ msgstr "Comments"
+
+#, fuzzy
+#~ msgid "Add Comment"
+#~ msgstr "Comments"
+
+#, fuzzy
+#~ msgid "Archive "
+#~ msgstr "Archive"
+
+#~ msgid ""
+#~ "La conferenza Italiana sul linguaggio di programmazione Python dove "
+#~ "sviluppatori, aziende e università si incontrano per imparare, "
+#~ "collaborare e crescere insieme."
+#~ msgstr ""
+#~ "The Italian conference on Python programming language where developers, "
+#~ "companies and universities meet to learn, work and grow up together."
+
+#~ msgid "I nostri sponsor"
+#~ msgstr "Our sponsors"
+
+#~ msgid "Media partner"
+#~ msgstr "Media Partners"
 
 #~ msgid "Mancano *%(days)d giorni* all'inizio della conferenza."
 #~ msgstr "The conference starts in *%(days)d days*."
@@ -259,7 +301,11 @@ msgstr "Blog archive"
 #~ msgstr "Web site"
 
 #~ msgid "saluto di guido in homepage"
-#~ msgstr "This year's PyCon Italy will have an exceptional guest in <b><a href=\"http://en.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></b>, author of the language, who will give a Keynote about the latest developments of the language."
+#~ msgstr ""
+#~ "This year's PyCon Italy will have an exceptional guest in <b><a href="
+#~ "\"http://en.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></"
+#~ "b>, author of the language, who will give a Keynote about the latest "
+#~ "developments of the language."
 
 #~ msgid "Pycon Tre"
 #~ msgstr "Pycon Tre"

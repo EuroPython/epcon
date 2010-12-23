@@ -11,9 +11,9 @@
         {% blocktrans with post.author.first_name as first_name and post.author.last_name as last_name and post.date|date:"j M Y" as post_date %}
         Scritto da <b>{{ first_name }} {{ last_name }}</b> il {{ post_date }} &mdash;
         {% endblocktrans %}
-        
+
         {% get_post_comment_count content.post as comments %}
-        <a title="Commenti articolo" href="{{ content.get_absolute_url }}#comments">Commenti ({{ comments }})</a>
+        <a title="Commenti articolo" href="{{ content.get_absolute_url }}#comments">{% trans "Commenti" %} ({{ comments }})</a>
     </p>
     <div class="summary">{{ content|prepare_summary|safe }}</div>
 </div>

@@ -52,7 +52,7 @@
     {% if post.allow_comments %}
         {% load comments %}
         <div id="add-comment">
-            <h3>Aggiungi un commento</h3>
+            <h3>{% trans "Aggiungi un commento" %} </h3>
             <div class="form-box">
                 {% get_comment_form for post as form %}
                 <form action="{% comment_form_target %}#preview-comment" method="post">
