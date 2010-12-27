@@ -8,3 +8,5 @@ stuff/sponsor/resized/*
 offline_stuff/*/output
 *.swp
 Session.vim
+.DS_Store
+
