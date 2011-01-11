@@ -37,12 +37,6 @@ if settings.DEBUG:
         'django.views.static.serve',
         {'document_root': CONFERENCE_STUFF_DIR, 'show_indexes': True}
     ))
-    from settings import MICROBLOG_STUFF_URL, MICROBLOG_STUFF_DIR
-    args.append((
-        r'^%s(?P<path>.*)$' % MICROBLOG_STUFF_URL,
-        'django.views.static.serve',
-        {'document_root': MICROBLOG_STUFF_DIR, 'show_indexes': True}
-    ))
     urlpatterns += patterns('', *args)
 
 urlpatterns += patterns('', (r'', include('pages.urls')))
