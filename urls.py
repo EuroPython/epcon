@@ -6,6 +6,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
+    (r'^accounts/login/', 'django.contrib.auth.views.login'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='auth_logout'),
     (r'^assopy/$', 'conference.views.genro_wrapper'),
     (r'^p3/gmap.js$', 'p3.views.gmap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
@@ -34,6 +36,12 @@ if settings.DEBUG:
         r'^%s(?P<path>.*)$' % CONFERENCE_STUFF_URL[1:],
         'django.views.static.serve',
         {'document_root': CONFERENCE_STUFF_DIR, 'show_indexes': True}
+    ))
+    from settings import MICROBLOG_STUFF_URL, MICROBLOG_STUFF_DIR
+    args.append((
+        r'^%s(?P<path>.*)$' % MICROBLOG_STUFF_URL,
+        'django.views.static.serve',
+        {'document_root': MICROBLOG_STUFF_DIR, 'show_indexes': True}
     ))
     urlpatterns += patterns('', *args)
 

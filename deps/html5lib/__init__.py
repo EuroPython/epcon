@@ -8,10 +8,10 @@ Example usage:
 
 import html5lib
 f = open("my_document.html")
-p = html5lib.HTMLParser()
-tree = p.parse(f) 
+tree = html5lib.parse(f) 
 """
-from html5parser import HTMLParser, parse
+__version__ = "0.90"
+from html5parser import HTMLParser, parse, parseFragment
 from treebuilders import getTreeBuilder
-
-from liberalxmlparser import XMLParser, XHTMLParser
+from treewalkers import getTreeWalker
+from serializer import serialize

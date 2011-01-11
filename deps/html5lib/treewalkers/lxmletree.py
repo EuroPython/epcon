@@ -1,4 +1,5 @@
 from lxml import etree
+from html5lib.treebuilders.etree import tag_regexp
 
 from gettext import gettext
 _ = gettext
@@ -127,7 +128,13 @@ class TreeWalker(_base.NonRecursiveTreeWalker):
 
         else:
             #This is assumed to be an ordinary element
-            return (_base.ELEMENT, self.filter.fromXmlName(node.tag), 
+            match = tag_regexp.match(node.tag)
+            if match:
+                namespace, tag = match.groups()
+            else:
+                namespace = None
+                tag = node.tag
+            return (_base.ELEMENT, namespace, self.filter.fromXmlName(tag), 
                     [(self.filter.fromXmlName(name), value) for 
                      name,value in node.attrib.iteritems()], 
                      len(node) > 0 or node.text)

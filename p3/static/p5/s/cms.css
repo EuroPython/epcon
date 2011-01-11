@@ -1,0 +1,265 @@
+/* ============================================== */
+/* ! Custom styles for text pulled from the CMS   */
+/* ============================================== */
+
+
+.cms {
+
+}
+
+.cms figure {
+    margin: 20px 0;    
+}
+
+.cms figure img {
+    display: block;
+}
+
+.cms figure.border img {
+    border: 5px solid #aba18f;
+}
+
+.cms p, 
+.cms dl, 
+.cms ul, 
+.cms ol,
+.cms table {
+	margin-bottom: 20px;
+}
+
+
+.cms h2 {
+	
+    margin: 40px 0 20px -20px;
+/*     text-transform: uppercase; */
+/*
+
+    letter-spacing: 1px;
+    word-spacing: 2px;
+*/
+    
+    color: #4895a3;
+}
+
+
+.cms h2:first-child {	
+    margin-top: 0;
+}
+
+.cms h3,
+.cms h4,
+.cms h5,
+.cms h6 {
+
+}
+
+.cms li {
+	margin: 0 0 10px 20px; 
+	
+	font: normal 12px/20px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;;
+    color: #635443;	
+}
+
+.cms dl {
+/* 	margin-left: 21px; */
+}
+
+
+/*
+.cms ul {
+	list-style: outside circle url(../i/bullet.png);
+}
+*/
+
+
+.cms ol {
+	list-style: outside decimal;
+}
+
+.cms dd {
+	margin-bottom: 20px;	
+}
+
+
+
+.cms blockquote {
+	margin: 10px 20px 10px 20px;	
+    color: #635443;		
+    
+    font: normal 12px/20px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;;
+
+}
+
+.cms table {
+	border-collapse: collapse;
+    width: 810px;
+
+    
+    border-top: 5px solid #aba18f;	
+        
+    margin: 40px 0;
+}
+
+
+.cms table caption {
+
+    font-style: italic;
+	caption-side: bottom;
+	
+	margin: 20px 0 0 0;
+	
+    text-align: center;
+    
+    color: #635443;
+    
+}
+
+
+.cms table th,
+.cms table td {	
+
+    border-bottom: 1px solid #c4b9a5;	
+	padding: 5px 0 5px 0;
+}
+
+
+.cms table th {
+
+	font-weight: bold;
+    color: #4895a3;
+
+    border-bottom-color: #7d6f60;
+    
+
+    	
+}
+
+.cms table td {	
+
+/*     border-bottom: 1px dotted #94946F; */
+	
+}
+
+/*
+
+.cms .small-list {
+
+}
+
+.cms .small-list p {
+    margin-bottom: 0;
+}
+*/
+
+
+
+/* ============== */
+/* ! highlights   */
+/* ============== */
+
+
+.cms .highlights {
+
+    padding: 10px;
+    border-top: 2px dotted #aba18f;
+    border-bottom: 2px dotted #aba18f;
+    
+    margin: 20px 0;
+        
+
+    background: #fff;
+}
+
+
+.cms .highlights h3 {
+    
+    color: #4895a3;
+    margin: 0 0 10px 0; 
+    font-size: 21px;
+
+    text-align: center;
+}
+
+
+.cms .highlights ul {
+    margin-bottom: 0;
+}
+
+.cms .highlights li {
+
+   	margin: 0 0 10px 20px;
+   	
+   	color: inherit;
+}
+
+/*
+.copy .highlights ul {
+    list-style: outside circle url(../i/bullet-arr.png);
+
+}
+*/
+
+
+/* ================ */
+/* ! preformatted   */
+/* ================ */
+
+
+.cms code {		
+	font: normal 12px/16px Consolas, “Lucida Console”, Menlo, Monaco, monospace;	
+}
+
+
+.cms pre {
+	display: block;
+	margin: 20px 0;
+
+    word-wrap: break-word;
+    
+    padding: 0 5px;
+    
+    border-top: 2px dotted #aba18f;
+    border-bottom: 2px dotted #aba18f;
+        
+    width: 810px;
+    background: #fff;
+    
+/*     overflow-x: scroll; */
+}
+
+
+/*
+.cms hr {
+  visibility: visible;  
+}
+*/
+
+
+
+/* ========= */
+/* ! aside   */
+/* ========= */
+
+
+aside .cms {
+    color: #635443;	
+    
+	font-size: 12px;
+
+}
+
+aside .cms h4 {
+    color: #4895a3;
+    margin: 0 0 10px 0; 
+    font-size: 21px;
+
+}
+
+aside .cms li {
+    margin-left: 0;
+
+}
+
+aside .cms ul {
+/* 	list-style: outside circle url(../i/bullet-aside.png); */
+}

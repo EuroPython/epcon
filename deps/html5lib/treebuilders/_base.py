@@ -1,4 +1,4 @@
-from html5lib.constants import scopingElements, tableInsertModeElements
+from html5lib.constants import scopingElements, tableInsertModeElements, namespaces
 try:
     frozenset
 except NameError:
@@ -10,9 +10,6 @@ except NameError:
 # marquees, table cells, and table captions, and are used to prevent formatting
 # from "leaking" into tables, buttons, object elements, and marquees.
 Marker = None
-
-#XXX - TODO; make the default interface more ElementTree-like
-#            rather than DOM-like
 
 class Node(object):
     def __init__(self, name):
@@ -112,7 +109,11 @@ class TreeBuilder(object):
     #Fragment class
     fragmentClass = None
 
-    def __init__(self):
+    def __init__(self, namespaceHTMLElements):
+        if namespaceHTMLElements:
+            self.defaultNamespace = "http://www.w3.org/1999/xhtml"
+        else:
+            self.defaultNamespace = None
         self.reset()
     
     def reset(self):
@@ -127,23 +128,23 @@ class TreeBuilder(object):
 
         self.document = self.documentClass()
 
-    def elementInScope(self, target, tableVariant=False):
+    def elementInScope(self, target, variant=None):
         # Exit early when possible.
-        if self.openElements[-1].name == target:
-            return True
+        listElementsMap = {
+            None:scopingElements,
+            "list":scopingElements | set([(namespaces["html"], "ol"),
+                                          (namespaces["html"], "ul")]),
+            "table":set([(namespaces["html"], "html"),
+                         (namespaces["html"], "table")])
+            }
+        listElements = listElementsMap[variant]
 
-        # AT Use reverse instead of [::-1] when we can rely on Python 2.4
-        # AT How about while True and simply set node to [-1] and set it to
-        # [-2] at the end...
-        for node in self.openElements[::-1]:
+        for node in reversed(self.openElements):
             if node.name == target:
                 return True
-            elif node.name == "table":
+            elif node.nameTuple in listElements:
                 return False
-            elif not tableVariant and node.name in scopingElements:
-                return False
-            elif node.name == "html":
-                return False
+
         assert False # We should never reach this point
 
     def reconstructActiveFormattingElements(self):
@@ -156,30 +157,34 @@ class TreeBuilder(object):
             return
 
         # Step 2 and step 3: we start with the last element. So i is -1.
-        i = -1
+        i = len(self.activeFormattingElements) - 1
         entry = self.activeFormattingElements[i]
         if entry == Marker or entry in self.openElements:
             return
 
         # Step 6
         while entry != Marker and entry not in self.openElements:
-            # Step 5: let entry be one earlier in the list.
-            i -= 1
-            try:
-                entry = self.activeFormattingElements[i]
-            except:
-                # Step 4: at this point we need to jump to step 8. By not doing
-                # i += 1 which is also done in step 7 we achieve that.
+            if i == 0:
+                #This will be reset to 0 below
+                i = -1
                 break
+            i -= 1
+            # Step 5: let entry be one earlier in the list.
+            entry = self.activeFormattingElements[i]
+
         while True:
             # Step 7
             i += 1
 
             # Step 8
-            clone = self.activeFormattingElements[i].cloneNode()
+            entry = self.activeFormattingElements[i]
+            clone = entry.cloneNode() #Mainly to get a new copy of the attributes
 
             # Step 9
-            element = self.insertElement(clone.name, clone.attributes)
+            element = self.insertElement({"type":"StartTag", 
+                                          "name":clone.name, 
+                                          "namespace":clone.namespace, 
+                                          "data":clone.attributes})
 
             # Step 10
             self.activeFormattingElements[i] = element
@@ -207,24 +212,30 @@ class TreeBuilder(object):
                 return item
         return False
 
-    def insertRoot(self, name):
-        element = self.createElement("html", {})
+    def insertRoot(self, token):
+        element = self.createElement(token)
         self.openElements.append(element)
         self.document.appendChild(element)
 
-    def insertDoctype(self, name, publicId, systemId):
+    def insertDoctype(self, token):
+        name = token["name"]
+        publicId = token["publicId"]
+        systemId = token["systemId"]
+
         doctype = self.doctypeClass(name, publicId, systemId)
         self.document.appendChild(doctype)
 
-    def insertComment(self, data, parent=None):
+    def insertComment(self, token, parent=None):
         if parent is None:
             parent = self.openElements[-1]
-        parent.appendChild(self.commentClass(data))
+        parent.appendChild(self.commentClass(token["data"]))
                            
-    def createElement(self, name, attributes):
+    def createElement(self, token):
         """Create an element but don't insert it anywhere"""
-        element = self.elementClass(name)
-        element.attributes = attributes
+        name = token["name"]
+        namespace = token.get("namespace", self.defaultNamespace)
+        element = self.elementClass(name, namespace)
+        element.attributes = token["data"]
         return element
 
     def _getInsertFromTable(self):
@@ -241,19 +252,20 @@ class TreeBuilder(object):
 
     insertFromTable = property(_getInsertFromTable, _setInsertFromTable)
         
-    def insertElementNormal(self, name, attributes):
-        element = self.elementClass(name)
-        element.attributes = attributes
+    def insertElementNormal(self, token):
+        name = token["name"]
+        namespace = token.get("namespace", self.defaultNamespace)
+        element = self.elementClass(name, namespace)
+        element.attributes = token["data"]
         self.openElements[-1].appendChild(element)
         self.openElements.append(element)
         return element
 
-    def insertElementTable(self, name, attributes):
+    def insertElementTable(self, token):
         """Create an element and insert it into the tree""" 
-        element = self.elementClass(name)
-        element.attributes = attributes
+        element = self.createElement(token)
         if self.openElements[-1].name not in tableInsertModeElements:
-            return self.insertElementNormal(name, attributes)
+            return self.insertElementNormal(token)
         else:
             #We should be in the InTable mode. This means we want to do
             #special magic element rearranging
@@ -270,8 +282,9 @@ class TreeBuilder(object):
         if parent is None:
             parent = self.openElements[-1]
 
-        if (not(self.insertFromTable) or (self.insertFromTable and\
-          self.openElements[-1].name not in tableInsertModeElements)):
+        if (not self.insertFromTable or (self.insertFromTable and
+                                         self.openElements[-1].name 
+                                         not in tableInsertModeElements)):
             parent.insertText(data)
         else:
             # We should be in the InTable mode. This means we want to do

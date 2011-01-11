@@ -16,13 +16,13 @@
     {% ifnotequal posts.paginator.num_pages 1 %}
     <div class="pager">
         {% if posts.has_previous %}
-            <span class="p"><a href="?page={{ posts.previous_page_number }}">&larr; Precedente</a></span>  
+            <span class="p"><a href="?page={{ posts.previous_page_number }}">&larr; Previous</a></span>
         {% else %}
             <span class="p">&nbsp;</span>
         {% endif %}
             <span>Pagina <b>{{ posts.number }}</b> di {{ posts.paginator.num_pages }}</span>
         {% if posts.has_next %}
-            <span class="n"><a href="?page={{ posts.next_page_number }}">Successiva &rarr;</a></span>
+            <span class="n"><a href="?page={{ posts.next_page_number }}">Next &rarr;</a></span>
         {% else %}
             <span class="p">&nbsp;</span>
         {% endif %}

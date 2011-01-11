@@ -1,22 +1,36 @@
 {% extends "p3/base.html" %}
 {% load i18n microblog %}
-{% block PAGE_TITLE %}Pycon Italia Blog{% endblock %}
+{% block PAGE_TITLE %}Blog &mdash; {% endblock %}
+
+{% block EXTRA_HEAD %}<link rel="stylesheet" href="{{ STATIC_URL}}p5/s/blog.css" type="text/css" media="screen, projection" />
+{% endblock %}
+
 {% block MAIN_CONTENT %}
-<div class="column span-12">
-    <div class="page border clearfix">
-        {% block BLOG_HEADER %}{% endblock %}
+
+
+<!-- <div class="page {% block PAGE_CLASS %}{% endblock %}"> -->
+<div class="page">
+    <div class="container clearfix">
+
+
+        {% block BLOG_HEADER %}
+        {% endblock %}
+
 
         <div class="column span-8">
             {% block BLOG_CONTENT %}{% endblock %}
         </div>
-        <div class="column span-4 last">
-            <div class="feed"><a href="http://feeds.feedburner.com/pyconit">Feed RSS</a></div>
 
-            {% block BLOG_POST_INFO %}{% endblock %}
+
+        <div class="column span-4 last">
+            <!--
+            <div class="feed"><a href="http://feeds.feedburner.com/pyconit">Feed RSS</a></div>
+            -->
+			{% block BLOG_POST_INFO %}{% endblock %}
 
             <div id="blog-archives-browser">
                 {% comment %}
-                {% category_list as categories %}                
+                {% category_list as categories %}
                 {% if categories %}
                     <h3>{% trans "Categorie" %}</h3>
                     <ul>
@@ -26,7 +40,7 @@
                     </ul>
                 {% endif %}
                 {% endcomment %}
-                
+
                 <h3>{% trans "Archivio" %}</h3>
                 {% year_list as years %}
                 <ul>
@@ -34,8 +48,16 @@
                     <li><a href="{% url microblog-list-by-year year=d %}">{{ d }}</a> ({{ count }})</li>
                     {% endfor %}
                 </ul>
+
             </div>
         </div>
+
+
+
+    <!-- /container -->
     </div>
+<!-- /page -->
 </div>
+
+
 {% endblock %}

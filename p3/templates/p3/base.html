@@ -1,18 +1,26 @@
-{% load conference pages_tags i18n tagging_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
+{% load conference pages_tags i18n tagging_tags %}
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="description" content="" />
+    <meta charset="UTF-8">
 
-    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %} &mdash; {% endif %}{% endblock %}PyCon Italia Qu4ttro</title>
+    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %} &mdash; {% endif %}{% endblock %} EuroPython 2011: Florence, June 23&ndash;26</title>
 
-    <link rel="stylesheet" href="{{ STATIC_URL }}p4/s/site.css" type="text/css" media="screen" />
-    <!--[if lte IE 6]>
-    <link rel="stylesheet" href="{{ STATIC_URL }}p4/s/ie.css" type="text/css" media="screen" />
-    <![endif]-->
-    <link rel="shortcut icon" href="{{ STATIC_URL }}p4/i/favicon.ico" type="image/vnd.microsoft.icon" />
-    <link rel="icon" href="{{ STATIC_URL }}p4/i/favicon.png" type="image/png" />
+    <link rel="icon" href="{{ STATIC_URL }}p5/i/favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="{{ STATIC_URL }}p5/i/favicon.ico" type="image/vnd.microsoft.icon" />
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/reset.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/grid.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/form.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="screen, projection" />
+
+<!--     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" media="screen, projection" />     -->
+
+<!--[if lt IE 9]>
+    <script src="{{ STATIC_URL }}p5/j/html5.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
+<![endif]-->
     <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="http://feeds.feedburner.com/pyconit" />
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -50,160 +58,219 @@
     {% block EXTRA_HEAD %}{% endblock %}
 </head>
 <body id="{% block BODY_ID %}page{% endblock %}">
-    <div id="pre-header">      
-        <!--[if lte IE 6]>
-        <div id="please-upgrade">
-            Your browser is outdated. Please upgrade to a newer version of Internet Explorer or <a href="http://browsehappy.com/">pick your browser of choice</a>.
-        </div>
-        <![endif]-->
+<!--[if lt IE 7]>
+<div class="please-upgrade">
+        Il tuo browser non è supportato. Sei pregato di aggiornare <a href="http://www.microsoft.com/windows/internet-explorer/"><b>Internet Explorer</b></a> o <a href="http://browsehappy.com/"><b>scegliere un browser alternativo</b></a>.
+</div>
+<![endif]-->
 
-        <div id="nav">    
-            <ul class="clearfix">
-                {% navi_menu1_pages as pages %}
-                {% for p in pages %}
-                <li class="{% ifequal current_page p %}current{% endifequal %}">
-                    <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
-                </li>
-                {% endfor %}
-                {% with request.META.PATH_INFO|slice:"1:5" as f %}
-                <li class="{% ifequal f "blog" %}current{% endifequal %}">
-                    <a href="/blog/">Blog</a>
-                </li>
-                {% endwith %}
-
-                <li id="li-chat">
-                    <div id="habla_available_div" class="hidden"><a href="#" onclick="habla_window.show()">Chat</a></div>
-                    <div id="habla_unavailable_div"><a href="#" title="Nessun operatore disponibile">Chat</a></div>
-                </li>
-                {% for l in LANGUAGES %}{% ifnotequal LANGUAGE_CODE l.0 %}<li id="li-lang"><a href="#" id="l-{{l.0}}" class="lang-selector">{{ l.1 }}</a></li>{% endifnotequal %}{% endfor %}
-            </ul>
-            <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><div style="display: inline;"><input type="hidden" name="language" value="" /></div></form>
-        </div>
-    </div> 
-    <div id="header">
+{% block HEADER_BLOCK %}
+<header>
+    <nav  class="darker">
         <div class="container clearfix">
-            <div id="logo">
-                <a href="/" title="PyCon Quattro Home"><img src="{{ STATIC_URL }}p4/i/pycon-logo.png" alt="Pycon Quattro Italia" height="265" width="280" /></a>
-            </div>
 
-            <div class="column span-10 prepend-3 last">
-                <div id="when-where">
-                    <div id="donate-button">
-                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-                        <input type="hidden" name="cmd" value="_s-xclick">
-                        <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG">
-                        <input type="image" src="https://www.paypal.com/it_IT/IT/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - Il sistema di pagamento online più facile e sicuro!">
-                        <img alt="" border="0" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1">
-                        </form>
-                    </div>
-                    <div>
-                        <h2>FIRENZE &mdash; 7, 8 e 9 MAGGIO 2010</h2>
-                        <p>{% trans "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme." %}</p>
-                    </div>
-                </div>
-            </div>
-         <!--  /container  -->
-        </div>
+            <div class="span-8">
+                <ul>
+                    {% with request.META.PATH_INFO as pth %}
+                    <li class="{% ifequal pth "/" %}current{% endifequal %}">
+                        <a href="/">Home</a>
+                    </li>
+                    {% endwith %}
 
-    <!-- /header -->
-    </div>
-
-    <div id="wrapper">
-        <div class="container clearfix">
-            {% block MAIN_CONTENT %}{% endblock %}
-            <div class="column span-2 last">
-                <div id="sponsor">
-                    <h4>{% trans "I nostri sponsor" %}</h4>
-                    {% conference_sponsor "pycon4" as sponsor %}
-                    {% for s in sponsor %}
-                    <div class="ad">
-                        <a href="{{ s.url }}">
-                            <img src="{{ SPONSOR_LOGO_URL }}{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="70" />
-                        </a>
-                    </div>
+                    {% navi_menu1_pages as pages %}
+                    {% for p in pages %}
+                    <li class="{% ifequal current_page p %}current{% endifequal %}">
+                        <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
+                    </li>
                     {% endfor %}
-                </div>
-            <!-- /column -->
+                    {% with request.META.PATH_INFO|slice:"1:5" as f %}
+                    <li class="{% ifequal f "blog" %}current{% endifequal %}">
+                        <a href="/blog/">Blog</a>
+                    </li>
+                    {% endwith %}
+
+                    {% comment %}
+                    <li id="li-chat">
+                        <div id="habla_available_div" class="hidden"><a href="#" onclick="habla_window.show()">Chat</a></div>
+                        <div id="habla_unavailable_div"><a href="#" title="Nessun operatore disponibile">Chat</a></div>
+                    </li>
+                    {% for l in LANGUAGES %}{% ifnotequal LANGUAGE_CODE l.0 %}<li id="li-lang"><a href="#" id="l-{{l.0}}" class="lang-selector">{{ l.1 }}</a></li>{% endifnotequal %}{% endfor %}
+                    {% endcomment %}
+                </ul>
+                <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><div style="display: inline;"><input type="hidden" name="language" value="" /></div></form>
             </div>
-        <!-- /container -->
+
+            <div class="span-4 last">
+                <div class="user">
+                    {% if request.user.is_authenticated %}
+                        Logged in as <b>{{ request.user.first_name }} {{ request.user.last_name }}</b> &bull; <a href="/logout/?next=/">Log out</a>
+                    {% else %}
+                        <a href="/accounts/login/?next=/">Log in</a>
+                    {% endif %}
+                </div>
+            </div>
+
         </div>
-    <!-- /wrapper -->
+    </nav>
+
+    <div class="container clearfix">
+
+        <div class="span-6">
+            <div class="logo">
+                <a title="EuroPython home" href="./index.html"><img src="{{ STATIC_URL }}p5/i/europython-logo.png" alt="EuroPython 2011" title="" width="330" height="110" /></a>
+            </div>
+        </div>
+
+        <div class="span-3">
+            <div class="buy badge">
+                <h5><a href="#">Buy Tickets</a></h5>
+                Starting from <b>99€</b>
+            </div>
+        </div>
+
+        <div class="span-3 last">
+            <div class="chat badge">
+                <h5><a href="#">Get Support</a></h5>
+                Chat with organizers
+            </div>
+        </div>
+
+
+    <!--     /container -->
     </div>
 
-    <div id="footer" style="clear: both">
-        <div class="container clearfix">
-            {% conference_mediapartner "pycon4" as partner %}
-            {% if partner %}
-            <div id="media-partner" class="clearfix">
-                <h4>{% trans "Media partner" %}</h4>
-                {% for s in partner %}
-                <div class="ad">
-                    <a href="{{ s.url }}"><img src="{{ MEDIAPARTNER_LOGO_URL }}{{ s.logo|image_resized }}" alt="{{ s.partner }}" width="110" height="70" /></a>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+</header>
+{% endblock %}
+
+{% block TEASER %}{% endblock %}
+
+
+
+<div class="page{% block BODY_CLASS %}{% endblock %}">
+    <div class="container clearfix">
+        {% block MAIN_CONTENT %}
+        {% endblock %}
+    <!-- /container -->
+    </div>
+<!-- /page -->
+</div>
+
+
+{% block FOOTER_BLOCK %}
+
+<div class="sponsors">
+
+    <div class="container clearfix">
+        <h5>Our Sponsors</h5>
+
+        <div class="ad">
+            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+
+        <div class="ad">
+            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+
+        <div class="ad">
+            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+
+        <div class="ad">
+            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+
+        <div class="ad">
+            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+
+        <div class="ad last">
+            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    <div class="container clearfix">
 
             {% navi_menu3_pages as pages %}
-            <div id="footer-nav">
-                <h4>PyCon Quattro</h4>
-                <ul>
-                    {% for p in pages %}
-                    <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
-                    {% endfor %}
-                </ul>
+            <div class="span-3">
+                <nav class="darker">
+                    <h5>&nbsp;</h5>
+                    <ul>
+                        {% for p in pages %}
+                        <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
+                        {% endfor %}
+                    </ul>
+                </nav>
             </div>
 
-            <div id="elsewhere">
-                <h4>Ci trovi anche su&hellip;</h4>
-                <ul>
-                    <li><img src="{{ STATIC_URL }}p4/i/twitter-16x16.png" alt="Twitter" width="16" height="16"/><a href="http://twitter.com/pyconit">Twitter</a></li>
 
-                    <li><img src="{{ STATIC_URL }}p4/i/facebook-16x16.png" alt="Facebook" width="16" height="16"/><a href="http://www.facebook.com/group.php?gid=92045427216">Facebook</a></li>
-                     {% comment %}
-                     <li><img src="{{ STATIC_URL }}p4/i/linkedin-16x16.png" alt="LinkedIn" width="16" height="16"/><a href="http://www.linkedin.com/groups?about=&amp;gid=1790402&amp;trk=anet_ug_grppro">LinkedIn</a></li>
-                     {% endcomment %}
-                </ul>
-            </div>
-
-            <div class="column span-7 append-1">
-                <h4>Credits</h4>
-                <p>Copyright &copy; 2007&ndash;2010 Python Italia, with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
-                <p>CF 94144670489, P. IVA 05753460483</p>
-            </div>
-            
-            <div class="column span-2">
-                <h4>Accounting System</h4>                    
-                <p><a href="http://www.softwell.it/">Softwell</a></p>                    
+            <div class="span-5">
+                <div class="darker twitter">
+                    <h5><span>Overheard on</span> Twitter</h5>
+                    <ul>
+                        <li>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit.</li>
+                        <li>Nam tincidunt @rhoncus urna. Aliquam id massa</li>
+                        <li>Quisque ultrices gravida pede. Mauris accumsan</li>
+                        <li>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit.</li>
+                        <li>Nam tincidunt @rhoncus urna. Aliquam id massa</li>
+                    </ul>
+                    <div class="">
+                        <a href="http://twitter.com/europython">Follow @europython on Twitter</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="column span-2 last">
-                <h4>Progetto grafico</h4>
-                <p><a href="http://passiomatic.com/">Andrea Peltrin</a></p>
+
+            <div class="span-4 last">
+                <div class="donate">
+                    <h5><span>Please</span> Donate</h5>
+
+                    <p>Help the Python Software Foundation... Phasellus condimentum bibendum dolor. Mauris sed ipsum. Phasellus in diam. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo.</p>
+
+                    <p class="we-accept">
+                        <img src="{{ STATIC_URL }}p5/i/icon-visa.png" alt="icon-visa" width="32" height="32" />
+                        <img src="{{ STATIC_URL }}p5/i/icon-mastercard.png" alt="icon-mastercard" width="32" height="32" />
+                        <img src="{{ STATIC_URL }}p5/i/icon-amex.png" alt="icon-amex" width="32" height="32" />
+                        <img src="{{ STATIC_URL }}p5/i/icon-paypal.png" alt="icon-paypal" width="32" height="32" />
+                    </p>
+
+                    <div class="button nut">
+                        <a href="#">Donate Now</a>
+                    </div>
+                </div>
             </div>
+
+
 
             <hr />
 
-            <div id="django-badge"><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite80x15.gif"  height="15" alt="A Django site." title="A Django site." /></a></div>
-        </div><!-- container -->
-    </div><!-- /footer -->
+            <div class="span-8">
 
-    <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-    </script>
-    <script type="text/javascript">
-        try {
-            var pageTracker = _gat._getTracker("UA-1860245-1");
-            pageTracker._trackPageview();
-        } catch(err) {
-        }
-    </script>
-    <script type="text/javascript" src="http://static.hab.la/js/wc.js"></script>
-    <script type="text/javascript"> 
-        config = new hbl.hwindow.config();
-        config.vars["start_hidden"] = 1;
-        wc_init("1751-12112149-10-1389", config);
-    </script>
+                <div class="darker legalese">
+                    <p>&copy; 2007&ndash;2011 <a href="http://python.it/">Python Italia</a>, with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
+                </div>
+
+            </div>
+
+            <div class="span-4 last">
+
+                <div class="darker feeds">
+                    <img src="{{ STATIC_URL }}p5/i/icon-feed.png" alt="" width="12" height="12" />&nbsp;<a href="#">Recent blog posts</a>
+                </div>
+
+            </div>
+
+<!--     /container -->
+    </div>
+
+</footer>
+
+{% endblock %}
+
 </body>
 </html>
+
+

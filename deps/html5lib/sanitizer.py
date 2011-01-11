@@ -152,7 +152,9 @@ class HTMLSanitizerMixin(object):
                             continue
                         val_unescaped = re.sub("[`\000-\040\177-\240\s]+", '',
                                                unescape(attrs[attr])).lower()
-                        if (re.match("^[a-z0-9][-+.a-z0-9]*:",val_unescaped) or
+                        #remove replacement characters from unescaped characters
+                        val_unescaped = val_unescaped.replace(u"\ufffd", "")
+                        if (re.match("^[a-z0-9][-+.a-z0-9]*:",val_unescaped) and
                             (val_unescaped.split(':')[0] not in 
                              self.allowed_protocols)):
                             del attrs[attr]
@@ -162,8 +164,8 @@ class HTMLSanitizerMixin(object):
                                                  ' ',
                                                  unescape(attrs[attr]))
                     if (token["name"] in self.svg_allow_local_href and
-                        'xlink:href' in attrs and re.find('^\s*[^#\s].*',
-                                                          attrs['xlink:href'])):
+                        'xlink:href' in attrs and re.search('^\s*[^#\s].*',
+                                                            attrs['xlink:href'])):
                         del attrs['xlink:href']
                     if attrs.has_key('style'):
                         attrs['style'] = self.sanitize_css(attrs['style'])
@@ -177,7 +179,7 @@ class HTMLSanitizerMixin(object):
                     token["data"] = "<%s%s>" % (token["name"],attrs)
                 else:
                     token["data"] = "<%s>" % token["name"]
-                if token["type"] == tokenTypes["EmptyTag"]:
+                if token["selfClosing"]:
                     token["data"]=token["data"][:-1] + "/>"
                 token["type"] = tokenTypes["Characters"]
                 del token["name"]
