@@ -156,18 +156,17 @@
 <footer>
     <div class="container clearfix">
 
-            {% navi_menu3_pages as pages %}
             <div class="span-3">
                 <nav class="darker">
                     <h5>&nbsp;</h5>
                     <ul>
+                        {% navi_menu3_pages as pages %}
                         {% for p in pages %}
                         <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
                         {% endfor %}
                     </ul>
                 </nav>
             </div>
-
 
             <div class="span-5">
                 <div class="darker twitter">
@@ -185,13 +184,10 @@
                 </div>
             </div>
 
-
             <div class="span-4 last">
                 <div class="donate">
                     <h5><span>Please</span> Donate</h5>
-
                     <p>Help the Python Software Foundation... Phasellus condimentum bibendum dolor. Mauris sed ipsum. Phasellus in diam. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo.</p>
-
                     <p class="we-accept">
                         <img src="{{ STATIC_URL }}p5/i/icon-visa.png" alt="icon-visa" width="32" height="32" />
                         <img src="{{ STATIC_URL }}p5/i/icon-mastercard.png" alt="icon-mastercard" width="32" height="32" />
@@ -205,34 +201,23 @@
                 </div>
             </div>
 
-
-
             <hr />
 
             <div class="span-8">
-
                 <div class="darker legalese">
                     <p>&copy; 2007&ndash;2011 <a href="http://python.it/">Python Italia</a>, with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
                 </div>
-
             </div>
 
             <div class="span-4 last">
-
                 <div class="darker feeds">
                     <img src="{{ STATIC_URL }}p5/i/icon-feed.png" alt="" width="12" height="12" />&nbsp;<a href="#">Recent blog posts</a>
                 </div>
-
             </div>
-
-<!--     /container -->
     </div>
 
 </footer>
-
 {% endblock %}
 
 </body>
 </html>
-
-
