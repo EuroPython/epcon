@@ -177,7 +177,7 @@ GOOGLE_MAPS_CONFERENCE = {
 DEFAULT_URL_PREFIX = 'http://www.pycon.it'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
-P3_TWITTER_USER = 'pyconit'
+P3_TWITTER_USER = 'europython'
 
 try:
     from settings_locale import *

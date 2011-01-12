@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load conference pages_tags i18n tagging_tags %}
+{% load conference pages_tags i18n tagging_tags p3 %}
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
@@ -165,19 +165,7 @@
             </div>
 
             <div class="span-5">
-                <div class="darker twitter">
-                    <h5><span>Overheard on</span> Twitter</h5>
-                    <ul>
-                        <li>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit.</li>
-                        <li>Nam tincidunt @rhoncus urna. Aliquam id massa</li>
-                        <li>Quisque ultrices gravida pede. Mauris accumsan</li>
-                        <li>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit.</li>
-                        <li>Nam tincidunt @rhoncus urna. Aliquam id massa</li>
-                    </ul>
-                    <div class="">
-                        <a href="http://twitter.com/europython">Follow @europython on Twitter</a>
-                    </div>
-                </div>
+                {% box_latest_tweets %}
             </div>
 
             <div class="span-4 last">
@@ -238,7 +226,6 @@
     </script>
 <!-- begin olark code --> <script type='text/javascript'>/*<![CDATA[*/ window.olark||(function(k){var g=window,j=document,a=g.location.protocol=="https:"?"https:":"http:",i=k.name,b="load",h="addEventListener";(function(){g[i]=function(){(c.s=c.s||[]).push(arguments)};var c=g[i]._={},f=k.methods.length;while(f--){(function(l){g[i][l]=function(){g[i]("call",l,arguments)}})(k.methods[f])}c.l=k.loader;c.i=arguments.callee;c.p={0:+new Date};c.P=function(l){c.p[l]=new Date-c.p[0]};function e(){c.P(b);g[i](b)}g[h]?g[h](b,e,false):g.attachEvent("on"+b,e);c.P(1);var d=j.createElement("script"),m=document.getElementsByTagName("script")[0];d.type="text/javascript";d.async=true;d.src=a+"//"+c.l;m.parentNode.insertBefore(d,m);c.P(2)})()})({loader:(function(a){return "static.olark.com/jsclient/loader1.js?ts="+(a?a[1]:(+new Date))})(document.cookie.match(/olarkld=([0-9]+)/)),name:"olark",methods:["configure","extend","declare","identify"]}); olark.identify('1751-12112149-10-1389');/*]]>*/</script> <!-- end olark code -->
     <script type='text/javascript'>
-    
     olark.extend(function(api){
         if(api.chat.operatorsAreAvailable()) {
             $('#habla_available_div').show();
@@ -249,7 +236,6 @@
             $('#habla_unavailable_div').show();
         }
     });
-    
     </script> 
 </body>
 </html>

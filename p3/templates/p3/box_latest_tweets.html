@@ -1,14 +1,11 @@
 {% load i18n p3 %}
-<div id="twitter">
-    <div id="latest-tweet" class="section">
-    <h2>{% trans "Da Twitter" %}</h2>
-    {% latest_tweets 1 as tweets %}
-    {% for tweet in tweets %}
-    <p>{{ tweet|convert_links }}</p>
-    {% endfor %}
-    </div>
-    <div id="follow-us">
-        <p><a href="http://twitter.com/pyconit">{% trans "Seguici su Twitter" %}</a><br />
-        <span>({% trans "siamo già in" %} {{ tweets.0.followers_count }}!)</span></p>
+<div class="darker twitter">
+    <h5><span>Overheard on</span> Twitter</h5>
+    {% latest_tweets 5 as tweets %}
+    <ul>
+        {% for tweet in tweets %}<li>{{ tweet|convert_links }}</li>{% endfor %}
+    </ul>
+    <div class="">
+        <a href="http://twitter.com/europython">Follow @europython on Twitter</a>
     </div>
 </div>
