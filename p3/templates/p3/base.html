@@ -15,46 +15,17 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="screen, projection" />
 
-<!--     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" media="screen, projection" />     -->
-
+    {% comment %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" media="screen, projection" />
+    {% endcomment %}
 <!--[if lt IE 9]>
     <script src="{{ STATIC_URL }}p5/j/html5.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
 <![endif]-->
     <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="http://feeds.feedburner.com/pyconit" />
 
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p4/j/utils.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/jquery.form.js"></script>
-    {% if current_page %}
-        {% tags_for_object current_page as ptags %}
-        {% for t in ptags %}
-            {% ifequal t.name "google-maps" %}
-    <script type="text/javascript" src="http://www.google.com/jsapi?key={{ GOOGLE_MAPS_KEY }}"></script>
-    <script type="text/javascript">
-        google.load("maps", "2", { "other_params": "sensor=false" });
-        $(document).ready(function() {
-            $(document).unload(function() { google.maps.Unload() });
-            $('.automap').each(function() { initGMAP(this.id); });
-        });
-    </script>
-    <script type="text/javascript" src="/p3/gmap.js"></script>
-            {% endifequal %}
-        {% endfor %}
-    {% endif %}
-    <script type="text/javascript">
-    //<![CDATA[
-        $(function() {
-            $('.lang-selector').click(function(e) {
-                e.preventDefault();
-                var f = $('#change-language').get(0);
-                f.language.value = this.id.split('-')[1];
-                f.submit();
-                return false;
-            });
-        });
-    //]]>
-    </script>
     {% block EXTRA_HEAD %}{% endblock %}
 </head>
 <body id="{% block BODY_ID %}page{% endblock %}">
