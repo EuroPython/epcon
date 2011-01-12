@@ -196,7 +196,18 @@
                     </p>
 
                     <div class="button nut">
-                        <a href="#">Donate Now</a>
+                        <form id="donate-form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG">
+                            <img alt="" border="0" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1">
+                            <a href="#" title="PayPal - The safer, easier way to pay online!">Donate Now</a>
+                            <script type="text/javascript">
+                            $('#donate-form a').click(function(e) {
+                                e.preventDefault();
+                                $('#donate-form').submit();
+                            });
+                            </script>
+                        </form>
                     </div>
                 </div>
             </div>
