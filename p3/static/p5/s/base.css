@@ -74,66 +74,6 @@ hr {
 }
 
 
-
-.button {
-    text-align: center;
-}
-
-.button.mini {
-    text-align: left;
-}
-
-.button a {
-
-    color: #fff;
-
-	background: #4895a3 url(../i/button-b.png) center top repeat-x;
-	padding: 5px 10px;	
-	
-    border: 1px solid #3d7e8a;
-		
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	
-	
-	text-shadow: #316770 1px 1px 1px;
-	
-    display: inline-block;
-    
-    -webkit-box-shadow: 0 1px 3px #7d6f60;
-}
-
-
-
-.button.nut a {
-
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
-	border-color: #aba18f;
-
-    color: #301d1d;    
-
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;
-    
-
-}
-
-.button.mini a {
-    padding: 2px 5px;
-
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
-	border-color: #aba18f;
-
-    color: #301d1d; 
-    
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
-
-    -webkit-box-shadow: 0 1px 2px #7d6f60;
-
-}
-
-
-
 /* ========= */
 /* ! links   */
 /* ========= */
@@ -184,7 +124,8 @@ a.tag {
     border-bottom: 1px solid #b0ab63;
     border-right: 1px solid #b0ab63;
 */
-    
+
+    -moz-border-radius: 3px;    
     border-radius: 3px;
     
 }
@@ -192,6 +133,54 @@ a.tag {
 a.tag:hover {
     background-color:#fff;
 }
+
+.button {
+    text-align: center;
+}
+
+/*
+.button.mini {
+    text-align: left;
+}
+*/
+
+.button a {
+
+    color: #fff;
+
+	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+	padding: 5px 10px;	
+	
+    border: 1px solid #3d7e8a;
+		
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+	
+	text-shadow: #316770 1px 1px 1px;
+	
+    display: inline-block;
+    
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
+}
+
+.button.mini a {
+    padding: 2px 5px;
+
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+
+    color: #301d1d; 
+    
+	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
+
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
+
+}
+
 
 /* ============= */
 /* ! utilities   */
@@ -203,35 +192,21 @@ a.tag:hover {
 .invisible { visibility: hidden !important; }
 .clickable { cursor: pointer }
 
+/* ================== */
+/* ! please-upgrade   */
+/* ================== */
 
-
-
-/* ============== */
-/* ! pre-header   */
-/* ============== */
-
-
-
-#pre-header {
-
-    width: 100%;        
-}
-
-#please-upgrade  {
-
+.please-upgrade  {
 
 	text-align: center;
-
-/* 	font-size: 13px; */
 
 	padding: 5px 0;
 	
 	color: #222d4d;
 	background: #FFF9B2;
-
 }
 
-#please-upgrade  a {
+.please-upgrade  a {
     color: #222d4d;
 }
 
@@ -241,10 +216,7 @@ a.tag:hover {
 /* ======= */
 
 header {
-
-/*     -webkit-transform: rotate(-1deg); */
 }
-
 
 header nav {
     background: #301d1d;		
@@ -257,8 +229,7 @@ header .user {
     font-size: 12px;
     line-height: 30px;
     
-    color: #aba18f;
-    
+    color: #aba18f;    
         
     padding: 5px 0;
 }
@@ -296,14 +267,13 @@ header nav li {
 
 }
 
-header nav ul a {
-
+header nav.darker li a {
 	border: none;	
-
 }
 
-header nav li.current a {
+header nav.darker li.current a {
     color: #9ae3f0;
+	border: none;	    
 }
 
 
@@ -333,29 +303,20 @@ header #li-chat #habla_unavailable_div a {
 */
 
 
-/*
+
 
 .badge {
+
     text-align: center;
-    font-size: 12px;
-    
-    min-height: 140px;
-    
-}
-*/
 
-
-.badge {
-
-    color: #fff;
-
-	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+	background: #4895a3 url(../i/badge-b.png) center top repeat-x;
 	padding: 5px 10px;	
 	
     border: 1px solid #3d7e8a;
-
     
-    -webkit-box-shadow: 0 1px 3px #7d6f60;
+    -webkit-box-shadow: 1px 1px 2px #7d6f60;
+    -moz-box-shadow: 1px 1px 2px #7d6f60;
+
     		
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
@@ -368,30 +329,40 @@ header #li-chat #habla_unavailable_div a {
 }
 
 .badge a {
-    border-bottom: none;
+    border-bottom: none;	
+ 	text-shadow: #316770 1px 1px 1px;
+
+    color: #fff;
+     	   
+/* 	text-shadow: rgba(100%, 100%, 100%, .7) 1px 1px 1px;	     */
+    
 }
 
+/*
 .badge a:hover {
     color: #fff;
 }
+*/
 
-.badge h5 {
-/*     padding: 55px 0 0 0; */
-    line-height: 24px;
-    
-	text-shadow: rgba(100%, 100%, 100%, .7) 1px 1px 1px;
-	    
+.badge span {
+	text-shadow: rgba(100%, 100%, 100%, .6) 1px 1px 1px;	    
+
+ 	font: normal 24px/24px "League Gothic", "Arial Narrow", sans-serif;		
+	text-transform: uppercase;
+
+	color: #301d1d;	
+	display: block;
 }
 
-.badge.buy {
-/*     background: transparent url(../i/badge-buy-2.png) 20px center no-repeat; */
-}
 
 .badge.chat {
-	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	background: #aba190 url(../i/badge-n.png) center top repeat-x;
 	border-color: #aba18f;
+}
 
-
+.badge.chat a {
+ 	text-shadow: #634646 1px 1px 1px;	
+	
 }
 
 
@@ -405,7 +376,7 @@ header #li-chat #habla_unavailable_div a {
 /* 	font: normal 70px/48px "League Gothic", "Arial Narrow", sans-serif;     */
 	
 
-	margin: 20px 0 20px 0;
+	margin: 20px 0 40px 0;
 }
 
 .logo a {
@@ -425,38 +396,6 @@ header #li-chat #habla_unavailable_div a {
 
 */
 
-
-
-#when-where  {
-
-    margin: 20px 0 0 0;
-}
-
-#when-where h2 {
-
-    font-size: 24px;
-    line-height: 30px;
-    
-    color: #4d5f5f;
-    
-/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
-}
-
-
-#when-where p {
-
-
-    font-size: 16px;
-    font-weight: bold;
-    font-style: italic;
-    
-    color: #5e5d3b;
-    
-/*     text-shadow: rgba(255, 255, 255, .95) 1px 1px 2px; */
-    
-/* 	text-shadow: #4d6161 1px 1px 1px; */
-    
-}
 
 
 
@@ -635,7 +574,7 @@ footer nav ul {
 
 	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
 
-	margin: 30px 0 30px -20px;
+	margin: 0 0 30px -20px;
 	
 /*     text-shadow: #161e33  1px 1px 1px;  */
 
@@ -649,6 +588,7 @@ footer nav ul {
 /* ! sidebar   */
 /* =========== */
 
+/*
 
 
 #sidebar {
@@ -712,6 +652,7 @@ footer nav ul {
 }
 
 
+*/
 
 /* =================== */
 /* ! speaker           */
@@ -1075,7 +1016,7 @@ footer nav ul {
 
 	font: normal 18px/30px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
 	
-	margin: 20px 0 40px 0;
+	margin: 0 0 40px 0;
 }
 
 .home h2 {
@@ -1141,7 +1082,7 @@ section.teaser {
 }
 
 section.teaser {
-    background: transparent url(../i/speakers-2.jpg)  center top repeat-x;
+    background: transparent url(../i/speakers.jpg)  center top repeat-x;
     
     min-height: 300px;
     
@@ -1174,8 +1115,8 @@ section.teaser p {
 
     margin: 0;
 
-    min-height: 110px; 
-    background: transparent url(../i/arrow-right.png) 50px bottom  no-repeat
+    min-height: 100px; 
+    background: transparent url(../i/arrow-right.png) 40px bottom  no-repeat
 }
 
 .side-h2 h2 span {
