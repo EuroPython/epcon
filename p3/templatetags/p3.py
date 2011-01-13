@@ -97,8 +97,6 @@ def box_speaker_talks(context, speaker):
 
 @register.inclusion_tag('p3/box_latest_tweets.html', takes_context=True)
 def box_latest_tweets(context):
-    request = context['request']
-    page = context['current_page']
     return {}
 
 # I tweet venogno scaricati ogni 5 minuti, a volte però twitter non risponde o
