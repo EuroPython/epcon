@@ -2,6 +2,19 @@
 {% load i18n conference %}
 
 {% block PAGE_TITLE %}{{ talk.title }} &mdash; {% endblock %}
+
+{% block EXTRA_HEAD %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}conference/projekktor/projekktor.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}conference/projekktor/style/projekktor_theme_tll/style.css" type="text/css" media="screen" />
+<script type="text/javascript">
+var PROJEKKTOR_CONFIG = {
+    playerFlashMP4:    "{{ STATIC_URL }}conference/projekktor/playerMP4.swf",
+    playerFlashMP3:    "{{ STATIC_URL }}conference/projekktor/playerMP3.swf"
+};
+</script>
+{% endblock %}
+
 {% block MAIN_CONTENT %}
 <div class="column span-12">
     <div id="talk-page" class="page border clearfix">
@@ -34,13 +47,12 @@
 
             <hr />
 
-            {% if talk.video_type %}
+            {% if talk|embed_video %}
             <div id="video" class="section">
-                <h2>Video</h2>
-                {{ talk|embed_video:"500,438" }}
+                <h2>{% trans "Video" %}</h2>
+                {{ talk|embed_video:"720,576" }}
             </div>
             {% endif %}
-
         </div>
 
         <div class="column span-4 last">
