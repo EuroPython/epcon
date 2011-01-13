@@ -18,6 +18,7 @@ import twitter
 from p3 import models
 from pages import models as PagesModels
 from conference import models as ConferenceModels
+from conference.settings import CONFERENCE_STUFF_DIR, CONFERENCE_STUFF_URL
 
 mimetypes.init()
 
@@ -193,3 +194,15 @@ def convert_links(tweet, args=None):
     text = re.sub(r'@([^\s]*)', r'@<a href="http://twitter.com/\1">\1</a>', text)
     text = re.sub(r'([^&])#([^\s]*)', r'\1<a href="http://twitter.com/search?q=%23\2">#\2</a>', text)
     return mark_safe(text)
+
+@register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
+def box_image_gallery(context):
+    request = context['request']
+    images = []
+    for f in os.listdir(CONFERENCE_STUFF_DIR):
+        images.append('%s%s' % (CONFERENCE_STUFF_URL, f))
+   
+    context.update({
+        'images': images,
+    })
+    return context
