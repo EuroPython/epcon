@@ -33,7 +33,7 @@ LANGUAGE_CODE = 'it'
 
 ugettext = lambda s: s
 LANGUAGES = (
-    ('it', ugettext('Italiano')),
+#    ('it', ugettext('Italiano')),
     ('en', ugettext('English')),
 )
 PAGE_LANGUAGES = LANGUAGES
