@@ -19,6 +19,21 @@
     border: 5px solid #aba18f;
 }
 
+.cms .floated  {
+    float: left;
+    margin-right: 10px;
+}
+
+.cms .floated img {
+    display: block;
+    border: 1px solid #aba18f;
+}
+
+.cms .floated.right  {
+    float: right;
+    margin: 0 0 0 10px;
+}
+
 .cms p, 
 .cms dl, 
 .cms ul, 
@@ -200,6 +215,7 @@
 */
 
 
+
 /* ================ */
 /* ! preformatted   */
 /* ================ */
@@ -233,7 +249,6 @@
   visibility: visible;  
 }
 */
-
 
 
 /* ========= */
