@@ -4,7 +4,7 @@
 {% block TEASER %}
 <div class="container">
     <div class="intro clear">
-        <p><b>EuroPython</b> is a conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and programmers.</p>
+        <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and programmers.</p>
     </div>
 </div>
 
@@ -14,14 +14,14 @@
             <h2><span>Confirmed</span> Speakers</h2>
             <img src="{{ STATIC_URL }}p5/i/speakers-wanted.png" alt="" width="390" height="160" />
             <div class="button">
-                <a href="/schedule/">View <b>speakers</b> and <b>schedule</b></a>
+                <a href="/cfp/">Join us as a speaker! See the <b>call for paper</b></a>
             </div>
         </div>
 
         <div class="europython-is span-6 last">
             <h2><span>EuroPython</span> is&hellip;</h2>
             <p>
-               An occasion to follow interesting <a href="/talk/">talks</a>, do some <a href="/networking/">networking</a>, <a href="/work-python/">recruite</a> quilified staff or be recruited by great firms, and last but not least follow funky <a href="/pyevents/">PyEvents</a>.
+               An occasion to follow interesting <a href="/talk/">talks</a>, do some <a href="/networking/">networking</a>, <a href="/recruiting/">recruite</a> quilified staff or be recruited by great firms, and last but not least follow funky <a href="/pyevents/">PyEvents</a>.
             </p>
         </div>
     </div>
@@ -57,7 +57,9 @@
 <section class="where clearfix">
     <h2>Let’s meet in <span>Florence</span></h2>
     <div class="span-6">
-        <p>EuroPython 2011 will be held in Florence at <b>Hotel Mediterraneo</b>... ipsum dolor sit amet, consectetuer adipiscing elit. Nullam ultrices, nisi quis scelerisque convallis, augue et mattis justo nibh eu elit neque. Nam sapien ligula, consectetuer id, hendrerit in, cursus sed, leo. </p>
+        <p>EuroPython 2011 will be held in the world-famous beautiful city of Florence. Take 
+        the chance to visit the city and the marvellous Tuscany, bringing your partner and family with you.
+        We're preparing a great <b>partner program</b> with guided tours and visits to museums at cheap rates! </p>
     </div>
 
     <div class="span-6 last">
@@ -89,12 +91,12 @@
                 {% get_post_comment_count post as comments %}
                 <div class="meta">Posted on <b>{{ post_content.post.date|date:"M j Y" }}</b>{% if comments %} &bull; <a href="#">{{ comments }} comments</a>{% endif %}</div>
             </li>
-            {% endfor %}
+                {% endfor %}
         </ul>
     </div>
 
     <div class="side-h2 span-2">
-        <h2>EuroPython<br /><span>on your phone</span></h2>
+        <h2>EuroPython<br /><span><a href="/mobile/">on your phone</a></span></h2>
     </div>
 
     <div class="span-4 last">
