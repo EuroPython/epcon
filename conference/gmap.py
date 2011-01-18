@@ -12,7 +12,7 @@ def geocode(address, key, country):
     """
     # see http://code.google.com/intl/it/apis/maps/documentation/geocoding/#GeocodingRequests
     params = {
-        'q': address,
+        'q': address.encode('utf-8') if isinstance(address, unicode) else address,
         'key': key,
         'sensor': 'false',
         'output': 'json',
