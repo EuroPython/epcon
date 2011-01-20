@@ -18,4 +18,4 @@ class Migration(SchemaMigration):
         
     }
 
-    complete_apps = ['sauth']
+    complete_apps = ['assopy']
