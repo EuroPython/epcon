@@ -174,7 +174,7 @@ GOOGLE_MAPS_CONFERENCE = {
     'country': 'it',
 }
 
-DEFAULT_URL_PREFIX = 'http://www.pycon.it'
+DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = 'europython'
