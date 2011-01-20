@@ -119,8 +119,13 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
+    'assopy',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'assopy.auth_backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 ## used by the blog
 #FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
 

@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     (r'^conference/', include('conference.urls')),
     (r'^comments/', include('django.contrib.comments.urls')),
     (r'^hcomments/', include('hcomments.urls')),
+    (r'^accounts/', include('assopy.urls')),
 )
 
 if 'rosetta' in settings.INSTALLED_APPS:
