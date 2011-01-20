@@ -99,6 +99,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'assopy',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -119,7 +120,6 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
-    'assopy',
 )
 
 AUTHENTICATION_BACKENDS = (
