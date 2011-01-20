@@ -6,6 +6,7 @@ p3*.db
 *.mo
 stuff/sponsor/resized/*
 offline_stuff/*/output
+offline_stuff/*/*.tif
 *.swp
 Session.vim
 .DS_Store
