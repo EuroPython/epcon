@@ -1,0 +1,24 @@
+{% extends "p3/base.html" %}
+{% load assopy_tags %}
+
+{% block MAIN_CONTENT %}
+<h1>Accedi al sito...</h1>
+
+<div>
+    <form action="" method="post">{% csrf_token %}
+        <fieldset>
+            {{ form.email|field }}
+            {{ form.password|field }}
+            <input type="hidden" name="next" value="{{ next }}" />
+        </fieldset>
+        <fieldset class="border">
+            <button type="submit">login</button>
+        </fieldset>
+    </form>
+    {% if form.errors %}
+    <p class="errornote">
+        <br><b>Nome utente e/o password non corretti.</b> Riprova per favore.<br>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}
