@@ -270,3 +270,8 @@ class QuoteAdmin(MultiLingualAdminContent):
         return o.text[:80]
 
 admin.site.register(models.Quote, QuoteAdmin)
+
+class SpecialPlaceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'email')
+    
+admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)

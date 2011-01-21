@@ -335,6 +335,28 @@ class Hotel(models.Model):
     def __unicode__(self):
         return self.name
 
+SPECIAL_PLACE_TYPES = (
+    ('conf-hq', 'Conference Site'),
+    ('pyevents', 'PyEvents'),
+)
+class SpecialPlace(models.Model):
+    name = models.CharField('nome', max_length = 100)
+    address = models.CharField('indirizzo', max_length = 200, default = '', blank = True)
+    type = models.CharField(max_length = 10, choices=SPECIAL_PLACE_TYPES)
+    url = models.URLField(verify_exists = False, blank = True)
+    email = models.EmailField('email', blank = True)
+    telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
+    note = models.TextField('note', blank = True)
+    visible = models.BooleanField('visibile', default = True)
+    lng = models.FloatField('longitudine', default = 0.0, blank = True)
+    lat = models.FloatField('latitudine', default = 0.0, blank = True)
+
+    class Meta:
+        ordering = [ 'name' ]
+
+    def __unicode__(self):
+        return self.name
+
 try:
     assert settings.CONFERENCE_GOOGLE_MAPS['key']
 except (KeyError, TypeError, AssertionError):
@@ -355,6 +377,7 @@ else:
                 obj.lat = lat
                 obj.save()
     post_save.connect(postSaveHotelHandler, sender=Hotel)
+    post_save.connect(postSaveHotelHandler, sender=SpecialPlace)
 
 class DidYouKnow(models.Model):
     """
