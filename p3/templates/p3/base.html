@@ -220,6 +220,7 @@
 
 </footer>
 {% endblock %}
+    {% if 'localhost' not in request.META.HTTP_HOST %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
         document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -244,5 +245,6 @@
         }
     });
     </script> 
+    {% endif %}
 </body>
 </html>
