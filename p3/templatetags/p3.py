@@ -15,8 +15,6 @@ from django.core.cache import cache
 from django.utils.safestring import mark_safe
 import twitter
 
-from p3 import models
-from pages import models as PagesModels
 from conference import models as ConferenceModels
 from conference.settings import CONFERENCE_STUFF_DIR, CONFERENCE_STUFF_URL
 
@@ -192,6 +190,19 @@ def convert_links(tweet, args=None):
     text = re.sub(r'@([^\s]*)', r'@<a href="http://twitter.com/\1">\1</a>', text)
     text = re.sub(r'([^&])#([^\s]*)', r'\1<a href="http://twitter.com/search?q=%23\2">#\2</a>', text)
     return mark_safe(text)
+
+@register.filter
+def check_map(page):
+    """
+    controlla se la pagina passata richiede o meno una mappa
+    """
+    if page:
+        return '{% render_map' in page.expose_content()
+    return False
+
+@register.inclusion_tag('p3/render_map.html', takes_context=True)
+def render_map(context):
+    return {}
 
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
