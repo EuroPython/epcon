@@ -1,0 +1,32 @@
+{% load i18n %}
+<div class="place">
+    <h1>{{ p.name }}</h1>
+    <p class="address">{{ p.address }}</p>
+    <table>
+        {% if p.telephone %}
+        <tr>
+            <th>{% trans "telephone" %}</th>
+            <td>{{ p.telephone }}</td>
+        </tr>
+        {% endif %}
+        {% if p.email %}
+        <tr>
+            <th>{% trans "email" %}</th>
+            <td><a href="mailto:{{p.email }}">{{ p.email }}</a></td>
+        </tr>
+        {% endif %}
+        {% if p.url %}
+        <tr>
+            <th>{% trans "url" %}</th>
+            <td><a href="{{ p.url }}">{{ p.url }}</a></td>
+        </tr>
+        {% endif %}
+        {% if p.price %}
+        <tr>
+            <th>{% trans "price" %}</th>
+            <td>{{ p.price }}</td>
+        </tr>
+        {% endif %}
+    </table>
+    <p class="note">{{ p.note|safe }}</p>
+</div>

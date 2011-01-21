@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[^\.]*).xml/speakers.xml$', 'conference.views.schedule_speakers_xml', name = 'conference-schedule-speakers-xml'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[^\.]*).xml/?$', 'conference.views.schedule_xml', name = 'conference-schedule-xml'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[^\.]*)$', 'conference.views.schedule', name = 'conference-schedule'),
-    url(r'^hotels/', 'conference.views.hotels', name = 'conference-hotels'),
+    url(r'^places/', 'conference.views.places', name = 'conference-places'),
     url(r'^sponsors/(?P<sponsor>.*)/', 'conference.views.sponsor', name = 'conference-sponsor'),
     url(r'^(?P<conference>.*)/talks.xml$', 'conference.views.talks_xml', name = 'conference-talks-xml'),
 )

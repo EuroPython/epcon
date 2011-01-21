@@ -16,6 +16,7 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
 import simplejson
@@ -234,15 +235,30 @@ def genro_wrapper(request):
         context_instance = RequestContext(request))
 
 @json
-def hotels(request):
+def places(request):
     """
-    ritorna un json con gli hotel inseriti
+    ritorna un json special places ed hotel
     """
-    hotels = []
-    for h in models.Hotel.objects.filter(visible = True):
-        hotels.append({
+    places = []
+    for h in models.SpecialPlace.objects.filter(visible = True):
+        places.append({
             'id': h.id,
             'name': h.name,
+            'address': h.address,
+            'type': h.type,
+            'url': h.url,
+            'email': h.email,
+            'telephone': h.telephone,
+            'note': h.note,
+            'lng': h.lng,
+            'lat': h.lat,
+            'html': render_to_string('conference/render_place.html', {'p': h}),
+        })
+    for h in models.Hotel.objects.filter(visible = True):
+        places.append({
+            'id': h.id,
+            'name': h.name,
+            'type': 'hotel',
             'telephone': h.telephone,
             'url': h.url,
             'email': h.email,
@@ -252,10 +268,11 @@ def hotels(request):
             'affiliated': h.affiliated,
             'lng': h.lng,
             'lat': h.lat,
-            'modified': h.modified.isoformat()
+            'modified': h.modified.isoformat(),
+            'html': render_to_string('conference/render_place.html', {'p': h}),
         })
 
-    return hotels
+    return places
 
 @json
 def sponsor(request, sponsor):
