@@ -278,3 +278,87 @@ aside .cms li {
 aside .cms ul {
 /* 	list-style: outside circle url(../i/bullet-aside.png); */
 }
+
+
+
+/* ============== */
+/* ! where page   */
+/* ============== */
+
+
+.cms .hotels th {
+    border: none;
+}
+
+.cms .hotels tr.affiliated {
+    color: #96204B;
+}
+
+.cms .hotels tr.affiliated a:link,
+.cms .hotels tr.affiliated a:visited {
+    color: #96204B;
+}
+
+.cms .hotels tr.info td {
+
+    border-top: 3px solid #94946F;
+    padding: 10px 10px 10px 0;
+}
+
+.cms .hotels tr.info td h4 {
+	
+/* 	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif; */
+			
+	margin: 0 0 5px 0;
+	text-transform: none;
+}
+
+
+.cms .hotels tr.note td {
+    font-style: italic;
+    color: #383829;
+    
+    padding: 5px 10px 5px 20px;
+    font-size: 13px;
+
+    border-top: 1px dotted #94946F;
+}
+
+
+.cms .hotels tr.note td p.last-contact {
+    margin-bottom: 0;
+}
+
+
+.cms .info-hotel {
+}
+
+.cms .info-hotel h1 {
+    background: none;
+    margin: 0 0 10px 0;
+    padding: 0;
+/* 	font: bold 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif; */
+    text-shadow: none;
+}
+
+.cms .info-hotel table {
+    background: #fff;
+    border: none;
+    margin: 0;
+    width: auto;
+}
+
+.cms .info-hotel th, 
+.cms .info-hotel td {
+    font-size: 13px;
+    padding: 3px 0 3px 0;
+}
+
+.cms .info-hotel th  {
+    border-bottom: 1px dotted #94946F;
+    text-transform: capitalize;    
+    padding-right: 10px;    
+}
+
+
+
