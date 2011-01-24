@@ -146,10 +146,10 @@ PAGE_DEFAULT_LANGUAGE = 'it'
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 
-MICROBLOG_LINK = 'http://www.pycon.it'
-MICROBLOG_TITLE = 'PyconItalia blog'
-MICROBLOG_DESCRIPTION = 'ultime news da PyconItalia'
-MICROBLOG_DEFAULT_LANGUAGE = 'it'
+MICROBLOG_LINK = 'http://www.europython.eu'
+MICROBLOG_TITLE = 'Europython blog'
+MICROBLOG_DESCRIPTION = 'latest news from europython'
+MICROBLOG_DEFAULT_LANGUAGE = 'en'
 MICROBLOG_POST_LIST_PAGINATION = True
 MICROBLOG_POST_PER_PAGE = 10
 MICROBLOG_MODERATION_TYPE = 'akismet'
@@ -163,7 +163,7 @@ STATIC_DIRS = {}
 # directory dove memorizzare la roba dei vari pycon
 STUFF_DIR = None
 
-SESSION_COOKIE_NAME = 'pycon_sessionid'
+SESSION_COOKIE_NAME = 'p3_sessionid'
 
 GNR_CONFERENCE = {
     'src': 'http://assopy.pycon.it/conference/',
