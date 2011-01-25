@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
 
     url(r'^home/$', 'assopy.views.home', name='assopy-home'),
+    url(r'^janrain/token/$', 'assopy.views.janrain_token', name='assopy-janrain-token'),
 )

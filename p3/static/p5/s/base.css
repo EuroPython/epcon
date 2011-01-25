@@ -1136,3 +1136,8 @@ section.teaser p {
     *margin: -7px 0 40px 0; 
     
 }
+
+.janrain-box {
+    width: 400px;
+    height: 240px;
+}
