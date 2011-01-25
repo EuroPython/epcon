@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 
 # see: http://www.djangosnippets.org/snippets/821/
 def render_to(template):
@@ -65,3 +66,7 @@ class PasswordLostForm(forms.Form):
 @render_to('assopy/home.html')
 def home(request):
     return {}
+
+@csrf_exempt
+def janrain_token(request):
+    pass
