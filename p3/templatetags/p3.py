@@ -75,7 +75,6 @@ def box_didyouknow(context):
 @register.inclusion_tag('p3/box_googlemaps.html', takes_context = True)
 def box_googlemaps(context, what='', zoom=13):
     what = ','.join([ "'%s'" % w for w in what.split(',') ])
-    print what
     return {
         'rand': random.randint(0, sys.maxint - 1),
         'what': what,
