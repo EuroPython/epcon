@@ -26,9 +26,13 @@ def field(field, cls=None):
         classes.extend(cls.split(','))
     return _field_tpl.render(template.Context(locals()))
 
-@register.inclusion_tag('assopy/render_janrain_box.html')
-def render_janrain_box():
+@register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
+def render_janrain_box(context, next=None):
     if settings.JANRAIN:
+        # mi salvo, nella sessione corrente, dove vuol essere rediretto
+        # l'utente una volta loggato
+        if next:
+            context['request'].session['jr_next'] = next
         domain = settings.JANRAIN['domain']
         if not domain.endswith('/'):
             domain += '/'
