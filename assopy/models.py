@@ -2,7 +2,7 @@
 from django.db import models
 
 class User(models.Model):
-    user = models.OneToOneField("auth.User")
+    user = models.OneToOneField("auth.User", related_name='assopy_user')
     # aggiungere id backend
 
 class UserIdentity(models.Model):
