@@ -1,10 +1,25 @@
 # -*- coding: UTF-8 -*-
 from django import forms
-from django.conf import settings
+from django import http
+from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
+
+from assopy import janrain
+from assopy import models
+from assopy import settings
+
+import logging
+
+log = logging.getLogger('assopy.views')
+
+class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
+    status_code = 303
 
 # see: http://www.djangosnippets.org/snippets/821/
 def render_to(template):
@@ -64,4 +79,73 @@ class PasswordLostForm(forms.Form):
 @login_required
 @render_to('assopy/home.html')
 def home(request):
+    return {}
+
+@csrf_exempt
+@transaction.commit_on_success
+def janrain_token(request):
+    if request.method != 'POST':
+        return http.HttpResponseNotAllowed(('POST',))
+    redirect_to = request.session.get('jr_next', '/')
+    try:
+        token = request.POST['token']
+    except KeyError:
+        return http.HttpResponseBadRequest()
+    profile = janrain.auth_info(settings.JANRAIN['secret'], token)
+    log.info('janrain profile: %s', profile['identifier'])
+
+    current = request.user
+    duser = auth.authenticate(identifier=profile['identifier'])
+    if duser is None:
+        log.info('%s is a new identity', profile['identifier'])
+        # è la prima volta che questo utente si logga con questo provider
+        if not current.is_anonymous():
+            # l'utente corrente non è anonimo, recupero il suo utente assopy
+            # per associarci la nuova identità
+            try:
+                user = current.assopy_user
+            except models.User.DoesNotExist:
+                # può accadere che l'utente corrente non sia un utente assopy
+                log.debug('the current user "%s" will become an assopy user', current)
+                user = models.User(user=current)
+                user.save()
+        else:
+            # devo creare tutto, utente django, assopy e identità
+            current = auth.models.User.objects.create_user(janrain.suggest_username(profile), profile.get('email'))
+            try:
+                current.first_name = profile['name']['givenName']
+            except KeyError:
+                pass
+            try:
+                current.last_name = profile['name']['familyName']
+            except KeyError:
+                pass
+            current.save()
+            log.debug('new django user created "%s"', current)
+            user = models.User(user=current)
+            user.save()
+        log.debug('the new identity will be linked to "%s"', current)
+        identity = models.UserIdentity.objects.create_from_profile(user, profile)
+
+        duser = auth.authenticate(identifier=identity.identifier)
+        auth.login(request, duser)
+    else:
+        # è un utente conosciuto, devo solo verificare che lo user associato
+        # all'identità e quello loggato in questo momento siano la stessa
+        # persona
+        if current.is_anonymous():
+            # ok, non devo fare altro che loggarmi con l'utente collegato
+            # all'identità
+            auth.login(request, duser)
+        elif current != duser:
+            # l'utente corrente e quello collegato all'identità non coincidano
+            # devo mostrare un messaggio di errore
+            return HttpResponseRedirectSeeOther(reverse('assopy-janrain-login_mismatch'))
+        else:
+            # non ho niente da fare, l'utente è già loggato
+            pass
+    return HttpResponseRedirectSeeOther(redirect_to)
+
+@render_to('assopy/janrain_login_mismatch.html')
+def janrain_login_mismatch(request):
     return {}
