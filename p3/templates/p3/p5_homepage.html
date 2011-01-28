@@ -4,13 +4,34 @@
 {% block TEASER %}
 <div class="container">
     <div class="intro clear">
-        <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and programmers.</p>
+        <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
     </div>
+    
+    {% comment %}
+    {% latest_deadlines 1 as deadline %}
+        <!-- Note: if empty (no deadlines) remove the section! -->
+        <section class="cal clearfix">
+            <h3><span>{{ deadline.0.0|date:"j"}}</span><br />{{ deadline.0.0|date:"M" }}</h3>
+            <div>
+                <h4>{{ deadline.0.1 }}</h4>
+                <p><a href="/calendario/">{% trans "See all deadlines &rarr;" %}</a></p>
+            </div>
+        </section>
+    {% endcomment %}
+    
+    <section class="cal clearfix">
+        <h3><span>22</span><br />Mar</h3>
+        <div>
+            <h4>Some very long deadline title</h4>
+            <p><a href="/calendario/">See all deadlines &rarr;</a></p>
+        </div>
+    </section>
+    
 </div>
-
+    
 <section class="teaser">
     <div class="container clearfix">
-        <div class="span-6">
+        <div class="span-5">
             <h2><span>Confirmed</span> Speakers</h2>
             <img src="{{ STATIC_URL }}p5/i/speakers-wanted.png" alt="" width="320" height="160" />
             <div class="button">
@@ -18,7 +39,7 @@
             </div>
         </div>
 
-        <div class="europython-is span-6 last">
+        <div class="europython-is span-7 last">
             <h2><span>EuroPython</span> is&hellip;</h2>
             <p>
                An occasion to follow interesting <a href="/talks/">talks</a>, do some <a href="/networking/">networking</a>, <a href="/work-python/">recruite</a> qualified staff or be recruited by great firms, and last but not least follow funky <a href="/pyevents/">PyEvents</a>.
