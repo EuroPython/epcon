@@ -27,6 +27,5 @@ class Talk(forms.Form):
     title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size': 40}))
     duration = forms.TypedChoiceField(choices=cmodels.TALK_DURATION, coerce=int, initial='30') #, emtpy_value=None)
     language = forms.TypedChoiceField(choices=cmodels.TALK_LANGUAGES, initial='en') #, emtpy_value=None)
-    abstract = forms.CharField(widget=forms.Textarea())
     slides = forms.FileField(required=False)
-
+    abstract = forms.CharField(widget=forms.Textarea())
