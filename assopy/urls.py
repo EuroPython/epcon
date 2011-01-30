@@ -11,7 +11,8 @@ urlpatterns = patterns('',
     url(r'^reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm'),
     url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
 
-    url(r'^home/$', 'assopy.views.home', name='assopy-home'),
+    url(r'^profile/$', 'assopy.views.home', name='assopy-home'),
+    url(r'^profile/speaker/$', 'assopy.views.speaker', name='assopy-speaker'),
     url(r'^janrain/login-mismatch/$', 'assopy.views.janrain_login_mismatch', name='assopy-janrain-login_mismatch'),
     url(r'^janrain/token/$', 'assopy.views.janrain_token', name='assopy-janrain-token'),
 )

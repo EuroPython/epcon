@@ -1,0 +1,33 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags %}
+{% block ASSOPY_MAIN_CONTENT %}
+<nav>
+    <a href="{% url assopy-home %}">Profile / Billing information</a>
+    <a href="{% url assopy-speaker %}">Speaker</a>
+</nav>
+
+<form action="{% url assopy-speaker %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <fieldset>
+        <legend>Speaker data</legend>
+        {% for f in form_speaker %}{{ f|field }}{% endfor %}
+    </fieldset>
+    <fieldset class="border">
+        <button type="submit" name="action" value="speaker">save</button>
+    </fieldset>
+</form>
+<form action="{% url assopy-speaker %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <fieldset>
+        <legend>Submit a talk</legend>
+        {{ formset_talk.management_form }}
+    </fieldset>
+    {% for form in formset_talk.forms %}
+    <fieldset>
+        {% for f in form %}{{ f|field }}{% endfor %}
+    </fieldset>
+    {% endfor %}
+    <fieldset class="border">
+        <button type="submit" name="action" value="talks">save</button>
+    </fieldset>
+</form>
+{% endblock %}
+

@@ -5,16 +5,22 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.forms.formsets import formset_factory
 from django.db import transaction
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
 
+from assopy import forms as aforms
 from assopy import janrain
 from assopy import models
 from assopy import settings
 
+from conference import models as cmodels
+
 import logging
+from itertools import izip_longest
 
 log = logging.getLogger('assopy.views')
 
@@ -79,7 +85,86 @@ class PasswordLostForm(forms.Form):
 @login_required
 @render_to('assopy/home.html')
 def home(request):
-    return {}
+    user = request.user.assopy_user
+    if request.method == 'GET':
+        initial = user.billing()
+        form_profile = aforms.Profile(initial=initial)
+        form_billing = aforms.BillingData(initial=initial)
+    return {
+        'user': user,
+        'form_profile': form_profile,
+        'form_billing': form_billing,
+    }
+
+@login_required
+@render_to('assopy/speaker.html')
+@transaction.commit_on_success
+def speaker(request):
+    user = request.user.assopy_user
+    speaker = user.speaker
+
+    TalkFormSet = formset_factory(aforms.Talk)
+    if speaker is None:
+        initial = {}
+        talks = []
+    else:
+        initial = {'bio': getattr(speaker.getBio(), 'body', '')}
+        talks = speaker.talk_set.all()
+
+    form_speaker = aforms.Speaker(initial=initial)
+    formset_talk = TalkFormSet(initial=[
+        {
+            'title': t.title,
+            'duration': t.duration,
+            'language': t.language,
+            'abstract': getattr(t.getAbstract(), 'body', ''),
+            'slides': t.slides,
+        } for t in talks
+    ])
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action not in ('talks', 'speaker'):
+            return http.HttpResponseBadRequest()
+        if speaker is None:
+            speaker = cmodels.Speaker()
+            speaker.name= user.name()
+            speaker.slug = slugify(speaker.name)
+            speaker.save()
+            user.speaker = speaker
+            user.save()
+            
+        if action == 'talks':
+            formset_talk = TalkFormSet(data=request.POST, files=request.FILES)
+            if formset_talk.is_valid():
+                data = formset_talk.cleaned_data
+                for d, t in izip_longest(data, talks):
+                    if not d:
+                        continue
+                    new = t is None
+                    if new:
+                        t = cmodels.Talk()
+                    t.title = d['title']
+                    t.duration = d['duration']
+                    t.language = d['language']
+                    t.slides = d['slides']
+                    t.save()
+                    t.setAbstract(d['abstract'])
+                    if new:
+                        t.speakers.add(speaker)
+                return HttpResponseRedirectSeeOther('.')
+        elif action == 'speaker':
+            form_speaker = aforms.Speaker(data=request.POST)
+            if form_speaker.is_valid():
+                data = form_speaker.cleaned_data
+                speaker.setBio(data['bio'])
+                speaker.save()
+                return HttpResponseRedirectSeeOther('.')
+                
+    return {
+        'user': user,
+        'form_speaker': form_speaker,
+        'formset_talk': formset_talk,
+    }
 
 @csrf_exempt
 @transaction.commit_on_success
