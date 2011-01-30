@@ -3,9 +3,10 @@
 {% block ASSOPY_MAIN_CONTENT %}
 <nav>
     <a href="{% url assopy-home %}">Profile / Billing information</a>
-    <a href="{% url assopy-speaker %}">Speaker</a>
+    <a href="{% url assopy-speaker %}">Talk submission</a>
 </nav>
 
+<h1>Talk submission</h1>
 <form action="{% url assopy-speaker %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     <fieldset>
         <legend>Speaker data</legend>
@@ -15,13 +16,17 @@
         <button type="submit" name="action" value="speaker">save</button>
     </fieldset>
 </form>
-<form action="{% url assopy-speaker %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    <fieldset>
-        <legend>Submit a talk</legend>
-        {{ formset_talk.management_form }}
+<form class="submitted-talks" action="{% url assopy-speaker %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ formset_talk.management_form }}
+    {% for form in formset_talk.forms|slice:"-1:"%}
+    <fieldset class="new-submission">
+        <legend>Submit a new talk</legend>
+        {% for f in form %}{{ f|field }}{% endfor %}
     </fieldset>
-    {% for form in formset_talk.forms %}
-    <fieldset>
+    {% endfor %}
+
+    {% for form in formset_talk.forms|slice:":-1" %}
+    <fieldset class="submission">
         {% for f in form %}{{ f|field }}{% endfor %}
     </fieldset>
     {% endfor %}
@@ -29,5 +34,38 @@
         <button type="submit" name="action" value="talks">save</button>
     </fieldset>
 </form>
+<script id="talk-compact" type="text/x-jquery-tmpl">
+    <div class="talk-compact">
+        <span class="title">${title}</span><span class="info">(${duration}/${language})</span>
+        <p class="abstract">${abstract}</p>
+        <div class="buttons">
+            <button class="edit">modify</button><button class="delete">delete</button>
+        </div>
+    </div>
+</script>
+<script type="text/javascript">//<![CDATA[
+$('.submitted-talks .submission').each(function(index) {
+    var f = $(this);
+    f.hide();
+    var data = {};
+    $.each(['input', 'textarea', 'select'], function(index, value) {
+        $(value, f).each(function() {
+            data[this.name.split('-').splice(-1)] = $(this).val();
+        })
+    });
+    var compact = $('#talk-compact').tmpl(data).insertBefore(f);
+    $('.edit', compact).click(function(e) {
+        e.preventDefault();
+        f.slideDown();
+        compact.hide();
+    });
+    $('.delete', compact).click(function(e) {
+        e.preventDefault();
+        if(confirm('are you sure?')) {
+            console.log('x');
+        }
+    });
+});
+//]]>
+</script>
 {% endblock %}
-

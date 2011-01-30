@@ -172,4 +172,38 @@ button.mini {
 
 
 
+.talk-compact {
+    margin: 0 0 10px 0;
+    background: #E1DBC5;
+    padding: 5px;
+}
 
+.talk-compact .title {
+    font-weight: bold;
+}
+
+.talk-compact .info {
+    margin: 0 0 0 5px;
+}
+
+.talk-compact .abstract {
+    /* two lines: line-height * 2*/
+    height: 40px;
+    overflow: hidden;
+}
+
+.talk-compact .buttons {
+    text-align: right;
+}
+
+.talk-compact button {
+    padding: 0;
+}
+
+.talk-compact .edit {
+    background: darkorange;
+}
+
+.talk-compact .delete {
+    background: firebrick;
+}
