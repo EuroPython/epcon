@@ -1,11 +1,52 @@
 # -*- coding: UTF-8 -*-
+from assopy.clients import genro
+
 from django.db import models
 
-from datetime import date
+from datetime import date, datetime
 
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
-    # aggiungere id backend
+    assopy_id = models.CharField(max_length=22, blank=True, unique=True)
+    verified = models.BooleanField(default=False)
+    photo = models.ImageField(null=True, upload_to='assopy/users')
+
+    speaker = models.OneToOneField('conference.speaker', null=True)
+
+    def photo_url(self):
+        if self.photo:
+            return self.photo.url
+        try:
+            return self.useridentity_set.exclude(photo='')[0]
+        except IndexError:
+            return None
+
+    def billing(self):
+        u = genro.user(self.assopy_id)
+        from lxml import objectify
+        objectify.enable_recursive_str()
+        print str(u.card)
+        return {
+            'firstname': u.user.firstname,
+            'lastname': u.user.lastname,
+            'registration_date': datetime.strptime(u.user.registration_date.text, '%Y-%m-%d').date(),
+            'email': u.user.email,
+            'www': u.card.www,
+            'phone': u.card.phone,
+            'card_name': u.card.card_name,
+            'is_company': u.card.is_company,
+            'vat_number': u.card.vat_number,
+            'tin_number': u.card.tin_number,
+            'address': u.card.address,
+            'city': u.card.city,
+            'state': u.card.state,
+            'zip': u.card.zip,
+            'country': u.card.country,
+        }
+
+    def name(self):
+        u = genro.user(self.assopy_id)
+        return '%s %s' % (u.user.firstname, u.user.lastname)
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
