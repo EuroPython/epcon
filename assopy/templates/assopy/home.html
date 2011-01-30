@@ -3,7 +3,7 @@
 {% block ASSOPY_MAIN_CONTENT %}
 <nav>
     <a href="{% url assopy-home %}">Profile / Billing information</a>
-    <a href="{% url assopy-speaker %}">Speaker</a>
+    <a href="{% url assopy-speaker %}">Talk submission</a>
 </nav>
 
 <form action="{% url assopy-home %}" method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -12,7 +12,7 @@
         {% for f in form_profile %}{{ f|field }}{% endfor %}
     </fieldset>
     <fieldset class="border">
-        <button type="submit">save</button>
+        <button type="submit" name="action" value="profile">save</button>
     </fieldset>
 </form>
 <form action="{% url assopy-home %}" method="post">{% csrf_token %}
@@ -21,7 +21,7 @@
         {% for f in form_billing %}{{ f|field }}{% endfor %}
     </fieldset>
     <fieldset class="border">
-        <button type="submit">save</button>
+        <button type="submit" name="action" value="billing">save</button>
     </fieldset>
 </form>
 {% endblock %}
