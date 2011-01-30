@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from assopy import settings
 
+from django import forms
 from django import template
 from django.conf import settings as dsettings
 from django.core.urlresolvers import reverse
@@ -24,7 +25,10 @@ def field(field, cls=None):
         classes.append('required')
     if cls:
         classes.extend(cls.split(','))
-    return _field_tpl.render(template.Context(locals()))
+    if isinstance(field.field.widget, (forms.HiddenInput,)):
+        return str(field)
+    else:
+        return _field_tpl.render(template.Context(locals()))
 
 @register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
 def render_janrain_box(context, next=None):
