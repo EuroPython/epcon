@@ -18,13 +18,13 @@
 </form>
 <form class="submitted-talks" action="{% url assopy-speaker %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     {{ formset_talk.management_form }}
+    <input id="delete_id" type="hidden" name="delete_id" value="" />
     {% for form in formset_talk.forms|slice:"-1:"%}
     <fieldset class="new-submission">
         <legend>Submit a new talk</legend>
         {% for f in form %}{{ f|field }}{% endfor %}
     </fieldset>
     {% endfor %}
-
     {% for form in formset_talk.forms|slice:":-1" %}
     <fieldset class="submission">
         {% for f in form %}{{ f|field }}{% endfor %}
@@ -39,7 +39,7 @@
         <span class="title">${title}</span><span class="info">(${duration}/${language})</span>
         <p class="abstract">${abstract}</p>
         <div class="buttons">
-            <button class="edit">modify</button><button class="delete">delete</button>
+            <button class="edit">modify</button><button class="delete" name="action" value="delete-talk">delete</button>
         </div>
     </div>
 </script>
@@ -60,10 +60,11 @@ $('.submitted-talks .submission').each(function(index) {
         compact.hide();
     });
     $('.delete', compact).click(function(e) {
-        e.preventDefault();
         if(confirm('are you sure?')) {
-            console.log('x');
+            $('#delete_id').val(data['id']);
         }
+        else
+            e.preventDefault();
     });
 });
 //]]>
