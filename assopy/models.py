@@ -24,9 +24,6 @@ class User(models.Model):
 
     def billing(self):
         u = genro.user(self.assopy_id)
-        from lxml import objectify
-        objectify.enable_recursive_str()
-        print str(u.card)
         return {
             'firstname': u.user.firstname,
             'lastname': u.user.lastname,
