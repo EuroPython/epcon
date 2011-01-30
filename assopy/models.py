@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from assopy.clients import genro
+from conference.models import Speaker
 
 from django.db import models
 
@@ -47,6 +48,17 @@ class User(models.Model):
     def name(self):
         u = genro.user(self.assopy_id)
         return '%s %s' % (u.user.firstname, u.user.lastname)
+
+    def setSpeakerProfile(self):
+        if not self.speaker:
+            speaker = Speaker()
+            speaker.name= self.name()
+            speaker.slug = slugify(speaker.name)
+            speaker.save()
+            self.speaker = speaker
+            self.save()
+        return self.speaker
+
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
