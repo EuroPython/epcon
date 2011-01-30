@@ -10,3 +10,4 @@ if hasattr(settings, 'ASSOPY_JANRAIN'):
 else:
     JANRAIN = None
 
+BACKEND = 'http://assopy.pycon.it/conference/externalcall'
