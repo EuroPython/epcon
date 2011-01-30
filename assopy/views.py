@@ -5,7 +5,7 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.forms.formsets import formset_factory
+from django.forms.formsets import BaseFormSet, formset_factory
 from django.db import transaction
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
@@ -103,7 +103,12 @@ def speaker(request):
     user = request.user.assopy_user
     speaker = user.speaker
 
-    TalkFormSet = formset_factory(aforms.Talk)
+    class BaseTalkFormSet(BaseFormSet):
+        def add_fields(self, form, index):
+            super(BaseTalkFormSet, self).add_fields(form, index)
+            form.fields['id'] = forms.IntegerField(required=False, widget=forms.HiddenInput())
+
+    TalkFormSet = formset_factory(aforms.Talk, formset=BaseTalkFormSet)
     if speaker is None:
         initial = {}
         talks = []
@@ -114,6 +119,7 @@ def speaker(request):
     form_speaker = aforms.Speaker(initial=initial)
     formset_talk = TalkFormSet(initial=[
         {
+            'id': t.id,
             'title': t.title,
             'duration': t.duration,
             'language': t.language,
@@ -123,7 +129,7 @@ def speaker(request):
     ])
     if request.method == 'POST':
         action = request.POST.get('action')
-        if action not in ('talks', 'speaker'):
+        if action not in ('talks', 'speaker', 'delete-talk'):
             return http.HttpResponseBadRequest()
         if speaker is None:
             speaker = cmodels.Speaker()
@@ -159,7 +165,14 @@ def speaker(request):
                 speaker.setBio(data['bio'])
                 speaker.save()
                 return HttpResponseRedirectSeeOther('.')
-                
+        elif action == 'delete-talk':
+            tid = int(request.POST['delete_id'])
+            for t in talks:
+                if t.id == tid:
+                    t.delete()
+                    break
+            return HttpResponseRedirectSeeOther('.')
+
     return {
         'user': user,
         'form_speaker': form_speaker,
