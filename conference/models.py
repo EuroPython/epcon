@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import datetime
 import os.path
+from django.conf import settings as dsettings
 from django.template.defaultfilters import slugify
 from django.db import models
 from django.db.models.signals import post_save
@@ -65,6 +66,36 @@ class DeadlineContent(models.Model):
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
+class MultilingualContentManager(models.Manager):
+    def setContent(self, object, content, language, body):
+        if language is None:
+            language = dsettings.LANGUAGE_CODE
+        object_type = ContentType.objects.get_for_model(object)
+        try:
+            mc = self.get(content_type=object_type, object_id=object.id, content=content, language=language)
+        except MultilingualContent.DoesNotExist:
+            mc = MultilingualContent(content_object=object)
+            mc.content = content
+            mc.language = language
+        mc.body = body
+        mc.save()
+
+    def getContent(self, object, content, language):
+        if language is None:
+            language = dsettings.LANGUAGE_CODE
+        object_type = ContentType.objects.get_for_model(object)
+        records = dict(
+            (x.language, x)
+            for x in self.exclude(body='').filter(content_type=object_type, object_id=object.id, content=content)
+        )
+        try:
+            return records[language]
+        except KeyError:
+            if not records:
+                return None
+            else:
+                return records.get(dsettings.LANGUAGE_CODE, records.keys()[0])
+
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -72,6 +103,8 @@ class MultilingualContent(models.Model):
     language = models.CharField(max_length = 3)
     content = models.CharField(max_length = 20)
     body = models.TextField()
+
+    objects = MultilingualContentManager()
 
 import urlparse
 from django.core.files.storage import FileSystemStorage
@@ -131,6 +164,12 @@ class Speaker(models.Model):
     def get_all_talks(self):
         return list(self.talk_set.all()) + list(self.additional_speakers.all())
 
+    def setBio(self, body, language=None):
+        MultilingualContent.objects.setContent(self, 'bios', language, body)
+
+    def getBio(self, language=None):
+        return MultilingualContent.objects.getContent(self, 'bios', language)
+
 post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
 TALK_DURATION = (
@@ -188,6 +227,12 @@ class Talk(models.Model):
 
     def get_all_speakers(self):
         return list(self.speakers.all()) + list(self.additional_speakers.all())
+
+    def setAbstract(self, body, language=None):
+        MultilingualContent.objects.setContent(self, 'abstracts', language, body)
+
+    def getAbstract(self, language=None):
+        return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
 fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 
