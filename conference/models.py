@@ -4,7 +4,9 @@ import os.path
 import subprocess
 
 from django.conf import settings as dsettings
+from django.db import connection
 from django.db import models
+from django.db import transaction
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
@@ -139,6 +141,35 @@ def postSaveResizeImageHandler(sender, **kwargs):
         close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate()
 
+class SpeakerManager(models.Manager):
+    def createFromName(self, name, user=None):
+        slug = slugify(name)
+        speaker = Speaker()
+        cursor = connection.cursor()
+        # qui ho bisogno di impedire che altre connessioni possano leggere il
+        # db fino a quando non ho finito
+        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
+        # È importante assicurarsi che la transazione venga chiusa, con successo
+        # o fallimento, il prima possibile
+        try:
+            count = 0
+            check = slug
+            while True:
+                if self.filter(slug=check).count() == 0:
+                    break
+                count += 1
+                check = '%s-%d' % (slug, count)
+            speaker.name = name
+            speaker.slug = check
+            speaker.user = user
+            speaker.save()
+        except:
+            transaction.rollback()
+            raise
+        else:
+            transaction.commit()
+        return speaker
+
 class Speaker(models.Model):
     user = models.OneToOneField('auth.User', null=True)
     name = models.CharField('nome e cognome speaker', max_length = 100)
@@ -152,6 +183,8 @@ class Speaker(models.Model):
     image = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
     bios = generic.GenericRelation(MultilingualContent)
     ad_hoc_description = generic.GenericRelation(MultilingualContent, related_name = 'ad_hoc_description_set', verbose_name='descrizione ad hoc')
+
+    objects = SpeakerManager()
 
     class Meta:
         ordering = ['name']
