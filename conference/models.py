@@ -185,6 +185,10 @@ TALK_LANGUAGES = (
     ('it', 'Italiano'),
     ('en', 'Inglese'),
 )
+TALK_STATUS = (
+    ('proposed', 'Proposed'),
+    ('accepted', 'Accepted'),
+)
 
 VIDEO_TYPE = (
     ('viddler_oembed', 'Viddler (oEmbed)'),
@@ -207,6 +211,7 @@ class Talk(models.Model):
     video_type = models.CharField(max_length = 30, choices = VIDEO_TYPE, blank = True)
     video_url = models.TextField(blank = True)
     video_file = models.FileField(upload_to = _talk_videos_path, blank = True, storage = fs_videos)
+    status = models.CharField(max_length=8, choices=TALK_STATUS)
     tags = TagField()
 
     class Meta:
