@@ -7,10 +7,13 @@ import tempfile
 from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
+from conference.forms import SubmissionForm
 
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.core.files.base import File
+from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -286,3 +289,44 @@ def sponsor(request, sponsor):
         'url': sponsor.url
     }
 
+
+@login_required
+@transaction.commit_on_success
+def paper_submission(request):
+    try:
+        speaker = request.user.speaker
+    except models.Speaker.DoesNotExist:
+        speaker = None
+    if request.method == 'POST':
+        form = SubmissionForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            if speaker is None:
+                name = '%s %s' % (request.user.first_name, request.user.last_name)
+                speaker = models.Speaker.objects.createFromName(name, request.user)
+            speaker.activity = data['activity']
+            speaker.industry = data['industry']
+            speaker.save()
+            speaker.setBio(data['bio'])
+            talk = models.Talk()
+            talk.title = data['title']
+            talk.duration = data['duration']
+            talk.language = data['language']
+            talk.slides = data['slides']
+            talk.save()
+            talk.speakers.add(speaker)
+            talk.setAbstract(data['abstract'])
+            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
+    else:
+        if speaker:
+            data = {
+                'activity': speaker.activity,
+                'industry': speaker.industry,
+                'bio': getattr(speaker.getBio(), 'body', ''),
+            }
+        else:
+            data = {}
+        form = SubmissionForm(initial=data)
+    return render_to_response('conference/paper_submission.html', {
+        'form': form,
+    }, context_instance=RequestContext(request))

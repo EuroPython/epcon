@@ -1,0 +1,11 @@
+<html>
+<body>
+    <h1>Talk submission</h1>
+    <form action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table>
+        {{ form.as_table }}
+        </table>
+        <input type="submit" />
+    </form>
+</body>
+</html>
