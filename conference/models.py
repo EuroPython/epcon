@@ -1,10 +1,12 @@
 # -*- coding: UTF-8 -*-
 import datetime
 import os.path
+import subprocess
+
 from django.conf import settings as dsettings
-from django.template.defaultfilters import slugify
 from django.db import models
 from django.db.models.signals import post_save
+from django.template.defaultfilters import slugify
 
 import tagging
 from tagging.fields import TagField
@@ -12,7 +14,6 @@ from tagging.fields import TagField
 import conference
 import settings
 import conference.gmap
-import subprocess
 
 class DeadlineManager(models.Manager):
     def valid_news(self):
@@ -139,6 +140,7 @@ def postSaveResizeImageHandler(sender, **kwargs):
     p.communicate()
 
 class Speaker(models.Model):
+    user = models.OneToOneField('auth.User', null=True)
     name = models.CharField('nome e cognome speaker', max_length = 100)
     slug = models.SlugField()
     homepage = models.URLField(verify_exists = False, blank = True)
