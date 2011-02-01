@@ -1,0 +1,18 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags %}
+{% block ASSOPY_MAIN_CONTENT %}
+<div class="container clearfix">
+    <form class="span-12 last" action=".?next={{ next }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <fieldset>
+            <legend>Create a new account</legend>
+            {% for f in form %}{{ f|field }}{% endfor %}
+            {% if form.non_field_errors %}
+            <p class="errornote">{{ form.non_field_errors }}</p>
+            {% endif %}
+        </fieldset>
+        <fieldset class="border">
+            <button type="submit">Create</button>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}
