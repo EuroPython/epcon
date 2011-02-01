@@ -273,6 +273,9 @@ class TalkManager(models.Manager):
                 check = '%s-%d' % (slug, count)
             talk.slug = check
             talk.save()
+            # associo qui lo speaker così se c'è qualche problema, ad esempio
+            # lo speaker non è valido, il tutto avviene in una transazione ed
+            # il db rimane pulito.
             talk.speakers.add(speaker)
         except:
             transaction.rollback()
