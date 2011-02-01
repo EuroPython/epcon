@@ -15,3 +15,7 @@ CONFERENCE_MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYP
 )
 
 CONFERENCE_VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
+try:
+    CONFERENCE = settings.CONFERENCE_CONFERENCE
+except AttributeError:
+    raise ImproperlyConfigured('Current conference not set (CONFERENCE_CONFERENCE)')
