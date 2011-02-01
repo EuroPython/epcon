@@ -310,16 +310,13 @@ def paper_submission(request):
             speaker.industry = data['industry']
             speaker.save()
             speaker.setBio(data['bio'])
-            talk = models.Talk()
-            talk.conference = settings.CONFERENCE
-            talk.title = data['title']
-            talk.slug = slugify(talk.title)
-            talk.duration = data['duration']
-            talk.language = data['language']
-            talk.slides = data['slides']
-            talk.status = 'proposed'
-            talk.save()
-            talk.speakers.add(speaker)
+            talk = models.Talk.objects.createFromTitle(
+                title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
+                status='proposed', duration=data['duration'], language=data['language'],
+            )
+            if data['slides']:
+                talk.slides = data['slides']
+                talk.save()
             talk.setAbstract(data['abstract'])
             messages.info(request, 'your talk has been submitted, thank you')
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))

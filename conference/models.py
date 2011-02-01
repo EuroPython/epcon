@@ -253,6 +253,34 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
+    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en'):
+        slug = slugify(title)
+        talk = Talk()
+        talk.title = title
+        talk.conference = conference
+        talk.status = status
+        talk.duration = duration
+        talk.language = language
+        cursor = connection.cursor()
+        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
+        try:
+            count = 0
+            check = slug
+            while True:
+                if self.filter(slug=check).count() == 0:
+                    break
+                count += 1
+                check = '%s-%d' % (slug, count)
+            talk.slug = check
+            talk.save()
+            talk.speakers.add(speaker)
+        except:
+            transaction.rollback()
+            raise
+        else:
+            transaction.commit()
+        return talk
+
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length = 100)
     slug = models.SlugField()
