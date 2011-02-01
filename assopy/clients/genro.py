@@ -4,15 +4,34 @@ from assopy.clients.gnrbag import Bag
 
 from lxml import objectify
 
+import logging
 import urllib
+from urlparse import urlparse, urlunparse
 
-def _get(subpath):
-    url = settings.BACKEND + subpath
+log = logging.getLogger('assopy.genro')
+
+_url = urlparse(settings.BACKEND)
+
+def _build(path, query=None):
+    splitted = list(_url)
+    if not path.startswith('/'):
+        path = '/' + path
+    splitted[2] = (splitted[2] + path).replace('//', '/')
+    if query:
+        splitted[4] = urllib.urlencode(query)
+    return urlunparse(splitted)
+
+def _get(subpath, **kwargs):
+    url = _build(subpath, kwargs)
+    log.debug('get -> %s', url)
     f = urllib.urlopen(url)
-    return objectify.fromstring(f.read())
+    b = Bag()
+    b.fromXml(f.read())
+    return b
 
 def _post(subpath, bag=None):
     url = settings.BACKEND + subpath
+    log.debug('post -> %s', url)
     body = {}
     if bag is not None:
         body['data'] = bag.toXml()
@@ -21,12 +40,18 @@ def _post(subpath, bag=None):
     b.fromXml(f.read())
     return b
 
+def users(email):
+    """
+    restituisce gli id degli utenti remoti che hanno l'email passata
+    """
+    return _get('/users/', email=email)
+
 def user(id):
     return _get('/users/%s' % id)   
 
-def create_user(first_name, last_name, email):
+def create_user(firstname, lastname, email):
     b = Bag()
-    b['firstname'] = first_name
-    b['lastname'] = last_name
+    b['firstname'] = firstname
+    b['lastname'] = lastname
     b['email'] = email
-    return _post('/users/', b)
+    return _post('/users/', b)['id']
