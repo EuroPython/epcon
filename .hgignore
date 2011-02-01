@@ -1,5 +1,7 @@
 syntax: glob
 *.pyc
+offline_stuff/*
+stuff/*
 Thumbs.db
 settings_locale.py
 p3*.db
