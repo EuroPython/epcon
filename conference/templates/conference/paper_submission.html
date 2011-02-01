@@ -1,6 +1,9 @@
 <html>
 <body>
     <h1>Talk submission</h1>
+    {% if proposed_talks %}
+    You have submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.
+    {% endif %}
     <form action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <table>
         {{ form.as_table }}

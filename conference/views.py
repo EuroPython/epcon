@@ -7,11 +7,13 @@ import tempfile
 from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
+from conference import settings
 from conference.forms import SubmissionForm
 
-from django.conf import settings
+from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -32,7 +34,7 @@ def json(f):
     """
     decoratore da applicare ad una vista per serializzare in json il risultato.
     """
-    if settings.DEBUG:
+    if dsettings.DEBUG:
         ct = 'text/plain'
         j = lambda d: simplejson.dumps(d, indent = 2)
     else:
@@ -229,7 +231,7 @@ def genro_wrapper(request):
     mostra in un iframe l'applicazione conference di genropy
     """
     try:
-        conf = dict(settings.GNR_CONFERENCE)
+        conf = dict(dsettings.GNR_CONFERENCE)
     except AttributeError:
         raise Http404()
     conf['src'] += '?' + urllib.urlencode(request.GET)
@@ -309,13 +311,17 @@ def paper_submission(request):
             speaker.save()
             speaker.setBio(data['bio'])
             talk = models.Talk()
+            talk.conference = settings.CONFERENCE
             talk.title = data['title']
+            talk.slug = slugify(talk.title)
             talk.duration = data['duration']
             talk.language = data['language']
             talk.slides = data['slides']
+            talk.status = 'proposed'
             talk.save()
             talk.speakers.add(speaker)
             talk.setAbstract(data['abstract'])
+            messages.info(request, 'your talk has been submitted, thank you')
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
         if speaker:
@@ -328,5 +334,7 @@ def paper_submission(request):
             data = {}
         form = SubmissionForm(initial=data)
     return render_to_response('conference/paper_submission.html', {
+        'speaker': speaker,
         'form': form,
+        'proposed_talks': speaker.talk_set.proposed(conference=settings.CONFERENCE) if speaker else [],
     }, context_instance=RequestContext(request))
