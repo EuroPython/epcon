@@ -109,6 +109,27 @@ def home(request):
         'form_billing': form_billing,
     }
 
+@render_to('assopy/new_account.html')
+def new_account(request):
+    next = request.GET.get('next', reverse('assopy-home'))
+    if not next.startswith('/'):
+        next = reverse('assopy-home')
+    if request.user.is_authenticated():
+        return redirect(next)
+
+    if request.method == 'GET':
+        form = aforms.NewAccountForm()
+    else:
+        form = aforms.NewAccountForm(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            log.info('new account for "%s %s" (%s) created', data['first_name'], data['last_name'], data['email'])
+            return redirect(next)
+    return {
+        'form': form,
+        'next': next,
+    }
+
 @login_required
 @render_to('assopy/speaker.html')
 @transaction.commit_on_success
