@@ -7,6 +7,7 @@ from django.conf import settings as dsettings
 from django.db import connection
 from django.db import models
 from django.db import transaction
+from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
@@ -233,6 +234,25 @@ VIDEO_TYPE = (
 fs_slides, _talk_slides_path = _build_fs_stuff('slides')
 fs_videos, _talk_videos_path = _build_fs_stuff('videos')
 
+class TalkManager(models.Manager):
+    def get_query_set(self):
+        return self._QuerySet(self.model)
+
+    def __getattr__(self, name):
+        return getattr(self.all(), name)
+
+    class _QuerySet(QuerySet):
+        def proposed(self, conference=None):
+            qs = self.filter(status='proposed')
+            if conference:
+                qs = qs.filter(conference=conference)
+            return qs
+        def accepted(self, conference=None):
+            qs = self.filter(status='accepted')
+            if conference:
+                qs = qs.filter(conference=conference)
+            return qs
+
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length = 100)
     slug = models.SlugField()
@@ -248,6 +268,8 @@ class Talk(models.Model):
     video_file = models.FileField(upload_to = _talk_videos_path, blank = True, storage = fs_videos)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     tags = TagField()
+
+    objects = TalkManager()
 
     class Meta:
         ordering = ['title']
