@@ -46,3 +46,19 @@ def render_janrain_box(context, next=None):
     return {
         'url': u,
     }
+
+class TNode(template.Node):
+    def _set_var(self, v):
+        if not v:
+            return v
+        if v.startswith('"') and v.endswith('"'):
+            return v[1:-1]
+        else:
+            return template.Variable(v)
+
+    def _get_var(self, v, context):
+        try:
+            return v.resolve(context)
+        except AttributeError:
+            return v
+
