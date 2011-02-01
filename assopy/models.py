@@ -12,7 +12,7 @@ class User(models.Model):
     verified = models.BooleanField(default=False)
     photo = models.ImageField(null=True, upload_to='assopy/users')
 
-    speaker = models.OneToOneField('conference.speaker', null=True)
+    #speaker = models.OneToOneField('conference.speaker', null=True)
 
     def photo_url(self):
         if self.photo:
