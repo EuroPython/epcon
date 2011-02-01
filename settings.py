@@ -80,6 +80,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'conference.context_processors.stuff',
     'p3.context_processors.highlight',
     'p3.context_processors.static',
+    'django.contrib.messages.context_processors.messages',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,6 +89,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'pycon_site.urls'
@@ -178,6 +180,8 @@ CONFERENCE_GOOGLE_MAPS = {
     'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
     'country': 'it',
 }
+
+CONFERENCE_CONFERENCE = 'ep2011'
 
 DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'

@@ -70,15 +70,13 @@
             </div>
 
             <div class="span-4 last">
-                {% comment %}
                 <div class="user">
                     {% if request.user.is_authenticated %}
-                        Logged in as <b>{{ request.user.first_name }} {{ request.user.last_name }}</b> &bull; <a href="/logout/?next=/">Log out</a>
+                        Logged in as <b>{{ request.user.assopy_user.name }}</b> &bull; <a href="/logout/?next=/">Log out</a>
                     {% else %}
                         <a href="/accounts/login/?next=/">Log in</a>
                     {% endif %}
                 </div>
-                {% endcomment %}
             </div>
         </div>
     </nav>
