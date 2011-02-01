@@ -29,3 +29,16 @@ class Talk(forms.Form):
     language = forms.TypedChoiceField(choices=cmodels.TALK_LANGUAGES, initial='en') #, emtpy_value=None)
     slides = forms.FileField(required=False)
     abstract = forms.CharField(widget=forms.Textarea())
+
+class NewAccountForm(forms.Form):
+    first_name = forms.CharField(max_length=32)
+    last_name = forms.CharField(max_length=32)
+    email = forms.EmailField()
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        data = self.cleaned_data
+        if data['password1'] != data['password2']:
+            raise forms.ValidationError('password mismatch')
+        return data
