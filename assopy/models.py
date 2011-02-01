@@ -43,8 +43,11 @@ class User(models.Model):
         }
 
     def name(self):
-        u = genro.user(self.assopy_id)
-        return '%s %s' % (u.user.firstname, u.user.lastname)
+        if self.assopy_id:
+            u = genro.user(self.assopy_id)
+            return '%s %s' % (u['user.firstname'], u['user.lastname'])
+        else:
+            return '%s %s' % (self.user.first_name, self.user.last_name)
 
     def setSpeakerProfile(self):
         if not self.speaker:
