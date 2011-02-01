@@ -80,6 +80,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'conference.context_processors.stuff',
     'p3.context_processors.highlight',
     'p3.context_processors.static',
+    'django.contrib.messages.context_processors.messages',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,6 +89,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'pycon_site.urls'
