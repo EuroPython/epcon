@@ -11,3 +11,5 @@ else:
     JANRAIN = None
 
 BACKEND = 'http://assopy.pycon.it/conference/externalcall'
+
+SEARCH_MISSING_USERS_ON_BACKEND = getattr(settings, 'ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND', False)

@@ -40,11 +40,16 @@ def _post(subpath, bag=None):
     b.fromXml(f.read())
     return b
 
-def users(email):
+def users(email, password=None):
     """
     restituisce gli id degli utenti remoti che hanno l'email passata
     """
-    return _get('/users/', email=email)
+    p = {
+        'email': email,
+    }
+    if password is not None:
+        p['password'] = password
+    return _get('/users/', **p)
 
 def user(id):
     return _get('/users/%s' % id)   
