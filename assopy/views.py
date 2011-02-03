@@ -53,35 +53,6 @@ def render_to(template):
         return wrapper
     return renderer
 
-class LoginForm(auth.forms.AuthenticationForm):
-    email = forms.EmailField()
-
-    def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
-        del self.fields['username']
-
-    def clean(self):
-        data = self.cleaned_data
-        if data.get('email') and data.get('password'):
-            user = auth.authenticate(email=data['email'], password=data['password'])
-            self.user_cache = user
-            if user is None:
-                raise forms.ValidationError('Invalid credentials')
-            elif not user.is_active:
-                raise forms.ValidationError('This account is inactive.')
-        return data
-
-class PasswordLostForm(forms.Form):
-    email = forms.EmailField()
-
-    def clean_email(self):
-        data = self.cleaned_data
-        try:
-            self.user = auth.models.User.objects.get(email=data['email'])
-        except:
-            raise forms.ValidationError('email non valida')
-        return data['email']
-
 @login_required
 @render_to('assopy/home.html')
 def home(request):

@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import *
-from assopy.forms import PasswordResetForm
-from assopy.views import LoginForm
+from assopy.forms import LoginForm, PasswordResetForm, SetPasswordForm
 
 urlpatterns = patterns('',
     url(r'^login/$', 'django.contrib.auth.views.login', kwargs={ 'authentication_form': LoginForm }),
@@ -9,7 +8,7 @@ urlpatterns = patterns('',
     url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done'),
     url(r'^password_reset/$', 'django.contrib.auth.views.password_reset', kwargs={ 'password_reset_form': PasswordResetForm }),
     url(r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
-    url(r'^reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm'),
+    url(r'^reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm', kwargs={ 'set_password_form': SetPasswordForm }),
     url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
 
     url(r'^new-account/$', 'assopy.views.new_account', name='assopy-new-account'),
