@@ -188,6 +188,8 @@ PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = 'europython'
 
+ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
+
 try:
     from settings_locale import *
 except ImportError:

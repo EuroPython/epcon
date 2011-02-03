@@ -2,8 +2,10 @@
 from django.contrib.auth.backends import ModelBackend
 from django.core.validators import email_re
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from assopy import models
+from assopy import settings
 from assopy.clients import genro
 
 import logging
@@ -11,6 +13,7 @@ import logging
 log = logging.getLogger('assopy.auth')
 
 class _AssopyBackend(ModelBackend):
+    @transaction.commit_on_success
     def linkUser(self, user):
         """
         collega l'utente assopy passato con il backend; crea l'utente remoto se
@@ -46,9 +49,34 @@ class EmailBackend(_AssopyBackend):
             if user.check_password(password):
                 self.linkUser(user.assopy_user)
                 return user
-        except (User.DoesNotExist, User.MultipleObjectsReturned):
+        except User.MultipleObjectsReturned:
             return None
+        except User.DoesNotExist:
+            # nel db di django non c'è un utente con quella email, ma potrebbe
+            # esserci un utente legacy nel backend di ASSOPY
+            if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
+                return None
+            rid = genro.users(email=email, password=password)['r0']
+            if rid is not None:
+                log.info('"%s" is a valid remote user; a local user is needed', email)
+                return self._createLocalUserFromRemote(rid, email, password)
 
+    @transaction.commit_on_success
+    def _createLocalUserFromRemote(self, rid, email, password):
+        info = genro.user(rid)
+        user = User.objects.create_user('_' + info['user.username'], email, password)
+        user.first_name = info['user.firstname']
+        user.last_name = info['user.lastname']
+        user.save()
+
+        u = models.User(user=user)
+        u.assopy_id = rid
+        # se è presente nel backend posso assumere che sia stato già verificato
+        u.verified = True
+        u.save()
+        log.debug('new local user created "%s"', user)
+        return user
+        
 class JanRainBackend(_AssopyBackend):
     def authenticate(self, identifier=None):
         try:
