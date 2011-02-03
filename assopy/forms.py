@@ -11,6 +11,24 @@ import logging
 
 log = logging.getLogger('assopy.forms')
 
+class LoginForm(auth.forms.AuthenticationForm):
+    email = forms.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        del self.fields['username']
+
+    def clean(self):
+        data = self.cleaned_data
+        if data.get('email') and data.get('password'):
+            user = auth.authenticate(email=data['email'], password=data['password'])
+            self.user_cache = user
+            if user is None:
+                raise forms.ValidationError('Invalid credentials')
+            elif not user.is_active:
+                raise forms.ValidationError('This account is inactive.')
+        return data
+
 class PasswordResetForm(auth.forms.PasswordResetForm):
     def clean_email(self):
         """
@@ -31,6 +49,16 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
                 return email
             else:
                 raise
+
+class SetPasswordForm(auth.forms.SetPasswordForm):
+    def save(self, *args, **kwargs):
+        user = super(SetPasswordForm, self).save(*args, **kwargs)
+        u = self.user.assopy_user
+        if not u.verified:
+            log.info('password reset for "%s" completed; now he\' a verified user', user.email)
+            u.verified = True
+            u.save()
+        return user
 
 class Profile(forms.Form):
     firstname = forms.CharField(max_length=32)
