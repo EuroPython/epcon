@@ -59,24 +59,11 @@ class EmailBackend(_AssopyBackend):
             rid = genro.users(email=email, password=password)['r0']
             if rid is not None:
                 log.info('"%s" is a valid remote user; a local user is needed', email)
-                return self._createLocalUserFromRemote(rid, email, password)
+                u = models.User.objects.create_from_backend(rid, email, password=password, verified=True)
+                return u.user
+            else:
+                return None
 
-    @transaction.commit_on_success
-    def _createLocalUserFromRemote(self, rid, email, password):
-        info = genro.user(rid)
-        user = User.objects.create_user('_' + info['user.username'], email, password)
-        user.first_name = info['user.firstname']
-        user.last_name = info['user.lastname']
-        user.save()
-
-        u = models.User(user=user)
-        u.assopy_id = rid
-        # se è presente nel backend posso assumere che sia stato già verificato
-        u.verified = True
-        u.save()
-        log.debug('new local user created "%s"', user)
-        return user
-        
 class JanRainBackend(_AssopyBackend):
     def authenticate(self, identifier=None):
         try:

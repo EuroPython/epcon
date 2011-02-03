@@ -2,9 +2,30 @@
 from assopy.clients import genro
 from conference.models import Speaker
 
+from django.contrib import auth
 from django.db import models
+from django.db import transaction
 
+import logging
 from datetime import date, datetime
+
+log = logging.getLogger('assopy.models')
+
+class UserManager(models.Manager):
+    @transaction.commit_on_success
+    def create_from_backend(self, rid, email, password=None, verified=False):
+        info = genro.user(rid)
+        user = auth.models.User.objects.create_user('_' + info['user.username'], email, password)
+        user.first_name = info['user.firstname']
+        user.last_name = info['user.lastname']
+        user.save()
+
+        u = User(user=user)
+        u.assopy_id = rid
+        u.verified = verified
+        u.save()
+        log.debug('new local user created "%s"', user)
+        return u
 
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
@@ -13,6 +34,8 @@ class User(models.Model):
     photo = models.ImageField(null=True, upload_to='assopy/users')
 
     #speaker = models.OneToOneField('conference.speaker', null=True)
+
+    objects = UserManager()
 
     def photo_url(self):
         if self.photo:
@@ -58,7 +81,6 @@ class User(models.Model):
             self.speaker = speaker
             self.save()
         return self.speaker
-
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
