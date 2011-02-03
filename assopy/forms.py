@@ -1,6 +1,36 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.contrib import auth
+
+from assopy import models
+from assopy import settings
+from assopy.clients import genro
 from conference import models as cmodels
+
+import logging
+
+log = logging.getLogger('assopy.forms')
+
+class PasswordResetForm(auth.forms.PasswordResetForm):
+    def clean_email(self):
+        """
+        Validates that a user exists with the given e-mail address.
+        """
+        try:
+            return super(PasswordResetForm, self).clean_email()
+        except forms.ValidationError:
+            # v. assopy.auth_backends.EmailBackend
+            if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
+                raise
+            email = self.cleaned_data["email"]
+            rid = genro.users(email=email)['r0']
+            if rid is not None:
+                log.info('"%s" is a remote user; a local user is needed to reset the password', email)
+                user = models.User.objects.create_from_backend(rid, email, password=None, verified=False)
+                self.users_cache = auth.models.User.objects.filter(pk=user.user.pk)
+                return email
+            else:
+                raise
 
 class Profile(forms.Form):
     firstname = forms.CharField(max_length=32)
