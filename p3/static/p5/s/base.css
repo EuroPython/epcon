@@ -488,31 +488,21 @@ elsewhere img {
 
 
 
-/*
-
-#elsewhere {
-
-    margin: 0 0 20px 0;
-    padding: 0 0 20px 0;
-
-    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
-}
-*/
-
-
-
 footer nav ul {
     list-style: none; 
 }
 
-/*
-#elsewhere li,
-#footer-nav li {
-    display: inline;
-    
-    margin-right: 10px;
+
+footer nav li.sep {
+    margin: 20px 0 0 0;
 }
-*/
+
+footer nav li img {
+    vertical-align: middle;
+}
+
+
+
 
 .feeds {
 
@@ -527,7 +517,7 @@ footer nav ul {
 }
 
 .twitter li {
-    margin: 0 0 10px 0;
+    margin: 0 0 10px 20px;
     
     list-style: outside disc url(../i/icon-bird.png);
 }

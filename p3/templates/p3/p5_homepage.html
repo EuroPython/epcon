@@ -110,7 +110,7 @@
             <li>
                 <h3><a href="{{ post_content.get_absolute_url }}">{{ post_content.headline }}</a></h3>
                 {% get_post_comment_count post as comments %}
-                <div class="meta">Posted on <b>{{ post_content.post.date|date:"M j Y" }}</b>{% if comments %} &bull; <a href="#">{{ comments }} comments</a>{% endif %}</div>
+                <div class="meta">Posted on <b>{{ post_content.post.date|date:"M j Y" }}</b>{% if comments %} &mdash; <a href="{{ post_content.get_absolute_url }}#comments">{{ comments }} comments</a>{% endif %}</div>
             </li>
                 {% endfor %}
         </ul>
