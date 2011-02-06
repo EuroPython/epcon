@@ -14,7 +14,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 from conference import settings
-from conference.settings import CONFERENCE_MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
+from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
 from conference import models
 from pages import models as PagesModels
 
@@ -148,7 +148,7 @@ def stuff_info(parser, token):
             try:
                 fpath = fpath.path
             except AttributeError:
-                fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, fpath)
+                fpath = os.path.join(settings.STUFF_DIR, fpath)
             try:
                 stat = os.stat(fpath)
             except (AttributeError, OSError), e:
@@ -816,15 +816,15 @@ def embed_video(value, args=None):
         #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
     else:
         src = fpath = None
-        if value.video_file or settings.CONFERENCE_VIDEO_DOWNLOAD_FALLBACK:
+        if value.video_file or settings.VIDEO_DOWNLOAD_FALLBACK:
             if value.video_file:
-                src = settings.CONFERENCE_STUFF_URL + 'videos/' + value.video_file.name
-                fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.video_file.name)
+                src = settings.STUFF_URL + 'videos/' + value.video_file.name
+                fpath = os.path.join(settings.STUFF_DIR, 'videos', value.video_file.name)
             else:
                 for ext in ('.avi', '.mp4'):
-                    fpath = os.path.join(settings.CONFERENCE_STUFF_DIR, 'videos', value.slug + ext)
+                    fpath = os.path.join(settings.STUFF_DIR, 'videos', value.slug + ext)
                     if os.path.exists(fpath):
-                        src = settings.CONFERENCE_STUFF_URL + 'videos/' + value.slug + ext
+                        src = settingsSTUFF_URL + 'videos/' + value.slug + ext
                         break
         if not src:
             html = ''

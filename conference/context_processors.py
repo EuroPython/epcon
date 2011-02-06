@@ -6,7 +6,7 @@ def stuff(request):
     """
     Aggiunge le variabili relative alla STUFF directory
     """
-    stuff = settings.CONFERENCE_STUFF_URL
+    stuff = settings.STUFF_URL
     ctx = {
         'STUFF_URL': stuff,
         'SPONSOR_LOGO_URL': '%ssponsor/' % stuff,
@@ -16,6 +16,6 @@ def stuff(request):
         'SLIDE_FILE_URL': '%sslides/' % stuff,
         'DEFAULT_URL_PREFIX': getattr(dsettings, 'DEFAULT_URL_PREFIX', ''),
     }
-    if settings.CONFERENCE_GOOGLE_MAPS:
-        ctx['GOOGLE_MAPS_KEY'] = settings.CONFERENCE_GOOGLE_MAPS['key']
+    if settings.GOOGLE_MAPS:
+        ctx['GOOGLE_MAPS_KEY'] = settings.GOOGLE_MAPS['key']
     return ctx

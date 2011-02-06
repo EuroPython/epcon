@@ -118,8 +118,8 @@ from django.core.files.storage import FileSystemStorage
 
 def _build_fs_stuff(subdir, attr=None):
     fs = FileSystemStorage(
-        location = os.path.join(settings.CONFERENCE_STUFF_DIR, subdir),
-        base_url = urlparse.urljoin(settings.CONFERENCE_STUFF_URL, subdir)
+        location = os.path.join(settings.STUFF_DIR, subdir),
+        base_url = urlparse.urljoin(settings.STUFF_URL, subdir)
     )
 
     if attr is None:
@@ -138,7 +138,7 @@ def postSaveResizeImageHandler(sender, **kwargs):
     tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
     null = open('/dev/null')
     p = subprocess.Popen(
-        [tool, settings.CONFERENCE_STUFF_DIR],
+        [tool, settings.STUFF_DIR],
         close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate()
 
@@ -517,7 +517,7 @@ class SpecialPlace(models.Model):
         return self.name
 
 try:
-    assert settings.CONFERENCE_GOOGLE_MAPS['key']
+    assert settings.GOOGLE_MAPS['key']
 except (KeyError, TypeError, AssertionError):
     pass
 else:
@@ -526,8 +526,8 @@ else:
         for obj in query:
             data = conference.gmap.geocode(
                 obj.address,
-                settings.CONFERENCE_GOOGLE_MAPS['key'],
-                settings.CONFERENCE_GOOGLE_MAPS.get('country')
+                settings.GOOGLE_MAPS['key'],
+                settings.GOOGLE_MAPS.get('country')
             )
             if data['Status']['code'] == 200:
                 point = data['Placemark'][0]['Point']['coordinates']
