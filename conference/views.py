@@ -9,6 +9,7 @@ from xml.etree import cElementTree as ET
 from conference import models
 from conference import settings
 from conference.forms import SubmissionForm
+from conference.utils import send_email
 
 from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -364,6 +365,11 @@ def paper_submission(request):
                 talk.save()
             talk.setAbstract(data['abstract'])
             messages.info(request, 'your talk has been submitted, thank you')
+
+            send_email(
+                subject='new paper from "%s %s"' % (request.user.first_name, request.user.last_name),
+                message='Title: %s\n\nAbstract: %s' % (data['title'], data['abstract']),
+            )
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
         if speaker:
