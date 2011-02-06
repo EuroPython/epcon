@@ -1,0 +1,34 @@
+{% extends "p3/base.html" %}
+{% load i18n conference assopy_tags %}
+
+{% block PAGE_TITLE %}paper submission &mdash; {% endblock %}
+
+{% block MAIN_CONTENT %}
+<div class="column span-12 border">
+    <div id="paper-submission" class="span-8 last page clearfix">
+        <h1>Talk submission</h1>
+        {% if proposed_talks %}
+        <h2>You have submitted <a href="{% url conference-speaker slug=speaker.slug %}">{{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.</a></h2>
+        {% endif %}
+        <form action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <fieldset>
+                <legend>About you</legend>
+                <div class="span-4">{{ form.activity|field }}</div>
+                <div class="span-4 last">{{ form.industry|field }}</div>
+                <div class="span-8 last">{{ form.bio|field }}</div>
+            </fieldset>
+            <fieldset>
+                <legend>About your paper</legend>
+                <div class="span-8 last">{{ form.title|field }}</div>
+                <div class="span-4">{{ form.language|field }}</div>
+                <div class="span-4 last">{{ form.duration|field }}</div>
+                <div class="span-4 last">{{ form.slides|field }}</div>
+                <div class="span-8 last">{{ form.abstract|field }}</div>
+            </fieldset>
+            <fieldset class="border">
+                <button type="submit">Submit</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+{% endblock %}
