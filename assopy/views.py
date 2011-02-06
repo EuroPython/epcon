@@ -80,6 +80,28 @@ def home(request):
         'form_billing': form_billing,
     }
 
+@login_required
+@render_to('assopy/profile.html')
+def profile(request):
+    user = request.user.assopy_user
+    if request.method == 'POST':
+        form = aforms.Profile(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['photo']:
+                user.photo = data['photo']
+                user.save()
+            del data['photo']
+            user.setBilling(**data)
+            return HttpResponseRedirectSeeOther('.')
+    else:
+        initial = user.billing()
+        form = aforms.Profile(initial=initial)
+    return {
+        'user': user,
+        'form': form,
+    }
+
 @render_to('assopy/new_account.html')
 def new_account(request):
     next = request.GET.get('next', reverse('assopy-home'))
