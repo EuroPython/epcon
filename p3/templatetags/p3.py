@@ -81,10 +81,13 @@ def box_googlemaps(context, what='', zoom=13):
         'zoom': zoom
     }
 
-@register.inclusion_tag('p3/box_speaker_talks.html', takes_context = True)
-def box_speaker_talks(context, speaker):
+@register.inclusion_tag('p3/box_talks_conference.html', takes_context = True)
+def box_talks_conference(context, talks):
+    """
+    mostra i talk passati raggruppati per conferenza
+    """
     conf = defaultdict(list)
-    for t in speaker.get_all_talks():
+    for t in talks:
         conf[t.conference].append(t)
 
     talks = []
