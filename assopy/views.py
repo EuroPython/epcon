@@ -54,33 +54,6 @@ def render_to(template):
     return renderer
 
 @login_required
-@render_to('assopy/home.html')
-def home(request):
-    user = request.user.assopy_user
-
-    initial = user.billing()
-    form_profile = aforms.Profile(initial=initial)
-    form_billing = aforms.BillingData(initial=initial)
-
-    if request.method == 'POST':
-        action = request.POST.get('action', '')
-        if action not in ('profile', 'billing'):
-            return http.HttpResponseBadRequest()
-        if action == 'profile':
-            form_profile = aforms.Profile(data=request.POST, files=request.FILES)
-            if form_profile.is_valid():
-                data = form_profile.cleaned_data
-                if data['photo']:
-                    user.photo = data['photo']
-                    user.save()
-                return HttpResponseRedirectSeeOther('.')
-    return {
-        'user': user,
-        'form_profile': form_profile,
-        'form_billing': form_billing,
-    }
-
-@login_required
 @render_to('assopy/profile.html')
 def profile(request):
     user = request.user.assopy_user
@@ -97,6 +70,24 @@ def profile(request):
     else:
         initial = user.billing()
         form = aforms.Profile(initial=initial)
+    return {
+        'user': user,
+        'form': form,
+    }
+
+@login_required
+@render_to('assopy/billing.html')
+def billing(request):
+    user = request.user.assopy_user
+    if request.method == 'POST':
+        form = aforms.BillingData(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            user.setBilling(**data)
+            return HttpResponseRedirectSeeOther('.')
+    else:
+        initial = user.billing()
+        form = aforms.BillingData(initial=initial)
     return {
         'user': user,
         'form': form,
