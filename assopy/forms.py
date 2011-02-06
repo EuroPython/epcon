@@ -75,7 +75,7 @@ class BillingData(forms.Form):
     city = forms.CharField(max_length=40, required=False)
     state = forms.CharField(max_length=2, required=False)
     zip = forms.CharField(max_length=8, required=False)
-    country = forms.CharField(max_length=2, required=False)
+    country = forms.ChoiceField(choices=models.Country.objects.order_by('printable_name').values_list('iso', 'printable_name'))
 
 class Speaker(forms.Form):
     bio = forms.CharField(widget=forms.Textarea())
