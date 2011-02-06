@@ -82,17 +82,35 @@ def json(f):
         return HttpResponse(content = result, content_type = ct, status = status)
     return decorator(wrapper, f)
 
+@render_to('conference/speaker.html')
 def speaker(request, slug):
-    spk = get_object_or_404(models.Speaker, slug = slug)
-    return render_to_response(
-        'conference/speaker.html', { 'speaker': spk },
-        context_instance = RequestContext(request))
+    spk = get_object_or_404(models.Speaker, slug=slug)
+    if request.user.is_staff or request.user == spk.user:
+        talks = spk.talks()
+    else:
+        talks = spk.talks(status='accepted')
+    if talks.count() == 0:
+        raise Http404()
+    return {
+        'speaker': spk,
+        'talks': talks,
+    }
 
+@render_to('conference/talk.html')
 def talk(request, slug):
-    tlk = get_object_or_404(models.Talk, slug = slug)
-    return render_to_response(
-        'conference/talk.html', { 'talk': tlk },
-        context_instance = RequestContext(request))
+    tlk = get_object_or_404(models.Talk, slug=slug)
+    if tlk.status == 'proposed' and not request.user.is_staff:
+        # i talk 'proposed' sono visibili solo ai loro speaker (e allo staff
+        # per controllo)
+        try:
+            tlk.get_all_speakers().get(user__id=request.user.id)
+        except models.Speaker.DoesNotExist:
+            raise Http404()
+        else:
+            pass
+    return {
+        'talk': tlk,
+    }
 
 def talk_report(request):
     conference = request.GET.getlist('conference')
