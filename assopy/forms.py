@@ -63,7 +63,6 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
 class Profile(forms.Form):
     firstname = forms.CharField(max_length=32)
     lastname = forms.CharField(max_length=32)
-    email = forms.EmailField()
     phone = forms.CharField(max_length=20, required=False)
     www = forms.URLField(verify_exists=False, required=False)
     photo = forms.FileField(required=False)
