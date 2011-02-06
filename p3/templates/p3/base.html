@@ -72,7 +72,7 @@
             <div class="span-4 last">
                 <div class="user">
                     {% if request.user.is_authenticated %}
-                        <b>{{ request.user.assopy_user.name }}</b> &bull;
+                        <a href="{% url assopy-profile %}"><b>{{ request.user.assopy_user.name }}</b></a> &bull;
                         {% if request.user.speaker %}
                         <a href="{% url conference-speaker slug=request.user.speaker.slug %}"><b>speaker</b></a> &bull;
                         {% endif %}
