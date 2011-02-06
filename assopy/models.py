@@ -11,6 +11,21 @@ from datetime import date, datetime
 
 log = logging.getLogger('assopy.models')
 
+def _cache(f):
+    """
+    cache dei poveri, memorizzo nell'istanza il risultato di una richiesta
+    remota (la cache dura una richiesta)
+    """
+    def wrapper(self, *args, **kwargs):
+        key = '_c' + f.__name__
+        try:
+            r = getattr(self, key)
+        except AttributeError:
+            r = f(self, *args, **kwargs)
+            setattr(self, key, r)
+        return r
+    return wrapper
+
 class UserManager(models.Manager):
     @transaction.commit_on_success
     def create_from_backend(self, rid, email, password=None, verified=False):
@@ -45,6 +60,7 @@ class User(models.Model):
         except IndexError:
             return None
 
+    @_cache
     def billing(self):
         return dict(genro.user(self.assopy_id))
 
@@ -55,7 +71,7 @@ class User(models.Model):
 
     def name(self):
         if self.assopy_id:
-            u = genro.user(self.assopy_id)
+            u = self.billing()
             return '%s %s' % (u['firstname'], u['lastname'])
         else:
             return '%s %s' % (self.user.first_name, self.user.last_name)
