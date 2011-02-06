@@ -238,7 +238,7 @@ def janrain_token(request):
                 pass
             current.save()
             log.debug('new django user created "%s"', current)
-            user = models.User(user=current)
+            user = models.User(user=current, verified=True)
             user.save()
         log.debug('the new identity will be linked to "%s"', current)
         identity = models.UserIdentity.objects.create_from_profile(user, profile)
