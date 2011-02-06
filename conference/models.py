@@ -144,6 +144,10 @@ def postSaveResizeImageHandler(sender, **kwargs):
 
 class SpeakerManager(models.Manager):
     def createFromName(self, name, user=None):
+        """
+        Crea uno speaker, collegandolo all'utente passato, calcolando uno slug
+        univoco per il nome passato.
+        """
         slug = slugify(name)
         speaker = Speaker()
         cursor = connection.cursor()
@@ -197,14 +201,31 @@ class Speaker(models.Model):
     def get_absolute_url(self):
         return ('conference-speaker', (), { 'slug': self.slug })
 
-    def get_all_talks(self):
-        return list(self.talk_set.all()) + list(self.additional_speakers.all())
-
     def setBio(self, body, language=None):
         MultilingualContent.objects.setContent(self, 'bios', language, body)
 
     def getBio(self, language=None):
         return MultilingualContent.objects.getContent(self, 'bios', language)
+
+    def talks(self, conference=None, include_secondary=True, status=None):
+        """
+        Restituisce i talk dello speaker filtrandoli per conferenza (se non
+        None); se include_secondary è True vengono inclusi anche i talk dove
+        non è lo speaker principale. Se status è diverso da None vengono
+        ritornati solo i talk con lo stato richiesto.
+        """
+        if status is None:
+            m = 'all'
+        elif status in ('proposed', 'accepted'):
+            m = status
+        else:
+            raise ValueError('status unknown')
+        qs = getattr(self.talk_set, m)()
+        if include_secondary:
+            qs |= getattr(self.additional_speakers, m)()
+        if conference is not None:
+            qs = qs.filter(conference=conference)
+        return qs
 
 post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
