@@ -46,29 +46,17 @@ class User(models.Model):
             return None
 
     def billing(self):
-        u = genro.user(self.assopy_id)
-        return {
-            'firstname': u.user.firstname,
-            'lastname': u.user.lastname,
-            'registration_date': datetime.strptime(u.user.registration_date.text, '%Y-%m-%d').date(),
-            'email': u.user.email,
-            'www': u.card.www,
-            'phone': u.card.phone,
-            'card_name': u.card.card_name,
-            'is_company': u.card.is_company,
-            'vat_number': u.card.vat_number,
-            'tin_number': u.card.tin_number,
-            'address': u.card.address,
-            'city': u.card.city,
-            'state': u.card.state,
-            'zip': u.card.zip,
-            'country': u.card.country,
-        }
+        return dict(genro.user(self.assopy_id))
+
+    def setBilling(self, **kwargs):
+        data = self.billing()
+        data.update(kwargs)
+        genro.setUser(self.assopy_id, data)
 
     def name(self):
         if self.assopy_id:
             u = genro.user(self.assopy_id)
-            return '%s %s' % (u['user.firstname'], u['user.lastname'])
+            return '%s %s' % (u['firstname'], u['lastname'])
         else:
             return '%s %s' % (self.user.first_name, self.user.last_name)
 

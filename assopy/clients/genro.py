@@ -54,6 +54,9 @@ def users(email, password=None):
 def user(id):
     return _get('/users/%s' % id)   
 
+def setUser(id, data):
+    return _post('/users/%s' % id, Bag(data))
+
 def create_user(firstname, lastname, email):
     b = Bag()
     b['firstname'] = firstname
