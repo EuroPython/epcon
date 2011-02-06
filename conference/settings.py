@@ -2,8 +2,11 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-STUFF_URL = getattr(settings, 'CONFERENCE_STUFF_URL', '%sstuff/' % settings.MEDIA_URL)
-STUFF_DIR = getattr(settings, 'CONFERENCE_STUFF_DIR', settings.MEDIA_ROOT)
+try:
+    CONFERENCE = settings.CONFERENCE_CONFERENCE
+except AttributeError:
+    raise ImproperlyConfigured('Current conference not set (CONFERENCE_CONFERENCE)')
+
 GOOGLE_MAPS = getattr(settings, 'CONFERENCE_GOOGLE_MAPS', None)
 
 MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYPE_NAME_CONVERSION_DICT', {
@@ -14,8 +17,10 @@ MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYPE_NAME_CONV
     }
 )
 
+SEND_EMAIL_TO = getattr(settings, 'CONFERENCE_SEND_EMAIL_TO', None)
+
+STUFF_DIR = getattr(settings, 'CONFERENCE_STUFF_DIR', settings.MEDIA_ROOT)
+
+STUFF_URL = getattr(settings, 'CONFERENCE_STUFF_URL', '%sstuff/' % settings.MEDIA_URL)
+
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
-try:
-    CONFERENCE = settings.CONFERENCE_CONFERENCE
-except AttributeError:
-    raise ImproperlyConfigured('Current conference not set (CONFERENCE_CONFERENCE)')
