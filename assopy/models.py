@@ -5,6 +5,7 @@ from conference.models import Speaker
 from django.contrib import auth
 from django.db import models
 from django.db import transaction
+from django.utils.translation import ugettext_lazy as _
 
 import logging
 from datetime import date, datetime
@@ -139,3 +140,19 @@ class UserIdentity(models.Model):
     address = models.TextField(blank=True)
 
     objects = UserIdentityManager()
+
+class Country(models.Model):
+    iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
+    name = models.CharField(max_length=100) 
+    vat_company = models.BooleanField('VAT for company', default=False)
+    vat_person = models.BooleanField('VAT for person', default=False)
+    iso3 = models.CharField(_('ISO alpha-3'), max_length=3, null=True)
+    numcode = models.PositiveSmallIntegerField(_('ISO numeric'), null=True)
+    printable_name = models.CharField(_('Country name'), max_length=128)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Countries'
+
+    def __unicode__(self):
+        return self.name
