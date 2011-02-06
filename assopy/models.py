@@ -26,6 +26,19 @@ def _cache(f):
         return r
     return wrapper
 
+def _gravatar(email, size=80, default='identicon', rating='r'):
+    # import code for encoding urls and generating md5 hashes
+    import urllib, hashlib
+
+    gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    gravatar_url += urllib.urlencode({
+        'default': default,
+        'size': size,
+        'rating': rating,
+    })
+    
+    return gravatar_url
+
 class UserManager(models.Manager):
     @transaction.commit_on_success
     def create_from_backend(self, rid, email, password=None, verified=False):
@@ -58,7 +71,7 @@ class User(models.Model):
         try:
             return self.useridentity_set.exclude(photo='')[0]
         except IndexError:
-            return None
+            return _gravatar(self.user.email)
 
     @_cache
     def billing(self):
