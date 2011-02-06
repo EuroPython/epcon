@@ -182,6 +182,7 @@ CONFERENCE_GOOGLE_MAPS = {
 }
 
 CONFERENCE_CONFERENCE = 'ep2011'
+CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 
 DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
