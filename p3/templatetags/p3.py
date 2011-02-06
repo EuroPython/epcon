@@ -16,7 +16,7 @@ from django.utils.safestring import mark_safe
 import twitter
 
 from conference import models as ConferenceModels
-from conference.settings import CONFERENCE_STUFF_DIR, CONFERENCE_STUFF_URL
+from conference.settings import STUFF_DIR, STUFF_URL
 
 mimetypes.init()
 
@@ -210,8 +210,8 @@ def render_map(context):
 def box_image_gallery(context):
     request = context['request']
     images = []
-    for f in os.listdir(CONFERENCE_STUFF_DIR):
-        images.append('%s%s' % (CONFERENCE_STUFF_URL, f))
+    for f in os.listdir(STUFF_DIR):
+        images.append('%s%s' % (STUFF_URL, f))
    
     context.update({
         'images': images,

@@ -31,11 +31,11 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': os.path.join(path, k), 'show_indexes': True}
         ))
-    from conference.settings import CONFERENCE_STUFF_URL, CONFERENCE_STUFF_DIR
+    from conference.settings import STUFF_URL, STUFF_DIR
     args.append((
-        r'^%s(?P<path>.*)$' % CONFERENCE_STUFF_URL[1:],
+        r'^%s(?P<path>.*)$' % STUFF_URL[1:],
         'django.views.static.serve',
-        {'document_root': CONFERENCE_STUFF_DIR, 'show_indexes': True}
+        {'document_root': STUFF_DIR, 'show_indexes': True}
     ))
     urlpatterns += patterns('', *args)
 
