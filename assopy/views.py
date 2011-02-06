@@ -226,8 +226,13 @@ def janrain_token(request):
                 user = models.User(user=current)
                 user.save()
         else:
-            # devo creare tutto, utente django, assopy e identità
-            current = auth.models.User.objects.create_user(janrain.suggest_username(profile), profile.get('email'))
+            # devo creare tutto, utente django, assopy e identità a meno che
+            # non si tratti di un amministratore che magari ha già l'account
+            # django con la stessa email fornita da janrain
+            try:
+                current = auth.models.User.objects.get(email=profile['email'])
+            except auth.models.User.DoesNotExist:
+                current = auth.models.User.objects.create_user(janrain.suggest_username(profile), profile['email'])
             try:
                 current.first_name = profile['name']['givenName']
             except KeyError:
