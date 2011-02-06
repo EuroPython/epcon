@@ -95,9 +95,9 @@ def billing(request):
 
 @render_to('assopy/new_account.html')
 def new_account(request):
-    next = request.GET.get('next', reverse('assopy-home'))
+    next = request.GET.get('next', reverse('assopy-profile'))
     if not next.startswith('/'):
-        next = reverse('assopy-home')
+        next = reverse('assopy-profile')
     if request.user.is_authenticated():
         return redirect(next)
 
