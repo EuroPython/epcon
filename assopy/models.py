@@ -61,8 +61,6 @@ class User(models.Model):
     verified = models.BooleanField(default=False)
     photo = models.ImageField(null=True, upload_to='assopy/users')
 
-    #speaker = models.OneToOneField('conference.speaker', null=True)
-
     objects = UserManager()
 
     def photo_url(self):
@@ -88,16 +86,6 @@ class User(models.Model):
             return '%s %s' % (u['firstname'], u['lastname'])
         else:
             return '%s %s' % (self.user.first_name, self.user.last_name)
-
-    def setSpeakerProfile(self):
-        if not self.speaker:
-            speaker = Speaker()
-            speaker.name= self.name()
-            speaker.slug = slugify(speaker.name)
-            speaker.save()
-            self.speaker = speaker
-            self.save()
-        return self.speaker
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
