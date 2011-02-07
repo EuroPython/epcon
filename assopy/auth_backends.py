@@ -45,9 +45,16 @@ class _AssopyBackend(ModelBackend):
 class EmailBackend(_AssopyBackend):
     def authenticate(self, email=None, password=None):
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.select_related('assopy_user').get(email=email)
             if user.check_password(password):
-                self.linkUser(user.assopy_user)
+                auser = user.assopy_user
+                if auser is None:
+                    # questo utente esiste su django ma non ha un utente assopy
+                    # collegato; probabilmente è un admin inserito prima del
+                    # collegamento con il backend.
+                    auser = models.User(user=user, verified=True)
+                    auser.save()
+                self.linkUser(auser)
                 return user
         except User.MultipleObjectsReturned:
             return None
