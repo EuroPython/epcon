@@ -98,7 +98,7 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, records.keys()[0])
+                return records.get(dsettings.LANGUAGE_CODE, records.values()[0])
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType)
