@@ -114,6 +114,17 @@ def new_account(request):
         'next': next,
     }
 
+@transaction.commit_on_success
+def otc_code(request, token):
+    user, ctype = models.Token.objects.validate(token)
+    if user is None:
+        return http.HttpResponseBadRequest()
+    user.verified = True
+    user.save()
+    user.backend = 'assopy.auth_backends.EmailBackend'
+    auth.login(request, user)
+    return redirect('/')
+
 @csrf_exempt
 @transaction.commit_on_success
 def janrain_token(request):
