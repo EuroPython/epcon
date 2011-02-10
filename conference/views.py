@@ -353,6 +353,7 @@ def paper_submission(request):
                 name = '%s %s' % (request.user.first_name, request.user.last_name)
                 speaker = models.Speaker.objects.createFromName(name, request.user)
             speaker.activity = data['activity']
+            speaker.activity_homepage = data['activity_homepage']
             speaker.industry = data['industry']
             speaker.save()
             speaker.setBio(data['bio'])
