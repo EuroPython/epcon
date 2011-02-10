@@ -340,7 +340,7 @@ class Talk(models.Model):
             return None
 
     def get_all_speakers(self):
-        return self.speakers.all() | self.additional_speakers.all()
+        return (self.speakers.all() | self.additional_speakers.all()).distinct()
 
     def setAbstract(self, body, language=None):
         MultilingualContent.objects.setContent(self, 'abstracts', language, body)
