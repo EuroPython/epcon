@@ -14,7 +14,6 @@ urlpatterns = patterns('',
     url(r'^new-account/$', 'assopy.views.new_account', name='assopy-new-account'),
     url(r'^profile/$', 'assopy.views.profile', name='assopy-profile'),
     url(r'^billing/$', 'assopy.views.billing', name='assopy-billing'),
-    url(r'^profile/speaker/$', 'assopy.views.speaker', name='assopy-speaker'),
     url(r'^janrain/login-mismatch/$', 'assopy.views.janrain_login_mismatch', name='assopy-janrain-login_mismatch'),
     url(r'^janrain/token/$', 'assopy.views.janrain_token', name='assopy-janrain-token'),
 )
