@@ -304,14 +304,14 @@ class TalkManager(models.Manager):
         return talk
 
 def _slides_upload_to(instance, filename):
-    fpath = os.path.join('conference', 'slides', '%s.%s' % (instance.slug, os.path.splitext(filename)[1]))
+    fpath = os.path.join('conference', 'slides', '%s%s' % (instance.slug, os.path.splitext(filename)[1].lower()))
     ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
     if os.path.exists(ipath):
         os.unlink(ipath)
     return fpath
 
 def _video_upload_to(instance, filename):
-    fpath = os.path.join('conference', 'videos', '%s.%s' % (instance.slug, os.path.splitext(filename)[1]))
+    fpath = os.path.join('conference', 'videos', '%s%s' % (instance.slug, os.path.splitext(filename)[1].lower()))
     ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
     if os.path.exists(ipath):
         os.unlink(ipath)
