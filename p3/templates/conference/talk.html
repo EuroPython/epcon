@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load i18n conference %}
+{% load i18n conference assopy_tags %}
 
 {% block PAGE_TITLE %}{{ talk.title }} &mdash; {% endblock %}
 
@@ -30,18 +30,31 @@ var PROJEKKTOR_CONFIG = {
         {% with talk.get_event as e %}
         {% with e.get_track as track %}
         <div class="cms">
-            {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-            <p>{{ ab.body|safe }}</p>
+            <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
+                {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
+                <p>{{ ab.body|safe }}</p>
+                {% if talk.status == "confirmed" %}
+                <h2>When and Where</h2>
+                <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
+                {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> {% trans "nella track" %} <i>{{ e.get_track.title }}</i>.
 
-            <h2>When and Where</h2>
-            <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
-            {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> {% trans "nella track" %} <i>{{ e.get_track.title }}</i>.
+                <hr />
 
-            <hr />
-
-            {% if talk|embed_video %}
-            <h2>{% trans "Video" %}</h2>
-            {{ talk|embed_video:"720,576" }}
+                {% if talk|embed_video %}
+                <h2>{% trans "Video" %}</h2>
+                {{ talk|embed_video:"720,576" }}
+                {% endif %}
+                {% endif %}
+            </div>
+            {% if full_access %}
+            <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
+                <fieldset>
+                {% for f in form %}{{ f|field }}{% endfor %}
+                </fieldset>
+                <fieldset class="border">
+                    <button type="submit">Submit</button>
+                </fieldset>
+            </form>
             {% endif %}
         </div>
         {% endwith %}
@@ -50,11 +63,24 @@ var PROJEKKTOR_CONFIG = {
     <div class="span-4 last">
         <aside>
             <div class="cms">
+                {% if full_access %}
+                <button class="profile edit">Edit talk</button>
+                <script type="text/javascript">//<![CDATA[
+                $('button.profile.edit').click(function(e) {
+                    e.preventDefault();
+                    $('div.readonly').hide();
+                    $('form.talk-details').show();
+                    $(e.target).hide();
+                });
+                //]]>
+                </script>
+                {% endif %}
+
                 {% if talk.slides %}
                 <h4>Download</h4>
                 <div class="button download">
                     {% stuff_info talk.slides as info %}
-                    <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">Slide ({{ info.0 }}) &mdash; {{ info.1|filesizeformat }}</a>
+                    <a href="{{ talk.slides.url }}">Slide ({{ info.0 }}) &mdash; {{ info.1|filesizeformat }}</a>
                 </div>
                 {% endif %}
                 <hr />
