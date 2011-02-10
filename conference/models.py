@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
+import os
 import os.path
 import subprocess
 
@@ -252,9 +253,6 @@ VIDEO_TYPE = (
     ('download', 'Download'),
 )
 
-fs_slides, _talk_slides_path = _build_fs_stuff('slides')
-fs_videos, _talk_videos_path = _build_fs_stuff('videos')
-
 class TalkManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
@@ -305,6 +303,20 @@ class TalkManager(models.Manager):
             transaction.commit()
         return talk
 
+def _slides_upload_to(instance, filename):
+    fpath = os.path.join('conference', 'slides', '%s.%s' % (instance.slug, os.path.splitext(filename)[1]))
+    ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+    if os.path.exists(ipath):
+        os.unlink(ipath)
+    return fpath
+
+def _video_upload_to(instance, filename):
+    fpath = os.path.join('conference', 'videos', '%s.%s' % (instance.slug, os.path.splitext(filename)[1]))
+    ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+    if os.path.exists(ipath):
+        os.unlink(ipath)
+    return fpath
+
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length = 100)
     slug = models.SlugField()
@@ -314,10 +326,10 @@ class Talk(models.Model):
     duration = models.IntegerField(choices = TALK_DURATION)
     language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
-    slides = models.FileField(upload_to = _talk_slides_path, blank = True, storage = fs_slides)
+    slides = models.FileField(upload_to = _slides_upload_to, blank = True)
     video_type = models.CharField(max_length = 30, choices = VIDEO_TYPE, blank = True)
     video_url = models.TextField(blank = True)
-    video_file = models.FileField(upload_to = _talk_videos_path, blank = True, storage = fs_videos)
+    video_file = models.FileField(upload_to = _video_upload_to, blank = True)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     tags = TagField()
 
