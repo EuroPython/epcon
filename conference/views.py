@@ -11,6 +11,7 @@ from conference import settings
 from conference.forms import SubmissionForm
 from conference.utils import send_email
 
+from django import http
 from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -19,7 +20,6 @@ from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
-from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -55,7 +55,7 @@ def render_to(template):
     return renderer
 
 
-class HttpResponseRedirectSeeOther(HttpResponseRedirect):
+class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
 def json(f):
@@ -75,12 +75,12 @@ def json(f):
             result = j(str(e))
             status = 500
         else:
-            if isinstance(result, HttpResponse):
+            if isinstance(result, http.HttpResponse):
                 return result
             else:
                 result = j(result)
                 status = 200
-        return HttpResponse(content = result, content_type = ct, status = status)
+        return http.HttpResponse(content = result, content_type = ct, status = status)
     return decorator(wrapper, f)
 
 @render_to('conference/speaker.html')
@@ -106,7 +106,7 @@ def talk(request, slug):
         try:
             tlk.get_all_speakers().get(user__id=request.user.id)
         except models.Speaker.DoesNotExist:
-            raise Http404()
+            raise http.Http404()
         else:
             pass
     return {
@@ -127,7 +127,7 @@ def talk_report(request):
 @transaction.commit_on_success
 def speaker_admin_image_upload(request):
     if request.method != 'POST':
-        raise Http404()
+        raise http.Http404()
     raw = []
     map(raw.append, request.FILES['zip'].chunks())
     zip = zipfile.ZipFile(StringIO(''.join(raw)), 'r')
@@ -149,7 +149,7 @@ def speaker_admin_image_upload(request):
 @transaction.commit_on_success
 def talk_admin_upload(request):
     if request.method != 'POST':
-        raise Http404()
+        raise http.Http404()
     raw = []
     map(raw.append, request.FILES['xml'].chunks())
     tree = ET.fromstring(''.join(raw))
@@ -279,7 +279,7 @@ def genro_wrapper(request):
     try:
         conf = dict(dsettings.GNR_CONFERENCE)
     except AttributeError:
-        raise Http404()
+        raise http.Http404()
     conf['src'] += '?' + urllib.urlencode(request.GET)
     return render_to_response(
         'conference/genro_wrapper.html', conf,
