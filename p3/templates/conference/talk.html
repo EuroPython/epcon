@@ -16,59 +16,48 @@ var PROJEKKTOR_CONFIG = {
 {% endblock %}
 
 {% block MAIN_CONTENT %}
-<div class="column span-12">
-    <div id="talk-page" class="page border clearfix">
-
-        <h1>{{ talk.title }}</h1>
-
+    <h1>{{ talk.title }}</h1>
+    <div class="page-summary">
+        <p>
+            <i>{% trans "di" %}</i>
+            {% for spk in talk.get_all_speakers %}
+            <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+            {% if not forloop.last %}-{% endif %}
+            {% endfor %}
+        </p>
+    </div>
+    <div class="span-7 append-1">
         {% with talk.get_event as e %}
         {% with e.get_track as track %}
-        <div class="column span-8">
+        <div class="cms">
+            {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
+            <p>{{ ab.body|safe }}</p>
 
-            <div class="page-summary">
-                <p>
-                    <i>{% trans "di" %}</i>
-                    {% for spk in talk.get_all_speakers %}
-                    <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
-                    {% if not forloop.last %}-{% endif %}
-                    {% endfor %}
-                </p>
-            </div>
-
-            <div class="cms">
-                {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-                <p>{{ ab.body|safe }}</p>
-            </div>
-
-            <div class="when-where">
-                <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
-                {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> {% trans "nella track" %} <i>{{ e.get_track.title }}</i>.
-            </div>
+            <h2>When and Where</h2>
+            <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
+            {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> {% trans "nella track" %} <i>{{ e.get_track.title }}</i>.
 
             <hr />
 
             {% if talk|embed_video %}
-            <div id="video" class="section">
-                <h2>{% trans "Video" %}</h2>
-                {{ talk|embed_video:"720,576" }}
-            </div>
+            <h2>{% trans "Video" %}</h2>
+            {{ talk|embed_video:"720,576" }}
             {% endif %}
         </div>
-
-        <div class="column span-4 last">
-
-            <div class="details">
-
+        {% endwith %}
+        {% endwith %}
+    </div>
+    <div class="span-4 last">
+        <aside>
+            <div class="cms">
                 {% if talk.slides %}
-                <h3>Download</h3>
+                <h4>Download</h4>
                 <div class="button download">
                     {% stuff_info talk.slides as info %}
                     <a href="{{ SLIDE_FILE_URL }}{{ talk.slides }}">Slide ({{ info.0 }}) &mdash; {{ info.1|filesizeformat }}</a>
                 </div>
                 {% endif %}
-
                 <hr />
-
                 <dl>
                     <dt>{% trans "Lingua" %}</dt>
                     <dd>{{ talk.language|upper }}</dd>
@@ -80,23 +69,8 @@ var PROJEKKTOR_CONFIG = {
                     <dt>{% trans "Traduzione simultanea" %}</dt>
                     <dd>{% trans "disponibile" %}</dd>
                     {% endif %}
-
-                    {% comment %}
-                    <dt>Tag</dt>
-                    <dd>
-                        <a href="/conference/talks/report?tag=Crowdsourcing" class="tag">Crowdsourcing</a>
-                        <a href="/conference/talks/report?tag=LongTail" class="tag">LongTail</a>
-                        <a href="/conference/talks/report?tag=SocialNetwork" class="tag">SocialNetwork</a>
-                        <a href="/conference/talks/report?tag=Web2.0" class="tag">Web2.0</a>
-                    </dd>
-                    {% endcomment %}
                 </dl>
             </div>
-
-        </div>
-        {% endwith %}
-        {% endwith %}
-
+        </aside>
     </div>
-</div>  
 {% endblock %}
