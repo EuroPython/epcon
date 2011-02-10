@@ -43,6 +43,27 @@ def auth_info(api_key, token):
     }
     return _request('auth_info', params)['profile']
 
+def _valid_username(u):
+    from django.contrib import auth
+    try:
+        auth.models.User.objects.get(username=u)
+    except auth.models.User.DoesNotExist:
+        return True
+    else:
+        return False
+
+def suggest_username_from_email(email):
+    try:
+        # Prendo le prime due iniziali dello username dell'email
+        prefix = ''.join(( x[0] for x in re.split(r'\W|_', email.split('@')[0]) if x ))[:2]
+    except KeyError:
+        prefix = 'xx'
+
+    while True:
+        uname = prefix + str(random.randint(1, 99999)).zfill(5)
+        if _valid_username(uname):
+            return uname
+
 def suggest_username(profile):
     """
     suggerisce uno username da usare per creare l'utente django che verrà
@@ -52,30 +73,12 @@ def suggest_username(profile):
     # suggerisce un preferredUsername utilizzo il suo valore come prima
     # opzione, altrimenti provo a derivarne uno dall'email (paddandola con un
     # numero random)
-    from django.contrib import auth
-    def _valid(u):
-        try:
-            auth.models.User.objects.get(username=u)
-        except auth.models.User.DoesNotExist:
-            return True
-        else:
-            return False
-            
     try:
         uname = profile['preferredUsername'][:30]
     except KeyError:
         uname = None
 
-    if uname is not None and _valid(uname):
+    if uname is not None and _valid_username(uname):
         return uname
 
-    try:
-        # Prendo le prime due iniziali dello username dell'email
-        prefix = ''.join(( x[0] for x in re.split(r'\W|_', profile['email'].split('@')[0]) if x ))[:2]
-    except KeyError:
-        prefix = 'xx'
-
-    while True:
-        uname = prefix + str(random.randint(1, 99999)).zfill(5)
-        if _valid(uname):
-            return uname
+    return suggest_username_from_email(profile['email'])

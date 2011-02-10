@@ -107,7 +107,16 @@ def new_account(request):
         form = aforms.NewAccountForm(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            log.info('new account for "%s %s" (%s) created', data['first_name'], data['last_name'], data['email'])
+            user = models.User.objects.create_user(
+                email=data['email'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                password=data['password1'],
+            )
+            # ho creato l'utente che non è ancora verificato, ma intanto lo
+            # loggo così può iniziare subito ad usare il sito
+            u = auth.authenticate(email=data['email'], password=data['password1'])
+            auth.login(request, u)
             return redirect(next)
     return {
         'form': form,

@@ -1,8 +1,13 @@
 # -*- coding: UTF-8 -*-
+from assopy import django_urls
+from assopy import janrain
 from assopy.clients import genro
 from conference.models import Speaker
 
+from django import template
 from django.contrib import auth
+from django.core import mail
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
@@ -102,6 +107,28 @@ class UserManager(models.Manager):
         u.save()
         log.debug('new local user created "%s"', user)
         return u
+
+    @transaction.commit_on_success
+    def create_user(self, email, first_name='', last_name='', password=None, verified=False, send_mail=True):
+        uname = janrain.suggest_username_from_email(email)
+        duser = auth.models.User.objects.create_user(uname, email, password=password)
+        duser.first_name = first_name
+        duser.last_name = last_name
+        duser.save()
+        user = User(user=duser, verified=verified)
+        user.save()
+        log.info(
+            'new local user "%s" created; for "%s %s" (%s)',
+            duser.username, first_name, last_name, email,
+        )
+        if send_mail:
+            ctx = {
+                'user': duser,
+                'token': Token.objects.create(duser),
+            }
+            body = template.loader.render_to_string('assopy/email/verify_user.txt', ctx)
+            mail.send_mail('Verify your account', body, 'info@pycon.it', [ email ])
+        return user
 
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
