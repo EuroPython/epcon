@@ -81,6 +81,16 @@ class User(models.Model):
         data.update(kwargs)
         genro.setUser(self.assopy_id, data)
 
+    @_cache
+    def profile(self):
+        billing = self.billing()
+        data = {
+            'photo': self.photo_url(),
+            'name': self.name(),
+            'www': billing['www'],
+        }
+        return data
+
     def name(self):
         if self.assopy_id:
             u = self.billing()
