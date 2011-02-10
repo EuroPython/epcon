@@ -8,7 +8,7 @@ from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
 from conference import settings
-from conference.forms import SubmissionForm
+from conference.forms import SpeakerForm, SubmissionForm
 from conference.utils import send_email
 
 from django import http
@@ -87,14 +87,36 @@ def json(f):
 def speaker(request, slug):
     spk = get_object_or_404(models.Speaker, slug=slug)
     if request.user.is_staff or request.user == spk.user:
+        full_access = True
         talks = spk.talks()
     else:
+        full_access = False
         talks = spk.talks(status='accepted')
-    if talks.count() == 0:
-        raise Http404()
+        if talks.count() == 0:
+            raise http.Http404()
+    if request.method == 'GET':
+        form = SpeakerForm(initial={
+            'activity': spk.activity,
+            'activity_homepage': spk.activity_homepage,
+            'industry': spk.industry,
+            'bio': spk.getBio().body,
+        })
+    elif request.method == 'POST':
+        if not full_access:
+            return http.HttpResponseBadRequest()
+        form = SpeakerForm(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            spk.activity = data['activity']
+            spk.activity_homepage = data['activity_homepage']
+            spk.industry = data['industry']
+            spk.save()
+            spk.setBio(data['bio'])
+            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': spk.slug}))
     return {
         'speaker': spk,
         'talks': talks,
+        'form': form,
     }
 
 @render_to('conference/talk.html')
