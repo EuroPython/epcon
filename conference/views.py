@@ -8,7 +8,7 @@ from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
 from conference import settings
-from conference.forms import SpeakerForm, SubmissionForm
+from conference.forms import SpeakerForm, SubmissionForm, TalkForm
 from conference.utils import send_email
 
 from django import http
@@ -114,24 +114,51 @@ def speaker(request, slug):
             spk.setBio(data['bio'])
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': spk.slug}))
     return {
+        'form': form,
+        'full_access': full_access,
         'speaker': spk,
         'talks': talks,
-        'form': form,
     }
 
 @render_to('conference/talk.html')
 def talk(request, slug):
     tlk = get_object_or_404(models.Talk, slug=slug)
-    if tlk.status == 'proposed' and not request.user.is_staff:
-        # i talk 'proposed' sono visibili solo ai loro speaker (e allo staff
-        # per controllo)
+    if request.user.is_staff:
+        full_access = True
+    else:
         try:
             tlk.get_all_speakers().get(user__id=request.user.id)
         except models.Speaker.DoesNotExist:
-            raise http.Http404()
+            full_access = False
         else:
-            pass
+            full_access = True
+
+    if tlk.status == 'proposed' and not full_access:
+        raise http.Http404()
+
+    if request.method == 'GET':
+        form = TalkForm(initial={
+            'title': tlk.title,
+            'duration': tlk.duration,
+            'language': tlk.language,
+            'abstract': tlk.getAbstract().body,
+        })
+    elif request.method == 'POST':
+        if not full_access:
+            return http.HttpResponseBadRequest()
+        form = TalkForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            tlk.title = data['title']
+            tlk.duration = data['duration']
+            tlk.language = data['language']
+            tlk.slides = data['slides']
+            tlk.save()
+            tlk.setAbstract(data['abstract'])
+            return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': tlk.slug}))
     return {
+        'form': form,
+        'full_access': full_access,
         'talk': tlk,
     }
 
