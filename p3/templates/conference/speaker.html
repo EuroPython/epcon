@@ -39,7 +39,7 @@
                     </dl>
                 </div>
             </div>
-            {% if request.user.speaker == speaker or request.user.is_staff %}
+            {% if full_access %}
             <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
                 <fieldset>
                 {% for f in form %}{{ f|field }}{% endfor %}
@@ -54,13 +54,14 @@
     <div class="span-4 last">
         <aside>
             <div class="cms">
-                {% if request.user.speaker == speaker or request.user.is_staff %}
+                {% if full_access %}
                 <button class="profile edit">Edit your profile</button>
                 <script type="text/javascript">//<![CDATA[
                 $('button.profile.edit').click(function(e) {
                     e.preventDefault();
                     $('div.readonly').hide();
                     $('form.speaker-profile').show();
+                    $(e.target).hide();
                 });
                 //]]>
                 </script>
