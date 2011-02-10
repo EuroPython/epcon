@@ -166,6 +166,13 @@ button.mini {
 }
 */
 
+/*
+ * pulsante utilizzato per entrare in modalià editing
+ */
+button.edit {
+    display: block;
+    margin: 8px auto;
+}
 
 
 
