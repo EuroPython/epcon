@@ -40,6 +40,53 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
     
     return gravatar_url
 
+class TokenManager(models.Manager):
+    def create(self, user, ctype=''):
+        from uuid import uuid4
+        Token.objects.filter(user=user, ctype=ctype).delete()
+        t = Token()
+        t.token = str(uuid4())
+        t.ctype = ctype
+        t.user = user
+        t.save()
+        return t
+
+    def _get_token(self, token):
+        try:
+            return Token.objects.get(token=token)
+        except Token.DoesNotExist:
+            return None
+
+    def check(self, token):
+        t = self._get_token(token)
+        if t is not None:
+            return t.user, t.ctype
+        else:
+            return None, None
+
+    def validate(self, token):
+        t = self._get_token(token)
+        if t is not None:
+            t.delete()
+            return t.user, t.ctype
+        else:
+            return None, None
+
+class Token(models.Model, django_urls.UrlMixin):
+    """
+    modello che mantiene codici univoci, utilizzabili una sola volta, di
+    diverso tipo per ogni utente.
+    """
+    token = models.CharField(max_length=36, primary_key=True)
+    ctype = models.CharField(max_length=1)
+    user = models.ForeignKey(auth.models.User, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    objects = TokenManager()
+
+    def get_url_path(self):
+        return reverse('assopy-otc-token', kwargs={'token': self.token})       
+
 class UserManager(models.Manager):
     @transaction.commit_on_success
     def create_from_backend(self, rid, email, password=None, verified=False):
