@@ -128,9 +128,12 @@ def otc_code(request, token):
     user, ctype = models.Token.objects.validate(token)
     if user is None:
         return http.HttpResponseBadRequest()
-    user.verified = True
-    user.save()
-    user.backend = 'assopy.auth_backends.EmailBackend'
+
+    auth.logout(request)
+
+    user.assopy_user.verified = True
+    user.assopy_user.save()
+    user = auth.authenticate(uid=user.id)
     auth.login(request, user)
     return redirect('/')
 
