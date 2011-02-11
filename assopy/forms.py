@@ -65,6 +65,7 @@ class Profile(forms.Form):
     lastname = forms.CharField(max_length=32)
     phone = forms.CharField(max_length=20, required=False)
     www = forms.URLField(verify_exists=False, required=False)
+    twitter = forms.CharField(max_length=20, required=False)
     photo = forms.FileField(required=False)
 
 class BillingData(forms.Form):
