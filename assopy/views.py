@@ -63,13 +63,20 @@ def profile(request):
             data = form.cleaned_data
             if data['photo']:
                 user.photo = data['photo']
-                user.save()
-            del data['photo']
-            user.setBilling(**data)
+            user.www = data['www']
+            user.twitter = data['twitter']
+            user.save()
+            user.setBilling(firstname=data['firstname'], lastname=data['lastname'], phone=data['phone'])
             return HttpResponseRedirectSeeOther('.')
     else:
-        initial = user.billing()
-        form = aforms.Profile(initial=initial)
+        data = user.billing()
+        form = aforms.Profile({
+            'firstname': data['firstname'],
+            'lastname': data['lastname'],
+            'phone': data['phone'],
+            'www': user.www,
+            'twitter': user.twitter,
+        })
     return {
         'user': user,
         'form': form,

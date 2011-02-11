@@ -135,6 +135,8 @@ class User(models.Model):
     assopy_id = models.CharField(max_length=22, blank=True, unique=True)
     verified = models.BooleanField(default=False)
     photo = models.ImageField(null=True, upload_to='assopy/users')
+    twitter = models.CharField(max_length=20, blank=True)
+    www = models.URLField(verify_exists=False, blank=True)
 
     objects = UserManager()
 
@@ -162,6 +164,7 @@ class User(models.Model):
             'photo': self.photo_url(),
             'name': self.name(),
             'www': billing['www'],
+            'twitter': self.twitter,
         }
         return data
 
