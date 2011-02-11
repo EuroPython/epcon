@@ -125,6 +125,7 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
+    'assopy.auth_backends.IdBackend',
     'assopy.auth_backends.EmailBackend',
     'assopy.auth_backends.JanRainBackend',
     'django.contrib.auth.backends.ModelBackend',

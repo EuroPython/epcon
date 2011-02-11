@@ -42,6 +42,26 @@ class _AssopyBackend(ModelBackend):
         user.save()
         return user
 
+class IdBackend(_AssopyBackend):
+    """
+    backend utilizzato solo internamento per autenticare utenti dato il loro id
+    (senza bisogno di password).
+    """
+    def authenticate(self, uid=None):
+        try:
+            user = User.objects.select_related('assopy_user').get(pk=uid)
+            auser = user.assopy_user
+            if auser is None:
+                # questo utente esiste su django ma non ha un utente assopy
+                # collegato; probabilmente è un admin inserito prima del
+                # collegamento con il backend.
+                auser = models.User(user=user, verified=True)
+                auser.save()
+            self.linkUser(auser)
+            return user
+        except User.DoesNotExist:
+            return None
+
 class EmailBackend(_AssopyBackend):
     def authenticate(self, email=None, password=None):
         try:
