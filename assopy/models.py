@@ -8,6 +8,7 @@ from django import template
 from django.contrib import auth
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.db import models
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
@@ -244,7 +245,7 @@ class Country(models.Model):
 
 class Order(models.Model):
     code = models.CharField(max_length=8, primary_key=True)
-    assopy_id = models.CharField(max_length=22, blank=True, unique=True)
+    assopy_id = models.CharField(max_length=22, null=True, unique=True)
     user = models.ForeignKey('auth.User')
     created = models.DateTimeField()
 
