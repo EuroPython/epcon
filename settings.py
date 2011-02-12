@@ -191,6 +191,7 @@ COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = 'europython'
 
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
+ASSOPY_TICKET_PAGE = 'p3-tickets'
 
 try:
     from settings_locale import *

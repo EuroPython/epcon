@@ -1,0 +1,13 @@
+{% extends "assopy/base.html" %}
+{% load p3 %}
+{% block MAIN_CONTENT %}
+    <h1>Your tickets!!!</h1>
+    <div class="span-12 append-1">
+        <div class="cms">
+        {% for t in attendee_tickets %}
+        {% render_attendee_ticket t %}
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
