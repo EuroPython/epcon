@@ -85,6 +85,7 @@ var PROJEKKTOR_CONFIG = {
                 (Size: {{ info.1|filesizeformat }})
             </div>
             <hr />
+            {% endif %}
             <dl>
                 <dt>{% trans "Lingua" %}</dt>
                 <dd>{{ talk.language|upper }}</dd>
@@ -97,7 +98,6 @@ var PROJEKKTOR_CONFIG = {
                 <dd>{% trans "disponibile" %}</dd>
                 {% endif %}
             </dl>
-            {% endif %}
         </div>
     </div>
 {% endblock %}
