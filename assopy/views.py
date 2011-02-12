@@ -267,4 +267,6 @@ def checkout(request):
 @login_required
 @render_to('assopy/tickets.html')
 def tickets(request):
+    if settings.TICKET_PAGE:
+        return redirect(settings.TICKET_PAGE)
     return {}
