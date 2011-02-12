@@ -247,7 +247,7 @@ class Order(models.Model):
     code = models.CharField(max_length=8, primary_key=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     user = models.ForeignKey('auth.User')
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
 
     def complete(self):
         return True
