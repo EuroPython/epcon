@@ -114,26 +114,17 @@ class MultilingualContent(models.Model):
 import urlparse
 from django.core.files.storage import FileSystemStorage
 
-# definisco uno storage custom perché non uso MEDIA_DIR per memorizzare la
-# roba sotto stuff
-
-def _build_fs_stuff(subdir, attr=None):
-    fs = FileSystemStorage(
-        location = os.path.join(settings.STUFF_DIR, subdir),
-        base_url = urlparse.urljoin(settings.STUFF_URL, subdir)
-    )
-
+def _fs_upload_to(subdir, attr=None):
     if attr is None:
         attr = lambda i: i.slug
+    def wrapper(instance, filename):
+        fpath = os.path.join('conference', subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
+        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+        if os.path.exists(ipath):
+            os.unlink(ipath)
+        return fpath
+    return wrapper
 
-    def build_path(instance, filename):
-        fname = attr(instance) + os.path.splitext(filename)[1].lower()
-        fs.delete(fname)
-        return fname
-
-    return fs, build_path
-
-fs_speaker, _speaker_image_path = _build_fs_stuff('speaker')
 
 def postSaveResizeImageHandler(sender, **kwargs):
     tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
@@ -178,17 +169,17 @@ class SpeakerManager(models.Manager):
 
 class Speaker(models.Model):
     user = models.OneToOneField('auth.User', null=True)
-    name = models.CharField('nome e cognome speaker', max_length = 100)
+    name = models.CharField('nome e cognome speaker', max_length=100)
     slug = models.SlugField()
-    homepage = models.URLField(verify_exists = False, blank = True)
-    activity = models.CharField(max_length = 50, blank = True)
-    industry = models.CharField(max_length = 50, blank = True)
-    location = models.CharField(max_length = 100, blank = True)
-    activity_homepage = models.URLField(verify_exists = False, blank = True)
-    twitter = models.CharField(max_length = 80, blank = True)
-    image = models.ImageField(upload_to = _speaker_image_path, blank = True, storage = fs_speaker)
+    homepage = models.URLField(verify_exists=False, blank=True)
+    activity = models.CharField(max_length=50, blank=True)
+    industry = models.CharField(max_length=50, blank=True)
+    location = models.CharField(max_length=100, blank=True)
+    activity_homepage = models.URLField(verify_exists=False, blank=True)
+    twitter = models.CharField(max_length=80, blank=True)
+    image = models.ImageField(upload_to=_fs_upload_to('speaker'), blank=True)
     bios = generic.GenericRelation(MultilingualContent)
-    ad_hoc_description = generic.GenericRelation(MultilingualContent, related_name = 'ad_hoc_description_set', verbose_name='descrizione ad hoc')
+    ad_hoc_description = generic.GenericRelation(MultilingualContent, related_name='ad_hoc_description_set', verbose_name='descrizione ad hoc')
 
     objects = SpeakerManager()
 
@@ -303,33 +294,19 @@ class TalkManager(models.Manager):
             transaction.commit()
         return talk
 
-def _slides_upload_to(instance, filename):
-    fpath = os.path.join('conference', 'slides', '%s%s' % (instance.slug, os.path.splitext(filename)[1].lower()))
-    ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
-    if os.path.exists(ipath):
-        os.unlink(ipath)
-    return fpath
-
-def _video_upload_to(instance, filename):
-    fpath = os.path.join('conference', 'videos', '%s%s' % (instance.slug, os.path.splitext(filename)[1].lower()))
-    ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
-    if os.path.exists(ipath):
-        os.unlink(ipath)
-    return fpath
-
 class Talk(models.Model):
-    title = models.CharField('titolo del talk', max_length = 100)
+    title = models.CharField('titolo del talk', max_length=100)
     slug = models.SlugField()
-    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
+    conference = models.CharField(help_text='nome della conferenza', max_length=20)
     speakers = models.ManyToManyField(Speaker)
-    additional_speakers = models.ManyToManyField(Speaker, related_name = 'additional_speakers', blank = True)
-    duration = models.IntegerField(choices = TALK_DURATION)
-    language = models.CharField('lingua del talk', max_length = 3, choices = TALK_LANGUAGES)
+    additional_speakers = models.ManyToManyField(Speaker, related_name='additional_speakers', blank=True)
+    duration = models.IntegerField(choices=TALK_DURATION)
+    language = models.CharField('lingua del talk', max_length=3, choices=TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
-    slides = models.FileField(upload_to = _slides_upload_to, blank = True)
-    video_type = models.CharField(max_length = 30, choices = VIDEO_TYPE, blank = True)
-    video_url = models.TextField(blank = True)
-    video_file = models.FileField(upload_to = _video_upload_to, blank = True)
+    slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
+    video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
+    video_url = models.TextField(blank=True)
+    video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     tags = TagField()
 
@@ -370,8 +347,6 @@ class Ticket(models.Model):
     end_validity = models.DateField(null=True)
     personal = models.BooleanField(default=True)
 
-fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
-
 class Sponsor(models.Model):
     """
     Attraverso l'elenco di SponsorIncome un'istanza di Sponsor è collegata
@@ -379,12 +354,12 @@ class Sponsor(models.Model):
     Sempre in SponsorIncome la conferenza è indicata, come in altri posti,
     con una chiave alfanumerica non collegata a nessuna tabella.
     """
-    sponsor = models.CharField(max_length = 100, help_text = 'nome dello sponsor')
+    sponsor = models.CharField(max_length=100, help_text='nome dello sponsor')
     slug = models.SlugField()
-    url = models.URLField(verify_exists = False, blank = True)
+    url = models.URLField(verify_exists=False, blank=True)
     logo = models.ImageField(
-        upload_to = _sponsor_logo_path, blank = True, storage = fs_sponsor_logo,
-        help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
+        upload_to=_fs_upload_to('sponsor'), blank=True,
+        help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
 
     class Meta:
@@ -397,26 +372,24 @@ post_save.connect(postSaveResizeImageHandler, sender=Sponsor)
 
 class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor)
-    conference = models.CharField(max_length = 20)
+    conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
     tags = TagField()
 
     class Meta:
         ordering = ['conference']
 
-fs_mediapartner_logo, _mediapartner_logo_path = _build_fs_stuff('media-partner')
-
 class MediaPartner(models.Model):
     """
     I media partner sono degli sponsor che non pagano ma che offrono visibilità
     di qualche tipo.
     """
-    partner = models.CharField(max_length = 100, help_text = 'nome del media partner')
+    partner = models.CharField(max_length=100, help_text='nome del media partner')
     slug = models.SlugField()
-    url = models.URLField(verify_exists = False, blank = True)
+    url = models.URLField(verify_exists=False, blank=True)
     logo = models.ImageField(
-        upload_to = _mediapartner_logo_path, blank = True, storage = fs_mediapartner_logo,
-        help_text = 'Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
+        upload_to=_fs_upload_to('media-partner'), blank = True,
+        help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
 
     class Meta:
@@ -567,13 +540,12 @@ class DidYouKnow(models.Model):
     visible = models.BooleanField('visible', default = True)
     messages = generic.GenericRelation(MultilingualContent)
 
-fs_quote, _quote_image_path = _build_fs_stuff('quote', attr=lambda i: slugify(i.who))
 class Quote(models.Model):
-    who = models.CharField(max_length = 100)
-    conference = models.CharField(max_length = 20)
+    who = models.CharField(max_length=100)
+    conference = models.CharField(max_length=20)
     text = models.TextField()
-    activity = models.CharField(max_length = 50, blank = True)
-    image = models.ImageField(upload_to = _quote_image_path, blank = True, storage = fs_quote)
+    activity = models.CharField(max_length=50, blank=True)
+    image = models.ImageField(upload_to=_fs_upload_to('quote', attr=lambda i: slugify(i.who)), blank=True)
 
     class Meta:
         ordering = ['conference', 'who']
