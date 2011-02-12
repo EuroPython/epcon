@@ -68,8 +68,13 @@ class Profile(forms.Form):
     twitter = forms.CharField(max_length=20, required=False)
     photo = forms.FileField(required=False)
 
+ACCOUNT_TYPE = (
+    ('private', 'Private use'),
+    ('company', 'Company'),
+)
 class BillingData(forms.Form):
     card_name = forms.CharField(max_length=80, required=False)
+    account_type = forms.ChoiceField(choices=ACCOUNT_TYPE)
     vat_number = forms.CharField(max_length=22, required=False)
     tin_number = forms.CharField(max_length=16, required=False)
     address = forms.CharField(required=False)
