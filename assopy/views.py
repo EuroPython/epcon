@@ -217,3 +217,51 @@ def janrain_token(request):
 @render_to('assopy/janrain_login_mismatch.html')
 def janrain_login_mismatch(request):
     return {}
+
+@render_to('assopy/checkout.html')
+def checkout(request):
+    class FormTickets(forms.Form):
+        payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
+
+        def __init__(self, *args, **kwargs):
+            super(FormTickets, self).__init__(*args, **kwargs)
+            for t in self.available_tickets():
+                self.fields[t.code] = forms.IntegerField(label=t.name, min_value=0, required=False)
+
+        def available_tickets(self):
+            return cmodels.Ticket.objects.available()
+
+        def clean(self):
+            tickets = dict( (x.code, x) for x in self.available_tickets() )
+            data = self.cleaned_data
+            o = []
+            for k, q in data.items():
+                if k in ('payment',):
+                    continue
+                if not q:
+                    continue
+                if k not in tickets:
+                    raise forms.ValidationError('Invalid ticket')
+                o.append((tickets[k], q))
+            if not o:
+                raise forms.ValidationError('no tickets')
+
+            data['tickets'] = o
+            return data
+
+    if request.method == 'POST':
+        form = FormTickets(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            o = models.Order.objects.create(user=request.user, payment=data['payment'], items=data['tickets'])
+            return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
+    else:
+        form = FormTickets()
+        
+    return {
+        'form': form,
+    }
+
+@render_to('assopy/tickets.html')
+def tickets(request):
+    return {}
