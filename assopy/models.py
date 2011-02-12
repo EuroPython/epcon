@@ -241,3 +241,16 @@ class Country(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class Order(models.Model):
+    code = models.CharField(max_length=8, primary_key=True)
+    assopy_id = models.CharField(max_length=22, blank=True, unique=True)
+    user = models.ForeignKey('auth.User')
+    created = models.DateTimeField()
+
+    def complete(self):
+        return True
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order)
+    ticket = models.ForeignKey('conference.ticket')
