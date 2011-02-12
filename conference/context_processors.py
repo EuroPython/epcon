@@ -15,6 +15,7 @@ def stuff(request):
         'SPEAKER_FACE_URL': '%sspeaker/' % stuff,
         'SLIDE_FILE_URL': '%sslides/' % stuff,
         'DEFAULT_URL_PREFIX': getattr(dsettings, 'DEFAULT_URL_PREFIX', ''),
+        'CONFERENCE': settings.CONFERENCE,
     }
     if settings.GOOGLE_MAPS:
         ctx['GOOGLE_MAPS_KEY'] = settings.GOOGLE_MAPS['key']
