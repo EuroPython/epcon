@@ -215,7 +215,6 @@ def render_attendee_ticket(context, attendee):
         except:
             inst = None
         form = forms.FormAttendee(instance=inst, initial={
-            'attendee_id': 0,
             'attendee_name': attendee.name, 
         })
     return {

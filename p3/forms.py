@@ -3,7 +3,6 @@ from django import forms
 import models
 
 class FormAttendee(forms.ModelForm):
-    attendee_id = forms.IntegerField(widget=forms.HiddenInput)
     attendee_name = forms.CharField(max_length=60, required=False)
 
     class Meta:
