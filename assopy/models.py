@@ -243,11 +243,44 @@ class Country(models.Model):
     def __unicode__(self):
         return self.name
 
+class OrderManager(models.Manager):
+    @transaction.commit_manually
+    def create(self, user, payment, items):
+        log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
+        y = date.today().year
+        cursor = connection.cursor()
+        # qui ho bisogno di impedire che altre connessioni possano leggere il
+        # db fino a quando non ho creato l'ordine
+        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
+        try:
+            try:
+                last = self.filter(code__startswith=str(y)).order_by('-created').values('code')[0]
+            except IndexError:
+                last_code = 0
+            else:
+                last_code = int(last['code'][4:])
+            o = Order()
+            o.code = '%s%s' % (y, str(last_code+1).zfill(4))
+            o.user = user
+            o.save()
+            for t, q in items:
+                item = OrderItem(order=o, ticket=t, quantity=q)
+                item.save()
+        except:
+            transaction.rollback()
+            raise
+        else:
+            transaction.commit()
+        log.info('local order created: %s', o.code)
+        return o
+
 class Order(models.Model):
     code = models.CharField(max_length=8, primary_key=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     user = models.ForeignKey('auth.User')
     created = models.DateTimeField(auto_now_add=True)
+
+    objects = OrderManager()
 
     def complete(self):
         return True
