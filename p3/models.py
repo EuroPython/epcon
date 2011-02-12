@@ -9,7 +9,7 @@ ATTENDEE_SHIRT_SIZES = (
     ('xxl', 'XXL'),
 )
 ATTENDEE_DIETS = (
-    ('omnivorous', 'Vegetarian'),
+    ('omnivorous', 'Omnivorous'),
     ('vegetarian', 'Vegetarian'),
     #('vegan', 'Vegan'),
     #('kosher', 'Kosher'),
