@@ -337,6 +337,23 @@ class Talk(models.Model):
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
+class TicketManager(models.Manager):
+    def get_query_set(self):
+        return self._QuerySet(self.model)
+
+    def __getattr__(self, name):
+        return getattr(self.all(), name)
+
+    class _QuerySet(QuerySet):
+        def available(self, conference=None):
+            today = datetime.date.today()
+            q1 = models.Q(start_validity=None, end_validity=None)
+            q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
+            qs = self.filter(q1 | q2)
+            if conference:
+                qs = qs.filter(conference=conference)
+            return qs
+
 TICKET_TYPES = (
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
@@ -351,6 +368,8 @@ class Ticket(models.Model):
     end_validity = models.DateField(null=True)
     personal = models.BooleanField(default=True)
     type = models.CharField(max_length=10, choices=TICKET_TYPES, default='conference')
+
+    objects = TicketManager()
 
     def __unicode__(self):
         return '%s - %s' % (self.code, self.conference)
