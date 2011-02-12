@@ -2,7 +2,7 @@
 from assopy import django_urls
 from assopy import janrain
 from assopy.clients import genro
-from conference.models import Speaker
+from conference.models import Attendee, Speaker
 
 from django import template
 from django.contrib import auth
@@ -272,6 +272,12 @@ class OrderManager(models.Manager):
         else:
             transaction.commit()
         log.info('local order created: %s', o.code)
+        for t, q in items:
+            for _ in range(q):
+                a = Attendee(user=user, ticket=t)
+                a.save()
+        transaction.commit()
+        log.info('local attendees created for order: %s', o.code)
         return o
 
 class Order(models.Model):
