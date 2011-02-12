@@ -337,6 +337,10 @@ class Talk(models.Model):
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
+TICKET_TYPES = (
+    ('conference', 'Conference ticket'),
+    ('partner', 'Partner Program'),
+)
 class Ticket(models.Model):
     conference = models.CharField(help_text='codice della conferenza', max_length=20)
     code = models.CharField(max_length=10)
@@ -346,6 +350,7 @@ class Ticket(models.Model):
     start_validity = models.DateField(null=True)
     end_validity = models.DateField(null=True)
     personal = models.BooleanField(default=True)
+    type = models.CharField(max_length=10, choices=TICKET_TYPES, default='conference')
 
 class Attendee(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
