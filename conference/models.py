@@ -360,6 +360,16 @@ class Talk(models.Model):
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
+class Ticket(models.Model):
+    conference = models.CharField(help_text='codice della conferenza', max_length=20)
+    code = models.CharField(max_length=10)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    start_validity = models.DateField(null=True)
+    end_validity = models.DateField(null=True)
+    personal = models.BooleanField(default=True)
+
 fs_sponsor_logo, _sponsor_logo_path = _build_fs_stuff('sponsor')
 
 class Sponsor(models.Model):

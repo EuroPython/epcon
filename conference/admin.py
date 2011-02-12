@@ -275,3 +275,8 @@ class SpecialPlaceAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'email')
     
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
+
+class TicketAdmin(admin.ModelAdmin):
+    list_display = ('conference', 'code', 'name', 'price', 'start_validity', 'end_validity')
+    
+admin.site.register(models.Ticket, TicketAdmin)
