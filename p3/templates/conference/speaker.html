@@ -3,72 +3,70 @@
 {% block PAGE_TITLE %}{{ speaker.name }} &mdash; {% endblock %}
 {% block MAIN_CONTENT %}
 {% with speaker.user.assopy_user as auser %}
-    <h1>{{ auser.name }}</h1>
-    <div class="page-summary">
-        <p>
-            {% comment %}{% if speaker.location %}{{ speaker.location }}{% endif %}{% endcomment %}
-            {% if speaker.activity %}{{ speaker.activity }}{% endif %}
-            {% if speaker.industry %}/ {{ speaker.industry }}{% endif %}
-        </p>
-    </div>
-    <div class="span-7 append-1">
-        <div class="cms">
-            <div class="floated">
-                <img src="{{ auser.photo_url }}" alt="{{ auser.name }}" width="98" />
-            </div>
-            <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
-                <h3>Biography</h3>
+    <div class="column span-8">
+        <h1>{{ auser.name }}</h1>
+        <div class="page-summary">
+            <p>
+                {% comment %}{% if speaker.location %}{{ speaker.location }}{% endif %}{% endcomment %}
+                {% if speaker.activity %}{{ speaker.activity }}{% endif %}
+                {% if speaker.industry %}| {{ speaker.industry }}{% endif %}
+            </p>
+        </div>
+        <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
+            <div class="cms">
                 {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
                 <p>{{ b.body|safe }}</p>
-
-                <div id="speaker-contacts">
-                    <h3>Contacts</h3>
-                    <dl>
-                        {% if auser.twitter %}
-                        <dt>{% trans "Twitter" %}</dt>
-                        <dd><a href="http://twitter.com/{{ auser.twitter }}">{{ auser.twitter }}</a></dd>
-                        {% endif %}
-                        {% if auser.www %}
-                        <dt>{% trans "Sito personale" %}</dt>
-                        <dd><a href="{{ auser.www }}">{{ auser.www }}</a></dd>
-                        {% endif %}
-                        {% if speaker.activity_homepage %}
-                        <dt>{% trans "Azienda" %}</dt>
-                        <dd><a href="{{ speaker.activity_homepage }}">{% if speaker.activity %}{{ speaker.activity }}{% else %}{{ speaker.activity_homepage }}{% endif %}</a></dd>
-                        {% endif %}
-                    </dl>
-                </div>
             </div>
-            {% if full_access %}
-            <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-                <fieldset>
-                {% for f in form %}{{ f|field }}{% endfor %}
-                </fieldset>
-                <fieldset class="border">
-                    <button type="submit">Submit</button>
-                </fieldset>
-            </form>
-            {% endif %}
+            <section class="speaker contacts">
+                <h2>Contacts</h2>
+                <dl>
+                    {% if auser.twitter %}
+                    <dt>{% trans "Twitter" %}</dt>
+                    <dd><a href="http://twitter.com/{{ auser.twitter }}">{{ auser.twitter }}</a></dd>
+                    {% endif %}
+                    {% if auser.www %}
+                    <dt>{% trans "Sito personale" %}</dt>
+                    <dd><a href="{{ auser.www }}">{{ auser.www }}</a></dd>
+                    {% endif %}
+                    {% if speaker.activity_homepage %}
+                    <dt>{% trans "Azienda" %}</dt>
+                    <dd><a href="{{ speaker.activity_homepage }}">{% if speaker.activity %}{{ speaker.activity }}{% else %}{{ speaker.activity_homepage }}{% endif %}</a></dd>
+                    {% endif %}
+                </dl>
+            </section>
+            {% box_talks_conference talks %}
         </div>
-    </div>
-    <div class="span-4 last">
-        <aside>
+        {% if full_access %}
+        <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
             <div class="cms">
-                {% if full_access %}
-                <button class="profile edit">Edit your profile</button>
-                <script type="text/javascript">//<![CDATA[
-                $('button.profile.edit').click(function(e) {
-                    e.preventDefault();
-                    $('div.readonly').hide();
-                    $('form.speaker-profile').show();
-                    $(e.target).hide();
-                });
-                //]]>
-                </script>
-                {% endif %}
-                {% box_talks_conference talks %}
+                <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post">
+                    <fieldset>
+                    {% for f in form %}{{ f|field }}{% endfor %}
+                    </fieldset>
+                    <fieldset class="border">
+                        <button type="submit">Submit</button>
+                    </fieldset>
+                </form>
             </div>
-        </aside>
+        </div>
+        {% endif %}
+    </div>
+    <div class="column span-3 last">
+        <div class="speaker-picture">
+            <img class="block" src="{{ auser.photo_url }}" alt="{{ auser.name }}" width="170" height="170" />
+        </div>
+        {% if full_access %}
+        <button class="profile edit">Edit your profile</button>
+        <script type="text/javascript">//<![CDATA[
+        $('button.profile.edit').click(function(e) {
+            e.preventDefault();
+            $('div.readonly').hide();
+            $('div.writable').show();
+            $(e.target).hide();
+        });
+        //]]>
+        </script>
+        {% endif %}
     </div>
 {% endwith %}
 {% endblock %}
