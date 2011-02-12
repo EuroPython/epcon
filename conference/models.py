@@ -357,6 +357,8 @@ class Ticket(models.Model):
 
     class Meta:
         ordering = ('conference', 'code')
+        unique_together = (('conference', 'code'),)
+
 class Attendee(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
     name = models.CharField(max_length=60, blank=True, help_text='name of the attendee (if blank the name of the user is used)')
