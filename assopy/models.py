@@ -150,11 +150,20 @@ class User(models.Model):
 
     @_cache
     def billing(self):
-        return dict(genro.user(self.assopy_id))
+        d = dict(genro.user(self.assopy_id))
+        if d.pop('is_company'):
+            d['account_type'] = 'company'
+        else:
+            d['account_type'] = 'private'
+        return d
 
     def setBilling(self, **kwargs):
         data = self.billing()
         data.update(kwargs)
+        if data.pop('account_type') == 'company':
+            data['is_company'] = True
+        else:
+            data['is_company'] = False
         genro.setUser(self.assopy_id, data)
 
     def name(self):
