@@ -378,10 +378,23 @@ class Ticket(models.Model):
         ordering = ('conference', 'code')
         unique_together = (('conference', 'code'),)
 
+class AttendeeManager(models.Manager):
+    def get_query_set(self):
+        return self._QuerySet(self.model)
+
+    def __getattr__(self, name):
+        return getattr(self.all(), name)
+
+    class _QuerySet(QuerySet):
+        def conference(self, conference):
+            return self.filter(ticket__conference=conference)
+
 class Attendee(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
     name = models.CharField(max_length=60, blank=True, help_text='name of the attendee (if blank the name of the user is used)')
     ticket = models.ForeignKey(Ticket, help_text='ticket type')
+
+    objects = AttendeeManager()
 
 class Sponsor(models.Model):
     """
