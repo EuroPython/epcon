@@ -264,6 +264,7 @@ def checkout(request):
         'form': form,
     }
 
+@login_required
 @render_to('assopy/tickets.html')
 def tickets(request):
     return {}
