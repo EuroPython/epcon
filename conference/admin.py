@@ -280,3 +280,23 @@ class TicketAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'start_validity', 'end_validity')
     
 admin.site.register(models.Ticket, TicketAdmin)
+
+class AttendeeAdmin(admin.ModelAdmin):
+    list_display = ('_name', '_buyer', '_conference', '_ticket')
+
+    def _name(self, o):
+        if o.name:
+            return o.name
+        else:
+            return self._buyer(o)
+
+    def _buyer(self, o):
+        return '%s %s' % (o.user.first_name, o.user.last_name)
+
+    def _conference(self, o):
+        return o.ticket.conference
+
+    def _ticket(self, o):
+        return o.ticket.code
+
+admin.site.register(models.Attendee, AttendeeAdmin)

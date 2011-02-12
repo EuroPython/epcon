@@ -347,6 +347,11 @@ class Ticket(models.Model):
     end_validity = models.DateField(null=True)
     personal = models.BooleanField(default=True)
 
+class Attendee(models.Model):
+    user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
+    name = models.CharField(max_length=60, blank=True, help_text='name of the attendee (if blank the name of the user is used)')
+    ticket = models.ForeignKey(Ticket, help_text='ticket type')
+
 class Sponsor(models.Model):
     """
     Attraverso l'elenco di SponsorIncome un'istanza di Sponsor è collegata
