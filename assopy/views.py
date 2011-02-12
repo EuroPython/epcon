@@ -250,6 +250,8 @@ def checkout(request):
             return data
 
     if request.method == 'POST':
+        if not request.is_authenticated():
+            return http.HttpResponseBadRequest('unauthorized')
         form = FormTickets(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
