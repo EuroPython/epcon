@@ -206,6 +206,23 @@ def check_map(page):
 def render_map(context):
     return {}
 
+@register.inclusion_tag('p3/render_attendee_ticket.html', takes_context=True)
+def render_attendee_ticket(context, attendee):
+    from p3 import forms
+    if attendee.ticket.type == 'conference':
+        try:
+            inst = attendee.p3_conference
+        except:
+            inst = None
+        form = forms.FormAttendee(instance=inst, initial={
+            'attendee_id': 0,
+            'attendee_name': attendee.name, 
+        })
+    return {
+        'attendee': attendee,
+        'form': form,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']

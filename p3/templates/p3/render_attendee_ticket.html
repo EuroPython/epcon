@@ -1,0 +1,11 @@
+{% load assopy_tags %}
+<div class="ticket {{ attendee.ticket.type }}">
+    <form action="{% url p3-tickets %}" method="post">{% csrf_token %}
+        <fieldset>
+            {% for f in form %}{{ f|field }}{% endfor %}
+        </fieldset>
+        <fieldset class="border">
+            <button type="submit">save</button>
+        </fieldset>
+    </form>
+</div>
