@@ -35,10 +35,17 @@ class _AssopyBackend(ModelBackend):
         rid = genro.users(email=user.user.email)['r0']
         if rid is not None:
             log.info('an existing match with the email "%s" is found: %s', user.user.email, rid)
+            data = genro.user(rid)
+            migrate = {
+                'www': data['www'],
+            }
         else:
             rid = genro.create_user(user.user.first_name, user.user.last_name, user.user.email)
+            migrate = {}
             log.info('new remote user id: %s', rid)
         user.assopy_id = rid
+        for k in ('www',):
+            setattr(user, k, migrate.get(k, ''))
         user.save()
         return user
 
