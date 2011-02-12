@@ -83,6 +83,23 @@ class BillingData(forms.Form):
     zip = forms.CharField(max_length=8, required=False)
     country = forms.ChoiceField(choices=models.Country.objects.order_by('printable_name').values_list('iso', 'printable_name'))
 
+    def clean(self):
+        data = self.cleaned_data
+        try:
+            c = models.Country.objects.get(iso=data['country'])
+        except (KeyError, models.Country.DoesNotExist):
+            raise forms.ValidationError('Invalid country')
+
+        if data['account_type'] not in ('private', 'company'):
+            raise forms.ValidationError('invalid account type')
+
+        if data['account_type'] == 'private' and c.vat_person and not data.get('tin_number'):
+            raise forms.ValidationError('tin number missing')
+        elif data['account_type'] == 'company' and c.vat_company and not data.get('vat_company'):
+            raise forms.ValidationError('vat number missing')
+
+        return data
+
 class Speaker(forms.Form):
     bio = forms.CharField(widget=forms.Textarea())
 
