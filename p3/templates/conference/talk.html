@@ -37,7 +37,7 @@ var PROJEKKTOR_CONFIG = {
             {% if talk.status == "accepted" %}
             <section class="talk when">
                 <a href="/{{ e.schedule.conference }}/schedule"><b>{{ e.schedule.conference }}</b></a>
-                {% if e.schedule.conference == "pycon4" %}{% trans "nella track" %} <i>{{ e.get_track.title }}</i>{% endif %}
+                {% if e.schedule.conference == CONFERENCE %}{% trans "nella track" %} <i>{{ e.get_track.title }}</i>{% endif %}
             </section>
             {% if talk|embed_video %}
             <section class="talk video">
