@@ -1,0 +1,18 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags %}
+{% block ASSOPY_MAIN_CONTENT %}
+    <h1>Checkout</h1>
+    <div class="span-12 append-1">
+        <div class="cms">
+            {{ form.non_field_errors }}
+            <form action="{% url assopy-checkout %}" method="post">{% csrf_token %}
+                <fieldset>
+                    {% for f in form %}{{ f|field }}{% endfor %}
+                </fieldset>
+                <fieldset class="border">
+                    <button type="submit">save</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock %}

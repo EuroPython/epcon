@@ -17,4 +17,6 @@ urlpatterns = patterns('',
     url(r'^janrain/login-mismatch/$', 'assopy.views.janrain_login_mismatch', name='assopy-janrain-login_mismatch'),
     url(r'^janrain/token/$', 'assopy.views.janrain_token', name='assopy-janrain-token'),
     url(r'^otc/(?P<token>.{36})/$', 'assopy.views.otc_code', name='assopy-otc-token'),
+    url(r'^checkout/$', 'assopy.views.checkout', name='assopy-checkout'),
+    url(r'^tickets/$', 'assopy.views.tickets', name='assopy-tickets'),
 )
