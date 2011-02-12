@@ -1281,4 +1281,22 @@ section.cal div p {
 
 
 
+/*
+ * questo id viene creato da un js, lo metto in posizione fixed così sono
+ * sicuro che sia sempre visibile.
+ */
+#feedback-js {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 25%;
+    width: 50%;
+}
 
+.feedback {
+    background: rgba(255, 185, 69, 0.85);
+    text-align: center;
+    line-height: 1.7em;
+    font-weight: bold;
+    color: black;
+}
