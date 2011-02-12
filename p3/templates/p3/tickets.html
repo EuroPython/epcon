@@ -9,5 +9,13 @@
         {% endfor %}
         </div>
     </div>
+    <script type="text/javascript">//<![CDATA[
+    $('div.ticket form button[type=submit]').click(function(e) {
+        e.preventDefault();
+        var form = $(e.target).parents('form');
+        form.ajaxSubmit(function() {
+        });
+    });
+    //]]>
+    </script>
 {% endblock %}
-
