@@ -17,86 +17,87 @@ var PROJEKKTOR_CONFIG = {
 
 {% block MAIN_CONTENT %}
     <h1>{{ talk.title }}</h1>
-    <div class="page-summary">
-        <p>
-            <i>{% trans "di" %}</i>
-            {% for spk in talk.get_all_speakers %}
-            <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
-            {% if not forloop.last %}-{% endif %}
-            {% endfor %}
-        </p>
-    </div>
-    <div class="span-7 append-1">
+    <div class="span-8">
+        <div class="page-summary">
+            <p>
+                {% trans "di" %}
+                {% for spk in talk.get_all_speakers %}
+                <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+                {% if not forloop.last %}-{% endif %}
+                {% endfor %}
+            </p>
+        </div>
         {% with talk.get_event as e %}
         {% with e.get_track as track %}
-        <div class="cms">
-            <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
+        <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
+            <div class="cms">
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
                 <p>{{ ab.body|safe }}</p>
-                {% if talk.status == "confirmed" %}
-                <h2>When and Where</h2>
-                <a href="/{{ e.schedule.conference }}/programma"><b>{{ e.schedule.conference }}</b>
-                {% ifequal e.schedule.conference "pycon4" %} - {{ e.schedule.date|date:"D d b" }} / {{ e.start_time|time:"H:i" }}{% endifequal %}</a> {% trans "nella track" %} <i>{{ e.get_track.title }}</i>.
-
-                <hr />
-
-                {% if talk|embed_video %}
+            </div>
+            {% if talk.status == "accepted" %}
+            <section class="talk when">
+                <a href="/{{ e.schedule.conference }}/schedule"><b>{{ e.schedule.conference }}</b></a>
+                {% if e.schedule.conference == "pycon4" %}{% trans "nella track" %} <i>{{ e.get_track.title }}</i>{% endif %}
+            </section>
+            {% if talk|embed_video %}
+            <section class="talk video">
                 <h2>{% trans "Video" %}</h2>
                 {{ talk|embed_video:"720,576" }}
-                {% endif %}
-                {% endif %}
-            </div>
-            {% if full_access %}
-            <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-                <fieldset>
-                {% for f in form %}{{ f|field }}{% endfor %}
-                </fieldset>
-                <fieldset class="border">
-                    <button type="submit">Submit</button>
-                </fieldset>
-            </form>
+            </section>
+            {% endif %}
             {% endif %}
         </div>
         {% endwith %}
         {% endwith %}
+        {% if full_access %}
+        <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
+            <div class="cms">
+                <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">
+                    <fieldset>
+                    {% for f in form %}{{ f|field }}{% endfor %}
+                    </fieldset>
+                    <fieldset class="border">
+                        <button type="submit">Submit</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        {% endif %}
     </div>
     <div class="span-4 last">
-        <aside>
-            <div class="cms">
-                {% if full_access %}
-                <button class="profile edit">Edit talk</button>
-                <script type="text/javascript">//<![CDATA[
-                $('button.profile.edit').click(function(e) {
-                    e.preventDefault();
-                    $('div.readonly').hide();
-                    $('form.talk-details').show();
-                    $(e.target).hide();
-                });
-                //]]>
-                </script>
-                {% endif %}
-
-                {% if talk.slides %}
-                <h4>Download</h4>
-                <div class="button download">
-                    {% stuff_info talk.slides as info %}
-                    <a href="{{ talk.slides.url }}">Slide ({{ info.0 }}) &mdash; {{ info.1|filesizeformat }}</a>
-                </div>
-                {% endif %}
-                <hr />
-                <dl>
-                    <dt>{% trans "Lingua" %}</dt>
-                    <dd>{{ talk.language|upper }}</dd>
-
-                    <dt>{% trans "Durata" %}</dt>
-                    <dd>{{ talk.duration }} {% trans "minuti" %}</dd>
-
-                    {% if track.translate %}
-                    <dt>{% trans "Traduzione simultanea" %}</dt>
-                    <dd>{% trans "disponibile" %}</dd>
-                    {% endif %}
-                </dl>
+        <div class="talk details">
+            {% if full_access %}
+            <button class="profile edit">Edit talk</button>
+            <script type="text/javascript">//<![CDATA[
+            $('button.profile.edit').click(function(e) {
+                e.preventDefault();
+                $('div.readonly').hide();
+                $('div.writable').show();
+                $(e.target).hide();
+            });
+            //]]>
+            </script>
+            {% endif %}
+            {% if talk.slides %}
+            <div class="button mini">
+                {% stuff_info talk.slides as info %}
+                <a href="{{ talk.slides.url }}">Download slide ({{ info.0 }})</a><br />
+                (Size: {{ info.1|filesizeformat }})
             </div>
-        </aside>
+            <hr />
+            <dl>
+                <dt>{% trans "Lingua" %}</dt>
+                <dd>{{ talk.language|upper }}</dd>
+
+                <dt>{% trans "Durata" %}</dt>
+                <dd>{{ talk.duration }} {% trans "minuti" %}</dd>
+
+                {% if track.translate %}
+                <dt>{% trans "Traduzione simultanea" %}</dt>
+                <dd>{% trans "disponibile" %}</dd>
+                {% endif %}
+            </dl>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
