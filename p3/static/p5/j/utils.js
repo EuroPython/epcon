@@ -12,3 +12,20 @@ $(document).ready(function() {
         });
     });
 });
+
+/*
+ * crea un div di feedback per mostrare il testo passato all'utente; il div
+ * viene distrutto dopo un po' di tempo
+ */
+function feedback(msg) {
+    var f = $('#feedback-js');
+    if(f.length != 0) {
+        f.html(msg);
+    }
+    else {
+        var f = $('<div id="feedback-js" class="feedback"></div>');
+        f.html(msg);
+        f.prependTo(document.body)
+        setTimeout(function() { f.remove() }, 10000);
+    }
+}
