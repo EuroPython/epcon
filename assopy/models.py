@@ -2,7 +2,7 @@
 from assopy import django_urls
 from assopy import janrain
 from assopy.clients import genro
-from conference.models import Attendee, Speaker
+from conference.models import Ticket, Speaker
 
 from django import template
 from django.contrib import auth
@@ -263,19 +263,18 @@ class OrderManager(models.Manager):
             o.code = '%s%s' % (y, str(last_code+1).zfill(4))
             o.user = user
             o.save()
-            for t, q in items:
-                item = OrderItem(order=o, ticket=t, quantity=q)
-                item.save()
         except:
             transaction.rollback()
             raise
         else:
             transaction.commit()
         log.info('local order created: %s', o.code)
-        for t, q in items:
+        for f, q in items:
             for _ in range(q):
-                a = Attendee(user=user, ticket=t)
+                a = Ticket(user=user, fare=f)
                 a.save()
+                item = OrderItem(order=o, ticket=a)
+                item.save()
         transaction.commit()
         log.info('local attendees created for order: %s', o.code)
         return o
@@ -293,5 +292,4 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
-    fare = models.ForeignKey('conference.fare')
-    quantity = models.PositiveIntegerField()
+    ticket = models.ForeignKey('conference.ticket')
