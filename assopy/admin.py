@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-
 from django.contrib import admin
 from assopy import models
 
@@ -18,7 +17,7 @@ class OrderAdmin(admin.ModelAdmin):
     _user.short_description = 'buyer'
 
     def _items(self, o):
-        return sum( x[0] for x in o.orderitem_set.values_list('quantity'))
+        return o.orderitem_set.count()
     _items.short_description = '#Tickets'
 
     def _created(self, o):
