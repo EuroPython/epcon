@@ -395,7 +395,7 @@ class TicketManager(models.Manager):
 
 class Ticket(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
-    name = models.CharField(max_length=60, blank=True, help_text='name of the attendee (if blank the name of the user is used)')
+    name = models.CharField(max_length=60, blank=True, help_text='name of the attendee')
     fare = models.ForeignKey(Fare)
 
     objects = TicketManager()
