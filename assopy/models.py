@@ -115,10 +115,10 @@ class UserManager(models.Manager):
         duser = auth.models.User.objects.create_user(uname, email, password=password)
         duser.first_name = first_name
         duser.last_name = last_name
-        if token:
-            duser.token = str(uuid4())
         duser.save()
         user = User(user=duser, verified=verified)
+        if token:
+            user.token = str(uuid4())
         user.save()
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
