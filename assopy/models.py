@@ -148,7 +148,7 @@ class User(models.Model):
         if self.photo:
             return self.photo.url
         try:
-            return self.identities.exclude(photo='')[0].url
+            return self.identities.exclude(photo='')[0].photo
         except IndexError:
             return _gravatar(self.user.email)
 
