@@ -276,12 +276,12 @@ class SpecialPlaceAdmin(admin.ModelAdmin):
     
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
-class TicketAdmin(admin.ModelAdmin):
+class FareAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'start_validity', 'end_validity')
     
-admin.site.register(models.Ticket, TicketAdmin)
+admin.site.register(models.Fare, FareAdmin)
 
-class AttendeeAdmin(admin.ModelAdmin):
+class TicketAdmin(admin.ModelAdmin):
     list_display = ('_name', '_buyer', '_conference', '_ticket')
 
     def _name(self, o):
@@ -299,4 +299,4 @@ class AttendeeAdmin(admin.ModelAdmin):
     def _ticket(self, o):
         return o.ticket.code
 
-admin.site.register(models.Attendee, AttendeeAdmin)
+admin.site.register(models.Ticket, TicketAdmin)
