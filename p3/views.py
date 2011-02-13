@@ -93,13 +93,28 @@ def ticket(request, tid):
         t.save()
         x = form.save(commit=False)
         x.ticket = t
-        if assigned_to != x.assigned_to:
+        if t.user != request.user:
+            # solo il proprietario del biglietto può riassegnarlo
+            x.assigned_to = assigned_to
+        x.save()
+        if t.user == request.user and assigned_to != x.assigned_to:
             if x.assigned_to:
                 log.info('ticket assigned to "%s"', x.assigned_to)
                 _assign_ticket(t, x.assigned_to)
             else:
                 log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
-        x.save()
+        if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
+            # shortcut, l'utente non ha impostati né il nome né il cognome (e
+            # tra l'altro non è la persona che ha comprato il biglietto) per
+            # dare un nome al suo profilo copio le informazioni che ha dato nel
+            # suo utente
+            try:
+                f, l = data['ticket_name'].strip().split(' ', 1)
+            except ValueError:
+                f = data['ticket_name'].strip()
+                l = ''
+            request.user.assopy_user.setBilling(firstname=f, lastname=l)
+            
     if request.is_ajax():
         # piccolo aiuto per le chiamate ajax che non sono interessate alla
         # risposta
