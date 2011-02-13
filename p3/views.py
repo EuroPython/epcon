@@ -39,8 +39,8 @@ def _assign_ticket(ticket, email):
         recipient = auth.models.User.objects.get(email=email)
     except auth.models.User.DoesNotExist:
         try:
-            # qui uso filter + [0] invece che .get perchè potrebbe accadere
-            # anche se non dovrebbe che due identità abbiano la stessa email
+            # qui uso filter + [0] invece che .get perchè potrebbe accadere,
+            # anche se non dovrebbe, che due identità abbiano la stessa email
             # (ad esempio se una persona a usato la stessa mail su più servizi
             # remoti ma ha collegato questi servizi a due utenti locali
             # diversi). Non è un problema se più identità hanno la stessa email
