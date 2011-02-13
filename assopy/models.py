@@ -133,6 +133,7 @@ class UserManager(models.Manager):
 
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
+    token = models.CharField(max_length=36, unique=True, null=True)
     assopy_id = models.CharField(max_length=22, blank=True, unique=True)
     verified = models.BooleanField(default=False)
     photo = models.ImageField(null=True, upload_to='assopy/users')
