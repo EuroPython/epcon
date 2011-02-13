@@ -14,6 +14,7 @@ from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
 import logging
+from uuid import uuid4
 from datetime import date, datetime
 
 log = logging.getLogger('assopy.models')
@@ -48,7 +49,6 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
 
 class TokenManager(models.Manager):
     def create(self, user, ctype=''):
-        from uuid import uuid4
         Token.objects.filter(user=user, ctype=ctype).delete()
         t = Token()
         t.token = str(uuid4())
@@ -110,11 +110,13 @@ class UserManager(models.Manager):
         return u
 
     @transaction.commit_on_success
-    def create_user(self, email, first_name='', last_name='', password=None, verified=False, send_mail=True):
+    def create_user(self, email, first_name='', last_name='', password=None, token=False, verified=False, send_mail=True):
         uname = janrain.suggest_username_from_email(email)
         duser = auth.models.User.objects.create_user(uname, email, password=password)
         duser.first_name = first_name
         duser.last_name = last_name
+        if token:
+            duser.token = str(uuid4())
         duser.save()
         user = User(user=duser, verified=verified)
         user.save()
