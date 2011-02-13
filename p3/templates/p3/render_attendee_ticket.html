@@ -1,14 +1,32 @@
 {% load assopy_tags %}
-<div class="ticket {{ attendee.ticket.type }}">
-    <form action="{% url p3-ticket tid=attendee.id %}" method="post">{% csrf_token %}
-        <fieldset>
-            {% for f in form %}{{ f|field }}{% endfor %}
+<div class="ticket {{ attendee.ticket.type }} span-6 last">
+    <form id="ticket-{{ attendee.id }}" action="{% url p3-ticket tid=attendee.id %}" method="post">{% csrf_token %}
+        {% with form.assigned_to|field_value as assigned %}
+        <fieldset{% if assigned %} style="display: none"{% endif %}>
+            {{ form.attendee_name|field }}
+            {{ form.tagline|field }}
+            <div class="span-2">
+                {{ form.diet|field }}
+            </div>
+            <div class="span-2">
+                {{ form.shirt_size|field }}
+            </div>
+            <div class="span-2 last">
+                {{ form.python_experience|field }}
+            </div>
+            {{ form.assigned_to|field }}
         </fieldset>
-        <fieldset class="border">
+        <fieldset class="border"{% if assigned %} style="display: none"{% endif %}>
             <button type="submit">save</button>
             {% if user == attendee.user %}
             <button value="assign">Assign</button>
             {% endif %}
         </fieldset>
+        {% if assigned %}
+        <div class="assigned">
+            <span>Assigned to {{ form.assigned_to|field_value }}<br /><a href="#" class="reclaim">(click to reclaim)</a></span>
+        </div>
+        {% endif %}
+        {% endwith %}
     </form>
 </div>

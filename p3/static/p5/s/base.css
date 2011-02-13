@@ -1300,3 +1300,47 @@ section.cal div p {
     font-weight: bold;
     color: black;
 }
+
+/*
+ * ticket page
+ */
+div.ticket {
+    border: 1px solid gray;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	padding: 4px;
+	margin-bottom: 10px;
+	/*
+     * i ticket hanno tutti "span-6 last", il last c'è sempre per comodità nel
+     * renderizzare il template. Per non avere tutti i div attaccati inserisco
+     * un margine qui che sovrascrive quello presente in .last
+	 */
+	margin-right: 5px;
+	height: 242px;
+}
+
+div.ticket form {
+    height: 100%;
+}
+
+/*
+ * nel ticket voglio che i button siano allineati a destra
+ */
+div.ticket fieldset.border {
+    text-align: right;
+}
+
+div.ticket div.assigned {
+    height: 100%;
+    background: rgba(240, 240, 240, 0.8);
+    color: black;
+    font-weight: bold;
+    font-size: 1.3em;
+    text-align: center;
+}
+
+div.ticket div.assigned span {
+    position: relative;
+    top: 50px;
+}
