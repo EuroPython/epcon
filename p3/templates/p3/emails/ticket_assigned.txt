@@ -1,0 +1,10 @@
+Hi {{ recipient.first_name }} {{ recipient.last_name }}
+
+{{ attendee.user.first_name }} {{ attendee.user.last_name }} has assigned you a ticket for the {{ conference }} conference
+
+You must fill out the ticket with your data, to do it using this link:
+
+{{ link }}
+
+sincerly
+ep2011 team

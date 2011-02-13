@@ -1,12 +1,14 @@
 # -*- coding: UTF-8 -*-
 from django import http
 from django.conf import settings
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 
+from assopy.models import UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
 
 import forms
@@ -29,6 +31,31 @@ def tickets(request):
         'attendee_tickets': tickets,
     }
 
+def _assign_ticket(attendee, email):
+    try:
+        recipient = auth.models.User.objects(email=email)
+    except auth.models.User.DoesNotExist:
+        try:
+            # qui uso filter + [0] invece che .get perchè potrebbe accadere
+            # anche se non dovrebbe che due identità abbiano la stessa email
+            # (ad esempio se una persona a usato la stessa mail su più servizi
+            # remoti ma ha collegato questi servizi a due utenti locali
+            # diversi). Non è un problema se più identità hanno la stessa email
+            # (nota che il backend di autenticazione già verifica che la stessa
+            # email non venga usata due volte per creare utenti django) perché
+            # in ogni caso si tratta di email verificate da servizi esterni.
+            recipient = UserIdentity.objects.filter(email=email)[0]
+        except IndexError:
+            recipient = None
+    if recipient is None:
+        log.info('No user found for the email "%s"; time to create a new one', email)
+    else:
+        log.info('Found a local user (%s) for the email "%s"', user, email)
+    ctx = {
+        'recipient': recipient,
+        'attendee': attendee,
+        'conference': 'Europython 2011',
+    }
 @login_required
 @transaction.commit_on_success
 def ticket(request, tid):
