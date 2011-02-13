@@ -4,7 +4,7 @@ from conference.models import Ticket
 import models
 
 class FormTicket(forms.ModelForm):
-    ticket_name = forms.CharField(max_length=60, required=True, help_text='name of the attendee')
+    ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')
 
     class Meta:
         model = models.TicketConference
@@ -12,6 +12,12 @@ class FormTicket(forms.ModelForm):
         widgets = {
             'assigned_to': forms.HiddenInput(),
         }
+
+    def clean(self):
+        data = self.cleaned_data
+        if not data.get('ticket_name') and not data.get('assigned_to'):
+            forms.ValidationError('invalid name')
+        return data
 
 class FormTicketPartner(forms.ModelForm):
     class Meta:
