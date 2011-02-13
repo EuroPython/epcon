@@ -22,5 +22,16 @@
         </div>
     </div>
     <div class="span-4 last">
+        <aside>
+            <h4>Your identities</h4>
+            <ul>
+                {% for i in user.identities.all %}
+                <li>{{ i.provider }}</li>
+                {% endfor %}
+            </ul>
+            <h4>Add another identity</h4>
+            {% url assopy-profile as u %}
+            {% render_janrain_box u "overlay" %}
+        </aside>
     </div>
 {% endblock %}
