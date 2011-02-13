@@ -1,17 +1,17 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
-from conference.admin import AttendeeAdmin
-from conference.models import Attendee
-from p3.models import AttendeeProfile
+from conference.admin import TicketAdmin
+from conference.models import Ticket
+from p3.models import TicketConference
 
-class AttendeeProfileAdmin(AttendeeAdmin):
-    list_display = AttendeeAdmin.list_display + ('_assigned',)
+class TicketConferenceAdmin(TicketAdmin):
+    list_display = TicketAdmin.list_display + ('_assigned',)
     
     def _assigned(self, o):
         try:
             return o.p3_conference.assigned_to
-        except AttendeeProfile.DoesNotExist:
+        except TicketConference.DoesNotExist:
             return ''
 
-admin.site.unregister(Attendee)
-admin.site.register(Attendee, AttendeeProfileAdmin)
+admin.site.unregister(Ticket)
+admin.site.register(Ticket, TicketConferenceAdmin)
