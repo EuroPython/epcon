@@ -145,7 +145,7 @@ class User(models.Model):
         if self.photo:
             return self.photo.url
         try:
-            return self.useridentity_set.exclude(photo='')[0]
+            return self.identities.exclude(photo='')[0]
         except IndexError:
             return _gravatar(self.user.email)
 
@@ -214,7 +214,7 @@ class UserIdentityManager(models.Manager):
 
 class UserIdentity(models.Model):
     identifier = models.CharField(max_length=255, primary_key=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='identities')
     provider = models.CharField(max_length=255)
     display_name = models.TextField(blank=True)
     gender = models.CharField(max_length=10, blank=True)
