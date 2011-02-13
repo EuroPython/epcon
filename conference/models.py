@@ -337,7 +337,7 @@ class Talk(models.Model):
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
-class TicketManager(models.Manager):
+class FareManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
 
@@ -358,7 +358,7 @@ TICKET_TYPES = (
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
 )
-class Ticket(models.Model):
+class Fare(models.Model):
     conference = models.CharField(help_text='codice della conferenza', max_length=20)
     code = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
@@ -367,9 +367,9 @@ class Ticket(models.Model):
     start_validity = models.DateField(null=True)
     end_validity = models.DateField(null=True)
     personal = models.BooleanField(default=True)
-    type = models.CharField(max_length=10, choices=TICKET_TYPES, default='conference')
+    ticket_type = models.CharField(max_length=10, choices=TICKET_TYPES, default='conference')
 
-    objects = TicketManager()
+    objects = FareManager()
 
     def __unicode__(self):
         return '%s - %s' % (self.code, self.conference)
@@ -392,7 +392,7 @@ class AttendeeManager(models.Manager):
 class Attendee(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
     name = models.CharField(max_length=60, blank=True, help_text='name of the attendee (if blank the name of the user is used)')
-    ticket = models.ForeignKey(Ticket, help_text='ticket type')
+    ticket = models.ForeignKey(Fare, help_text='ticket type')
 
     objects = AttendeeManager()
 
