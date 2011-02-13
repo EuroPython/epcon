@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django import http
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -40,7 +41,7 @@ def ticket(request, tid):
             except models.AttendeeProfile.DoesNotExist:
                 p3c = None
                 assigned_to = None
-        form = forms.FormAttendee(instance=p3c, data=request.POST)
+        form = forms.FormAttendee(instance=p3c, data=request.POST, prefix='a%d' % (a.id,))
         if not form.is_valid():
             return http.HttpResponseBadRequest()
         data = form.cleaned_data

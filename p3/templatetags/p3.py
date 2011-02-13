@@ -214,9 +214,13 @@ def render_attendee_ticket(context, attendee):
             inst = attendee.p3_conference
         except:
             inst = None
-        form = forms.FormAttendee(instance=inst, initial={
-            'attendee_name': attendee.name, 
-        })
+        form = forms.FormAttendee(
+            instance=inst,
+            initial={
+                'attendee_name': attendee.name, 
+            },
+            prefix='a%d' % (attendee.id,)
+        )
     return {
         'attendee': attendee,
         'form': form,
