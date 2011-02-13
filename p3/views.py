@@ -29,7 +29,7 @@ def map_js(request):
 @login_required
 @render_to('p3/tickets.html')
 def tickets(request):
-    tickets = request.user.ticket_set.conference(settings.CONFERENCE_CONFERENCE)
+    tickets = models.TicketConference.objects.available(request.user, settings.CONFERENCE_CONFERENCE)
     return {
         'tickets': tickets,
     }
