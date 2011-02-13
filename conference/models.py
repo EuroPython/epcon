@@ -391,7 +391,7 @@ class TicketManager(models.Manager):
 
     class _QuerySet(QuerySet):
         def conference(self, conference):
-            return self.filter(ticket__conference=conference)
+            return self.filter(fare__conference=conference)
 
 class Ticket(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
