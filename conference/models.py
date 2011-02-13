@@ -378,7 +378,7 @@ class Fare(models.Model):
         ordering = ('conference', 'code')
         unique_together = (('conference', 'code'),)
 
-class AttendeeManager(models.Manager):
+class TicketManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
 
@@ -389,12 +389,12 @@ class AttendeeManager(models.Manager):
         def conference(self, conference):
             return self.filter(ticket__conference=conference)
 
-class Attendee(models.Model):
+class Ticket(models.Model):
     user = models.ForeignKey('auth.User', help_text='holder of the ticket (who has buyed it?)')
     name = models.CharField(max_length=60, blank=True, help_text='name of the attendee (if blank the name of the user is used)')
-    ticket = models.ForeignKey(Fare, help_text='ticket type')
+    fare = models.ForeignKey(Fare)
 
-    objects = AttendeeManager()
+    objects = TicketManager()
 
 class Sponsor(models.Model):
     """
