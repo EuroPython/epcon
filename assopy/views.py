@@ -225,14 +225,14 @@ def checkout(request):
 
         def __init__(self, *args, **kwargs):
             super(FormTickets, self).__init__(*args, **kwargs)
-            for t in self.available_tickets():
+            for t in self.available_fares():
                 self.fields[t.code] = forms.IntegerField(label=t.name, min_value=0, required=False)
 
-        def available_tickets(self):
-            return cmodels.Ticket.objects.available()
+        def available_fares(self):
+            return cmodels.Fare.objects.available()
 
         def clean(self):
-            tickets = dict( (x.code, x) for x in self.available_tickets() )
+            fares = dict( (x.code, x) for x in self.available_fares() )
             data = self.cleaned_data
             o = []
             for k, q in data.items():
@@ -240,9 +240,12 @@ def checkout(request):
                     continue
                 if not q:
                     continue
-                if k not in tickets:
-                    raise forms.ValidationError('Invalid ticket')
-                o.append((tickets[k], q))
+                if k not in fares:
+                    raise forms.ValidationError('Invalid fare')
+                f = fares[k]
+                if not f.valid():
+                    raise forms.ValidationError('Invalid fare')
+                o.append((f, q))
             if not o:
                 raise forms.ValidationError('no tickets')
 
