@@ -220,6 +220,7 @@ def render_attendee_ticket(context, attendee):
     return {
         'attendee': attendee,
         'form': form,
+        'user': context['request'].user,
     }
 
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)

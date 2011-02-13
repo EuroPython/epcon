@@ -7,4 +7,7 @@ class FormAttendee(forms.ModelForm):
 
     class Meta:
         model = models.AttendeeProfile
-        exclude = ('attendee', 'assigned_to', )
+        exclude = ('attendee',)
+        widgets = {
+            'assigned_to': forms.HiddenInput(),
+        }

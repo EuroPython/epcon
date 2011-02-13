@@ -12,6 +12,10 @@ import forms
 import models
 from conference.models import Attendee
 
+import logging
+
+log = logging.getLogger('p3.views')
+
 def map_js(request):
     return render_to_response(
         'p3/map.js', {}, context_instance=RequestContext(request), mimetype = 'text/javascript')
@@ -32,8 +36,10 @@ def ticket(request, tid):
         if a.ticket.type == 'conference':
             try:
                 p3c = a.p3_conference
+                assigned_to = p3c.assigned_to
             except models.AttendeeProfile.DoesNotExist:
                 p3c = None
+                assigned_to = None
         form = forms.FormAttendee(instance=p3c, data=request.POST)
         if not form.is_valid():
             return http.HttpResponseBadRequest()
@@ -42,5 +48,10 @@ def ticket(request, tid):
         a.save()
         x = form.save(commit=False)
         x.attendee = a
+        if assigned_to != x.assigned_to:
+            if x.assigned_to:
+                log.info('ticket assigned to "%s"', x.assigned_to)
+            else:
+                log.info('ticket reclaimed (previously assigned to "%s")', p3c.assigned_to)
         x.save()
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))

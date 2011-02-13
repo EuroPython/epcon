@@ -17,6 +17,17 @@
             feedback('ticket saved');
         });
     });
+    $('div.ticket form button[value=assign]').click(function(e) {
+        e.preventDefault();
+        var email = prompt('Enter the email of the person you want to assign the ticket');
+        if(!email)
+            return;
+        var form = $(e.target).parents('form');
+        $('input[name=assigned_to]', form).val(email);
+        form.ajaxSubmit(function() {
+            feedback('ticket assigned to ' + email);
+        });
+    });
     //]]>
     </script>
 {% endblock %}

@@ -6,6 +6,9 @@
         </fieldset>
         <fieldset class="border">
             <button type="submit">save</button>
+            {% if user == attendee.user %}
+            <button value="assign">Assign</button>
+            {% endif %}
         </fieldset>
     </form>
 </div>
