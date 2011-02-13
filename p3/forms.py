@@ -3,7 +3,7 @@ from django import forms
 import models
 
 class FormTicket(forms.ModelForm):
-    ticket_name = forms.CharField(max_length=60, required=False)
+    ticket_name = forms.CharField(max_length=60, required=True)
 
     class Meta:
         model = models.TicketConference

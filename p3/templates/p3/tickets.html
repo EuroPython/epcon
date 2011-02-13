@@ -13,13 +13,26 @@
     $('div.ticket form button[type=submit]').click(function(e) {
         e.preventDefault();
         var form = $(e.target).parents('form');
-        form.ajaxSubmit(function() {
-            feedback('ticket saved');
+        form.ajaxSubmit({
+            success: function() {
+                feedback('ticket saved');
+            },
+            beforeSubmit: function(arr, form, options) {
+                var n = ticket_field(form, 'ticket_name').val().trim();
+                if(n == '') {
+                    alert('please enter the name');
+                    return false;
+                }
+                return true;
+            },
+            error: function(xhr, status, error) {
+                alert('cannot save the ticket, please contact info@pycon.it for assistance');
+            }
         });
     });
     function ticket_field(form, field_name) {
         var tid = $(form).get(0).id.split('-')[1];
-        return $('input[name=t' + tid + '-assigned_to]', form);
+        return $('input[name=t' + tid + '-' + field_name + ']', form);
     }
     $('div.ticket form button[value=assign]').click(function(e) {
         e.preventDefault();
