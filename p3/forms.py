@@ -7,4 +7,4 @@ class FormAttendee(forms.ModelForm):
 
     class Meta:
         model = models.AttendeeProfile
-        exclude = ('attendee',)
+        exclude = ('attendee', 'assigned_to', )

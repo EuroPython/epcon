@@ -28,4 +28,5 @@ class AttendeeProfile(models.Model):
     python_experience = models.PositiveIntegerField(choices=ATTENDEE_EXPERIENCES, default=0)
     diet = models.CharField(max_length=10, choices=ATTENDEE_DIETS, default='omnivorous')
     tagline = models.CharField(max_length=60, blank=True, help_text='a (funny?) tagline for the attendee')
+    assigned_to = models.EmailField(blank=True)
 
