@@ -206,23 +206,23 @@ def check_map(page):
 def render_map(context):
     return {}
 
-@register.inclusion_tag('p3/render_attendee_ticket.html', takes_context=True)
-def render_attendee_ticket(context, attendee):
+@register.inclusion_tag('p3/render_ticket.html', takes_context=True)
+def render_ticket(context, ticket):
     from p3 import forms
-    if attendee.ticket.type == 'conference':
+    if ticket.fare.ticket_type == 'conference':
         try:
-            inst = attendee.p3_conference
+            inst = ticket.p3_conference
         except:
             inst = None
-        form = forms.FormAttendee(
+        form = forms.FormTicket(
             instance=inst,
             initial={
-                'attendee_name': attendee.name, 
+                'ticket_name': ticket.name, 
             },
-            prefix='a%d' % (attendee.id,)
+            prefix='t%d' % (ticket.id,)
         )
     return {
-        'attendee': attendee,
+        'ticket': ticket,
         'form': form,
         'user': context['request'].user,
     }

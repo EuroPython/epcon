@@ -13,7 +13,7 @@ from assopy.views import render_to, HttpResponseRedirectSeeOther
 
 import forms
 import models
-from conference.models import Attendee
+from conference.models import Ticket
 
 import logging
 
@@ -26,9 +26,9 @@ def map_js(request):
 @login_required
 @render_to('p3/tickets.html')
 def tickets(request):
-    tickets = request.user.attendee_set.conference(settings.CONFERENCE_CONFERENCE)
+    tickets = request.user.ticket_set.conference(settings.CONFERENCE_CONFERENCE)
     return {
-        'attendee_tickets': tickets,
+        'tickets': tickets,
     }
 
 def _assign_ticket(attendee, email):
@@ -59,23 +59,23 @@ def _assign_ticket(attendee, email):
 @login_required
 @transaction.commit_on_success
 def ticket(request, tid):
-    a = get_object_or_404(Attendee, user=request.user, pk=tid)
+    t = get_object_or_404(Ticket, user=request.user, pk=tid)
     if request.method == 'POST':
-        if a.ticket.type == 'conference':
+        if t.fare.ticket_type == 'conference':
             try:
-                p3c = a.p3_conference
+                p3c = t.p3_conference
                 assigned_to = p3c.assigned_to
-            except models.AttendeeProfile.DoesNotExist:
+            except models.TicketConference.DoesNotExist:
                 p3c = None
                 assigned_to = None
-        form = forms.FormAttendee(instance=p3c, data=request.POST, prefix='a%d' % (a.id,))
+        form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
         if not form.is_valid():
             return http.HttpResponseBadRequest()
         data = form.cleaned_data
-        a.name = data['attendee_name']
-        a.save()
+        t.name = data['ticket_name']
+        t.save()
         x = form.save(commit=False)
-        x.attendee = a
+        x.ticket = t
         if assigned_to != x.assigned_to:
             if x.assigned_to:
                 log.info('ticket assigned to "%s"', x.assigned_to)

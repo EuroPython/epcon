@@ -1,9 +1,9 @@
 {% load assopy_tags %}
-<div class="ticket {{ attendee.ticket.type }} span-6 last">
-    <form id="ticket-{{ attendee.id }}" action="{% url p3-ticket tid=attendee.id %}" method="post">{% csrf_token %}
+<div class="ticket {{ ticket.fare.ticket_type }} span-6 last">
+    <form id="ticket-{{ ticket.id }}" action="{% url p3-ticket tid=ticket.id %}" method="post">{% csrf_token %}
         {% with form.assigned_to|field_value as assigned %}
         <fieldset{% if assigned %} style="display: none"{% endif %}>
-            {{ form.attendee_name|field }}
+            {{ form.ticket_name|field }}
             {{ form.tagline|field }}
             <div class="span-2">
                 {{ form.diet|field }}
@@ -18,7 +18,7 @@
         </fieldset>
         <fieldset class="border"{% if assigned %} style="display: none"{% endif %}>
             <button type="submit">save</button>
-            {% if user == attendee.user %}
+            {% if user == ticket.user %}
             <button value="assign">Assign</button>
             {% endif %}
         </fieldset>
