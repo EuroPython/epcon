@@ -169,6 +169,11 @@ class User(models.Model):
         else:
             data['is_company'] = False
         genro.setUser(self.assopy_id, data)
+        # mantengo sincronizzato l'utente locale
+        if self.user.first_name != data['firstname'] or self.user.last_name != data['lastname']:
+            self.user.first_name = data['firstname']
+            self.user.last_name = data['lastname']
+            self.user.save()
 
     def name(self):
         if self.assopy_id:
