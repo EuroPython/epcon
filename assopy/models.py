@@ -303,4 +303,4 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
-    ticket = models.ForeignKey('conference.ticket')
+    ticket = models.OneToOneField('conference.ticket')
