@@ -5,8 +5,11 @@ from conference.models import Ticket
 from p3.models import TicketConference
 
 class TicketConferenceAdmin(TicketAdmin):
-    list_display = TicketAdmin.list_display + ('_assigned',)
+    list_display = TicketAdmin.list_display + ('_order', '_assigned',)
     
+    def _order(self, o):
+        return o.orderitem.order.code
+
     def _assigned(self, o):
         try:
             return o.p3_conference.assigned_to
