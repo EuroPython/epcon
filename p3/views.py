@@ -53,6 +53,6 @@ def ticket(request, tid):
             if x.assigned_to:
                 log.info('ticket assigned to "%s"', x.assigned_to)
             else:
-                log.info('ticket reclaimed (previously assigned to "%s")', p3c.assigned_to)
+                log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
         x.save()
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
