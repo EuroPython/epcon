@@ -73,15 +73,18 @@ def _assign_ticket(ticket, email):
 @login_required
 @transaction.commit_on_success
 def ticket(request, tid):
-    t = get_object_or_404(Ticket, user=request.user, pk=tid)
+    t = get_object_or_404(Ticket, pk=tid)
+    if t.user != request.user:
+        try:
+            p3c = t.p3_conference
+        except models.TicketConference.DoesNotExist:
+            p3c = None
+            assigned_to = None
+        else:
+            assigned_to = p3c.assigned_to
+        if assigned_to is None or assigned_to != request.user.email:
+            raise http.Http404()
     if request.method == 'POST':
-        if t.fare.ticket_type == 'conference':
-            try:
-                p3c = t.p3_conference
-                assigned_to = p3c.assigned_to
-            except models.TicketConference.DoesNotExist:
-                p3c = None
-                assigned_to = None
         form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
         if not form.is_valid():
             return http.HttpResponseBadRequest()
@@ -97,7 +100,12 @@ def ticket(request, tid):
             else:
                 log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
         x.save()
-    return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
+    if request.is_ajax():
+        # piccolo aiuto per le chiamate ajax che non sono interessate alla
+        # risposta
+        return http.HttpResponse('')
+    else:
+        return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
 def user(request, token):
     """
