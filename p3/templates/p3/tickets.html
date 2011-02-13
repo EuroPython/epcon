@@ -18,9 +18,15 @@
                 feedback('ticket saved');
             },
             beforeSubmit: function(arr, form, options) {
-                var n = ticket_field(form, 'ticket_name').val().trim();
+                var ticket = form.parents('.ticket');
+                if(ticket.hasClass('conference'))
+                    var f = ticket_field(form, 'ticket_name');
+                else
+                    var f = ticket_field(form, 'name');
+                var n = f.val().trim();
                 if(n == '') {
                     alert('please enter the name');
+                    f.focus();
                     return false;
                 }
                 return true;

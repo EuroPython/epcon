@@ -85,35 +85,41 @@ def ticket(request, tid):
         if assigned_to is None or assigned_to != request.user.email:
             raise http.Http404()
     if request.method == 'POST':
-        form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
-        if not form.is_valid():
-            return http.HttpResponseBadRequest(str(form.errors))
-        data = form.cleaned_data
-        t.name = data['ticket_name']
-        t.save()
-        x = form.save(commit=False)
-        x.ticket = t
-        if t.user != request.user:
-            # solo il proprietario del biglietto può riassegnarlo
-            x.assigned_to = assigned_to
-        x.save()
-        if t.user == request.user and assigned_to != x.assigned_to:
-            if x.assigned_to:
-                log.info('ticket assigned to "%s"', x.assigned_to)
-                _assign_ticket(t, x.assigned_to)
-            else:
-                log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
-        if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
-            # shortcut, l'utente non ha impostati né il nome né il cognome (e
-            # tra l'altro non è la persona che ha comprato il biglietto) per
-            # dare un nome al suo profilo copio le informazioni che ha dato nel
-            # suo utente
-            try:
-                f, l = data['ticket_name'].strip().split(' ', 1)
-            except ValueError:
-                f = data['ticket_name'].strip()
-                l = ''
-            request.user.assopy_user.setBilling(firstname=f, lastname=l)
+        if t.fare.ticket_type == 'conference':
+            form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
+            if not form.is_valid():
+                return http.HttpResponseBadRequest(str(form.errors))
+            data = form.cleaned_data
+            t.name = data['ticket_name']
+            t.save()
+            x = form.save(commit=False)
+            x.ticket = t
+            if t.user != request.user:
+                # solo il proprietario del biglietto può riassegnarlo
+                x.assigned_to = assigned_to
+            x.save()
+            if t.user == request.user and assigned_to != x.assigned_to:
+                if x.assigned_to:
+                    log.info('ticket assigned to "%s"', x.assigned_to)
+                    _assign_ticket(t, x.assigned_to)
+                else:
+                    log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
+            if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
+                # shortcut, l'utente non ha impostati né il nome né il cognome (e
+                # tra l'altro non è la persona che ha comprato il biglietto) per
+                # dare un nome al suo profilo copio le informazioni che ha dato nel
+                # suo utente
+                try:
+                    f, l = data['ticket_name'].strip().split(' ', 1)
+                except ValueError:
+                    f = data['ticket_name'].strip()
+                    l = ''
+                request.user.assopy_user.setBilling(firstname=f, lastname=l)
+        else:
+            form = forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
+            if not form.is_valid():
+                return http.HttpResponseBadRequest(str(form.errors))
+            form.save()
             
     if request.is_ajax():
         # piccolo aiuto per le chiamate ajax che non sono interessate alla

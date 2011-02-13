@@ -1,16 +1,17 @@
 {% load assopy_tags %}
 <div class="ticket {{ ticket.fare.ticket_type }} span-6 last">
     <form id="ticket-{{ ticket.id }}" action="{% url p3-ticket tid=ticket.id %}" method="post">{% csrf_token %}
+    {% if ticket.fare.ticket_type == "conference" %}
         <fieldset{% if blocked %} style="display: none"{% endif %}>
             {{ form.ticket_name|field }}
             {{ form.tagline|field }}
-            <div class="span-2">
+            <div class="span-3">
                 {{ form.diet|field }}
             </div>
-            <div class="span-2">
+            <div class="span-3 last">
                 {{ form.shirt_size|field }}
             </div>
-            <div class="span-2 last">
+            <div class="span-3">
                 {{ form.python_experience|field }}
             </div>
             {{ form.assigned_to|field }}
@@ -26,5 +27,15 @@
             <span>Assigned to {{ form.assigned_to|field_value }}<br /><a href="#" class="reclaim">(click to reclaim)</a></span>
         </div>
         {% endif %}
+    {% else %}
+        <fieldset>
+            {% for f in form %}
+            {{ f|field }}
+            {% endfor %}
+        </fieldset>
+        <fieldset class="border">
+            <button type="submit">save</button>
+        </fieldset>
+    {% endif %}
     </form>
 </div>

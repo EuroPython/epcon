@@ -1305,6 +1305,7 @@ section.cal div p {
  * ticket page
  */
 div.ticket {
+    position: relative;
     border: 1px solid gray;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
@@ -1317,7 +1318,7 @@ div.ticket {
      * un margine qui che sovrascrive quello presente in .last
 	 */
 	margin-right: 5px;
-	height: 242px;
+	height: 330px;
 }
 
 div.ticket form {
@@ -1325,10 +1326,12 @@ div.ticket form {
 }
 
 /*
- * nel ticket voglio che i button siano allineati a destra
+ * nel ticket voglio che i button siano allineati in fondo a destra
  */
 div.ticket fieldset.border {
-    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 div.ticket div.assigned {

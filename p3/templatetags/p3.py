@@ -226,6 +226,9 @@ def render_ticket(context, ticket):
             blocked = inst.assigned_to != user.email
         else:
             blocked = False
+    else:
+        form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
+        blocked = False
     return {
         'ticket': ticket,
         'form': form,
