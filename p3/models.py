@@ -1,20 +1,20 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 
-ATTENDEE_SHIRT_SIZES = (
+TICKET_CONFERENCE_SHIRT_SIZES = (
     ('s', 'S'),
     ('m', 'M'),
     ('l', 'L'),
     ('xl', 'XL'),
     ('xxl', 'XXL'),
 )
-ATTENDEE_DIETS = (
+TICKET_CONFERENCE_DIETS = (
     ('omnivorous', 'Omnivorous'),
     ('vegetarian', 'Vegetarian'),
     #('vegan', 'Vegan'),
     #('kosher', 'Kosher'),
 )
-ATTENDEE_EXPERIENCES = (
+TICKET_CONFERENCE_EXPERIENCES = (
     (0, '0'),
     (1, '1'),
     (2, '2'),
@@ -23,10 +23,10 @@ ATTENDEE_EXPERIENCES = (
     (5, '5'),
 )
 class TicketConference(models.Model):
-    attendee = models.OneToOneField('conference.ticket', related_name='p3_conference')
-    shirt_size = models.CharField(max_length=2, choices=ATTENDEE_SHIRT_SIZES, default='l')
-    python_experience = models.PositiveIntegerField(choices=ATTENDEE_EXPERIENCES, default=0)
-    diet = models.CharField(max_length=10, choices=ATTENDEE_DIETS, default='omnivorous')
+    ticket = models.OneToOneField('conference.ticket', related_name='p3_conference')
+    shirt_size = models.CharField(max_length=2, choices=TICKET_CONFERENCE_SHIRT_SIZES, default='l')
+    python_experience = models.PositiveIntegerField(choices=TICKET_CONFERENCE_EXPERIENCES, default=0)
+    diet = models.CharField(max_length=10, choices=TICKET_CONFERENCE_DIETS, default='omnivorous')
     tagline = models.CharField(max_length=60, blank=True, help_text='a (funny?) tagline for the attendee')
     assigned_to = models.EmailField(blank=True)
 
