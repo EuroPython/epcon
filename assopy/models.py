@@ -298,6 +298,9 @@ class Order(models.Model):
     def complete(self):
         return True
 
+    def total(self):
+        return self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
     ticket = models.ForeignKey('conference.ticket')
