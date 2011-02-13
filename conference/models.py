@@ -354,7 +354,7 @@ class FareManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-TICKET_TYPES = (
+FARE_TICKET_TYPES = (
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
 )
@@ -367,7 +367,7 @@ class Fare(models.Model):
     start_validity = models.DateField(null=True)
     end_validity = models.DateField(null=True)
     personal = models.BooleanField(default=True)
-    ticket_type = models.CharField(max_length=10, choices=TICKET_TYPES, default='conference')
+    ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference')
 
     objects = FareManager()
 
