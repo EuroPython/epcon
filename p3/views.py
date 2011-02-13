@@ -83,3 +83,16 @@ def ticket(request, tid):
                 log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
         x.save()
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
+
+def user(request, token):
+    """
+    view che logga automaticamente un utente (se il token è valido) e lo
+    ridirige alla pagine dei tickets 
+    """
+    u = get_object_or_404(User, token=token)
+    if not u.verified:
+        u.verified = True
+        u.save()
+    user = auth.authenticate(uid=u.user.id)
+    auth.login(request, user)
+    return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
