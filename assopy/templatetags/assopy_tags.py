@@ -31,7 +31,7 @@ def field(field, cls=None):
         return _field_tpl.render(template.Context(locals()))
 
 @register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
-def render_janrain_box(context, next=None):
+def render_janrain_box(context, next=None, mode='embed'):
     if settings.JANRAIN:
         # mi salvo, nella sessione corrente, dove vuol essere rediretto
         # l'utente una volta loggato
@@ -45,6 +45,7 @@ def render_janrain_box(context, next=None):
         u = None
     return {
         'url': u,
+        'mode': mode,
     }
 
 class TNode(template.Node):
