@@ -87,7 +87,7 @@ def ticket(request, tid):
     if request.method == 'POST':
         form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
         if not form.is_valid():
-            return http.HttpResponseBadRequest()
+            return http.HttpResponseBadRequest(str(form.errors))
         data = form.cleaned_data
         t.name = data['ticket_name']
         t.save()
