@@ -209,6 +209,7 @@ def render_map(context):
 @register.inclusion_tag('p3/render_ticket.html', takes_context=True)
 def render_ticket(context, ticket):
     from p3 import forms
+    user = context['request'].user
     if ticket.fare.ticket_type == 'conference':
         try:
             inst = ticket.p3_conference
@@ -221,10 +222,15 @@ def render_ticket(context, ticket):
             },
             prefix='t%d' % (ticket.id,)
         )
+        if inst and inst.assigned_to:
+            blocked = inst.assigned_to != user.email
+        else:
+            blocked = False
     return {
         'ticket': ticket,
         'form': form,
-        'user': context['request'].user,
+        'user': user,
+        'blocked': blocked,
     }
 
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
