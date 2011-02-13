@@ -57,7 +57,14 @@ def _assign_ticket(ticket, email):
         name = email
     else:
         log.info('Found a local user (%s) for the email "%s"', recipient, email)
-        if not recipient.assopy_user.token:
+        try:
+            auser = recipient.assopy_user
+        except User.DoesNotExist:
+            # uff, ho un utente su django che non è un assopy user, sicuramente
+            # strascichi prima dell'introduzione dell'app assopy
+            auser = User(user=recipient, verified=True)
+            auser.save()
+        if not auser.token:
             recipient.assopy_user.token = str(uuid.uuid4())
             recipient.assopy_user.save()
         name = recipient.assopy_user.name()
