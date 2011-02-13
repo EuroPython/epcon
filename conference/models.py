@@ -378,6 +378,10 @@ class Fare(models.Model):
         ordering = ('conference', 'code')
         unique_together = (('conference', 'code'),)
 
+    def valid(self):
+        today = datetime.date.today()
+        return self.start_validity <= today <= self.end_validity
+
 class TicketManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
