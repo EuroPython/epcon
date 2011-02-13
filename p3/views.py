@@ -74,14 +74,14 @@ def _assign_ticket(ticket, email):
 @transaction.commit_on_success
 def ticket(request, tid):
     t = get_object_or_404(Ticket, pk=tid)
+    try:
+        p3c = t.p3_conference
+    except models.TicketConference.DoesNotExist:
+        p3c = None
+        assigned_to = None
+    else:
+        assigned_to = p3c.assigned_to
     if t.user != request.user:
-        try:
-            p3c = t.p3_conference
-        except models.TicketConference.DoesNotExist:
-            p3c = None
-            assigned_to = None
-        else:
-            assigned_to = p3c.assigned_to
         if assigned_to is None or assigned_to != request.user.email:
             raise http.Http404()
     if request.method == 'POST':
