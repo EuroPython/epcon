@@ -139,8 +139,8 @@ def otc_code(request, token):
 
     auth.logout(request)
 
-    user.assopy_user.verified = True
-    user.assopy_user.save()
+    user.is_active = True
+    user.save()
     user = auth.authenticate(uid=user.id)
     auth.login(request, user)
     return redirect('/')
@@ -189,6 +189,7 @@ def janrain_token(request):
                     current.last_name = profile['name']['familyName']
                 except KeyError:
                     pass
+                current.is_active = True
                 current.save()
                 log.debug('new django user created "%s"', current)
             else:
@@ -198,7 +199,7 @@ def janrain_token(request):
                 # anche la controparte assopy
                 user = current.assopy_user
             except models.User.DoesNotExist:
-                user = models.User(user=current, verified=True)
+                user = models.User(user=current)
                 user.save()
         log.debug('the new identity will be linked to "%s"', current)
         identity = models.UserIdentity.objects.create_from_profile(user, profile)
