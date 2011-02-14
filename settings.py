@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
+    'templatesadmin',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -193,6 +194,10 @@ P3_TWITTER_USER = 'europython'
 
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
+
+TEMPLATESADMIN_EDITHOOKS = (
+    'templatesadmin.edithooks.hgcommit.HgCommitHook',
+)
 
 try:
     from settings_locale import *

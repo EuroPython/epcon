@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}
+<script type="text/javascript">
+/* <![CDATA[ */
+(function() {
+  var saved = window.onload;
+  var hash = window.location.hash;
+  window.onload = function() {
+    saved && saved();
+    var elements = document.getElementsByTagName("a");
+    for(var i = 0; i< elements.length; i++) {
+      if("#" + elements[i].getAttribute("name") == hash) {
+        elements[i].parentNode.setAttribute("style", "border: 3px solid red;");
+      }
+    }
+  }
+})();
+/* ]]> */
+</script>
+{% endblock %}
+
