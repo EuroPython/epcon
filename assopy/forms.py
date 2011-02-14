@@ -54,10 +54,13 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
     def save(self, *args, **kwargs):
         user = super(SetPasswordForm, self).save(*args, **kwargs)
         u = self.user.assopy_user
-        if not u.verified:
-            log.info('password reset for "%s" completed; now he\' a verified user', user.email)
-            u.verified = True
-            u.save()
+        # non voglio riabilitare un utente con is_active=False, voglio tenermi
+        # questo flag come uno strumento di amministrazione per impedire
+        # l'accesso al sito
+#        if not u.verified:
+#            log.info('password reset for "%s" completed; now he\' a verified user', user.email)
+#            u.verified = True
+#            u.save()
         return user
 
 class Profile(forms.Form):
