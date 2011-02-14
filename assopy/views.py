@@ -193,8 +193,13 @@ def janrain_token(request):
                 log.debug('new django user created "%s"', current)
             else:
                 log.debug('django user found "%s"', current)
-            user = models.User(user=current, verified=True)
-            user.save()
+            try:
+                # se current è stato trovato tra gli utenti locali forse esiste
+                # anche la controparte assopy
+                user = current.assopy_user
+            except models.User.DoesNotExist:
+                user = models.User(user=current, verified=True)
+                user.save()
         log.debug('the new identity will be linked to "%s"', current)
         identity = models.UserIdentity.objects.create_from_profile(user, profile)
 
