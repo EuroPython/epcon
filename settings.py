@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
+    'templatesadmin',
 )
 
 AUTHENTICATION_BACKENDS = (
