@@ -62,7 +62,7 @@ def _assign_ticket(ticket, email):
         except User.DoesNotExist:
             # uff, ho un utente su django che non è un assopy user, sicuramente
             # strascichi prima dell'introduzione dell'app assopy
-            auser = User(user=recipient, verified=True)
+            auser = User(user=recipient)
             auser.save()
         if not auser.token:
             recipient.assopy_user.token = str(uuid.uuid4())
@@ -141,9 +141,11 @@ def user(request, token):
     ridirige alla pagine dei tickets 
     """
     u = get_object_or_404(User, token=token)
-    if not u.verified:
-        u.verified = True
+    log.info('autologin (via token url) for "%s"', u.user)
+    if not u.user.is_active:
+        u.user.is_active = True
         u.save()
+        log.info('"%s" activated', u.user)
     user = auth.authenticate(uid=u.user.id)
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
