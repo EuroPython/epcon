@@ -14,8 +14,8 @@ _field_tpl = template.Template("""
     <div class="{{ classes|join:" " }}">
         {{ field.label_tag }}
         {{ field }}
-        {{ field.errors }}
         {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+        {{ field.errors }}
     </div>
 """)
 @register.filter()
