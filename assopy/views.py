@@ -181,16 +181,18 @@ def janrain_token(request):
                 current = auth.models.User.objects.get(email=profile['email'])
             except auth.models.User.DoesNotExist:
                 current = auth.models.User.objects.create_user(janrain.suggest_username(profile), profile['email'])
-            try:
-                current.first_name = profile['name']['givenName']
-            except KeyError:
-                pass
-            try:
-                current.last_name = profile['name']['familyName']
-            except KeyError:
-                pass
-            current.save()
-            log.debug('new django user created "%s"', current)
+                try:
+                    current.first_name = profile['name']['givenName']
+                except KeyError:
+                    pass
+                try:
+                    current.last_name = profile['name']['familyName']
+                except KeyError:
+                    pass
+                current.save()
+                log.debug('new django user created "%s"', current)
+            else:
+                log.debug('django user found "%s"', current)
             user = models.User(user=current, verified=True)
             user.save()
         log.debug('the new identity will be linked to "%s"', current)
