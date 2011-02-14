@@ -75,9 +75,6 @@
                 <div class="user">
                     {% if request.user.is_authenticated %}
                         <a href="{% url assopy-profile %}"><b>{{ request.user.assopy_user.name }}</b></a> &bull;
-                        {% if request.user.speaker %}
-                        <a href="{% url conference-speaker slug=request.user.speaker.slug %}"><b>speaker</b></a> &bull;
-                        {% endif %}
                         <a href="/logout/?next=/">Log out</a>
                     {% else %}
                         <a href="/accounts/login/?next=/">Log in</a>

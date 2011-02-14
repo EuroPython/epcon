@@ -29,9 +29,11 @@
                 <li class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</li>
                 {% endfor %}
             </ul>
-            <h4>Add another identity</h4>
             {% url assopy-profile as u %}
-            {% render_janrain_box u "overlay" %}
+            <h4>{% render_janrain_box u "overlay" %}</h4>
+            {% if request.user.speaker %}
+            <h4><a href="{% url conference-speaker slug=request.user.speaker.slug %}">Speaker public page</a></h4>
+            {% endif %}
         </aside>
     </div>
 {% endblock %}
