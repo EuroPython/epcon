@@ -95,28 +95,29 @@ class Token(models.Model, django_urls.UrlMixin):
 
 class UserManager(models.Manager):
     @transaction.commit_on_success
-    def create_from_backend(self, rid, email, password=None, verified=False):
+    def create_from_backend(self, rid, email, password=None, active=False):
         info = genro.user(rid)
         user = auth.models.User.objects.create_user('_' + info['user.username'], email, password)
         user.first_name = info['user.firstname']
         user.last_name = info['user.lastname']
+        user.is_active = active
         user.save()
 
         u = User(user=user)
         u.assopy_id = rid
-        u.verified = verified
         u.save()
         log.debug('new local user created "%s"', user)
         return u
 
     @transaction.commit_on_success
-    def create_user(self, email, first_name='', last_name='', password=None, token=False, verified=False, send_mail=True):
+    def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, send_mail=True):
         uname = janrain.suggest_username_from_email(email)
         duser = auth.models.User.objects.create_user(uname, email, password=password)
         duser.first_name = first_name
         duser.last_name = last_name
+        duser.is_active = active
         duser.save()
-        user = User(user=duser, verified=verified)
+        user = User(user=duser)
         if token:
             user.token = str(uuid4())
         user.save()
@@ -137,7 +138,6 @@ class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
-    verified = models.BooleanField(default=False)
     photo = models.ImageField(null=True, upload_to='assopy/users')
     twitter = models.CharField(max_length=20, blank=True)
     www = models.URLField(verify_exists=False, blank=True)
