@@ -26,7 +26,7 @@
             <h4>Your identities</h4>
             <ul>
                 {% for i in user.identities.all %}
-                <li>{{ i.provider }}</li>
+                <li class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</li>
                 {% endfor %}
             </ul>
             <h4>Add another identity</h4>
