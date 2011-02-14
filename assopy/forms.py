@@ -65,8 +65,14 @@ class Profile(forms.Form):
     lastname = forms.CharField(max_length=32)
     phone = forms.CharField(max_length=20, required=False)
     www = forms.URLField(verify_exists=False, required=False)
-    twitter = forms.CharField(max_length=20, required=False)
+    twitter = forms.CharField(max_length=20, required=False, help_text="only your username without @")
     photo = forms.FileField(required=False)
+
+    def clean_twitter(self):
+        data = self.cleaned_data.get('twitter', '')
+        if data.startswith('@'):
+            raise forms.ValidationError('use your twitter username without @')
+        return data
 
 ACCOUNT_TYPE = (
     ('private', 'Private use'),
