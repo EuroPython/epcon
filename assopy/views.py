@@ -103,11 +103,8 @@ def billing(request):
 
 @render_to('assopy/new_account.html')
 def new_account(request):
-    next = request.GET.get('next', reverse('assopy-profile'))
-    if not next.startswith('/'):
-        next = reverse('assopy-profile')
     if request.user.is_authenticated():
-        return redirect(next)
+        return redirect('assopy-profile')
 
     if request.method == 'GET':
         form = aforms.NewAccountForm()
@@ -121,14 +118,23 @@ def new_account(request):
                 last_name=data['last_name'],
                 password=data['password1'],
             )
-            # ho creato l'utente che non è ancora verificato, ma intanto lo
-            # loggo così può iniziare subito ad usare il sito
-            u = auth.authenticate(email=data['email'], password=data['password1'])
-            auth.login(request, u)
-            return redirect(next)
+            user.is_active = False
+            user.save()
+            request.session['new-account-user'] = user.pk
+            return HttpResponseRedirectSeeOther(reverse('assopy-new-account-feedback'))
     return {
         'form': form,
         'next': next,
+    }
+
+@render_to('assopy/new_account_feedback.html')
+def new_account_feedback(request):
+    try:
+        user = models.User.objects.get(pk=request.session.pop('new-account-user'))
+    except models.User.DoesNotExist:
+        user = None
+    return {
+        'u': user,
     }
 
 @transaction.commit_on_success

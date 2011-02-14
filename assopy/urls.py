@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
 
     url(r'^new-account/$', 'assopy.views.new_account', name='assopy-new-account'),
+    url(r'^new-account/feedback$', 'assopy.views.new_account_feedback', name='assopy-new-account-feedback'),
     url(r'^profile/$', 'assopy.views.profile', name='assopy-profile'),
     url(r'^billing/$', 'assopy.views.billing', name='assopy-billing'),
     url(r'^janrain/login-mismatch/$', 'assopy.views.janrain_login_mismatch', name='assopy-janrain-login_mismatch'),
