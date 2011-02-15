@@ -4,32 +4,34 @@
 {% block PAGE_TITLE %}paper submission &mdash; {% endblock %}
 
 {% block MAIN_CONTENT %}
-<div class="column span-12 border">
-    <div id="paper-submission" class="span-8 last page clearfix">
-        <h1>Talk submission</h1>
+    <h1>Talk submission</h1>
+    <div class="cms span-9 last">
         {% if proposed_talks %}
         <h2>You have submitted <a href="{% url conference-speaker slug=speaker.slug %}">{{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.</a></h2>
         {% endif %}
         <form action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <h2>Spaker profile</h2>
             <fieldset>
-                <legend>About you</legend>
                 <div class="span-4">{{ form.activity|field }}</div>
-                <div class="span-4 last">{{ form.activity_homepage|field }}</div>
-                <div class="span-4 last">{{ form.industry|field }}</div>
-                <div class="span-8 last">{{ form.bio|field }}</div>
+                <div class="span-5 last">{{ form.activity_homepage|field }}</div>
+                <div class="span-4">{{ form.company|field }}</div>
+                <div class="span-5 last">{{ form.company_homepage|field }}</div>
+                <div>{{ form.bio|field }}</div>
             </fieldset>
+            <h2>Talk description</h2>
             <fieldset>
-                <legend>About your paper</legend>
-                <div class="span-8 last">{{ form.title|field }}</div>
-                <div class="span-4">{{ form.language|field }}</div>
-                <div class="span-4 last">{{ form.duration|field }}</div>
-                <div class="span-4 last">{{ form.slides|field }}</div>
-                <div class="span-8 last">{{ form.abstract|field }}</div>
+                <div>{{ form.title|field }}</div>
+                <div>{{ form.training|field }}</div>
+
+                <div class="span-3">{{ form.language|field }}</div>
+                <div class="span-3">{{ form.duration|field }}</div>
+                <div class="span-3 last">{{ form.level|field }}</div>
+                <div>{{ form.abstract|field }}</div>
             </fieldset>
             <fieldset class="border">
+                <p>Note: if you are available to give the same talk both in Italian and English, please submit the talk twice, with fully translated title and abstract.</p>
                 <button type="submit">Submit</button>
             </fieldset>
         </form>
     </div>
-</div>
 {% endblock %}

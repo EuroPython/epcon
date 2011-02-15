@@ -14,7 +14,7 @@ _field_tpl = template.Template("""
     <div class="{{ classes|join:" " }}">
         {{ field.label_tag }}
         {{ field }}
-        {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+        {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
         {{ field.errors }}
     </div>
 """)
