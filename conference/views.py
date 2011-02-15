@@ -86,14 +86,15 @@ def json(f):
 @render_to('conference/speaker.html')
 def speaker(request, slug):
     spk = get_object_or_404(models.Speaker, slug=slug)
+    accepted = spk.talks(status='accepted')
     if request.user.is_staff or request.user == spk.user:
         full_access = True
         talks = spk.talks()
     else:
         full_access = False
-        talks = spk.talks(status='accepted')
-        if talks.count() == 0:
+        if accepted.count() == 0:
             raise http.Http404()
+        talks = accepted
     if request.method == 'GET':
         form = SpeakerForm(initial={
             'activity': spk.activity,
@@ -118,6 +119,7 @@ def speaker(request, slug):
         'full_access': full_access,
         'speaker': spk,
         'talks': talks,
+        'accepted': accepted,
     }
 
 @render_to('conference/talk.html')
