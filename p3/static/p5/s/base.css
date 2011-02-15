@@ -1349,3 +1349,19 @@ div.ticket div.assigned span {
     position: relative;
     top: 50px;
 }
+
+section.notice {
+    margin: 10px auto 30px auto;
+	background-color:#301D1D;
+	border:1px solid #fff;
+	padding:10px 15px;
+	color:#FCF8C0;
+	text-align:left;
+	font-size:12px;
+	font-weight: bold;
+	width: 70%;
+
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #000;
+	-webkit-box-shadow:0 0 10px #000;
+}
