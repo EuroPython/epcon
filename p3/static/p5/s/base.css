@@ -1277,6 +1277,8 @@ section.cal div p {
 .janrain-box {
     width: 400px;
     height: 240px;
+    margin: 0 auto 50px auto;
+    display: block;
 }
 
 
