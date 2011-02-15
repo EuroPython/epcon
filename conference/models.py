@@ -11,6 +11,7 @@ from django.db import transaction
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext as _
 
 import tagging
 from tagging.fields import TagField
@@ -224,21 +225,21 @@ class Speaker(models.Model):
 post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
 TALK_DURATION = (
-    (5, '5 minuti'),
-    (15, '15 minuti'),
-    (30, '30 minuti'),
-    (45, '45 minuti'),
-    (60, '60 minuti'),
-    (90, '90 minuti'),
-    (120, '120 minuti'),
+    (5,   _('5 minutes')),
+    (15,  _('15 minutes')),
+    (30,  _('30 minutes')),
+    (45,  _('45 minutes')),
+    (60,  _('60 minutes')),
+    (90,  _('90 minutes')),
+    (120, _('120 minutes')),
 )
 TALK_LANGUAGES = (
-    ('it', 'Italiano'),
-    ('en', 'Inglese'),
+    ('it', _('Italian')),
+    ('en', _('English')),
 )
 TALK_STATUS = (
-    ('proposed', 'Proposed'),
-    ('accepted', 'Accepted'),
+    ('proposed', _('Proposed')),
+    ('accepted', _('Accepted')),
 )
 
 VIDEO_TYPE = (
@@ -247,9 +248,9 @@ VIDEO_TYPE = (
 )
 
 TALK_LEVEL = (
-    ('beginner', 'Beginner'),
-    ('intermediate', 'Intermediate'),
-    ('advanced', 'Advanced'),
+    ('beginner',     _('Beginner')),
+    ('intermediate', _('Intermediate')),
+    ('advanced',     _('Advanced')),
 )
 
 class TalkManager(models.Manager):
