@@ -2,8 +2,7 @@
 {% load assopy_tags %}
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>{{ user.name }} - Your profile</h1>
-    <div class="span-7 append-1">
-        <div class="cms">
+    <div class="span-2">
             {% with user.photo_url as u %}
             {% if u %}
             <div class="floated">
@@ -11,6 +10,9 @@
             </div>
             {% endif %}
             {% endwith %}
+    </div>
+    <div class="span-5 append-1">
+        <div class="cms">
             <form action="{% url assopy-profile %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
                     {% for f in form %}{{ f|field }}{% endfor %}
@@ -23,17 +25,24 @@
     </div>
     <div class="span-4 last">
         <aside>
-            <h4>Your identities</h4>
-            <ul>
-                {% for i in user.identities.all %}
-                <li class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</li>
-                {% endfor %}
-            </ul>
-            {% url assopy-profile as u %}
-            <h4>{% render_janrain_box u "overlay" %}</h4>
-            {% if request.user.speaker %}
-            <h4><a href="{% url conference-speaker slug=request.user.speaker.slug %}">Speaker public page</a></h4>
-            {% endif %}
+            <div class="cms">
+                <h4>Web accounts for login</h4>
+                <ul>
+                    {% for i in user.identities.all %}
+                    <li class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+                <p>
+                    {% url assopy-profile as u %}
+                    {% render_janrain_box u "overlay" %}
+                </p>
+                {% if request.user.speaker %}
+                <h4>Speaker profile</h4>
+                <p>
+                    <a href="{% url conference-speaker slug=request.user.speaker.slug %}">Your public page</a>
+                </p>
+                {% endif %}
+            </div>
         </aside>
     </div>
 {% endblock %}
