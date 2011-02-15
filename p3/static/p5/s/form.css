@@ -250,3 +250,7 @@ button a {
     color: white;
     border: 0;
 }
+
+label:after {
+    content: ":";
+}
