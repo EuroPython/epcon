@@ -244,6 +244,12 @@ VIDEO_TYPE = (
     ('download', 'Download'),
 )
 
+TALK_LEVEL = (
+    ('beginner', 'Beginner'),
+    ('intermediate', 'Intermediate'),
+    ('advanced', 'Advanced'),
+)
+
 class TalkManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
@@ -263,7 +269,7 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en'):
+    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en', level='beginner'):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
@@ -271,6 +277,7 @@ class TalkManager(models.Manager):
         talk.status = status
         talk.duration = duration
         talk.language = language
+        talk.level = level
         cursor = connection.cursor()
         cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
         try:
@@ -308,6 +315,7 @@ class Talk(models.Model):
     video_url = models.TextField(blank=True)
     video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
+    level = models.CharField(max_length=12, choices=TALK_LEVEL)
     tags = TagField()
 
     objects = TalkManager()

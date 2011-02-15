@@ -409,6 +409,7 @@ def paper_submission(request):
             talk = models.Talk.objects.createFromTitle(
                 title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', duration=data['duration'], language=data['language'],
+                level=data['level'],
             )
             if data['slides']:
                 talk.slides = data['slides']
