@@ -319,6 +319,7 @@ class Talk(models.Model):
     video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
+    training_available = models.BooleanField(default=False)
     tags = TagField()
 
     objects = TalkManager()
