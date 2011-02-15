@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.contrib import auth
+from django.utils.translation import ugettext as _
 
 from assopy import models
 from assopy import settings
@@ -64,18 +65,21 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
         return user
 
 class Profile(forms.Form):
-    firstname = forms.CharField(max_length=32)
+    firstname = forms.CharField(
+        help_text=_('Please do not enter a company name here.<br />You will be able to specify billing details during the checkout.'),
+        max_length=32,)
     lastname = forms.CharField(max_length=32)
-    phone = forms.CharField(max_length=20, required=False)
-    www = forms.URLField(verify_exists=False, required=False)
-    twitter = forms.CharField(max_length=20, required=False, help_text="only your username without @")
+    phone = forms.CharField(
+        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+        max_length=20,
+        required=False,)
+    www = forms.URLField(label=_('Homepage'), verify_exists=False, required=False)
+    twitter = forms.CharField(max_length=20, required=False)
     photo = forms.FileField(required=False)
 
     def clean_twitter(self):
         data = self.cleaned_data.get('twitter', '')
-        if data.startswith('@'):
-            raise forms.ValidationError('use your twitter username without @')
-        return data
+        return data.lstrip('@')
 
 ACCOUNT_TYPE = (
     ('private', 'Private use'),
