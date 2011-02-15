@@ -403,13 +403,15 @@ def paper_submission(request):
                 speaker = models.Speaker.objects.createFromName(name, request.user)
             speaker.activity = data['activity']
             speaker.activity_homepage = data['activity_homepage']
+            speaker.company = data['company']
+            speaker.company_homepage = data['company_homepage']
             speaker.industry = data['industry']
             speaker.save()
             speaker.setBio(data['bio'])
             talk = models.Talk.objects.createFromTitle(
                 title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', duration=data['duration'], language=data['language'],
-                level=data['level'],
+                level=data['level'], training_available=data['training'],
             )
             if data['slides']:
                 talk.slides = data['slides']

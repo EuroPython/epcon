@@ -272,7 +272,7 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en', level='beginner'):
+    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en', level='beginner', training_available=False):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
@@ -281,6 +281,7 @@ class TalkManager(models.Manager):
         talk.duration = duration
         talk.language = language
         talk.level = level
+        talk.training_available = training_available
         cursor = connection.cursor()
         cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
         try:
