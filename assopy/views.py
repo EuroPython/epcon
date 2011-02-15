@@ -84,6 +84,19 @@ def profile(request):
     }
 
 @login_required
+def profile_identities(request):
+    if request.method == 'POST':
+        try:
+            x = request.user.assopy_user.identities.get(identifier=request.POST['identifier'])
+        except:
+            return http.HttpResponseBadRequest()
+        x.delete()
+    if request.is_ajax():
+        return http.HttpResponse('')
+    else:
+        return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
+
+@login_required
 @render_to('assopy/billing.html')
 def billing(request):
     user = request.user.assopy_user
