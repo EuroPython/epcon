@@ -27,11 +27,14 @@
         <aside>
             <div class="cms">
                 <h4>Web accounts for login</h4>
-                <ul>
+                <ul id="web-accounts">
                     {% for i in user.identities.all %}
-                    <li class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</li>
+                    <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span> <img class="delete" src="{{ STATIC_URL }}assopy/i/delete.png" title="delete" /></li>
                     {% endfor %}
                 </ul>
+                <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
+                    <input type="hidden" name="identifier" value="" />
+                </form>
                 <p>
                     {% url assopy-profile as u %}
                     {% render_janrain_box u "overlay" %}
@@ -44,5 +47,25 @@
                 {% endif %}
             </div>
         </aside>
+        <script type="text/javascript">
+            $('#web-accounts img.delete').click(function(e) {
+                if(!confirm('Are you sure?')) {
+                    return;
+                }
+                var parent = $(e.target).parents('li');
+                var id = parent.attr('data-identifier');
+                var form = $('form#remove-identity');
+                $('input[name=identifier]', form).val(id);
+                form.ajaxSubmit({
+                    success: function() {
+                        feedback('web access removed');
+                        parent.remove();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('cannot remove the requested item, please contact info@pycon.it for assistance');
+                    }
+                });
+            });
+        </script>
     </div>
 {% endblock %}
