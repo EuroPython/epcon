@@ -113,6 +113,8 @@ def speaker(request, slug):
             spk.activity = data['activity']
             spk.activity_homepage = data['activity_homepage']
             spk.industry = data['industry']
+            spk.company = data['company']
+            spk.company_homepage = data['company_homepage']
             spk.save()
             spk.setBio(data['bio'])
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': spk.slug}))
@@ -125,7 +127,7 @@ def speaker(request, slug):
     }
 
 @render_to('conference/talk.html')
-def talk(request, slug):
+def talk(request, slug, talk_form=TalkForm):
     tlk = get_object_or_404(models.Talk, slug=slug)
     if request.user.is_staff:
         full_access = True
@@ -141,21 +143,25 @@ def talk(request, slug):
         raise http.Http404()
 
     if request.method == 'GET':
-        form = TalkForm(initial={
+        form = talk_form(initial={
             'title': tlk.title,
+            'training': tlk.training_available,
             'duration': tlk.duration,
             'language': tlk.language,
+            'level': tlk.level,
             'abstract': tlk.getAbstract().body,
         })
     elif request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
-        form = TalkForm(data=request.POST, files=request.FILES)
+        form = talk_form(data=request.POST, files=request.FILES)
         if form.is_valid():
             data = form.cleaned_data
             tlk.title = data['title']
+            tlk.training_available = data['training']
             tlk.duration = data['duration']
             tlk.language = data['language']
+            tlk.level = data['level']
             tlk.slides = data['slides']
             tlk.save()
             tlk.setAbstract(data['abstract'])
