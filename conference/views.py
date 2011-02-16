@@ -100,6 +100,8 @@ def speaker(request, slug):
             'activity': spk.activity,
             'activity_homepage': spk.activity_homepage,
             'industry': spk.industry,
+            'company': spk.company,
+            'company_homepage': spk.company_homepage,
             'bio': spk.getBio().body,
         })
     elif request.method == 'POST':

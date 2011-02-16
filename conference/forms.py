@@ -80,10 +80,19 @@ class SubmissionForm(forms.Form):
         return talk
 
 class SpeakerForm(forms.Form):
-    activity = forms.CharField(max_length=50, required=False)
-    activity_homepage = forms.URLField(required=False)
+    activity = forms.CharField(
+        label=_('Job title'),
+        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
+        max_length=50,
+        required=False,)
+    activity_homepage = forms.URLField(label=_('Personal homepage'), required=False)
+    company = forms.CharField(label=_('Your company'), max_length=50, required=False)
+    company_homepage = forms.URLField(label=_('Company homepage'), required=False)
     industry = forms.CharField(max_length=50, required=False)
-    bio = forms.CharField(widget=forms.Textarea())
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=forms.Textarea(),)
 
 class TalkForm(forms.Form):
     title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size': 40}))
