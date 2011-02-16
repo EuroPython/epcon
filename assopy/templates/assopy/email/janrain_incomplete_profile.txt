@@ -1,10 +1,18 @@
-Hi {{ name }} the provider you choose *{{ provider }}* don't supply a verified email.
+Hi {{ name }},
+
 {% if current %}
-If you follow the link below this provider will be added to your account.
+somebody tried to access your EuroPython account through {{ provider }}.
+
+If you wish to confirm this request please click on the link below
+to authorize access through {{ provider }}.
 {% else %}
-If you follow the link below we will activate your account
+somebody tried to create an EuroPython account through {{ provider }}.
+
+If you wish to confirm this request please click on the link below
+to activate the account.
 {% endif %}
 
 {{ token.get_url }}
 
 sincerly
+EuroPython 

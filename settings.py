@@ -10,7 +10,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 SERVER_EMAIL = 'wtf@python.it'
-DEFAULT_FROM_EMAIL = 'site@pycon.it'
+DEFAULT_FROM_EMAIL = 'info@pycon.it'
 
 DATABASES = {
     'default': {

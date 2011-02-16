@@ -3,7 +3,7 @@
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Account verification needed</h1>
     <div class="cms">
-        <p>Hi {{ name }}, the provider you've choosen <b>{{ provider }}</b> doesn't supply a verified email. Please enter your email address in the form below to complete the registration process</p>
+        <p>Hi {{ name }}, the provider you've chosen <b>{{ provider }}</b> doesn't supply a verified email. Please enter your email address in the form below to complete the registration process</p>
         <form action="{% url assopy-janrain-incomplete-profile %}" method="post">{% csrf_token %}
             {{ form.email|field }}
             <button type="submit">Proceed</button>
