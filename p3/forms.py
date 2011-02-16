@@ -12,6 +12,12 @@ class P3SubmissionForm(SubmissionForm):
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
         max_length=20,
         required=True,)
+    duration = forms.TypedChoiceField(
+        label=_('Suggested duration'),
+        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
+        coerce=int,
+        initial=60,)
 
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
