@@ -10,7 +10,7 @@ from p3 import models
 class P3SubmissionForm(SubmissionForm):
     mobile = forms.CharField(
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
-        max_length=20,
+        max_length=30,
         required=True,)
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
@@ -23,7 +23,7 @@ class P3SubmissionForm(SubmissionForm):
         if 'instance' in kwargs:
             instance = kwargs['instance']
             data = {
-                'mobile': instance.user.assopy_user.billing()['phone'],
+                'mobile': instance.user.assopy_user.phone,
             }
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
@@ -33,7 +33,8 @@ class P3SubmissionForm(SubmissionForm):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
         instance = kwargs.get('instance') or self.instance
         data = self.cleaned_data
-        instance.user.assopy_user.setBilling(phone=data['mobile'])
+        instance.user.assopy_user.phone = data['mobile']
+        instance.user.assopy_user.save()
         return talk
 
 

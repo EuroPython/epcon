@@ -132,6 +132,7 @@ class User(models.Model):
     photo = models.ImageField(null=True, upload_to='assopy/users')
     twitter = models.CharField(max_length=20, blank=True)
     www = models.URLField(verify_exists=False, blank=True)
+    phone = models.CharField(max_length=30, blank=True)
 
     objects = UserManager()
 
