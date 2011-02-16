@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 from __future__ import with_statement
 import os.path
+import tempfile
 import urllib
 import zipfile
-import tempfile
 from cStringIO import StringIO
 from xml.etree import cElementTree as ET
 from conference import models
@@ -20,7 +20,7 @@ from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import redirect, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
@@ -142,6 +142,8 @@ def talk(request, slug, talk_form=TalkForm):
     if tlk.status == 'proposed' and not full_access:
         raise http.Http404()
 
+    conf = models.Conference.objects.current()
+
     if request.method == 'GET':
         form = talk_form(initial={
             'title': tlk.title,
@@ -158,10 +160,11 @@ def talk(request, slug, talk_form=TalkForm):
         if form.is_valid():
             data = form.cleaned_data
             tlk.title = data['title']
-            tlk.training_available = data['training']
-            tlk.duration = data['duration']
-            tlk.language = data['language']
-            tlk.level = data['level']
+            if conf.cfp():
+                tlk.training_available = data['training']
+                tlk.duration = data['duration']
+                tlk.language = data['language']
+                tlk.level = data['level']
             tlk.slides = data['slides']
             tlk.save()
             tlk.setAbstract(data['abstract'])
@@ -170,6 +173,7 @@ def talk(request, slug, talk_form=TalkForm):
         'form': form,
         'full_access': full_access,
         'talk': tlk,
+        'cfp': conf.cfp(),
     }
 
 def talk_report(request):
