@@ -48,35 +48,25 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
     return gravatar_url
 
 class TokenManager(models.Manager):
-    def create(self, user, ctype=''):
-        Token.objects.filter(user=user, ctype=ctype).delete()
+    def create(self, ctype='', user=None, payload=''):
+        if user is not None:
+            Token.objects.filter(user=user, ctype=ctype).delete()
         t = Token()
         t.token = str(uuid4())
         t.ctype = ctype
         t.user = user
+        t.payload = payload
         t.save()
         return t
 
-    def _get_token(self, token):
+    def retrieve(self, token, delete=True):
         try:
-            return Token.objects.get(token=token)
+            t = Token.objects.get(token=token)
         except Token.DoesNotExist:
             return None
-
-    def check(self, token):
-        t = self._get_token(token)
-        if t is not None:
-            return t.user, t.ctype
-        else:
-            return None, None
-
-    def validate(self, token):
-        t = self._get_token(token)
-        if t is not None:
+        if delete:
             t.delete()
-            return t.user, t.ctype
-        else:
-            return None, None
+        return t
 
 class Token(models.Model, django_urls.UrlMixin):
     """
@@ -85,7 +75,8 @@ class Token(models.Model, django_urls.UrlMixin):
     """
     token = models.CharField(max_length=36, primary_key=True)
     ctype = models.CharField(max_length=1)
-    user = models.ForeignKey(auth.models.User, unique=True)
+    user = models.ForeignKey(auth.models.User, null=True)
+    payload = models.TextField(blank='')
     created = models.DateTimeField(auto_now_add=True)
 
     objects = TokenManager()
@@ -128,7 +119,7 @@ class UserManager(models.Manager):
         if send_mail:
             ctx = {
                 'user': duser,
-                'token': Token.objects.create(duser),
+                'token': Token.objects.create(ctype='v', user=duser),
             }
             body = template.loader.render_to_string('assopy/email/verify_user.txt', ctx)
             mail.send_mail('Verify your account', body, 'info@pycon.it', [ email ])
