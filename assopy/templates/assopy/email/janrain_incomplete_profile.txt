@@ -1,0 +1,10 @@
+Hi {{ name }} the provider you choose *{{ provider }}* don't supply a verified email.
+{% if current %}
+If you follow the link below this provider will be added to your account.
+{% else %}
+If you follow the link below we will activate your account
+{% endif %}
+
+{{ token.get_url }}
+
+sincerly

@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django import http
+from django import template
 from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.forms.formsets import BaseFormSet, formset_factory
 from django.db import transaction
@@ -11,6 +13,7 @@ from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.translation import ugettext as _
 
 from assopy import forms as aforms
 from assopy import janrain
@@ -20,6 +23,7 @@ from assopy.utils import send_email
 
 from conference import models as cmodels
 
+import json
 import logging
 from itertools import izip_longest
 
@@ -152,17 +156,57 @@ def new_account_feedback(request):
 
 @transaction.commit_on_success
 def otc_code(request, token):
-    user, ctype = models.Token.objects.validate(token)
-    if user is None:
-        return http.HttpResponseBadRequest()
+    t = models.Token.objects.retrieve(token)
+    if t is None:
+        raise http.Http404()
 
-    auth.logout(request)
+    if t.ctype == 'v':
+        auth.logout(request)
+        user = t.user
+        user.is_active = True
+        user.save()
+        user = auth.authenticate(uid=user.id)
+        auth.login(request, user)
+        return redirect('assopy-profile')
+    elif t.ctype == 'j':
+        payload = json.loads(t.payload)
+        email = payload['email']
+        profile = payload['profile']
+        log.info('"%s" verified; link to "%s"', email, profile['identifier'])
+        identity = _linkProfileToEmail(email, profile)
+        duser = auth.authenticate(identifier=identity.identifier)
+        auth.login(request, duser)
+        return redirect('assopy-profile')
 
-    user.is_active = True
-    user.save()
-    user = auth.authenticate(uid=user.id)
-    auth.login(request, user)
-    return redirect('/')
+def _linkProfileToEmail(email, profile):
+    try:
+        current = auth.models.User.objects.get(email=email)
+    except auth.models.User.DoesNotExist:
+        current = auth.models.User.objects.create_user(janrain.suggest_username(profile), email)
+        try:
+            current.first_name = profile['name']['givenName']
+        except KeyError:
+            pass
+        try:
+            current.last_name = profile['name']['familyName']
+        except KeyError:
+            pass
+        current.is_active = True
+        current.save()
+        log.debug('new (active) django user created "%s"', current)
+    else:
+        log.debug('django user found "%s"', current)
+    try:
+        # se current è stato trovato tra gli utenti locali forse esiste
+        # anche la controparte assopy
+        user = current.assopy_user
+    except models.User.DoesNotExist:
+        log.debug('the current user "%s" will become an assopy user', current)
+        user = models.User(user=current)
+        user.save()
+    log.debug('a new identity (for "%s") will be linked to "%s"', profile['identifier'], current)
+    identity = models.UserIdentity.objects.create_from_profile(user, profile)
+    return identity
 
 @csrf_exempt
 @transaction.commit_on_success
@@ -175,7 +219,7 @@ def janrain_token(request):
     except KeyError:
         return http.HttpResponseBadRequest()
     profile = janrain.auth_info(settings.JANRAIN['secret'], token)
-    log.info('janrain profile: %s', profile['identifier'])
+    log.info('janrain profile from %s: %s', profile['providerName'], profile['identifier'])
 
     current = request.user
     duser = auth.authenticate(identifier=profile['identifier'])
@@ -183,46 +227,21 @@ def janrain_token(request):
         log.info('%s is a new identity', profile['identifier'])
         # è la prima volta che questo utente si logga con questo provider
         if not current.is_anonymous():
-            # l'utente corrente non è anonimo, recupero il suo utente assopy
-            # per associarci la nuova identità
-            try:
-                user = current.assopy_user
-            except models.User.DoesNotExist:
-                # può accadere che l'utente corrente non sia un utente assopy
-                log.debug('the current user "%s" will become an assopy user', current)
-                user = models.User(user=current)
-                user.save()
+            verifiedEmail = current.email
         else:
-            # devo creare tutto, utente django, assopy e identità a meno che
-            # non si tratti di un amministratore che magari ha già l'account
-            # django con la stessa email fornita da janrain
-            try:
-                current = auth.models.User.objects.get(email=profile['email'])
-            except auth.models.User.DoesNotExist:
-                current = auth.models.User.objects.create_user(janrain.suggest_username(profile), profile['email'])
-                try:
-                    current.first_name = profile['name']['givenName']
-                except KeyError:
-                    pass
-                try:
-                    current.last_name = profile['name']['familyName']
-                except KeyError:
-                    pass
-                current.is_active = True
-                current.save()
-                log.debug('new django user created "%s"', current)
+            # devo creare tutto, utente django, assopy e identità
+            if not 'verifiedEmail' in profile:
+                # argh, il provider scelto non mi fornisce un email sicura; per
+                # evitare il furto di account non posso rendere l'account
+                # attivo.  Devo chiedere all'utente un email validae inviare a
+                # quella email una mail con un link di conferma.
+                log.info('janrain profile without a verified email')
+                request.session['incomplete-profile'] = profile
+                return HttpResponseRedirectSeeOther(reverse('assopy-janrain-incomplete-profile'))
             else:
-                log.debug('django user found "%s"', current)
-            try:
-                # se current è stato trovato tra gli utenti locali forse esiste
-                # anche la controparte assopy
-                user = current.assopy_user
-            except models.User.DoesNotExist:
-                user = models.User(user=current)
-                user.save()
-        log.debug('the new identity will be linked to "%s"', current)
-        identity = models.UserIdentity.objects.create_from_profile(user, profile)
-
+                verifiedEmail = profile['verifiedEmail']
+                log.info('janrain profile with a verified email "%s"', verifiedEmail)
+        identity = _linkProfileToEmail(verifiedEmail, profile)
         duser = auth.authenticate(identifier=identity.identifier)
         auth.login(request, duser)
     else:
@@ -241,6 +260,51 @@ def janrain_token(request):
             # non ho niente da fare, l'utente è già loggato
             pass
     return HttpResponseRedirectSeeOther(redirect_to)
+
+@render_to('assopy/janrain_incomplete_profile.html')
+@transaction.commit_on_success
+def janrain_incomplete_profile(request):
+    p = request.session['incomplete-profile']
+    try:
+        name = p['displayName']
+    except KeyError:
+        name = '%s %s' % (p['name'].get('givenName', ''), p['name'].get('familyName', ''))
+    class Form(forms.Form):
+        email = forms.EmailField()
+    if request.method == 'POST':
+        form = Form(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            payload = {
+                'email': email,
+                'profile': p,
+            }
+            token = models.Token.objects.create(ctype='j', payload=json.dumps(payload))
+            try:
+                current = auth.models.User.objects.get(email=email)
+            except auth.models.User.DoesNotExist:
+                current = None
+            ctx = {
+                'name': name,
+                'provider': p['providerName'],
+                'token': token,
+                'current': current,
+            }
+            body = template.loader.render_to_string('assopy/email/janrain_incomplete_profile.txt', ctx)
+            mail.send_mail(_('Verify your email'), body, 'info@pycon.it', [ email ])
+            del request.session['incomplete-profile']
+            return HttpResponseRedirectSeeOther(reverse('assopy-janrain-incomplete-profile-feedback'))
+    else:
+        form = Form()
+    return {
+        'provider': p['providerName'],
+        'name': name,
+        'form': form,
+    }
+
+@render_to('assopy/janrain_incomplete_profile_feedback.html')
+def janrain_incomplete_profile_feedback(request):
+    return {}
 
 @render_to('assopy/janrain_login_mismatch.html')
 def janrain_login_mismatch(request):
