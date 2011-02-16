@@ -71,7 +71,7 @@ class Profile(forms.Form):
     lastname = forms.CharField(max_length=32)
     phone = forms.CharField(
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
-        max_length=20,
+        max_length=30,
         required=False,)
     www = forms.URLField(label=_('Homepage'), verify_exists=False, required=False)
     twitter = forms.CharField(max_length=20, required=False)

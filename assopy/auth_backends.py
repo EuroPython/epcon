@@ -38,13 +38,14 @@ class _AssopyBackend(ModelBackend):
             data = genro.user(rid)
             migrate = {
                 'www': data['www'],
+                'phone': data['phone'],
             }
         else:
             rid = genro.create_user(user.user.first_name, user.user.last_name, user.user.email)
             migrate = {}
             log.info('new remote user id: %s', rid)
         user.assopy_id = rid
-        for k in ('www',):
+        for k in ('www', 'phone'):
             setattr(user, k, migrate.get(k, ''))
         user.save()
         return user
