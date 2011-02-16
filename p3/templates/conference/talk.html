@@ -54,7 +54,15 @@ var PROJEKKTOR_CONFIG = {
             <div class="cms">
                 <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">
                     <fieldset>
-                    {% for f in form %}{{ f|field }}{% endfor %}
+                    {{ form.title|field }}
+                    {% if cfp %}
+                    {{ form.training|field }}
+                    {{ form.duration|field }}
+                    {{ form.language|field }}
+                    {{ form.level|field }}
+                    {% endif %}
+                    {{ form.slides|field }}
+                    {{ form.abstract|field }}
                     </fieldset>
                     <fieldset class="border">
                         <button type="submit">Submit</button>
