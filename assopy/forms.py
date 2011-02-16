@@ -130,6 +130,12 @@ class NewAccountForm(forms.Form):
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm password", widget=forms.PasswordInput)
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if auth.models.User.objects.filter(email__iexact=email).count() > 0:
+            raise forms.ValidationError('email aready in use')
+        return data
+
     def clean(self):
         data = self.cleaned_data
         if data['password1'] != data['password2']:
