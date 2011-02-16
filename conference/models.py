@@ -17,8 +17,27 @@ import tagging
 from tagging.fields import TagField
 
 import conference
-import settings
 import conference.gmap
+from conference import settings
+
+class ConferenceManager(models.Manager):
+    def current(self):
+        return self.get(code=settings.CONFERENCE)
+
+class Conference(models.Model):
+    code = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=100)
+    cfp_start = models.DateField(null=True, blank=True)
+    cfp_end = models.DateField(null=True, blank=True)
+
+    objects = ConferenceManager()
+
+    def __unicode__(self):
+        return self.code
+
+    def cfp(self):
+        today = datetime.date.today()
+        return self.cfp_start <= today <= self.cfp_end
 
 class DeadlineManager(models.Manager):
     def valid_news(self):

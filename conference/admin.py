@@ -9,6 +9,11 @@ from conference import models
 
 import re
 
+class ConferenceAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+
+admin.site.register(models.Conference, ConferenceAdmin)
+
 class DeadlineAdmin(admin.ModelAdmin):
 
     list_display = ('date', 'text', 'isValid')
