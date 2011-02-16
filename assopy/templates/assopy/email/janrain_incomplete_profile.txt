@@ -14,5 +14,5 @@ to activate the account.
 
 {{ token.get_url }}
 
-sincerly
-EuroPython 
+Sincerely
+EuroPython web team
