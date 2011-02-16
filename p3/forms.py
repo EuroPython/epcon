@@ -20,7 +20,7 @@ class P3SubmissionForm(SubmissionForm):
         initial=60,)
 
     def __init__(self, *args, **kwargs):
-        if 'instance' in kwargs:
+        if 'instance' in kwargs and kwargs['instance']:
             instance = kwargs['instance']
             data = {
                 'mobile': instance.user.assopy_user.phone,
