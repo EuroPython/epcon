@@ -404,6 +404,17 @@ def paper_submission(request, submission_form=SubmissionForm):
         speaker = request.user.speaker
     except models.Speaker.DoesNotExist:
         speaker = None
+
+    conf = models.Conference.objects.current()
+    if not conf.cfp_start or not conf.cfp_end:
+        raise http.Http404()
+
+    if not conf.cfp():
+        if settings.CFP_CLOSED:
+            return redirect(settings.CFP_CLOSED)
+        else:
+            raise http.Http404()
+    
     if request.method == 'POST':
         form = submission_form(data=request.POST, files=request.FILES)
         if form.is_valid():
