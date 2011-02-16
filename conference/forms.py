@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from conference import models
+from conference import settings
 from django.utils.translation import ugettext as _
 
 class SubmissionForm(forms.Form):
     activity = forms.CharField(
         label=_('Job title'),
-        help_text=_('eg: student, developer, CTO, js ninja'),
+        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
         max_length=50,
         required=False,)
     activity_homepage = forms.URLField(label=_('Personal homepage'), required=False)
@@ -39,6 +40,44 @@ class SubmissionForm(forms.Form):
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
+
+    def __init__(self, instance=None, *args, **kwargs):
+        if instance:
+            data = {
+                'activity': instance.activity,
+                'activity_homepage': instance.activity_homepage,
+                'company': instance.company,
+                'company_homepage': instance.company_homepage,
+                'industry': instance.industry,
+                'bio': getattr(instance.getBio(), 'body', ''),
+            }
+            data.update(kwargs.get('initial', {}))
+            kwargs['initial'] = data
+        super(SubmissionForm, self).__init__(*args, **kwargs)
+        self.instance = instance
+
+    def save(self, instance=None):
+        if instance is None:
+            instance = self.instance
+        data = self.cleaned_data
+        instance.activity = data['activity']
+        instance.activity_homepage = data['activity_homepage']
+        instance.company = data['company']
+        instance.company_homepage = data['company_homepage']
+        instance.industry = data['industry']
+        instance.save()
+        instance.setBio(data['bio'])
+        talk = models.Talk.objects.createFromTitle(
+            title=data['title'], conference=settings.CONFERENCE, speaker=instance,
+            status='proposed', duration=data['duration'], language=data['language'],
+            level=data['level'], training_available=data['training'],
+        )
+        if data['slides']:
+            talk.slides = data['slides']
+            talk.save()
+        talk.setAbstract(data['abstract'])
+
+        return talk
 
 class SpeakerForm(forms.Form):
     activity = forms.CharField(max_length=50, required=False)

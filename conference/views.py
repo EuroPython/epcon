@@ -391,51 +391,28 @@ def sponsor(request, sponsor):
 
 @login_required
 @transaction.commit_on_success
-def paper_submission(request):
+def paper_submission(request, submission_form=SubmissionForm):
     try:
         speaker = request.user.speaker
     except models.Speaker.DoesNotExist:
         speaker = None
     if request.method == 'POST':
-        form = SubmissionForm(data=request.POST, files=request.FILES)
+        form = submission_form(data=request.POST, files=request.FILES)
         if form.is_valid():
-            data = form.cleaned_data
             if speaker is None:
                 name = '%s %s' % (request.user.first_name, request.user.last_name)
                 speaker = models.Speaker.objects.createFromName(name, request.user)
-            speaker.activity = data['activity']
-            speaker.activity_homepage = data['activity_homepage']
-            speaker.company = data['company']
-            speaker.company_homepage = data['company_homepage']
-            speaker.industry = data['industry']
-            speaker.save()
-            speaker.setBio(data['bio'])
-            talk = models.Talk.objects.createFromTitle(
-                title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
-                status='proposed', duration=data['duration'], language=data['language'],
-                level=data['level'], training_available=data['training'],
-            )
-            if data['slides']:
-                talk.slides = data['slides']
-                talk.save()
-            talk.setAbstract(data['abstract'])
+            talk = form.save(instance=speaker)
             messages.info(request, 'your talk has been submitted, thank you')
 
+            data = form.cleaned_data
             send_email(
                 subject='new paper from "%s %s"' % (request.user.first_name, request.user.last_name),
                 message='Title: %s\n\nAbstract: %s' % (data['title'], data['abstract']),
             )
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
-        if speaker:
-            data = {
-                'activity': speaker.activity,
-                'industry': speaker.industry,
-                'bio': getattr(speaker.getBio(), 'body', ''),
-            }
-        else:
-            data = {}
-        form = SubmissionForm(initial=data)
+        form = submission_form(instance=speaker)
     return render_to_response('conference/paper_submission.html', {
         'speaker': speaker,
         'form': form,
