@@ -12,9 +12,8 @@
         <h1>{{ auser.name }}</h1>
         <div class="page-summary">
             <p>
-                {% comment %}{% if speaker.location %}{{ speaker.location }}{% endif %}{% endcomment %}
                 {% if speaker.activity %}{{ speaker.activity }}{% endif %}
-                {% if speaker.industry %}| {{ speaker.industry }}{% endif %}
+                {% if speaker.company %}@{{ speaker.company }}{% endif %}
             </p>
         </div>
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
@@ -33,9 +32,9 @@
                     <dt>{% trans "Sito personale" %}</dt>
                     <dd><a href="{{ auser.www }}">{{ auser.www }}</a></dd>
                     {% endif %}
-                    {% if speaker.activity_homepage %}
-                    <dt>{% trans "Azienda" %}</dt>
-                    <dd><a href="{{ speaker.activity_homepage }}">{% if speaker.activity %}{{ speaker.activity }}{% else %}{{ speaker.activity_homepage }}{% endif %}</a></dd>
+                    {% if speaker.company_homepage %}
+                    <dt>{% trans "Sito Azienda" %}</dt>
+                    <dd><a href="{{ speaker.company_homepage }}">{{ speaker.company_homepage }}</a></dd>
                     {% endif %}
                 </dl>
             </section>
@@ -46,7 +45,10 @@
             <div class="cms">
                 <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post">
                     <fieldset>
-                    {% for f in form %}{{ f|field }}{% endfor %}
+                    {{ form.activity|field }}
+                    {{ form.company|field }}
+                    {{ form.company_homepage|field }}
+                    {{ form.bio|field }}
                     </fieldset>
                     <fieldset class="border">
                         <button type="submit">Submit</button>
