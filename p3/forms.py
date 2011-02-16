@@ -2,7 +2,7 @@
 from django import forms
 from django.utils.translation import ugettext as _
 
-from conference.forms import SubmissionForm
+from conference.forms import SubmissionForm, TalkForm
 from conference.models import Ticket
 
 from p3 import models
@@ -37,6 +37,13 @@ class P3SubmissionForm(SubmissionForm):
         instance.user.assopy_user.save()
         return talk
 
+class P3TalkForm(TalkForm):
+    duration = forms.TypedChoiceField(
+        label=_('Suggested duration'),
+        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
+        coerce=int,
+        initial=60,)
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')

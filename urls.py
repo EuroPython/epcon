@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-from p3.forms import P3SubmissionForm
+from p3.forms import P3SubmissionForm, P3TalkForm
 
 urlpatterns = patterns('',
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^blog/', include('microblog.urls')),
     url(r'^conference/paper-submission/$', 'conference.views.paper_submission', {'submission_form': P3SubmissionForm}, name='conference-paper-submission'),
+    url(r'^conference/talks/(?P<slug>.*)', 'conference.views.talk', {'talk_form': P3TalkForm}, name='conference-talk'),
     (r'^conference/', include('conference.urls')),
     (r'^comments/', include('django.contrib.comments.urls')),
     (r'^hcomments/', include('hcomments.urls')),
