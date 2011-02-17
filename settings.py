@@ -188,7 +188,7 @@ CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
 
 DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
-PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
+PINGBACK_TARGET_DOMAIN = 'ep2011.europython.eu'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = 'europython'
 
