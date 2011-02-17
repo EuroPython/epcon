@@ -10,3 +10,10 @@ if hasattr(settings, 'ASSOPY_JANRAIN'):
 else:
     JANRAIN = None
 
+BACKEND = 'http://assopy.pycon.it/conference/externalcall'
+
+SEARCH_MISSING_USERS_ON_BACKEND = getattr(settings, 'ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND', False)
+
+TICKET_PAGE = getattr(settings, 'ASSOPY_TICKET_PAGE', None)
+
+SEND_EMAIL_TO = getattr(settings, 'ASSOPY_SEND_EMAIL_TO', None)

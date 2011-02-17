@@ -16,7 +16,7 @@ from django.utils.safestring import mark_safe
 import twitter
 
 from conference import models as ConferenceModels
-from conference.settings import CONFERENCE_STUFF_DIR, CONFERENCE_STUFF_URL
+from conference.settings import STUFF_DIR, STUFF_URL
 
 mimetypes.init()
 
@@ -81,10 +81,13 @@ def box_googlemaps(context, what='', zoom=13):
         'zoom': zoom
     }
 
-@register.inclusion_tag('p3/box_speaker_talks.html', takes_context = True)
-def box_speaker_talks(context, speaker):
+@register.inclusion_tag('p3/box_talks_conference.html', takes_context = True)
+def box_talks_conference(context, talks):
+    """
+    mostra i talk passati raggruppati per conferenza
+    """
     conf = defaultdict(list)
-    for t in speaker.get_all_talks():
+    for t in talks:
         conf[t.conference].append(t)
 
     talks = []
@@ -203,12 +206,42 @@ def check_map(page):
 def render_map(context):
     return {}
 
+@register.inclusion_tag('p3/render_ticket.html', takes_context=True)
+def render_ticket(context, ticket):
+    from p3 import forms
+    user = context['request'].user
+    if ticket.fare.ticket_type == 'conference':
+        try:
+            inst = ticket.p3_conference
+        except:
+            inst = None
+        form = forms.FormTicket(
+            instance=inst,
+            initial={
+                'ticket_name': ticket.name, 
+            },
+            prefix='t%d' % (ticket.id,)
+        )
+        if inst and inst.assigned_to:
+            blocked = inst.assigned_to != user.email
+        else:
+            blocked = False
+    else:
+        form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
+        blocked = False
+    return {
+        'ticket': ticket,
+        'form': form,
+        'user': user,
+        'blocked': blocked,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']
     images = []
-    for f in os.listdir(CONFERENCE_STUFF_DIR):
-        images.append('%s%s' % (CONFERENCE_STUFF_URL, f))
+    for f in os.listdir(STUFF_DIR):
+        images.append('%s%s' % (STUFF_URL, f))
    
     context.update({
         'images': images,

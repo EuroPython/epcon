@@ -2,24 +2,43 @@
 {% load assopy_tags %}
 
 {% block ASSOPY_MAIN_CONTENT %}
-<h1>Accedi al sito...</h1>
-<div>
-    <form action="" method="post">{% csrf_token %}
-        <fieldset>
-            {{ form.email|field }}
-            {{ form.password|field }}
-            <input type="hidden" name="next" value="{{ next }}" />
-        </fieldset>
-        <fieldset class="border">
-            <button type="submit">login</button>
-        </fieldset>
-    </form>
-    {% if form.errors %}
-    <p class="errornote">
-        <br><b>Nome utente e/o password non corretti.</b> Riprova per favore.<br>
-    </p>
-    {% endif %}
-</div>
-
-{% render_janrain_box next %}
+    <h1>Log in into EuroPython using one of your existing web accounts:</h1>
+    <div class="span-12">
+        {% render_janrain_box next "embed" %}
+        <div class="cms">
+            <p>You will be able to specify billing and personal info later; eg: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere.</p>
+            <p>If you really really don't want to use an existing web account but you prefer a standard registration/login form, <a id="show-classic-login" href="#">click here</a></p>
+        </div>
+        <div id="classic-login"{% if form.errors|length == 0 %} style="display: none"{% endif %}>
+            <div class="span-6">
+                <form action="" method="post">{% csrf_token %}
+                    <fieldset>
+                        {{ form.email|field }}
+                        {{ form.password|field }}
+                        <input type="hidden" name="next" value="{{ next }}" />
+                    </fieldset>
+                    <fieldset class="border">
+                        <button type="submit">login</button>
+                    </fieldset>
+                </form>
+                {% if form.errors %}
+                <p class="errornote">
+                    <br /><b>Invalid credentials</b>; please try again.
+                </p>
+                {% endif %}
+            </div>
+            <div class="span-6 last">
+                <div class="cms">
+                    <p>If you don't have an account, please register:</p>
+                    <button><a href="{% url assopy-new-account %}?next={{ next }}">register</a></button>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $('#show-classic-login').click(function(e) {
+                e.preventDefault();
+                $('#classic-login').slideDown('slow');
+            })
+        </script>
+    </div>
 {% endblock %}
