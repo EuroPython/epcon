@@ -168,11 +168,11 @@ class User(models.Model):
             self.user.save()
 
     def name(self):
-        if self.assopy_id:
-            u = self.billing()
-            return '%s %s' % (u['firstname'], u['lastname'])
+        name = '%s %s' % (self.user.first_name, self.user.last_name)
+        if not name.strip():
+            return self.user.email
         else:
-            return '%s %s' % (self.user.first_name, self.user.last_name)
+            return name
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
