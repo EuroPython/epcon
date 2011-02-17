@@ -14,5 +14,8 @@ to activate the account.
 
 {{ token.get_url }}
 
+If you didn't make the request, just ignore this e-mail.
+
 Sincerely
 EuroPython web team
+
