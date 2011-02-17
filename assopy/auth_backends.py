@@ -46,7 +46,7 @@ class _AssopyBackend(ModelBackend):
             log.info('new remote user id: %s', rid)
         user.assopy_id = rid
         for k in ('www', 'phone'):
-            setattr(user, k, migrate.get(k, ''))
+            setattr(user, k, migrate.get(k, '') or '')
         user.save()
         return user
 
