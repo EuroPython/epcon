@@ -35,7 +35,6 @@ LANGUAGES = (
 #    ('it', ugettext('Italiano')),
     ('en', ugettext('English')),
 )
-PAGE_LANGUAGES = LANGUAGES
 
 SITE_ID = 1
 
@@ -136,7 +135,6 @@ AUTHENTICATION_BACKENDS = (
 
 PAGE_USE_SITE_ID = False
 DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
-
 PAGE_TEMPLATES = (
     ('p3/index.html', 'homepage'),
     ('p3/index-simple.html', 'homepage (semplificata)'),
@@ -145,11 +143,10 @@ PAGE_TEMPLATES = (
     ('p3/content-assopy.html', 'assopy page (una colonna)'),
     ('p3/p5_homepage.html', '(p5) homepage'),
 )
-
-PAGE_DEFAULT_LANGUAGE = 'it'
-
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
+PAGE_DEFAULT_LANGUAGE = 'it'
+PAGE_LANGUAGES = LANGUAGES
 
 MICROBLOG_LINK = 'http://www.europython.eu'
 MICROBLOG_TITLE = 'Europython blog'
