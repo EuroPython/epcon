@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load microblog %}
+{% load microblog conference %}
 
 {% block TEASER %}
 <div class="container">
@@ -19,11 +19,14 @@
         </section>
     {% endcomment %}
     
+    {% latest_deadlines 1 as l %}
     <section class="cal clearfix">
-        <h3><span>22</span><br />Mar</h3>
+        <h3><span>{{ l.0.0|date:"d" }}</span><br />{{ l.0.0|date:"b" }}</h3>
         <div>
-            <h4>Some very long deadline title</h4>
+            <h4>{{ l.0.1|safe }}</h4>
+            {% comment %}
             <p><a href="/calendario/">See all deadlines &rarr;</a></p>
+            {% endcomment %}
         </div>
     </section>
     
