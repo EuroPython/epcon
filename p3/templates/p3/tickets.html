@@ -1,0 +1,70 @@
+{% extends "assopy/base.html" %}
+{% load p3 %}
+{% block MAIN_CONTENT %}
+    <h1>Your tickets!!!</h1>
+    <div class="span-12 append-1">
+        <div class="cms">
+        {% for t in tickets %}
+        {% render_ticket t %}
+        {% endfor %}
+        </div>
+    </div>
+    <script type="text/javascript">//<![CDATA[
+    $('div.ticket form button[type=submit]').click(function(e) {
+        e.preventDefault();
+        var form = $(e.target).parents('form');
+        form.ajaxSubmit({
+            success: function() {
+                feedback('ticket saved');
+            },
+            beforeSubmit: function(arr, form, options) {
+                var ticket = form.parents('.ticket');
+                if(ticket.hasClass('conference'))
+                    var f = ticket_field(form, 'ticket_name');
+                else
+                    var f = ticket_field(form, 'name');
+                var n = f.val().trim();
+                if(n == '') {
+                    alert('please enter the name');
+                    f.focus();
+                    return false;
+                }
+                return true;
+            },
+            error: function(xhr, status, error) {
+                alert('cannot save the ticket, please contact info@pycon.it for assistance');
+            }
+        });
+    });
+    function ticket_field(form, field_name) {
+        var tid = $(form).get(0).id.split('-')[1];
+        return $('input[name=t' + tid + '-' + field_name + ']', form);
+    }
+    $('div.ticket form button[value=assign]').click(function(e) {
+        e.preventDefault();
+        var email = prompt('Enter the email of the person you want to assign the ticket');
+        if(!email)
+            return;
+        var form = $(e.target).parents('form');
+        ticket_field(form, 'assigned_to').val(email);
+        form.ajaxSubmit(function() {
+            feedback('ticket assigned to ' + email);
+            $('fieldset', form).hide();
+            $('<div class="assigned"><span>Assigned to ' + email + '<br /><a href="#" class="reclaim">(click to reclaim)</a></span></div>').appendTo(form);
+        });
+    });
+    $('div.ticket a.reclaim').live('click', function(e) {
+        e.preventDefault();
+        if(window.confirm('Are you sure to reclaim this ticket')) {
+            var form = $(e.target).parents('form');
+            ticket_field(form, 'assigned_to').val('');
+            form.ajaxSubmit(function() {
+                feedback('ticket reclaimed');
+                $('div.assigned', form).remove();
+                $('fieldset', form).show();
+            });
+        }
+    });
+    //]]>
+    </script>
+{% endblock %}

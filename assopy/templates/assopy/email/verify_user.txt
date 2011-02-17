@@ -1,0 +1,6 @@
+Hi {{ user.first_name }} {{ user.last_name }},
+click on the link below in order to verify your email address
+
+{{ token.get_url }}
+
+sincerly

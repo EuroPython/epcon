@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %} &mdash; {% endif %}{% endblock %} EuroPython 2011: Florence, June 23&ndash;26</title>
+    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %} &mdash; {% endif %}{% endblock %} EuroPython 2011: Florence, June 20&ndash;26</title>
 
     <link rel="icon" href="{{ STATIC_URL }}p5/i/favicon.png" type="image/png" />
     <link rel="shortcut icon" href="{{ STATIC_URL }}p5/i/favicon.ico" type="image/vnd.microsoft.icon" />
@@ -22,10 +22,14 @@
     <script src="{{ STATIC_URL }}p5/j/html5.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
 <![endif]-->
-    <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest/" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="http://feeds.feedburner.com/pyconit" />
+    <script src="http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js"></script>
+    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.form.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/utils.js"></script>
+    {% comment %}
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/jquery.form.js"></script>
+    {% endcomment %}
     {% if current_page|check_map %}
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="{% url p3-map-js %}"></script>
@@ -41,7 +45,7 @@
 
 {% block HEADER_BLOCK %}
 <header>
-    <nav  class="darker">
+    <nav class="darker">
         <div class="container clearfix">
 
             <div class="span-8">
@@ -68,15 +72,17 @@
             </div>
 
             <div class="span-4 last">
-                {% comment %}
                 <div class="user">
                     {% if request.user.is_authenticated %}
-                        Logged in as <b>{{ request.user.first_name }} {{ request.user.last_name }}</b> &bull; <a href="/logout/?next=/">Log out</a>
+                        <a href="{% url assopy-profile %}"><b>{{ request.user.assopy_user.name }}</b></a> &bull;
+                        {% if request.user.is_staff %}
+                        <a href="/admin/"><b>Admin</b></a> &bull;
+                        {% endif %}
+                        <a href="/logout/?next=/">Log out</a>
                     {% else %}
                         <a href="/accounts/login/?next=/">Log in</a>
                     {% endif %}
                 </div>
-                {% endcomment %}
             </div>
         </div>
     </nav>
@@ -248,5 +254,22 @@
     });
     </script> 
     {% endif %}
+    <script type='text/javascript'>
+        $('form').each(function() {
+            $('.help-text', this).prev(':input').tooltip({
+                position: "center right",
+                offset: [0, 10],
+                effect: "fade",
+                opacity: 0.9
+            })
+        });
+        $('.show-tooltip').tooltip({
+            position: "bottom center",
+            offset: [5, 0],
+            effect: "fade",
+            opacity: 0.9
+        });
+    </script>
 </body>
 </html>
+
