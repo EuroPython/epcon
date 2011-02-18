@@ -169,9 +169,10 @@ button.mini {
 /*
  * pulsante utilizzato per entrare in modalià editing
  */
-button.edit {
-    display: block;
-    margin: 8px auto;
+h1 button.edit {
+    margin: 0 15px;
+    position: relative;
+    top: -8px;
 }
 
 
@@ -253,4 +254,24 @@ button a {
 
 label:after {
     content: ":";
+}
+
+.field.booleanfield {
+    height: 40px;
+}
+.field.booleanfield label {
+    position: relative;
+    left: 25px;
+}
+.field.booleanfield input {
+    position: relative;
+    top: -19px;
+}
+.field.booleanfield label:after {
+    content: "";
+}
+
+.field.booleanfield .errorlist {
+    position: relative;
+    top: -19px;
 }
