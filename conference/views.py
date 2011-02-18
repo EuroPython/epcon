@@ -403,7 +403,7 @@ def sponsor(request, sponsor):
 
 @login_required
 @transaction.commit_on_success
-def paper_submission(request, submission_form=SubmissionForm):
+def paper_submission(request, submission_form=SubmissionForm, submission_additional_form=TalkForm):
     try:
         speaker = request.user.speaker
     except models.Speaker.DoesNotExist:
@@ -418,26 +418,44 @@ def paper_submission(request, submission_form=SubmissionForm):
             return redirect(settings.CFP_CLOSED)
         else:
             raise http.Http404()
-    
-    if request.method == 'POST':
-        form = submission_form(data=request.POST, files=request.FILES)
-        if form.is_valid():
-            if speaker is None:
-                name = '%s %s' % (request.user.first_name, request.user.last_name)
-                speaker = models.Speaker.objects.createFromName(name, request.user)
-            talk = form.save(instance=speaker)
-            messages.info(request, 'your talk has been submitted, thank you')
 
-            data = form.cleaned_data
+    proposed = speaker.talk_set.proposed(conference=settings.CONFERENCE) if speaker else []
+    if request.method == 'POST':
+        if len(proposed) == 0:
+            form = submission_form(data=request.POST, files=request.FILES)
+        else:
+            form = submission_additional_form(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            if len(proposed) == 0:
+                if speaker is None:
+                    name = '%s %s' % (request.user.first_name, request.user.last_name)
+                    speaker = models.Speaker.objects.createFromName(name, request.user)
+                talk = form.save(instance=speaker)
+                data = form.cleaned_data
+            else:
+                data = form.cleaned_data
+                talk = models.Talk.objects.createFromTitle(
+                    title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
+                    status='proposed', duration=data['duration'], language=data['language'],
+                    level=data['level'], training_available=data['training'],
+                )
+                if data['slides']:
+                    talk.slides = data['slides']
+                    talk.save()
+                talk.setAbstract(data['abstract'])
+            messages.info(request, 'Your talk has been submitted, thank you!')
             send_email(
                 subject='new paper from "%s %s"' % (request.user.first_name, request.user.last_name),
                 message='Title: %s\n\nAbstract: %s' % (data['title'], data['abstract']),
             )
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
-        form = submission_form(instance=speaker)
+        if len(proposed) == 0:
+            form = submission_form(instance=speaker)
+        else:
+            form = submission_additional_form()
     return render_to_response('conference/paper_submission.html', {
         'speaker': speaker,
         'form': form,
-        'proposed_talks': speaker.talk_set.proposed(conference=settings.CONFERENCE) if speaker else [],
+        'proposed_talks': proposed,
     }, context_instance=RequestContext(request))
