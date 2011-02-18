@@ -133,6 +133,7 @@ class User(models.Model):
     twitter = models.CharField(max_length=20, blank=True)
     www = models.URLField(verify_exists=False, blank=True)
     phone = models.CharField(max_length=30, blank=True)
+    birthday = models.DateField(null=True, blank=True)
 
     objects = UserManager()
 
