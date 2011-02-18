@@ -37,6 +37,7 @@ class SubmissionForm(forms.Form):
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
     slides = forms.FileField(required=False)
     abstract = forms.CharField(
+        max_length=5000,
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
