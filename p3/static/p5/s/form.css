@@ -254,3 +254,23 @@ button a {
 label:after {
     content: ":";
 }
+
+.field.booleanfield {
+    height: 40px;
+}
+.field.booleanfield label {
+    position: relative;
+    left: 25px;
+}
+.field.booleanfield input {
+    position: relative;
+    top: -19px;
+}
+.field.booleanfield label:after {
+    content: "";
+}
+
+.field.booleanfield .errorlist {
+    position: relative;
+    top: -19px;
+}
