@@ -16,9 +16,23 @@ admin.site.register(models.Conference, ConferenceAdmin)
 
 class DeadlineAdmin(admin.ModelAdmin):
 
-    list_display = ('date', 'text', 'isValid')
+    list_display = ('date', '_headline', '_text', '_expired')
 
-    def text(self, obj):
+    def _headline(self, obj):
+        contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
+        for l, lname in settings.LANGUAGES:
+            try:
+                content = contents[l]
+            except KeyError:
+                continue
+            if content.headline:
+                return content.headline
+        else:
+            return '[No Headline]'
+    _headline.short_description = 'headline'
+    _headline.allow_tags = True
+
+    def _text(self, obj):
         contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
         for l, lname in settings.LANGUAGES:
             try:
@@ -29,12 +43,12 @@ class DeadlineAdmin(admin.ModelAdmin):
                 return content.body
         else:
             return '[No Body]'
-    text.short_description = 'testo'
-    text.allow_tags = True
+    _text.short_description = 'testo'
+    _text.allow_tags = True
 
-    def isValid(self, obj):
+    def _expired(self, obj):
         return not obj.isExpired()
-    isValid.boolean = True
+    _expired.boolean = True
 
     # Nella pagina per la creazione/modifica di una deadline voglio mostrare
     # una textarea per ogni lingua abilitata nei settings. Per fare questo
@@ -50,11 +64,21 @@ class DeadlineAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super(DeadlineAdmin, self).get_form(request, obj, **kwargs)
         if obj:
-            contents = dict((c.language, c.body) for c in obj.deadlinecontent_set.all())
+            contents = dict((c.language, (c.headline, c.body)) for c in obj.deadlinecontent_set.all())
         for l, _ in settings.LANGUAGES:
-            f = forms.CharField(widget = forms.Textarea, required = False)
+            f = forms.CharField(max_length=200, required=False)
             if obj:
-                f.initial = contents.get(l, '')
+                try:
+                    f.initial = contents[l][0]
+                except:
+                    pass
+            form.base_fields['headline_' + l] = f
+            f = forms.CharField(widget=forms.Textarea, required=False)
+            if obj:
+                try:
+                    f.initial = contents[l][1]
+                except:
+                    pass
             form.base_fields['body_' + l] = f
         return form
 
@@ -62,10 +86,9 @@ class DeadlineAdmin(admin.ModelAdmin):
         obj.save()
         data = form.cleaned_data
         for l, _ in settings.LANGUAGES:
-            key =  'body_' + l
             if change:
                 try:
-                    instance = models.DeadlineContent.objects.get(deadline = obj, language = l)
+                    instance = models.DeadlineContent.objects.get(deadline=obj, language=l)
                 except models.DeadlineContent.DoesNotExist:
                     instance = models.DeadlineContent()
             else:
@@ -73,7 +96,8 @@ class DeadlineAdmin(admin.ModelAdmin):
             if not instance.id:
                 instance.deadline = obj
                 instance.language = l
-            instance.body = data.get(key, '')
+            instance.headline = data.get('headline_' + l, '')
+            instance.body = data.get('body_' + l, '')
             instance.save()
 
 admin.site.register(models.Deadline, DeadlineAdmin)
