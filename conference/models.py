@@ -89,7 +89,8 @@ class DeadlineContent(models.Model):
     Testo, multilingua, di una deadline
     """
     deadline = models.ForeignKey(Deadline)
-    language = models.CharField(max_length = 3)
+    language = models.CharField(max_length=3)
+    headline = models.CharField(max_length=200)
     body = models.TextField()
 
 from django.contrib.contenttypes.models import ContentType

@@ -22,7 +22,7 @@ class SubmissionForm(forms.Form):
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
     training = forms.BooleanField(
         label=_('Training'),
-        help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See te Call for paper for details.'),
+        help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details.'),
         required=False,)
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
@@ -37,6 +37,7 @@ class SubmissionForm(forms.Form):
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
     slides = forms.FileField(required=False)
     abstract = forms.CharField(
+        max_length=5000,
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
@@ -98,7 +99,7 @@ class TalkForm(forms.Form):
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
     training = forms.BooleanField(
         label=_('Training'),
-        help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See te Call for paper for details.'),
+        help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details.'),
         required=False,)
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
