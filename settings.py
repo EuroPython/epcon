@@ -156,7 +156,7 @@ MICROBLOG_POST_LIST_PAGINATION = True
 MICROBLOG_POST_PER_PAGE = 10
 MICROBLOG_MODERATION_TYPE = 'akismet'
 MICROBLOG_AKISMET_KEY = '56c34997206c'
-MICROBLOG_EMAIL_RECIPIENTS = ['europython@python.org', 'pycon-organization@googlegroups.com']
+MICROBLOG_EMAIL_RECIPIENTS = ['europython@python.org', 'europython-improve@python.org', 'pycon-organization@googlegroups.com']
 MICROBLOG_EMAIL_INTEGRATION = True
 
 # se si vuole far servire a django i file statici
