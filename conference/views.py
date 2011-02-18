@@ -134,7 +134,9 @@ def talk(request, slug, talk_form=TalkForm):
     else:
         try:
             tlk.get_all_speakers().get(user__id=request.user.id)
-        except models.Speaker.DoesNotExist:
+        except (models.Speaker.DoesNotExist, models.Speaker.MultipleObjectsReturned):
+            # Il MultipleObjectsReturned può capitare se l'utente non è loggato
+            # e .id vale None
             full_access = False
         else:
             full_access = True
