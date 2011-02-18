@@ -55,6 +55,21 @@ class P3SubmissionForm(SubmissionForm):
         instance.user.assopy_user.save()
         return talk
 
+class P3SubmissionAdditionalForm(TalkForm):
+    duration = forms.TypedChoiceField(
+        label=_('Suggested duration'),
+        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
+        coerce=int,
+        initial=60,)
+    slides_agreement = forms.BooleanField(
+        label=_('I agree to release all the talk material after the event.'),
+        help_text=_('If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site.'),
+    )
+    video_agreement = forms.BooleanField(
+        label=_('I agree to let the organization record my talk and publish the video.'),
+    )
+
 class P3TalkForm(TalkForm):
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),

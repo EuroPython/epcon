@@ -4,12 +4,15 @@
 {% block PAGE_TITLE %}paper submission &mdash; {% endblock %}
 
 {% block MAIN_CONTENT %}
-    <h1>Talk submission</h1>
+    <h1>New talk submission</h1>
     <div class="cms span-9 last">
         {% if proposed_talks %}
-        <h2>You have submitted <a href="{% url conference-speaker slug=speaker.slug %}">{{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.</a></h2>
+        <section class="notice">
+            <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.<br />To edit your submission{{ proposed_talks.count|pluralize }}, please visit your <a href="{% url conference-speaker slug=speaker.slug %}">speaker profile</a>.</p>
+        </section>
         {% endif %}
         <form action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% if not proposed_talks %}
             <h2>Spaker profile</h2>
             <fieldset>
                 <div class="span-3">{{ form.activity|field }}</div>
@@ -32,6 +35,20 @@
                 <div>{{ form.video_agreement|field }}</div>
                 <div>{{ form.slides_agreement|field }}</div>
             </fieldset>
+            {% else %}
+            <h2>Talk description</h2>
+            <fieldset>
+                <div>{{ form.title|field }}</div>
+                <div>{{ form.training|field }}</div>
+
+                <div class="span-3">{{ form.language|field }}</div>
+                <div class="span-3">{{ form.duration|field }}</div>
+                <div class="span-3 last">{{ form.level|field }}</div>
+                <div>{{ form.abstract|field }}</div>
+                <div>{{ form.video_agreement|field }}</div>
+                <div>{{ form.slides_agreement|field }}</div>
+            </fieldset>
+            {% endif %}
             <fieldset class="border">
                 <p>Note: if you are available to give the same talk both in Italian and English, please submit the talk twice, with fully translated title and abstract.</p>
                 <button type="submit">Submit</button>
