@@ -3,35 +3,33 @@
 {% block MAIN_CONTENT %}
 <div class="column span-12">
     <div class="page clearfix border">
-        <h1>Errore 404. Impossibile trovare la pagina.</h1>
+        <h1>Error 404: Cannot find the requested page.</h1>
 
         <div class="column span-8">
             <div class="page-summary">
                 <blockquote>
-                    <p>Oops! Siamo spiacenti, ma la pagina che hai richiesto non esiste ...</p>
+                    <p>Oops! We're sorry, the page you requested does not exist...</p>
                 </blockquote>
             </div>
             <div class="cms">
                 <p>
-                    Ecco alcuni collegamenti ad altre pagine utili:
+                    Here are a few useful links:
                     <ul>
                         <li>
-                            Il nostro <a href="http://www.pycon.it/blog/" title="PyCon Tre Blog">Blog</a>;
+                            Our <a href="/blog/">Blog</a>;
                         </li>
                         <li>
-                            Il <a href="http://www.pycon.it/pycon4/programma/" title="pycon tre schedule">programma</a>
-                            degli eventi PyCon;
+                            The <a href="/schedule/">conference schedule</a>;
                         </li>
                         <li>
-                            La nostra pagina degli
-                            <a href="http://www.pycon.it/sponsor/" title="sponsorizza pycon tre">sponsor</a>;
+                            Our page about
+                            <a href="/sponsor/">sponsorship opportunities</a>;
                         </li>
                         <li>
-                            <a href="http://www.pycon.it/faq/" title="domande frequenti sul pycon">Domande frequenti</a>
-                            (F.A.Q.)
+                            <a href="/faq/">Frequently asked questions</a> (F.A.Q.);
                         </li>
                         <li>
-                            ... oppure torna alla Home Page di <a href="http://www.pycon.it/" title="pycon.it conferenza italiana python">PyCon.it</a>
+                            ... or get back to the<a href="/">Europython Home Page</a>
                         </li>
                     </ul>
                 </p>
@@ -40,7 +38,6 @@
 
         <div class="column span-4 last">
             <div id="sidebar" class="cms">
-                {% box_cal %}
                 {% box_didyouknow %}
                 {% box_newsletter %}
             </div>
@@ -48,4 +45,5 @@
     </div>
 </div>
 {% endblock %}
+
 
