@@ -16,7 +16,19 @@ var PROJEKKTOR_CONFIG = {
 {% endblock %}
 
 {% block MAIN_CONTENT %}
-    <h1>{{ talk.title }}</h1>
+    <h1><span>{{ talk.title }}</span>
+    {% if full_access %}
+    <button class="profile edit">Edit talk</button>
+    <script type="text/javascript">//<![CDATA[
+    $('button.profile.edit').click(function(e) {
+        e.preventDefault();
+        $('div.readonly').hide();
+        $('div.writable').show();
+        $(e.target).hide();
+    });
+    //]]>
+    </script>
+    {% endif %}</h1>
     <div class="span-8">
         <div class="page-summary">
             <p>
@@ -74,18 +86,6 @@ var PROJEKKTOR_CONFIG = {
     </div>
     <div class="span-4 last">
         <div class="talk details">
-            {% if full_access %}
-            <button class="profile edit">Edit talk</button>
-            <script type="text/javascript">//<![CDATA[
-            $('button.profile.edit').click(function(e) {
-                e.preventDefault();
-                $('div.readonly').hide();
-                $('div.writable').show();
-                $(e.target).hide();
-            });
-            //]]>
-            </script>
-            {% endif %}
             {% if talk.slides %}
             <div class="button mini">
                 {% stuff_info talk.slides as info %}

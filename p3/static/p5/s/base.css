@@ -1355,3 +1355,8 @@ section.notice {
 	-moz-box-shadow:0 0 10px #000;
 	-webkit-box-shadow:0 0 10px #000;
 }
+
+section.notice a {
+	color:#FCF8C0;
+	border-bottom: 1px solid #fcf8c0;
+}

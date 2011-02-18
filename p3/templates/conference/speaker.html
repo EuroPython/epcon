@@ -9,7 +9,19 @@
     </section>
     {% endif %}
     <div class="column span-8">
-        <h1>{{ auser.name }}</h1>
+        <h1><span>{{ auser.name }}</span>
+        {% if full_access %}
+        <button class="profile edit">Edit this page</button>
+        <script type="text/javascript">//<![CDATA[
+        $('button.profile.edit').click(function(e) {
+            e.preventDefault();
+            $('div.readonly').hide();
+            $('div.writable').show();
+            $(e.target).hide();
+        });
+        //]]>
+        </script>
+        {% endif %}</h1>
         <div class="page-summary">
             <p>
                 {% if speaker.activity %}{{ speaker.activity }}{% endif %}
@@ -62,18 +74,6 @@
         <div class="speaker-picture">
             <img class="block" src="{{ auser.photo_url }}" alt="{{ auser.name }}" width="170" height="170" />
         </div>
-        {% if full_access %}
-        <button class="profile edit">Edit this page</button>
-        <script type="text/javascript">//<![CDATA[
-        $('button.profile.edit').click(function(e) {
-            e.preventDefault();
-            $('div.readonly').hide();
-            $('div.writable').show();
-            $(e.target).hide();
-        });
-        //]]>
-        </script>
-        {% endif %}
     </div>
 {% endwith %}
 {% endblock %}
