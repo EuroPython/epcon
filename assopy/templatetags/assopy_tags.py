@@ -12,7 +12,7 @@ register = template.Library()
 
 _field_tpl = template.Template("""
     <div class="{{ classes|join:" " }}">
-        {{ field.label_tag }}
+        <label for="{{ field.auto_id }}">{{ field.label }}</label>
         {{ field }}
         {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
         {{ field.errors }}
@@ -25,6 +25,7 @@ def field(field, cls=None):
         classes.append('required')
     if cls:
         classes.extend(cls.split(','))
+    classes.append(field.field.__class__.__name__.lower())
     if isinstance(field.field.widget, (forms.HiddenInput,)):
         return str(field)
     else:
