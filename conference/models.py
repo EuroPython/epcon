@@ -37,7 +37,11 @@ class Conference(models.Model):
 
     def cfp(self):
         today = datetime.date.today()
-        return self.cfp_start <= today <= self.cfp_end
+        try:
+            return self.cfp_start <= today <= self.cfp_end
+        except TypeError:
+            # date non impostate
+            return False
 
 class DeadlineManager(models.Manager):
     def valid_news(self):
