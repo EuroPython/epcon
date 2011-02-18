@@ -65,10 +65,10 @@ label.inline {
 }
 
 
-label span {
-	color: #8396cc;
+label span.required {
+    color: #46a0ac;
+    margin: 0 5px;
     text-transform: none;
-
 }
 
 
@@ -275,3 +275,5 @@ label:after {
     position: relative;
     top: -19px;
 }
+
+
