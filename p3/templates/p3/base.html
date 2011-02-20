@@ -22,7 +22,7 @@
     <script src="{{ STATIC_URL }}p5/j/html5.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
 <![endif]-->
-    <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="http://feeds.feedburner.com/pyconit" />
+    <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest/" />
     <script src="http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js"></script>
     <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.form.js"></script>
@@ -44,6 +44,11 @@
 <![endif]-->
 
 {% block HEADER_BLOCK %}
+{% if messages %}
+{% for m in messages %}
+<div class="feedback{% if m.tags %} {{ m.tags }}{% endif %}">{{ m }}</div>
+{% endfor %}
+{% endif %}
 <header>
     <nav class="darker">
         <div class="container clearfix">

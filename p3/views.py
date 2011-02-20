@@ -15,7 +15,7 @@ from assopy.views import render_to, HttpResponseRedirectSeeOther
 
 import forms
 import models
-from conference.models import Ticket
+from conference.models import Fare, Ticket
 
 import logging
 import uuid
@@ -149,3 +149,42 @@ def user(request, token):
     user = auth.authenticate(uid=u.user.id)
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
+
+@render_to('p3/cart.html')
+def cart(request):
+    from assopy.forms import FormTickets
+    at = request.user.assopy_user.billing()['account_type']
+    class P3FormTickets(FormTickets):
+        def __init__(self, *args, **kwargs):
+            super(P3FormTickets, self).__init__(*args, **kwargs)
+            del self.fields['payment']
+        def available_fares(self):
+            return Fare.objects.all()
+        def clean(self):
+            data = super(P3FormTickets, self).clean()
+            company = at == 'company'
+            for fare, quantity in data['tickets']:
+                if (company ^ (fare.code[-1] == 'C')):
+                    self._errors[fare.code] = self.error_class([ 'Invalid Fare'])
+                    del data[fare.code]
+            return data
+    if request.method == 'POST':
+        form = P3FormTickets(data=request.POST)
+        if form.is_valid():
+            request.session['user-cart'] = form.cleaned_data
+            return redirect('p3-billing')
+    else:
+        form = P3FormTickets()
+    fares = {}
+    for f in form.available_fares():
+        fares[f.code] = f
+    return {
+        'form': form,
+        'fares': fares,
+        'account_type': at,
+    }
+
+@render_to('p3/billing.html')
+def billing(request):
+    return {}
+    

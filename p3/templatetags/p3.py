@@ -236,6 +236,34 @@ def render_ticket(context, ticket):
         'blocked': blocked,
     }
 
+@register.inclusion_tag('p3/render_cart_row.html', takes_context=True)
+def render_cart_row(context, subcode, form, fares):
+    def g(code):
+        try:
+            return form[code]
+        except KeyError:
+            return None
+    at = context['request'].user.assopy_user.billing()['account_type']
+    company = at == 'company'
+    subfares = [ fares.get(subcode + x) for x in ('S', 'P', 'C') ]
+
+    # row a tre elementi: studente, privato, azienda
+    #   ognuno di questi è una tupla con 3 elementi:
+    #       1. Fare
+    #       2. FormField
+    #       3. Boolean che indica se la tariffa è utilizzabile dall'utente
+    row = []
+    for f in subfares:
+        if f is None:
+            row.append((None, None, None))
+        else:
+            # la tariffa è valida se passa il controllo temporale e se il tipo
+            # dell'account è compatibile
+            row.append((f, g(f.code), f.valid() and not (company ^ (f.code[-1] == 'C')),))
+    return {
+        'row': row,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']

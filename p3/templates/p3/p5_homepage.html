@@ -23,7 +23,7 @@
     <section class="cal clearfix">
         <h3><span>{{ l.0.0|date:"d" }}</span><br />{{ l.0.0|date:"b" }}</h3>
         <div>
-            <h4>{{ l.0.1|safe }}</h4>
+            <h4>{% if l.0.1.headline %}{{ l.0.1.headline|safe }}{% else %}{{ l.0.1.body|safe }}{% endif %}</h4>
             {% comment %}
             <p><a href="/calendario/">See all deadlines &rarr;</a></p>
             {% endcomment %}
@@ -38,7 +38,7 @@
             <h2><span>Confirmed</span> Speakers</h2>
             <img src="{{ STATIC_URL }}p5/i/speakers-wanted.png" alt="" width="320" height="160" />
             <div class="button">
-                <a href="/cfp/">Join us as a speaker! See the <b>call for paper</b></a>
+                <a href="/call-for-paper/">Join us as a speaker! See the <b>call for paper</b></a>
             </div>
         </div>
 
@@ -128,3 +128,4 @@
     </div>
 </section>
 {% endblock %}
+
