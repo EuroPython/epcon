@@ -22,8 +22,8 @@ class _AssopyBackend(ModelBackend):
         if user.assopy_id:
             return user
         name = unicode(user.user).encode('utf-8')
-        if not user.verified:
-            log.info('cannot link a remote user to "%s": it\'s not verified', name) 
+        if not user.user.is_active:
+            log.info('cannot link a remote user to "%s": it\'s not active', name) 
             return
 
         log.info('a remote user is needed for "%s"', name)
@@ -35,24 +35,52 @@ class _AssopyBackend(ModelBackend):
         rid = genro.users(email=user.user.email)['r0']
         if rid is not None:
             log.info('an existing match with the email "%s" is found: %s', user.user.email, rid)
+            data = genro.user(rid)
+            migrate = {
+                'www': data['www'],
+                'phone': data['phone'],
+            }
         else:
             rid = genro.create_user(user.user.first_name, user.user.last_name, user.user.email)
+            migrate = {}
             log.info('new remote user id: %s', rid)
         user.assopy_id = rid
+        for k in ('www', 'phone'):
+            setattr(user, k, migrate.get(k, ''))
         user.save()
         return user
+
+class IdBackend(_AssopyBackend):
+    """
+    backend utilizzato solo internamento per autenticare utenti dato il loro id
+    (senza bisogno di password).
+    """
+    def authenticate(self, uid=None):
+        try:
+            user = User.objects.select_related('assopy_user').get(pk=uid, is_active=True)
+            auser = user.assopy_user
+            if auser is None:
+                # questo utente esiste su django ma non ha un utente assopy
+                # collegato; probabilmente è un admin inserito prima del
+                # collegamento con il backend.
+                auser = models.User(user=user)
+                auser.save()
+            self.linkUser(auser)
+            return user
+        except User.DoesNotExist:
+            return None
 
 class EmailBackend(_AssopyBackend):
     def authenticate(self, email=None, password=None):
         try:
-            user = User.objects.select_related('assopy_user').get(email=email)
+            user = User.objects.select_related('assopy_user').get(email=email, is_active=True)
             if user.check_password(password):
                 auser = user.assopy_user
                 if auser is None:
                     # questo utente esiste su django ma non ha un utente assopy
                     # collegato; probabilmente è un admin inserito prima del
                     # collegamento con il backend.
-                    auser = models.User(user=user, verified=True)
+                    auser = models.User(user=user)
                     auser.save()
                 self.linkUser(auser)
                 return user
@@ -66,7 +94,7 @@ class EmailBackend(_AssopyBackend):
             rid = genro.users(email=email, password=password)['r0']
             if rid is not None:
                 log.info('"%s" is a valid remote user; a local user is needed', email)
-                u = models.User.objects.create_from_backend(rid, email, password=password, verified=True)
+                u = models.User.objects.create_from_backend(rid, email, password=password, active=True)
                 return u.user
             else:
                 return None
@@ -74,7 +102,7 @@ class EmailBackend(_AssopyBackend):
 class JanRainBackend(_AssopyBackend):
     def authenticate(self, identifier=None):
         try:
-            i = models.UserIdentity.objects.select_related('user__user').get(identifier=identifier)
+            i = models.UserIdentity.objects.select_related('user__user').get(identifier=identifier, user__user__is_active=True)
         except models.UserIdentity.DoesNotExist:
             return None
         else:

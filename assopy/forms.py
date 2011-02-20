@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.contrib import auth
+from django.utils.translation import ugettext as _
 
 from assopy import models
 from assopy import settings
@@ -54,21 +55,39 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
     def save(self, *args, **kwargs):
         user = super(SetPasswordForm, self).save(*args, **kwargs)
         u = self.user.assopy_user
-        if not u.verified:
-            log.info('password reset for "%s" completed; now he\' a verified user', user.email)
-            u.verified = True
-            u.save()
+        # non voglio riabilitare un utente con is_active=False, voglio tenermi
+        # questo flag come uno strumento di amministrazione per impedire
+        # l'accesso al sito
+#        if not u.verified:
+#            log.info('password reset for "%s" completed; now he\' a verified user', user.email)
+#            u.verified = True
+#            u.save()
         return user
 
 class Profile(forms.Form):
-    firstname = forms.CharField(max_length=32)
+    firstname = forms.CharField(
+        help_text=_('Please do not enter a company name here.<br />You will be able to specify billing details during the checkout.'),
+        max_length=32,)
     lastname = forms.CharField(max_length=32)
-    phone = forms.CharField(max_length=20, required=False)
-    www = forms.URLField(verify_exists=False, required=False)
+    phone = forms.CharField(
+        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+        max_length=30,
+        required=False,)
+    www = forms.URLField(label=_('Homepage'), verify_exists=False, required=False)
+    twitter = forms.CharField(max_length=20, required=False)
     photo = forms.FileField(required=False)
 
+    def clean_twitter(self):
+        data = self.cleaned_data.get('twitter', '')
+        return data.lstrip('@')
+
+ACCOUNT_TYPE = (
+    ('private', 'Private use'),
+    ('company', 'Company'),
+)
 class BillingData(forms.Form):
     card_name = forms.CharField(max_length=80, required=False)
+    account_type = forms.ChoiceField(choices=ACCOUNT_TYPE)
     vat_number = forms.CharField(max_length=22, required=False)
     tin_number = forms.CharField(max_length=16, required=False)
     address = forms.CharField(required=False)
@@ -76,6 +95,23 @@ class BillingData(forms.Form):
     state = forms.CharField(max_length=2, required=False)
     zip = forms.CharField(max_length=8, required=False)
     country = forms.ChoiceField(choices=models.Country.objects.order_by('printable_name').values_list('iso', 'printable_name'))
+
+    def clean(self):
+        data = self.cleaned_data
+        try:
+            c = models.Country.objects.get(iso=data['country'])
+        except (KeyError, models.Country.DoesNotExist):
+            raise forms.ValidationError('Invalid country')
+
+        if data['account_type'] not in ('private', 'company'):
+            raise forms.ValidationError('invalid account type')
+
+        if data['account_type'] == 'private' and c.vat_person and not data.get('tin_number'):
+            raise forms.ValidationError('tin number missing')
+        elif data['account_type'] == 'company' and c.vat_company and not data.get('vat_company'):
+            raise forms.ValidationError('vat number missing')
+
+        return data
 
 class Speaker(forms.Form):
     bio = forms.CharField(widget=forms.Textarea())
@@ -91,8 +127,14 @@ class NewAccountForm(forms.Form):
     first_name = forms.CharField(max_length=32)
     last_name = forms.CharField(max_length=32)
     email = forms.EmailField()
-    password1 = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Confirm password", widget=forms.PasswordInput)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if auth.models.User.objects.filter(email__iexact=email).count() > 0:
+            raise forms.ValidationError('email aready in use')
+        return data
 
     def clean(self):
         data = self.cleaned_data

@@ -166,10 +166,43 @@ button.mini {
 }
 */
 
+/*
+ * pulsante utilizzato per entrare in modalià editing
+ */
+button.edit {
+    display: block;
+    margin: 8px auto;
+}
 
 
+.help-text {
+	background-color:#301D1D;
+	border:1px solid #fff;
+	padding:10px 15px;
+	width:200px;
+	display:none;
+	color:#FCF8C0;
+	text-align:left;
+	font-size:12px;
 
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #000;
+	-webkit-box-shadow:0 0 10px #000;
+}
 
+.tooltip {
+	background-color:#301D1D;
+	border:1px solid #fff;
+	padding:10px 15px;
+	display:none;
+	color:#FCF8C0;
+	text-align:left;
+	font-size:12px;
+
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #000;
+	-webkit-box-shadow:0 0 10px #000;
+}
 
 
 .talk-compact {
@@ -206,4 +239,18 @@ button.mini {
 
 .talk-compact .delete {
     background: firebrick;
+}
+
+#classic-login form {
+    margin: 0 auto;
+    width: 200px;
+}
+
+button a {
+    color: white;
+    border: 0;
+}
+
+label:after {
+    content: ":";
 }

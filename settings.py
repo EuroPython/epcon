@@ -10,7 +10,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 SERVER_EMAIL = 'wtf@python.it'
-DEFAULT_FROM_EMAIL = 'site@pycon.it'
+DEFAULT_FROM_EMAIL = 'info@pycon.it'
 
 DATABASES = {
     'default': {
@@ -122,9 +122,11 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
+    'templatesadmin',
 )
 
 AUTHENTICATION_BACKENDS = (
+    'assopy.auth_backends.IdBackend',
     'assopy.auth_backends.EmailBackend',
     'assopy.auth_backends.JanRainBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -183,13 +185,19 @@ CONFERENCE_GOOGLE_MAPS = {
 
 CONFERENCE_CONFERENCE = 'ep2011'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
+ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
 
 DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
-PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
+PINGBACK_TARGET_DOMAIN = 'ep2011.europython.eu'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = 'europython'
 
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
+ASSOPY_TICKET_PAGE = 'p3-tickets'
+
+TEMPLATESADMIN_EDITHOOKS = (
+    'templatesadmin.edithooks.hgcommit.HgCommitHook',
+)
 
 try:
     from settings_locale import *

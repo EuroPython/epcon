@@ -206,6 +206,36 @@ def check_map(page):
 def render_map(context):
     return {}
 
+@register.inclusion_tag('p3/render_ticket.html', takes_context=True)
+def render_ticket(context, ticket):
+    from p3 import forms
+    user = context['request'].user
+    if ticket.fare.ticket_type == 'conference':
+        try:
+            inst = ticket.p3_conference
+        except:
+            inst = None
+        form = forms.FormTicket(
+            instance=inst,
+            initial={
+                'ticket_name': ticket.name, 
+            },
+            prefix='t%d' % (ticket.id,)
+        )
+        if inst and inst.assigned_to:
+            blocked = inst.assigned_to != user.email
+        else:
+            blocked = False
+    else:
+        form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
+        blocked = False
+    return {
+        'ticket': ticket,
+        'form': form,
+        'user': user,
+        'blocked': blocked,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']

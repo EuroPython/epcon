@@ -14,8 +14,8 @@ _field_tpl = template.Template("""
     <div class="{{ classes|join:" " }}">
         {{ field.label_tag }}
         {{ field }}
+        {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
         {{ field.errors }}
-        {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
     </div>
 """)
 @register.filter()
@@ -30,8 +30,29 @@ def field(field, cls=None):
     else:
         return _field_tpl.render(template.Context(locals()))
 
+# in django 1.3 questo filtro non serve più, si potrà usare direttamente
+# field.value
+# http://code.djangoproject.com/ticket/10427
+@register.filter
+def field_value(field):
+	""" 
+	Returns the value for this BoundField, as rendered in widgets. 
+	""" 
+	if field.form.is_bound: 
+		if isinstance(field.field, FileField) and field.data is None: 
+			val = field.form.initial.get(field.name, field.field.initial) 
+		else: 
+			val = field.data 
+	else:
+		val = field.form.initial.get(field.name, field.field.initial)
+		if callable(val):
+			val = val()
+	if val is None:
+		val = ''
+	return val
+
 @register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
-def render_janrain_box(context, next=None):
+def render_janrain_box(context, next=None, mode='embed'):
     if settings.JANRAIN:
         # mi salvo, nella sessione corrente, dove vuol essere rediretto
         # l'utente una volta loggato
@@ -45,6 +66,7 @@ def render_janrain_box(context, next=None):
         u = None
     return {
         'url': u,
+        'mode': mode,
     }
 
 class TNode(template.Node):

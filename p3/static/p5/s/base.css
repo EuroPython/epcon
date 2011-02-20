@@ -488,31 +488,21 @@ elsewhere img {
 
 
 
-/*
-
-#elsewhere {
-
-    margin: 0 0 20px 0;
-    padding: 0 0 20px 0;
-
-    background: transparent url(../i/bg-footer-sep.png) bottom left repeat-x;
-}
-*/
-
-
-
 footer nav ul {
     list-style: none; 
 }
 
-/*
-#elsewhere li,
-#footer-nav li {
-    display: inline;
-    
-    margin-right: 10px;
+
+footer nav li.sep {
+    margin: 20px 0 0 0;
 }
-*/
+
+footer nav li img {
+    vertical-align: middle;
+}
+
+
+
 
 .feeds {
 
@@ -527,7 +517,7 @@ footer nav ul {
 }
 
 .twitter li {
-    margin: 0 0 10px 0;
+    margin: 0 0 10px 20px;
     
     list-style: outside disc url(../i/icon-bird.png);
 }
@@ -661,7 +651,7 @@ footer nav ul {
 
 
 .speaker-picture {
-    float: left;
+/*    float: left; */
 /*     width: 100px; */
 
     border: 5px solid #aba18f;
@@ -1277,8 +1267,91 @@ section.cal div p {
 .janrain-box {
     width: 400px;
     height: 240px;
+    margin: 0 auto 50px auto;
+    display: block;
 }
 
 
 
+/*
+ * questo id viene creato da un js, lo metto in posizione fixed così sono
+ * sicuro che sia sempre visibile.
+ */
+#feedback-js {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 25%;
+    width: 50%;
+}
 
+.feedback {
+    background: rgba(255, 185, 69, 0.85);
+    text-align: center;
+    line-height: 1.7em;
+    font-weight: bold;
+    color: black;
+}
+
+/*
+ * ticket page
+ */
+div.ticket {
+    position: relative;
+    border: 1px solid gray;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	padding: 4px;
+	margin-bottom: 10px;
+	/*
+     * i ticket hanno tutti "span-6 last", il last c'è sempre per comodità nel
+     * renderizzare il template. Per non avere tutti i div attaccati inserisco
+     * un margine qui che sovrascrive quello presente in .last
+	 */
+	margin-right: 5px;
+	height: 330px;
+}
+
+div.ticket form {
+    height: 100%;
+}
+
+/*
+ * nel ticket voglio che i button siano allineati in fondo a destra
+ */
+div.ticket fieldset.border {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+div.ticket div.assigned {
+    height: 100%;
+    background: rgba(240, 240, 240, 0.8);
+    color: black;
+    font-weight: bold;
+    font-size: 1.3em;
+    text-align: center;
+}
+
+div.ticket div.assigned span {
+    position: relative;
+    top: 50px;
+}
+
+section.notice {
+    margin: 10px auto 30px auto;
+	background-color:#301D1D;
+	border:1px solid #fff;
+	padding:10px 15px;
+	color:#FCF8C0;
+	text-align:left;
+	font-size:12px;
+	font-weight: bold;
+	width: 70%;
+
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #000;
+	-webkit-box-shadow:0 0 10px #000;
+}
