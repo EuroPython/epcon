@@ -159,6 +159,10 @@ MICROBLOG_AKISMET_KEY = '56c34997206c'
 MICROBLOG_EMAIL_RECIPIENTS = ['europython@python.org', 'europython-improve@python.org', 'pycon-organization@googlegroups.com']
 MICROBLOG_EMAIL_INTEGRATION = True
 
+MICROBLOG_TWITTER_USERNAME = 'europython'
+MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
+MICROBLOG_TWITTER_INTEGRATION = False
+
 # se si vuole far servire a django i file statici
 # popolare questo dizionario con coppie
 # nome app -> static dir
@@ -189,7 +193,7 @@ ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
 DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'ep2011.europython.eu'
 COMMENTS_APP = 'hcomments'
-P3_TWITTER_USER = 'europython'
+P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
