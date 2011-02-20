@@ -44,6 +44,11 @@
 <![endif]-->
 
 {% block HEADER_BLOCK %}
+{% if messages %}
+{% for m in messages %}
+<div class="feedback{% if m.tags %} {{ m.tags }}{% endif %}">{{ m }}</div>
+{% endfor %}
+{% endif %}
 <header>
     <nav class="darker">
         <div class="container clearfix">

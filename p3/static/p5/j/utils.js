@@ -18,6 +18,7 @@ $(document).ready(function() {
  * viene distrutto dopo un po' di tempo
  */
 function feedback(msg) {
+    $('div.feedback').remove();
     var f = $('#feedback-js');
     if(f.length != 0) {
         f.html(msg);
