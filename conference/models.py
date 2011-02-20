@@ -346,6 +346,7 @@ class Talk(models.Model):
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
     tags = TagField()
+    created = models.DateTimeField(auto_now_add=True)
 
     objects = TalkManager()
 
