@@ -4,6 +4,7 @@ from django import http
 from django import template
 from django.conf import settings as dsettings
 from django.contrib import auth
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core import mail
 from django.core.urlresolvers import reverse
@@ -74,6 +75,7 @@ def profile(request):
             user.phone = data['phone']
             user.save()
             user.setBilling(firstname=data['firstname'], lastname=data['lastname'])
+            messages.info(request, 'Profile updated')
             return HttpResponseRedirectSeeOther('.')
     else:
         data = user.billing()
