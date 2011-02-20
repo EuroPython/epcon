@@ -65,7 +65,7 @@ class LatestDeadlinesNode(template.Node):
                     break
             else:
                 continue
-            news.append((n.date, content.body))
+            news.append((n.date, {'headline': content.headline, 'body': content.body }))
         context[self.var_name] = news
         return ""
 
