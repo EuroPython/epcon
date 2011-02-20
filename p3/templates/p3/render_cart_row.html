@@ -1,12 +1,13 @@
+{% load assopy_tags %}
 {% for fare, field, enabled in row %}
     <td{% if not enabled %} class="disabled"{% endif %}>
         {% if fare %}
         <label><input{% if not enabled %} disabled="disabled"{% endif %} type="checkbox" name="row1" value="" /> € <span id="fare-{{ fare.code }}" class="fare">{{ fare.price }}</span></label>
         {% endif %}
     </td> 
-    <td{% if not enabled %} class="disabled"{% endif %}>
+    <td class="{% if field.errors %} error {% endif %}{% if not enabled %} disabled{% endif %}">
         {% if fare %}
-        <input{% if not enabled %} disabled="disabled"{% endif %} type="text" size="2" name="{{ field.name }}" value="" />
+        <input{% if not enabled %} disabled="disabled"{% endif %} type="text" size="2" name="{{ field.name }}" value="{{ field|field_value }}" />
         {% endif %}
     </td>
 {% endfor %}

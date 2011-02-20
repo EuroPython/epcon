@@ -4,19 +4,19 @@
     <h1>Checkout</h1>
     <div class="cms">
         {{ form.non_field_errors }}
-        <form id="form-cart" action="{% url assopy-checkout %}" method="post">{% csrf_token %}
+        <form id="form-cart" action="{% url p3-cart %}" method="post">{% csrf_token %}
             <fieldset>
                 <table>
                     <col />
 
-                    <col />
-                    <col />
+                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
                     
-                    <col />
-                    <col />
+                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
                     
-                    <col />
-                    <col />
+                    <col {% if account_type == "private" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type == "private" %} style="background: #2d3b66"{% endif %}/>
                     <thead>
                         <tr>
                             <th>&nbsp;</th>
@@ -85,7 +85,7 @@
                 </div> 
             </fieldset>
             <fieldset class="border">
-                <button type="submit">save</button>
+                <button type="submit">checkout</button>
             </fieldset>
         </form>
         <script type="text/javascript">
@@ -101,6 +101,7 @@
                 $('#form-cart .total b').html('€ ' + total);
             }
             $('#form-cart input').change(calcTotal);
+            calcTotal();
         </script>
     </div>
 {% endblock %}
