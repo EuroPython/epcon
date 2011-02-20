@@ -281,7 +281,7 @@ class OrderManager(models.Manager):
         return o
 
 class Order(models.Model):
-    code = models.CharField(max_length=8, primary_key=True)
+    code = models.CharField(max_length=8, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     user = models.ForeignKey('auth.User')
     created = models.DateTimeField(auto_now_add=True)
