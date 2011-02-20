@@ -248,28 +248,11 @@ class OrderManager(models.Manager):
     @transaction.commit_manually
     def create(self, user, payment, items):
         log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
-        y = date.today().year
-        cursor = connection.cursor()
-        # qui ho bisogno di impedire che altre connessioni possano leggere il
-        # db fino a quando non ho creato l'ordine
-        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
-        try:
-            try:
-                last = self.filter(code__startswith=str(y)).order_by('-created').values('code')[0]
-            except IndexError:
-                last_code = 0
-            else:
-                last_code = int(last['code'][4:])
-            o = Order()
-            o.code = '%s%s' % (y, str(last_code+1).zfill(4))
-            o.user = user
-            o.save()
-        except:
-            transaction.rollback()
-            raise
-        else:
-            transaction.commit()
-        log.info('local order created: %s', o.code)
+        o = Order()
+        o.code = None
+        o.method = payment
+        o.user = user
+        o.save()
         for f, q in items:
             for _ in range(q):
                 a = Ticket(user=user, fare=f)
@@ -277,14 +260,19 @@ class OrderManager(models.Manager):
                 item = OrderItem(order=o, ticket=a)
                 item.save()
         transaction.commit()
-        log.info('local attendees created for order: %s', o.code)
+        log.info('order "%s" and tickets created locally', o.id)
         return o
 
+ORDER_PAYMENT = (
+    ('paypal', 'PayPal'),
+    ('bank', 'Bank'),
+)
 class Order(models.Model):
     code = models.CharField(max_length=8, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
+    method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
 
     objects = OrderManager()
 

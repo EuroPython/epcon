@@ -63,3 +63,29 @@ def create_user(firstname, lastname, email):
     b['lastname'] = lastname
     b['email'] = email
     return _post('/users/', b)['id']
+
+def create_order(order):
+    b = Bag()
+    assert order.user.assopy_id
+    rows = list(order.orderitem_set.select_related('ticket__fare'))
+    b['event'] = rows[0].ticket.fare.conference_id
+    b['customer_id'] = order.user.assopy_id
+    #b['coupon'] = 
+    #b['discount'] = 
+    b['payment_method'] = o.method
+    items = {}
+    for r in rows:
+        fcode = r.ticket.fare.code
+        if fcode not in items:
+            x = Bag()
+            x['quantity'] = 1
+            x['fare_code'] = fcode
+            items[fcode] = x
+        else:
+            items[fcode]['quantity'] += 1
+    b['order_rows'] = items.values()
+    result = _post('/orders/', b)
+    o.assopy_id = result['order_id']
+    o.code = result['order_code']
+    o.save()
+    return result['paypal_url']
