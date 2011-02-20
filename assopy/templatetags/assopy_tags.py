@@ -26,6 +26,8 @@ def field(field, cls=None):
     if cls:
         classes.extend(cls.split(','))
     classes.append(field.field.__class__.__name__.lower())
+    if field.errors:
+        classes.append('error')
     if isinstance(field.field.widget, (forms.HiddenInput,)):
         return str(field)
     else:
@@ -40,7 +42,7 @@ def field_value(field):
 	Returns the value for this BoundField, as rendered in widgets. 
 	""" 
 	if field.form.is_bound: 
-		if isinstance(field.field, FileField) and field.data is None: 
+		if isinstance(field.field, forms.FileField) and field.data is None: 
 			val = field.form.initial.get(field.name, field.field.initial) 
 		else: 
 			val = field.data 
