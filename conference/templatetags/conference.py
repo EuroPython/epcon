@@ -61,7 +61,7 @@ class LatestDeadlinesNode(template.Node):
                     content = contents[l]
                 except KeyError:
                     continue
-                if content.body:
+                if content.headline or content.body:
                     break
             else:
                 continue
