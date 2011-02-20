@@ -316,42 +316,10 @@ def janrain_login_mismatch(request):
 
 @render_to('assopy/checkout.html')
 def checkout(request):
-    class FormTickets(forms.Form):
-        payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
-
-        def __init__(self, *args, **kwargs):
-            super(FormTickets, self).__init__(*args, **kwargs)
-            for t in self.available_fares():
-                self.fields[t.code] = forms.IntegerField(label=t.name, min_value=0, required=False)
-
-        def available_fares(self):
-            return cmodels.Fare.objects.available()
-
-        def clean(self):
-            fares = dict( (x.code, x) for x in self.available_fares() )
-            data = self.cleaned_data
-            o = []
-            for k, q in data.items():
-                if k in ('payment',):
-                    continue
-                if not q:
-                    continue
-                if k not in fares:
-                    raise forms.ValidationError('Invalid fare')
-                f = fares[k]
-                if not f.valid():
-                    raise forms.ValidationError('Invalid fare')
-                o.append((f, q))
-            if not o:
-                raise forms.ValidationError('no tickets')
-
-            data['tickets'] = o
-            return data
-
     if request.method == 'POST':
         if not request.user.is_authenticated():
             return http.HttpResponseBadRequest('unauthorized')
-        form = FormTickets(data=request.POST)
+        form = aforms.FormTickets(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
             o = models.Order.objects.create(user=request.user, payment=data['payment'], items=data['tickets'])
@@ -370,7 +338,7 @@ def checkout(request):
             else:
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
     else:
-        form = FormTickets()
+        form = aforms.FormTickets()
         
     return {
         'form': form,

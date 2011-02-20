@@ -141,3 +141,39 @@ class NewAccountForm(forms.Form):
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')
         return data
+
+class FormTickets(forms.Form):
+    payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
+
+    def __init__(self, *args, **kwargs):
+        super(FormTickets, self).__init__(*args, **kwargs)
+        for t in self.available_fares():
+            self.fields[t.code] = forms.IntegerField(
+                label=t.name,
+                min_value=0,
+                required=False,
+            )
+
+    def available_fares(self):
+        return cmodels.Fare.objects.available()
+
+    def clean(self):
+        fares = dict( (x.code, x) for x in self.available_fares() )
+        data = self.cleaned_data
+        o = []
+        for k, q in data.items():
+            if k in ('payment',):
+                continue
+            if not q:
+                continue
+            if k not in fares:
+                raise forms.ValidationError('Invalid fare')
+            f = fares[k]
+            if not f.valid():
+                raise forms.ValidationError('Invalid fare')
+            o.append((f, q))
+        if not o:
+            raise forms.ValidationError('no tickets')
+
+        data['tickets'] = o
+        return data
