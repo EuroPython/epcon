@@ -15,7 +15,7 @@ from assopy.views import render_to, HttpResponseRedirectSeeOther
 
 import forms
 import models
-from conference.models import Ticket
+from conference.models import Fare, Ticket
 
 import logging
 import uuid
@@ -149,3 +149,19 @@ def user(request, token):
     user = auth.authenticate(uid=u.user.id)
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
+
+@render_to('p3/cart.html')
+def cart(request):
+    from assopy.forms import FormTickets
+    class P3FormTickets(FormTickets):
+        def available_fares(self):
+            return Fare.objects.all()
+    form = P3FormTickets()
+    fares = {}
+    for f in form.available_fares():
+        fares[f.code] = f
+    return {
+        'form': form,
+        'fares': fares,
+    }
+    

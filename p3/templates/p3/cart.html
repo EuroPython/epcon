@@ -1,0 +1,107 @@
+{% extends "assopy/base.html" %}
+{% load p3 assopy_tags i18n %}
+{% block ASSOPY_MAIN_CONTENT %}
+    <h1>Checkout</h1>
+    <div class="cms">
+        {{ form.non_field_errors }}
+        <form id="form-cart" action="{% url assopy-checkout %}" method="post">{% csrf_token %}
+            <fieldset>
+                <table>
+                    <col />
+
+                    <col />
+                    <col />
+                    
+                    <col />
+                    <col />
+                    
+                    <col />
+                    <col />
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th colspan="2">{% trans "Student" %}</th>
+                            <th colspan="2">{% trans "Personal" %}</th>
+                            <th colspan="2">{% trans "Businness" %}</th>
+                        </tr>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>{% trans "Price" %}</th>
+                            <th>{% trans "Quantity" %}</th>
+                            <th>{% trans "Price" %}</th>
+                            <th>{% trans "Quantity" %}</th>
+                            <th>{% trans "Price" %}</th>
+                            <th>{% trans "Quantity" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr> 
+                            <td>Ticket Early - Standard</td> 
+                            {% render_cart_row "TES" form fares %}
+                        </tr> 
+                        <tr> 
+                            <td>Ticket Early - Full Access</td> 
+                            {% render_cart_row "TEF" form fares %}
+                        </tr> 
+                        <tr> 
+                            <td>Ticket Early - Daily Pass</td> 
+                            {% render_cart_row "TED" form fares %}
+                        </tr> 
+
+                        <tr> 
+                            <td>Ticket Regular - Standard</td> 
+                            {% render_cart_row "TRS" form fares %}
+                        </tr> 
+                        <tr> 
+                            <td>Ticket Regular - Full Access</td> 
+                            {% render_cart_row "TRF" form fares %}
+                        </tr> 
+                        <tr> 
+                            <td>Ticket Regular - Daily Pass</td> 
+                            {% render_cart_row "TRD" form fares %}
+                        </tr> 
+
+                        <tr> 
+                            <td>Ticket OnDesk - Standard</td> 
+                            {% render_cart_row "TDS" form fares %}
+                        </tr> 
+                        <tr> 
+                            <td>Ticket OnDesk - Full Access</td> 
+                            {% render_cart_row "TDF" form fares %}
+                        </tr> 
+                        <tr> 
+                            <td>Ticket OnDesk - Daily Pass</td> 
+                            {% render_cart_row "TDD" form fares %}
+                        </tr> 
+
+                        <tr> 
+                            <td>Ticket OnDesk - Single Training</td> 
+                            {% render_cart_row "TDT" form fares %}
+                        </tr> 
+                    </tbody>
+                </table>
+                <div class="total"> 
+                    Totale ordine (IVA inc.): <b>€ 0</b> 
+                </div> 
+            </fieldset>
+            <fieldset class="border">
+                <button type="submit">save</button>
+            </fieldset>
+        </form>
+        <script type="text/javascript">
+            function calcTotal() {
+                var total = 0;
+                $('#form-cart input').each(function() {
+                    var x = Number(this.value);
+                    if(!isNaN(x)) {
+                        var fare = Number($('#fare-' + this.name).html());
+                        total += x * fare;
+                    }
+                });
+                $('#form-cart .total b').html('€ ' + total);
+            }
+            $('#form-cart input').change(calcTotal);
+        </script>
+    </div>
+{% endblock %}
+

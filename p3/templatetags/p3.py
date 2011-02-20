@@ -236,6 +236,20 @@ def render_ticket(context, ticket):
         'blocked': blocked,
     }
 
+@register.inclusion_tag('p3/render_cart_row.html', takes_context=True)
+def render_cart_row(context, subcode, form, fares):
+    def g(code):
+        try:
+            return form[code]
+        except KeyError:
+            return None
+    row = [
+        (fares.get(subcode + x), g(subcode + x)) for x in ('S', 'P', 'C')
+    ]
+    return {
+        'row': row,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']
