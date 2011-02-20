@@ -161,18 +161,24 @@ class FormTickets(forms.Form):
         fares = dict( (x.code, x) for x in self.available_fares() )
         data = self.cleaned_data
         o = []
+        total = 0
         for k, q in data.items():
             if k in ('payment',):
                 continue
             if not q:
                 continue
             if k not in fares:
-                raise forms.ValidationError('Invalid fare')
+                self._errors[k] = self.error_class(['Invalid fare'])
+                del data[k]
+                continue
+            total += q
             f = fares[k]
             if not f.valid():
-                raise forms.ValidationError('Invalid fare')
+                self._errors[k] = self.error_class(['Invalid fare'])
+                del data[k]
+                continue
             o.append((f, q))
-        if not o:
+        if total == 0:
             raise forms.ValidationError('no tickets')
 
         data['tickets'] = o
