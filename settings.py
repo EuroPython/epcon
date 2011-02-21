@@ -188,15 +188,16 @@ CONFERENCE_GOOGLE_MAPS = {
 
 CONFERENCE_CONFERENCE = 'ep2011'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
+
+ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
+ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
+ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
 
 DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'ep2011.europython.eu'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
-
-ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
-ASSOPY_TICKET_PAGE = 'p3-tickets'
 
 TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.hgcommit.HgCommitHook',
