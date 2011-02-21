@@ -1,52 +1,15 @@
-{% load conference %}
-{% latest_deadlines 6 as deadlines %}
-<ul id="deadlines">
-    {% if deadlines.0 %}
-    <li class="clearfix"> 
-	<h3><span>{{ deadlines.0.0|date:"j" }}</span> {{ deadlines.0.0|date:"M" }}</h3>
-	<div><p>{{ deadlines.0.1 }}</p>
-	</div>
-    </li>
-    {% endif %}
-
-    {% if deadlines.1 %}
-    <li class="clearfix" style="opacity: .90"> 
-	<h3><span>{{ deadlines.1.0|date:"j" }}</span> {{ deadlines.1.0|date:"M" }}</h3>
-	<div><p>{{ deadlines.1.1 }}</p>
-	</div>
-    </li>
-    {% endif %}
-
-    {% if deadlines.2 %}
-    <li class="clearfix" style="opacity: .80"> 
-	<h3><span>{{ deadlines.2.0|date:"j" }}</span> {{ deadlines.2.0|date:"M" }}</h3>
-	<div><p>{{ deadlines.2.1 }}</p>
-	</div>
-    </li>
-    {% endif %}
-
-    {% if deadlines.3 %}
-    <li class="clearfix" style="opacity: .70"> 
-	<h3><span>{{ deadlines.3.0|date:"j" }}</span> {{ deadlines.3.0|date:"M" }}</h3>
-	<div><p>{{ deadlines.3.1 }}</p>
-	</div>
-    </li>
-    {% endif %}
-
-    {% if deadlines.4 %}
-    <li class="clearfix" style="opacity: .60"> 
-	<h3><span>{{ deadlines.4.0|date:"j" }}</span> {{ deadlines.4.0|date:"M" }}</h3>
-	<div><p>{{ deadlines.4.1 }}</p>
-	</div>
-    </li>
-    {% endif %}
-
-    <!-- @@NOTE: Don't go below: 50  -->
-    {% if deadlines.5 %}
-    <li class="clearfix" style="opacity: .50"> 
-	<h3><span>{{ deadlines.5.0|date:"j" }}</span> {{ deadlines.5.0|date:"M" }}</h3>
-	<div><p>{{ deadlines.5.1 }}</p>
-	</div>
-    </li>
-    {% endif %}
-</ul>
+{% load p3 conference %}
+{% latest_deadlines as deadlines %}
+<section class="cal clearfix">
+    {% for d in deadlines %}
+    <div class="deadline">
+        <h3><span>{{ d.0|date:"d" }}</span><br />{{ d.0|date:"b" }}</h3>
+        <div> 
+            <h4>{% if d.1.headline %}{{ d.1.headline|safe }}{% else %}{{ d.1.body|safe }}{% endif %}</h4>
+            {% if d.1.headline and d.1.body %}
+            <p>{{ d.1.body|safe }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</section>

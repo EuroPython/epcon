@@ -5,7 +5,7 @@
         {% for d in deadlines %}
         <li> 
             <h4><span>{{ d.0.date|date:"j" }}</span> {{ d.0.date|date:"M" }}</h4>
-            <p>{{ d.1.body|safe }}</p>
+            <p>{% if d.1.headline %}{{ d.1.headline|safe }}< br/>{% endif %}{{ d.1.body|safe }}</p>
         </li>
         {% endfor %}
     </ul>                                                            

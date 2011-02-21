@@ -1209,52 +1209,42 @@ section.teaser p {
 
 
 section.cal {
-    background: #e1dbc5;
     margin: 0 0 40px 0;
     padding: 5px 0;
 
 }
 
+section.cal div.deadline {
+    background: #e1dbc5;
+}
+
 section.cal h3 {
-    float: left;
     width: 70px;
-    
     color: #7D6F60;
     text-align: center;
-
     font-size: 21px;
-
     letter-spacing: 1px;
-
+    display: table-cell;
 /*     padding: 5px 0 0 0; */
 }
 
 section.cal h3 span {
-
     letter-spacing: 0;
-
     font-size: 30px;
     color: #301D1D;            
 }
 
-
-
-section.cal div {
-    float: left;
+section.cal div.deadline div {
     width: 700px;
-/*     margin: 0 0 0 10px;  */
+    display: table-cell;
 }
-
-
 
 section.cal h4 {
     margin: 0 0 5px 0;
-    
 }
 
 section.cal div p {
 /*     font-size: 13px; */
-    
 }
 
 

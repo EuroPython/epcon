@@ -31,11 +31,17 @@ def box_newsletter():
     return {}
 
 @register.inclusion_tag('p3/box_cal.html', takes_context = True)
-def box_cal(context):
+def box_cal(context, limit=None):
     deadlines = ConferenceModels.Deadline.objects.valid_news()
+    if limit:
+        deadlines = deadlines[:int(limit)]
     return {
         'deadlines': [ (d, d.content(context['LANGUAGE_CODE'])) for d in deadlines ]
     }
+
+@register.inclusion_tag('p3/render_cal.html', takes_context=True)
+def render_cal(context):
+    return context
 
 @register.inclusion_tag('p3/box_download.html', takes_context = True)
 def box_download(context, fname, label=None):

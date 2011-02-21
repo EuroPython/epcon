@@ -6,30 +6,16 @@
     <div class="intro clear">
         <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
     </div>
-    
-    {% comment %}
-    {% latest_deadlines 1 as deadline %}
-        <!-- Note: if empty (no deadlines) remove the section! -->
-        <section class="cal clearfix">
-            <h3><span>{{ deadline.0.0|date:"j"}}</span><br />{{ deadline.0.0|date:"M" }}</h3>
-            <div>
-                <h4>{{ deadline.0.1 }}</h4>
-                <p><a href="/calendario/">{% trans "See all deadlines &rarr;" %}</a></p>
-            </div>
-        </section>
-    {% endcomment %}
-    
     {% latest_deadlines 1 as l %}
     <section class="cal clearfix">
-        <h3><span>{{ l.0.0|date:"d" }}</span><br />{{ l.0.0|date:"b" }}</h3>
-        <div>
-            <h4>{% if l.0.1.headline %}{{ l.0.1.headline|safe }}{% else %}{{ l.0.1.body|safe }}{% endif %}</h4>
-            {% comment %}
-            <p><a href="/calendario/">See all deadlines &rarr;</a></p>
-            {% endcomment %}
+        <div class="deadline">
+            <h3><span>{{ l.0.0|date:"d" }}</span><br />{{ l.0.0|date:"b" }}</h3>
+            <div>
+                <h4>{% if l.0.1.headline %}{{ l.0.1.headline|safe }}{% else %}{{ l.0.1.body|safe }}{% endif %}</h4>
+                <p><a href="/calendar/">See all deadlines &rarr;</a></p>
+            </div>
         </div>
     </section>
-    
 </div>
     
 <section class="teaser">

@@ -2,39 +2,35 @@
 {% load pages_tags markup p3 conference %}
 
 {% block MAIN_CONTENT %}
-        <h1>{% show_content current_page "title" %}</h1>
+    <h1>{% show_content current_page "title" %}</h1>
 
-        <div class="page-summary">
-            {% placeholder subtitle with markItUpMarkdown as text parsed %}
-            {{ text|markdown }}
-        </div>
-
-        <div class="{% block PAGE__CLASS_MAIN_COLUMN %}span-7 append-1{% endblock %}">
-            <div class="cms">
-                {% placeholder text with markItUpMarkdown as text %}
-                {% render_page_template text as m %}
-                {{ m|markdown }}
-            </div>
-        </div>
-
-
-        {% block PAGE__AFTER_MAIN_COLUMN %}
-        <div class="span-4 last">
-            <aside>
-                <div class="cms">
-                    {% block PAGE_SIDEBAR_TOP %}
-                    {% endblock %}
-                    {% block PAGE_SIDEBAR %}
-                    {% placeholder right-column parsed %}
-                    {% endblock %}
-                    {% box_didyouknow %}
-                    {% box_newsletter %}
-                </div>
-            </aside>
-        </div>
-        {% endblock %}
-
-
+    <div class="page-summary">
+        {% placeholder subtitle with markItUpMarkdown as text parsed %}
+        {{ text|markdown }}
     </div>
-</div>
+
+    <div class="{% block PAGE__CLASS_MAIN_COLUMN %}span-7 append-1{% endblock %}">
+        <div class="cms">
+            {% placeholder text with markItUpMarkdown as text parsed %}
+            {% render_page_template text as m %}
+            {{ m|markdown }}
+        </div>
+    </div>
+
+
+    {% block PAGE__AFTER_MAIN_COLUMN %}
+    <div class="span-4 last">
+        <aside>
+            <div class="cms">
+                {% block PAGE_SIDEBAR_TOP %}
+                {% endblock %}
+                {% block PAGE_SIDEBAR %}
+                {% placeholder right-column parsed %}
+                {% endblock %}
+                {% box_didyouknow %}
+                {% box_newsletter %}
+            </div>
+        </aside>
+    </div>
+    {% endblock %}
 {% endblock %}
