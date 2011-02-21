@@ -3,6 +3,37 @@
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Checkout</h1>
     <div class="cms">
+        {{ form.non_field_errors }}
+        <form id="form-cart" action="{% url p3-cart %}" method="post">{% csrf_token %}
+            <fieldset>
+                <table>
+                    <col />
+                    <col />
+                    <col />
+                    <thead> 
+                        <tr> 
+                            <th>Ticket</th> 
+                            <th>Quantity</th> 
+                            <th>Price</th> 
+                        </tr> 
+                    </thead>
+                    <tbody>
+                        {% for fare, quantity, price in tickets %}
+                        <tr>
+                            <td>{{ fare.name }}</td>
+                            <td>{{ quantity }}</td>
+                            <td>€ {{ price|floatformat:"2" }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="subtotal"> 
+                            <td colspan="2" style="text-align: right">Total</td>
+                            <td>€ {{ total|floatformat:"2" }}</td> 
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </form>
+
     </div>
 {% endblock %}
 

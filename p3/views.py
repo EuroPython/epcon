@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
@@ -186,5 +186,16 @@ def cart(request):
 
 @render_to('p3/billing.html')
 def billing(request):
-    return {}
+    print request.session['user-cart']
+    tickets = []
+    total = 0
+    for fare, quantity in request.session['user-cart']['tickets']:
+        t = fare.price * quantity
+        tickets.append((fare, quantity, t))
+        total += t
+        
+    return {
+        'tickets': tickets,
+        'total': total,
+    }
     
