@@ -83,7 +83,7 @@
                         {% if request.user.is_staff %}
                         <a href="/admin/"><b>Admin</b></a> &bull;
                         {% endif %}
-                        <a href="/logout/?next=/">Log out</a>
+                        <a href="/accounts/logout/?next=/">Log out</a>
                     {% else %}
                         <a href="/accounts/login/?next=/">Log in</a>
                     {% endif %}
