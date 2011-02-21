@@ -148,7 +148,7 @@ class User(models.Model):
     @_cache
     def billing(self):
         d = dict(genro.user(self.assopy_id))
-        if d.pop('is_company'):
+        if d.pop('is_company', False):
             d['account_type'] = 'company'
         else:
             d['account_type'] = 'private'
