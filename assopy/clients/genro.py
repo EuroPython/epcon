@@ -50,7 +50,10 @@ def user_local2remote(user):
     data['lastname'] = user.user.last_name
     data['www'] = user.www
     data['phone'] = user.phone
-    data['card_name'] = user.card_name
+    if user.card_name:
+        data['card_name'] = user.card_name
+    else:
+        data['card_name'] = '%s %s' % (user.user.first_name, user.user.last_name)
     data['is_company'] = user.account_type == 'c'
     data['vat_number'] = user.vat_number
     data['tin_number'] = user.cf_number
