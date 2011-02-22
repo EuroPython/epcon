@@ -49,14 +49,14 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
     return gravatar_url
 
 COUNTRY_VAT_COMPANY_VERIFY = (
-    ('', 'None'),
+    (' ', 'None'),
     ('v', 'VIES'),
 )
 class Country(models.Model):
     iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
     name = models.CharField(max_length=100) 
     vat_company = models.BooleanField('VAT for company', default=False)
-    vat_company_verify = models.CharField(max_length=1, choices=COUNTRY_VAT_COMPANY_VERIFY, default='')
+    vat_company_verify = models.CharField(max_length=1, choices=COUNTRY_VAT_COMPANY_VERIFY, default=' ')
     vat_person = models.BooleanField('VAT for person', default=False)
     iso3 = models.CharField(_('ISO alpha-3'), max_length=3, null=True)
     numcode = models.PositiveSmallIntegerField(_('ISO numeric'), null=True)
