@@ -106,14 +106,12 @@ def profile_identities(request):
 def billing(request):
     user = request.user.assopy_user
     if request.method == 'POST':
-        form = aforms.BillingData(data=request.POST, files=request.FILES)
+        form = aforms.BillingData(data=request.POST, files=request.FILES, instance=user)
         if form.is_valid():
-            data = form.cleaned_data
-            user.setBilling(**data)
+            form.save()
             return HttpResponseRedirectSeeOther('.')
     else:
-        initial = user.billing()
-        form = aforms.BillingData(initial=initial)
+        form = aforms.BillingData(instance=user)
     return {
         'user': user,
         'form': form,
