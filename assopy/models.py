@@ -163,35 +163,16 @@ class User(models.Model):
         except IndexError:
             return _gravatar(self.user.email)
 
-    @_cache
-    def billing(self):
-        d = dict(genro.user(self.assopy_id))
-        if d.pop('is_company'):
-            d['account_type'] = 'company'
-        else:
-            d['account_type'] = 'private'
-        return d
-
-    def setBilling(self, **kwargs):
-        data = self.billing()
-        data.update(kwargs)
-        if data.pop('account_type') == 'company':
-            data['is_company'] = True
-        else:
-            data['is_company'] = False
-        genro.setUser(self.assopy_id, data)
-        # mantengo sincronizzato l'utente locale
-        if self.user.first_name != data['firstname'] or self.user.last_name != data['lastname']:
-            self.user.first_name = data['firstname']
-            self.user.last_name = data['lastname']
-            self.user.save()
-
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
         if not name.strip():
             return self.user.email
         else:
             return name
+
+    def save(self, *args, **kwargs):
+        super(User, self).save(*args, **kwargs)
+        genro.user_local2remote(self)
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
