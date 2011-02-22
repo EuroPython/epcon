@@ -212,7 +212,7 @@ def _linkProfileToEmail(email, profile):
 def janrain_token(request):
     if request.method != 'POST':
         return http.HttpResponseNotAllowed(('POST',))
-    redirect_to = request.session.get('jr_next', '/')
+    redirect_to = request.session.get('jr_next', reverse('assopy-profile'))
     try:
         token = request.POST['token']
     except KeyError:
