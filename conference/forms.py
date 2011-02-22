@@ -13,17 +13,35 @@ class SubmissionForm(forms.Form):
     activity_homepage = forms.URLField(label=_('Personal homepage'), required=False)
     company = forms.CharField(label=_('Your company'), max_length=50, required=False)
     company_homepage = forms.URLField(label=_('Company homepage'), required=False)
-    industry = forms.CharField(max_length=50, required=False)
+    industry = forms.TypedChoiceField(choices=models.SPEAKER_INDUSTRY, required=False)
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
         widget=forms.Textarea(),)
+    previous_experience = forms.CharField(
+        label=_('Previous experience'),
+        widget=forms.Textarea(),
+        required=False,)
+    last_year_talks = forms.IntegerField(
+        label=_('Last year talks'),
+        help_text=_('How many talks you have held during the last year?'),
+        min_value=0,
+        required=False,)
+    max_audience = forms.IntegerField(
+        label=_('Maximum audience'),
+        min_value=0,
+        required=False,)
 
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
     training = forms.BooleanField(
         label=_('Training'),
         help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details.'),
         required=False,)
+    type = forms.TypedChoiceField(
+        label=_('Talk Type'),
+        choices=models.TALK_TYPE,
+        initial='s',
+        required=True,)
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
         help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
@@ -51,6 +69,9 @@ class SubmissionForm(forms.Form):
                 'company_homepage': instance.company_homepage,
                 'industry': instance.industry,
                 'bio': getattr(instance.getBio(), 'body', ''),
+                'previous_experience': instance.previous_experience,
+                'last_year_talks': instance.last_year_talks,
+                'max_audience': instance.max_audience,
             }
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
@@ -66,6 +87,9 @@ class SubmissionForm(forms.Form):
         instance.company = data['company']
         instance.company_homepage = data['company_homepage']
         instance.industry = data['industry']
+        instance.previous_experience = data['previous_experience']
+        instance.last_year_talks = data['last_year_talks']
+        instance.max_audience = data['max_audience']
         instance.save()
         instance.setBio(data['bio'])
         talk = models.Talk.objects.createFromTitle(
@@ -73,9 +97,10 @@ class SubmissionForm(forms.Form):
             status='proposed', duration=data['duration'], language=data['language'],
             level=data['level'], training_available=data['training'],
         )
+        talk.type = data['type']
         if data['slides']:
             talk.slides = data['slides']
-            talk.save()
+        talk.save()
         talk.setAbstract(data['abstract'])
 
         return talk
@@ -94,6 +119,7 @@ class SpeakerForm(forms.Form):
         label=_('Compact biography'),
         help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
         widget=forms.Textarea(),)
+    ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
 
 class TalkForm(forms.Form):
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))

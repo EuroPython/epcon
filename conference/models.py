@@ -192,6 +192,31 @@ class SpeakerManager(models.Manager):
             transaction.commit()
         return speaker
 
+SPEAKER_INDUSTRY = (
+    ('alimentare',      'Alimentare'),
+    ('ambiente',        'Ambiente e Sicurezza'),
+    ('automazione',     'Automazione'),
+    ('automotive',      'Automotive'),
+    ('bancario',        'Bancario e Assicurativo'),
+    ('comunicazione',   'Comunicazione'),
+    ('commercio',       'Commercio'),
+    ('consulting',      'Consulting'),
+    ('editoria',        'Editoria'),
+    ('elettronica',     'Elettronica'),
+    ('energia',         'Energia'),
+    ('farmaceutica',    'Farmaceutica'),
+    ('industria',       'Industria (chimica, meccanica, edile)'),
+    ('informatica',     'Informatica e Software'),
+    ('media',           'Intrattenimento e Media'),
+    ('istruzione',      'Istruzione'),
+    ('luxury',          'Luxury (Moda, Gioielli)'),
+    ('tessile',         'Tessile (Abbigliamento, Pelletteria, Accessori)'),
+    ('pubblica-amm',    'Pubblica Amministrazione'),
+    ('telecom',         'Telecomunicazioni'),
+    ('trasporti',       'Trasporti'),
+    ('turismo',         'Turismo'),
+    ('altro',           'Altro'),
+)
 class Speaker(models.Model):
     user = models.OneToOneField('auth.User', null=True)
     name = models.CharField('nome e cognome speaker', max_length=100)
@@ -201,12 +226,15 @@ class Speaker(models.Model):
     activity_homepage = models.URLField(verify_exists=False, blank=True)
     company = models.CharField(max_length=50, blank=True)
     company_homepage = models.URLField(verify_exists=False, blank=True)
-    industry = models.CharField(max_length=50, blank=True)
+    industry = models.CharField(max_length=50, choices=SPEAKER_INDUSTRY, blank=True)
     location = models.CharField(max_length=100, blank=True)
     twitter = models.CharField(max_length=80, blank=True)
     image = models.ImageField(upload_to=_fs_upload_to('speaker'), blank=True)
     bios = generic.GenericRelation(MultilingualContent)
     ad_hoc_description = generic.GenericRelation(MultilingualContent, related_name='ad_hoc_description_set', verbose_name='descrizione ad hoc')
+    previous_experience = models.TextField(blank=True)
+    last_year_talks = models.PositiveIntegerField(default=0)
+    max_audience = models.PositiveIntegerField(default=0)
 
     objects = SpeakerManager()
 
@@ -225,6 +253,12 @@ class Speaker(models.Model):
 
     def getBio(self, language=None):
         return MultilingualContent.objects.getContent(self, 'bios', language)
+
+    def setAdHocDescription(self, body, language=None):
+        MultilingualContent.objects.setContent(self, 'ad_hoc_description', language, body)
+
+    def getAdHocDescription(self, language=None):
+        return MultilingualContent.objects.getContent(self, 'ad_hoc_description', language)
 
     def talks(self, conference=None, include_secondary=True, status=None):
         """
@@ -329,6 +363,10 @@ class TalkManager(models.Manager):
             transaction.commit()
         return talk
 
+TALK_TYPE = (
+    ('s', 'Standard'),
+    ('i', 'Interactive'),
+)
 class Talk(models.Model):
     title = models.CharField('titolo del talk', max_length=100)
     slug = models.SlugField()
@@ -345,6 +383,7 @@ class Talk(models.Model):
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
+    type = models.CharField(max_length=1, choices=TALK_LEVEL, default='s')
     tags = TagField()
     created = models.DateTimeField(auto_now_add=True)
 
