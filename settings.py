@@ -203,6 +203,10 @@ TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.hgcommit.HgCommitHook',
 )
 
+import logging
+logging.getLogger('south').setLevel(logging.INFO)
+logging.getLogger('suds').setLevel(logging.INFO)
+
 try:
     from settings_locale import *
 except ImportError:
