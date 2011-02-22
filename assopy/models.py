@@ -160,6 +160,8 @@ class User(models.Model):
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     photo = models.ImageField(null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
     twitter = models.CharField(max_length=20, blank=True)
+    skype = models.CharField(max_length=20, blank=True)
+    jabber = models.EmailField(blank=True)
     www = models.URLField(verify_exists=False, blank=True)
     phone = models.CharField(
         max_length=30, blank=True,
