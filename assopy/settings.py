@@ -17,3 +17,5 @@ SEARCH_MISSING_USERS_ON_BACKEND = getattr(settings, 'ASSOPY_SEARCH_MISSING_USERS
 TICKET_PAGE = getattr(settings, 'ASSOPY_TICKET_PAGE', None)
 
 SEND_EMAIL_TO = getattr(settings, 'ASSOPY_SEND_EMAIL_TO', None)
+
+VIES_WSDL_URL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl'
