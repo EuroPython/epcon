@@ -65,8 +65,12 @@ def render_to(template):
 def profile(request):
     user = request.user.assopy_user
     if request.method == 'POST':
-        form = aforms.Profile(data=request.POST, files=request.FILES)
+        form = aforms.Profile(data=request.POST, files=request.FILES, instance=user)
         if form.is_valid():
+            form.save()
+            messages.info(request, 'Profile updated')
+            return HttpResponseRedirectSeeOther('.')
+            
             data = form.cleaned_data
             if data['photo']:
                 user.photo = data['photo']
@@ -78,14 +82,7 @@ def profile(request):
             messages.info(request, 'Profile updated')
             return HttpResponseRedirectSeeOther('.')
     else:
-        data = user.billing()
-        form = aforms.Profile({
-            'firstname': data['firstname'],
-            'lastname': data['lastname'],
-            'phone': user.phone,
-            'www': user.www,
-            'twitter': user.twitter,
-        })
+        form = aforms.Profile(instance=user)
     return {
         'user': user,
         'form': form,

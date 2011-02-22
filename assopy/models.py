@@ -138,10 +138,13 @@ class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
-    photo = models.ImageField(null=True, upload_to='assopy/users')
+    photo = models.ImageField(null=True, blank=True, upload_to='assopy/users')
     twitter = models.CharField(max_length=20, blank=True)
     www = models.URLField(verify_exists=False, blank=True)
-    phone = models.CharField(max_length=30, blank=True)
+    phone = models.CharField(
+        max_length=30, blank=True,
+        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+    )
     birthday = models.DateField(null=True, blank=True)
     card_name = models.CharField(max_length=200, blank=True)
     account_type = models.CharField(max_length=1, choices=USER_ACCOUNT_TYPE, default='p')

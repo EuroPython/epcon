@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.contrib import auth
+from django.db import transaction
 from django.utils.translation import ugettext as _
 
 from assopy import models
@@ -66,22 +67,39 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
 #            u.save()
         return user
 
-class Profile(forms.Form):
-    firstname = forms.CharField(
+class Profile(forms.ModelForm):
+    first_name = forms.CharField(
         help_text=_('Please do not enter a company name here.<br />You will be able to specify billing details during the checkout.'),
         max_length=32,)
-    lastname = forms.CharField(max_length=32)
-    phone = forms.CharField(
-        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
-        max_length=30,
-        required=False,)
-    www = forms.URLField(label=_('Homepage'), verify_exists=False, required=False)
-    twitter = forms.CharField(max_length=20, required=False)
-    photo = forms.FileField(required=False)
+    last_name = forms.CharField(max_length=32)
+    class Meta:
+        model = models.User
+        fields = ('first_name', 'last_name', 'phone', 'www', 'twitter', 'photo')
+
+    def __init__(self, *args, **kwargs):
+        o = kwargs.get('instance')
+        if o:
+            initial = kwargs.get('initial', {})
+            if 'first_name' not in initial:
+                initial['first_name'] = o.user.first_name
+            if 'last_name' not in initial:
+                initial['last_name'] = o.user.last_name
+            kwargs['initial'] = initial
+        super(Profile, self).__init__(*args, **kwargs)
 
     def clean_twitter(self):
         data = self.cleaned_data.get('twitter', '')
         return data.lstrip('@')
+
+    @transaction.commit_on_success
+    def save(self, commit=True):
+        data = self.cleaned_data
+        self.instance.user.first_name = data['first_name']
+        self.instance.user.last_name = data['last_name']
+        u = super(Profile, self).save(commit=commit)
+        if commit:
+            self.instance.user.save()
+        return u
 
 ACCOUNT_TYPE = (
     ('private', 'Private use'),
