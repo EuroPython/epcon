@@ -42,9 +42,8 @@ def _post(subpath, bag=None):
 
 def user_local2remote(user):
     assert user.assopy_id is not None
-    o = user_data(user.assopy_id)
+    o = dict(user_data(user.assopy_id))
 
-    log.info('user local2remote %s -> %s', user.user.email, user.assopy_id)
     data = dict(o)
     data['firstname'] = user.user.first_name
     data['lastname'] = user.user.last_name
@@ -61,9 +60,10 @@ def user_local2remote(user):
     data['zip'] = user.zip_code
     data['address'] = user.address
     data['city'] = user.city
-    data['state'] = user.sate
+    data['state'] = user.provincia
 
     if data != o:
+        log.info('user local2remote %s -> %s', user.user.email, user.assopy_id)
         set_user_data(user.assopy_id, data)
     return user
 
