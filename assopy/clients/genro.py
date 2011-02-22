@@ -6,6 +6,7 @@ from lxml import objectify
 
 import logging
 import urllib
+from collections import defaultdict
 from urlparse import urlparse, urlunparse
 
 log = logging.getLogger('assopy.genro')
@@ -124,22 +125,18 @@ def create_order(order):
     b = Bag()
     assert order.user.assopy_id
     rows = list(order.orderitem_set.select_related('ticket__fare'))
-    b['event'] = rows[0].ticket.fare.conference_id
+    b['event'] = rows[0].ticket.fare.conference
     b['customer_id'] = order.user.assopy_id
     #b['coupon'] = 
     #b['discount'] = 
-    b['payment_method'] = o.method
-    items = {}
+    b['payment_method'] = order.method
+
+    tickets = defaultdict(lambda: 0)
     for r in rows:
-        fcode = r.ticket.fare.code
-        if fcode not in items:
-            x = Bag()
-            x['quantity'] = 1
-            x['fare_code'] = fcode
-            items[fcode] = x
-        else:
-            items[fcode]['quantity'] += 1
-    b['order_rows'] = items.values()
+        tickets[r.ticket.fare.code] += 1
+    for ix, t in enumerate(tickets):
+        b['order_rows.r%s.fare_code' % ix] = t
+        b['order_rows.r%s.quantity' % ix] = tickets[t]
     result = _post('/orders/', b)
     o.assopy_id = result['order_id']
     o.code = result['order_code']

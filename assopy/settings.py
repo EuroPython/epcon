@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 if hasattr(settings, 'ASSOPY_JANRAIN'):
     JANRAIN = {
@@ -10,7 +11,10 @@ if hasattr(settings, 'ASSOPY_JANRAIN'):
 else:
     JANRAIN = None
 
-BACKEND = 'http://assopy.pycon.it/conference/externalcall'
+try:
+    BACKEND = settings.ASSOPY_BACKEND
+except AttributeError:
+    raise ImproperlyConfigured('Assopy Backend not set')
 
 SEARCH_MISSING_USERS_ON_BACKEND = getattr(settings, 'ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND', False)
 

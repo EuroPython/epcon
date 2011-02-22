@@ -246,7 +246,7 @@ class UserIdentity(models.Model):
     objects = UserIdentityManager()
 
 class OrderManager(models.Manager):
-    @transaction.commit_manually
+    @transaction.commit_on_success
     def create(self, user, payment, items):
         log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
         o = Order()
@@ -256,11 +256,10 @@ class OrderManager(models.Manager):
         o.save()
         for f, q in items:
             for _ in range(q):
-                a = Ticket(user=user, fare=f)
+                a = Ticket(user=user.user, fare=f)
                 a.save()
                 item = OrderItem(order=o, ticket=a)
                 item.save()
-        transaction.commit()
         log.info('order "%s" and tickets created locally', o.id)
         return o
 
