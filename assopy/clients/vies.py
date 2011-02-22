@@ -6,4 +6,4 @@ from suds.client import Client
 _client = Client(settings.VIES_WSDL_URL)
 
 def check_vat(country, vat):
-    return c.service.checkVat(country, vat)['valid']
+    return _client.service.checkVat(country, vat)['valid']

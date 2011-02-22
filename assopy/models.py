@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 from assopy import django_urls
 from assopy import janrain
-from assopy.clients import genro
+from assopy.clients import genro, vies
 from conference.models import Ticket, Speaker
 
 from django import template
 from django.contrib import auth
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
@@ -47,10 +48,15 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
     
     return gravatar_url
 
+COUNTRY_VAT_COMPANY_VERIFY = (
+    ('', 'None'),
+    ('v', 'VIES'),
+)
 class Country(models.Model):
     iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
     name = models.CharField(max_length=100) 
     vat_company = models.BooleanField('VAT for company', default=False)
+    vat_company_verify = models.CharField(max_length=1, choices=COUNTRY_VAT_COMPANY_VERIFY, default='')
     vat_person = models.BooleanField('VAT for person', default=False)
     iso3 = models.CharField(_('ISO alpha-3'), max_length=3, null=True)
     numcode = models.PositiveSmallIntegerField(_('ISO numeric'), null=True)
@@ -173,6 +179,15 @@ class User(models.Model):
         else:
             return name
 
+    def clean_fields(self, *args, **kwargs):
+        super(User, self).clean_fields(*args, **kwargs)
+        # check del vat_number. Al posso verificare solo i codici europei
+        # tramite vies
+        if self.account_type == 'c' and self.vat_number:
+            if self.country.vat_company_verify == 'v':
+                if not vies.check_vat(self.country.pk, self.vat_number):
+                    raise ValidationError({'vat_number': [_('According to VIES, this is not a valid vat number')]})
+            
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         genro.user_local2remote(self)
