@@ -5,6 +5,7 @@ from assopy.clients import genro, vies
 from conference.models import Ticket, Speaker
 
 from django import template
+from django.conf import settings as dsettings
 from django.contrib import auth
 from django.core import mail
 from django.core.exceptions import ValidationError
@@ -14,6 +15,8 @@ from django.db import models
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
+import os
+import os.path
 import logging
 from uuid import uuid4
 from datetime import date, datetime
@@ -136,6 +139,17 @@ class UserManager(models.Manager):
             mail.send_mail('Verify your account', body, 'info@pycon.it', [ email ])
         return user
 
+def _fs_upload_to(subdir, attr=None):
+    if attr is None:
+        attr = lambda i: i.pk
+    def wrapper(instance, filename):
+        fpath = os.path.join('assopy', subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
+        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+        if os.path.exists(ipath):
+            os.unlink(ipath)
+        return fpath
+    return wrapper
+
 USER_ACCOUNT_TYPE = (
     ('p', 'Private'),
     ('c', 'Company'),
@@ -144,7 +158,7 @@ class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
-    photo = models.ImageField(null=True, blank=True, upload_to='assopy/users')
+    photo = models.ImageField(null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
     twitter = models.CharField(max_length=20, blank=True)
     www = models.URLField(verify_exists=False, blank=True)
     phone = models.CharField(
