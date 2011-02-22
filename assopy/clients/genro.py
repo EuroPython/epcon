@@ -40,6 +40,50 @@ def _post(subpath, bag=None):
     b.fromXml(f.read())
     return b
 
+def user_local2remote(user):
+    assert user.assopy_id is not None
+    o = user_data(user.assopy_id)
+    data = dict(o)
+    data['firstname'] = user.user.first_name
+    data['lastname'] = user.user.last_name
+    data['www'] = user.www
+    data['phone'] = user.phone
+    data['card_name'] = user.card_name
+    data['is_company'] = user.account_type == 'c'
+    data['vat_number'] = user.vat_number
+    data['tin_number'] = user.cf_number
+    data['country'] = user.country_id
+    data['zip'] = user.zip_code
+    data['address'] = user.address
+    data['city'] = user.city
+    data['state'] = user.sate
+
+    if data != o:
+        set_user_data(user.assopy_id, data)
+    return user
+
+def user_remote2local(user):
+    assert user.assopy_id is not None
+    data = user_data(user.assopy_id)
+
+    g = lambda k: (data.get(k) or '').strip()
+    user.user.first_name = g('firstname')
+    user.user.last_name = g('lastname')
+    user.user.save()
+    user.www = g('www')
+    user.phone = g('phone')
+    user.card_name = g('card_name')
+    user.account_type = 'c' if data.get('is_company') else 'p'
+    user.vat_number = g('vat_number')
+    user.cf_number = g('tin_number')
+    user.country_id = data.get('country')
+    user.zip_code = g('zip')
+    user.address = g('address')
+    user.city = g('city')
+    user.provincia = g('state')
+    user.save()
+    return user
+
 def users(email, password=None):
     """
     restituisce gli id degli utenti remoti che hanno l'email passata
@@ -51,10 +95,10 @@ def users(email, password=None):
         p['password'] = password
     return _get('/users/', **p)
 
-def user(id):
+def user_data(id):
     return _get('/users/%s' % id)   
 
-def setUser(id, data):
+def set_user_data(id, data):
     return _post('/users/%s' % id, Bag(data))
 
 def create_user(firstname, lastname, email):

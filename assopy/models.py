@@ -47,6 +47,22 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
     
     return gravatar_url
 
+class Country(models.Model):
+    iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
+    name = models.CharField(max_length=100) 
+    vat_company = models.BooleanField('VAT for company', default=False)
+    vat_person = models.BooleanField('VAT for person', default=False)
+    iso3 = models.CharField(_('ISO alpha-3'), max_length=3, null=True)
+    numcode = models.PositiveSmallIntegerField(_('ISO numeric'), null=True)
+    printable_name = models.CharField(_('Country name'), max_length=128)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Countries'
+
+    def __unicode__(self):
+        return self.name
+
 class TokenManager(models.Manager):
     def create(self, ctype='', user=None, payload=''):
         if user is not None:
@@ -86,22 +102,7 @@ class Token(models.Model, django_urls.UrlMixin):
 
 class UserManager(models.Manager):
     @transaction.commit_on_success
-    def create_from_backend(self, rid, email, password=None, active=False):
-        info = genro.user(rid)
-        user = auth.models.User.objects.create_user('_' + info['user.username'], email, password)
-        user.first_name = info['user.firstname']
-        user.last_name = info['user.lastname']
-        user.is_active = active
-        user.save()
-
-        u = User(user=user)
-        u.assopy_id = rid
-        u.save()
-        log.debug('new local user created "%s"', user)
-        return u
-
-    @transaction.commit_on_success
-    def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, send_mail=True):
+    def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, assopy_id=None, send_mail=True):
         uname = janrain.suggest_username_from_email(email)
         duser = auth.models.User.objects.create_user(uname, email, password=password)
         duser.first_name = first_name
@@ -111,11 +112,15 @@ class UserManager(models.Manager):
         user = User(user=duser)
         if token:
             user.token = str(uuid4())
+        if assopy_id is not None:
+            user.assopy_id = assopy_id
         user.save()
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
             duser.username, first_name, last_name, email,
         )
+        if assopy_id is not None:
+            genro.user_remote2local(user)
         if send_mail:
             ctx = {
                 'user': duser,
@@ -125,6 +130,10 @@ class UserManager(models.Manager):
             mail.send_mail('Verify your account', body, 'info@pycon.it', [ email ])
         return user
 
+USER_ACCOUNT_TYPE = (
+    ('p', 'Private'),
+    ('c', 'Company'),
+)
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True)
@@ -134,6 +143,15 @@ class User(models.Model):
     www = models.URLField(verify_exists=False, blank=True)
     phone = models.CharField(max_length=30, blank=True)
     birthday = models.DateField(null=True, blank=True)
+    card_name = models.CharField(max_length=200, blank=True)
+    account_type = models.CharField(max_length=1, choices=USER_ACCOUNT_TYPE, default='p')
+    vat_number = models.CharField(max_length=22, blank=True)
+    cf_number = models.CharField(max_length=16, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
+    zip_code = models.CharField(max_length=5, blank=True)
+    address = models.CharField(max_length=150, blank=True)
+    city = models.CharField(max_length=40, blank=True)
+    provincia = models.CharField(max_length=2, blank=True)
 
     objects = UserManager()
 
@@ -227,22 +245,6 @@ class UserIdentity(models.Model):
     address = models.TextField(blank=True)
 
     objects = UserIdentityManager()
-
-class Country(models.Model):
-    iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
-    name = models.CharField(max_length=100) 
-    vat_company = models.BooleanField('VAT for company', default=False)
-    vat_person = models.BooleanField('VAT for person', default=False)
-    iso3 = models.CharField(_('ISO alpha-3'), max_length=3, null=True)
-    numcode = models.PositiveSmallIntegerField(_('ISO numeric'), null=True)
-    printable_name = models.CharField(_('Country name'), max_length=128)
-
-    class Meta:
-        ordering = ['name']
-        verbose_name_plural = 'Countries'
-
-    def __unicode__(self):
-        return self.name
 
 class OrderManager(models.Manager):
     @transaction.commit_manually

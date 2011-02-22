@@ -35,19 +35,14 @@ class _AssopyBackend(ModelBackend):
         rid = genro.users(email=user.user.email)['r0']
         if rid is not None:
             log.info('an existing match with the email "%s" is found: %s', user.user.email, rid)
-            data = genro.user(rid)
-            migrate = {
-                'www': data['www'],
-                'phone': data['phone'],
-            }
+            user.assopy_id = rid
+            user.save()
+            genro.user_remote2local(user)
         else:
             rid = genro.create_user(user.user.first_name, user.user.last_name, user.user.email)
-            migrate = {}
             log.info('new remote user id: %s', rid)
-        user.assopy_id = rid
-        for k in ('www', 'phone'):
-            setattr(user, k, migrate.get(k, '') or '')
-        user.save()
+            user.assopy_id = rid
+            user.save()
         return user
 
 class IdBackend(_AssopyBackend):
@@ -94,8 +89,8 @@ class EmailBackend(_AssopyBackend):
             rid = genro.users(email=email, password=password)['r0']
             if rid is not None:
                 log.info('"%s" is a valid remote user; a local user is needed', email)
-                u = models.User.objects.create_from_backend(rid, email, password=password, active=True)
-                return u.user
+                auser = models.User.objects.create_user(email, password=password, active=True, assopy_id=rid, send_mail=False)
+                return auser.user
             else:
                 return None
 

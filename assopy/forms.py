@@ -45,7 +45,9 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
             rid = genro.users(email=email)['r0']
             if rid is not None:
                 log.info('"%s" is a remote user; a local user is needed to reset the password', email)
-                user = models.User.objects.create_from_backend(rid, email, password=None, verified=False)
+                # active=True non è un problema, perchè non uso una password e
+                # l'utente non può loggarsi e deve resettarla.
+                user = models.User.objects.create_user(email, assopy_id=rid, active=True, send_mail=False)
                 self.users_cache = auth.models.User.objects.filter(pk=user.user.pk)
                 return email
             else:
