@@ -43,6 +43,8 @@ def _post(subpath, bag=None):
 def user_local2remote(user):
     assert user.assopy_id is not None
     o = user_data(user.assopy_id)
+
+    log.info('user local2remote %s -> %s', user.user.email, user.assopy_id)
     data = dict(o)
     data['firstname'] = user.user.first_name
     data['lastname'] = user.user.last_name
@@ -66,6 +68,7 @@ def user_remote2local(user):
     assert user.assopy_id is not None
     data = user_data(user.assopy_id)
 
+    log.info('user remote2local %s -> %s', user.assopy_id, user.user.email)
     g = lambda k: (data.get(k) or '').strip()
     user.user.first_name = g('firstname')
     user.user.last_name = g('lastname')
@@ -76,7 +79,13 @@ def user_remote2local(user):
     user.account_type = 'c' if data.get('is_company') else 'p'
     user.vat_number = g('vat_number')
     user.cf_number = g('tin_number')
-    user.country_id = data.get('country')
+
+    from assopy.models import Country
+    try:
+        country = Country.objects.get(pk=data['country'])
+    except Country.DoesNotExist:
+        country = None
+    user.country = country
     user.zip_code = g('zip')
     user.address = g('address')
     user.city = g('city')
