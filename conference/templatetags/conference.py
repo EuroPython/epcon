@@ -95,7 +95,6 @@ class NaviPages(template.Node):
         self.var_name = var_name
 
     def render(self, context):
-        request = context['request']
         query = PagesModels.Page.objects.published().order_by('tree_id', 'lft')
         query = query.filter(tags__name__in=[self.page_type])
         context[self.var_name] = query
