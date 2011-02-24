@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 12:29+0100\n"
+"POT-Creation-Date: 2011-02-24 13:13+0100\n"
 "PO-Revision-Date: 2009-03-25 12:23+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -84,7 +84,7 @@ msgid ""
 "subject.<br />See the Call for paper for details."
 msgstr ""
 
-#: forms.py:43
+#: forms.py:43 forms.py:153
 msgid "Talk Type"
 msgstr ""
 
@@ -96,19 +96,19 @@ msgstr ""
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr ""
 
-#: forms.py:54 forms.py:153
+#: forms.py:54 forms.py:158
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr ""
 
-#: forms.py:57 forms.py:156
+#: forms.py:57 forms.py:161
 msgid "Audience level"
 msgstr ""
 
-#: forms.py:61 forms.py:159
+#: forms.py:61 forms.py:164
 msgid "Talk abstract"
 msgstr ""
 
-#: forms.py:62 forms.py:160
+#: forms.py:62 forms.py:165
 msgid ""
 "<p>Please enter a short description of the talk you are submitting. Be sure "
 "to includes the goals of your talk and any prerequisite required to fully "
@@ -119,59 +119,59 @@ msgstr ""
 msgid "Presentation"
 msgstr ""
 
-#: models.py:286
+#: models.py:287
 msgid "5 minutes"
 msgstr ""
 
-#: models.py:287
+#: models.py:288
 msgid "15 minutes"
 msgstr ""
 
-#: models.py:288
+#: models.py:289
 msgid "30 minutes"
 msgstr ""
 
-#: models.py:289
+#: models.py:290
 msgid "45 minutes"
 msgstr ""
 
-#: models.py:290
+#: models.py:291
 msgid "60 minutes"
 msgstr ""
 
-#: models.py:291
+#: models.py:292
 msgid "90 minutes"
 msgstr ""
 
-#: models.py:292
+#: models.py:293
 msgid "120 minutes"
 msgstr ""
 
-#: models.py:295
+#: models.py:296
 msgid "Italian"
 msgstr ""
 
-#: models.py:296
+#: models.py:297
 msgid "English"
 msgstr ""
 
-#: models.py:299
+#: models.py:300
 msgid "Proposed"
 msgstr ""
 
-#: models.py:300
+#: models.py:301
 msgid "Accepted"
 msgstr ""
 
-#: models.py:309
+#: models.py:310
 msgid "Beginner"
 msgstr ""
 
-#: models.py:310
+#: models.py:311
 msgid "Intermediate"
 msgstr ""
 
-#: models.py:311
+#: models.py:312
 msgid "Advanced"
 msgstr ""
 
