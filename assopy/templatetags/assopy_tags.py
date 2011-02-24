@@ -33,6 +33,20 @@ def field(field, cls=None):
     else:
         return _field_tpl.render(template.Context(locals()))
 
+_form_errors_tpl = template.Template("""
+    <div class="error-notice">
+        {% for e in form.non_field_errors %}
+        <div>↓ {{ e }}</div>
+        {% endfor %}
+    </div>
+""")
+@register.filter()
+def form_errors(form, cls=None):
+    if not form.errors:
+        return ''
+    classes = [ 'error-notice' ]
+    return _form_errors_tpl.render(template.Context(locals()))
+
 # in django 1.3 questo filtro non serve più, si potrà usare direttamente
 # field.value
 # http://code.djangoproject.com/ticket/10427
