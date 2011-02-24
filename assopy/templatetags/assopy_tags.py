@@ -42,7 +42,7 @@ _form_errors_tpl = template.Template("""
 """)
 @register.filter()
 def form_errors(form, cls=None):
-    if not form.errors:
+    if not form.non_field_errors:
         return ''
     classes = [ 'error-notice' ]
     return _form_errors_tpl.render(template.Context(locals()))
