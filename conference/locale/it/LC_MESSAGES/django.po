@@ -2,7 +2,7 @@
 # Copyright (C) 2009 Python Italia
 # This file is distributed under the same license as the conference package.
 # dvd <dvd@gnx.it>, 2009.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
@@ -11,33 +11,33 @@ msgstr ""
 "PO-Revision-Date: 2011-02-24 16:00\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "X-Translated-Using: django-rosetta 0.5.1\n"
 
-#: forms.py:9 forms.py:127
+#: forms.py:10 forms.py:135
 msgid "Job title"
 msgstr "Mansione/Ruolo"
 
-#: forms.py:10 forms.py:128
+#: forms.py:11 forms.py:136
 msgid "eg: student, developer, CTO, js ninja, BDFL"
 msgstr "es: CEO, Sviluppatore, Studente, Ruby Ninja, Coffee Addicted, etc"
 
-#: forms.py:13 forms.py:131
+#: forms.py:14 forms.py:139
 msgid "Personal homepage"
 msgstr "Personal website"
 
-#: forms.py:14 forms.py:132
+#: forms.py:15 forms.py:140
 msgid "Your company"
 msgstr "Azienda"
 
-#: forms.py:15 forms.py:133
+#: forms.py:16 forms.py:141
 msgid "Company homepage"
 msgstr "Company website"
 
-#: forms.py:18 forms.py:136
+#: forms.py:19 forms.py:144
 msgid "Compact biography"
 msgstr "Breve biografia"
 
@@ -45,79 +45,98 @@ msgstr "Breve biografia"
 msgid "Please enter a short biography (one or two paragraphs). Do not paste your CV!"
 msgstr "Inserisci una tua breve biografia di 2/3 paragrafi. La biografia sarà visibile al pubblico una volta che il tuo talk sarà approvato. Per favore <b>non fare copia-incolla del tuo CV</b>!"
 
-#: forms.py:22
+#: forms.py:23
 msgid "Previous experience"
 msgstr "Precedenti esperienze"
 
-#: forms.py:23
+#: forms.py:24
 msgid "List yout previous experiences"
-msgstr "Inserisci una o più esperienze di intervento come speaker in conferenze che ritieni importanti (<i>nome conferenza, anno, argomento del talk</i>)"
+msgstr ""
+"Inserisci una o più esperienze di intervento come speaker in conferenze che "
+"ritieni importanti (<i>nome conferenza, anno, argomento del talk</i>)"
 
-#: forms.py:27
+#: forms.py:28
 msgid "Last year talks"
 msgstr "Talk 2010"
 
-#: forms.py:28
+#: forms.py:29
 msgid "How many talks you have held during the last year?"
 msgstr "Inserisci, se ne hai tenuti, il numero dei talk effettuati in altre conferenze nel 2010."
 
-#: forms.py:32
+#: forms.py:33
 msgid "Maximum audience"
 msgstr "Platea massima"
 
-#: forms.py:33
+#: forms.py:34
 msgid "Specify the size of your biggest audience"
 msgstr "Il numero massimo di partecipanti ad una conferenza davanti ai quali hai già tenuto un intervento. "
 
-#: forms.py:37 forms.py:142
+#: forms.py:38 forms.py:150
 msgid "Talk title"
 msgstr "Titolo talk"
 
-#: forms.py:39 forms.py:144
+#: forms.py:40 forms.py:152
 msgid "Training"
 msgstr "Training"
 
-#: forms.py:40 forms.py:144
-msgid "Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details."
-msgstr "Check Training se sei disponibile a tenere un approfondimento sull'argomento con una audience selezionata su prenotazione."
+#: forms.py:41 forms.py:153
+msgid ""
+"Check if you are willing to also deliver a 4-hours hands-on training on this "
+"subject.<br />See the Call for paper for details."
+msgstr ""
+"Check Training se sei disponibile a tenere un approfondimento sull'argomento "
+"con una audience selezionata su prenotazione."
 
-#: forms.py:43 forms.py:154
+#: forms.py:44 forms.py:162
 msgid "Talk Type"
 msgstr "Tipo talk"
 
-#: forms.py:48 forms.py:147
-msgid "Suggested duration"
-msgstr "Durata stimata"
-
-#: forms.py:44
+#: forms.py:45
 msgid "Talk Type description"
 msgstr "<b>Standard Talk</b>: è il classico talk con slide e Q&A finali. <b>Sessione Interattiva</b>: una sessione ad alta interazione con una platea ridotta (20/30 persone), in cui approfondire l'argomento con esempi e casi reali."
 
-#: forms.py:49 forms.py:148
+#: forms.py:50 forms.py:156
 msgid "Suggested duration"
 msgstr "Durata prevista"
 
-#: forms.py:50 forms.py:149
+#: forms.py:51 forms.py:157
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al pubblico per eventuali domande finali. <b>Sessione Interattiva</b>: non influente, specificate direttamente nell'abstract."
 
-#: forms.py:55 forms.py:159
+#: forms.py:56 forms.py:167
 msgid "Select Italian only if you are not comfortable in speaking English."
-msgstr "Seleziona Italiano solo se non sei in grado di tenere un intervento in Inglese."
+msgstr ""
+"Seleziona Italiano solo se non sei in grado di tenere un intervento in "
+"Inglese."
 
-#: forms.py:58 forms.py:162
+#: forms.py:59 forms.py:170
 msgid "Audience level"
 msgstr "Audience"
 
-#: forms.py:62 forms.py:165
+#: forms.py:63 forms.py:173
 msgid "Talk abstract"
 msgstr "Talk abstract"
 
-#: forms.py:62 forms.py:165
-msgid "<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>"
-msgstr "Inserisci una breve descrizione dell'intervento che intendi proporre. Particolarmente utile specificare gli obiettivi del talk e se si presentano esperienze dirette e case study. La dimensione consigliata sono 4/5 paragrafi."
+#: forms.py:64 forms.py:174
+msgid ""
+"<p>Please enter a short description of the talk you are submitting. Be sure "
+"to includes the goals of your talk and any prerequisite required to fully "
+"understand it.</p><p>Suggested size: two or three paragraphs.</p>"
+msgstr ""
+"Inserisci una breve descrizione dell'intervento che intendi proporre. "
+"Particolarmente utile specificare gli obiettivi del talk e se si presentano "
+"esperienze dirette e case study. La dimensione consigliata sono 4/5 "
+"paragrafi."
 
-#: forms.py:139
+#: forms.py:67 forms.py:177
+msgid "Promo video"
+msgstr ""
+
+#: forms.py:68 forms.py:178
+msgid "Promo video description"
+msgstr ""
+
+#: forms.py:147
 msgid "Presentation"
 msgstr "Presentazione"
 

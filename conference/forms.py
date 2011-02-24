@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.db import transaction
 from conference import models
 from conference import settings
 from django.utils.translation import ugettext as _
@@ -62,6 +63,11 @@ class SubmissionForm(forms.Form):
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
+    promo_video = forms.URLField(
+        label=_('Promo video'),
+        help_text=_('Promo video description'),
+        required=False,
+    )
 
     def __init__(self, instance=None, *args, **kwargs):
         if instance:
@@ -95,6 +101,7 @@ class SubmissionForm(forms.Form):
             data = 0
         return data
 
+    @transaction.commit_on_success
     def save(self, instance=None):
         if instance is None:
             instance = self.instance
@@ -115,6 +122,7 @@ class SubmissionForm(forms.Form):
             level=data['level'], training_available=data['training'],
         )
         talk.type = data['type']
+        talk.promo_video_url = data['promo_video']
         if data['slides']:
             talk.slides = data['slides']
         talk.save()
@@ -165,6 +173,11 @@ class TalkForm(forms.Form):
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
+    promo_video = forms.URLField(
+        label=_('Promo video'),
+        help_text=_('Promo video description'),
+        required=False,
+    )
 
     def __init__(self, instance=None, *args, **kwargs):
         if instance:
@@ -181,6 +194,7 @@ class TalkForm(forms.Form):
         super(TalkForm, self).__init__(*args, **kwargs)
         self.instance = instance
 
+    @transaction.commit_on_success
     def save(self, instance=None, speaker=None):
         if instance is None:
             instance = self.instance
@@ -199,9 +213,11 @@ class TalkForm(forms.Form):
             instance.level = data['level']
             instance.training_available = data['training']
 
+        instance.type = data['type']
+        instance.promo_video_url = data['promo_video']
         if data['slides']:
             instance.slides = data['slides']
-            instance.save()
+        instance.save()
         instance.setAbstract(data['abstract'])
 
         return instance
