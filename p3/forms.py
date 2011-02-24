@@ -23,6 +23,8 @@ class P3SubmissionForm(SubmissionForm):
         choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
         coerce=int,
         initial=60,)
+    # per ep non c'è il tipo di talk
+    type = forms.TypedChoiceField(required=False)
     personal_agreement = forms.BooleanField(
         label=_('I agree to let you publish my data on the web site.'),
         help_text=_('This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <strong>never</strong> be published'),
@@ -45,6 +47,9 @@ class P3SubmissionForm(SubmissionForm):
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(*args, **kwargs)
+
+    def clean_type(self):
+        return 's'
 
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
@@ -77,6 +82,10 @@ class P3TalkForm(TalkForm):
         choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
         coerce=int,
         initial=60,)
+    type = forms.TypedChoiceField(required=False)
+
+    def clean_type(self):
+        return 's'
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')
