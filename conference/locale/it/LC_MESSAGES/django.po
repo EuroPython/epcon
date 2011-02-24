@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-02-24 13:13+0100\n"
-"PO-Revision-Date: 2011-02-24 15:01\n"
+"PO-Revision-Date: 2011-02-24 16:00\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -43,7 +43,7 @@ msgstr "Breve biografia"
 
 #: forms.py:19 forms.py:136
 msgid "Please enter a short biography (one or two paragraphs). Do not paste your CV!"
-msgstr "Inserisci una tua breve biografia di 2/3 paragrafi. Per favore non fare copia-incolla del tuo CV!"
+msgstr "Inserisci una tua breve biografia di 2/3 paragrafi. La biografia sarà visibile al pubblico una volta che il tuo talk sarà approvato. Per favore <b>non fare copia-incolla del tuo CV</b>!"
 
 #: forms.py:22
 msgid "Previous experience"
@@ -59,7 +59,7 @@ msgstr "Talk 2010"
 
 #: forms.py:28
 msgid "How many talks you have held during the last year?"
-msgstr "Inserisci, se ne hai tenuti, il numero dei talk che hai tenuto in altre conferenze nel 2010."
+msgstr "Inserisci, se ne hai tenuti, il numero dei talk effettuati in altre conferenze nel 2010."
 
 #: forms.py:32
 msgid "Maximum audience"
@@ -67,7 +67,7 @@ msgstr "Platea massima"
 
 #: forms.py:33
 msgid "Specify the size of your biggest audience"
-msgstr "Inserisci la dimensione di massima della platea più estesa che hai affrontato come speaker."
+msgstr "Il numero massimo di partecipanti ad una conferenza davanti ai quali hai già tenuto un intervento. "
 
 #: forms.py:37 forms.py:142
 msgid "Talk title"
@@ -91,15 +91,15 @@ msgstr "Durata stimata"
 
 #: forms.py:44
 msgid "Talk Type description"
-msgstr ""
+msgstr "<b>Standard Talk</b>: è il classico talk con slide e Q&A finali. <b>Sessione Interattiva</b>: una sessione ad alta interazione con una platea ridotta (20/30 persone), in cui approfondire l'argomento con esempi e casi reali."
 
 #: forms.py:49 forms.py:148
 msgid "Suggested duration"
-msgstr ""
+msgstr "Durata prevista"
 
 #: forms.py:50 forms.py:149
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
-msgstr "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al pubblico per eventuali domande finali. <b>Sessione Interattiva</b>: non influente, specificate la durata prevista direttamente nell'abstract."
+msgstr "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al pubblico per eventuali domande finali. <b>Sessione Interattiva</b>: non influente, specificate direttamente nell'abstract."
 
 #: forms.py:55 forms.py:159
 msgid "Select Italian only if you are not comfortable in speaking English."
