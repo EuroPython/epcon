@@ -41,6 +41,7 @@ class SubmissionForm(forms.Form):
         required=False,)
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
+        help_text=_('Talk Type description'),
         choices=models.TALK_TYPE,
         initial='s',
         required=True,)
