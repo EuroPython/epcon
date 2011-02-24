@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 15:16+0100\n"
+"POT-Creation-Date: 2011-02-24 16:59+0100\n"
 "PO-Revision-Date: 2009-03-25 12:23+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -17,109 +17,117 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: forms.py:9 forms.py:127
+#: forms.py:10 forms.py:135
 msgid "Job title"
 msgstr ""
 
-#: forms.py:10 forms.py:128
+#: forms.py:11 forms.py:136
 msgid "eg: student, developer, CTO, js ninja, BDFL"
 msgstr ""
 
-#: forms.py:13 forms.py:131
+#: forms.py:14 forms.py:139
 msgid "Personal homepage"
 msgstr ""
 
-#: forms.py:14 forms.py:132
+#: forms.py:15 forms.py:140
 msgid "Your company"
 msgstr ""
 
-#: forms.py:15 forms.py:133
+#: forms.py:16 forms.py:141
 msgid "Company homepage"
 msgstr ""
 
-#: forms.py:18 forms.py:136
+#: forms.py:19 forms.py:144
 msgid "Compact biography"
 msgstr ""
 
-#: forms.py:19 forms.py:137
+#: forms.py:20 forms.py:145
 msgid ""
 "Please enter a short biography (one or two paragraphs). Do not paste your CV!"
 msgstr ""
 
-#: forms.py:22
+#: forms.py:23
 msgid "Previous experience"
 msgstr ""
 
-#: forms.py:23
+#: forms.py:24
 msgid "List yout previous experiences"
 msgstr ""
 
-#: forms.py:27
+#: forms.py:28
 msgid "Last year talks"
 msgstr ""
 
-#: forms.py:28
+#: forms.py:29
 msgid "How many talks you have held during the last year?"
 msgstr ""
 
-#: forms.py:32
+#: forms.py:33
 msgid "Maximum audience"
 msgstr ""
 
-#: forms.py:33
+#: forms.py:34
 msgid "Specify the size of your biggest audience"
 msgstr ""
 
-#: forms.py:37 forms.py:142
+#: forms.py:38 forms.py:150
 msgid "Talk title"
 msgstr ""
 
-#: forms.py:39 forms.py:144
+#: forms.py:40 forms.py:152
 msgid "Training"
 msgstr ""
 
-#: forms.py:40 forms.py:145
+#: forms.py:41 forms.py:153
 msgid ""
 "Check if you are willing to also deliver a 4-hours hands-on training on this "
 "subject.<br />See the Call for paper for details."
 msgstr ""
 
-#: forms.py:43 forms.py:154
+#: forms.py:44 forms.py:162
 msgid "Talk Type"
 msgstr ""
 
-#: forms.py:44
+#: forms.py:45
 msgid "Talk Type description"
 msgstr ""
 
-#: forms.py:49 forms.py:148
+#: forms.py:50 forms.py:156
 msgid "Suggested duration"
 msgstr ""
 
-#: forms.py:50 forms.py:149
+#: forms.py:51 forms.py:157
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr ""
 
-#: forms.py:55 forms.py:159
+#: forms.py:56 forms.py:167
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr ""
 
-#: forms.py:58 forms.py:162
+#: forms.py:59 forms.py:170
 msgid "Audience level"
 msgstr ""
 
-#: forms.py:62 forms.py:165
+#: forms.py:63 forms.py:173
 msgid "Talk abstract"
 msgstr ""
 
-#: forms.py:63 forms.py:166
+#: forms.py:64 forms.py:174
 msgid ""
 "<p>Please enter a short description of the talk you are submitting. Be sure "
 "to includes the goals of your talk and any prerequisite required to fully "
 "understand it.</p><p>Suggested size: two or three paragraphs.</p>"
 msgstr ""
 
-#: forms.py:139
+#: forms.py:67 forms.py:177
+msgid "Promo video"
+msgstr ""
+
+#: forms.py:68 forms.py:178
+msgid "Promo video description"
+msgstr ""
+
+#: forms.py:147
 msgid "Presentation"
 msgstr ""
 
