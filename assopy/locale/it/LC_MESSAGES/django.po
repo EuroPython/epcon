@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 11:34+0100\n"
+"POT-Creation-Date: 2011-02-24 11:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,9 +19,17 @@ msgstr ""
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: forms.py:72
+msgid "First Name"
+msgstr ""
+
+#: forms.py:73
 msgid ""
 "Please do not enter a company name here.<br />You will be able to specify "
 "billing details during the checkout."
+msgstr ""
+
+#: forms.py:76
+msgid "Last Name"
 msgstr ""
 
 #: models.py:59
@@ -40,13 +48,77 @@ msgstr ""
 msgid "Country name"
 msgstr ""
 
-#: models.py:168
+#: models.py:161
+msgid "Photo"
+msgstr ""
+
+#: models.py:162
+msgid "Twitter"
+msgstr ""
+
+#: models.py:163
+msgid "Skype"
+msgstr ""
+
+#: models.py:164
+msgid "Jabber"
+msgstr ""
+
+#: models.py:165
+msgid "Www"
+msgstr ""
+
+#: models.py:167
+msgid "Phone"
+msgstr ""
+
+#: models.py:169
 msgid ""
 "Enter a phone number where we can contact you in case of administrative "
 "issues.<br />Use the international format, eg: +39-055-123456"
 msgstr ""
 
-#: models.py:205
+#: models.py:171
+msgid "Birthday"
+msgstr ""
+
+#: models.py:172
+msgid "Card name"
+msgstr ""
+
+#: models.py:173
+msgid "Account type"
+msgstr ""
+
+#: models.py:174
+msgid "Vat Number"
+msgstr ""
+
+#: models.py:175
+msgid "Codice Fiscale"
+msgstr ""
+
+#: models.py:176
+msgid "Country"
+msgstr ""
+
+#: models.py:177
+msgid "Zip Code"
+msgstr ""
+
+#: models.py:178
+msgid "Address"
+msgstr ""
+
+#: models.py:179
+msgid "City"
+msgstr ""
+
+#: models.py:180
+msgid "Provincia"
+msgstr ""
+
+#: models.py:206
 msgid "According to VIES, this is not a valid vat number"
 msgstr ""
 
