@@ -17,27 +17,27 @@ msgstr ""
 "Language: \n"
 "X-Translated-Using: django-rosetta 0.5.1\n"
 
-#: forms.py:9 forms.py:126
+#: forms.py:9 forms.py:127
 msgid "Job title"
 msgstr "Mansione/Ruolo"
 
-#: forms.py:10 forms.py:127
+#: forms.py:10 forms.py:128
 msgid "eg: student, developer, CTO, js ninja, BDFL"
 msgstr "es: CEO, Sviluppatore, Studente, Ruby Ninja, Coffee Addicted, etc"
 
-#: forms.py:13 forms.py:130
+#: forms.py:13 forms.py:131
 msgid "Personal homepage"
 msgstr "Personal website"
 
-#: forms.py:14 forms.py:131
+#: forms.py:14 forms.py:132
 msgid "Your company"
 msgstr "Azienda"
 
-#: forms.py:15 forms.py:132
+#: forms.py:15 forms.py:133
 msgid "Company homepage"
 msgstr "Company website"
 
-#: forms.py:18 forms.py:135
+#: forms.py:18 forms.py:136
 msgid "Compact biography"
 msgstr "Breve biografia"
 
@@ -69,11 +69,11 @@ msgstr "Platea massima"
 msgid "Specify the size of your biggest audience"
 msgstr "Inserisci la dimensione di massima della platea più estesa che hai affrontato come speaker."
 
-#: forms.py:37 forms.py:141
+#: forms.py:37 forms.py:142
 msgid "Talk title"
 msgstr "Titolo talk"
 
-#: forms.py:39 forms.py:143
+#: forms.py:39 forms.py:144
 msgid "Training"
 msgstr "Training"
 
@@ -81,7 +81,7 @@ msgstr "Training"
 msgid "Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details."
 msgstr "Check Training se sei disponibile a tenere un approfondimento sull'argomento con una audience selezionata su prenotazione."
 
-#: forms.py:43 forms.py:153
+#: forms.py:43 forms.py:154
 msgid "Talk Type"
 msgstr "Tipo talk"
 
@@ -89,19 +89,27 @@ msgstr "Tipo talk"
 msgid "Suggested duration"
 msgstr "Durata stimata"
 
+#: forms.py:44
+msgid "Talk Type description"
+msgstr ""
+
 #: forms.py:49 forms.py:148
+msgid "Suggested duration"
+msgstr ""
+
+#: forms.py:50 forms.py:149
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al pubblico per eventuali domande finali. <b>Sessione Interattiva</b>: non influente, specificate la durata prevista direttamente nell'abstract."
 
-#: forms.py:54 forms.py:158
+#: forms.py:55 forms.py:159
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr "Seleziona Italiano solo se non sei in grado di tenere un intervento in Inglese."
 
-#: forms.py:57 forms.py:161
+#: forms.py:58 forms.py:162
 msgid "Audience level"
 msgstr "Audience"
 
-#: forms.py:61 forms.py:164
+#: forms.py:62 forms.py:165
 msgid "Talk abstract"
 msgstr "Talk abstract"
 
@@ -109,7 +117,7 @@ msgstr "Talk abstract"
 msgid "<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>"
 msgstr "Inserisci una breve descrizione dell'intervento che intendi proporre. Particolarmente utile specificare gli obiettivi del talk e se si presentano esperienze dirette e case study. La dimensione consigliata sono 4/5 paragrafi."
 
-#: forms.py:138
+#: forms.py:139
 msgid "Presentation"
 msgstr "Presentazione"
 

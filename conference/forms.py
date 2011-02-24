@@ -41,6 +41,7 @@ class SubmissionForm(forms.Form):
         required=False,)
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
+        help_text=_('Talk Type description'),
         choices=models.TALK_TYPE,
         initial='s',
         required=True,)
@@ -169,7 +170,7 @@ class TalkForm(forms.Form):
         if instance:
             data = {
                 'title': instance.title,
-                'training': instance.training,
+                'training': instance.training_available,
                 'duration': instance.duration,
                 'language': instance.language,
                 'level': instance.level,
