@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.db import transaction
 from conference import models
 from conference import settings
 from django.utils.translation import ugettext as _
@@ -95,6 +96,7 @@ class SubmissionForm(forms.Form):
             data = 0
         return data
 
+    @transaction.commit_on_success
     def save(self, instance=None):
         if instance is None:
             instance = self.instance
@@ -181,6 +183,7 @@ class TalkForm(forms.Form):
         super(TalkForm, self).__init__(*args, **kwargs)
         self.instance = instance
 
+    @transaction.commit_on_success
     def save(self, instance=None, speaker=None):
         if instance is None:
             instance = self.instance
@@ -201,7 +204,7 @@ class TalkForm(forms.Form):
 
         if data['slides']:
             instance.slides = data['slides']
-            instance.save()
+        instance.save()
         instance.setAbstract(data['abstract'])
 
         return instance
