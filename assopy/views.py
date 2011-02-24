@@ -134,19 +134,19 @@ def new_account(request):
                 last_name=data['last_name'],
                 password=data['password1'],
             )
-            user.is_active = False
-            user.save()
             request.session['new-account-user'] = user.pk
             return HttpResponseRedirectSeeOther(reverse('assopy-new-account-feedback'))
     return {
         'form': form,
-        'next': next,
+        'next': request.GET.get('next', '/'),
     }
 
 @render_to('assopy/new_account_feedback.html')
 def new_account_feedback(request):
     try:
-        user = models.User.objects.get(pk=request.session.pop('new-account-user'))
+        user = models.User.objects.get(pk=request.session['new-account-user'])
+    except KeyError:
+        return redirect('/')
     except models.User.DoesNotExist:
         user = None
     return {
