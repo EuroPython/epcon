@@ -2,19 +2,19 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 11:34+0100\n"
+"POT-Creation-Date: 2011-02-24 11:59+0100\n"
 "PO-Revision-Date: 2011-02-24 11:47\n"
 "Last-Translator: David Mugnai <dvd@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "X-Translated-Using: django-rosetta 0.5.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -76,7 +76,6 @@ msgstr ""
 msgid ""
 "Enter a phone number where we can contact you in case of administrative "
 "issues.<br />Use the international format, eg: +39-055-123456"
-
 msgstr ""
 
 #: models.py:171
@@ -132,7 +131,9 @@ msgid "Activation required"
 msgstr ""
 
 #: templates/assopy/new_account_feedback.html:7
-msgid "your account is created, you need to activate it following the instruction sent to you by email at"
+msgid ""
+"your account is created, you need to activate it following the instruction "
+"sent to you by email at"
 msgstr ""
 
 #: templates/assopy/profile.html:21
@@ -148,11 +149,16 @@ msgid "Add another account"
 msgstr ""
 
 #: templates/registration/login.html:9
-msgid "You will be able to specify billing and personal info later; eg: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere."
+msgid ""
+"You will be able to specify billing and personal info later; eg: you can use "
+"your personal Facebook account to buy tickets for your company and the "
+"Facebook name will not appear anywhere."
 msgstr ""
 
 #: templates/registration/login.html:10
-msgid "If you really really don't want to use an existing web account but you prefer a standard registration/login form,"
+msgid ""
+"If you really really don't want to use an existing web account but you "
+"prefer a standard registration/login form,"
 msgstr ""
 
 #: templates/registration/login.html:10
