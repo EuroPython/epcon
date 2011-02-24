@@ -206,7 +206,8 @@ class User(models.Model):
             
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
-        genro.user_local2remote(self)
+        if self.assopy_id:
+            genro.user_local2remote(self)
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
