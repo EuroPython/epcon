@@ -235,6 +235,7 @@ class Speaker(models.Model):
     previous_experience = models.TextField(blank=True)
     last_year_talks = models.PositiveIntegerField(default=0)
     max_audience = models.PositiveIntegerField(default=0)
+    video_presentation = models.TextField(blank=True)
 
     objects = SpeakerManager()
 
@@ -384,6 +385,11 @@ class Talk(models.Model):
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
     type = models.CharField(max_length=1, choices=TALK_LEVEL, default='s')
+    # Questi sono i tag che lo speaker suggerisce per il proprio talk, li ho
+    # messi qui per una questione di tempo (il cfp di BSW2011 incombe) ma la
+    # cosa giusta sarebbe creare un nuovo modello "Submission" legato al Talk e
+    # mettere li i dati del cfp
+    suggested_tags = models.CharField(max_length=100, blank=True)
     tags = TagField()
     created = models.DateTimeField(auto_now_add=True)
 
