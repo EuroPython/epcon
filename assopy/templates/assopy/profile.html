@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load assopy_tags %}
+{% load assopy_tags i18n %}
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>{{ user.name }} - Your profile</h1>
     <div class="span-2">
@@ -18,7 +18,7 @@
                     {% for f in form %}{{ f|field }}{% endfor %}
                 </fieldset>
                 <fieldset class="border">
-                    <button type="submit">save</button>
+                    <button type="submit">{% trans "save" %}</button>
                 </fieldset>
             </form>
         </div>
@@ -26,7 +26,7 @@
     <div class="span-4 last">
         <aside>
             <div class="cms">
-                <h4>Web accounts for login</h4>
+                <h4>{% trans "Web accounts for login" %}</h4>
                 <ul id="web-accounts">
                     {% for i in user.identities.all %}
                     <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span> <img class="delete" src="{{ STATIC_URL }}assopy/i/delete.png" title="delete" /></li>

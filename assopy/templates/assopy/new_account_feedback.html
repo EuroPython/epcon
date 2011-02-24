@@ -1,10 +1,10 @@
 {% extends "assopy/base.html" %}
-{% load assopy_tags %}
+{% load assopy_tags i18n %}
 {% block ASSOPY_MAIN_CONTENT %}
-    <h1>Activation required</h1>
+    <h1>{% trans "Activation required" %}</h1>
     <div class="span-8">
         <div class="cms">
-            <p>{{ u.user.first_name }} your account is created, you need to activate it following the instruction sent to you by email</p>
+            <p>{{ u.user.first_name }} {% trans "your account is created, you need to activate it following the instruction sent to you by email at" %} {{ u.user.email }}</p>
         </div>
     </div>
 {% endblock %}
