@@ -131,9 +131,11 @@ class NewAccountForm(forms.Form):
         email = self.cleaned_data['email']
         if auth.models.User.objects.filter(email__iexact=email).count() > 0:
             raise forms.ValidationError('email aready in use')
-        return data
+        return email
 
     def clean(self):
+        if not self.is_valid():
+            return super(NewAccountForm, self).clean()
         data = self.cleaned_data
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')
