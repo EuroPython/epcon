@@ -78,6 +78,20 @@ class SubmissionForm(forms.Form):
         super(SubmissionForm, self).__init__(*args, **kwargs)
         self.instance = instance
 
+    def clean_max_audience(self):
+        try:
+            data = int(self.cleaned_data['max_audience'])
+        except:
+            data = 0
+        return data
+
+    def clean_last_year_talks(self):
+        try:
+            data = int(self.cleaned_data['last_year_talks'])
+        except:
+            data = 0
+        return data
+
     def save(self, instance=None):
         if instance is None:
             instance = self.instance
