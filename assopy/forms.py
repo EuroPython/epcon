@@ -69,9 +69,12 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
 
 class Profile(forms.ModelForm):
     first_name = forms.CharField(
+        label=_('First Name'),
         help_text=_('Please do not enter a company name here.<br />You will be able to specify billing details during the checkout.'),
         max_length=32,)
-    last_name = forms.CharField(max_length=32)
+    last_name = forms.CharField(
+        label=_('Last Name'),
+        max_length=32,)
     class Meta:
         model = models.User
         fields = ('first_name', 'last_name', 'phone', 'www', 'twitter', 'photo')
