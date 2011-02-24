@@ -20,6 +20,7 @@ class SubmissionForm(forms.Form):
         widget=forms.Textarea(),)
     previous_experience = forms.CharField(
         label=_('Previous experience'),
+        help_text=_('List yout previous experiences'),
         widget=forms.Textarea(),
         required=False,)
     last_year_talks = forms.IntegerField(
@@ -29,6 +30,7 @@ class SubmissionForm(forms.Form):
         required=False,)
     max_audience = forms.IntegerField(
         label=_('Maximum audience'),
+        help_text=_('Specify the size of your biggest audience'),
         min_value=0,
         required=False,)
 
@@ -53,7 +55,7 @@ class SubmissionForm(forms.Form):
         choices=models.TALK_LANGUAGES,
         initial='en',)
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
-    slides = forms.FileField(required=False)
+    slides = forms.FileField(required=False,)
     abstract = forms.CharField(
         max_length=5000,
         label=_('Talk abstract'),
