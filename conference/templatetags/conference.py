@@ -147,7 +147,7 @@ def stuff_info(parser, token):
             try:
                 fpath = fpath.path
             except AttributeError:
-                fpath = os.path.join(settings.STUFF_DIR, fpath)
+                fpath = os.path.join(settings.STUFF_DIR, 'conference', fpath)
             try:
                 stat = os.stat(fpath)
             except (AttributeError, OSError), e:
@@ -817,13 +817,13 @@ def embed_video(value, args=None):
         src = fpath = None
         if value.video_file or settings.VIDEO_DOWNLOAD_FALLBACK:
             if value.video_file:
-                src = settings.STUFF_URL + 'videos/' + value.video_file.name
-                fpath = os.path.join(settings.STUFF_DIR, 'videos', value.video_file.name)
+                src = settings.STUFF_URL + 'conference/videos/' + value.video_file.name
+                fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', value.video_file.name)
             else:
                 for ext in ('.avi', '.mp4'):
-                    fpath = os.path.join(settings.STUFF_DIR, 'videos', value.slug + ext)
+                    fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', value.slug + ext)
                     if os.path.exists(fpath):
-                        src = settingsSTUFF_URL + 'videos/' + value.slug + ext
+                        src = settings.STUFF_URL + 'conference/videos/' + value.slug + ext
                         break
         if not src:
             html = ''
