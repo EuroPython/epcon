@@ -169,7 +169,7 @@ class TalkForm(forms.Form):
         if instance:
             data = {
                 'title': instance.title,
-                'training': instance.training,
+                'training': instance.training_available,
                 'duration': instance.duration,
                 'language': instance.language,
                 'level': instance.level,
