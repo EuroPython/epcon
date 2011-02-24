@@ -155,21 +155,13 @@ def talk(request, slug, talk_form=TalkForm):
             'level': tlk.level,
             'abstract': tlk.getAbstract().body,
         })
+        form = talk_form(instance=tlk)
     elif request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
-        form = talk_form(data=request.POST, files=request.FILES)
+        form = talk_form(data=request.POST, files=request.FILES, instance=tlk)
         if form.is_valid():
-            data = form.cleaned_data
-            tlk.title = data['title']
-            if conf.cfp():
-                tlk.training_available = data['training']
-                tlk.duration = data['duration']
-                tlk.language = data['language']
-                tlk.level = data['level']
-            tlk.slides = data['slides']
-            tlk.save()
-            tlk.setAbstract(data['abstract'])
+            talk = form.save()
             return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': tlk.slug}))
     return {
         'form': form,
