@@ -149,6 +149,11 @@ class TalkForm(forms.Form):
         choices=models.TALK_DURATION,
         coerce=int,
         initial='30',)
+    type = forms.TypedChoiceField(
+        label=_('Talk Type'),
+        choices=models.TALK_TYPE,
+        initial='s',
+        required=True,)
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
@@ -159,3 +164,43 @@ class TalkForm(forms.Form):
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
+
+    def __init__(self, instance=None, *args, **kwargs):
+        if instance:
+            data = {
+                'title': instance.title,
+                'training': instance.training,
+                'duration': instance.duration,
+                'language': instance.language,
+                'level': instance.level,
+                'abstract': getattr(instance.getAbstract(), 'body', ''),
+            }
+            data.update(kwargs.get('initial', {}))
+            kwargs['initial'] = data
+        super(TalkForm, self).__init__(*args, **kwargs)
+        self.instance = instance
+
+    def save(self, instance=None, speaker=None):
+        if instance is None:
+            instance = self.instance
+        data = self.cleaned_data
+        if instance is None:
+            assert speaker is not None
+            instance = models.Talk.objects.createFromTitle(
+                title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
+                status='proposed', duration=data['duration'], language=data['language'],
+                level=data['level'], training_available=data['training'],
+            )
+        else:
+            instance.title = data['title']
+            instance.duration = data['duration']
+            instance.language = data['language']
+            instance.level = data['level']
+            instance.training_available = data['training']
+
+        if data['slides']:
+            instance.slides = data['slides']
+            instance.save()
+        instance.setAbstract(data['abstract'])
+
+        return instance

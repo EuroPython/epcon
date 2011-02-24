@@ -428,23 +428,14 @@ def paper_submission(request, submission_form=SubmissionForm, submission_additio
         else:
             form = submission_additional_form(data=request.POST, files=request.FILES)
         if form.is_valid():
+            data = form.cleaned_data
             if len(proposed) == 0:
                 if speaker is None:
                     name = '%s %s' % (request.user.first_name, request.user.last_name)
                     speaker = models.Speaker.objects.createFromName(name, request.user)
                 talk = form.save(instance=speaker)
-                data = form.cleaned_data
             else:
-                data = form.cleaned_data
-                talk = models.Talk.objects.createFromTitle(
-                    title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
-                    status='proposed', duration=data['duration'], language=data['language'],
-                    level=data['level'], training_available=data['training'],
-                )
-                if data['slides']:
-                    talk.slides = data['slides']
-                    talk.save()
-                talk.setAbstract(data['abstract'])
+                talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
             send_email(
                 subject='new paper from "%s %s"' % (request.user.first_name, request.user.last_name),
