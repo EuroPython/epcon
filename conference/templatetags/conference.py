@@ -8,6 +8,7 @@ import httplib2
 import simplejson
 from django import template
 from django.conf import settings as dsettings
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import defaultfilters
 from django.utils.html import escape
@@ -95,9 +96,15 @@ class NaviPages(template.Node):
         self.var_name = var_name
 
     def render(self, context):
-        query = PagesModels.Page.objects.published().order_by('tree_id', 'lft')
-        query = query.filter(tags__name__in=[self.page_type])
-        context[self.var_name] = query
+        lang = context.get('LANGUAGE_CODE', '')
+        key = 'navi_pages_%s_%s' % (self.page_type, lang)
+        output = cache.get(key)
+        if not output:
+            query = PagesModels.Page.objects.published().order_by('tree_id', 'lft')
+            query = query.filter(tags__name__in=[self.page_type])
+            output = [ (p, p.get_url_path(language=lang)) for p in query ]
+            cache.set(key, output, 600)
+        context[self.var_name] = output
         return ''
 
 def navi_pages(parser, token):
