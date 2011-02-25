@@ -1,11 +1,12 @@
 {% extends "p3/base.html" %}
-{% load microblog conference %}
+{% load cache microblog conference %}
 
 {% block TEASER %}
 <div class="container">
     <div class="intro clear">
         <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
     </div>
+    {% cache 600 deadline %}
     {% latest_deadlines 1 as l %}
     <section class="cal clearfix">
         <div class="deadline">
@@ -16,6 +17,7 @@
             </div>
         </div>
     </section>
+    {% endcache %}
 </div>
     
 <section class="teaser">
@@ -92,6 +94,7 @@
 <hr />
 
 <section class="clearfix">
+    {% cache 600 blog %}
     {% last_blog_post 4 as posts %}
     <div class="blog border span-6">
         <ul>
@@ -104,6 +107,7 @@
                 {% endfor %}
         </ul>
     </div>
+    {% endcache %}
 
     <div class="side-h2 span-2">
         <h2>EuroPython<br /><span><a href="/mobile/">on your phone</a></span></h2>
