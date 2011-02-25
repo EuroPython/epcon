@@ -6,6 +6,12 @@ from conference import settings
 from django.utils.translation import ugettext as _
 
 class SubmissionForm(forms.Form):
+    first_name = forms.CharField(
+        label=_('First name'),
+        max_length=30,)
+    last_name = forms.CharField(
+        label=_('Last name'),
+        max_length=30,)
     activity = forms.CharField(
         label=_('Job title'),
         help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
@@ -69,23 +75,31 @@ class SubmissionForm(forms.Form):
         required=False,
     )
 
-    def __init__(self, instance=None, *args, **kwargs):
-        if instance:
-            data = {
-                'activity': instance.activity,
-                'activity_homepage': instance.activity_homepage,
-                'company': instance.company,
-                'company_homepage': instance.company_homepage,
-                'industry': instance.industry,
-                'bio': getattr(instance.getBio(), 'body', ''),
-                'previous_experience': instance.previous_experience,
-                'last_year_talks': instance.last_year_talks,
-                'max_audience': instance.max_audience,
-            }
-            data.update(kwargs.get('initial', {}))
-            kwargs['initial'] = data
+    def __init__(self, user, *args, **kwargs):
+        try:
+            speaker = user.speaker
+        except models.Speaker.DoesNotExist:
+            speaker = None
+        data = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        }
+        if speaker:
+            data.update({
+                'activity': speaker.activity,
+                'activity_homepage': speaker.activity_homepage,
+                'company': speaker.company,
+                'company_homepage': speaker.company_homepage,
+                'industry': speaker.industry,
+                'bio': getattr(speaker.getBio(), 'body', ''),
+                'previous_experience': speaker.previous_experience,
+                'last_year_talks': speaker.last_year_talks,
+                'max_audience': speaker.max_audience,
+            })
+        data.update(kwargs.get('initial', {}))
+        kwargs['initial'] = data
         super(SubmissionForm, self).__init__(*args, **kwargs)
-        self.instance = instance
+        self.user = user
 
     def clean_max_audience(self):
         try:
@@ -102,22 +116,33 @@ class SubmissionForm(forms.Form):
         return data
 
     @transaction.commit_on_success
-    def save(self, instance=None):
-        if instance is None:
-            instance = self.instance
+    def save(self):
         data = self.cleaned_data
-        instance.activity = data['activity']
-        instance.activity_homepage = data['activity_homepage']
-        instance.company = data['company']
-        instance.company_homepage = data['company_homepage']
-        instance.industry = data['industry']
-        instance.previous_experience = data['previous_experience']
-        instance.last_year_talks = data['last_year_talks']
-        instance.max_audience = data['max_audience']
-        instance.save()
-        instance.setBio(data['bio'])
+        user = self.user
+        user.first_name = data['first_name'].strip()
+        user.last_name = data['last_name'].strip()
+        user.save()
+
+        name = '%s %s' % (data['first_name'], data['last_name'])
+        try:
+            speaker = user.speaker
+        except models.Speaker.DoesNotExist:
+            speaker = models.Speaker.objects.createFromName(name, user)
+        else:
+            speaker.name = name
+
+        speaker.activity = data['activity']
+        speaker.activity_homepage = data['activity_homepage']
+        speaker.company = data['company']
+        speaker.company_homepage = data['company_homepage']
+        speaker.industry = data['industry']
+        speaker.previous_experience = data['previous_experience']
+        speaker.last_year_talks = data['last_year_talks']
+        speaker.max_audience = data['max_audience']
+        speaker.save()
+        speaker.setBio(data['bio'])
         talk = models.Talk.objects.createFromTitle(
-            title=data['title'], conference=settings.CONFERENCE, speaker=instance,
+            title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', duration=data['duration'], language=data['language'],
             level=data['level'], training_available=data['training'],
         )

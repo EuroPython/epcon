@@ -416,16 +416,14 @@ def paper_submission(request, submission_form=SubmissionForm, submission_additio
     proposed = speaker.talk_set.proposed(conference=settings.CONFERENCE) if speaker else []
     if request.method == 'POST':
         if len(proposed) == 0:
-            form = submission_form(data=request.POST, files=request.FILES)
+            form = submission_form(user=request.user, data=request.POST, files=request.FILES)
         else:
             form = submission_additional_form(data=request.POST, files=request.FILES)
         if form.is_valid():
             data = form.cleaned_data
             if len(proposed) == 0:
-                if speaker is None:
-                    name = '%s %s' % (request.user.first_name, request.user.last_name)
-                    speaker = models.Speaker.objects.createFromName(name, request.user)
-                talk = form.save(instance=speaker)
+                talk = form.save()
+                speaker = request.user.speaker
             else:
                 talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
@@ -436,7 +434,7 @@ def paper_submission(request, submission_form=SubmissionForm, submission_additio
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
         if len(proposed) == 0:
-            form = submission_form(instance=speaker)
+            form = submission_form(user=request.user)
         else:
             form = submission_additional_form()
     return render_to_response('conference/paper_submission.html', {
