@@ -62,9 +62,9 @@
                     {% endwith %}
 
                     {% navi_menu1_pages as pages %}
-                    {% for p in pages %}
-                    <li class="{% ifequal current_page p %}current{% endifequal %}">
-                        <a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a>
+                    {% for page, purl in pages %}
+                    <li class="{% ifequal current_page page %}current{% endifequal %}">
+                        <a href="{{ purl }}" title="">{% show_content page "title" %}</a>
                     </li>
                     {% endfor %}
                     {% with request.META.PATH_INFO|slice:"1:5" as f %}
@@ -175,8 +175,8 @@
                     <h5>&nbsp;</h5>
                     <ul>
                         {% navi_menu3_pages as pages %}
-                        {% for p in pages %}
-                        <li><a href="{% show_absolute_url p %}" title="">{% show_content p "title" %}</a></li>
+                        {% for page, purl in pages %}
+                        <li><a href="{{ purl }}" title="">{% show_content page "title" %}</a></li>
                         {% endfor %}
                         
                         <li class="sep"><img src="{{ STATIC_URL }}p5/i/facebook-16x16.png" alt="" width="16" height="16" />&nbsp;<a href="http://www.facebook.com/pages/EuroPython/196457473701266">EuroPython on Facebook</a></li>
