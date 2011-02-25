@@ -18,8 +18,6 @@ form .field {
 	margin: 0 0 10px 0;
 }
 
-
-
 fieldset {    
 }
 
@@ -256,8 +254,20 @@ label:after {
     content: ":";
 }
 
+/*
+ * un layout più compatto per i booleanfield:
+ *
+ * [ ] label
+ *
+ * invece di 
+ *
+ * label
+ * [ ]
+ */
 .field.booleanfield {
     height: 40px;
+    margin: 0;
+    padding: 0;
 }
 .field.booleanfield label {
     position: relative;
@@ -276,4 +286,14 @@ label:after {
     top: -19px;
 }
 
+.field .errorlist {
+    margin: 0;
+}
 
+.field .errorlist li {
+    margin-bottom: 0;
+}
+
+form hr {
+    margin: 0;
+}
