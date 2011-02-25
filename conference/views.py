@@ -129,7 +129,9 @@ def speaker(request, slug):
 @render_to('conference/talk.html')
 def talk(request, slug, talk_form=TalkForm):
     tlk = get_object_or_404(models.Talk, slug=slug)
-    if request.user.is_staff:
+    if request.user.is_anonymous():
+        full_access = False
+    elif request.user.is_staff:
         full_access = True
     else:
         try:
