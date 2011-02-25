@@ -428,8 +428,8 @@ def paper_submission(request, submission_form=SubmissionForm, submission_additio
                 talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
             send_email(
-                subject='new paper from "%s %s"' % (request.user.first_name, request.user.last_name),
-                message='Title: %s\n\nAbstract: %s' % (data['title'], data['abstract']),
+                subject='[new paper] "%s %s" - %s' % (request.user.first_name, request.user.last_name, data['title']),
+                message='Title: %s\nDuration: %s\nLanguage: %s\nAlso training: %s\n\nAbstract: %s' % (data['title'], data['duration'], data['language'], data['training'], data['abstract']),
             )
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
