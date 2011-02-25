@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.db import transaction
 from django.utils.translation import ugettext as _
 
 from conference.forms import SubmissionForm, TalkForm
@@ -37,27 +38,32 @@ class P3SubmissionForm(SubmissionForm):
         label=_('I agree to let the organization record my talk and publish the video.'),
     )
 
-    def __init__(self, *args, **kwargs):
-        if 'instance' in kwargs and kwargs['instance']:
-            instance = kwargs['instance']
-            data = {
-                'mobile': instance.user.assopy_user.phone,
-                'birthday': instance.user.assopy_user.birthday,
-            }
-            data.update(kwargs.get('initial', {}))
-            kwargs['initial'] = data
-        super(P3SubmissionForm, self).__init__(*args, **kwargs)
+    def __init__(self, user, *args, **kwargs):
+        data = {
+            'mobile': user.assopy_user.phone,
+            'birthday': user.assopy_user.birthday,
+            'activity_homepage': user.assopy_user.www,
+        }
+        data.update(kwargs.get('initial', {}))
+        kwargs['initial'] = data
+        super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
     def clean_type(self):
         return 's'
 
+    @transaction.commit_on_success
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
-        instance = kwargs.get('instance') or self.instance
+
+        auser = self.user.assopy_user
+        speaker = self.user.speaker
         data = self.cleaned_data
-        instance.user.assopy_user.phone = data['mobile']
-        instance.user.assopy_user.birthday = data['birthday']
-        instance.user.assopy_user.save()
+
+        auser.phone = data['mobile']
+        auser.birthday = data['birthday']
+        auser.www = data['activity_homepage']
+        auser.save()
+
         return talk
 
 class P3SubmissionAdditionalForm(TalkForm):
@@ -74,6 +80,10 @@ class P3SubmissionAdditionalForm(TalkForm):
     video_agreement = forms.BooleanField(
         label=_('I agree to let the organization record my talk and publish the video.'),
     )
+    type = forms.TypedChoiceField(required=False)
+
+    def clean_type(self):
+        return 's'
 
 class P3TalkForm(TalkForm):
     duration = forms.TypedChoiceField(
