@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
+from assopy.forms import BillingData
 from assopy.models import User, UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
 
@@ -191,18 +192,30 @@ def cart(request):
         'account_type': at,
     }
 
+@login_required
 @render_to('p3/billing.html')
 def billing(request):
-    print request.session['user-cart']
     tickets = []
     total = 0
     for fare, quantity in request.session['user-cart']['tickets']:
         t = fare.price * quantity
         tickets.append((fare, quantity, t))
         total += t
+
+    if request.method == 'POST':
+        # non voglio che attraverso questa view sia possibile cambiare il tipo
+        # di account company/private
+        post_data = request.POST.copy()
+        post_data['account_type'] = request.user.assopy_user.account_type
+        form = BillingData(instance=request.user.assopy_user, data=post_data)
+        if form.is_valid():
+            pass
+    else:
+        form = BillingData(instance=request.user.assopy_user)
         
     return {
         'tickets': tickets,
         'total': total,
+        'form': form,
     }
     
