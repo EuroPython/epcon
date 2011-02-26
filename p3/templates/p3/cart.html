@@ -3,20 +3,25 @@
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Checkout</h1>
     <div class="cms">
-        {{ form.non_field_errors }}
+        {% if not account_type %}
+        <section class="notice">
+            <p>In order to buy the tickets you have to <a href="/accounts/login/?next={% url p3-cart %}">log in</a></p>
+        </section>
+        {% endif %}
+        {{ form|form_errors }}
         <form id="form-cart" action="{% url p3-cart %}" method="post">{% csrf_token %}
             <fieldset>
                 <table>
                     <col />
 
-                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
-                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
                     
-                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
-                    <col {% if account_type == "company" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
                     
-                    <col {% if account_type == "private" %} style="background: #2d3b66"{% endif %}/>
-                    <col {% if account_type == "private" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type != "c" %} style="background: #2d3b66"{% endif %}/>
+                    <col {% if account_type != "c" %} style="background: #2d3b66"{% endif %}/>
                     <thead>
                         <tr>
                             <th>&nbsp;</th>

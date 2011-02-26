@@ -249,8 +249,17 @@ def render_cart_row(context, subcode, form, fares):
             return form[code]
         except KeyError:
             return None
-    at = context['request'].user.assopy_user.billing()['account_type']
-    company = at == 'company'
+    try:
+        at = context['request'].user.assopy_user.account_type
+    except AttributeError:
+        at = None
+    company = at == 'c'
+
+    # Selezione le tariffe che devo mostrare: per ogni subcode passato ci sono
+    # al più tre tariffe, ad esempio con TES (ticket early standard):
+    # TESS -> student 
+    # TESP -> private 
+    # TESC -> company 
     subfares = [ fares.get(subcode + x) for x in ('S', 'P', 'C') ]
 
     # row a tre elementi: studente, privato, azienda
@@ -265,7 +274,7 @@ def render_cart_row(context, subcode, form, fares):
         else:
             # la tariffa è valida se passa il controllo temporale e se il tipo
             # dell'account è compatibile
-            row.append((f, g(f.code), f.valid() and not (company ^ (f.code[-1] == 'C')),))
+            row.append((f, g(f.code), f.valid() and at and not (company ^ (f.code[-1] == 'C')),))
     return {
         'row': row,
     }

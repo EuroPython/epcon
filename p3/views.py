@@ -153,7 +153,10 @@ def user(request, token):
 @render_to('p3/cart.html')
 def cart(request):
     from assopy.forms import FormTickets
-    at = request.user.assopy_user.billing()['account_type']
+    try:
+        at = request.user.assopy_user.account_type
+    except AttributeError:
+        at = None
     class P3FormTickets(FormTickets):
         def __init__(self, *args, **kwargs):
             super(P3FormTickets, self).__init__(*args, **kwargs)
@@ -162,12 +165,16 @@ def cart(request):
             return Fare.objects.all()
         def clean(self):
             data = super(P3FormTickets, self).clean()
-            company = at == 'company'
+            company = at == 'c'
             for fare, quantity in data['tickets']:
                 if (company ^ (fare.code[-1] == 'C')):
                     self._errors[fare.code] = self.error_class([ 'Invalid Fare'])
                     del data[fare.code]
             return data
+    # user-cart serve alla pagina di conferma con i dati di fatturazione,
+    # voglio essere sicuro che l'unico modo per impostarlo sia quando viene
+    # fatta una POST valida
+    request.session.pop('user-cart', None)
     if request.method == 'POST':
         form = P3FormTickets(data=request.POST)
         if form.is_valid():
