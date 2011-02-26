@@ -13,6 +13,18 @@ import logging
 
 log = logging.getLogger('assopy.forms')
 
+# autostrip - http://djangosnippets.org/snippets/956/
+# il motivo per questo abominio?
+# http://code.djangoproject.com/ticket/6362
+def autostrip(cls):
+    fields = [(key, value) for key, value in cls.base_fields.iteritems() if isinstance(value, forms.CharField)]
+    for field_name, field_object in fields:
+        def get_clean_func(original_clean):
+            return lambda value: original_clean(value and value.strip())
+        clean_func = get_clean_func(getattr(field_object, 'clean'))
+        setattr(field_object, 'clean', clean_func)
+    return cls
+
 class LoginForm(auth.forms.AuthenticationForm):
     email = forms.EmailField()
 
@@ -104,6 +116,8 @@ class Profile(forms.ModelForm):
             self.instance.user.save()
         return u
 
+Profile = autostrip(Profile)
+
 class BillingData(forms.ModelForm):
     class Meta:
         model = models.User
@@ -113,15 +127,17 @@ class BillingData(forms.ModelForm):
             'vat_number', 'cf_number',
         )
 
-class Speaker(forms.Form):
-    bio = forms.CharField(widget=forms.Textarea())
+    def _required(self, name):
+        data = self.cleaned_data.get(name, '').strip()
+        if not data:
+            raise forms.ValidationError('this field is required')
+        return data
 
-class Talk(forms.Form):
-    title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size': 40}))
-    duration = forms.TypedChoiceField(choices=cmodels.TALK_DURATION, coerce=int, initial='30') #, emtpy_value=None)
-    language = forms.TypedChoiceField(choices=cmodels.TALK_LANGUAGES, initial='en') #, emtpy_value=None)
-    slides = forms.FileField(required=False)
-    abstract = forms.CharField(widget=forms.Textarea())
+    clean_address = lambda self: self._required('address')
+    clean_city = lambda self: self._required('city')
+    clean_zip_code = lambda self: self._required('zip_code')
+
+BillingData = autostrip(BillingData)
 
 class NewAccountForm(forms.Form):
     first_name = forms.CharField(max_length=32)
@@ -143,6 +159,8 @@ class NewAccountForm(forms.Form):
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')
         return data
+
+NewAccountForm = autostrip(NewAccountForm)
 
 class FormTickets(forms.Form):
     payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
