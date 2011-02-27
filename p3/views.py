@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from assopy.forms import BillingData
-from assopy.models import User, UserIdentity
+from assopy.models import Order, User, UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
 
 import forms
@@ -205,11 +205,19 @@ def billing(request):
     if request.method == 'POST':
         # non voglio che attraverso questa view sia possibile cambiare il tipo
         # di account company/private
+        auser = request.user.assopy_user
         post_data = request.POST.copy()
-        post_data['account_type'] = request.user.assopy_user.account_type
-        form = BillingData(instance=request.user.assopy_user, data=post_data)
+        post_data['account_type'] = auser.account_type
+        form = BillingData(instance=auser, data=post_data)
         if form.is_valid():
-            pass
+            o = Order.objects.create(
+                user=auser, payment='bank',
+                items=request.session['user-cart']['tickets'],
+            )
+            if o.payment_url:
+                return HttpResponseRedirectSeeOther(o.payment_url)
+            else:
+                return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
     else:
         form = BillingData(instance=request.user.assopy_user)
         
