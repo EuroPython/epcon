@@ -318,18 +318,8 @@ def checkout(request):
         if form.is_valid():
             data = form.cleaned_data
             o = models.Order.objects.create(user=request.user, payment=data['payment'], items=data['tickets'])
-            url = genro.create_order(o)
-            rows = []
-            for x in o.orderitem_set.order_by('ticket__fare__code'):
-                rows.append('%-15s%6.2f' % (x.ticket.fare.code, x.ticket.fare.price))
-            rows.append('-'*21)
-            rows.append('%15s%6.2f' % ('', o.total()))
-            send_email(
-                subject='new order from "%s %s"' % (request.user.first_name, request.user.last_name),
-                message='\n'.join(rows),
-            )
-            if url:
-                return HttpResponseRedirectSeeOther(url)
+            if o.payment_url:
+                return HttpResponseRedirectSeeOther(o.payment_url)
             else:
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
     else:

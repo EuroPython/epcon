@@ -2,6 +2,7 @@
 from assopy import django_urls
 from assopy import janrain
 from assopy.clients import genro, vies
+from assopy.utils import send_email
 from conference.models import Ticket, Speaker
 
 from django import template
@@ -265,7 +266,7 @@ class UserIdentity(models.Model):
 
 class OrderManager(models.Manager):
     @transaction.commit_on_success
-    def create(self, user, payment, items):
+    def create(self, user, payment, items, remote=True):
         log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
         o = Order()
         o.code = None
@@ -279,6 +280,20 @@ class OrderManager(models.Manager):
                 item = OrderItem(order=o, ticket=a)
                 item.save()
         log.info('order "%s" and tickets created locally', o.id)
+        if remote:
+            genro.create_order(o)
+            log.info('order "%s" created remotly -> #%s', o.id, o.code)
+
+        # feedback
+        rows = []
+        for x in o.orderitem_set.order_by('ticket__fare__code'):
+            rows.append('%-15s%6.2f' % (x.ticket.fare.code, x.ticket.fare.price))
+        rows.append('-'*21)
+        rows.append('%15s%6.2f' % ('', o.total()))
+        send_email(
+            subject='new order from "%s %s" (%s)' % (request.user.first_name, request.user.last_name, payment),
+            message='\n'.join(rows),
+        )
         return o
 
 ORDER_PAYMENT = (
@@ -291,6 +306,7 @@ class Order(models.Model):
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
+    payment_url = models.TextField(blank=True)
 
     objects = OrderManager()
 

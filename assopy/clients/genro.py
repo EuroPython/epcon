@@ -126,7 +126,7 @@ def create_order(order):
     assert order.user.assopy_id
     rows = list(order.orderitem_set.select_related('ticket__fare'))
     b['event'] = rows[0].ticket.fare.conference
-    b['customer_id'] = order.user.assopy_id
+    b['user_id'] = order.user.assopy_id
     #b['coupon'] = 
     #b['discount'] = 
     b['payment_method'] = order.method
@@ -140,5 +140,5 @@ def create_order(order):
     result = _post('/orders/', b)
     o.assopy_id = result['order_id']
     o.code = result['order_code']
+    o.payment_url = result['paypal_url']
     o.save()
-    return result['paypal_url']
