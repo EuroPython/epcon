@@ -141,7 +141,7 @@ def create_order(order):
         b['order_rows.r%s.fare_code' % ix] = t
         b['order_rows.r%s.quantity' % ix] = tickets[t]
     result = _post('/orders/', b)
-    o.assopy_id = result['order_id']
-    o.code = result['order_code']
-    o.payment_url = result['paypal_url']
-    o.save()
+    order.assopy_id = result['order_id']
+    order.code = result['order_code']
+    order.payment_url = result['paypal_url']
+    order.save()

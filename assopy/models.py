@@ -291,7 +291,7 @@ class OrderManager(models.Manager):
         rows.append('-'*21)
         rows.append('%15s%6.2f' % ('', o.total()))
         send_email(
-            subject='new order from "%s %s" (%s)' % (request.user.first_name, request.user.last_name, payment),
+            subject='new order from "%s %s" (%s)' % (user.user.first_name, user.user.last_name, payment),
             message='\n'.join(rows),
         )
         return o
