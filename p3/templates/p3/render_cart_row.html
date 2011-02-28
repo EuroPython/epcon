@@ -2,7 +2,7 @@
 {% for fare, field, enabled in row %}
     <td{% if not enabled %} class="disabled"{% endif %}>
         {% if fare %}
-        <label><input{% if not enabled %} disabled="disabled"{% endif %} type="checkbox" name="row1" value="" /> € <span id="fare-{{ fare.code }}" class="fare">{{ fare.price }}</span></label>
+        <label>€ <span id="fare-{{ fare.code }}" class="fare">{{ fare.price }}</span></label>
         {% endif %}
     </td> 
     <td class="{% if field.errors %} error {% endif %}{% if not enabled %} disabled{% endif %}">

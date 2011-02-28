@@ -162,8 +162,8 @@ def cart(request):
         def __init__(self, *args, **kwargs):
             super(P3FormTickets, self).__init__(*args, **kwargs)
             del self.fields['payment']
-        def available_fares(self):
-            return Fare.objects.all()
+        #def available_fares(self):
+        #    return Fare.objects.all()
         def clean(self):
             data = super(P3FormTickets, self).clean()
             company = at == 'c'

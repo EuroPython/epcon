@@ -1,7 +1,8 @@
 {% extends "assopy/base.html" %}
 {% load p3 assopy_tags i18n %}
 {% block ASSOPY_MAIN_CONTENT %}
-    <h1>Checkout</h1>
+    <h1 class="steps"><span>Step 1 - Order</span><span class="active">Step 2 - Checkout</span></h1>
+    <section>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus orci at lectus ornare et suscipit orci luctus.</section>
     <div class="cms span-9 last">
         <table>
             <col />
@@ -9,7 +10,7 @@
             <col />
             <thead> 
                 <tr> 
-                    <th>Ticket</th> 
+                    <th></th> 
                     <th>Quantity</th> 
                     <th>Price</th> 
                 </tr> 
@@ -22,6 +23,11 @@
                     <td>€ {{ price|floatformat:"2" }}</td>
                 </tr>
                 {% endfor %}
+                <tr>
+                    <td>PyFiorentina</td>
+                    <td>4</td>
+                    <td>€ {{ 120|floatformat:"2" }}</td>
+                </tr>
                 <tr class="subtotal"> 
                     <td colspan="2" style="text-align: right">Total</td>
                     <td>€ {{ total|floatformat:"2" }}</td> 
@@ -29,7 +35,7 @@
             </tbody>
         </table>
         <h2>Billing data</h2>
-        {{ form.non_field_errors }}
+        {{ form|form_errors }}
         <form id="form-cart" action="{% url p3-billing %}" method="post">{% csrf_token %}
             <fieldset>
                 <div class="span-6">{{ form.card_name|field }}</div>
@@ -46,7 +52,7 @@
                 <div class="span-3 last">&nbsp;</div>
             </fieldset>
             <fieldset class="border">
-                <button type="submit">save</button>
+                <button type="submit">Confirm</button>
             </fieldset>
         </form>
         <script type="text/javascript">
