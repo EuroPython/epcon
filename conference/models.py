@@ -29,6 +29,8 @@ class Conference(models.Model):
     name = models.CharField(max_length=100)
     cfp_start = models.DateField(null=True, blank=True)
     cfp_end = models.DateField(null=True, blank=True)
+    conference_start = models.DateField(null=True, blank=True)
+    conference_end = models.DateField(null=True, blank=True)
 
     objects = ConferenceManager()
 
