@@ -34,15 +34,20 @@ def field(field, cls=None):
         return _field_tpl.render(template.Context(locals()))
 
 _form_errors_tpl = template.Template("""
+    {% load i18n %}
     <div class="error-notice">
-        {% for e in form.non_field_errors %}
-        <div>↓ {{ e }}</div>
-        {% endfor %}
+        {% if form.non_field_errors %}
+            {% for e in form.non_field_errors %}
+            <div>↓ {{ e }}</div>
+            {% endfor %}
+        {% else %}
+            <div>↓ {% trans "Warning, check your data on the form below" %}</div>
+        {% endif %}
     </div>
 """)
 @register.filter()
 def form_errors(form, cls=None):
-    if not form.non_field_errors():
+    if not form.errors:
         return ''
     classes = [ 'error-notice' ]
     return _form_errors_tpl.render(template.Context(locals()))
