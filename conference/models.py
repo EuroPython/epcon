@@ -385,7 +385,7 @@ class Talk(models.Model):
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
-    type = models.CharField(max_length=1, choices=TALK_LEVEL, default='s')
+    type = models.CharField(max_length=1, choices=TALK_TYPE, default='s')
     # Questi sono i tag che lo speaker suggerisce per il proprio talk, li ho
     # messi qui per una questione di tempo (il cfp di BSW2011 incombe) ma la
     # cosa giusta sarebbe creare un nuovo modello "Submission" legato al Talk e
