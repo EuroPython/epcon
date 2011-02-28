@@ -48,7 +48,10 @@ def user_local2remote(user):
     data = dict(o)
     data['firstname'] = user.user.first_name
     data['lastname'] = user.user.last_name
-    data['www'] = user.www
+    # il backend ha ua dimensione massima per il campo www di 40 caratteri,
+    # visto che non è fondamentale passare questa info invece che troncarla
+    # preferisco non metterla.
+    #data['www'] = user.www
     data['phone'] = user.phone
     if user.card_name:
         data['card_name'] = user.card_name
