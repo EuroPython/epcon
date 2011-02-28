@@ -54,6 +54,7 @@ class TicketConference(models.Model):
     python_experience = models.PositiveIntegerField(choices=TICKET_CONFERENCE_EXPERIENCES, default=0)
     diet = models.CharField(max_length=10, choices=TICKET_CONFERENCE_DIETS, default='omnivorous')
     tagline = models.CharField(max_length=60, blank=True, help_text='a (funny?) tagline for the attendee')
+    days = models.CharField(max_length=15, blank=True)
     assigned_to = models.EmailField(blank=True)
 
     objects = TicketConferenceManager()
