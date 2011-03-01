@@ -4,27 +4,38 @@
 
 }
 
+.wizard table {
+    margin: 20px 0 10px 0;   
+}
+
 .wizard .subtotal td {
     font-weight: bold;
 }
 
 .wizard .total {
     text-align: center;
-
 	
     border-top: 2px solid #c4b9a5;	
     border-bottom: 2px solid #c4b9a5;	    
     	
-	
-	padding: 5px 0;
+    padding: 5px 0;
 	
 /*     font: normal 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
     
 /*     color: #9dcc4f;	 */
     
-    margin: 20px 0;
+    margin: 10px 0 40px 0;
+    background: #E1DBC5;
 
 }
+
+.wizard .total.grand {
+    border: none;
+    font-size: 16px;
+    background: #4895A3;    
+    color: #fff;
+}
+
 
 .wizard fieldset {
     margin: 20px 0 30px 10px;
@@ -39,7 +50,16 @@
 
 
 .wizard legend {
-    margin-left: -10px;
+
+	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;	
+	
+	text-transform: uppercase;
+	
+    margin: 0 0 10px -10px;
+    color: #4895a3;
+}
+
+    
 }
 
 .wizard .error-notice {
@@ -56,6 +76,6 @@
 }
 
 .wizard .disabled {
-    opacity: .4;
+    opacity: .3;
 
 }
