@@ -137,6 +137,13 @@ class BillingData(forms.ModelForm):
     clean_city = lambda self: self._required('city')
     clean_zip_code = lambda self: self._required('zip_code')
 
+    def clean_card_name(self):
+        data = self.cleaned_data.get('card_name', '')
+        if not data:
+            return self.instance.name()
+        else:
+            return data
+
 BillingData = autostrip(BillingData)
 
 class NewAccountForm(forms.Form):
