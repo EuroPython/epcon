@@ -133,6 +133,8 @@ def create_order(order):
     #b['coupon'] = 
     #b['discount'] = 
     b['payment_method'] = order.method
+    b['personal'] = order.personal
+    b['vat_rate'] = order.vat_rate()
 
     tickets = defaultdict(lambda: 0)
     for r in rows:
