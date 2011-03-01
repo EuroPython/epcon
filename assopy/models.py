@@ -173,12 +173,12 @@ class User(models.Model):
     card_name = models.CharField(_('Card name'), max_length=200, blank=True)
     account_type = models.CharField(_('Account type'), max_length=1, choices=USER_ACCOUNT_TYPE, default='p')
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
-    cf_number = models.CharField(_('Codice Fiscale'), max_length=16, blank=True)
+    tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
     city = models.CharField(_('City'), max_length=40, blank=True)
-    provincia = models.CharField(_('Provincia'), max_length=2, blank=True)
+    state = models.CharField(_('State'), max_length=2, blank=True)
 
     objects = UserManager()
 
