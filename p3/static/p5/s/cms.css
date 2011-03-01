@@ -386,6 +386,9 @@ aside .cms ul {
     margin: 0 0 40px 0;
 }
 
+
+
+
 .cms section.cal {
     background: transparent;
 }
@@ -396,9 +399,18 @@ aside .cms ul {
 .cms section.cal p {
     margin: 0;
 }
+
+
+
+/* ============ */
+/* ! deadline   */
+/* ============ */
+
+
 .cms section.cal div.deadline div {
     width: auto;
 }
+
 .cms section.cal div.deadline {
     width: 100%;
     margin-bottom: 20px;
