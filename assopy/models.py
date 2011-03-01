@@ -266,12 +266,21 @@ class UserIdentity(models.Model):
 
 class OrderManager(models.Manager):
     @transaction.commit_on_success
-    def create(self, user, payment, items, remote=True):
+    def create(self, user, payment, items, personal=True, remote=True):
         log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
         o = Order()
         o.code = None
         o.method = payment
         o.user = user
+        o.personal = personal
+        o.card_name = user.card_name or user.name()
+        o.vat_number = user.vat_number
+        o.tin_number = user.tin_number
+        o.country = user.country
+        o.zip_code = user.zip_code
+        o.address = user.address
+        o.city = user.city
+        o.state = user.state
         o.save()
         for f, q in items:
             for _ in range(q):
@@ -308,7 +317,57 @@ class Order(models.Model):
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
     payment_url = models.TextField(blank=True)
 
+    # Se True l'ordine si considera fatto da un privato che non può detrarre
+    # l'iva dalla fattura/ricevuta
+    personal = models.BooleanField(default=True)
+    # Ragione sociale
+    card_name = models.CharField(_('Card name'), max_length=200)
+    vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
+    tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'))
+    zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
+    address = models.CharField(_('Address'), max_length=150, blank=True)
+    city = models.CharField(_('City'), max_length=40, blank=True)
+    # la provincia italiana, obbligatorio solo per l'italia
+    state = models.CharField(_('State'), max_length=2, blank=True)
+
     objects = OrderManager()
+
+    def billable(self):
+        """
+        Regola per verificare se un ordine è fatturabile:
+
+        Se la nazione è l'ITALIA serve VAT e TIN
+        Se la nazione sono gli USA serve VAT e TIN
+        Se la nazione è EUROPEA basta il VAT ma deve passare il controllo VIES
+        Altrimenti basta il VAT
+        """
+        if self.country_id == 'IT':
+            return self.vat_number and self.tin_number
+        elif self.country_id == 'US':
+            return self.vat_number and self.tin_number
+        elif self.country.vat_company_verify:
+            if self.country.vat_company_verify == 'v':
+                return vies.check_vat(self.country_id, self.vat_number)
+            else:
+                raise RuntimeError('unknown verification method')
+        else:
+            return bool(self.vat_number)
+    
+    def vat_rate(self):
+        """
+        Regola per determinare l'aliquota iva:
+
+        Se la nazione è l'ITALIA l'aliquota è il 20%
+        Se l'ordine è fatturabile l'aliquota è lo 0%
+        Altrimenti l'aliquota è il 20%
+        """
+        if self.country_id == 'IT':
+            return 20.0
+        elif self.billable():
+            return 0.0
+        else:
+            return 20.0
 
     def complete(self):
         return True
