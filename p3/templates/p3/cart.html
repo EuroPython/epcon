@@ -1,8 +1,16 @@
 {% extends "assopy/base.html" %}
 {% load p3 assopy_tags i18n %}
+
+{% block BODY_CLASS %}wizard{% endblock %}
+
+
 {% block ASSOPY_MAIN_CONTENT %}
-    <h1 class="steps"><span class="active">Step 1 - Order</span><span>Step 2 - Checkout</span></h1>
-    <section>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus orci at lectus ornare et suscipit orci luctus.</section>
+
+    <h1>Buy tickets (1 of 2)</h1>
+        
+    <section>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus orci at lectus 
+    ornare et suscipit orci luctus.</section>
+    
     <div class="cms">
         {% if not account_type %}
         <section class="notice">
@@ -115,8 +123,8 @@
 
 If you don't like to drink or you are vegetarian... Come anyway, you won't regret it!</p>
                                 </td>
-                                <td>€ 30:</td>
-                                <td><input size="2" /></td>
+                                <td>€ 30</td>
+                                <td><input type="text" size="2" /></td>
                             </tr>
                         </tbody>
                     </table>
@@ -143,20 +151,20 @@ If you don't like to drink or you are vegetarian... Come anyway, you won't regre
                             <tr>
                                 <td>Cioccolatai a Firenze</td>
                                 <td>Mon, 20 Jun</td>
-                                <td>€ 80:</td>
-                                <td><input size="2" /></td>
+                                <td>€ 80</td>
+                                <td><input type="text" size="2" /></td>
                             </tr>
                             <tr>
                                 <td>Cioccolatai a Firenze</td>
                                 <td>Wed, 22 Jun</td>
-                                <td>€ 80:</td>
-                                <td><input size="2" /></td>
+                                <td>€ 80</td>
+                                <td><input type="text" size="2" /></td>
                             </tr>
                             <tr>
                                 <td>Uffizi</td>
                                 <td>Wed, 22 Jun</td>
-                                <td>€ 40:</td>
-                                <td><input size="2" /></td>
+                                <td>€ 40</td>
+                                <td><input type="text" size="2" /></td>
                             </tr>
                         </tbody>
                     </table>

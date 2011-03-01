@@ -1,0 +1,61 @@
+.wizard .cms th,
+.wizard .cms td  {
+    padding-left: 5px;
+
+}
+
+.wizard .subtotal td {
+    font-weight: bold;
+}
+
+.wizard .total {
+    text-align: center;
+
+	
+    border-top: 2px solid #c4b9a5;	
+    border-bottom: 2px solid #c4b9a5;	    
+    	
+	
+	padding: 5px 0;
+	
+/*     font: normal 16px/20px  Museo, "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif; */
+    
+/*     color: #9dcc4f;	 */
+    
+    margin: 20px 0;
+
+}
+
+.wizard fieldset {
+    margin: 20px 0 30px 10px;
+	padding: 10px 0 0 0;    
+}
+
+
+.wizard fieldset.border {
+
+    text-align: center;
+}
+
+
+.wizard legend {
+    margin-left: -10px;
+}
+
+.wizard .error-notice {
+    padding: 5px 0;
+    text-align: center;
+    
+    border: 2px solid #d9415a;    
+    
+    background: #fff;
+    
+    color: #d9415a;
+    
+    font-size: 13px;
+}
+
+.wizard .disabled {
+    opacity: .4;
+
+}

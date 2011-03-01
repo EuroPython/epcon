@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/form.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/wizard.css" type="text/css" media="screen, projection" />
 
     {% comment %}
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" media="screen, projection" />
@@ -125,7 +126,7 @@
 
 {% block TEASER %}{% endblock %}
 
-<div class="page{% block BODY_CLASS %}{% endblock %}">
+<div class="page {% block BODY_CLASS %}{% endblock %}">
     <div class="container clearfix">
         {% block MAIN_CONTENT %}
         {% endblock %}
