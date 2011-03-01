@@ -202,6 +202,10 @@ def billing(request):
         tickets.append((fare, quantity, t))
         total += t
 
+    fare_types = set(x[0].personal for x in tickets)
+    if len(fare_types) != 1:
+        raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
+
     if request.method == 'POST':
         # non voglio che attraverso questa view sia possibile cambiare il tipo
         # di account company/private
@@ -212,6 +216,7 @@ def billing(request):
         if form.is_valid():
             o = Order.objects.create(
                 user=auser, payment='bank',
+                personal=fare_types.pop(),
                 items=request.session['user-cart']['tickets'],
             )
             if o.payment_url:
