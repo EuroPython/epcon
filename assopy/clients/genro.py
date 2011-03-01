@@ -59,12 +59,12 @@ def user_local2remote(user):
         data['card_name'] = '%s %s' % (user.user.first_name, user.user.last_name)
     data['is_company'] = user.account_type == 'c'
     data['vat_number'] = user.vat_number
-    data['tin_number'] = user.cf_number
+    data['tin_number'] = user.tin_number
     data['country'] = user.country_id
     data['zip'] = user.zip_code
     data['address'] = user.address
     data['city'] = user.city
-    data['state'] = user.provincia
+    data['state'] = user.state
 
     if data != o:
         log.info('user local2remote %s -> %s', user.user.email, user.assopy_id)
@@ -85,7 +85,7 @@ def user_remote2local(user):
     user.card_name = g('card_name')
     user.account_type = 'c' if data.get('is_company') else 'p'
     user.vat_number = g('vat_number')
-    user.cf_number = g('tin_number')
+    user.tin_number = g('tin_number')
 
     from assopy.models import Country
     try:
@@ -96,7 +96,7 @@ def user_remote2local(user):
     user.zip_code = g('zip')
     user.address = g('address')
     user.city = g('city')
-    user.provincia = g('state')
+    user.state = g('state')
     user.save()
     return user
 

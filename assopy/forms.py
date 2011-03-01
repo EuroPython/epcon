@@ -123,8 +123,8 @@ class BillingData(forms.ModelForm):
         model = models.User
         fields = (
             'card_name', 'account_type', 'country',
-            'address', 'city', 'zip_code', 'provincia',
-            'vat_number', 'cf_number',
+            'address', 'city', 'zip_code', 'state',
+            'vat_number', 'tin_number',
         )
 
     def _required(self, name):
