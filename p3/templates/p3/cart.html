@@ -243,7 +243,13 @@
                     $('b', e).html('€ ' + t);
                 })
             }
-            $('#form-cart input').change(calcTotal);
+            $('#form-cart input')
+                .change(calcTotal)
+                .keypress(function(e) {
+                    if((e.which < 48 || e.which > 57) && e.which != 13) {
+                        e.preventDefault()
+                    }
+                });
             calcTotal();
         </script>
     </div>
