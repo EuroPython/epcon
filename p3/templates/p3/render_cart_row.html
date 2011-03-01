@@ -2,7 +2,7 @@
 {% for fare, field, enabled in row %}
     <td{% if not enabled %} class="disabled"{% endif %}>
         {% if fare %}
-        <label>€ <span id="fare-{{ fare.code }}" class="fare">{{ fare.price }}</span></label>
+        <label id="fare-{{ fare.code }}" data-amount="{{ fare.price }}">€ <span class="fare">{{ fare.price }}</span></label>
         {% endif %}
     </td> 
     <td class="{% if field.errors %} error {% endif %}{% if not enabled %} disabled{% endif %}">

@@ -147,8 +147,8 @@
                                 <td><span class="toggle">PyFiorentina</span>
                                     <span class="more">The only dinner that any self-respecting Gourmet doesn't want to miss, set in one of the best steak houses in the historic center of Florence where you can taste our famous bistecca alla fiorentina. If you don't like to drink or you are vegetarian... Come anyway, you won't regret it!</span>
                                 </td>
-                                <td>€ 30</td>
-                                <td><input type="text" size="2" /></td>
+                                <td id="fare-XXX1" data-amount="30">€ 30</td>
+                                <td><input type="text" size="2" name="XXX1" /></td>
                             </tr>
                         </tbody>
                     </table>
@@ -219,15 +219,29 @@
         </form>
         <script type="text/javascript">
             function calcTotal() {
-                var total = 0;
-                $('#form-cart input').each(function() {
-                    var x = Number(this.value);
-                    if(!isNaN(x)) {
-                        var fare = Number($('#fare-' + this.name).html());
-                        total += x * fare;
-                    }
+                var totals = [ 0, 0, 0];
+                $('#form-cart fieldset').each(function(ix, e) {
+                    if(ix >= totals.length)
+                        return;
+                    $('input', this).each(function() {
+                        var x = Number(this.value);
+                        if(!isNaN(x)) {
+                            var fare = Number($('#fare-' + this.name).attr('data-amount'));
+                            if(!isNaN(fare))
+                                totals[ix] += x * fare;
+                        }
+                    });
                 });
-                $('#form-cart .total b').html('€ ' + total);
+                $('#form-cart .total').each(function(ix, e) {
+                    var e = $(this);
+                    if(e.hasClass('grand')) {
+                        var t = totals[0] + totals[1] + totals[2];
+                    }
+                    else {
+                        var t = totals[ix];
+                    }
+                    $('b', e).html('€ ' + t);
+                })
             }
             $('#form-cart input').change(calcTotal);
             calcTotal();
