@@ -5,6 +5,7 @@ import os.path
 import subprocess
 
 from django.conf import settings as dsettings
+from django.core import exceptions
 from django.db import connection
 from django.db import models
 from django.db import transaction
@@ -36,6 +37,14 @@ class Conference(models.Model):
 
     def __unicode__(self):
         return self.code
+
+    def clean(self):
+        if self.conference_start and self.conference_end:
+            if self.conference_start > self.conference_end:
+                raise exceptions.ValidationError('range di date per la conferenza non valido') 
+        if self.cfp_start and self.cfp_end:
+            if self.cfp_start > self.cfp_end:
+                raise exceptions.ValidationError('range di date per il cfp non valido') 
 
     def cfp(self):
         today = datetime.date.today()
