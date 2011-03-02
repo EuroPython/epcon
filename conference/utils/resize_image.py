@@ -1,17 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import ConfigParser
+import fnmatch
+import logging
 import os
 import os.path
-import logging
 import sys
-import ConfigParser
 from optparse import OptionParser
+
 from PIL import Image
 
-parser = OptionParser(usage = '%prog [-v] [-a] [work_dir]')
+parser = OptionParser(usage = '%prog [-v] [-a] [-x glob] [-n] [work_dir]')
 parser.add_option('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False)
+parser.add_option('-n', '--dry-run',
+    dest = 'dry_run', action = 'store_true', default = False)
+parser.add_option('-x', '--exclude',
+    dest = 'exclude', action = 'store', default = None)
 parser.add_option('-a', '--all',
     dest = 'all', action = 'store_true', default = False,
     help = 'processa tutte le immagini, non solo quelle modificate')
@@ -76,7 +82,8 @@ class Resize(object):
                 raise ValueError('invalid action: %s' % action)
             except TypeError, e:
                 raise ValueError('invalid params for action: %s' % action)
-        img.save(dst, 'JPEG', quality=90)
+        if not options.dry_run:
+            img.save(dst, 'JPEG', quality=90)
 
     def alphacolor(self, img):
         """
@@ -124,7 +131,7 @@ class Resize(object):
         iw, ih = img.size
         rw = iw / size[0]
         rh = ih / size[1]
-        if size[1] == -1 or rw > rh:
+        if rw > rh:
             nw = size[0]
             nh = ih * nw / iw
         else:
@@ -138,7 +145,11 @@ class Resize(object):
         l'immagine passata)
         """
         size = map(int, size.split('x'))
-        i = Image.new('RGB', size, bg)
+        if size[0] == -1:
+            size[0] = img.size[0]
+        if size[1] == -1:
+            size[1] = img.size[1]
+        i = Image.new('RGBA', size, bg)
         paste_point = []
         for d1, d2 in zip(size, img.size):
             if d1 < d2:
@@ -151,12 +162,28 @@ class Resize(object):
             i.paste(img, tuple(paste_point))
         return i
 
+    def reduce_canvas(self, img, size):
+        nw, nh = map(int, size.split('x'))
+        w, h = img.size
+
+        if nw < w or nh < h:
+            i = self.canvas(img, size, '#ffffff')
+        else:
+            i = img
+        return i
+
 def resize_dir(cfg, src, dst):
+    def f(fname):
+        if fname.endswith('.ini') or fname.startswith('.'):
+            return False
+        if options.exclude:
+            return not fnmatch.fnmatch(fname, options.exclude)
+        else:
+            return True
+        
     count = 0
     resizer = Resize(cfg)
-    for fname in os.listdir(src):
-        if fname.endswith('.ini') or fname[0] == '.':
-            continue
+    for fname in filter(f, os.listdir(src)):
         spath = os.path.join(src, fname)
         if not os.path.isfile(spath):
             continue
@@ -167,6 +194,7 @@ def resize_dir(cfg, src, dst):
                 dstat = os.stat(dpath)
                 if dstat.st_mtime > sstat.st_mtime:
                     continue
+        log.info('resizing %s', spath)
         try:
             resizer(spath, dpath)
         except IOError:
@@ -175,6 +203,8 @@ def resize_dir(cfg, src, dst):
         count += 1
     return count
 
+if options.dry_run:
+    log.info('dry run mode, nothing will be actually written to disk')
 log.info('inspecting %s', work_dir)
 for cpath in inspect():
     log.info('config file found: %s', cpath)
@@ -187,7 +217,8 @@ for cpath in inspect():
     dst_dir = os.path.join(src_dir, output)
     if not os.path.isdir(dst_dir):
         log.info('mkdirs %s', dst_dir)
-        os.makedirs(dst_dir)
+        if not options.dry_run:
+            os.makedirs(dst_dir)
     try:
         count = resize_dir(cfg, src_dir, dst_dir)
     except ValueError, e:
