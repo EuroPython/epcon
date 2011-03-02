@@ -4,9 +4,11 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 
 from conference.forms import SubmissionForm, TalkForm
-from conference.models import Ticket
+from conference.models import Conference, Ticket
 
 from p3 import models
+
+import datetime
 
 class P3SubmissionForm(SubmissionForm):
     mobile = forms.CharField(
@@ -99,6 +101,7 @@ class P3TalkForm(TalkForm):
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')
+    days = forms.MultipleChoiceField(choices=tuple(), widget=forms.CheckboxSelectMultiple, required=False)
 
     class Meta:
         model = models.TicketConference
@@ -106,6 +109,38 @@ class FormTicket(forms.ModelForm):
         widgets = {
             'assigned_to': forms.HiddenInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('instance'):
+            data = {
+                'days': kwargs['instance'].days.split(','),
+            }
+            data.update(kwargs.get('initial', {}))
+            kwargs['initial'] = data
+        super(FormTicket, self).__init__(*args, **kwargs)
+
+        days = []
+        conf = Conference.objects.current()
+        d = conf.conference_start
+        while d <= conf.conference_end:
+            days.append((d.strftime('%Y-%m-%d'), d.strftime('%a, %d %b')))
+            d = d + datetime.timedelta(days=1)
+        self.fields['days'].choices = days
+
+
+    def clean_days(self):
+        try:
+            data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), self.cleaned_data.get('days', []))
+        except Exception, e:
+            raise forms.ValidationError('formato data non valido')
+        conf = Conference.objects.current()
+        days = []
+        for x in data:
+            if conf.conference_start <= x.date() <= conf.conference_end:
+                days.append(x.strftime('%Y-%m-%d'))
+            else:
+                raise forms.ValidationError('data non valida')
+        return ','.join(days)
 
     def clean(self):
         data = self.cleaned_data
