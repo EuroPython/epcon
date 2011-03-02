@@ -140,9 +140,12 @@
     <div class="container clearfix">
         <h5>Our Sponsors</h5>
 
+        {% conference_sponsor "ep2011" as sponsors %}
+        {% for s in sponsors|slice:":6" %}
         <div class="ad">
-            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+            <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
         </div>
+        {% endfor %}
 
         <div class="ad">
             <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
