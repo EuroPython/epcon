@@ -73,6 +73,24 @@ def field_value(field):
 		val = ''
 	return val
 
+@register.filter
+def field_display_value(field):
+    val = field_value(field)
+    if hasattr(field.field, 'choices'):
+        data = dict(field.field.choices)
+        if isinstance(field.field, (forms.MultipleChoiceField,)):# forms.TypedMultipleChoiceField)):
+            output = []
+            for x in val:
+                output.append(data.get(x, ''))
+        else:
+            output = data.get(val, '')
+        val = output
+    return val
+
+@register.filter
+def as_range(value):
+    return range(value)
+
 @register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
 def render_janrain_box(context, next=None, mode='embed'):
     if settings.JANRAIN:
