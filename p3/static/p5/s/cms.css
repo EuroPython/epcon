@@ -80,11 +80,9 @@
 }
 
 
-/*
 .cms ul {
 	list-style: outside circle url(../i/bullet.png);
 }
-*/
 
 
 .cms ol {
@@ -293,7 +291,7 @@ aside .cms li {
 }
 
 aside .cms ul {
-/* 	list-style: outside circle url(../i/bullet-aside.png); */
+	list-style: outside circle url(../i/bullet-aside.png);
 }
 
 
