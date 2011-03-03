@@ -97,21 +97,26 @@ def ticket(request, tid):
             form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():
                 return http.HttpResponseBadRequest(str(form.errors))
+
             data = form.cleaned_data
+            # prima di tutto sistemo il ticket di conference...
             t.name = data['ticket_name']
             t.save()
+            # ...poi penso alle funzionalità aggiuntive dei biglietti p3
             x = form.save(commit=False)
             x.ticket = t
             if t.user != request.user:
                 # solo il proprietario del biglietto può riassegnarlo
                 x.assigned_to = assigned_to
             x.save()
+
             if t.user == request.user and assigned_to != x.assigned_to:
                 if x.assigned_to:
                     log.info('ticket assigned to "%s"', x.assigned_to)
                     _assign_ticket(t, x.assigned_to)
                 else:
                     log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
+
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
                 # shortcut, l'utente non ha impostati né il nome né il cognome (e
                 # tra l'altro non è la persona che ha comprato il biglietto) per
