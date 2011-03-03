@@ -1428,3 +1428,20 @@ section.notice a {
 	color:#FCF8C0;
 	border-bottom: 1px solid #fcf8c0;
 }
+
+.overlay {
+	display:none;
+	
+	z-index:10000;
+	
+	background-color:#7f6f60;
+	padding: 10px;
+	
+	width:575px;	
+	min-height:200px;
+	border:1px solid #666;
+	
+	-moz-box-shadow:0 0 90px 5px #000;
+	-webkit-box-shadow: 0 0 90px #000;
+}
+
