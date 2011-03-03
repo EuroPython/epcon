@@ -118,16 +118,19 @@ def ticket(request, tid):
                     log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
 
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
-                # shortcut, l'utente non ha impostati né il nome né il cognome (e
-                # tra l'altro non è la persona che ha comprato il biglietto) per
-                # dare un nome al suo profilo copio le informazioni che ha dato nel
-                # suo utente
+                # l'utente non ha, nel suo profilo, né il nome né il cognome (e
+                # tra l'altro non è la persona che ha comprato il biglietto)
+                # posso usare il nome che ha inserito per il biglietto nei dati
+                # del profilo
+
                 try:
                     f, l = data['ticket_name'].strip().split(' ', 1)
                 except ValueError:
                     f = data['ticket_name'].strip()
                     l = ''
-                request.user.assopy_user.setBilling(firstname=f, lastname=l)
+                request.user.first_name = f
+                request.user.last_name = l
+                request.user.save()
         else:
             form = forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():
