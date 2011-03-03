@@ -235,12 +235,13 @@ def render_ticket(context, ticket):
     else:
         form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
         blocked = False
-    return {
+    context.update({
         'ticket': ticket,
         'form': form,
         'user': user,
         'blocked': blocked,
-    }
+    })
+    return context
 
 @register.inclusion_tag('p3/render_cart_row.html', takes_context=True)
 def render_cart_row(context, subcode, form, fares):

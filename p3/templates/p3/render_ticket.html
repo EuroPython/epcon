@@ -13,63 +13,61 @@
 -->
 
     <div class="preview">
-            
-            <h2>{ticket_type} Conference</h2>
-            
-            <div class="ticket-name">
-                {ticket_name} Adriana Lima            
-            </div>
-            <div class="ticket-tagline">
-                {tagline} Top model            
-            </div>
-            <div class="ticket-python-experience">
-                {python_experience} 
-                <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />            
-                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
-                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
-                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
+        <h2>{{ ticket.fare.name }}</h2>
+        <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
 
-            </div>
-            
-<!--
-            <div class="ticket-assigned-to">
-                Currently assigned to <b>{Nome cognome}</b>&nbsp;<a href="#">(click to reclaim)</a>.
-            </div>   
--->     
+    {% if ticket.fare.ticket_type == "conference" %}
+        <div class="ticket-tagline">{{ form.tagline|field_value|default:"something about me" }}</div>
+        <div class="ticket-python-experience">
+            python power
+            {% for x in form.python_experience|field_value|as_range %}
+            <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />
+            {% endfor %}
+        </div>
+        
+        <div class="ticket-assigned-to"{% if not blocked %} style="display: none"{% endif %}>
+            Currently assigned to <b>{{ form.assigned_to|field_value }}</b>&nbsp;<a href="#" class="reclaim-button">(click to reclaim)</a>.
+        </div>   
 
-            <div class="ticket-commands">            
-                <p><a href="#">Edit information</a> |
-                    <a href="#" class="button mini">Assign to user</a>
-                    <!-- if blocked... -->
-                    | <a href="reclaim">Reclaim</a>
-                    <!-- endif -->
-                </p>
-            <!-- commands -->
-            </div>            
-
-    <!--     /preview         -->
+        <div class="ticket-commands"{% if blocked %} style="display: none"{% endif %}>            
+            <p>
+                <a href="#">Edit information</a> |
+                {% if user == ticket.user %}
+                <a href="#" class="button mini assign-button">Assign to user</a>
+                {% endif %}
+                {% comment %}
+                <!-- if blocked... -->
+                | <a href="reclaim">Reclaim</a>
+                <!-- endif -->
+                {% endcomment %}
+            </p>
+        </div>
+    {% else %}
+        <div class="ticket-commands">            
+            <p><a href="#">Edit information</a></p>
+        </div>
+    {% endif %}
     </div>
 
+    {% if ticket.fare.ticket_type == "conference" %}
     <div class="ticket-additional-info">
         <p>
             Additional information (they won&#8217;t show up on the ticket)
-        </p>        
+        </p>
         <dl>
             <dt>Attending on days:</dt>
-            <dd>Mon, 20 Jun; Tue, 21 Jun.</dd>
+            <dd>{{ form.days|field_display_value|join:"; " }}.</dd>
             <dt>Diet:</dt>
-            <dd>Vegetarian.</dd>
+            <dd>{{ form.diet|field_display_value }}</dd>
             <dt>Shirt size:</dt>
-            <dd>XL.</dd>            
+            <dd>{{ form.shirt_size|field_display_value }}</dd>
         </dl>
     </div>
+    {% endif %}
 
-{%comment %}
-    
-    <form id="ticket-{{ ticket.id }}" action="{% url p3-ticket tid=ticket.id %}" method="post">{% csrf_token %}
-    
+    <form data-ticket="{{ ticket.id }}" action="{% url p3-ticket tid=ticket.id %}" method="post">{% csrf_token %}
     {% if ticket.fare.ticket_type == "conference" %}
-        <fieldset{% if blocked %} style="display: none"{% endif %}>
+        <fieldset>
             {{ form.ticket_name|field }}
             {{ form.tagline|field }}
             <div class="span-3">
@@ -92,11 +90,6 @@
             <button name="" value="assign">Assign</button>
             {% endif %}
         </fieldset>
-        {% if blocked %}        
-            <div class="assigned">
-                <span>Assigned to {{ form.assigned_to|field_value }}<br /><a href="#" class="reclaim">(click to reclaim)</a></span>
-            </div>        
-        {% endif %}
     {% else %}
         <fieldset>
             {% for f in form %}
@@ -108,7 +101,4 @@
         </fieldset>
     {% endif %}
     </form>
-
-{% endcomment %}
-
 </div>
