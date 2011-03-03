@@ -84,11 +84,8 @@
             </div>
             {{ form.assigned_to|field }}
         </fieldset>
-        <fieldset class="border"{% if blocked %} style="display: none"{% endif %}>
+        <fieldset class="border">
             <button name="" value="" type="submit">Save Changes</button>
-            {% if user == ticket.user %}
-            <button name="" value="assign">Assign</button>
-            {% endif %}
         </fieldset>
     {% else %}
         <fieldset>

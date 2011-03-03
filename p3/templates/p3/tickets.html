@@ -12,10 +12,24 @@
         {% cycle '' '<hr />' %}    
     {% endfor %}
     <script type="text/javascript">//<![CDATA[
-    $('div.ticket form button[type=submit]').click(function(e) {
+    $('div.ticket form').live('submit', function(e) {
+        /*
+         * non mi piace impedire il submit da tasto invio, ma devo essere
+         * sicuro che venga eseguito il codice collegato con i
+         * button[type=submit]. Nota che con FF e chrome ( e forse con altri
+         * browser) questo non è un problema, perché la pressione dell'invio in
+         * un input causa l'evento click nel input/button di tipo submit
+         */
+
+        e.preventDefault();
+    });
+    $('div.ticket form button[type=submit]').live('click', function(e) {
         e.preventDefault();
         var form = $(e.target).parents('form');
+        var container = form.parents('div.ticket');
         form.ajaxSubmit({
+            target: container,
+            replaceTarget: true,
             success: function() {
                 feedback('Ticket saved');
             },
@@ -46,7 +60,7 @@
         var tid = $(form).attr('data-ticket');
         return $('input[name=t' + tid + '-' + field_name + ']', form);
     }
-    $('div.ticket .assign-button').click(function(e) {
+    $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
         var email = prompt('Enter the email of the person you want to assign the ticket').trim();
         if(!email)
@@ -58,7 +72,6 @@
         var ticket = $(e.target).parents('.ticket');
         var form = $('form', ticket);
         ticket_field(form, 'assigned_to').val(email);
-        console.log(email, form);
         form.ajaxSubmit(function() {
             feedback('ticket assigned to ' + email);
             $('.ticket-assigned-to', ticket).show().children('b').html(email);
