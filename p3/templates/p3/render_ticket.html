@@ -1,7 +1,73 @@
 {% load assopy_tags %}
-<div class="ticket {{ ticket.fare.ticket_type }} span-6 last">
-    <section>Ticket not active; waiting bank transfer: O/11.0001</section>
+<div class="ticket {{ ticket.fare.ticket_type }}">
+
+    <div class="ticket-status inactive">
+        &darr; This ticket is not active; waiting bank transfer: O/11.0001
+    </div>
+
+<!--
+    Show this if you don't have any message
+    <div class="ticket-status">
+        &nbsp;
+    </div>
+-->
+
+    <div class="preview">
+            
+            <h2>{ticket_type} Conference</h2>
+            
+            <div class="ticket-name">
+                {ticket_name} Adriana Lima            
+            </div>
+            <div class="ticket-tagline">
+                {tagline} Top model            
+            </div>
+            <div class="ticket-python-experience">
+                {python_experience} 
+                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
+                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
+                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
+                <!-- <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="20" height="20" />   -->          
+
+            </div>
+            
+<!--
+            <div class="ticket-assigned-to">
+                Currently assigned to <b>{Nome cognome}</b>&nbsp;<a href="#">(click to reclaim)</a>.
+            </div>   
+-->     
+
+            <div class="ticket-commands">            
+                <p><a href="#">Edit information</a> |
+                    <a href="#" class="button mini">Assign to user</a>
+                    <!-- if blocked... -->
+                    | <a href="reclaim">Reclaim</a>
+                    <!-- endif -->
+                </p>
+            <!-- commands -->
+            </div>            
+
+    <!--     /preview         -->
+    </div>
+
+    <div class="ticket-additional-info">
+        <p>
+            Additional information (they won&#8217;t show up on the ticket)
+        </p>        
+        <dl>
+            <dt>Attending on days:</dt>
+            <dd>Mon, 20 Jun; Tue, 21 Jun.</dd>
+            <dt>Diet:</dt>
+            <dd>Vegetarian.</dd>
+            <dt>Shirt size:</dt>
+            <dd>XL.</dd>            
+        </dl>
+    </div>
+
+{%comment %}
+    
     <form id="ticket-{{ ticket.id }}" action="{% url p3-ticket tid=ticket.id %}" method="post">{% csrf_token %}
+    
     {% if ticket.fare.ticket_type == "conference" %}
         <fieldset{% if blocked %} style="display: none"{% endif %}>
             {{ form.ticket_name|field }}
@@ -21,15 +87,15 @@
             {{ form.assigned_to|field }}
         </fieldset>
         <fieldset class="border"{% if blocked %} style="display: none"{% endif %}>
-            <button type="submit">save</button>
+            <button name="" value="" type="submit">Save Changes</button>
             {% if user == ticket.user %}
-            <button value="assign">Assign</button>
+            <button name="" value="assign">Assign</button>
             {% endif %}
         </fieldset>
-        {% if blocked %}
-        <div class="assigned">
-            <span>Assigned to {{ form.assigned_to|field_value }}<br /><a href="#" class="reclaim">(click to reclaim)</a></span>
-        </div>
+        {% if blocked %}        
+            <div class="assigned">
+                <span>Assigned to {{ form.assigned_to|field_value }}<br /><a href="#" class="reclaim">(click to reclaim)</a></span>
+            </div>        
         {% endif %}
     {% else %}
         <fieldset>
@@ -38,8 +104,11 @@
             {% endfor %}
         </fieldset>
         <fieldset class="border">
-            <button type="submit">save</button>
+            <button value="" type="submit">Save Changes</button>
         </fieldset>
     {% endif %}
     </form>
+
+{% endcomment %}
+
 </div>

@@ -250,9 +250,11 @@ button a {
     border: 0;
 }
 
+/*
 label:after {
     content: ":";
 }
+*/
 
 /*
  * un layout più compatto per i booleanfield:

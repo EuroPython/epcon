@@ -1,21 +1,27 @@
 {% extends "assopy/base.html" %}
 {% load p3 %}
 {% block MAIN_CONTENT %}
-    <h1>Your tickets!!!</h1>
-    <div class="span-12 append-1">
-        <div class="cms">
-        {% for t in tickets %}
-        {% render_ticket t %}
-        {% endfor %}
+    
+    <h1>Your tickets</h1>
+
+    {% for t in tickets %}
+        <div class="span-6 {% cycle '' 'last' %}">
+            {% render_ticket t %}
         </div>
-    </div>
+        
+        {% cycle '' '<hr />' %}    
+    {% endfor %}
+    
+    
+    
+
     <script type="text/javascript">//<![CDATA[
     $('div.ticket form button[type=submit]').click(function(e) {
         e.preventDefault();
         var form = $(e.target).parents('form');
         form.ajaxSubmit({
             success: function() {
-                feedback('ticket saved');
+                feedback('Ticket saved');
             },
             beforeSubmit: function(arr, form, options) {
                 var ticket = form.parents('.ticket');
@@ -25,14 +31,14 @@
                     var f = ticket_field(form, 'name');
                 var n = f.val().trim();
                 if(n == '') {
-                    alert('please enter the name');
+                    alert('Please enter the name');
                     f.focus();
                     return false;
                 }
                 return true;
             },
             error: function(xhr, status, error) {
-                alert('cannot save the ticket, please contact info@pycon.it for assistance');
+                alert('Cannot save the ticket, please contact info@pycon.it for assistance');
             }
         });
     });

@@ -25,6 +25,9 @@ header, section, footer, aside, nav, article, figure  {
 	vertical-align: baseline;
 }
 
+ol, ul {
+	list-style: none;
+}
 
 /* body { background: #fff; } */
 

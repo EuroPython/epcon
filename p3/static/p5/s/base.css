@@ -140,11 +140,7 @@ a.tag:hover {
     text-align: center;
 }
 
-/*
-.button.mini {
-    text-align: left;
-}
-*/
+
 
 .button a {
 
@@ -410,8 +406,7 @@ header #li-chat #habla_unavailable_div a {
 footer {
     color: #aba18f;
 
-    /* make room for 'sponsors' band */     
-    padding: 40px 0 120px 0;    
+    padding: 40px 0;    
 
     border-top: 3px solid #aba18f;
     background: #301d1d url(../i/footer.jpg) top left;
@@ -1252,6 +1247,134 @@ section.cal div p {
 
 
 /* ========== */
+/* ! ticket   */
+/* ========== */
+
+
+.ticket .preview {
+    background: #fff;
+
+    padding: 2px;
+    margin: 20px 0;
+    
+    border: 1px solid #301d1d;
+    
+    border-radius: 2px;
+
+    position: relative;
+    min-height: 200px;
+
+    -webkit-box-shadow: 1px 2px 3px #7d6f60;
+    -moz-box-shadow: 1px 2px 3px #7d6f60;
+
+    -webkit-transform:rotate(-.8deg);
+    
+}
+
+
+
+.ticket .preview h2 {
+    padding: 5px 15px;
+/*     text-align: center; */
+    
+    color: #fff;
+    background: #4895A3;
+    font-size: 21px;
+    
+    letter-spacing: 1px;
+}
+
+
+.ticket-additional-info {
+    
+
+}
+
+.ticket-additional-info dt,
+.ticket-additional-info dd {
+    display: inline;
+}
+
+.ticket-additional-info dd {
+    font-weight: bold;
+}
+
+.ticket-additional-info dt {
+    color: #635443;
+}
+
+
+.ticket-status {
+    padding: 5px 0;
+    text-align: center;    
+    border: 2px solid transparent;        
+    
+    font-size: 12px;
+}
+
+
+.ticket-status.inactive {            
+    border-color: #d9415a;        
+    background: #fff;
+    color: #d9415a;
+}
+
+.preview:hover .ticket-commands {
+    opacity: 1;
+}
+
+.ticket-commands {
+    position: absolute;    
+    top: 0;
+    left: 0;
+    z-index: 1;
+    
+    text-align: center;
+
+    min-height: 100%;
+    min-width: 100%;
+
+    background: #fff;
+    background: rgba(100%, 100%, 100%, .8);    
+
+    -webkit-transition: opacity .2s ease-out;
+    opacity: 0;
+}
+
+.ticket-commands p {
+    margin: 90px 0 0 0;
+    font-size: 16px;
+
+    color: #635443;
+}
+
+.ticket-name,
+.ticket-tagline,
+.ticket-python-experience {
+    padding: 0 15px;
+}
+
+
+.ticket-name {
+    font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;		
+	text-transform: uppercase;	
+	
+	margin: 10px 0 40px 0;
+}
+
+.ticket-tagline {
+    font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;		
+    color: #635443;
+    
+	text-transform: uppercase;	    
+}
+
+.ticket-python-experience {
+
+}
+
+
+/* ========== */
 /* ! Extras   */
 /* ========== */
 
@@ -1283,53 +1406,6 @@ section.cal div p {
     line-height: 1.7em;
     font-weight: bold;
     color: black;
-}
-
-/*
- * ticket page
- */
-div.ticket {
-    position: relative;
-    border: 1px solid gray;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
-	border-radius: 6px;
-	padding: 4px;
-	margin-bottom: 10px;
-	/*
-     * i ticket hanno tutti "span-6 last", il last c'è sempre per comodità nel
-     * renderizzare il template. Per non avere tutti i div attaccati inserisco
-     * un margine qui che sovrascrive quello presente in .last
-	 */
-	margin-right: 5px;
-	height: 330px;
-}
-
-div.ticket form {
-    height: 100%;
-}
-
-/*
- * nel ticket voglio che i button siano allineati in fondo a destra
- */
-div.ticket fieldset.border {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-}
-
-div.ticket div.assigned {
-    height: 100%;
-    background: rgba(240, 240, 240, 0.8);
-    color: black;
-    font-weight: bold;
-    font-size: 1.3em;
-    text-align: center;
-}
-
-div.ticket div.assigned span {
-    position: relative;
-    top: 50px;
 }
 
 section.notice {

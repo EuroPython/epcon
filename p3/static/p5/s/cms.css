@@ -295,6 +295,43 @@ aside .cms ul {
 }
 
 
+/* ================== */
+/* ! call-to-action   */
+/* ================== */
+
+
+/*
+.cms .call-to-action  {
+
+    margin: 20px 0;
+    
+    text-align: center;
+}
+
+.cms .call-to-action a {
+
+    font: bold 16px/20px "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+
+    border: none;
+	background: #222d4d;
+	color: #9DCC4F;
+	
+	padding: 5px 10px;	
+	
+    text-align: center;
+
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+}
+
+.cms .call-to-action a:hover {
+    color: #fff;
+}
+*/
+
+
 
 /* ============== */
 /* ! where page   */
@@ -380,11 +417,13 @@ aside .cms ul {
 }
 
 
-.cfp-page .badge {
-    margin: 0 0 40px 0;
-}
 
 
+
+
+/* ============ */
+/* ! deadline   */
+/* ============ */
 
 
 .cms section.cal {
@@ -400,11 +439,6 @@ aside .cms ul {
 
 
 
-/* ============ */
-/* ! deadline   */
-/* ============ */
-
-
 .cms section.cal div.deadline div {
     width: auto;
 }
@@ -413,3 +447,17 @@ aside .cms ul {
     width: 100%;
     margin-bottom: 20px;
 }
+
+
+
+
+/* ========== */
+/* ! extras   */
+/* ========== */
+
+
+
+.cfp-page .badge {
+    margin: 0 0 40px 0;
+}
+
