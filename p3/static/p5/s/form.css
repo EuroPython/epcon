@@ -173,20 +173,23 @@ h1 button.edit {
     top: -8px;
 }
 
+/* Hovering help text */
 
 .help-text {
-	background-color:#301D1D;
-	border:1px solid #fff;
-	padding:10px 15px;
-	width:200px;
-	display:none;
-	color:#FCF8C0;
-	text-align:left;
-	font-size:12px;
+	background-color: #fff;
+	border:2px solid #635443;
+	padding: 10px 15px;
+	
+	width: 200px;
+	display: none;
+/* 	color:#FCF8C0; */
+	text-align: left;
+	font-size: 12px;
 
 	/* outline radius for mozilla/firefox only */
-	-moz-box-shadow:0 0 10px #000;
-	-webkit-box-shadow:0 0 10px #000;
+	-moz-box-shadow:0 0 10px #7d6f60;
+	-webkit-box-shadow: 0 0 10px #7d6f60;
+	box-shadow: 0 0 10px #7d6f60;
 }
 
 .tooltip {
