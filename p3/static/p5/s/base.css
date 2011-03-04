@@ -570,77 +570,6 @@ footer nav li img {
 
 }
 
-
-/* =========== */
-/* ! sidebar   */
-/* =========== */
-
-/*
-
-
-#sidebar {
-	color: #383829;
-
-	font: normal 12px/18px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
-
-}
-
-#sidebar h3 {
-    font-size: 18px;
-    color: #4D5E5F;
-    text-transform: uppercase;   
-}
-
-
-#sidebar .section {
-    margin: 0 0 20px 0;
-}
-
-
-#sidebar .newsletter .google {
-    margin: 10px 0 0 0;
-
-}
-
-#sidebar .newsletter .google a {
-    color: #61613F;
-    border-bottom-color: #61613F;
-}
-
-
-#sidebar .newsletter .google a:hover {
-	color: #630b2b;
-	border-bottom-color: #9babab;
-}
-
-
-
-#sidebar .cal ul {
-    list-style: none;
-    margin: 0;
-}
-
-#sidebar .cal li {
-
-    margin: 0 0 10px 0;        
-}
-
-#sidebar .cal h4 {
-    float: left;
-    margin: 0 10px 0 0;
-}
-
-#sidebar .cal h4 span {
-    color: #96204B;
-}
-
-#sidebar .cal p {
-    margin: 0;
-}
-
-
-*/
-
 /* =================== */
 /* ! speaker           */
 /* =================== */
@@ -898,14 +827,14 @@ footer nav li img {
 
 
 
+/* ============= */
+/* ! deadlines   */
+/* ============= */
 
-/* ======= */
-/* ! cal   */
-/* ======= */
 
 
 #deadlines {
-    list-style: none;
+/*     list-style: none; */
     margin: 0;
 }
 
@@ -1238,6 +1167,12 @@ section.cal div.deadline div {
 
 section.cal h4 {
     margin: 0 0 5px 0;
+}
+
+section.cal h4 b {
+    /* For to do not use bold for League Gothic, it doesn't exist */
+    font-weight: normal;
+    color: #4895A3;
 }
 
 section.cal div p {
