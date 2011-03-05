@@ -505,12 +505,9 @@ footer nav li img {
 
 }
 
+.follow img,
 .feeds img {
     vertical-align: middle;
-}
-
-.twitter {
-    
 }
 
 .twitter li {
@@ -518,6 +515,7 @@ footer nav li img {
     
     list-style: outside disc url(../i/icon-bird.png);
 }
+
 
 .we-accept {
     text-align: center;

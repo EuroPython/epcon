@@ -5,7 +5,7 @@
     <ul>
         {% for tweet in tweets %}<li>{{ tweet|convert_links }}</li>{% endfor %}
     </ul>
-    <div class="">
-        <a href="http://twitter.com/europython">Follow @europython on Twitter</a>
+    <div class="follow">
+        <img src="{{ STATIC_URL }}p5/i/twitter-16x16.png" alt="" width="16" height="16" />&nbsp;<a href="http://twitter.com/europython">Follow @europython on Twitter</a>
     </div>
 </div>
