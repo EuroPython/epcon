@@ -59,21 +59,7 @@
     color: #4895a3;
 }
 
-    
-}
 
-.wizard .error-notice {
-    padding: 5px 0;
-    text-align: center;
-    
-    border: 2px solid #d9415a;    
-    
-    background: #fff;
-    
-    color: #d9415a;
-    
-    font-size: 13px;
-}
 
 .wizard .disabled {
     opacity: .3;

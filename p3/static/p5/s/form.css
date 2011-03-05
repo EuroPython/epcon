@@ -5,6 +5,8 @@
 	border: 1px solid #aba18f;
 }
 
+
+
 .form-box fieldset {
 }
 
@@ -18,16 +20,18 @@ form .field {
 	margin: 0 0 10px 0;
 }
 
+form .field.required {
+/*     font-weight: bold; */
+}
+
+
+
 fieldset {    
 }
 
 fieldset.border {
 	padding: 10px 0 0 0;
-/* 	border-top: 1px solid #384b80;	    */
-
-/*     background: transparent url(../i/bg-sep.png) top left repeat-x; */
 }
-
 
 
 legend {
@@ -43,11 +47,9 @@ legend {
 }
 
 
-label {
-    	
+label {    	
 	display: block; 
-
-    font-size: 13px;
+/*     font-size: 13px; */
 /* 	color: #d7cef5; */
 
 /*     text-transform: uppercase; */
@@ -59,13 +61,6 @@ label.inline {
 
 	color: #fff;
     
-    text-transform: none;
-}
-
-
-label span.required {
-    color: #46a0ac;
-    margin: 0 5px;
     text-transform: none;
 }
 
@@ -94,6 +89,7 @@ textarea {
 
 
 input[type='text'], 
+/* input[type='file'], */
 input[type='password'], 
 textarea,
 select {    
@@ -109,6 +105,29 @@ select {
 	background: #fae6e9;
 }
 
+/* Top red bordered error notice on invalid forms  */
+
+.error-notice {
+    padding: 5px 0 5px 5px;
+/*     text-align: center; */
+    margin: 0 0 20px 0;
+    
+    border: 2px solid #d9415a;    
+    
+    background: #fff;
+    
+    color: #d9415a;
+    
+    font-size: 13px;
+}
+
+.field .errorlist {
+
+}
+
+.field .errorlist li {
+    margin: 0 0 5px 0;
+}
 
 
 /*
@@ -122,12 +141,6 @@ textarea:focus {
 }
 
 */
-
-
-
-
-
-
 
 button {
 
@@ -152,112 +165,8 @@ button {
     -webkit-box-shadow: 1px 1px 2px #7d6f60;
     -moz-box-shadow: 1px 1px 2px #7d6f60;
 	
-	
-}
-/*
-
-button.mini {
-
-	
-	padding: 2px 7px;	
-	
-}
-*/
-
-/*
- * pulsante utilizzato per entrare in modalià editing
- */
-h1 button.edit {
-    margin: 0 15px;
-    position: relative;
-    top: -8px;
 }
 
-/* Hovering help text */
-
-.help-text {
-	background-color: #fff;
-	border:2px solid #635443;
-	padding: 10px 15px;
-	
-	width: 200px;
-	display: none;
-/* 	color:#FCF8C0; */
-	text-align: left;
-	font-size: 12px;
-
-	/* outline radius for mozilla/firefox only */
-	-moz-box-shadow:0 0 10px #7d6f60;
-	-webkit-box-shadow: 0 0 10px #7d6f60;
-	box-shadow: 0 0 10px #7d6f60;
-}
-
-.tooltip {
-	background-color:#301D1D;
-	border:1px solid #fff;
-	padding:10px 15px;
-	display:none;
-	color:#FCF8C0;
-	text-align:left;
-	font-size:12px;
-
-	/* outline radius for mozilla/firefox only */
-	-moz-box-shadow:0 0 10px #000;
-	-webkit-box-shadow:0 0 10px #000;
-}
-
-
-.talk-compact {
-    margin: 0 0 10px 0;
-    background: #E1DBC5;
-    padding: 5px;
-}
-
-.talk-compact .title {
-    font-weight: bold;
-}
-
-.talk-compact .info {
-    margin: 0 0 0 5px;
-}
-
-.talk-compact .abstract {
-    /* two lines: line-height * 2*/
-    height: 40px;
-    overflow: hidden;
-}
-
-.talk-compact .buttons {
-    text-align: right;
-}
-
-.talk-compact button {
-    padding: 0;
-}
-
-.talk-compact .edit {
-    background: darkorange;
-}
-
-.talk-compact .delete {
-    background: firebrick;
-}
-
-#classic-login form {
-    margin: 0 auto;
-    width: 200px;
-}
-
-button a {
-    color: white;
-    border: 0;
-}
-
-/*
-label:after {
-    content: ":";
-}
-*/
 
 /*
  * un layout più compatto per i booleanfield:
@@ -291,13 +200,6 @@ label:after {
     top: -19px;
 }
 
-.field .errorlist {
-    margin: 0;
-}
-
-.field .errorlist li {
-    margin-bottom: 0;
-}
 
 form hr {
     margin: 0;

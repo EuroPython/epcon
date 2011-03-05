@@ -1259,9 +1259,10 @@ section.teaser p {
 
 .janrain-box {
     width: 400px;
-    height: 240px;
-    margin: 0 auto 50px auto;
     display: block;
+    
+    min-height: 240px;
+    _height: 240;    
 }
 
 
@@ -1326,4 +1327,82 @@ section.notice a {
 	-webkit-box-shadow: 0 0 55px #7d6f60;
 	box-shadow: 0 0 55px #7d6f60;
 }
+
+
+
+
+
+
+/* ================== */
+/* ! Talk managment   */
+/* ================== */
+
+
+h1 button.edit {
+    margin: 0 15px;
+    position: relative;
+    top: -8px;
+}
+
+/* Hovering help text */
+
+.tooltip,
+.help-text {
+	background-color: #fff;
+	border:2px solid #635443;
+	padding: 10px 15px;
+	
+	width: 200px;
+	display: none;
+/* 	color:#FCF8C0; */
+	text-align: left;
+	font-size: 12px;
+
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #7d6f60;
+	-webkit-box-shadow: 0 0 10px #7d6f60;
+	box-shadow: 0 0 10px #7d6f60;
+}
+
+.tooltip {
+    width: auto;
+}
+
+
+.talk-compact {
+    margin: 0 0 10px 0;
+    background: #E1DBC5;
+    padding: 5px;
+}
+
+.talk-compact .title {
+    font-weight: bold;
+}
+
+.talk-compact .info {
+    margin: 0 0 0 5px;
+}
+
+.talk-compact .abstract {
+    /* two lines: line-height * 2*/
+    height: 40px;
+    overflow: hidden;
+}
+
+.talk-compact .buttons {
+    text-align: right;
+}
+
+.talk-compact button {
+    padding: 0;
+}
+
+.talk-compact .edit {
+    background: darkorange;
+}
+
+.talk-compact .delete {
+    background: firebrick;
+}
+
 
