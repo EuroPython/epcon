@@ -171,6 +171,7 @@ NewAccountForm = autostrip(NewAccountForm)
 
 class FormTickets(forms.Form):
     payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
+    order_type = forms.ChoiceField(choices=(('non-deductible', 'Personal Purchase'), ('deductible', 'Company Purchase')), initial='non-deductible')
 
     def __init__(self, *args, **kwargs):
         super(FormTickets, self).__init__(*args, **kwargs)
@@ -190,7 +191,7 @@ class FormTickets(forms.Form):
         o = []
         total = 0
         for k, q in data.items():
-            if k in ('payment',):
+            if k in ('payment', 'order_type'):
                 continue
             if not q:
                 continue
