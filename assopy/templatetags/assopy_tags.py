@@ -88,6 +88,12 @@ def field_display_value(field):
     return val
 
 @register.filter
+def field_widget(field, attrs):
+    attrs = dict(map(lambda _: _.strip(), x.split('=')) for x in attrs.split(','))
+    field.field.widget.attrs.update(attrs)
+    return field
+
+@register.filter
 def as_range(value):
     return range(value)
 
