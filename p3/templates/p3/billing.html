@@ -60,6 +60,12 @@
                 <div class="span-6">{{ form.card_name|field }}</div>
                 <div class="span-6">{{ form.country|field }}</div>
                 <div class="span-6">{{ form.address|field_widget:"size=58"|field }}</div>
+                <div class="span-6 cms">
+                    <div id="google-guess" style="display: none">
+                        <p>Google says:</p>
+                        <ul></ul>
+                    </div>
+                </div>
                 <div class="span-6">{{ form.billing_notes|field }}</div>
 {% comment %}
 <!--                 <div class="span-3 last">&nbsp;</div> -->
@@ -81,21 +87,47 @@
         
         
         <script type="text/javascript">
-            function onCountryChanged(e) {
-                var e = $(e);
-                console.log(e.val());
-                var it = e.val().toUpperCase() == 'IT';
-                if(it) {
-                    $('#id_cf_number').removeAttr('disabled');
-                    $('#id_provincia').removeAttr('disabled');
-                }
-                else {
-                    $('#id_cf_number').attr('disabled', true);
-                    $('#id_provincia').attr('disabled', true);
-                }
+            function _geoCode() {
+                var address = $('#id_address').val();
+                var region = $('#id_country').val();
+                var url = "{% url assopy-geocode %}";
+                $.getJSON(
+                    url,
+                    {
+                        'address': address,
+                        'region': region
+                    },
+                    function(data, textStatus, xhr) {
+                        var results = []
+                        if(data.status == 'OK') {
+                            $.each(data.results, function(ix, value) {
+                                results.push(value.formatted_address);
+                            })
+                        }
+                        var output = $('#google-guess');
+                        $('ul', output).remove();
+                        if(results.length > 0) {
+                            var ul = $('<ul>');
+                            $.each(results, function(ix, value) {
+                                ul.append($('<li><a href="#">' + value + '</a></li>'));
+                            })
+                            $('a', ul).click(function(e) {
+                                e.preventDefault()
+                                var address = $(this).html();
+                                $('#id_address').val(address.substr(0, address.lastIndexOf(',')));
+                            })
+                            output.append(ul);
+                            if(!output.is(':visible'))
+                                output.slideDown(1000);
+                        }
+                        else {
+                            output.slideUp('fast');
+                        }
+                    }
+                );
             }
-            $('#id_country').change(function(e) { onCountryChanged(e.target); })
-            onCountryChanged($('#id_country'));
+            $('#id_country').change(_geoCode);
+            $('#id_address').change(_geoCode);
         </script>
     </div>
 {% endblock %}
