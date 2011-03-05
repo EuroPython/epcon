@@ -175,10 +175,12 @@ def cart(request):
         #    return Fare.objects.all()
         def clean(self):
             data = super(P3FormTickets, self).clean()
-            company = at == 'c'
-            for fare, quantity in data['tickets']:
+            order_type = data['order_type']
+            company = order_type == 'deductible'
+            for ix, row in list(enumerate(data['tickets']))[::-1]:
+                fare, quantity = row
                 if (company ^ (fare.code[-1] == 'C')):
-                    self._errors[fare.code] = self.error_class([ 'Invalid Fare'])
+                    del data['tickets'][ix]
                     del data[fare.code]
             return data
     # user-cart serve alla pagina di conferma con i dati di fatturazione,
@@ -191,7 +193,9 @@ def cart(request):
             request.session['user-cart'] = form.cleaned_data
             return redirect('p3-billing')
     else:
-        form = P3FormTickets()
+        form = P3FormTickets(initial={
+            'order_type': 'deductible' if at == 'c' else 'non-deductible',
+        })
     fares = {}
     for f in form.available_fares():
         fares[f.code] = f
