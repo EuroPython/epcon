@@ -2,18 +2,25 @@
 {% load assopy_tags %}
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Create a new account</h1> 
-    <div class="cms">
-        <form action=".?next={{ next }}" method="post">{% csrf_token %}
-            <fieldset>
-                <legend></legend>
-                {% for f in form %}{{ f|field }}{% endfor %}
-                {% if form.non_field_errors %}
-                <p class="errornote">{{ form.non_field_errors }}</p>
-                {% endif %}
-            </fieldset>
-            <fieldset class="border">
-                <button type="submit">Create</button>
-            </fieldset>
-        </form>
+    
+    <div class="span-5">
+
+        <div class="form-box">
+            <form action=".?next={{ next }}" method="post">{% csrf_token %}
+                <fieldset>
+<!--                     <legend></legend> -->
+                    {% for f in form %}{{ f|field }}{% endfor %}
+                    {% if form.non_field_errors %}
+                        <!-- ??? -->
+                        <p class="errornote">{{ form.non_field_errors }}</p>
+                    {% endif %}
+                </fieldset>
+                <fieldset class="border">
+                    <button name="" value="" type="submit">Create Account</button>
+                </fieldset>
+            </form>
+        </div>
+    
     </div>
+    
 {% endblock %}

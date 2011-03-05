@@ -1,27 +1,44 @@
 {% extends "assopy/base.html" %}
 {% load assopy_tags i18n %}
+
+{% block EXTRA_HEAD %}
+<style type="text/css">
+
+h1 span {
+    color: #635443;
+}
+
+.profile-picture {
+    border: 5px solid #aba18f;
+
+}
+
+</style>
+{% endblock %}
+
+
 {% block ASSOPY_MAIN_CONTENT %}
-    <h1>{{ user.name }} - Your profile</h1>
-    <div class="span-2">
-            {% with user.photo_url as u %}
-            {% if u %}
-            <div class="floated">
-                <img src="{{ u }}" alt="{{ user.name }}" width="98" />
-            </div>
-            {% endif %}
-            {% endwith %}
-    </div>
-    <div class="span-5 append-1">
-        <div class="cms">
+    <h1>{{ user.name }} <span>(Your profile)</span></h1>
+    <div class="span-5">
+        <div class="form-box">
             <form action="{% url assopy-profile %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
                     {% for f in form %}{{ f|field }}{% endfor %}
                 </fieldset>
                 <fieldset class="border">
-                    <button type="submit">{% trans "save" %}</button>
+                    <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
                 </fieldset>
             </form>
         </div>
+    </div>
+    <div class="span-2 append-1">
+            {% with user.photo_url as u %}
+            {% if u %}
+            <div class="profile-picture">
+                <img class="block" src="{{ u }}" alt="{{ user.name }}" width="98" />
+            </div>
+            {% endif %}
+            {% endwith %}
     </div>
     <div class="span-4 last">
         <aside>
@@ -29,7 +46,7 @@
                 <h4>{% trans "Web accounts for login" %}</h4>
                 <ul id="web-accounts">
                     {% for i in user.identities.all %}
-                    <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span> <img class="delete" src="{{ STATIC_URL }}assopy/i/delete.png" title="delete" /></li>
+                    <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="Delete account" /></li>
                     {% endfor %}
                 </ul>
                 <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
@@ -58,11 +75,11 @@
                 $('input[name=identifier]', form).val(id);
                 form.ajaxSubmit({
                     success: function() {
-                        feedback('web access removed');
+                        feedback('Web access removed');
                         parent.remove();
                     },
                     error: function(xhr, status, error) {
-                        alert('cannot remove the requested item, please contact info@pycon.it for assistance');
+                        alert('Cannot remove the requested item, please contact info@pycon.it for assistance');
                     }
                 });
             });
