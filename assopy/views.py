@@ -27,6 +27,7 @@ from conference import models as cmodels
 
 import json
 import logging
+import urllib
 from itertools import izip_longest
 
 log = logging.getLogger('assopy.views')
@@ -59,6 +60,28 @@ def render_to(template):
             return output
         return wrapper
     return renderer
+
+def render_to_json(f):
+    if dsettings.DEBUG:
+        ct = 'text/plain'
+        j = lambda d: json.dumps(d, indent=2)
+    else:
+        ct = 'application/json'
+        j = json.dumps
+    def wrapper(*args, **kw):
+        try:
+            result = f(*args, **kw)
+        except Exception, e:
+            result = j(str(e))
+            status = 500
+        else:
+            if isinstance(result, http.HttpResponse):
+                return result
+            else:
+                result = j(result)
+                status = 200
+        return http.HttpResponse(content=result, content_type=ct, status=status)
+    return wrapper
 
 @login_required
 @render_to('assopy/profile.html')
@@ -335,3 +358,21 @@ def tickets(request):
     if settings.TICKET_PAGE:
         return redirect(settings.TICKET_PAGE)
     return {}
+
+@login_required
+@render_to_json
+def geocode(request):
+    address = request.GET.get('address', '').strip()
+    region = request.GET.get('region')
+    if not address:
+        return ''
+
+    params = {
+        'address': address,
+        'sensor': 'false',
+    }
+    if region:
+        params['region'] = region.strip()
+    url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode(params)
+    data = json.loads(urllib.urlopen(url).read())
+    return data
