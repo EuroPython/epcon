@@ -226,6 +226,9 @@ def billing(request):
         payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')), initial='paypal')
         billing_notes = forms.ChoiceField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
+        class Meta(BillingData.Meta):
+            exclude = ('city', 'zip_code', 'state', 'vat_number', 'tin_number')
+
     if request.method == 'POST':
         # non voglio che attraverso questa view sia possibile cambiare il tipo
         # di account company/private
@@ -234,6 +237,7 @@ def billing(request):
         post_data['account_type'] = auser.account_type
         form = P3BillingData(instance=auser, data=post_data)
         if form.is_valid():
+            form.save()
             o = Order.objects.create(
                 user=auser, payment='bank',
                 personal=fare_types.pop(),

@@ -57,7 +57,7 @@
 
 
                 <div class="span-6">{{ form.payment|field }}</div>
-                <div class="span-6">{{ form.card_name|field }}</div>
+                <div class="span-6">{{ form.card_name|field_widget:"size=58"|field }}</div>
                 <div class="span-6">{{ form.country|field }}</div>
                 <div class="span-6">{{ form.address|field_widget:"size=58"|field }}</div>
                 <div class="span-6 cms">
@@ -67,18 +67,6 @@
                     </div>
                 </div>
                 <div class="span-6">{{ form.billing_notes|field }}</div>
-{% comment %}
-<!--                 <div class="span-3 last">&nbsp;</div> -->
-                <div class="span-6">{{ form.country|field }}</div>
-<!--                 <div class="span-3 last">&nbsp;</div> -->
-                <div class="span-3">{{ form.city|field }}</div>
-                <div class="span-3 last">{{ form.zip_code|field }}</div>
-                <div class="span-6">{{ form.state|field }}</div>
-<!--                 <div class="span-3 last">&nbsp;</div> -->
-                <div class="span-3">{{ form.vat_number|field }}</div>
-                <div class="span-3">{{ form.tin_number|field }}</div>
-<!--                 <div class="span-3 last">&nbsp;</div> -->
-{% endcomment %}
             </fieldset>
             <fieldset class="border">
                 <button value="" name="" type="submit">Place Order &rarr;</button>
