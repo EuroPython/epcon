@@ -23,4 +23,6 @@ urlpatterns = patterns('',
     url(r'^otc/(?P<token>.{36})/$', 'assopy.views.otc_code', name='assopy-otc-token'),
     url(r'^checkout/$', 'assopy.views.checkout', name='assopy-checkout'),
     url(r'^tickets/$', 'assopy.views.tickets', name='assopy-tickets'),
+
+    url(r'^geocode/$', 'assopy.views.geocode', name='assopy-geocode'),
 )
