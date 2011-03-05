@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django import forms
 from django import http
 from django.conf import settings
 from django.contrib import auth
@@ -14,7 +15,7 @@ from assopy.forms import BillingData
 from assopy.models import Order, User, UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
 
-import forms
+import forms as p3forms
 import models
 from conference.models import Fare, Ticket
 
@@ -94,7 +95,7 @@ def ticket(request, tid):
             raise http.Http404()
     if request.method == 'POST':
         if t.fare.ticket_type == 'conference':
-            form = forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
+            form = p3forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():
                 return http.HttpResponseBadRequest(str(form.errors))
 
@@ -132,7 +133,7 @@ def ticket(request, tid):
                 request.user.last_name = l
                 request.user.save()
         else:
-            form = forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
+            form = p3forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():
                 return http.HttpResponseBadRequest(str(form.errors))
             form.save()
@@ -215,9 +216,15 @@ def billing(request):
         tickets.append((fare, quantity, t))
         total += t
 
+    # non si possono comprare biglietti destinati ad entità diverse
+    # (persone/ditte)
     fare_types = set(x[0].personal for x in tickets)
     if len(fare_types) != 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
+
+    class P3BillingData(BillingData):
+        payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')), initial='paypal')
+        billing_notes = forms.ChoiceField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
     if request.method == 'POST':
         # non voglio che attraverso questa view sia possibile cambiare il tipo
@@ -225,7 +232,7 @@ def billing(request):
         auser = request.user.assopy_user
         post_data = request.POST.copy()
         post_data['account_type'] = auser.account_type
-        form = BillingData(instance=auser, data=post_data)
+        form = P3BillingData(instance=auser, data=post_data)
         if form.is_valid():
             o = Order.objects.create(
                 user=auser, payment='bank',
@@ -237,7 +244,7 @@ def billing(request):
             else:
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
     else:
-        form = BillingData(instance=request.user.assopy_user)
+        form = P3BillingData(instance=request.user.assopy_user)
         
     return {
         'tickets': tickets,
