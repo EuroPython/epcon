@@ -1,15 +1,17 @@
 {% load p3 conference %}
 {% latest_deadlines as deadlines %}
-<section class="cal clearfix">
+<div class="cal all-deadlines">
     {% for d in deadlines %}
-    <div class="deadline">
+    <!--  @@TODO: Add CSS class "expired" -->
+    <div class="deadline clearfix">
         <h3><span>{{ d.0|date:"d" }}</span><br />{{ d.0|date:"b" }}</h3>
         <div> 
             <h4>{% if d.1.headline %}{{ d.1.headline|safe }}{% else %}{{ d.1.body|safe }}{% endif %}</h4>
+            <!-- @@TODO: Do not show body if deadline expired -->
             {% if d.1.headline and d.1.body %}
-            <p>{{ d.1.body|safe }}</p>
+                <p>{{ d.1.body|safe }}</p>
             {% endif %}
         </div>
     </div>
     {% endfor %}
-</section>
+</div>

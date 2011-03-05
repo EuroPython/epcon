@@ -825,79 +825,6 @@ footer nav li img {
 
 
 
-/* ============= */
-/* ! deadlines   */
-/* ============= */
-
-
-
-#deadlines {
-/*     list-style: none; */
-    margin: 0;
-}
-
-#deadlines p {
-    margin: 0;
-}
-
-#deadlines li {
-
-    /* IE */
-/*     background: #222d4d url(../i/bg-cal.png) left center no-repeat; */
-    /* rest of the world */
-    background-color: rgba(34, 45, 77, .8);
-
-    margin: 0 0 10px 0;        
-}
-
-
-/* reset value on hover */
-#deadlines li:hover {
-    opacity: 1.0 !important;
-}
-
-
-#deadlines h3 {
-    float: left;
-    width: 50px;
-    margin: 0;
-    
-/*     text-align: center; */
-    
-    color: #d7cef5;
-    
-/*     font: normal 13px/20px  "Museo", "Trebuchet MS", "Lucida Grande", "Lucida Sans", Arial, sans-serif;     */
-    
-/*     text-transform: uppercase; */
-    
-    text-shadow: #222c4d 1px 1px 1px;  
-    
-    padding: 10px 0 10px 5px;
-    
-}
-
-#deadlines h3 span {
-
-    text-transform: none;
-    color: #9dcc4f;
-
-/*     font-family: "Museo Sans"; */
-
-}
-
-
-#deadlines div {
-    float: left;
-    width: 470px;
-
-    margin: 0 0 0 15px; 
-
-    padding: 10px 0;
-
-}
-
-
-
 
 /* ====== */
 /* ! ad   */
@@ -1132,52 +1059,70 @@ section.teaser p {
 /* ======= */
 
 
-section.cal {
+.cal {
     margin: 0 0 40px 0;
-    padding: 5px 0;
-
+/*     padding: 5px 0; */
 }
 
-section.cal div.deadline {
+.cal .deadline {
     background: #e1dbc5;
+    margin: 0 0 20px 0;
 }
 
-section.cal h3 {
+.cal .deadline.expired {
+    opacity: .7;
+}
+
+
+.cal h3 {
     width: 70px;
     color: #7D6F60;
     text-align: center;
     font-size: 21px;
     letter-spacing: 1px;
-    display: table-cell;
-/*     padding: 5px 0 0 0; */
+    float: left;
+    padding: 5px 0 0 0;
 }
 
-section.cal h3 span {
+.cal h3 span {
     letter-spacing: 0;
     font-size: 30px;
-    color: #301D1D;            
+    line-height: 30px;
+    color: #4895A3;            
 }
 
-section.cal div.deadline div {
-    width: 700px;
-    display: table-cell;
+.cal .deadline div {
+    margin-left: 70px;
 }
 
-section.cal h4 {
+.cal h4 {
+/*     padding: 5px 0 0 0; */
     margin: 0 0 5px 0;
 }
 
-section.cal h4 b {
-    /* For to do not use bold for League Gothic, it doesn't exist */
+
+.cal .deadline.expired h4 {
+    text-decoration: line-through;
+}
+
+
+.cal h4 b {
+    /* Force to *not* use bold for League Gothic, it doesn't exist */
     font-weight: normal;
     color: #4895A3;
 }
 
-section.cal div p {
-/*     font-size: 13px; */
+.cal div p {
+    color: #635443;
+    padding: 0 10px 10px 0;
 }
 
-
+/* On home page we have more room  */
+/*
+.home .cal div.deadline div {
+    width: 700px;
+}
+*/
 
 /* ========== */
 /* ! ticket   */

@@ -8,15 +8,15 @@
     </div>
     {% cache 600 deadline %}
     {% latest_deadlines 1 as l %}
-    <section class="cal clearfix">
-        <div class="deadline">
+    <div class="cal">
+        <div class="deadline clearfix">
             <h3><span>{{ l.0.0|date:"d" }}</span><br />{{ l.0.0|date:"b" }}</h3>
             <div>
                 <h4>{% if l.0.1.headline %}{{ l.0.1.headline|safe }}{% else %}{{ l.0.1.body|safe }}{% endif %}</h4>
                 <p><a href="/calendar/">See all deadlines &rarr;</a></p>
             </div>
         </div>
-    </section>
+    </div>
     {% endcache %}
 </div>
     
