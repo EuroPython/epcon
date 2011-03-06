@@ -237,10 +237,11 @@ def billing(request):
         post_data['account_type'] = auser.account_type
         form = P3BillingData(instance=auser, data=post_data)
         if form.is_valid():
+            data = form.cleaned_data
             form.save()
             o = Order.objects.create(
-                user=auser, payment='bank',
-                personal=fare_types.pop(),
+                user=auser, payment=data['payment'],
+                deductible=not fare_types.pop(),
                 items=request.session['user-cart']['tickets'],
             )
             if o.payment_url:
