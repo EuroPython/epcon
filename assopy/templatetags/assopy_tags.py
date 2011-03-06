@@ -12,7 +12,7 @@ register = template.Library()
 
 _field_tpl = template.Template("""
     <div class="{{ classes|join:" " }}">
-        <label for="{{ field.auto_id }}">{% if field.field.required %}<span class="show-tooltip required" title="required">*</span>{% endif %}{{ field.label }}</label>
+        <label for="{{ field.auto_id }}">{{ field.label }}{% if field.field.required %}<span class="required">(required)</span>{% endif %}</label>
         {{ field }}
         {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
         {{ field.errors }}
