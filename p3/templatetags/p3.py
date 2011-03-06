@@ -104,7 +104,7 @@ def box_talks_conference(context, talks):
 
 @register.inclusion_tag('p3/box_latest_tweets.html', takes_context=True)
 def box_latest_tweets(context):
-    return {}
+    return context
 
 # I tweet venogno scaricati ogni 5 minuti, a volte però twitter non risponde o
 # solleva un errore, in questo caso mostriamo gli ultimi tweet validi che
