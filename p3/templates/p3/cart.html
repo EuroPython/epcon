@@ -20,8 +20,7 @@
         {% endif %}
 
         {{ form|form_errors }}
-
-        <form id="form-cart" action="{% url p3-cart %}" method="post">{% csrf_token %}
+        <form id="form-cart" action="{% url p3-cart %}" method="post"{% if not account_type %} class="disabled"{% endif%}>{% csrf_token %}
             <fieldset>
  
                 <legend>Conference tickets</legend>
@@ -29,8 +28,10 @@
                 <p>{Sample text} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus orci at lectus ornare 
                 et suscipit orci luctus.</p>
 
+                {{ form.order_type|field }}
+
                 <div class="cms">    
-                    <table>
+                    <table id="conference-tickets">
                         <col />
 
                         <col style="background: #E1DBC5" />
@@ -41,17 +42,7 @@
 
                         <col style="background: #E1DBC5" />
                         <col style="background: #E1DBC5" />
-                        
-{%comment %}    
-                        <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
-                        <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
-                        
-                        <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
-                        <col {% if account_type != "p" %} style="background: #2d3b66"{% endif %}/>
-                        
-                        <col {% if account_type != "c" %} style="background: #2d3b66"{% endif %}/>
-                        <col {% if account_type != "c" %} style="background: #2d3b66"{% endif %}/>
-{% endcomment %}
+
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -218,17 +209,23 @@
             </fieldset>
         </form>
         <script type="text/javascript">
+            {% if not account_type %}
+                $('#form-cart input').attr('disabled', true);
+                $('#form-cart select').attr('disabled', true);
+            {% else %}
             function calcTotal() {
                 var totals = [ 0, 0, 0];
                 $('#form-cart fieldset').each(function(ix, e) {
                     if(ix >= totals.length)
                         return;
                     $('input', this).each(function() {
-                        var x = Number(this.value);
-                        if(!isNaN(x)) {
-                            var fare = Number($('#fare-' + this.name).attr('data-amount'));
-                            if(!isNaN(fare))
-                                totals[ix] += x * fare;
+                        if(!$(this).attr('disabled')) {
+                            var x = Number(this.value);
+                            if(!isNaN(x)) {
+                                var fare = Number($('#fare-' + this.name).attr('data-amount'));
+                                if(!isNaN(fare))
+                                    totals[ix] += x * fare;
+                            }
                         }
                     });
                 });
@@ -250,7 +247,28 @@
                         e.preventDefault()
                     }
                 });
-            calcTotal();
+            function _enableFares(personal) {
+                $('#conference-tickets td.fare').each(function() {
+                    var td = $(this);
+                    var fare_code = td.attr('data-fare');
+                    var e = ((fare_code[3] == 'C' && !personal) || (fare_code[3] != 'C' && personal));
+                    var inputs = $('input', td);
+                    if(e) {
+                        td.removeClass('disabled');
+                        inputs.attr('disabled', false);
+                    }
+                    else {
+                        td.addClass('disabled');
+                        inputs.attr('disabled', true);
+                    }
+                });
+            }
+            $('#id_order_type').change(function() {
+                _enableFares($(this).val() != 'deductible');
+                calcTotal();
+            });
+            $('#id_order_type').change();
+            {% endif %}
         </script>
     </div>
 {% endblock %}
