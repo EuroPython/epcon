@@ -3,13 +3,12 @@
 <div class="cal all-deadlines">
     {% for d in deadlines %}
     <!--  @@TODO: Add CSS class "expired" -->
-    <div class="deadline clearfix">
-        <h3><span>{{ d.0|date:"d" }}</span><br />{{ d.0|date:"b" }}</h3>
+    <div class="deadline clearfix{% if d.isExpired %} expired{% endif %}">
+        <h3><span>{{ d.date|date:"d" }}</span><br />{{ d.date|date:"b" }}</h3>
         <div> 
-            <h4>{% if d.1.headline %}{{ d.1.headline|safe }}{% else %}{{ d.1.body|safe }}{% endif %}</h4>
-            <!-- @@TODO: Do not show body if deadline expired -->
-            {% if d.1.headline and d.1.body %}
-                <p>{{ d.1.body|safe }}</p>
+            <h4>{% if d.headline %}{{ d.headline|safe }}{% else %}{{ d.body|safe }}{% endif %}</h4>
+            {% if not d.isExpired and d.headline and d.body %}
+                <p>{{ d.body|safe }}</p>
             {% endif %}
         </div>
     </div>
