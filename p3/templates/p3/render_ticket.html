@@ -1,16 +1,19 @@
 {% load assopy_tags %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
 
-    <div class="ticket-status inactive">
-        &darr; This ticket is not active; waiting bank transfer: O/11.0001
-    </div>
-
-<!--
-    Show this if you don't have any message
+    {% comment %} più biglietti possono far riferimento al solito ordine, forse
+    è il caso di una cache?{% endcomment %}
+    {% with ticket.orderitem.order as order %}
+    {% if order.complete %}
     <div class="ticket-status">
         &nbsp;
     </div>
--->
+    {% else %}
+    <div class="ticket-status inactive">
+        &darr; This ticket is not active; waiting bank transfer: {{ order.code }}
+    </div>
+    {% endif %}
+    {% endwith %}
 
     <div class="preview">
         <h2>{{ ticket.fare.name }}</h2>
