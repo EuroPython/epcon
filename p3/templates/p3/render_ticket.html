@@ -30,23 +30,22 @@
             {% endfor %}
         </div>
         
-        <div class="ticket-assigned-to"{% if not blocked %} style="display: none"{% endif %}>
-            Currently assigned to <b>{{ form.assigned_to|field_value }}</b>&nbsp;<a href="#" class="reclaim-button">(click to reclaim)</a>.
-        </div>   
-
-        <div class="ticket-commands"{% if blocked %} style="display: none"{% endif %}>            
+        {% if blocked %}
+        <div class="ticket-commands ticket-assigned-to">
+            <p>
+            Currently assigned to <b>{{ form.assigned_to|field_value }}</b> | <a href="#" class="reclaim-button">Reclaim</a>.
+            </p>
+        </div>
+        {% else %}
+        <div class="ticket-commands">
             <p>
                 <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a> |
                 {% if user == ticket.user %}
                 <a href="#" class="button mini assign-button">Assign to user</a>
                 {% endif %}
-                {% comment %}
-                <!-- if blocked... -->
-                | <a href="reclaim">Reclaim</a>
-                <!-- endif -->
-                {% endcomment %}
             </p>
         </div>
+        {% endif %}
     {% else %}
         <div class="ticket-commands">            
             <p><a href="#">Edit information</a></p>

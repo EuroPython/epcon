@@ -1232,6 +1232,10 @@ section.teaser p {
     color: #635443;
 }
 
+.ticket-assigned-to.ticket-commands {
+    opacity: 1;
+}
+
 .ticket-name,
 .ticket-tagline,
 .ticket-python-experience {
