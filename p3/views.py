@@ -32,6 +32,13 @@ def map_js(request):
 @render_to('p3/tickets.html')
 def tickets(request):
     tickets = models.TicketConference.objects.available(request.user, settings.CONFERENCE_CONFERENCE)
+    # non mostro i biglietti associati ad ordini paypal che non risultano
+    # ancora "completi"; poiché la notifica IPN è quasi contestuale al ritorno
+    # dell'utente sul nostro sito, filtrando via gli ordini non confermati
+    # elimino di fatto vecchi record rimasti nel db dapo che l'utente non ha
+    # confermato il pagamento sul sito paypal o dopo che è tornato indietro
+    # utilizzando il pulsante back
+    tickets = filter(lambda x: x.orderitem.order.method != 'paypal' or x.orderitem.order.complete(), tickets)
     return {
         'tickets': tickets,
     }
