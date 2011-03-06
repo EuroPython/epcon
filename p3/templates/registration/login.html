@@ -1,0 +1,120 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+
+{% block EXTRA_HEAD %}
+<style type="text/css">
+
+.or {
+    text-align:center;     
+    margin: 0 0 40px 0;
+    
+    background: transparent url({{ STATIC_URL }}p5/i/sep.png) center left repeat-x;
+}
+
+
+.or span {
+	font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;	
+	text-transform: uppercase;    
+    
+    color: #4895a3;	
+    
+    letter-spacing: 2px;
+    padding: 0 10px;
+    
+    background: #fcfad9;
+}
+
+h2 {
+    margin: 0 0 10px 0;    
+/*     color: #4895a3; */
+    color: #635443;
+    text-align: center;
+}
+
+.create-account {
+    background: #E1DBC5;
+    
+    padding: 15px 10px;
+	border: 1px solid #aba18f;    
+}
+
+.login-method {
+    font-size: 1.1em;
+}
+
+.login-method p {
+    margin-bottom: 10px;
+}
+</style>
+{% endblock %}
+    
+{% block ASSOPY_MAIN_CONTENT %}
+
+    <h1>Log into EuroPython</h1>
+
+    <div class="login-method">
+        <h2>By using one of your existing web accounts</h2>
+
+        <hr />
+
+        <div class="span-5">
+            <p>{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
+        </div>
+
+        <div class="span-7 last">        
+            {% render_janrain_box next "embed" %}      
+        </div>
+    </div>
+    
+    <hr />
+
+    <div class="or"><span>OR</span></div>
+
+    <div class="login-method">
+        <h2>By using email/password</h2>
+
+        <hr />
+
+        <div>
+            <p>{% trans "If you really really don't want to use an existing web account but you prefer a standard registration/login form," %} <a id="show-classic-login" href="#">{% trans "click here" %}</a></p>
+            <div id="classic-login"{% if form.errors|length == 0 %} style="display: none"{% endif %}>
+                <div class="span-7 append-1">
+                    <div class="form-box">
+                        <h2>Your EuroPython account</h2>
+                        
+                        {% if form.errors %}
+                            <div class="error-notice">{% trans "Invalid credentials" %}</div>
+                        {% endif %}
+                
+                        <form action="" method="post">{% csrf_token %}
+                            <fieldset>
+                                {{ form.email|field }}
+                                {{ form.password|field }}
+                                <input type="hidden" name="next" value="{{ next }}" />
+                            </fieldset>
+                            <fieldset class="border">
+                                <button name="" value="" type="submit">Log in</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="span-4 last">                
+                    <div class="create-account">
+                        <h2>{% trans "Don&#8217;t you have an account?" %}</h2>
+                        <div class="button">
+                            <a href="{% url assopy-new-account %}?next={{ next }}" class="button">Create a new account now</a>
+                        </div>                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('#show-classic-login').click(function(e) {
+            e.preventDefault();
+            $('#classic-login').slideDown('slow');
+        })
+    </script>
+{% endblock %}
+
