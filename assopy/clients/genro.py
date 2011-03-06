@@ -148,3 +148,6 @@ def create_order(order):
     order.code = result['order_code']
     order.payment_url = result['paypal_url']
     order.save()
+
+def order(id):
+    return _get('/orders/%s' % id)
