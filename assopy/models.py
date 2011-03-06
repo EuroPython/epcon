@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
 from django.db import transaction
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 import os
@@ -266,13 +267,16 @@ class UserIdentity(models.Model):
 
 class OrderManager(models.Manager):
     @transaction.commit_on_success
-    def create(self, user, payment, items, personal=True, remote=True):
+    def create(self, user, payment, items, deductible=False, billing_notes='', remote=True):
         log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
         o = Order()
         o.code = None
         o.method = payment
         o.user = user
-        o.personal = personal
+        o.deductible = deductible
+
+        o.billing_notes = billing_notes
+
         o.card_name = user.card_name or user.name()
         o.vat_number = user.vat_number
         o.tin_number = user.tin_number
@@ -281,6 +285,7 @@ class OrderManager(models.Manager):
         o.address = user.address
         o.city = user.city
         o.state = user.state
+
         o.save()
         for f, q in items:
             for _ in range(q):
@@ -292,17 +297,7 @@ class OrderManager(models.Manager):
         if remote:
             genro.create_order(o)
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
-
-        # feedback
-        rows = []
-        for x in o.orderitem_set.order_by('ticket__fare__code'):
-            rows.append('%-15s%6.2f' % (x.ticket.fare.code, x.ticket.fare.price))
-        rows.append('-'*21)
-        rows.append('%15s%6.2f' % ('', o.total()))
-        send_email(
-            subject='new order from "%s %s" (%s)' % (user.user.first_name, user.user.last_name, payment),
-            message='\n'.join(rows),
-        )
+        _order_feedback(o)
         return o
 
 ORDER_PAYMENT = (
@@ -317,10 +312,15 @@ class Order(models.Model):
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
     payment_url = models.TextField(blank=True)
 
-    # Se True l'ordine si considera fatto da un privato che non può detrarre
-    # l'iva dalla fattura/ricevuta
-    personal = models.BooleanField(default=True)
-    # Ragione sociale
+    # Se False l'ordine non è deducibile; l'acquirente ha comprato biglietti ad
+    # uso "personale" e non vogliamo che possa dedurli. Questo flag informa il
+    # software di fatturazione di riportare in fattura una dicitura apposita.
+    deductible = models.BooleanField(default=False)
+
+    # note libere che l'acquirente può inserire in fattura
+    billing_notes = models.TextField()
+
+    # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
     tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
@@ -328,7 +328,6 @@ class Order(models.Model):
     zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
     city = models.CharField(_('City'), max_length=40, blank=True)
-    # la provincia italiana, obbligatorio solo per l'italia
     state = models.CharField(_('State'), max_length=2, blank=True)
 
     objects = OrderManager()
@@ -362,6 +361,9 @@ class Order(models.Model):
         Se l'ordine è fatturabile l'aliquota è lo 0%
         Altrimenti l'aliquota è il 20%
         """
+        # contr'ordine, per quest'anno, 2011, l'IVA, per le conferenze, è
+        # sempre il 20% indipendentemente da tutto
+        return 20.0
         if self.country_id == 'IT':
             return 20.0
         elif self.billable():
@@ -370,7 +372,10 @@ class Order(models.Model):
             return 20.0
 
     def complete(self):
-        return True
+        if not self.assopy_id:
+            # non dovrebbe mai accadere
+            return False
+        return bool(genro.order(self.assopy_id)['invoice_number'])
 
     def total(self):
         return self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']
@@ -378,3 +383,15 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
     ticket = models.OneToOneField('conference.ticket')
+
+def _order_feedback(o):
+    rows = []
+    for x in o.orderitem_set.order_by('ticket__fare__code').select_related():
+        fare = x.ticket.fare
+        rows.append('%-5s %-47s %6.2f' % (fare.code, fare.name, fare.price))
+    rows.append('-' * 60)
+    rows.append('%54s%6.2f' % ('', o.total()))
+    send_email(
+        subject='new order from "%s %s" (%s)' % (o.user.user.first_name, o.user.user.last_name, o.method),
+        message='\n'.join(rows),
+    )
