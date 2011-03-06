@@ -376,3 +376,7 @@ def geocode(request):
     url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode(params)
     data = json.loads(urllib.urlopen(url).read())
     return data
+
+@render_to('assopy/paypal_feedback_ok.html')
+def paypal_feedback_ok(request):
+    return {}

@@ -124,7 +124,7 @@ def create_user(firstname, lastname, email):
     b['email'] = email
     return _post('/users/', b)['id']
 
-def create_order(order):
+def create_order(order, return_url=None):
     b = Bag()
     assert order.user.assopy_id
     rows = list(order.orderitem_set.select_related('ticket__fare'))
@@ -136,6 +136,8 @@ def create_order(order):
     b['personal'] = not order.deductible
     b['billing_notes'] = order.billing_notes
     b['vat_rate'] = order.vat_rate()
+    if return_url:
+        b['return_url'] = return_url
 
     tickets = defaultdict(lambda: 0)
     for r in rows:

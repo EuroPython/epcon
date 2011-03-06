@@ -25,4 +25,6 @@ urlpatterns = patterns('',
     url(r'^tickets/$', 'assopy.views.tickets', name='assopy-tickets'),
 
     url(r'^geocode/$', 'assopy.views.geocode', name='assopy-geocode'),
+
+    url(r'paypal_return/$', 'assopy.views.paypal_feedback_ok', name='assopy-paypal-feedback-ok'),
 )

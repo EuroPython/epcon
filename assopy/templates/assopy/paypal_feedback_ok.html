@@ -1,0 +1,12 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags %}
+{% block ASSOPY_MAIN_CONTENT %}
+    <h1>Purchase completed</h1>
+    <div class="span-12 append-1">
+        <div class="cms">
+            <p>Thank you for the purchase. The transaction was completed and a receipt from paypal is sent to your email address.</p>
+
+            <p>Now you can manage <a href="{% url assopy-tickets %}">your tickets</a></p>
+        </div>
+    </div>
+{% endblock %}
