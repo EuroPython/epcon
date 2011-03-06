@@ -33,12 +33,16 @@ class LatestDeadlinesNode(template.Node):
     Le deadline vengono riportate nella lingua dell'utente con un fallback
     nella lingua di default.
     """
-    def __init__(self, limit, var_name):
+    def __init__(self, limit, var_name, not_expired):
         self.limit = limit
         self.var_name = var_name
+        self.not_expired = not_expired
 
     def render(self, context):
-        query = models.Deadline.objects.all()
+        if self.not_expired:
+            query = models.Deadline.objects.valid_news()
+        else:
+            query = models.Deadline.objects.all()
         if self.limit:
             query = query[:self.limit]
 
@@ -90,7 +94,7 @@ def latest_deadlines(parser, token):
         var_name = contents[-1]
     except IndexError:
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    return LatestDeadlinesNode(limit, var_name)
+    return LatestDeadlinesNode(limit, var_name, True)
 
 class NaviPages(template.Node):
     def __init__(self, page_type, var_name):
