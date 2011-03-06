@@ -5,8 +5,10 @@
     è il caso di una cache?{% endcomment %}
     {% with ticket.orderitem.order as order %}
     {% if order.complete %}
-    <div class="ticket-status">
-        &nbsp;
+    <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
+        {% if user != ticket.user %}
+        &darr; Assigned to you by <b>{{ ticket.user.assopy_user.name }}</b>
+        {% endif %}
     </div>
     {% else %}
     <div class="ticket-status inactive">

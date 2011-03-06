@@ -1192,9 +1192,15 @@ section.teaser p {
 
 
 .ticket-status.inactive {            
-    border-color: #d9415a;        
+    border-color: #d9415a;
     background: #fff;
     color: #d9415a;
+}
+
+.ticket-status.active {
+    border-color: #4895a3;
+    background: #fff;
+    color: #4895a3;
 }
 
 .preview:hover .ticket-commands {
