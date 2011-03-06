@@ -317,6 +317,14 @@ class Order(models.Model):
     # software di fatturazione di riportare in fattura una dicitura apposita.
     deductible = models.BooleanField(default=False)
 
+    # _complete è una cache dello stato dell'ordine; quando è False il metodo
+    # .complete deve interrogare il backend remoto per sapere lo stato
+    # dell'ordine, quando è True significa che l'ordine è stato confermato.
+    # Ovviamente questo non permette di cachare lo stato "non confermato", ma
+    # gli ordine non confermati più vecchi di un carta data dovrebbero essere
+    # eliminati.
+    _complete = models.BooleanField(default=False)
+
     # note libere che l'acquirente può inserire in fattura
     billing_notes = models.TextField()
 
@@ -364,18 +372,25 @@ class Order(models.Model):
         # contr'ordine, per quest'anno, 2011, l'IVA, per le conferenze, è
         # sempre il 20% indipendentemente da tutto
         return 20.0
-        if self.country_id == 'IT':
-            return 20.0
-        elif self.billable():
-            return 0.0
-        else:
-            return 20.0
+        #if self.country_id == 'IT':
+        #    return 20.0
+        #elif self.billable():
+        #    return 0.0
+        #else:
+        #    return 20.0
 
-    def complete(self):
+    def complete(self, update_cache=True, ignore_cache=False):
+        if self._complete and not ignore_cache:
+            return True
         if not self.assopy_id:
-            # non dovrebbe mai accadere
+            # non ha senso chiamare .complete su un ordine non associato al
+            # backend
             return False
-        return bool(genro.order(self.assopy_id)['invoice_number'])
+        r = bool(genro.order(self.assopy_id)['invoice_number'])
+        if r and update_cache:
+            self._complete = r
+            self.save()
+        return r
 
     def total(self):
         return self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']
