@@ -26,7 +26,6 @@
 
 h2 {
     margin: 0 0 10px 0;    
-/*     color: #4895a3; */
     color: #635443;
     text-align: center;
 }
@@ -43,22 +42,14 @@ h2 {
     
 {% block ASSOPY_MAIN_CONTENT %}
 
-    <h1>Log into EuroPython</h1>
+    <h1>Log in</h1>
 
     <h2>By using one of your existing web accounts</h2>
 
     <hr />
 
     <div class="span-5">
-        
-        
-<!--         <div class="cms"> -->
-                
             <p>{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
-<!--             <p>{% trans "If you really really don't want to use an existing web account but you prefer a standard registration/login form," %} <a id="show-classic-login" href="#">{% trans "click here" %}</a></p> -->
-
-<!--         </div> -->
-
     </div>
 
     <div class="span-7 last">        
@@ -73,7 +64,7 @@ h2 {
 
         <div class="form-box" id="classic-login" {% if form.errors|length == 0 %}{% endif %}>
             
-            <h2>By using your EuroPython account</h2>
+            <h2>By using your account</h2>
             
             {% if form.errors %}
                 <div class="error-notice">{% trans "Invalid credentials" %}</div>
@@ -90,7 +81,6 @@ h2 {
                 </fieldset>
             </form>
             
-        <!-- /classic-login -->
         </div>
 
     </div>
@@ -108,14 +98,4 @@ h2 {
         </div>
         
     </div>
-    
-
-<!--
-    <script type="text/javascript">
-        $('#show-classic-login').click(function(e) {
-            e.preventDefault();
-            $('#classic-login').slideDown('slow');
-        })
-    </script>
--->
 {% endblock %}
