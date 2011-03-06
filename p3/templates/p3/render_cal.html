@@ -2,7 +2,6 @@
 {% latest_deadlines as deadlines %}
 <div class="cal all-deadlines">
     {% for d in deadlines %}
-    <!--  @@TODO: Add CSS class "expired" -->
     <div class="deadline clearfix{% if d.isExpired %} expired{% endif %}">
         <h3><span>{{ d.date|date:"d" }}</span><br />{{ d.date|date:"b" }}</h3>
         <div> 

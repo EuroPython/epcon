@@ -10,9 +10,9 @@
     {% latest_deadlines 1 as l %}
     <div class="cal">
         <div class="deadline clearfix">
-            <h3><span>{{ l.0.0|date:"d" }}</span><br />{{ l.0.0|date:"b" }}</h3>
+            <h3><span>{{ l.0.date|date:"d" }}</span><br />{{ l.0.date|date:"b" }}</h3>
             <div>
-                <h4>{% if l.0.1.headline %}{{ l.0.1.headline|safe }}{% else %}{{ l.0.1.body|safe }}{% endif %}</h4>
+                <h4>{% if l.0.headline %}{{ l.0.headline|safe }}{% else %}{{ l.0.body|safe }}{% endif %}</h4>
                 <p><a href="/calendar/">See all deadlines &rarr;</a></p>
             </div>
         </div>
