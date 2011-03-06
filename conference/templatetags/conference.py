@@ -38,7 +38,7 @@ class LatestDeadlinesNode(template.Node):
         self.var_name = var_name
 
     def render(self, context):
-        query = models.Deadline.objects.valid_news()
+        query = models.Deadline.objects.all()
         if self.limit:
             query = query[:self.limit]
 
@@ -66,7 +66,9 @@ class LatestDeadlinesNode(template.Node):
                     break
             else:
                 continue
-            news.append((n.date, {'headline': content.headline, 'body': content.body }))
+            n.headline = content.headline
+            n.body = content.body
+            news.append(n)
         context[self.var_name] = news
         return ""
 
