@@ -7,7 +7,7 @@
     {% if order.complete %}
     <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
         {% if user != ticket.user %}
-        &darr; Assigned to you by <b>{{ ticket.user.assopy_user.name }}</b>
+        &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
         {% endif %}
     </div>
     {% else %}
@@ -39,9 +39,9 @@
         {% else %}
         <div class="ticket-commands">
             <p>
-                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a> |
+                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a>
                 {% if user == ticket.user %}
-                <a href="#" class="button mini assign-button">Assign to user</a>
+                | <a href="#" class="button mini assign-button">Assign to user</a>
                 {% endif %}
             </p>
         </div>
