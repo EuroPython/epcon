@@ -530,18 +530,13 @@ footer nav li img {
 
 
 .page {
-/*     min-height: 600px; */
-
-    margin: 0 0 60px 0;
-	
+    margin: 0 0 60px 0;	    
+/*     position: relative; */
 }
 
-.page.border {
-    
-/*     background: transparent url(../i/bg-vsep.png) 540px 80px no-repeat; */
+.page.border {    
 
 }
-
 
 .page-summary {
 	
@@ -554,18 +549,10 @@ footer nav li img {
 
 }
 
-
 .page h1  {
 
 	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
-
 	margin: 0 0 30px -20px;
-	
-/*     text-shadow: #161e33  1px 1px 1px;  */
-
-/* 	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px;  */
-	
-
 }
 
 /* =================== */
@@ -830,30 +817,26 @@ footer nav li img {
 /* ! ad   */
 /* ====== */
 
-
-
-.ad img,
 .ad a {
 	display: block;    
+    border: none;
 }
 
-.ad a {
-    border: none;
+.ad img {
+	background: #fff;
 }
 
 .sponsors h5 {
     font-size: 18px;
         
-    color: #aba18f;
+    color: #635443;
     text-align: center;
     
-    margin: 5px 0 0 0;
+    margin: 0 0 10px 0;
 }
 
 .sponsors .ad {    
-    margin: 0 30px 0 0;
-    float: left;
-    
+    margin: 0  0 10px 0;
 }
 
 .sponsors .ad.last {    
@@ -862,16 +845,14 @@ footer nav li img {
 
 
 .sponsors {
-    background: transparent url(../i/sponsor.png) top left repeat-x;
-    padding: 5px 0;
-
-    position: fixed;
-
+    padding: 5px 15px;
+    width: 110px;    
+    position: absolute;
+/*     top: 345px; */
+    top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    
-    z-index: 1;
+    z-index: 1;        
+    background: #E1DBC5;
 }
 
 

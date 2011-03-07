@@ -131,46 +131,45 @@
         {% block MAIN_CONTENT %}
         {% endblock %}
     </div>
+
+    {% comment %}
+    <section class="sponsors">
+    
+        <h5>Our Sponsors</h5>
+    
+        {% conference_sponsor "ep2011" as sponsors %}
+        {% for s in sponsors|slice:":6" %}
+            <div class="ad">
+                <a href="{{ s.url }}"><img class="block" src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
+            </div>
+        {% endfor %}
+    
+        <div class="ad">
+            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+    
+        <div class="ad">
+            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+    
+        <div class="ad">
+            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+    
+        <div class="ad">
+            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+    
+        <div class="ad">
+            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+        </div>
+    <!-- /sponsors -->
+    </section>
+    {% endcomment %}
+    
 </div>
 
 {% block FOOTER_BLOCK %}
-{% comment %}
-<div class="sponsors">
-
-    <div class="container clearfix">
-        <h5>Our Sponsors</h5>
-
-        {% conference_sponsor "ep2011" as sponsors %}
-        {% for s in sponsors|slice:":6" %}
-        <div class="ad">
-            <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
-        </div>
-        {% endfor %}
-
-        <div class="ad">
-            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-
-        <div class="ad">
-            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-
-        <div class="ad">
-            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-
-        <div class="ad">
-            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-
-        <div class="ad last">
-            <a href="#"><img src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-
-    </div>
-
-</div>
-{% endcomment %}
 <footer>
     <div class="container clearfix">
 
