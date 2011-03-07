@@ -3,7 +3,7 @@ from assopy import django_urls
 from assopy import janrain
 from assopy.clients import genro, vies
 from assopy.utils import send_email
-from conference.models import Ticket, Speaker
+from conference.models import Fare, Ticket, Speaker
 
 from django import template
 from django.conf import settings as dsettings
@@ -267,13 +267,12 @@ class UserIdentity(models.Model):
 
 class OrderManager(models.Manager):
     @transaction.commit_on_success
-    def create(self, user, payment, items, deductible=False, billing_notes='', remote=True):
-        log.info('new order for "%s" via "%s": %d items', user, payment, sum(x[1] for x in items))
+    def create(self, user, payment, items, billing_notes='', remote=True):
+        log.info('new order for "%s" via "%s": %d items', user.name(), payment, sum(x[1] for x in items))
         o = Order()
         o.code = None
         o.method = payment
         o.user = user
-        o.deductible = deductible
 
         o.billing_notes = billing_notes
 
@@ -311,11 +310,6 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
     payment_url = models.TextField(blank=True)
-
-    # Se False l'ordine non è deducibile; l'acquirente ha comprato biglietti ad
-    # uso "personale" e non vogliamo che possa dedurli. Questo flag informa il
-    # software di fatturazione di riportare in fattura una dicitura apposita.
-    deductible = models.BooleanField(default=False)
 
     # _complete è una cache dello stato dell'ordine; quando è False il metodo
     # .complete deve interrogare il backend remoto per sapere lo stato
@@ -391,6 +385,22 @@ class Order(models.Model):
             self._complete = r
             self.save()
         return r
+
+    def deductible(self):
+        """
+        Ritorna True/False a seconda che l'ordine sia deducibile o meno
+        """
+        # considero non deducibile un ordine che contiene almeno un biglietto
+        # per la conferenza destinato a privati/studenti
+        qs = Fare.objects\
+            .filter(id__in=self.orderitem_set.values('ticket__fare'))\
+            .values_list('recipient_type', 'ticket_type')
+        deductible = True
+        for r, t in qs:
+            if t == 'conference' and r != 'c':
+                deductible = False
+                break
+        return deductible
 
     def total(self):
         return self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']

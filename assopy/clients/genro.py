@@ -135,7 +135,11 @@ def create_order(order, return_url=None):
     #b['coupon'] = 
     #b['discount'] = 
     b['payment_method'] = order.method
-    b['personal'] = not order.deductible
+
+    # Se order.deducibile() == False l'acquirente ha comprato biglietti ad uso
+    # "personale" e non vogliamo che possa dedurli. Questo flag informa il
+    # software di fatturazione di riportare in fattura una dicitura apposita.
+    b['personal'] = not order.deductible()
     b['billing_notes'] = order.billing_notes
     b['vat_rate'] = order.vat_rate()
     if return_url:
