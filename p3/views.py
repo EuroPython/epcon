@@ -38,7 +38,12 @@ def tickets(request):
     # elimino di fatto vecchi record rimasti nel db dapo che l'utente non ha
     # confermato il pagamento sul sito paypal o dopo che è tornato indietro
     # utilizzando il pulsante back
-    tickets = filter(lambda x: x.orderitem.order.method != 'paypal' or x.orderitem.order.complete(), tickets)
+    from p3.templatetags.p3 import _get_cached_order
+    tickets = list(tickets)
+    for ix, t in list(enumerate(tickets))[::-1]:
+        order = _get_cached_order(request, t.orderitem.order_id)
+        if order.method == 'paypal' and not order.complete():
+            del tickets[ix]
     return {
         'tickets': tickets,
     }

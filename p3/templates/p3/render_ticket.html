@@ -1,9 +1,9 @@
-{% load assopy_tags %}
+{% load p3 assopy_tags %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
 
     {% comment %} più biglietti possono far riferimento al solito ordine, forse
     è il caso di una cache?{% endcomment %}
-    {% with ticket.orderitem.order as order %}
+    {% ticket_order ticket as order %}
     {% if order.complete %}
     <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
         {% if user != ticket.user %}
@@ -15,7 +15,6 @@
         &darr; This ticket is not active; waiting bank transfer: {{ order.code }}
     </div>
     {% endif %}
-    {% endwith %}
 
     <div class="preview">
         <h2>{{ ticket.fare.name }}</h2>
