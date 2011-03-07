@@ -1268,8 +1268,12 @@ section.teaser p {
 .janrain-box {
     width: 400px;
     display: block;
+
+    background: transparent url(../i/loading-janrain.png) center center no-repeat;
     
     min-height: 240px;
+
+    /* Older IE */
     _height: 240;    
 }
 
