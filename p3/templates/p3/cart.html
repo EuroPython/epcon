@@ -21,15 +21,14 @@
 
         {{ form|form_errors }}
         <form id="form-cart" action="{% url p3-cart %}" method="post"{% if not account_type %} class="disabled"{% endif%}>{% csrf_token %}
-            <fieldset>
- 
-                <legend>Conference tickets</legend>
-                
-                <p>{Sample text} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus orci at lectus ornare 
-                et suscipit orci luctus.</p>
-
+            <fieldset class="order-type">
+                <legend>Select billing type</legend>
+                <p>Please, select the entity you are purchasing tickets for:</p>
                 {{ form.order_type|field }}
-
+                <p>Invoices for personal purchases will be explicitly marked as "non tax-deductible".</p>
+            </fieldset>
+            <fieldset class="tickets">
+                <legend>Conference tickets</legend>
                 <div class="cms">    
                     <table id="conference-tickets">
                         <col />
@@ -114,9 +113,14 @@
                     Conference tickets total (VAT inc.): <b>€ 0</b>
                 </div> 
 
+                <div class="total grand"> 
+                    Grand total (VAT inc.): <b>€ 0</b> 
+                </div> 
+
             </fieldset>
     
-            <fieldset>
+            {% comment %}
+            <fieldset class="tickets">
                 
                 <legend>PyEvents</legend>
                 
@@ -153,7 +157,7 @@
 
             </fieldset>
 
-            <fieldset>
+            <fieldset class="tickets">
                             
                 <legend>Partner Program</legend>
 
@@ -203,6 +207,7 @@
                 </div> 
         
             </fieldset>
+    {% endcomment %}
 
             <fieldset class="border">
                 <button value=""  name="" type="submit">Proceed to Checkout &rarr;</button>

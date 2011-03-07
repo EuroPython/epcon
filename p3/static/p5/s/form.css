@@ -204,3 +204,16 @@ button {
 form hr {
     margin: 0;
 }
+
+#form-cart fieldset.order-type label {
+    display: none;
+}
+
+#form-cart fieldset.order-type div.field {
+    width: 200px;
+    margin: 10px auto;
+}
+
+#form-cart fieldset.order-type select {
+    font-size: 1.05em;
+}
