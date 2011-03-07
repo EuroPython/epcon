@@ -222,3 +222,7 @@ form hr {
 #form-cart fieldset.order-type select {
     font-size: 1.05em;
 }
+
+#form-cart .fare-description {
+    font-size: 0.9em;
+}
