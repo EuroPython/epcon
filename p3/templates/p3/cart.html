@@ -217,7 +217,7 @@
             {% else %}
             function calcTotal() {
                 var totals = [ 0, 0, 0];
-                $('#form-cart fieldset').each(function(ix, e) {
+                $('#form-cart fieldset.tickets').each(function(ix, e) {
                     if(ix >= totals.length)
                         return;
                     $('input', this).each(function() {
