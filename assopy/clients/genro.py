@@ -32,10 +32,12 @@ def _get(subpath, **kwargs):
 
 def _post(subpath, bag=None):
     url = settings.BACKEND + subpath
-    log.debug('post -> %s', url)
     body = {}
     if bag is not None:
         body['data'] = bag.toXml()
+        log.debug('post -> %s data: %s', url, body['data'])
+    else:
+        log.debug('post -> %s', url)
     f = urllib.urlopen(url, urllib.urlencode(body))
     b = Bag()
     b.fromXml(f.read())
