@@ -159,3 +159,16 @@ def create_order(order, return_url=None):
 
 def order(id):
     return _get('/orders/%s' % id)
+
+def update_fare(fare):
+    # le tariffe di tipo vaucher non devono arrivare al backend
+    assert fare.payment_type != 'v'
+    b = Bag()
+    b['price'] = fare.price
+    b['description'] = fare.name
+    b['personal_fare'] = fare.recipient_type != 'c'
+    b['voucher'] = fare.payment_type == 'd'
+    b['long_desc'] = fare.description
+    b['start_date'] = fare.start_validity
+    b['end_date'] = fare.end_validity
+    return _post('/fares/%s/%s/' % (fare.conference, fare.code), b)
