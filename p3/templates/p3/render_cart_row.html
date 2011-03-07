@@ -1,4 +1,5 @@
 {% load assopy_tags %}
+    <td>{{ row.0.0.name }}</td>
 {% for fare, field, enabled in row %}
     <td class="fare" data-fare="{{ fare.code }}">
         {% if fare %}
