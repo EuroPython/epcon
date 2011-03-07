@@ -230,11 +230,18 @@ def billing(request):
 
     # non si possono comprare biglietti destinati ad entità diverse
     # (persone/ditte)
-    fare_types = set(x[0].personal for x in tickets)
-    if len(fare_types) != 1:
+    recipients = set()
+    for fare, _, _ in tickets:
+        recipients.add('c' if fare.recipient_type == 'c' else 'p')
+    if len(recipients) != 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
 
+    recipient = recipients.pop()
     class P3BillingData(BillingData):
+        card_name = forms.CharField(
+            label='Your Name' if recipient != 'c' else 'Company Name',
+            max_length=200,
+        )
         payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')), initial='paypal')
         billing_notes = forms.ChoiceField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
@@ -253,7 +260,6 @@ def billing(request):
             form.save()
             o = Order.objects.create(
                 user=auser, payment=data['payment'],
-                deductible=not fare_types.pop(),
                 items=request.session['user-cart']['tickets'],
             )
             if o.payment_url:
@@ -261,6 +267,8 @@ def billing(request):
             else:
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
     else:
+        if not request.user.assopy_user.card_name:
+            request.user.assopy_user.card_name = request.user.assopy_user.name()
         form = P3BillingData(instance=request.user.assopy_user)
         
     return {
@@ -268,4 +276,4 @@ def billing(request):
         'total': total,
         'form': form,
     }
-    
+
