@@ -452,6 +452,19 @@ class FareManager(models.Manager):
 FARE_TICKET_TYPES = (
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
+    ('event', 'Event'),
+)
+
+FARE_PAYMENT_TYPE = (
+    ('p', 'Payment'),
+    ('v', 'Voucher'),
+    ('d', 'Deposit'),
+)
+
+FARE_TYPES = (
+    ('c', 'Company'),
+    ('s', 'Student'),
+    ('p', 'Personal'),
 )
 class Fare(models.Model):
     conference = models.CharField(help_text='codice della conferenza', max_length=20)
@@ -461,8 +474,9 @@ class Fare(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
     start_validity = models.DateField(null=True)
     end_validity = models.DateField(null=True)
-    personal = models.BooleanField(default=True)
+    recipient_type = models.CharField(max_length=1, choices=FARE_TYPES, default='p')
     ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference')
+    payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
 
     objects = FareManager()
 

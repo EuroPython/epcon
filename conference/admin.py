@@ -306,7 +306,7 @@ class SpecialPlaceAdmin(admin.ModelAdmin):
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
 class FareAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'code', 'name', 'price', 'start_validity', 'end_validity')
+    list_display = ('conference', 'code', 'name', 'price', 'recipient_type', 'start_validity', 'end_validity')
     
 admin.site.register(models.Fare, FareAdmin)
 
