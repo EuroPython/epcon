@@ -1186,20 +1186,18 @@ section.teaser p {
     padding: 5px 0;
     text-align: center;    
     border: 2px solid transparent;        
-    
+    background: #fff;   
     font-size: 12px;
 }
 
 
 .ticket-status.inactive {            
     border-color: #d9415a;
-    background: #fff;
     color: #d9415a;
 }
 
 .ticket-status.active {
     border-color: #4895a3;
-    background: #fff;
     color: #4895a3;
 }
 
@@ -1257,8 +1255,8 @@ section.teaser p {
 	text-transform: uppercase;	    
 }
 
-.ticket-python-experience {
-
+.ticket-python-experience img {
+    vertical-align: middle;
 }
 
 

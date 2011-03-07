@@ -64,6 +64,11 @@ label.inline {
     text-transform: none;
 }
 
+label span.required  {
+    margin: 0 0 0 5px;
+    color: #635443;
+}
+
 
 .error label {
 	color: #bf2640;
