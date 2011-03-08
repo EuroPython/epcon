@@ -380,3 +380,7 @@ def geocode(request):
 @render_to('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request):
     return {}
+
+@render_to('assopy/bank_feedback_ok.html')
+def bank_feedback_ok(request):
+    return {}
