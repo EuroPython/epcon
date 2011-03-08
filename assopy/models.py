@@ -5,6 +5,7 @@ from assopy.clients import genro, vies
 from assopy.utils import send_email
 from conference.models import Fare, Ticket, Speaker
 
+from django import dispatch
 from django import template
 from django.conf import settings as dsettings
 from django.contrib import auth
@@ -303,6 +304,11 @@ class OrderManager(models.Manager):
         _order_feedback(o)
         return o
 
+# segnale emesso da un ordine quando un questo viene "completato".  Al momento
+# l'unico meccanismo per accorgersi se un ordine è completo è pollare il
+# backend attraverso il metodo Order.complete.
+order_completed = dispatch.Signal(providing_args=[])
+
 ORDER_PAYMENT = (
     ('paypal', 'PayPal'),
     ('bank', 'Bank'),
@@ -385,6 +391,9 @@ class Order(models.Model):
             # backend
             return False
         r = bool(genro.order(self.assopy_id)['invoice_number'])
+        if r and not self._complete:
+            log.info('order "%s" completed', self.code)
+            order_completed.send(sender=self)
         if r and update_cache:
             self._complete = r
             self.save()
