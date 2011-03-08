@@ -247,8 +247,16 @@ def billing(request):
                 ('cc', 'Credit Card'),
                 ('bank', 'Wire transfer'),
             ), initial='paypal')
-        billing_notes = forms.ChoiceField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
+        def __init__(self, *args, **kwargs):
+            super(P3BillingData, self).__init__(*args, **kwargs)
+            if recipient == 'c':
+                self.fields['billing_notes'] = forms.ChoiceField(
+                    label='Additional billing information',
+                    help_text='If your company needs some additional information to appear on the invoice (eg. VAT number, PO number, etc) write them here.<br />We reserve the right to review the contents of this box.',
+                    required=False,
+                    widget=forms.Textarea(attrs={'rows': 3}),
+                )
         class Meta(BillingData.Meta):
             exclude = ('city', 'zip_code', 'state', 'vat_number', 'tin_number')
 
@@ -272,7 +280,7 @@ def billing(request):
             if o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:
-                return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
+                return HttpResponseRedirectSeeOther(reverse('assopy-bank-feedback-ok'))
     else:
         if not request.user.assopy_user.card_name:
             request.user.assopy_user.card_name = request.user.assopy_user.name()

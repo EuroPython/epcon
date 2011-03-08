@@ -72,7 +72,9 @@
                         <ul></ul>
                     </div>
                 </div>
+                {% if form.billing_notes %}
                 <div class="span-6">{{ form.billing_notes|field }}</div>
+                {% endif %}
             </fieldset>
             <fieldset class="border">
                 <button value="" name="" type="submit">Place Order &rarr;</button>

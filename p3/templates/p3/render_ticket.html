@@ -12,7 +12,7 @@
     </div>
     {% else %}
     <div class="ticket-status inactive">
-        &darr; This ticket is not active; waiting bank transfer: {{ order.code }}
+        &darr; Ticket not active; waiting for wire transfer (order {{ order.code }})
     </div>
     {% endif %}
 
@@ -83,7 +83,7 @@
                 <div class="span-3">
                     {{ form.python_experience|field }}
                 </div>
-                <div class="span-3">
+                <div class="span-3 show-tooltip" title="This ticket grants you full access to the conference. The above selection is just for helping out the organizers.">
                     {{ form.days|field }}
                 </div>
                 {{ form.assigned_to|field }}

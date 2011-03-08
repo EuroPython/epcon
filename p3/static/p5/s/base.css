@@ -1408,3 +1408,8 @@ h1 button.edit {
     display: none;
     margin: 15px 0;
 }
+
+.vat-info {
+    text-align: center;
+    font-size: 1.1em;
+}
