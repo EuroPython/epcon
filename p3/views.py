@@ -255,7 +255,7 @@ def billing(request):
             if recipient == 'c':
                 self.fields['billing_notes'] = forms.CharField(
                     label='Additional billing information',
-                    help_text='If your company needs some additional information to appear on the invoice (eg. VAT number, PO number, etc) write them here.<br />We reserve the right to review the contents of this box.',
+                    help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. VAT number, PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
                     required=False,
                     widget=forms.Textarea(attrs={'rows': 3}),
                 )
