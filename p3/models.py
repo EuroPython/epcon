@@ -58,3 +58,5 @@ class TicketConference(models.Model):
     assigned_to = models.EmailField(blank=True)
 
     objects = TicketConferenceManager()
+
+import p3.listeners
