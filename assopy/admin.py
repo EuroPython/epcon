@@ -13,7 +13,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('code', '_user', '_created', '_items')
 
     def _user(self, o):
-        return '%s %s' % (o.user.first_name, o.user.last_name)
+        return o.user.name()
     _user.short_description = 'buyer'
 
     def _items(self, o):
