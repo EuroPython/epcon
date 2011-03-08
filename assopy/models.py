@@ -450,7 +450,7 @@ def _order_feedback(sender, **kwargs):
     rows.append('-' * 60)
     rows.append('%54s%6.2f' % ('', sender.total()))
     send_email(
-        subject='New order, %s, from "%s %s" (%s)' % (sender.code, sender.user.user.first_name, sender.user.user.last_name, sender.method),
+        subject='New order, %s, from "%s %s" (%s) via "%s"' % (sender.code, sender.user.user.first_name, sender.user.user.last_name, sender.user.user.email, sender.method),
         message='\n'.join(rows),
     )
 
