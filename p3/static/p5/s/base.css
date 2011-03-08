@@ -363,6 +363,10 @@ header #li-chat #habla_unavailable_div a {
 	
 }
 
+.badge.chat.unavailable {
+    opacity: .7;
+}
+
 
 
 /* ========== */
