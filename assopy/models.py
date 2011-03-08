@@ -194,6 +194,9 @@ class User(models.Model):
 
     objects = UserManager()
 
+    def __unicode__(self):
+        return 'Assopy user: %s' % self.name()
+
     def photo_url(self):
         if self.photo:
             return self.photo.url
