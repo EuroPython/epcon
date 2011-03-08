@@ -62,11 +62,11 @@ h1 span {
                     <a href="{% url conference-speaker slug=request.user.speaker.slug %}">Your public page</a>
                 </p>
                 {% endif %}
+                {% if request.user.assopy_user.tickets|length > 0 %}
                 <h4>Utilities</h4>
-                <p>
-                <a href="{% url assopy-tickets %}">Your tickets</a>
-                </p>
+                <p><a href="{% url assopy-tickets %}">Your tickets</a></p>
                 <p>No invoices Yet</p>
+                {% endif %}
             </div>
         </aside>
         <script type="text/javascript">

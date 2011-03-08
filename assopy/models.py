@@ -153,6 +153,12 @@ def _fs_upload_to(subdir, attr=None):
         return fpath
     return wrapper
 
+# segnale emesso quando assopy ha bisogno di conoscere i biglietti assegnati ad
+# un certo utente (il sender).  questo segnale permette ad altre applicazioni
+# di intervenire su questa scelta, se nessuno è in ascolto viene fatta una
+# query guardando i Conference.Ticket
+ticket_for_user = dispatch.Signal(providing_args=['tickets'])
+
 USER_ACCOUNT_TYPE = (
     ('p', 'Private'),
     ('c', 'Company'),
@@ -216,6 +222,13 @@ class User(models.Model):
         super(User, self).save(*args, **kwargs)
         if self.assopy_id:
             genro.user_local2remote(self)
+
+    def tickets(self):
+        tickets = []
+        ticket_for_user.send(sender=self, tickets=tickets)
+        if not tickets:
+            tickets = Ticket.objects.conference(dsettings.CONFERENCE_CONFERENCE).filter(user=self.user)
+        return tickets
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
