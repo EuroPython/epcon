@@ -128,11 +128,16 @@ class BillingData(forms.ModelForm):
         )
 
     def _required(self, name):
-        data = self.cleaned_data.get(name, '').strip()
+        data = self.cleaned_data.get(name, '')
+        try:
+            data = data.strip()
+        except:
+            pass
         if not data:
             raise forms.ValidationError('this field is required')
         return data
 
+    clean_country = lambda self: self._required('country')
     clean_address = lambda self: self._required('address')
     clean_city = lambda self: self._required('city')
     clean_zip_code = lambda self: self._required('zip_code')
