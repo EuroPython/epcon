@@ -18,8 +18,6 @@ import twitter
 from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
 
-from assopy.models import Order
-
 mimetypes.init()
 
 register = template.Library()
@@ -293,52 +291,3 @@ def box_image_gallery(context):
         'images': images,
     })
     return context
-
-def _get_cached_order(request, order_id):
-    try:
-        cache = request._order_cache
-    except AttributeError:
-        cache = request._order_cache = {}
-    
-    try:
-        order = cache[order_id]
-    except KeyError:
-        order = cache[order_id] = Order.objects.get(pk=order_id)
-    
-    return order
-
-@register.tag
-def ticket_order(parser, token):
-    """
-    {% ticket_order ticket as var %}
-    Equivalente a `ticket.orderitem.order` ma sfrutta una cache che dura quanto
-    la richiesta corrente e restituisce la solita istanza dell'ordine per tutti
-    i ticket che ne fanno parte.
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    if contents[-2] != 'as':
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" %tag_name)
-    var_name = contents[-1]
-    ticket = contents[1]
-
-    class Node(template.Node):
-        def __init__(self, ticket, var_name):
-            self.ticket = template.Variable(ticket)
-            self.var_name = var_name
-        def render(self, context):
-            try:
-                ticket = self.ticket.resolve(context)
-            except AttributeError:
-                order = none
-            else:
-                order_id = ticket.orderitem.order_id
-                request = context.get('request')
-                if request:
-                    order = _get_cached_order(request, ticket.orderitem.order_id)
-                else:
-                    order = ticket.orderitem.order
-
-            context[self.var_name] = order
-            return ''
-    return Node(ticket, var_name)    

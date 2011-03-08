@@ -1,10 +1,7 @@
-{% load p3 assopy_tags %}
+{% load assopy_tags %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
-
-    {% comment %} più biglietti possono far riferimento al solito ordine, forse
-    è il caso di una cache?{% endcomment %}
-    {% ticket_order ticket as order %}
-    {% if order.complete %}
+    {% order_complete ticket.orderitem.order_id as ocomplete %}
+    {% if ocomplete %}
     <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
         {% if user != ticket.user %}
         &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
