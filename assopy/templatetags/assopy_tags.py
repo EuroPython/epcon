@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from assopy import models
 from assopy import settings
 
 from django import forms
@@ -130,3 +131,46 @@ class TNode(template.Node):
         except AttributeError:
             return v
 
+def _get_cached_order_status(request, order_id):
+    try:
+        cache = request._order_cache
+    except AttributeError:
+        cache = request._order_cache = {}
+    
+    if order_id not in cache:
+        cache[order_id] = models.Order.objects.get(pk=order_id).complete()
+    return cache[order_id]
+
+@register.tag
+def order_complete(parser, token):
+    """
+    {% order_complete order_id as var %}
+    Equivalente a `Order.objects.get(id=order_id).complete()` ma memorizza il
+    risultato in una cache che dura quanto la richiesta corrente.
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" %tag_name)
+    var_name = contents[-1]
+    order_id = contents[1]
+
+    class Node(template.Node):
+        def __init__(self, order_id, var_name):
+            self.order_id = template.Variable(order_id)
+            self.var_name = var_name
+        def render(self, context):
+            try:
+                order_id = self.order_id.resolve(context)
+            except AttributeError:
+                complete = False
+            else:
+                request = context.get('request')
+                if request:
+                    complete = _get_cached_order_status(request, order_id)
+                else:
+                    complete = models.Order.objects.get(id=order_id).complete()
+
+            context[self.var_name] = complete
+            return ''
+    return Node(order_id, var_name)
