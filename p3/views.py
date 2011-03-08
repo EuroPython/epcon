@@ -275,6 +275,7 @@ def billing(request):
                 payment = 'paypal'
             o = Order.objects.create(
                 user=auser, payment=payment,
+                billing_notes=data.get('billing_notes', ''),
                 items=request.session['user-cart']['tickets'],
             )
             if o.payment_url:
