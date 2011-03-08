@@ -12,5 +12,10 @@
 </script>
 {% else %}
 <iframe class="janrain-box" src="{{ url }}&flags=hide_sign_in_with" scrolling="no" frameBorder="no" allowtransparency="true"></iframe> 
+<script type="text/javascript">
+    $('iframe.janrain-box').load(function(e) {
+        $(this).css('background-image', 'none');
+    });
+</script>
 {% endif %}
 {% endif %}
