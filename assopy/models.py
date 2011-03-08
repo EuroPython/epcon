@@ -324,7 +324,7 @@ class Order(models.Model):
     _complete = models.BooleanField(default=False)
 
     # note libere che l'acquirente può inserire in fattura
-    billing_notes = models.TextField()
+    billing_notes = models.TextField(blank=True)
 
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
