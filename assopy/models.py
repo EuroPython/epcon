@@ -301,13 +301,17 @@ class OrderManager(models.Manager):
         if remote:
             genro.create_order(o, return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok'))
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
-        _order_feedback(o)
+        order_created.send(sender=o)
         return o
+
+# segnale emesso quando un ordine, il sender, è stato correttamente registrato
+# in locale e sul backend.
+order_created = dispatch.Signal(providing_args=[])
 
 # segnale emesso da un ordine quando un questo viene "completato".  Al momento
 # l'unico meccanismo per accorgersi se un ordine è completo è pollare il
 # backend attraverso il metodo Order.complete.
-order_completed = dispatch.Signal(providing_args=[])
+purchase_completed = dispatch.Signal(providing_args=[])
 
 ORDER_PAYMENT = (
     ('paypal', 'PayPal'),
@@ -392,8 +396,8 @@ class Order(models.Model):
             return False
         r = bool(genro.order(self.assopy_id)['invoice_number'])
         if r and not self._complete:
-            log.info('order "%s" completed', self.code)
-            order_completed.send(sender=self)
+            log.info('purchase of order "%s" completed', self.code)
+            purchase_completed.send(sender=self)
         if r and update_cache:
             self._complete = r
             self.save()
@@ -422,14 +426,16 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order)
     ticket = models.OneToOneField('conference.ticket')
 
-def _order_feedback(o):
+def _order_feedback(sender, **kwargs):
     rows = []
-    for x in o.orderitem_set.order_by('ticket__fare__code').select_related():
+    for x in sender.orderitem_set.order_by('ticket__fare__code').select_related():
         fare = x.ticket.fare
         rows.append('%-5s %-47s %6.2f' % (fare.code, fare.name, fare.price))
     rows.append('-' * 60)
-    rows.append('%54s%6.2f' % ('', o.total()))
+    rows.append('%54s%6.2f' % ('', sender.total()))
     send_email(
-        subject='New order, %s, from "%s %s" (%s)' % (o.code, o.user.user.first_name, o.user.user.last_name, o.method),
+        subject='New order, %s, from "%s %s" (%s)' % (sender.code, sender.user.user.first_name, sender.user.user.last_name, sender.method),
         message='\n'.join(rows),
     )
+
+order_created.connect(_order_feedback)
