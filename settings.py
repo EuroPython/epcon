@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'rosetta',
     'south',
     'templatesadmin',
+    'email_template',
 )
 
 AUTHENTICATION_BACKENDS = (
