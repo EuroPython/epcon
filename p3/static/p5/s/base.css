@@ -1332,11 +1332,15 @@ section.notice a {
 	box-shadow: 0 0 55px #7d6f60;
 }
 
-
-
-
-
-
+.overlay .close {
+    background: transparent url(../i/close.png) center center no-repeat;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    position: absolute;
+    top: -18px;
+    right: -18px;
+}
 /* ================== */
 /* ! Talk managment   */
 /* ================== */
