@@ -421,6 +421,6 @@ def _order_feedback(o):
     rows.append('-' * 60)
     rows.append('%54s%6.2f' % ('', o.total()))
     send_email(
-        subject='new order from "%s %s" (%s)' % (o.user.user.first_name, o.user.user.last_name, o.method),
+        subject='New order, %s, from "%s %s" (%s)' % (o.code, o.user.user.first_name, o.user.user.last_name, o.method),
         message='\n'.join(rows),
     )
