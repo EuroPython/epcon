@@ -250,6 +250,8 @@ def billing(request):
 
         def __init__(self, *args, **kwargs):
             super(P3BillingData, self).__init__(*args, **kwargs)
+            for f in self.fields.values():
+                f.required = True
             if recipient == 'c':
                 self.fields['billing_notes'] = forms.ChoiceField(
                     label='Additional billing information',
