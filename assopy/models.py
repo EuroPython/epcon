@@ -299,7 +299,10 @@ class OrderManager(models.Manager):
                 item.save()
         log.info('order "%s" and tickets created locally', o.id)
         if remote:
-            genro.create_order(o, return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok'))
+            genro.create_order(
+                o,
+                return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok', kwargs={'code': '%(code)s'})
+            )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
         order_created.send(sender=o)
         return o
