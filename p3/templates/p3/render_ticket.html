@@ -103,6 +103,26 @@
         </form>
     </div>
     <script type='text/javascript'>
-        $('div[data-ticket={{ ticket.id }}] .edit-button').overlay();
+        $('div[data-ticket={{ ticket.id }}] .edit-button').overlay({
+            onLoad: function(e) {
+                $('div[data-ticket={{ ticket.id }}] .help-text').each(function() {
+                    /*
+                     * purtroppo jQueryTools non riesce a calcolare
+                     * correttamente il posizionamento di un tooltip dentro un
+                     * overlay, devo fare degli aggiustamenti a mano.
+                     * TODO: test con IE
+                     */
+                    var offset = [-180, -270];
+                    if($.browser.mozilla)
+                        offset[0] = -120;
+                    $(this).prev(':input').tooltip({
+                        position: "center right",
+                        offset: offset,
+                        effect: "fade",
+                        opacity: 0.9
+                    });
+                });
+            }
+        });
     </script>
 </div>

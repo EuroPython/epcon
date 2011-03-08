@@ -264,7 +264,15 @@
     {% endif %}
     <script type='text/javascript'>
         $('form').each(function() {
-            $('.help-text', this).prev(':input').tooltip({
+            var i = $('.help-text', this).prev(':input');
+            /*
+             * a causa di qualche problema tra tooltip e overlay (sempre di
+             * jQueryTools) non li inizializzo qui.
+             */
+            if(i.parents('.overlay').length != 0) {
+                return
+            }
+            i.tooltip({
                 position: "center right",
                 offset: [0, 10],
                 effect: "fade",

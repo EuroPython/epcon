@@ -1374,6 +1374,8 @@ h1 button.edit {
 
 .tooltip {
     width: auto;
+    /* otherwise not shown with an overlay window */
+    z-index: 10000;
 }
 
 
