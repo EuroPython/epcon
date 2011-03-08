@@ -1,12 +1,21 @@
 {% extends "assopy/base.html" %}
 {% load assopy_tags %}
+{% block ASSOPY_EXTRA_HEAD %}
+    {% order_complete order.id as ocomplete %}
+    {% if not ocomplete %}
+    <meta http-equiv="refresh" content="2;url=." />
+    {% endif %}
+{% endblock %}
 {% block ASSOPY_MAIN_CONTENT %}
+    {% order_complete order.id as ocomplete %}
+    {% if not ocomplete %}
     <h1>Waiting for Paypal response...</h1>
     <div class="span-12 append-1">
         <div class="cms">
-            <p>Are you waiting for too long? <a href="mailto:info@pycon.it">Write to us</a> specifying your order number O/XXXX</p>
+            <p>Are you waiting for too long? <a href="mailto:info@pycon.it">Write to us</a> specifying your order number {{ order.code }}</p>
         </div>
     </div>
+    {% else %}
     <h1>Purchase completed</h1>
     <div class="span-12 append-1">
         <div class="cms">
@@ -14,4 +23,5 @@
             <p>Now you can manage <a href="{% url assopy-tickets %}">your tickets</a> directly from your profile.</p>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

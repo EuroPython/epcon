@@ -378,14 +378,22 @@ def geocode(request):
     return data
 
 @render_to('assopy/paypal_feedback_ok.html')
-def paypal_feedback_ok(request):
-    return {}
+def paypal_feedback_ok(request, code):
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    if o.user.user != request.user or o.method != 'paypal':
+        raise http.Http404()
+    # aspettiamo un po' per dare tempo a Paypal di inviarci la notifica IPN
+    from time import sleep
+    sleep(0.4)
+    return {
+        'order': o,
+    }
 
 @login_required
 @render_to('assopy/bank_feedback_ok.html')
 def bank_feedback_ok(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    if o.user.user != request.user:
+    if o.user.user != request.user or o.method != 'bank':
         raise http.Http404()
     return {
         'order': o,
