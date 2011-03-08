@@ -163,11 +163,19 @@ def order(id):
 def update_fare(fare):
     # le tariffe di tipo vaucher non devono arrivare al backend
     assert fare.payment_type != 'v'
+    name = fare.name
+    if fare.ticket_type == 'conference':
+        if fare.recipient_type == 's':
+            name += ' (for students only)'
+        elif fare.recipient_type == 'p':
+            name += ' (for private person)'
+        
+    assert len(name) <= 40
     b = Bag()
     b['price'] = fare.price
-    b['description'] = fare.name[:40]
+    b['description'] = name
     b['personal_fare'] = fare.recipient_type != 'c'
-    b['voucher'] = fare.payment_type == 'd'
+    b['deposit_fare'] = fare.payment_type == 'd'
     b['long_desc'] = fare.description
     b['start_date'] = fare.start_validity
     b['end_date'] = fare.end_validity
