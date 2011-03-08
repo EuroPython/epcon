@@ -281,7 +281,12 @@ def billing(request):
             if o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:
-                return HttpResponseRedirectSeeOther(reverse('assopy-bank-feedback-ok'))
+                return HttpResponseRedirectSeeOther(
+                    reverse(
+                        'assopy-bank-feedback-ok',
+                        kwargs={'code': o.code.replace('/', '-')}
+                    )
+                )
     else:
         if not request.user.assopy_user.card_name:
             request.user.assopy_user.card_name = request.user.assopy_user.name()
