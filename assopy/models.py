@@ -177,7 +177,11 @@ class User(models.Model):
     tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
-    address = models.CharField(_('Address'), max_length=150, blank=True)
+    address = models.CharField(
+        _('Address'),
+        max_length=150,
+        blank=True,
+        help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
     city = models.CharField(_('City'), max_length=40, blank=True)
     state = models.CharField(_('State'), max_length=2, blank=True)
 
