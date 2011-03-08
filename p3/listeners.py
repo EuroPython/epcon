@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
+import models
+
+from django.conf import settings
 from email_template import utils
-from assopy.models import order_created, purchase_completed
+from assopy.models import order_created, purchase_completed, ticket_for_user
 
 def on_order_created(sender, **kwargs):
     if sender.method == 'bank':
@@ -23,3 +26,9 @@ def on_purchase_completed(sender, **kwargs):
     ).send()
 
 purchase_completed.connect(on_purchase_completed)
+
+def on_ticket_for_user(sender, **kwargs):
+    tickets = models.TicketConference.objects.available(sender.user, settings.CONFERENCE_CONFERENCE)
+    map(kwargs['tickets'].append, tickets)
+
+ticket_for_user.connect(on_ticket_for_user)
