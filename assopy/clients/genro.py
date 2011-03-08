@@ -165,7 +165,7 @@ def update_fare(fare):
     assert fare.payment_type != 'v'
     b = Bag()
     b['price'] = fare.price
-    b['description'] = fare.name
+    b['description'] = fare.name[:40]
     b['personal_fare'] = fare.recipient_type != 'c'
     b['voucher'] = fare.payment_type == 'd'
     b['long_desc'] = fare.description
