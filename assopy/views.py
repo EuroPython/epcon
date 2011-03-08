@@ -10,7 +10,7 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.forms.formsets import BaseFormSet, formset_factory
 from django.db import transaction
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
@@ -381,6 +381,12 @@ def geocode(request):
 def paypal_feedback_ok(request):
     return {}
 
+@login_required
 @render_to('assopy/bank_feedback_ok.html')
-def bank_feedback_ok(request):
-    return {}
+def bank_feedback_ok(request, code):
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    if o.user.user != request.user:
+        raise http.Http404()
+    return {
+        'order': o,
+    }
