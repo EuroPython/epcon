@@ -56,7 +56,13 @@
                 <legend>Billing data</legend>
 
 
-                <div class="span-6">{{ form.payment|field }}</div>
+                <div class="span-6">{{ form.payment|field }}
+                    <div id="id_payment_cc">
+                        Paypal is used for credit card transactions.<br />
+                        <strong>No registration is required</strong>, you will just need to
+                        fill in the form.
+                    </div>
+                </div>
                 <div class="span-6">{{ form.card_name|field_widget:"size=58"|field }}</div>
                 <div class="span-6">{{ form.country|field }}</div>
                 <div class="span-6">{{ form.address|field_widget:"size=58"|field }}</div>
@@ -71,6 +77,18 @@
             <fieldset class="border">
                 <button value="" name="" type="submit">Place Order &rarr;</button>
             </fieldset>
+            <script type="text/javascript">
+                $('#id_payment').change(function(e) {
+                    var method = $(this).val();
+                    var feedback = $('#id_payment_cc');
+                    if(method == 'cc') {
+                        feedback.show();
+                    }
+                    else {
+                        feedback.hide();
+                    }
+                })
+            </script>
         </form>
         
         

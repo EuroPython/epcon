@@ -242,7 +242,11 @@ def billing(request):
             label='Your Name' if recipient != 'c' else 'Company Name',
             max_length=200,
         )
-        payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')), initial='paypal')
+        payment = forms.ChoiceField(choices=(
+                ('paypal', 'PayPal'),
+                ('cc', 'Credit Card'),
+                ('bank', 'Wire transfer'),
+            ), initial='paypal')
         billing_notes = forms.ChoiceField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
         class Meta(BillingData.Meta):
@@ -258,8 +262,11 @@ def billing(request):
         if form.is_valid():
             data = form.cleaned_data
             form.save()
+            payment = data['payment']
+            if payment == 'cc':
+                payment = 'paypal'
             o = Order.objects.create(
-                user=auser, payment=data['payment'],
+                user=auser, payment=payment,
                 items=request.session['user-cart']['tickets'],
             )
             if o.payment_url:

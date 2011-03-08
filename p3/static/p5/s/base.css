@@ -1404,4 +1404,7 @@ h1 button.edit {
     background: firebrick;
 }
 
-
+#id_payment_cc {
+    display: none;
+    margin: 15px 0;
+}
