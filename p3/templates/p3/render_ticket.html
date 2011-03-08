@@ -8,6 +8,8 @@
     <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
         {% if user != ticket.user %}
         &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
+        {% else %}
+        &nbsp;
         {% endif %}
     </div>
     {% else %}
