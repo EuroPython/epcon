@@ -1,12 +1,17 @@
 {% extends "assopy/base.html" %}
 {% load assopy_tags %}
 {% block ASSOPY_MAIN_CONTENT %}
+    <h1>Waiting for Paypal response...</h1>
+    <div class="span-12 append-1">
+        <div class="cms">
+            <p>Are you waiting for too long? <a href="mailto:info@pycon.it">Write to us</a> specifying your order number O/XXXX</p>
+        </div>
+    </div>
     <h1>Purchase completed</h1>
     <div class="span-12 append-1">
         <div class="cms">
-            <p>Thank you for the purchase. The transaction was completed and a receipt from paypal is sent to your email address.</p>
-
-            <p>Now you can manage <a href="{% url assopy-tickets %}">your tickets</a></p>
+            <p>Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address.</p>
+            <p>Now you can manage <a href="{% url assopy-tickets %}">your tickets</a> directly from your profile.</p>
         </div>
     </div>
 {% endblock %}
