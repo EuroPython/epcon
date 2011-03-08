@@ -10,8 +10,9 @@ class CountryAdmin(admin.ModelAdmin):
 admin.site.register(models.Country, CountryAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_created', '_items', '_complete', '_total')
+    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_total')
     list_select_related = True
+    date_hierarchy = 'created'
 
     def _user(self, o):
         return o.user.name()
