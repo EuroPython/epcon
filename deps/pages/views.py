@@ -8,6 +8,8 @@ from pages.models import Page, PageAlias
 from pages.http import auto_render, get_language_from_request, remove_slug
 from pages.urlconf_registry import get_urlconf
 
+import os.path
+
 LANGUAGE_KEYS = [key for (key, value) in settings.PAGE_LANGUAGES]
 
 
@@ -70,7 +72,8 @@ class Details(object):
         template_name = self.get_template(request, context)
 
         if request.is_ajax():
-            template_name = "body_%s" % template_name
+            tdir, tname = os.path.split(template_name)
+            template_name = os.path.join(tdir, 'body_' + tname)
 
         self.extra_context(request, context)
 
