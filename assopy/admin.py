@@ -31,3 +31,19 @@ class OrderAdmin(admin.ModelAdmin):
         return o.total()
 
 admin.site.register(models.Order, OrderAdmin)
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('_name', 'phone', 'address', '_identities',)
+    list_select_related = True
+    search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address')
+
+    def _name(self, o):
+        return o.name()
+    _name.short_description = 'name'
+    _name.admin_order_field = 'user__first_name'
+
+    def _identities(self, o):
+        return o.identities.count()
+    _identities.short_description = '#id'
+
+admin.site.register(models.User, UserAdmin)
