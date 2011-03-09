@@ -15,10 +15,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/wizard.css" type="text/css" media="screen, projection" />
-
-    {% comment %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" media="handheld" />
-    {% endcomment %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" />
 <!--[if lt IE 9]>
     <script src="{{ STATIC_URL }}p5/j/html5.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
@@ -121,6 +118,7 @@
 </header>
 {% endblock %}
 
+
 {% block TEASER %}{% endblock %}
 
 <div class="page {% block BODY_CLASS %}{% endblock %}">
@@ -128,44 +126,29 @@
         {% block MAIN_CONTENT %}
         {% endblock %}
     </div>
-
-    {% comment %}
-    <section class="sponsors">
-    
-        <h5>Our Sponsors</h5>
-    
-        {% conference_sponsor "ep2011" as sponsors %}
-        {% for s in sponsors|slice:":6" %}
-            <div class="ad">
-                <a href="{{ s.url }}"><img class="block" src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
-            </div>
-        {% endfor %}
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    <!-- /sponsors -->
-    </section>
-    {% endcomment %}
-    
 </div>
 
+<section class="sponsors">
+
+    <h5>Our Sponsors</h5>
+
+    {% conference_sponsor "ep2011" as sponsors %}
+    {% for s in sponsors|slice:":6" %}
+        <div class="ad">
+            <a href="{{ s.url }}"><img class="block" src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
+        </div>
+    {% endfor %}
+
+<!--
+    <div class="ad">
+        <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
+    </div>
+-->
+
+<!-- /sponsors -->
+</section>
+
+    
 {% block FOOTER_BLOCK %}
 <footer>
     <div class="container clearfix">
@@ -233,6 +216,7 @@
 
 </footer>
 {% endblock %}
+    <div id="global-overlay" class="overlay"><div class="contentWrap"></div></div>
     {% if 'localhost' not in request.META.HTTP_HOST %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -281,6 +265,13 @@
             offset: [5, 0],
             effect: "fade",
             opacity: 0.9
+        });
+        $('a.global-overlay').overlay({
+            target: $('#global-overlay'),
+            onBeforeLoad: function() {
+                var wrap = this.getOverlay().find(".contentWrap");
+                wrap.load(this.getTrigger().attr("href"));
+            }
         });
     </script>
 </body>

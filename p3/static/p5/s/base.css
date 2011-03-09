@@ -535,7 +535,6 @@ footer nav li img {
 
 .page {
     margin: 0 0 60px 0;	    
-/*     position: relative; */
 }
 
 .page.border {    
@@ -830,12 +829,23 @@ footer nav li img {
 	background: #fff;
 }
 
+
+.sponsors {
+    padding: 5px 15px;
+    width: 110px;    
+    position: absolute;
+    top: 220px;
+    left: 50%;
+    margin-left: 435px;         
+    z-index: 1;        
+    background: #E1DBC5;
+}
+
+
 .sponsors h5 {
-    font-size: 18px;
-        
+    font-size: 18px;        
     color: #635443;
-    text-align: center;
-    
+    text-align: center;    
     margin: 0 0 10px 0;
 }
 
@@ -846,19 +856,6 @@ footer nav li img {
 .sponsors .ad.last {    
     margin-right: 0;
 }
-
-
-.sponsors {
-    padding: 5px 15px;
-    width: 110px;    
-    position: absolute;
-/*     top: 345px; */
-    top: 0;
-    left: 0;
-    z-index: 1;        
-    background: #E1DBC5;
-}
-
 
 
 
@@ -1423,4 +1420,21 @@ h1 button.edit {
 .vat-info {
     text-align: center;
     font-size: 1.1em;
+}
+
+
+#global-overlay {
+    padding: 20px;
+}
+
+#global-overlay .contentWrap {
+    height: 450px;
+    overflow-y: auto;
+}
+
+#global-overlay .contentWrap h1,
+#global-overlay .contentWrap h2,
+#global-overlay .contentWrap h3,
+#global-overlay .contentWrap h4 {
+    margin-left: 0;
 }

@@ -44,7 +44,6 @@
 
 
 .cms h2 {
-	
     margin: 40px 0 20px -20px;
     color: #4895a3;
 }
@@ -54,11 +53,10 @@
     margin-top: 0;
 }
 
-.cms h3,
-.cms h4,
-.cms h5,
-.cms h6 {
-
+.cms h3 {
+    text-transform: none;
+    font-size: 21px;
+    color: #635443;
 }
 
 .cms li {

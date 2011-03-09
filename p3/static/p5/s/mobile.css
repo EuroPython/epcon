@@ -1,7 +1,24 @@
-body {
-	
-	/* Yes, I'm using Helvetica as fallback 
-	font for iPad/iPhone before Verdana */
-	font: normal 14px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Helvetica Neue", Helvetica, Verdana, sans-serif;
+/* ========== */
+/* ! mobile   */
+/* ========== */
+
+/* Target at sub-iPad screen resolutions */
+
+@media handheld, only screen and (max-device-width: 767px) {
+
+    body {
+    	
+    	/* Yes, I'm using Helvetica as fallback 
+    	font for iPad/iPhone before Verdana */
+    	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Helvetica Neue", Helvetica, Verdana, sans-serif;
+    }
+    
+    /* Reset negative margin which is causing issues on Android */
+    .page h1,  
+    .cms h2 {
+        margin-left: 0;
+    }    
+
 }
+
 
