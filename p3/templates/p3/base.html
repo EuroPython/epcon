@@ -216,6 +216,7 @@
 
 </footer>
 {% endblock %}
+    <div id="global-overlay" class="overlay"><div class="contentWrap"></div></div>
     {% if 'localhost' not in request.META.HTTP_HOST %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -264,6 +265,13 @@
             offset: [5, 0],
             effect: "fade",
             opacity: 0.9
+        });
+        $('a.global-overlay').overlay({
+            target: $('#global-overlay'),
+            onBeforeLoad: function() {
+                var wrap = this.getOverlay().find(".contentWrap");
+                wrap.load(this.getTrigger().attr("href"));
+            }
         });
     </script>
 </body>

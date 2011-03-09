@@ -1421,3 +1421,20 @@ h1 button.edit {
     text-align: center;
     font-size: 1.1em;
 }
+
+
+#global-overlay {
+    padding: 20px;
+}
+
+#global-overlay .contentWrap {
+    height: 450px;
+    overflow-y: auto;
+}
+
+#global-overlay .contentWrap h1,
+#global-overlay .contentWrap h2,
+#global-overlay .contentWrap h3,
+#global-overlay .contentWrap h4 {
+    margin-left: 0;
+}
