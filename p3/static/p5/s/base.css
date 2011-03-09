@@ -535,7 +535,6 @@ footer nav li img {
 
 .page {
     margin: 0 0 60px 0;	    
-/*     position: relative; */
 }
 
 .page.border {    
@@ -830,6 +829,30 @@ footer nav li img {
 	background: #fff;
 }
 
+
+.sponsors-container {
+    position: relative;
+/*
+    width: 980px;
+    margin: 0 auto;
+*/
+
+}
+
+
+.sponsors {
+    padding: 5px 15px;
+    width: 110px;    
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: 435px; 
+        
+    z-index: 1;        
+    background: #E1DBC5;
+}
+
+
 .sponsors h5 {
     font-size: 18px;
         
@@ -846,19 +869,6 @@ footer nav li img {
 .sponsors .ad.last {    
     margin-right: 0;
 }
-
-
-.sponsors {
-    padding: 5px 15px;
-    width: 110px;    
-    position: absolute;
-/*     top: 345px; */
-    top: 0;
-    left: 0;
-    z-index: 1;        
-    background: #E1DBC5;
-}
-
 
 
 

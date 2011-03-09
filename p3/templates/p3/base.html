@@ -121,15 +121,18 @@
 </header>
 {% endblock %}
 
-{% block TEASER %}{% endblock %}
 
-<div class="page {% block BODY_CLASS %}{% endblock %}">
-    <div class="container clearfix">
-        {% block MAIN_CONTENT %}
-        {% endblock %}
+<div class="sponsors-container">
+
+    {% block TEASER %}{% endblock %}
+    
+    <div class="page {% block BODY_CLASS %}{% endblock %}">
+        <div class="container clearfix">
+            {% block MAIN_CONTENT %}
+            {% endblock %}
+        </div>
     </div>
-
-    {% comment %}
+    
     <section class="sponsors">
     
         <h5>Our Sponsors</h5>
@@ -141,31 +144,18 @@
             </div>
         {% endfor %}
     
+<!--
         <div class="ad">
             <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
         </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
-    
-        <div class="ad">
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-        </div>
+-->
+
     <!-- /sponsors -->
     </section>
-    {% endcomment %}
-    
-</div>
 
+<!-- /sponsors-container -->
+</div>
+    
 {% block FOOTER_BLOCK %}
 <footer>
     <div class="container clearfix">
