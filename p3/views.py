@@ -247,6 +247,7 @@ def billing(request):
                 ('cc', 'Credit Card'),
                 ('bank', 'Wire transfer'),
             ), initial='paypal')
+        code_conduct = forms.BooleanField(label='I have read and accepted the <a class="global-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
 
         def __init__(self, *args, **kwargs):
             super(P3BillingData, self).__init__(*args, **kwargs)
