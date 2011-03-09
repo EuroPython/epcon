@@ -831,7 +831,7 @@ footer nav li img {
 
 
 .sponsors-container {
-    position: relative;
+/*     position: relative; */
 /*
     width: 980px;
     margin: 0 auto;
@@ -844,7 +844,7 @@ footer nav li img {
     padding: 5px 15px;
     width: 110px;    
     position: absolute;
-    top: 0;
+    top: 220px;
     left: 50%;
     margin-left: 435px; 
         
