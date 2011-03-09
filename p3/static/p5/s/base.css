@@ -830,35 +830,22 @@ footer nav li img {
 }
 
 
-.sponsors-container {
-/*     position: relative; */
-/*
-    width: 980px;
-    margin: 0 auto;
-*/
-
-}
-
-
 .sponsors {
     padding: 5px 15px;
     width: 110px;    
     position: absolute;
     top: 220px;
     left: 50%;
-    margin-left: 435px; 
-        
+    margin-left: 435px;         
     z-index: 1;        
     background: #E1DBC5;
 }
 
 
 .sponsors h5 {
-    font-size: 18px;
-        
+    font-size: 18px;        
     color: #635443;
-    text-align: center;
-    
+    text-align: center;    
     margin: 0 0 10px 0;
 }
 
