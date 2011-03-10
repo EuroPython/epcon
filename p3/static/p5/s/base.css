@@ -555,7 +555,7 @@ footer nav li img {
 .page h1  {
 
 	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
-	margin: 0 0 30px -20px;
+	margin: 0 0 30px 0;
 }
 
 /* =================== */
@@ -1432,9 +1432,4 @@ h1 button.edit {
     overflow-y: auto;
 }
 
-#global-overlay .contentWrap h1,
-#global-overlay .contentWrap h2,
-#global-overlay .contentWrap h3,
-#global-overlay .contentWrap h4 {
-    margin-left: 0;
-}
+

@@ -44,7 +44,7 @@
 
 
 .cms h2 {
-    margin: 40px 0 20px -20px;
+    margin: 40px 0 20px 0;
     color: #4895a3;
 }
 
@@ -270,7 +270,7 @@ aside .cms {
 }
 
 aside .cms h4 {
-    color: #4895a3;
+/*     color: #4895a3; */
     margin: 0 0 10px 0; 
     font-size: 21px;
 
@@ -408,36 +408,6 @@ aside .cms ul {
 }
 
 
-
-
-
-
-/* ============ */
-/* ! deadline   */
-/* ============ */
-
-
-.cms section.cal {
-    background: transparent;
-}
-
-.cms section.cal h3 {
-}
-
-.cms section.cal p {
-    margin: 0;
-}
-
-
-
-.cms section.cal div.deadline div {
-    width: auto;
-}
-
-.cms section.cal div.deadline {
-    width: 100%;
-    margin-bottom: 20px;
-}
 
 
 
