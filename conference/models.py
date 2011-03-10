@@ -509,6 +509,9 @@ class Ticket(models.Model):
 
     objects = TicketManager()
 
+    def __unicode__(self):
+        return 'Ticket "%s" (%s)' % (self.fare.name, self.fare.code)
+
 class Sponsor(models.Model):
     """
     Attraverso l'elenco di SponsorIncome un'istanza di Sponsor è collegata
