@@ -1,11 +1,10 @@
 {% load i18n %}
-<div class="section cal">
-    <h3>{% trans "Calendario" %}</h3>
+<div class="section">
+    <h4>{% trans "Next deadline" %}</h4>
     <ul>                                
         {% for d in deadlines %}
         <li> 
-            <h4><span>{{ d.0.date|date:"j" }}</span> {{ d.0.date|date:"M" }}</h4>
-            <p>{% if d.1.headline %}{{ d.1.headline|safe }}< br/>{% endif %}{{ d.1.body|safe }}</p>
+            <p><b>{{ d.0.date|date:"j M" }}</b>: {% if d.1.headline %}{{ d.1.headline|safe }}<br />{% endif %}{{ d.1.body|safe }}</p>
         </li>
         {% endfor %}
     </ul>                                                            
