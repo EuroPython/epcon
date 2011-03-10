@@ -134,7 +134,12 @@ def create_order(order, return_url=None):
     b['user_id'] = order.user.assopy_id
     #b['coupon'] = 
     #b['discount'] = 
-    b['payment_method'] = order.method
+    payment_method = {
+        'paypal': 'paypal',
+        'cc': 'paypal',
+        'bank': 'bank',
+    }[order.method]
+    b['payment_method'] = payment_method
 
     # Se order.deducibile() == False l'acquirente ha comprato biglietti ad uso
     # "personale" e non vogliamo che possa dedurli. Questo flag informa il

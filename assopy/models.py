@@ -334,6 +334,7 @@ purchase_completed = dispatch.Signal(providing_args=[])
 
 ORDER_PAYMENT = (
     ('paypal', 'PayPal'),
+    ('cc', 'Credit Card'),
     ('bank', 'Bank'),
 )
 class Order(models.Model):
