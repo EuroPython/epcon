@@ -446,14 +446,22 @@ class OrderItem(models.Model):
     ticket = models.OneToOneField('conference.ticket')
 
 def _order_feedback(sender, **kwargs):
-    rows = []
+    rows = [
+        'Utente: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
+        'Ragione sociale: "%s"' % (sender.card_name,),
+        'Metodo di pagamento: "%s"' % (sender.method,),
+        'Nazione: "%s"' % (sender.country.name,),
+        'Indirizzo: "%s"' % (sender.address,),
+        'Note di fatturazione:\n%s\n' % (sender.billing_notes,),
+        'Biglietti acquistati:',
+    ]
     for x in sender.orderitem_set.order_by('ticket__fare__code').select_related():
         fare = x.ticket.fare
         rows.append('%-5s %-47s %6.2f' % (fare.code, fare.name, fare.price))
     rows.append('-' * 60)
     rows.append('%54s%6.2f' % ('', sender.total()))
     send_email(
-        subject='New order, %s, from "%s %s" (%s) via "%s"' % (sender.code, sender.user.user.first_name, sender.user.user.last_name, sender.user.user.email, sender.method),
+        subject='New order: %s, from "%s %s"' % (sender.code, sender.user.user.first_name, sender.user.user.last_name,),
         message='\n'.join(rows),
     )
 
