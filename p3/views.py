@@ -12,7 +12,7 @@ from django.template import RequestContext, Template
 from django.template.loader import render_to_string
 
 from assopy.forms import BillingData
-from assopy.models import Order, User, UserIdentity
+from assopy.models import Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
 
 import forms as p3forms
@@ -242,11 +242,7 @@ def billing(request):
             label='Your Name' if recipient != 'c' else 'Company Name',
             max_length=200,
         )
-        payment = forms.ChoiceField(choices=(
-                ('paypal', 'PayPal'),
-                ('cc', 'Credit Card'),
-                ('bank', 'Wire transfer'),
-            ), initial='paypal')
+        payment = forms.ChoiceField(choices=ORDER_PAYMENT, initial='paypal')
         code_conduct = forms.BooleanField(label='I have read and accepted the <a class="global-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
 
         def __init__(self, *args, **kwargs):
@@ -274,10 +270,8 @@ def billing(request):
             data = form.cleaned_data
             form.save()
             payment = data['payment']
-            if payment == 'cc':
-                payment = 'paypal'
             o = Order.objects.create(
-                user=auser, payment=payment,
+                user=auser, payment=data['payment'],
                 billing_notes=data.get('billing_notes', ''),
                 items=request.session['user-cart']['tickets'],
             )
