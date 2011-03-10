@@ -9,12 +9,19 @@ class CountryAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Country, CountryAdmin)
 
+class OrderItemInlineAdmin(admin.TabularInline):
+    model = models.OrderItem
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_total')
     list_select_related = True
     list_filter = ('method',)
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email')
     date_hierarchy = 'created'
+
+    inlines = (
+        OrderItemInlineAdmin,
+    )
 
     def _user(self, o):
         return o.user.name()
