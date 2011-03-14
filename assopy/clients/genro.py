@@ -187,3 +187,12 @@ def update_fare(fare):
     b['start_date'] = fare.start_validity
     b['end_date'] = fare.end_validity
     return _post('/fares/%s/%s/' % (fare.conference, fare.code), b)
+
+def user_invoices(id):
+    return _get('/invoices/user/%s' % id)
+
+def invoice_url(id):
+    return _build('/invoice/%s' % id)
+
+def invoice(id):
+    return _get('/invoice/%s/bag' % id)

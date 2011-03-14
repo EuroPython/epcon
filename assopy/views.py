@@ -398,3 +398,15 @@ def bank_feedback_ok(request, code):
     return {
         'order': o,
     }
+
+def invoice_pdf(request, assopy_id):
+    data = genro.invoice(assopy_id)
+    order = get_object_or_404(models.Order, assopy_id=data['order_id'])
+
+    conference = order.orderitem_set.all()[0].ticket.fare.conference
+
+    fname = '[%s] invoice.pdf' % (conference,)
+    f = urllib.urlopen(genro.invoice_url(assopy_id))
+    response = http.HttpResponse(f, mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+    return response

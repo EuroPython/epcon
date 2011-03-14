@@ -62,11 +62,24 @@ h1 span {
                     <a href="{% url conference-speaker slug=request.user.speaker.slug %}">Your public page</a>
                 </p>
                 {% endif %}
-                {% if request.user.assopy_user.tickets|length > 0 %}
+                {% with request.user.assopy_user.tickets as tickets %}
+                {% with request.user.assopy_user.invoices as invoices %}
+                {% if tickets|length or invoices|length %}
                 <h4>Utilities</h4>
+                {% if tickets|length %}
                 <p><a href="{% url assopy-tickets %}">Your tickets</a></p>
-                <p>No invoices Yet</p>
                 {% endif %}
+                {% if invoices|length %}
+                <p>Your invoices</p>
+                <ul>
+                {% for i in invoices %}
+                <li><a href="{% url assopy-invoice-pdf assopy_id=i.id %}">Order: {{ i.order.code }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                {% endif %}
+                {% endwith %}
+                {% endwith %}
             </div>
         </aside>
         <script type="text/javascript">
