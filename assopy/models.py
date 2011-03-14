@@ -355,7 +355,7 @@ ORDER_PAYMENT = (
     ('bank', 'Bank'),
 )
 class Order(models.Model):
-    code = models.CharField(max_length=8, null=True)
+    code = models.CharField(max_length=9, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     user = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
