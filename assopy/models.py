@@ -18,6 +18,7 @@ from django.db import transaction
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
+import re
 import os
 import os.path
 import logging
@@ -467,3 +468,18 @@ def _order_feedback(sender, **kwargs):
     )
 
 order_created.connect(_order_feedback)
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=5, primary_key=True)
+    start_validity = models.DateField(null=True, blank=True)
+    end_validity = models.DateField(null=True, blank=True)
+    max_usage = models.PositiveIntegerField(default=0)
+    description = models.TextField(blank=True)
+    value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.code, self.value)
+
+    def clean(self):
+        if re.search(r'[^\d\%]+', self.value):
+            raise ValidationError('il valore del coupon contiene un carattere non valido')

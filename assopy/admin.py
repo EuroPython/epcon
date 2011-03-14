@@ -39,6 +39,11 @@ class OrderAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Order, OrderAdmin)
 
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage')
+
+admin.site.register(models.Coupon, CouponAdmin)
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ('_name', 'phone', 'address', '_identities',)
     list_select_related = True
