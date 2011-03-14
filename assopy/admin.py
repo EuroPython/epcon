@@ -13,7 +13,7 @@ class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_total')
+    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_total_nodiscount', '_discount', '_total_payed')
     list_select_related = True
     list_filter = ('method',)
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email')
@@ -34,8 +34,17 @@ class OrderAdmin(admin.ModelAdmin):
     def _created(self, o):
         return o.created.strftime('%d %b %Y - %H:%M:%S')
 
-    def _total(self, o):
+    def _total_nodiscount(self, o):
+        return o.total(apply_discounts=False)
+    _total_nodiscount.short_description = 'Total'
+
+    def _discount(self, o):
+        return models.Order.calculateDiscount(self._total_nodiscount(o), o.coupons.all())
+    _discount.short_description = 'Discount'
+
+    def _total_payed(self, o):
         return o.total()
+    _total_payed.short_description = 'Payed'
 
 admin.site.register(models.Order, OrderAdmin)
 

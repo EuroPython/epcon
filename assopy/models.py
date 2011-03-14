@@ -24,6 +24,7 @@ import os.path
 import logging
 from uuid import uuid4
 from datetime import date, datetime
+from decimal import Decimal
 
 log = logging.getLogger('assopy.models')
 
@@ -287,6 +288,21 @@ class UserIdentity(models.Model):
 
     objects = UserIdentityManager()
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=5, primary_key=True)
+    start_validity = models.DateField(null=True, blank=True)
+    end_validity = models.DateField(null=True, blank=True)
+    max_usage = models.PositiveIntegerField(default=0)
+    description = models.TextField(blank=True)
+    value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.code, self.value)
+
+    def clean(self):
+        if re.search(r'[^\d\%]+', self.value):
+            raise ValidationError('il valore del coupon contiene un carattere non valido')
+
 class OrderManager(models.Manager):
     @transaction.commit_on_success
     def create(self, user, payment, items, billing_notes='', remote=True):
@@ -367,6 +383,8 @@ class Order(models.Model):
     city = models.CharField(_('City'), max_length=40, blank=True)
     state = models.CharField(_('State'), max_length=2, blank=True)
 
+    coupons = models.ManyToManyField(Coupon)
+
     objects = OrderManager()
 
     def billable(self):
@@ -440,8 +458,25 @@ class Order(models.Model):
                 break
         return deductible
 
-    def total(self):
-        return self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']
+    def total(self, apply_discounts=True):
+        t = self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']
+        if apply_discounts:
+            return t - self.calculateDiscount(t, self.coupons.all())
+        else:
+            return t
+
+    @classmethod
+    def calculateDiscount(cls, total, coupons):
+        value = Decimal('0')
+        perc = Decimal('0')
+        for c in coupons:
+            if c.value.endswith('%'):
+                perc += Decimal(c.value[:-1])
+            else:
+                value += Decimal(c.value)
+        total = Decimal(total)
+        discount = value + total / 100 * perc
+        return discount
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
@@ -468,18 +503,3 @@ def _order_feedback(sender, **kwargs):
     )
 
 order_created.connect(_order_feedback)
-
-class Coupon(models.Model):
-    code = models.CharField(max_length=5, primary_key=True)
-    start_validity = models.DateField(null=True, blank=True)
-    end_validity = models.DateField(null=True, blank=True)
-    max_usage = models.PositiveIntegerField(default=0)
-    description = models.TextField(blank=True)
-    value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
-
-    def __unicode__(self):
-        return '%s (%s)' % (self.code, self.value)
-
-    def clean(self):
-        if re.search(r'[^\d\%]+', self.value):
-            raise ValidationError('il valore del coupon contiene un carattere non valido')
