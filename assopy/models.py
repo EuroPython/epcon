@@ -390,6 +390,13 @@ class OrderManager(models.Manager):
                 item.save()
         tickets_total = o.total()
         if coupons:
+            # applico i coupon in due passi:
+            #   1. applico i coupon a percentuale sempre rispetto al totale
+            #       dell'ordine
+            #   2. applico i coupon a valore sul totale risultante
+            #
+            # queste regole servono a preparare un ordine (e una fattura) che
+            # risulti il più capibile possibile per l'utente.
             for c in coupons:
                 if c.type() == 'perc':
                     item = OrderItem(order=o, ticket=None)
@@ -397,6 +404,7 @@ class OrderManager(models.Manager):
                     item.description = c.description
                     item.price = -1 * c.apply(tickets_total, o.total())
                     item.save()
+                    log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
             for c in coupons:
                 if c.type() == 'val':
                     item = OrderItem(order=o, ticket=None)
@@ -404,6 +412,7 @@ class OrderManager(models.Manager):
                     item.description = c.description
                     item.price = -1 * c.apply(o.total(), o.total())
                     item.save()
+                    log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
         log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
         if remote:
             genro.create_order(
