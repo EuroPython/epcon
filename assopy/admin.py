@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django import forms
 from django.contrib import admin
 from assopy import models
 
@@ -48,8 +49,16 @@ class OrderAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Order, OrderAdmin)
 
+class CouponAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Coupon
+
+    def clean_code(self):
+        return self.cleaned_data['code'].upper()
+
 class CouponAdmin(admin.ModelAdmin):
     list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage')
+    form = CouponAdminForm
 
 admin.site.register(models.Coupon, CouponAdmin)
 
