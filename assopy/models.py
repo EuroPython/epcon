@@ -315,7 +315,7 @@ class Coupon(models.Model):
     start_validity = models.DateField(null=True, blank=True)
     end_validity = models.DateField(null=True, blank=True)
     max_usage = models.PositiveIntegerField(default=0)
-    description = models.TextField(blank=True)
+    description = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
 
     def __unicode__(self):
@@ -325,9 +325,42 @@ class Coupon(models.Model):
         if re.search(r'[^\d\%]+', self.value):
             raise ValidationError('il valore del coupon contiene un carattere non valido')
 
+    def type(self):
+        if self.value.endswith('%'):
+            return 'perc'
+        else:
+            return 'val'
+
+    def valid(self):
+        if self.start_validity and self.end_validity:
+            today = date.today()
+            if today < self.start_validity or today > self.end_validity:
+                return False
+
+        if self.max_usage:
+            if OrderItem.objects.exclude(ticket=None).filter(code=self.code).count() >= self.max_usage:
+                return False
+        return True
+
+    def apply(self, total, guard=None):
+        if self.type() == 'val':
+            v = Decimal(self.value)
+        else:
+            v = total / 100 * Decimal(self.value[:-1]) 
+        if guard is not None:
+            if v > guard:
+                v = guard
+        return v
+
 class OrderManager(models.Manager):
     @transaction.commit_on_success
-    def create(self, user, payment, items, billing_notes='', remote=True):
+    def create(self, user, payment, items, billing_notes='', coupons=None, remote=True):
+        if coupons:
+            for c in coupons:
+                if not c.valid():
+                    log.warn('Invalid coupon: %s', c.code)
+                    raise ValueError(c)
+
         log.info('new order for "%s" via "%s": %d items', user.name(), payment, sum(x[1] for x in items))
         o = Order()
         o.code = None
@@ -351,8 +384,27 @@ class OrderManager(models.Manager):
                 a = Ticket(user=user.user, fare=f)
                 a.save()
                 item = OrderItem(order=o, ticket=a)
+                item.code = f.code
+                item.description = f.name
+                item.price = f.price
                 item.save()
-        log.info('order "%s" and tickets created locally', o.id)
+        tickets_total = o.total()
+        if coupons:
+            for c in coupons:
+                if c.type() == 'perc':
+                    item = OrderItem(order=o, ticket=None)
+                    item.code = c.code
+                    item.description = c.description
+                    item.price = -1 * c.apply(tickets_total, o.total())
+                    item.save()
+            for c in coupons:
+                if c.type() == 'val':
+                    item = OrderItem(order=o, ticket=None)
+                    item.code = c.code
+                    item.description = c.description
+                    item.price = -1 * c.apply(o.total(), o.total())
+                    item.save()
+        log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
         if remote:
             genro.create_order(
                 o,
@@ -404,8 +456,6 @@ class Order(models.Model):
     address = models.CharField(_('Address'), max_length=150, blank=True)
     city = models.CharField(_('City'), max_length=40, blank=True)
     state = models.CharField(_('State'), max_length=2, blank=True)
-
-    coupons = models.ManyToManyField(Coupon)
 
     objects = OrderManager()
 
@@ -471,7 +521,7 @@ class Order(models.Model):
         # considero non deducibile un ordine che contiene almeno un biglietto
         # per la conferenza destinato a privati/studenti
         qs = Fare.objects\
-            .filter(id__in=self.orderitem_set.values('ticket__fare'))\
+            .filter(id__in=self.orderitem_set.exclude(ticket=None).values('ticket__fare'))\
             .values_list('recipient_type', 'ticket_type')
         deductible = True
         for r, t in qs:
@@ -481,28 +531,14 @@ class Order(models.Model):
         return deductible
 
     def total(self, apply_discounts=True):
-        t = self.orderitem_set.aggregate(t=models.Sum('ticket__fare__price'))['t']
-        if apply_discounts:
-            return t - self.calculateDiscount(t, self.coupons.all())
-        else:
-            return t
-
-    @classmethod
-    def calculateDiscount(cls, total, coupons):
-        value = Decimal('0')
-        perc = Decimal('0')
-        for c in coupons:
-            if c.value.endswith('%'):
-                perc += Decimal(c.value[:-1])
-            else:
-                value += Decimal(c.value)
-        total = Decimal(total)
-        discount = value + total / 100 * perc
-        return discount
+        return self.orderitem_set.aggregate(t=models.Sum('price'))['t']
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
-    ticket = models.OneToOneField('conference.ticket')
+    ticket = models.OneToOneField('conference.ticket', null=True)
+    code = models.CharField(max_length=10)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    description = models.CharField(max_length=100, blank=True)
 
 def _order_feedback(sender, **kwargs):
     rows = [
@@ -515,8 +551,7 @@ def _order_feedback(sender, **kwargs):
         'Biglietti acquistati:',
     ]
     for x in sender.orderitem_set.order_by('ticket__fare__code').select_related():
-        fare = x.ticket.fare
-        rows.append('%-5s %-47s %6.2f' % (fare.code, fare.name, fare.price))
+        rows.append('%-5s %-47s %6.2f' % (x.code, x.description, x.price))
     rows.append('-' * 60)
     rows.append('%54s%6.2f' % ('', sender.total()))
     send_email(
