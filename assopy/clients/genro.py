@@ -2,8 +2,6 @@
 from assopy import settings
 from assopy.clients.gnrbag import Bag
 
-from lxml import objectify
-
 import logging
 import urllib
 from collections import defaultdict
@@ -167,6 +165,12 @@ def create_order(order, return_url=None):
 def order(id):
     return _get('/orders/%s' % id)
 
+def confirm_order(id, value, date=None):
+    b = Bag()
+    b['payment_value'] = value
+    b['payment_date'] = date
+    return _post('/orders/confirm/%s/' % (id,), b)
+
 def update_fare(fare):
     # le tariffe di tipo vaucher non devono arrivare al backend
     assert fare.payment_type != 'v'
@@ -196,3 +200,4 @@ def invoice_url(id):
 
 def invoice(id):
     return _get('/invoice/%s/bag' % id)
+
