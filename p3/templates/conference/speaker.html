@@ -9,11 +9,11 @@
     </section>
     {% endif %}
     <div class="column span-8">
-        <h1><span>{{ auser.name }}</span>
+        <h1>{{ auser.name }}
         {% if full_access %}
-        <button class="profile edit">Edit this page</button>
+        <span class="action edit"><a href="#">(Edit profile)</a></span>
         <script type="text/javascript">//<![CDATA[
-        $('button.profile.edit').click(function(e) {
+        $('.action a').click(function(e) {
             e.preventDefault();
             $('div.readonly').hide();
             $('div.writable').show();
@@ -54,19 +54,17 @@
         </div>
         {% if full_access %}
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-            <div class="cms">
-                <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post">
-                    <fieldset>
-                    {{ form.activity|field }}
-                    {{ form.company|field }}
-                    {{ form.company_homepage|field }}
-                    {{ form.bio|field }}
-                    </fieldset>
-                    <fieldset class="border">
-                        <button type="submit">Submit</button>
-                    </fieldset>
-                </form>
-            </div>
+            <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post">
+                <fieldset>
+                {{ form.activity|field }}
+                {{ form.company|field }}
+                {{ form.company_homepage|field }}
+                {{ form.bio|field }}
+                </fieldset>
+                <fieldset class="border">
+                    <button type="submit">Save Changes</button>
+                </fieldset>
+            </form>
         </div>
         {% endif %}
     </div>

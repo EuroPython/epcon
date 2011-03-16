@@ -16,11 +16,11 @@ var PROJEKKTOR_CONFIG = {
 {% endblock %}
 
 {% block MAIN_CONTENT %}
-    <h1><span>{{ talk.title }}</span>
+    <h1>{{ talk.title }}
     {% if full_access %}
-    <button class="profile edit">Edit talk</button>
+    <span class="action edit"><a href="#">(Edit talk)</a></span>
     <script type="text/javascript">//<![CDATA[
-    $('button.profile.edit').click(function(e) {
+    $('.action a').click(function(e) {
         e.preventDefault();
         $('div.readonly').hide();
         $('div.writable').show();
@@ -63,24 +63,22 @@ var PROJEKKTOR_CONFIG = {
         {% endwith %}
         {% if full_access %}
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-            <div class="cms">
-                <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">
-                    <fieldset>
-                    {{ form.title|field }}
-                    {% if cfp %}
-                    {{ form.training|field }}
-                    {{ form.duration|field }}
-                    {{ form.language|field }}
-                    {{ form.level|field }}
-                    {% endif %}
-                    {{ form.slides|field }}
-                    {{ form.abstract|field }}
-                    </fieldset>
-                    <fieldset class="border">
-                        <button type="submit">Submit</button>
-                    </fieldset>
-                </form>
-            </div>
+            <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">
+                <fieldset>
+                {{ form.title|field }}
+                {% if cfp %}
+                {{ form.training|field }}
+                {{ form.duration|field }}
+                {{ form.language|field }}
+                {{ form.level|field }}
+                {% endif %}
+                {{ form.slides|field }}
+                {{ form.abstract|field }}
+                </fieldset>
+                <fieldset class="border">
+                    <button name="" value="" type="submit">Save Changes</button>
+                </fieldset>
+            </form>
         </div>
         {% endif %}
     </div>

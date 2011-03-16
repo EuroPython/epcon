@@ -59,4 +59,13 @@ class TicketConference(models.Model):
 
     objects = TicketConferenceManager()
 
+class Donation(models.Model):
+    user = models.ForeignKey('assopy.User')
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=6, decimal_places=2)
+    message = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return '%s donation of %s' % (self.user.name(), self.date)
+
 import p3.listeners

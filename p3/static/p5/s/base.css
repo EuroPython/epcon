@@ -73,15 +73,6 @@ hr {
 }
 
 
-.meta {
-    font-size: 12px;
-    color: #7d6f60;
-}
-
-.meta a {
-    color: #7d6f60;    
-    border-bottom-color: #7d6f60;
-}
 
 
 /* ========= */
@@ -108,6 +99,16 @@ a:hover {
     -webkit-transition: color ease-out .2s;
 }
 
+.meta {
+    font-size: 12px;
+    color: #7d6f60;
+}
+
+.meta a {
+    color: #7d6f60;    
+    border-bottom-color: #7d6f60;
+}
+
 .darker a {
     color: #fcf8c0;
 	border-bottom-color: #7d6f60;
@@ -130,10 +131,6 @@ a.tag {
     font-size: 12px;
     
     border: 1px solid #b0ab63;
-/*
-    border-bottom: 1px solid #b0ab63;
-    border-right: 1px solid #b0ab63;
-*/
 
     -moz-border-radius: 3px;    
     border-radius: 3px;
@@ -186,6 +183,17 @@ a.tag:hover {
     -moz-box-shadow: 1px 1px 2px #7d6f60;
 
 }
+
+
+.action a {
+    text-transform: lowercase;
+    border-bottom-color: #7d6f60;    
+    color: #7d6f60;
+    font-size: 24px;
+}
+
+
+
 
 
 /* ============= */
@@ -591,7 +599,7 @@ footer nav li img {
 .speaker h2  {
     text-align: left;
     
-    margin: 0 0 20px -20px;
+    margin: 0 0 20px 0;
 }
 
 
@@ -645,7 +653,6 @@ footer nav li img {
 
     padding: 0 0 10px 0;
     margin: 0 0 10px 0;
-
 }
 
 
