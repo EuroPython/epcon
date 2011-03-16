@@ -311,7 +311,8 @@ class UserIdentity(models.Model):
     objects = UserIdentityManager()
 
 class Coupon(models.Model):
-    code = models.CharField(max_length=10, primary_key=True)
+    conference = models.ForeignKey('conference.Conference')
+    code = models.CharField(max_length=10)
     start_validity = models.DateField(null=True, blank=True)
     end_validity = models.DateField(null=True, blank=True)
     max_usage = models.PositiveIntegerField(default=0)
