@@ -127,3 +127,16 @@ class UserAdmin(admin.ModelAdmin):
     _identities.short_description = '#id'
 
 admin.site.register(models.User, UserAdmin)
+
+class DonationAdmin(admin.ModelAdmin):
+    list_display = ('_name', 'date', 'amount')
+    list_select_related = True
+    search_fields = ('user__user__first_name', 'user__user__last_name', 'user__user__email')
+    date_hierarchy = 'date'
+
+    def _name(self, o):
+        return o.user.name()
+    _name.short_description = 'name'
+    _name.admin_order_field = 'user__user__first_name'
+
+admin.site.register(models.Donation, DonationAdmin)
