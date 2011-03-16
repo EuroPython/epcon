@@ -507,12 +507,18 @@ class Order(models.Model):
         #else:
         #    return 20.0
 
-    def invoice(self):
-        iid = genro.order(self.assopy_id)['invoice_number']
-        if iid:
-            return genro.invoice(iid)
-        else:
-            return None
+    def invoices(self):
+        output = []
+        if self.assopy_id:
+            data = genro.order(self.assopy_id)
+            ix = 0
+            while True:
+                invoice = data['invoices.i%d' % ix]
+                if not invoice:
+                    break
+                output.append((invoice['id'], invoice['number'], invoice['invoice_date'], invoice['payment_date']))
+                ix += 1
+        return output
         
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
@@ -521,7 +527,10 @@ class Order(models.Model):
             # non ha senso chiamare .complete su un ordine non associato al
             # backend
             return False
-        r = bool(genro.order(self.assopy_id)['invoice_number'])
+        # un ordine risulta pagato se tutte le sue fatture riportano la data
+        # del pagamento
+        invoices = [ i[3] for i in self.invoices() ]
+        r = len(invoices) > 0 and all(invoices)
         if r and not self._complete:
             log.info('purchase of order "%s" completed', self.code)
             purchase_completed.send(sender=self)
@@ -547,7 +556,10 @@ class Order(models.Model):
         return deductible
 
     def total(self, apply_discounts=True):
-        return self.orderitem_set.aggregate(t=models.Sum('price'))['t']
+        if apply_discounts:
+            return self.orderitem_set.aggregate(t=models.Sum('price'))['t']
+        else:
+            return self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)

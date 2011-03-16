@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.shortcuts import redirect, render_to_response
 from assopy import models
+from assopy.clients import genro
 
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('printable_name', 'vat_company', 'vat_company_verify', 'vat_person')
@@ -19,7 +20,7 @@ class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_total_nodiscount', '_discount', '_total_payed')
+    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
     list_select_related = True
     list_filter = ('method',)
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email')
@@ -46,12 +47,19 @@ class OrderAdmin(admin.ModelAdmin):
     _total_nodiscount.short_description = 'Total'
 
     def _discount(self, o):
-        return models.Order.calculateDiscount(self._total_nodiscount(o), o.coupons.all())
+        return o.total(apply_discounts=False) - o.total()
     _discount.short_description = 'Discount'
 
     def _total_payed(self, o):
         return o.total()
     _total_payed.short_description = 'Payed'
+
+    def _invoice(self, o):
+        output = []
+        for i in o.invoices():
+            output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i[0]), i[1], ' *' if not i[3] else ''))
+        return ' '.join(output)
+    _invoice.allow_tags = True
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
