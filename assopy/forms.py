@@ -196,13 +196,9 @@ class FormTickets(forms.Form):
         o = []
         total = 0
         for k, q in data.items():
-            if k in ('payment', 'order_type'):
+            if k not in fares:
                 continue
             if not q:
-                continue
-            if k not in fares:
-                self._errors[k] = self.error_class(['Invalid fare'])
-                del data[k]
                 continue
             total += q
             f = fares[k]
