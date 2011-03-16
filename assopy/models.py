@@ -588,12 +588,3 @@ def _order_feedback(sender, **kwargs):
     )
 
 order_created.connect(_order_feedback)
-
-class Donation(models.Model):
-    user = models.ForeignKey(User)
-    date = models.DateField()
-    amount = models.DecimalField(max_digits=6, decimal_places=2)
-    message = models.TextField(blank=True)
-
-    def __unicode__(self):
-        return '%s donation of %s' % (self.user.name(), self.date)
