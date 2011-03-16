@@ -507,6 +507,13 @@ class Order(models.Model):
         #else:
         #    return 20.0
 
+    def invoice(self):
+        iid = genro.order(self.assopy_id)['invoice_number']
+        if iid:
+            return genro.invoice(iid)
+        else:
+            return None
+        
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
             return True
