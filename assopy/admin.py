@@ -1,5 +1,11 @@
 # -*- coding: UTF-8 -*-
+from django import forms
+from django import http
+from django import template
+from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
+from django.core import urlresolvers
+from django.shortcuts import redirect, render_to_response
 from assopy import models
 
 class CountryAdmin(admin.ModelAdmin):
@@ -18,6 +24,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('method',)
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email')
     date_hierarchy = 'created'
+    actions = ('do_edit_invoices',)
 
     inlines = (
         OrderItemInlineAdmin,
@@ -45,6 +52,50 @@ class OrderAdmin(admin.ModelAdmin):
     def _total_payed(self, o):
         return o.total()
     _total_payed.short_description = 'Payed'
+
+    def get_urls(self):
+        urls = super(OrderAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^invoices/$', self.admin_site.admin_view(self.edit_invoices), name='assopy-edit-invoices'),
+        )
+        return my_urls + urls
+
+    def do_edit_invoices(self, request, queryset):
+        ids = [ str(o.id) for o in queryset if not o.complete() ]
+        if ids:
+            url = urlresolvers.reverse('admin:assopy-edit-invoices') + '?id=' + ','.join(ids)
+            return redirect(url)
+        else:
+            self.message_user(request, 'no orders')
+    do_edit_invoices.short_description = 'Edit/Make invoices'
+
+    def edit_invoices(self, request):
+        try:
+            ids = map(int, request.GET['id'].split(','))
+        except KeyError:
+            return http.HttpResponseBadRequest('orders id missing')
+        except ValueError:
+            return http.HttpResponseBadRequest('invalid id list')
+        orders = models.Order.objects.filter(id__in=ids)
+        if not orders.count():
+            return redirect('admin:assopy_order_changelist')
+            
+        class FormPaymentDate(forms.Form):
+            date = forms.DateField(input_formats=('%Y/%m/%d',), help_text='Enter the date (YYYY/MM/DD) of receipt of payment. Leave blank to issue an invoice without a payment', required=False)
+
+        if request.method == 'POST':
+            form = FormPaymentDate(data=request.POST)
+            if form.is_valid():
+                d = form.cleaned_data['date']
+                return redirect('admin:assopy_order_changelist')
+        else:
+            form = FormPaymentDate()
+        ctx = {
+            'orders': orders,
+            'form': form,
+            'ids': request.GET.get('id'),
+        }
+        return render_to_response('assopy/admin/edit_invoices.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.register(models.Order, OrderAdmin)
 
