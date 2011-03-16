@@ -5,6 +5,7 @@ from django import template
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
+from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from assopy import models
 from assopy.clients import genro
@@ -20,7 +21,7 @@ class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
+    list_display = ('code', '_user', '_created', 'method', '_items', '_complete_order', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
     list_select_related = True
     list_filter = ('method',)
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email')
@@ -55,11 +56,28 @@ class OrderAdmin(admin.ModelAdmin):
     _total_payed.short_description = 'Payed'
 
     def _invoice(self, o):
-        output = []
-        for i in o.invoices():
-            output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i[0]), i[1], ' *' if not i[3] else ''))
-        return ' '.join(output)
+        # micro cache per evitare di richiedere continuamente al server remoto gli stessi dati
+        key = 'admin:assopy-order-invoices-%d' % o.id
+        data = cache.get(key)
+        if data is None:
+            output = []
+            for i in o.invoices():
+                output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i[0]), i[1], ' *' if not i[3] else ''))
+            data = ' '.join(output)
+            cache.set(key, data, 300)
+        return data
     _invoice.allow_tags = True
+
+    def _complete_order(self, o):
+        # micro cache per evitare di richiedere continuamente al server remoto gli stessi dati
+        key = 'admin:assopy-order-complete-%d' % o.id
+        data = cache.get(key)
+        if data is None:
+            data = o.complete()
+            cache.set(key, data, 300)
+        return data
+    _complete_order.boolean = True
+    _complete_order.short_description = 'Payed'
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
@@ -95,6 +113,11 @@ class OrderAdmin(admin.ModelAdmin):
             form = FormPaymentDate(data=request.POST)
             if form.is_valid():
                 d = form.cleaned_data['date']
+                for o in orders:
+                    genro.confirm_order(o.assopy_id, o.total(), d)
+                    # invalido le cache per poter vedere subito i risultati
+                    cache.delete('admin:assopy-order-invoices-%d' % o.id)
+                    cache.delete('admin:assopy-order-complete-%d' % o.id)
                 return redirect('admin:assopy_order_changelist')
         else:
             form = FormPaymentDate()
