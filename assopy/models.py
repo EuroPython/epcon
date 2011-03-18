@@ -558,9 +558,10 @@ class Order(models.Model):
 
     def total(self, apply_discounts=True):
         if apply_discounts:
-            return self.orderitem_set.aggregate(t=models.Sum('price'))['t']
+            t = self.orderitem_set.aggregate(t=models.Sum('price'))['t']
         else:
-            return self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
+            t = self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
+        return t if t is not None else 0
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
