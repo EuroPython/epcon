@@ -22,4 +22,4 @@ TICKET_PAGE = getattr(settings, 'ASSOPY_TICKET_PAGE', None)
 
 SEND_EMAIL_TO = getattr(settings, 'ASSOPY_SEND_EMAIL_TO', None)
 
-VIES_WSDL_URL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl'
+VIES_WSDL_URL = getattr(settings, 'ASSOPY_VIES_WSDL_URL', 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl')
