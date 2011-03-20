@@ -6,9 +6,23 @@ $(document).ready(function() {
      */
     $(".toggle").each(function() {
         // nasconde il contenuto e aggiunge il supporto per il mostra/nascondi
-        $(this).next().hide();
-        $(this).click(function() {
-            $(this).next().toggle();
+        if($(this).attr('rel'))
+            var target = $($(this).attr('rel'));
+        else
+            var target = $(this).next();
+        var trigger = $(this);
+        target.hide();
+        trigger.addClass('trigger-collapsed');
+        trigger.click(function() {
+            target.toggle();
+            if(target.is(":visible")) {
+                trigger.removeClass('trigger-collapsed');
+                trigger.addClass('trigger-expanded');
+            }
+            else {
+                trigger.addClass('trigger-collapsed');
+                trigger.removeClass('trigger-expanded');
+            }
         });
     });
 });
