@@ -1,0 +1,38 @@
+{% extends "p3/base.html" %}
+
+{% block PAGE_TITLE %}Talk voting &mdash; {% endblock %}
+
+{% block MAIN_CONTENT %}
+    <h1>Talk Voting</h1>
+    <div id="talk-voting" class="span-12 cms">
+        {% for t in talks %}
+        <div>
+            <h2 class="toggle" rel="p[data-talk={{ t.id }}]">{{ t.title }}</h2>
+            <form action="{% url conference-voting %}" method="post">{% csrf_token %}
+                <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote }}" step="0.5" />
+                <div class="rateit" data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
+            </form>
+            <p data-talk="{{ t.id }}">{{ t.getAbstract.body }}</p>
+        </div>
+        {% endfor %}
+        <script type="text/javascript">
+            function rate(e, val) {
+                var field = $(e.rateit('backingfld'));
+                var form = field.parents('form');
+                if(val == undefined) 
+                    field.val(e.rateit('value'))
+                else
+                    field.val(val);
+                form.ajaxSubmit();
+            }
+            $('#talk-voting .rateit')
+                .rateit()
+                .bind('rated', function() {
+                    rate($(this));
+                })
+                .bind('reset', function() {
+                    rate($(this), 0);
+                });
+        </script>
+    </div>
+{% endblock %}
