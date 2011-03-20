@@ -462,6 +462,9 @@ def voting(request):
     @login_required
     @render_to('conference/voting.html')
     def wrapper(request):
+        if not settings.VOTING_ALLOWED(request.user):
+            return http.HttpResponseBadRequest('voting not allowed')
+
         talks = models.Talk.objects.proposed(conference=conf.code)
         votes = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=request.user))
         for t in talks:
