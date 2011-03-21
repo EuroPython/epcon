@@ -150,11 +150,11 @@ class MultilingualContent(models.Model):
 import urlparse
 from django.core.files.storage import FileSystemStorage
 
-def _fs_upload_to(subdir, attr=None):
+def _fs_upload_to(subdir, attr=None, package='conference'):
     if attr is None:
         attr = lambda i: i.slug
     def wrapper(instance, filename):
-        fpath = os.path.join('conference', subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
+        fpath = os.path.join(package, subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
         ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
         if os.path.exists(ipath):
             os.unlink(ipath)
