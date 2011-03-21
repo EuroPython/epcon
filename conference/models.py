@@ -32,6 +32,8 @@ class Conference(models.Model):
     cfp_end = models.DateField(null=True, blank=True)
     conference_start = models.DateField(null=True, blank=True)
     conference_end = models.DateField(null=True, blank=True)
+    voting_start = models.DateField(null=True, blank=True)
+    voting_end = models.DateField(null=True, blank=True)
 
     objects = ConferenceManager()
 
@@ -45,11 +47,22 @@ class Conference(models.Model):
         if self.cfp_start and self.cfp_end:
             if self.cfp_start > self.cfp_end:
                 raise exceptions.ValidationError('range di date per il cfp non valido') 
+        if self.voting_start and self.voting_end:
+            if self.voting_start > self.voting_end:
+                raise exceptions.ValidationError('range di date per la votazione non valido') 
 
     def cfp(self):
         today = datetime.date.today()
         try:
             return self.cfp_start <= today <= self.cfp_end
+        except TypeError:
+            # date non impostate
+            return False
+
+    def voting(self):
+        today = datetime.date.today()
+        try:
+            return self.voting_start <= today <= self.voting_end
         except TypeError:
             # date non impostate
             return False
@@ -714,4 +727,12 @@ class Quote(models.Model):
 
     class Meta:
         ordering = ['conference', 'who']
+
+class VotoTalk(models.Model):
+    user = models.ForeignKey('auth.User')
+    talk = models.ForeignKey(Talk)
+    vote = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = (('user', 'talk'),)
 

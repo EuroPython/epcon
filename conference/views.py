@@ -444,3 +444,60 @@ def paper_submission(request, submission_form=SubmissionForm, submission_additio
         'form': form,
         'proposed_talks': proposed,
     }, context_instance=RequestContext(request))
+
+def voting(request):
+    conf = models.Conference.objects.current()
+    if not conf.voting_start or not conf.voting_end:
+        raise http.Http404()
+
+    if not conf.voting():
+        if settings.VOTING_CLOSED:
+            return redirect(settings.VOTING_CLOSED)
+        else:
+            raise http.Http404()
+
+    # "wrapper" serve solo a verificare le condizioni che portano ad un 404
+    # prima di se l'utente è autenticato. Non mi piace l'idea di chidere
+    # username/password per poi far vedere un "page not found".
+    @login_required
+    @render_to('conference/voting.html')
+    def wrapper(request):
+        if not settings.VOTING_ALLOWED(request.user):
+            return http.HttpResponseBadRequest('voting not allowed')
+
+        talks = models.Talk.objects.proposed(conference=conf.code)
+        votes = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=request.user))
+        for t in talks:
+            t.user_vote = votes.get(t.id)
+
+        if request.method == 'POST':
+            data = dict((x.id, x) for x in talks)
+            for k, v in filter(lambda x: x[0].startswith('vote-'), request.POST.items()):
+                try:
+                    talk = data[int(k[5:])]
+                except KeyError:
+                    return http.HttpResponseBadRequest('invalid talk')
+                except ValueError:
+                    return http.HttpResponseBadRequest('id malformed')
+                if not v:
+                    models.VotoTalk.objects.filter(user=request.user, talk=talk).delete()
+                    talks.user_vote = None
+                else:
+                    try:
+                        vote = int(v)
+                    except ValueError:
+                        return http.HttpResponseBadRequest('vote malformed')
+                    try:
+                        o = models.VotoTalk.objects.get(user=request.user, talk=talk)
+                    except models.VotoTalk.DoesNotExist:
+                        o = models.VotoTalk(user=request.user, talk=talk)
+                    o.vote = vote
+                    o.save()
+                    talks.user_vote = o
+            return HttpResponseRedirectSeeOther(reverse('conference-voting'))
+
+        return {
+            'talks': talks,
+        }
+
+    return wrapper(request)

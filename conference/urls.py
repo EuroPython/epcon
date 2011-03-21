@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'^sponsors/(?P<sponsor>.*)/', 'conference.views.sponsor', name = 'conference-sponsor'),
     url(r'^(?P<conference>.*)/talks.xml$', 'conference.views.talks_xml', name = 'conference-talks-xml'),
     url(r'^paper-submission/$', 'conference.views.paper_submission', name='conference-paper-submission'),
+    url(r'^voting/$', 'conference.views.voting', name='conference-voting'),
 )
 

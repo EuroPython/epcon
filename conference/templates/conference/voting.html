@@ -1,0 +1,17 @@
+<html>
+<body>
+    <h1>Talk voting</h1>
+    <form action="{% url conference-voting %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table>
+        {% for t in talks %}
+            <tr>
+                <td>{{ t.title }}</td>
+                <td><input type="text" size="2" name="vote-{{ t.id }}" value="{{ t.user_vote.vote }}" />
+            </tr>
+        {% endfor %}
+        </table>
+        <input type="submit" />
+    </form>
+</body>
+</html>
+

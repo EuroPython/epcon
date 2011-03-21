@@ -19,6 +19,11 @@ MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYPE_NAME_CONV
 
 CFP_CLOSED = getattr(settings, 'CONFERENCE_CFP_CLOSED', None)
 
+VOTING_CLOSED = getattr(settings, 'CONFERENCE_VOTING_CLOSED', None)
+
+# callable per verificare se l'utente passato può partecipare alla votazione
+VOTING_ALLOWED = getattr(settings, 'CONFERENCE_VOTING_ALLOWED', lambda user: True)
+
 SEND_EMAIL_TO = getattr(settings, 'CONFERENCE_SEND_EMAIL_TO', None)
 
 STUFF_DIR = getattr(settings, 'CONFERENCE_STUFF_DIR', settings.MEDIA_ROOT)
