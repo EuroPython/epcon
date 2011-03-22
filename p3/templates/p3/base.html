@@ -36,6 +36,14 @@
     <script type="text/javascript" src="{% url p3-map-js %}"></script>
     {% endif %}
     {% block EXTRA_HEAD %}{% endblock %}
+
+    <meta property="og:title" content="EuroPython 2011" />
+    <meta property="og:type" content="non-profit" />
+    <meta property="og:url" content="http://ep2011.europython.eu/" />
+    <meta property="og:image" content="http://a1.twimg.com/profile_images/1231560986/Twitter-Avatar_bigger.png"/>
+    <meta property="og:site_name" content="EuroPython Conference 2011" />
+    <meta property="fb:admins" content="789244177" />
+
 </head>
 <body id="{% block BODY_ID %}{% endblock %}">
 <!--[if lt IE 7]>
@@ -279,4 +287,5 @@
     </script>
 </body>
 </html>
+
 
