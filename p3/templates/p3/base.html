@@ -141,7 +141,7 @@
     <h5>Our Sponsors</h5>
 
     {% conference_sponsor "ep2011" as sponsors %}
-    {% for s in sponsors|slice:":6" %}
+    {% for s in sponsors %}
         <div class="ad">
             <a href="{{ s.url }}"><img class="block" src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
         </div>
