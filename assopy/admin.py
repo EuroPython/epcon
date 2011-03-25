@@ -6,7 +6,7 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.core.cache import cache
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 from assopy import models
 from assopy.clients import genro
 
@@ -157,4 +157,18 @@ class UserAdmin(admin.ModelAdmin):
         return o.identities.count()
     _identities.short_description = '#id'
 
+    def get_urls(self):
+        urls = super(UserAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^(?P<uid>\d+)/login/$', self.admin_site.admin_view(self.login_as_user), name='assopy-login-user'),
+        )
+        return my_urls + urls
+
+    def login_as_user(self, request, uid):
+        user = get_object_or_404(models.User, pk=uid)
+        from django.contrib import auth 
+        auth.logout(request)
+        user = auth.authenticate(uid=user.user.id)
+        auth.login(request, user)
+        return http.HttpResponseRedirect('/')
 admin.site.register(models.User, UserAdmin)

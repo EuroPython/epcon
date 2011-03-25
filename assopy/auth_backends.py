@@ -47,7 +47,7 @@ class _AssopyBackend(ModelBackend):
 
 class IdBackend(_AssopyBackend):
     """
-    backend utilizzato solo internamento per autenticare utenti dato il loro id
+    backend utilizzato solo internamente per autenticare utenti dato il loro id
     (senza bisogno di password).
     """
     def authenticate(self, uid=None):

@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% block object-tools %}
+    <ul class="object-tools">
+        <li>
+            <a class="historylink" href="history/">History</a>
+        </li>
+        <li>
+            <a class="" href="{% url admin:assopy-login-user uid=object_id %}">Log in as this user</a>
+        </li>
+    </ul>
+{% endblock %}
