@@ -144,7 +144,7 @@ class CouponAdmin(admin.ModelAdmin):
 admin.site.register(models.Coupon, CouponAdmin)
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('_name', 'phone', 'address', '_identities',)
+    list_display = ('_name', '_email', 'phone', 'address', '_identities',)
     list_select_related = True
     search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address')
 
@@ -153,8 +153,13 @@ class UserAdmin(admin.ModelAdmin):
     _name.short_description = 'name'
     _name.admin_order_field = 'user__first_name'
 
+    def _email(self, o):
+        return o.user.email
+    _email.short_description = 'email'
+    _email.admin_order_field = 'user__email'
+
     def _identities(self, o):
-        return o.identities.count()
+        return ','.join(i['provider'] for i in o.identities.values('provider'))
     _identities.short_description = '#id'
 
     def get_urls(self):
