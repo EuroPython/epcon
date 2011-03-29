@@ -181,11 +181,13 @@ class FormTickets(forms.Form):
     def __init__(self, *args, **kwargs):
         super(FormTickets, self).__init__(*args, **kwargs)
         for t in self.available_fares():
-            self.fields[t.code] = forms.IntegerField(
+            field = forms.IntegerField(
                 label=t.name,
                 min_value=0,
                 required=False,
             )
+            field.fare = t
+            self.fields[t.code] = field
 
     def available_fares(self):
         return cmodels.Fare.objects.available()
