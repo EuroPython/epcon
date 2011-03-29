@@ -427,6 +427,9 @@ class OrderManager(models.Manager):
                 return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok', kwargs={'code': '%(code)s'})
             )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
+        if o.total() == 0:
+            o._complete = True
+            o.save()
         order_created.send(sender=o)
         return o
 
