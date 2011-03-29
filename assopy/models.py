@@ -167,7 +167,7 @@ USER_ACCOUNT_TYPE = (
 )
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
-    token = models.CharField(max_length=36, unique=True, null=True)
+    token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     photo = models.ImageField(_('Photo'), null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
     twitter = models.CharField(_('Twitter'), max_length=20, blank=True)
