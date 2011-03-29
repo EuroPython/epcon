@@ -310,6 +310,12 @@ class UserIdentity(models.Model):
 
     objects = UserIdentityManager()
 
+class UserOAuthInfo(models.Model):
+    user = models.ForeignKey(User, related_name='oauth_infos')
+    service = models.CharField(max_length=20)
+    token = models.CharField(max_length=200)
+    secret = models.CharField(max_length=200)
+
 class Coupon(models.Model):
     conference = models.ForeignKey('conference.Conference')
     code = models.CharField(max_length=10)

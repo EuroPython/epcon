@@ -143,10 +143,17 @@ class CouponAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Coupon, CouponAdmin)
 
+class UserOAuthInfoAdmin(admin.TabularInline):
+    model = models.UserOAuthInfo
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ('_name', '_email', 'phone', 'address', '_identities',)
     list_select_related = True
     search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address')
+
+    inlines = (
+        UserOAuthInfoAdmin,
+    )
 
     def _name(self, o):
         return o.name()
