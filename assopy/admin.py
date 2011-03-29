@@ -6,6 +6,7 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.core.cache import cache
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from assopy import models
 from assopy.clients import genro
@@ -173,6 +174,7 @@ class UserAdmin(admin.ModelAdmin):
         urls = super(UserAdmin, self).get_urls()
         my_urls = patterns('',
             url(r'^(?P<uid>\d+)/login/$', self.admin_site.admin_view(self.login_as_user), name='assopy-login-user'),
+            url(r'^(?P<uid>\d+)/order/$', self.admin_site.admin_view(self.new_order), name='assopy-user-order'),
         )
         return my_urls + urls
 
@@ -183,4 +185,53 @@ class UserAdmin(admin.ModelAdmin):
         user = auth.authenticate(uid=user.user.id)
         auth.login(request, user)
         return http.HttpResponseRedirect('/')
+
+    @transaction.commit_on_success
+    def new_order(self, request, uid):
+        from assopy import forms as aforms
+        from conference.models import Fare
+        from conference.settings import CONFERENCE
+
+        user = get_object_or_404(models.User, pk=uid)
+
+        class FormTickets(aforms.FormTickets):
+            coupon = forms.CharField(label='Coupon(s)', required=False)
+            billing_notes = forms.CharField(required=False)
+            def __init__(self, *args, **kwargs):
+                super(FormTickets, self).__init__(*args, **kwargs)
+                self.fields['payment'].choices = (('admin', 'Admin'),) + tuple(self.fields['payment'].choices)
+                self.fields['payment'].initial = 'admin'
+            def available_fares(self):
+                return Fare.objects.available(conference=CONFERENCE)
+
+            def clean_coupon(self):
+                data = self.cleaned_data.get('coupon')
+                output = []
+                if data:
+                    for c in data.split(' '):
+                        try:
+                            output.append(models.Coupon.objects.get(conference=CONFERENCE, code=c))
+                        except models.Coupon.DoesNotExist:
+                            raise forms.ValidationError('invalid coupon "%s"' % c)
+                return output
+
+        if request.method == 'POST':
+            form = FormTickets(data=request.POST)
+            if form.is_valid():
+                data = form.cleaned_data
+                models.Order.objects.create(
+                    user=user,
+                    payment=data['payment'], 
+                    items=data['tickets'],
+                    billing_notes=data['billing_notes'],
+                    coupons=data['coupon'],
+                )
+                return redirect('admin:assopy_user_change', user.id,)
+        else:
+            form = FormTickets()
+        ctx = {
+            'user': user,
+            'form': form,
+        }
+        return render_to_response('admin/assopy/user/new_order.html', ctx, context_instance=template.RequestContext(request))
 admin.site.register(models.User, UserAdmin)
