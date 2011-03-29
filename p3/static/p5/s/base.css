@@ -193,6 +193,36 @@ a.tag:hover {
 }
 
 
+/* ========== */
+/* ! toggle   */
+/* ========== */
+
+dt.toggle {
+    font-weight: bold;
+    margin: 10px 0 0 0;
+    padding: 0 0 0 15px;
+    
+    cursor: pointer;
+
+    background: transparent url(../i/icon-arr-down.png) left center no-repeat;
+}
+
+dt.toggle.trigger-expanded {
+    background-image: url(../i/icon-arr-up.png);
+}
+
+dt.toggle img {
+    vertical-align: middle;
+}
+
+dt.toggle+dd {
+    font-size: 12px;
+
+    color: #63584d;    
+    margin: 10px 0 0 20px;
+    
+}
+
 
 
 
@@ -710,7 +740,21 @@ footer nav li img {
 
 }
 
+#talk-voting {
 
+}
+
+#talk-voting li {
+    margin: 0 0 30px 0;
+}
+
+#talk-voting h2 {
+    text-transform: none;
+}
+
+#talk-voting form {
+    margin: 10px 0 0 0;
+}
 
 
 /*
