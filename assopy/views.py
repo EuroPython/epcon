@@ -340,7 +340,7 @@ def checkout(request):
         form = aforms.FormTickets(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            o = models.Order.objects.create(user=request.user, payment=data['payment'], items=data['tickets'])
+            o = models.Order.objects.create(user=request.user.assopy_user, payment=data['payment'], items=data['tickets'])
             if o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:
