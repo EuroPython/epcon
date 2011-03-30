@@ -226,3 +226,11 @@ form hr {
 #form-cart .fare-description {
     font-size: 0.9em;
 }
+
+.tickets tr.selected td {
+    font-weight: bold;
+}
+
+.tickets input.selected {
+    background-color: #E1DBC5;
+}

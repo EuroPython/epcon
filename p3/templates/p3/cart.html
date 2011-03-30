@@ -199,61 +199,76 @@
                 $('#form-cart input').attr('disabled', true);
                 $('#form-cart select').attr('disabled', true);
             {% else %}
-            function calcTotal() {
-                var totals = [ 0, 0, 0];
-                $('#form-cart fieldset.tickets').each(function(ix, e) {
-                    if(ix >= totals.length)
-                        return;
-                    $('input', this).each(function() {
-                        if(!$(this).attr('disabled')) {
-                            var x = Number(this.value);
-                            if(!isNaN(x)) {
-                                var fare = Number($('#fare-' + this.name).attr('data-amount'));
-                                if(!isNaN(fare))
-                                    totals[ix] += x * fare;
+            (function() {
+                function calcTotal() {
+                    var totals = [ 0, 0, 0];
+                    $('#form-cart fieldset.tickets').each(function(ix, e) {
+                        if(ix >= totals.length)
+                            return;
+                        $('input', this).each(function() {
+                            if(!$(this).attr('disabled')) {
+                                var x = Number(this.value);
+                                if(!isNaN(x)) {
+                                    var fare = Number($('#fare-' + this.name).attr('data-amount'));
+                                    if(!isNaN(fare))
+                                        totals[ix] += x * fare;
+                                }
                             }
+                        });
+                    });
+                    $('#form-cart .total').each(function(ix, e) {
+                        var e = $(this);
+                        if(e.hasClass('grand')) {
+                            var t = totals[0] + totals[1] + totals[2];
+                        }
+                        else {
+                            var t = totals[ix];
+                        }
+                        $('b', e).html('€ ' + t);
+                    })
+                }
+                $('#form-cart input')
+                    .change(calcTotal)
+                    .keypress(function(e) {
+                        if((e.which < 48 || e.which > 57) && e.which != 13 && e.which != 0 && e.which != 8) {
+                            e.preventDefault()
                         }
                     });
+                function _enableFares(personal) {
+                    $('#conference-tickets td.fare').each(function() {
+                        var td = $(this);
+                        var fare_code = td.attr('data-fare');
+                        var e = ((fare_code[3] == 'C' && !personal) || (fare_code[3] != 'C' && personal));
+                        var inputs = $('input', td);
+                        if(e) {
+                            td.removeClass('disabled');
+                            inputs.attr('disabled', false);
+                        }
+                        else {
+                            td.addClass('disabled');
+                            inputs.attr('disabled', true);
+                        }
+                    });
+                }
+                $('#id_order_type').change(function() {
+                    _enableFares($(this).val() != 'deductible');
+                    calcTotal();
                 });
-                $('#form-cart .total').each(function(ix, e) {
-                    var e = $(this);
-                    if(e.hasClass('grand')) {
-                        var t = totals[0] + totals[1] + totals[2];
-                    }
-                    else {
-                        var t = totals[ix];
-                    }
-                    $('b', e).html('€ ' + t);
-                })
-            }
-            $('#form-cart input')
-                .change(calcTotal)
-                .keypress(function(e) {
-                    if((e.which < 48 || e.which > 57) && e.which != 13 && e.which != 0 && e.which != 8) {
-                        e.preventDefault()
-                    }
-                });
-            function _enableFares(personal) {
-                $('#conference-tickets td.fare').each(function() {
-                    var td = $(this);
-                    var fare_code = td.attr('data-fare');
-                    var e = ((fare_code[3] == 'C' && !personal) || (fare_code[3] != 'C' && personal));
-                    var inputs = $('input', td);
-                    if(e) {
-                        td.removeClass('disabled');
-                        inputs.attr('disabled', false);
-                    }
-                    else {
-                        td.addClass('disabled');
-                        inputs.attr('disabled', true);
-                    }
-                });
-            }
-            $('#id_order_type').change(function() {
-                _enableFares($(this).val() != 'deductible');
-                calcTotal();
-            });
-            $('#id_order_type').change();
+
+                if(document.location.search.substr(0, 3) == '?f=') {
+                    var highligh_fare = document.location.search.substr(3);
+                    var i = $('td[data-fare=' + highligh_fare + '] input');
+                    if(!i.val())
+                        i.val(1);
+                    i.addClass('selected')
+                        .focus()
+                        .parents('tr')
+                        .addClass('selected');
+                    i.eq(0)[0].scrollIntoView();
+                }
+
+                $('#id_order_type').change();
+            })();
             {% endif %}
         </script>
     </div>
