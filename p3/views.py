@@ -42,7 +42,7 @@ def tickets(request):
     tickets = list(tickets)
     for ix, t in list(enumerate(tickets))[::-1]:
         order = t.orderitem.order
-        if order.method == 'paypal' and not _get_cached_order_status(request, order.id):
+        if order.method != 'bank' and not _get_cached_order_status(request, order.id):
             del tickets[ix]
     return {
         'tickets': tickets,
