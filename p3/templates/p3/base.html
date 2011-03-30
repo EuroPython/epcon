@@ -114,7 +114,7 @@
 
         <div class="span-3 last">
             <div id="habla_available_div" class="badge chat hidden">
-                <h5><a href="#" onclick="habla_window.expand()">Get Support</a></h5>
+                <h5><a href="#">Get Support</a></h5>
                 Chat with organizers
             </div>
             <div id="habla_unavailable_div" class="badge chat unavailable">
@@ -225,7 +225,6 @@
 </footer>
 {% endblock %}
     <div id="global-overlay" class="overlay"><div class="contentWrap"></div></div>
-    {% if 'localhost' not in request.META.HTTP_HOST %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
         document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -237,20 +236,23 @@
         } catch(err) {
         }
     </script>
+    {% comment %}
 <!-- begin olark code --> <script type='text/javascript'>/*<![CDATA[*/ window.olark||(function(k){var g=window,j=document,a=g.location.protocol=="https:"?"https:":"http:",i=k.name,b="load",h="addEventListener";(function(){g[i]=function(){(c.s=c.s||[]).push(arguments)};var c=g[i]._={},f=k.methods.length;while(f--){(function(l){g[i][l]=function(){g[i]("call",l,arguments)}})(k.methods[f])}c.l=k.loader;c.i=arguments.callee;c.p={0:+new Date};c.P=function(l){c.p[l]=new Date-c.p[0]};function e(){c.P(b);g[i](b)}g[h]?g[h](b,e,false):g.attachEvent("on"+b,e);c.P(1);var d=j.createElement("script"),m=document.getElementsByTagName("script")[0];d.type="text/javascript";d.async=true;d.src=a+"//"+c.l;m.parentNode.insertBefore(d,m);c.P(2)})()})({loader:(function(a){return "static.olark.com/jsclient/loader1.js?ts="+(a?a[1]:(+new Date))})(document.cookie.match(/olarkld=([0-9]+)/)),name:"olark",methods:["configure","extend","declare","identify"]}); olark.identify('1751-12112149-10-1389');/*]]>*/</script> <!-- end olark code -->
+    {% endcomment %}
+<!-- begin olark code --><script type='text/javascript'>/*{literal}<![CDATA[*/window.olark||(function(i){var e=window,h=document,a=e.location.protocol=="https:"?"https:":"http:",g=i.name,b="load";(function(){e[g]=function(){(c.s=c.s||[]).push(arguments)};var c=e[g]._={},f=i.methods.length;while(f--){(function(j){e[g][j]=function(){e[g]("call",j,arguments)}})(i.methods[f])}c.l=i.loader;c.i=arguments.callee;c.f=setTimeout(function(){if(c.f){(new Image).src=a+"//"+c.l.replace(".js",".png")+"&"+escape(e.location.href)}c.f=null},20000);c.p={0:+new Date};c.P=function(j){c.p[j]=new Date-c.p[0]};function d(){c.P(b);e[g](b)}e.addEventListener?e.addEventListener(b,d,false):e.attachEvent("on"+b,d);(function(){function l(){return["<head></head><",z,' onload="var d=',B,";d.getElementsByTagName('head')[0].",y,"(d.",A,"('script')).",u,"='",a,"//",c.l,"'",'"',"></",z,">"].join("")}var z="body",s=h[z];if(!s){return setTimeout(arguments.callee,100)}c.P(1);var y="appendChild",A="createElement",u="src",r=h[A]("div"),G=r[y](h[A](g)),D=h[A]("iframe"),B="document",C="domain",q;r.style.display="none";s.insertBefore(r,s.firstChild).id=g;D.frameBorder="0";D.id=g+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){D.src="javascript:false"}D.allowTransparency="true";G[y](D);try{D.contentWindow[B].open()}catch(F){i[C]=h[C];q="javascript:var d="+B+".open();d.domain='"+h.domain+"';";D[u]=q+"void(0);"}try{var H=D.contentWindow[B];H.write(l());H.close()}catch(E){D[u]=q+'d.write("'+l().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}c.P(2)})()})()})({loader:(function(a){return "static.olark.com/jsclient/loader0.js?ts="+(a?a[1]:(+new Date))})(document.cookie.match(/olarkld=([0-9]+)/)),name:"olark",methods:["configure","extend","declare","identify"]});olark.identify('1751-12112149-10-1389');/*]]>{/literal}*/</script><!-- end olark code -->
     <script type='text/javascript'>
-    olark.extend(function(api){
-        if(api.chat.operatorsAreAvailable()) {
-            $('#habla_available_div').show();
-            $('#habla_unavailable_div').hide();
-        }
-        else {
-            $('#habla_available_div').hide();
-            $('#habla_unavailable_div').show();
-        }
+    {% if request.user.assopy_user %}
+    olark('api.chat.updateVisitorNickname', {snippet: '{{ request.user.assopy_user.name|escapejs }}'});
+    {% endif %}
+    $('#habla_available_div').click(function(e) {
+        e.preventDefault();
+        olark('api.box.expand');
+    });
+    olark('api.chat.onOperatorsAvailable', function() {
+        $('#habla_available_div').show();
+        $('#habla_unavailable_div').hide();
     });
     </script> 
-    {% endif %}
     <script type='text/javascript'>
         $('form').each(function() {
             var i = $('.help-text', this).prev(':input');
