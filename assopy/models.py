@@ -167,7 +167,7 @@ USER_ACCOUNT_TYPE = (
 )
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
-    token = models.CharField(max_length=36, unique=True, null=True)
+    token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
     photo = models.ImageField(_('Photo'), null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
     twitter = models.CharField(_('Twitter'), max_length=20, blank=True)
@@ -310,6 +310,12 @@ class UserIdentity(models.Model):
 
     objects = UserIdentityManager()
 
+class UserOAuthInfo(models.Model):
+    user = models.ForeignKey(User, related_name='oauth_infos')
+    service = models.CharField(max_length=20)
+    token = models.CharField(max_length=200)
+    secret = models.CharField(max_length=200)
+
 class Coupon(models.Model):
     conference = models.ForeignKey('conference.Conference')
     code = models.CharField(max_length=10)
@@ -421,6 +427,9 @@ class OrderManager(models.Manager):
                 return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok', kwargs={'code': '%(code)s'})
             )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
+        if o.total() == 0:
+            o._complete = True
+            o.save()
         order_created.send(sender=o)
         return o
 
