@@ -137,7 +137,7 @@ def latest_tweets(parser, token):
             # che gira con un utente diverso).
             api.SetCache(None)
             try:
-                tweets = api.GetUserTimeline(settings.P3_TWITTER_USER, n_tweets)
+                tweets = api.GetUserTimeline(settings.P3_TWITTER_USER, count=n_tweets)
             except (ValueError, urllib2.HTTPError):
                 # ValueError: a volte twitter.com non risponde correttamente, e
                 # twitter (il modulo) non verifica. Di conseguenza viene
