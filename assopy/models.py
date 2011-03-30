@@ -187,7 +187,7 @@ class User(models.Model):
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
     address = models.CharField(
-        _('Address'),
+        _('Address and City'),
         max_length=150,
         blank=True,
         help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
