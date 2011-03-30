@@ -197,6 +197,7 @@ class UserAdmin(admin.ModelAdmin):
         class FormTickets(aforms.FormTickets):
             coupon = forms.CharField(label='Coupon(s)', required=False)
             billing_notes = forms.CharField(required=False)
+            remote = forms.BooleanField(required=False, initial=True, help_text='debug only, fill the order on the remote backend')
             def __init__(self, *args, **kwargs):
                 super(FormTickets, self).__init__(*args, **kwargs)
                 self.fields['payment'].choices = (('admin', 'Admin'),) + tuple(self.fields['payment'].choices)
@@ -225,6 +226,7 @@ class UserAdmin(admin.ModelAdmin):
                     items=data['tickets'],
                     billing_notes=data['billing_notes'],
                     coupons=data['coupon'],
+                    remote=data['remote'],
                 )
                 return redirect('admin:assopy_user_change', user.id,)
         else:
