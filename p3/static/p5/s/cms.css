@@ -145,32 +145,6 @@
 }
 
 
-/* ========== */
-/* ! toggle   */
-/* ========== */
-
-.cms dt.toggle {
-    font-weight: bold;
-    margin: 10px 0 0 0;
-    padding: 0 0 0 15px;
-    
-    cursor: pointer;
-
-    background: transparent url(../i/icon-arr-down.png) left center no-repeat;
-}
-
-
-.cms dt.toggle img {
-    vertical-align: middle;
-}
-
-.cms dt.toggle+dd {
-    font-size: 12px;
-
-    color: #63584d;    
-    margin: 10px 0 0 20px;
-    
-}
 
 
 

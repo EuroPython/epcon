@@ -110,13 +110,7 @@
                 <div class="total"> 
                     Conference tickets total (VAT inc.): <b>€ 0</b>
                 </div> 
-
-                <div class="total grand"> 
-                    Grand total (VAT inc.): <b>€ 0</b> 
-                </div> 
-
             </fieldset>
-    
             {% comment %}
             <fieldset class="tickets">
                 
@@ -154,6 +148,7 @@
                 </div> 
 
             </fieldset>
+            {% endcomment %}
 
             <fieldset class="tickets">
                             
@@ -167,33 +162,22 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Event name" %}</th>
-                                <th>{% trans "Date" %}</th>
                                 <th>{% trans "Price" %}</th>
                                 <th>{% trans "Q.ty" %}</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for f in fares.values %}
+                            {% if f.ticket_type == "partner" %}
                             <tr>
-                                <td>Cioccolatai a Firenze</td>
-                                <td>Mon, 20 Jun</td>
-                                <td>€ 80</td>
-                                <td><input type="text" size="2" /></td>
+                                <td>{{ f.name }}</td>
+                                <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
+                                <td data-fare="{{ f.code }}"><input type="text" name="{{ f.code }}" size="2" /></td>
                             </tr>
-                            <tr>
-                                <td>Cioccolatai a Firenze</td>
-                                <td>Wed, 22 Jun</td>
-                                <td>€ 80</td>
-                                <td><input type="text" size="2" /></td>
-                            </tr>
-                            <tr>
-                                <td>Uffizi</td>
-                                <td>Wed, 22 Jun</td>
-                                <td>€ 40</td>
-                                <td><input type="text" size="2" /></td>
-                            </tr>
+                            {% endif %}
+                            {% endfor %}
                         </tbody>
                     </table>
-                <!-- /cms -->
                 </div>
 
                 <div class="total"> 
@@ -205,7 +189,6 @@
                 </div> 
         
             </fieldset>
-    {% endcomment %}
 
             <fieldset class="border">
                 <button value=""  name="" type="submit">Proceed to Checkout &rarr;</button>

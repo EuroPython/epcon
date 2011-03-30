@@ -167,7 +167,7 @@ def user(request, token):
     log.info('autologin (via token url) for "%s"', u.user)
     if not u.user.is_active:
         u.user.is_active = True
-        u.save()
+        u.user.save()
         log.info('"%s" activated', u.user)
     user = auth.authenticate(uid=u.user.id)
     auth.login(request, user)
