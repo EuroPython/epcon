@@ -79,6 +79,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'conference.context_processors.stuff',
     'p3.context_processors.highlight',
     'p3.context_processors.static',
+    'p3.context_processors.current_url',
     'django.contrib.messages.context_processors.messages',
 )
 
