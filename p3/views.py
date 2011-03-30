@@ -184,8 +184,6 @@ def cart(request):
         def __init__(self, *args, **kwargs):
             super(P3FormTickets, self).__init__(*args, **kwargs)
             del self.fields['payment']
-        #def available_fares(self):
-        #    return Fare.objects.all()
         def clean(self):
             data = super(P3FormTickets, self).clean()
             order_type = data['order_type']
@@ -212,9 +210,11 @@ def cart(request):
     fares = {}
     for f in form.available_fares():
         fares[f.code] = f
+    fares_ordered = sorted(fares.values(), key=lambda x: x.name)
     return {
         'form': form,
         'fares': fares,
+        'fares_ordered': fares_ordered,
         'account_type': at,
     }
 

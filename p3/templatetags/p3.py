@@ -280,6 +280,20 @@ def render_cart_row(context, subcode, form, fares):
         'row': row,
     }
 
+@register.inclusion_tag('p3/render_pp_cart_row.html', takes_context=True)
+def render_pp_cart_row(context, fare):
+    if fare.ticket_type == "partner":
+        name, date = fare.name.rsplit('(', 1)
+        name = name.strip()
+        date = date.replace(')', '').strip()
+    else:
+        name = date = ''
+    return {
+        'f': fare,
+        'name': name,
+        'date': date,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']

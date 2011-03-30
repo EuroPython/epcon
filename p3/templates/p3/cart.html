@@ -162,19 +162,14 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Event name" %}</th>
+                                <th>{% trans "Event date" %}</th>
                                 <th>{% trans "Price" %}</th>
                                 <th>{% trans "Q.ty" %}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for f in fares.values %}
-                            {% if f.ticket_type == "partner" %}
-                            <tr>
-                                <td>{{ f.name }}</td>
-                                <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
-                                <td data-fare="{{ f.code }}"><input type="text" name="{{ f.code }}" size="2" /></td>
-                            </tr>
-                            {% endif %}
+                            {% for f in fares_ordered %}
+                            {% render_pp_cart_row f %}
                             {% endfor %}
                         </tbody>
                     </table>

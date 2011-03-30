@@ -1,0 +1,11 @@
+{% if f.ticket_type == "partner" %}
+    <tr>
+        <td>
+            {{ name }} <a href="#" class="trigger-overlay" rel="p[data-fare={{ f.code }}]">(details)</a>
+            <p class="overlay" data-fare="{{ f.code }}">{{ f.description }}</p>
+        </td>
+        <td>{{ date }}</td>
+        <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
+        <td data-fare="{{ f.code }}"><input type="text" name="{{ f.code }}" size="2" /></td>
+    </tr>
+{% endif %}
