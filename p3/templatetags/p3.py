@@ -12,7 +12,10 @@ from collections import defaultdict
 from django import template
 from django.conf import settings
 from django.core.cache import cache
+from django.template import Context
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from fancy_tag import fancy_tag
 import twitter
 
 from conference import models as ConferenceModels
@@ -305,3 +308,13 @@ def box_image_gallery(context):
         'images': images,
     })
     return context
+
+@fancy_tag(register, takes_context=True)
+def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", action="recommend", font=""):
+    if not href:
+        href = context['CURRENT_URL']
+    data = dict(locals())
+    data.pop('context')
+    ctx = Context(context)
+    ctx.update(data)
+    return render_to_string('p3/render_fb_like.html', ctx)
