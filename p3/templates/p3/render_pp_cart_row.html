@@ -2,7 +2,7 @@
     <tr>
         <td>
             {{ name }} <a href="#" class="trigger-overlay" rel="p[data-fare={{ f.code }}]">(details)</a>
-            <p class="overlay" data-fare="{{ f.code }}">{{ f.description }}</p>
+            <p class="overlay" data-fare="{{ f.code }}">{{ f.description|safe }}</p>
         </td>
         <td>{{ date }}</td>
         <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
