@@ -38,7 +38,7 @@ class OrderAdmin(admin.ModelAdmin):
     _user.short_description = 'buyer'
 
     def _items(self, o):
-        return o.orderitem_set.count()
+        return o.orderitem_set.exclude(ticket=None).count()
     _items.short_description = '#Tickets'
 
     def _created(self, o):
