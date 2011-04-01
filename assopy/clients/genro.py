@@ -191,10 +191,9 @@ def update_fare(fare):
         elif fare.recipient_type == 'p':
             name += ' (for private person)'
         
-    assert len(name) <= 40
     b = Bag()
     b['price'] = fare.price
-    b['description'] = name
+    b['description'] = name[:40]
     b['personal_fare'] = fare.recipient_type != 'c'
     b['deposit_fare'] = fare.payment_type == 'd'
     b['long_desc'] = fare.description
