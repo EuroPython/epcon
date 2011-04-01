@@ -2,19 +2,71 @@
 # Copyright (C) 2009 Python Italia.
 # This file is distributed under the same license as the p3 package.
 # dvd <dvd@gnx.it>, 2009.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-31 11:57+0200\n"
+"POT-Creation-Date: 2011-04-01 15:52+0200\n"
 "PO-Revision-Date: 2010-03-31 16:35\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.5.3\n"
+
+#: forms.py:15
+msgid ""
+"We require a mobile number for all speakers for important last minutes "
+"contacts.<br />Use the international format, eg: +39-055-123456.<br />This "
+"number will <strong>never</strong> be published."
+msgstr ""
+
+#: forms.py:19
+msgid "Date of birth"
+msgstr ""
+
+#: forms.py:20
+msgid ""
+"We require date of birth for speakers to accomodate for Italian laws "
+"regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</"
+"strong> be published."
+msgstr ""
+
+#: forms.py:24 forms.py:73 forms.py:92
+msgid "Suggested duration"
+msgstr ""
+
+#: forms.py:25 forms.py:74 forms.py:93
+msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
+msgstr ""
+
+#: forms.py:32
+msgid "I agree to let you publish my data on the web site."
+msgstr ""
+
+#: forms.py:33
+msgid ""
+"This speaker profile will be publicly accesible if one of your talks is "
+"accepted. Your mobile phone and date of birth will <strong>never</strong> be "
+"published"
+msgstr ""
+
+#: forms.py:36 forms.py:79
+msgid "I agree to release all the talk material after the event."
+msgstr ""
+
+#: forms.py:37 forms.py:80
+msgid ""
+"If the talk is accepted, speakers a required to timely release all the talk "
+"material (including slides) for publishing on this web site."
+msgstr ""
+
+#: forms.py:40 forms.py:83
+msgid "I agree to let the organization record my talk and publish the video."
+msgstr ""
 
 #: templates/conference/genro_wrapper.html:6
 msgid "genro-account"
@@ -22,7 +74,10 @@ msgstr "Se hai partecipato a Pycon1 o Pycon2 puoi riusare lo stesso account."
 
 #: templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
-msgstr "Se hai problemi contattaci in <a onclick=\"habla_window.show(); habla_window.expand()\" href=\"#\">chat</a> o scrivi a <a href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+msgstr ""
+"Se hai problemi contattaci in <a onclick=\"habla_window.show(); habla_window."
+"expand()\" href=\"#\">chat</a> o scrivi a <a href=\"mailto:gestionale@pycon."
+"it\">gestionale@pycon.it</a>"
 
 #: templates/conference/render_hotels.html:5
 msgid "Nome"
@@ -49,43 +104,48 @@ msgstr "Contattato il %(d)s"
 msgid "sponsorizzato da"
 msgstr "sponsorizzato da"
 
-#: templates/conference/speaker.html:42
+#: templates/conference/speaker.html:40
 msgid "Twitter"
 msgstr "Twitter"
 
-#: templates/conference/speaker.html:46
+#: templates/conference/speaker.html:44
 msgid "Sito personale"
 msgstr "Sito personale"
 
-#: templates/conference/speaker.html:50
-msgid "Azienda"
+#: templates/conference/speaker.html:48
+#, fuzzy
+msgid "Sito Azienda"
 msgstr "Azienda"
 
-#: templates/conference/talk.html:17
+#: templates/conference/talk.html:35
 msgid "di"
 msgstr "di"
 
-#: templates/conference/talk.html:32
+#: templates/conference/talk.html:52
 msgid "nella track"
 msgstr "nella track"
 
-#: templates/conference/talk.html:61
+#: templates/conference/talk.html:56
+msgid "Video"
+msgstr ""
+
+#: templates/conference/talk.html:96
 msgid "Lingua"
 msgstr "Lingua"
 
-#: templates/conference/talk.html:64
+#: templates/conference/talk.html:99
 msgid "Durata"
 msgstr "Durata"
 
-#: templates/conference/talk.html:65
+#: templates/conference/talk.html:100
 msgid "minuti"
 msgstr "minuti"
 
-#: templates/conference/talk.html:68
+#: templates/conference/talk.html:103
 msgid "Traduzione simultanea"
 msgstr "Traduzione simultanea"
 
-#: templates/conference/talk.html:69
+#: templates/conference/talk.html:104
 msgid "disponibile"
 msgstr "disponibile"
 
@@ -93,35 +153,40 @@ msgstr "disponibile"
 msgid "Permalink a questo commento"
 msgstr "Permalink a questo commento"
 
-#: templates/microblog/base.html:21
+#: templates/microblog/base.html:29
 msgid "Categorie"
 msgstr "Categorie"
 
-#: templates/microblog/base.html:30 templates/microblog/list_by_year.html:3
+#: templates/microblog/base.html:38 templates/microblog/list_by_year.html:3
 msgid "Archivio"
 msgstr "Archivio"
 
-#: templates/microblog/post_detail.html:21
+#: templates/microblog/post_detail.html:22
 msgid "Lo staff sta controllando il tuo commento, a breve verrà pubblicato."
 msgstr "Lo staff sta controllando il tuo commento, a breve verrà pubblicato."
 
-#: templates/microblog/post_detail.html:87
+#: templates/microblog/post_detail.html:55
+#, fuzzy
+msgid "Aggiungi un commento"
+msgstr "Aggiungi Commento"
+
+#: templates/microblog/post_detail.html:88
 msgid "Post comment"
 msgstr "Lascia un commento"
 
-#: templates/microblog/post_detail.html:100 templates/p3/index.html:85
+#: templates/microblog/post_detail.html:101 templates/p3/index.html:85
 msgid "Scritto da"
 msgstr "Scritto da"
 
-#: templates/microblog/post_detail.html:103
+#: templates/microblog/post_detail.html:104
 msgid "Data"
 msgstr "Data"
 
-#: templates/microblog/post_detail.html:106
+#: templates/microblog/post_detail.html:107
 msgid "Categoria"
 msgstr "Categoria"
 
-#: templates/microblog/post_detail.html:111
+#: templates/microblog/post_detail.html:112
 msgid "Tag"
 msgstr "Tag"
 
@@ -133,7 +198,8 @@ msgstr "Archivio Blog"
 msgid "Nessun post trovato."
 msgstr "Nessun post trovato."
 
-#: templates/microblog/show_post_comments.html:4 templates/p3/index.html:85
+#: templates/microblog/show_post_comments.html:4
+#: templates/microblog/show_post_summary.html:16 templates/p3/index.html:85
 msgid "Commenti"
 msgstr "Commenti"
 
@@ -145,7 +211,8 @@ msgstr "Aggiungi Commento"
 #, python-format
 msgid ""
 "\n"
-"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s &mdash;\n"
+"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s "
+"&mdash;\n"
 "        "
 msgstr ""
 "\n"
@@ -155,41 +222,58 @@ msgstr ""
 msgid "Reazioni"
 msgstr "Reazioni"
 
-#: templates/p3/base.html:92
-msgid "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme."
-msgstr "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme."
-
-#: templates/p3/base.html:106
-msgid "I nostri sponsor"
-msgstr "I nostri sponsor"
-
-#: templates/p3/base.html:128
-msgid "Media partner"
-msgstr "Media partner"
+#: templates/microblog/show_social_networks.html:4
+msgid "Condividi questo post"
+msgstr ""
 
 #: templates/p3/box_cal.html:3
-msgid "Calendario"
-msgstr "Calendario"
+msgid "Next deadline"
+msgstr ""
 
 #: templates/p3/box_didyouknow.html:4
 msgid "Lo sai che"
 msgstr "Lo sai che?"
 
-#: templates/p3/box_latest_tweets.html:4
-msgid "Da Twitter"
-msgstr "Da Twitter"
+#: templates/p3/box_talks_conference.html:3
+msgid "Your talks"
+msgstr ""
 
-#: templates/p3/box_latest_tweets.html:11
-msgid "Seguici su Twitter"
-msgstr "Seguici su Twitter"
+#: templates/p3/cart.html:49
+msgid "Student"
+msgstr ""
 
-#: templates/p3/box_latest_tweets.html:12
-msgid "siamo già in"
-msgstr "siamo già in"
+#: templates/p3/cart.html:50
+#, fuzzy
+msgid "Personal"
+msgstr "Sito personale"
 
-#: templates/p3/box_speaker_talks.html:3
-msgid "I suoi talk"
-msgstr "I talk"
+#: templates/p3/cart.html:51
+msgid "Business"
+msgstr ""
+
+#: templates/p3/cart.html:55 templates/p3/cart.html.py:57
+#: templates/p3/cart.html:59 templates/p3/cart.html.py:128
+#: templates/p3/cart.html:165
+msgid "Price"
+msgstr ""
+
+#: templates/p3/cart.html:56 templates/p3/cart.html.py:58
+#: templates/p3/cart.html:60 templates/p3/cart.html.py:129
+#: templates/p3/cart.html:166
+msgid "Q.ty"
+msgstr ""
+
+#: templates/p3/cart.html:127 templates/p3/cart.html.py:163
+msgid "Event name"
+msgstr ""
+
+#: templates/p3/cart.html:157
+msgid "Partner Program intro"
+msgstr ""
+
+#: templates/p3/cart.html:164
+msgid "Event date"
+msgstr ""
 
 #: templates/p3/index-simple.html:32
 msgid "Dal blog"
@@ -208,12 +292,24 @@ msgid "Vedi tutte le scadenze &rarr;"
 msgstr "Vedi tutte le scadenze &rarr;"
 
 #: templates/p3/index.html:55
-msgid "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
-msgstr "Dopo il grande successo dell'ultima edizione, anche quest'anno vi aspettiamo numerosi  al Pycon Italia, il più grande convegno nazionale dedicato al linguaggio di programmazione Python."
+msgid ""
+"Following the great success of the last year we will waiting for you at "
+"PyCon Italy, the biggest national conference in Europe dedicated to the "
+"Python programming language."
+msgstr ""
+"Dopo il grande successo dell'ultima edizione, anche quest'anno vi aspettiamo "
+"numerosi  al Pycon Italia, il più grande convegno nazionale dedicato al "
+"linguaggio di programmazione Python."
 
 #: templates/p3/index.html:62
-msgid "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world."
-msgstr "Ci aspettiamo più di 400 partecipanti tra aziende, professionisti e studenti che parteciperanno ai numerosi interventi sugli argomenti più attuali relativi al mondo Python."
+msgid ""
+"We expect more than 400 visitors among companies, professionals and "
+"hobbystis that will have a chance to attend to numerous talks about the most "
+"up to date topics  in the Python world."
+msgstr ""
+"Ci aspettiamo più di 400 partecipanti tra aziende, professionisti e studenti "
+"che parteciperanno ai numerosi interventi sugli argomenti più attuali "
+"relativi al mondo Python."
 
 #: templates/p3/index.html:80
 msgid "Dal Blog"
@@ -230,6 +326,61 @@ msgstr "Continua &rarr;"
 #: templates/p3/index.html:92
 msgid "Archivio blog"
 msgstr "Archivio blog"
+
+#: templates/registration/login.html:61
+msgid ""
+"You will be able to specify billing and personal info later; e.g.: you can "
+"use your personal Facebook account to buy tickets for your company and the "
+"Facebook name will not appear anywhere."
+msgstr ""
+
+#: templates/registration/login.html:79
+msgid ""
+"If you really really don't want to use an existing web account but you "
+"prefer a standard registration/login form,"
+msgstr ""
+
+#: templates/registration/login.html:79
+msgid "click here"
+msgstr ""
+
+#: templates/registration/login.html:86
+msgid "Invalid credentials"
+msgstr ""
+
+#: templates/registration/login.html:104
+msgid "Don&#8217;t you have an account?"
+msgstr ""
+
+#~ msgid ""
+#~ "La conferenza Italiana sul linguaggio di programmazione Python dove "
+#~ "sviluppatori, aziende e università si incontrano per imparare, "
+#~ "collaborare e crescere insieme."
+#~ msgstr ""
+#~ "La conferenza Italiana sul linguaggio di programmazione Python dove "
+#~ "sviluppatori, aziende e università si incontrano per imparare, "
+#~ "collaborare e crescere insieme."
+
+#~ msgid "I nostri sponsor"
+#~ msgstr "I nostri sponsor"
+
+#~ msgid "Media partner"
+#~ msgstr "Media partner"
+
+#~ msgid "Calendario"
+#~ msgstr "Calendario"
+
+#~ msgid "Da Twitter"
+#~ msgstr "Da Twitter"
+
+#~ msgid "Seguici su Twitter"
+#~ msgstr "Seguici su Twitter"
+
+#~ msgid "siamo già in"
+#~ msgstr "siamo già in"
+
+#~ msgid "I suoi talk"
+#~ msgstr "I talk"
 
 #~ msgid "Mancano *%(days)d giorni* all'inizio della conferenza."
 #~ msgstr "Mancano *%(days)d giorni* all'inizio della conferenza."
@@ -259,7 +410,11 @@ msgstr "Archivio blog"
 #~ msgstr "Sito web"
 
 #~ msgid "saluto di guido in homepage"
-#~ msgstr "Questa edizione di PyCon Italia sarà arricchita dalla presenza di un ospite d&#8217;eccezione: <b><a href=\"http://it.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></b>, l&#8217;ideatore di Python, che terrà un keynote sulla nascita del linguaggio."
+#~ msgstr ""
+#~ "Questa edizione di PyCon Italia sarà arricchita dalla presenza di un "
+#~ "ospite d&#8217;eccezione: <b><a href=\"http://it.wikipedia.org/wiki/"
+#~ "Guido_van_Rossum\">Guido van Rossum</a></b>, l&#8217;ideatore di Python, "
+#~ "che terrà un keynote sulla nascita del linguaggio."
 
 #~ msgid "Pycon Tre"
 #~ msgstr "Pycon Tre"
