@@ -572,6 +572,37 @@ class Order(models.Model):
             t = self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
+    @classmethod
+    def calculator(self, items, coupons=None):
+        """
+        calcola l'importo di un ordine non ancora effettuato tenendo conto di
+        eventuali coupons.
+        """
+        # sono le stesse regole utilizzate dalla OrderManager.create
+        totals = {
+            'tickets': 0,
+            'coupons': {},
+        }
+        tickets_total = 0
+        for f, q in items:
+            tickets_total += f.price * q
+
+        totals['tickets'] = total = tickets_total
+        if coupons:
+            for c in coupons:
+                if c.type() == 'perc':
+                    v = -1 * c.apply(tickets_total, total)
+                    totals['coupons'][c.code] = v
+                    total += v
+
+            for c in coupons:
+                if c.type() == 'val':
+                    v = -1 * c.apply(total, total)
+                    totals['coupons'][c.code] = v
+                    total += v
+
+        return totals
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
     ticket = models.OneToOneField('conference.ticket', null=True)
