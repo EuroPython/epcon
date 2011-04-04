@@ -16,7 +16,7 @@ def on_order_created(sender, **kwargs):
 order_created.connect(on_order_created)
 
 def on_purchase_completed(sender, **kwargs):
-    if s.method == 'admin':
+    if sender.method == 'admin':
         return
     utils.email(
         'purchase-complete',
