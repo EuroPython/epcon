@@ -580,27 +580,30 @@ class Order(models.Model):
         """
         # sono le stesse regole utilizzate dalla OrderManager.create
         totals = {
-            'tickets': 0,
+            'tickets': {},
             'coupons': {},
+            'total': 0,
         }
         tickets_total = 0
         for f, q in items:
+            totals['tickets'][f.code] = (f.price * q, q, f)
             tickets_total += f.price * q
 
-        totals['tickets'] = total = tickets_total
+        total = tickets_total
         if coupons:
             for c in coupons:
                 if c.type() == 'perc':
                     v = -1 * c.apply(tickets_total, total)
-                    totals['coupons'][c.code] = v
+                    totals['coupons'][c.code] = (v, c)
                     total += v
 
             for c in coupons:
                 if c.type() == 'val':
                     v = -1 * c.apply(total, total)
-                    totals['coupons'][c.code] = v
+                    totals['coupons'][c.code] = (v, c)
                     total += v
 
+        totals['total'] = total
         return totals
 
 class OrderItem(models.Model):
