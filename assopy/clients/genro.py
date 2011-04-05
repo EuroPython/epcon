@@ -52,7 +52,9 @@ def user_local2remote(user):
     # visto che non è fondamentale passare questa info invece che troncarla
     # preferisco non metterla.
     #data['www'] = user.www
-    data['phone'] = user.phone
+
+    # idem per phone che è di 20 caratteri
+    #data['phone'] = user.phone
     if user.card_name:
         data['card_name'] = user.card_name
     else:
