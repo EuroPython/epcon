@@ -283,6 +283,13 @@ def render_cart_row(context, subcode, form, fares):
         'row': row,
     }
 
+@register.filter()
+def split_date_from_partner(name):
+    name, date = name.rsplit('(', 1)
+    name = name.strip()
+    date = date.replace(')', '').strip()
+    return name, date
+
 @register.inclusion_tag('p3/render_pp_cart_row.html', takes_context=True)
 def render_pp_cart_row(context, fare):
     if fare.ticket_type == "partner":
