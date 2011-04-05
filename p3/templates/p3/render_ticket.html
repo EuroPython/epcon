@@ -44,16 +44,14 @@
         </div>
         {% endif %}
     {% else %}
-        {% with ticket.fare.name|split_date_from_partner as data %}
-        <h2>{{ data.0 }}</h2>
+        <h2>{{ ticket.fare.name }}</h2>
         <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
-        <div class="ticket-footer">{{ data.1 }}</div>
+        <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
         <div class="ticket-commands">            
             <p>
                 <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a>
             </p>
         </div>
-        {% endwith %}
     {% endif %}
     </div>
 
@@ -70,6 +68,14 @@
             <dt>Shirt size:</dt>
             <dd>{{ form.shirt_size|field_display_value }}</dd>
         </dl>
+    </div>
+    {% else %}
+    <div class="ticket-additional-info">
+        <p>
+            {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
+            Deposit: € 30, <b>Balance: € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
+            {% endwith %}
+        </p>
     </div>
     {% endif %}
 
