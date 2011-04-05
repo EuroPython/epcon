@@ -1,4 +1,4 @@
-{% load assopy_tags %}
+{% load assopy_tags p3 %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ocomplete %}
@@ -11,15 +11,14 @@
     </div>
     {% else %}
     <div class="ticket-status inactive">
-        &darr; Ticket not active; waiting for wire transfer (order {{ order.code }})
+        &darr; Ticket not active; waiting for wire transfer (order {{ ticket.orderitem.order.code }})
     </div>
     {% endif %}
 
     <div class="preview">
+    {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
         <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
-
-    {% if ticket.fare.ticket_type == "conference" %}
         <div class="ticket-tagline">{{ form.tagline|field_value|default:"something about me" }}</div>
         <div class="ticket-python-experience">
             Python power
@@ -45,9 +44,16 @@
         </div>
         {% endif %}
     {% else %}
+        {% with ticket.fare.name|split_date_from_partner as data %}
+        <h2>{{ data.0 }}</h2>
+        <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
+        <div class="ticket-footer">{{ data.1 }}</div>
         <div class="ticket-commands">            
-            <p><a href="#">Edit information</a></p>
+            <p>
+                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a>
+            </p>
         </div>
+        {% endwith %}
     {% endif %}
     </div>
 
