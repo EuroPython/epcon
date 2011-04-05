@@ -44,7 +44,7 @@ var PROJEKKTOR_CONFIG = {
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-                <p>{{ ab.body|safe }}</p>
+                <p>{{ ab.body|linebreaks }}</p>
             </div>
             {% if talk.status == "accepted" %}
             <section class="talk when">
