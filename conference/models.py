@@ -490,6 +490,7 @@ class Fare(models.Model):
     recipient_type = models.CharField(max_length=1, choices=FARE_TYPES, default='p')
     ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference')
     payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
+    blob = models.TextField(blank=True)
 
     objects = FareManager()
 
