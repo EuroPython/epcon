@@ -174,3 +174,7 @@ def order_complete(parser, token):
             context[self.var_name] = complete
             return ''
     return Node(order_id, var_name)
+
+@register.filter()
+def include_fare(order, type):
+    return order.orderitem_set.filter(ticket__fare__payment_type=type).exists()
