@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'south',
     'templatesadmin',
     'email_template',
+    'filebrowser',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -134,6 +135,7 @@ AUTHENTICATION_BACKENDS = (
 )
 ## used by the blog
 #FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
+FILEBROWSER_URL_FILEBROWSER_MEDIA = '/static/filebrowser/'
 
 PAGE_USE_SITE_ID = False
 DEFAULT_PAGE_TEMPLATE = 'p3/content.html'

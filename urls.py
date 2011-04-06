@@ -8,6 +8,7 @@ from p3.forms import P3SubmissionForm, P3SubmissionAdditionalForm, P3TalkForm
 
 urlpatterns = patterns('',
     (r'^accounts/', include('assopy.urls')),
+    (r'^admin/filebrowser/', include('filebrowser.urls')),
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^blog/', include('microblog.urls')),
