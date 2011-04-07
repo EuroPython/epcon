@@ -196,6 +196,8 @@ class UserAdmin(admin.ModelAdmin):
 
         class FormTickets(aforms.FormTickets):
             coupon = forms.CharField(label='Coupon(s)', required=False)
+            country = forms.CharField(max_length=2, required=False)
+            address = forms.CharField(max_length=150, required=False)
             billing_notes = forms.CharField(required=False)
             remote = forms.BooleanField(required=False, initial=True, help_text='debug only, fill the order on the remote backend')
             def __init__(self, *args, **kwargs):
@@ -204,6 +206,15 @@ class UserAdmin(admin.ModelAdmin):
                 self.fields['payment'].initial = 'admin'
             def available_fares(self):
                 return Fare.objects.available(conference=CONFERENCE)
+
+            def clean_country(self):
+                data = self.cleaned_data.get('country')
+                if data:
+                    try:
+                        data = models.Country.objects.get(pk=data)
+                    except models.Country.DoesNotExist:
+                        raise forms.ValidationError('Invalid country: %s' % data)
+                return data
 
             def clean_coupon(self):
                 data = self.cleaned_data.get('coupon')
@@ -227,6 +238,8 @@ class UserAdmin(admin.ModelAdmin):
                     billing_notes=data['billing_notes'],
                     coupons=data['coupon'],
                     remote=data['remote'],
+                    country=data['country'],
+                    address=data['address'],
                 )
                 return redirect('admin:assopy_user_change', user.id,)
         else:
