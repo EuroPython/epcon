@@ -5,11 +5,16 @@ from django.db.models.query import QuerySet
 from conference.models import Ticket
 
 TICKET_CONFERENCE_SHIRT_SIZES = (
-    ('s', 'S'),
-    ('m', 'M'),
-    ('l', 'L'),
-    ('xl', 'XL'),
-    ('xxl', 'XXL'),
+    ('fs', 'S (female)'),
+    ('fm', 'M (female)'),
+    ('fl', 'L (female)'),
+    ('fxl', 'XL (female)'),
+    ('fxxl', 'XXL (female)'),
+    ('s', 'S (male)'),
+    ('m', 'M (male)'),
+    ('l', 'L (male)'),
+    ('xl', 'XL (male)'),
+    ('xxl', 'XXL (male)'),
 )
 TICKET_CONFERENCE_DIETS = (
     ('omnivorous', 'Omnivorous'),
@@ -50,7 +55,7 @@ class TicketConferenceManager(models.Manager):
     
 class TicketConference(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference')
-    shirt_size = models.CharField(max_length=3, choices=TICKET_CONFERENCE_SHIRT_SIZES, default='l')
+    shirt_size = models.CharField(max_length=4, choices=TICKET_CONFERENCE_SHIRT_SIZES, default='l')
     python_experience = models.PositiveIntegerField(choices=TICKET_CONFERENCE_EXPERIENCES, default=0)
     diet = models.CharField(max_length=10, choices=TICKET_CONFERENCE_DIETS, default='omnivorous')
     tagline = models.CharField(max_length=60, blank=True, help_text='a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of FooBar Inc.; Student at MIT; Super Python fanboy')
