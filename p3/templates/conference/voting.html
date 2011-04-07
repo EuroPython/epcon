@@ -14,17 +14,20 @@
         <ul id="talk-voting">
             {% for t in talks %}
             <li>
-<!--                 <h2><a href="#">{{ t.title }}</a></h2> -->
-                <h2>{{ t.title }}</h2>
-                <div class="meta">By <a href="/path/to/speaker-profile"><b>Speaker Name</b></a> on <b>EuroPython tracks</b></div>                                
+                <h2><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></h2>
+                <div class="meta">
+                    By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b>{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
+                    for <b>{{ t.get_level_display }}</b>
+                </div>
                 <form action="{% url conference-voting %}" method="post">{% csrf_token %}
-                    <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote }}" step="0.5" />
+                    <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote|default:"0" }}" step="0.5" />
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
-                </form>                
+                </form>
                 <dl>
-                    <dt rel="div[data-talk={{ t.id }}]" class="toggle">Dettagli del talk</dt>
+                    <dt rel="div[data-talk={{ t.id }}]" class="toggle">Abstract</dt>
                     <dd>
-                        <div data-talk="{{ t.id }}">
+                        <div class="cms" data-talk="{{ t.id }}">
                             {{ t.getAbstract.body|linebreaks }}
                         </div>                    
                     </dd>                    
