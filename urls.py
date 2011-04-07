@@ -4,11 +4,14 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+admin.site.index_template = 'p3/admin/index.html'
+
 from p3.forms import P3SubmissionForm, P3SubmissionAdditionalForm, P3TalkForm
 
 urlpatterns = patterns('',
     (r'^accounts/', include('assopy.urls')),
     (r'^admin/filebrowser/', include('filebrowser.urls')),
+    (r'^admin/rosetta/', include('rosetta.urls')),
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^blog/', include('microblog.urls')),
@@ -20,11 +23,6 @@ urlpatterns = patterns('',
     (r'^p3/', include('p3.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
 )
-
-if 'rosetta' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        url(r'^rosetta/', include('rosetta.urls')),
-    )
 
 if settings.DEBUG:
     import os.path
