@@ -170,6 +170,7 @@ def talk(request, slug, talk_form=TalkForm):
         'full_access': full_access,
         'talk': tlk,
         'cfp': conf.cfp(),
+        'voting': conf.voting(),
     }
 
 def talk_report(request):
