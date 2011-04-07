@@ -1,6 +1,6 @@
 {% extends "rosetta/base.html" %}
 {% load i18n %}
-{% block breadcumbs %}<a href="{% url rosetta-pick-file %}">{% trans "Home" %}</a> &rsaquo; {% trans "Language selection" %}{% endblock %}
+{% block breadcumbs %}<a href="{% url admin:index %}">{% trans "Admin Home" %}</a> &rsaquo; <a href="{% url rosetta-pick-file %}">{% trans "Rosetta Home" %}</a> &rsaquo; {% trans "Language selection" %}{% endblock %}
 {% block pagetitle %}{% trans "Language selection" %}{% endblock %}
 {% block main %}
     {% if has_pos %}
