@@ -2,11 +2,13 @@
 {% load assopy_tags %}
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Order completed</h1>
-    <div class="span-12 append-1">
+    <div class="span-8">
         <div class="cms">
             <p>Thank you for your order. You will receieve an email with all the details for the wire transfer.</p>
-            <p>If you don't receive this email please check yout spam folder and <a href="mailto:info@pycon.it">Write to us</a> specifying your order number {{ order.code }}</p>
-            <p>Meanwhile you can manage <a href="{% url assopy-tickets %}">your tickets</a> directly from your profile.</p>
+            <p>If you don't receive this email please check yout spam folder and <a href="mailto:info@pycon.it">write to us</a> specifying your order number: <b>{{ order.code }}</b></p>
+            
+            <h2>What to do next</h2>
+            <p>Meanwhile you can <a href="{% url assopy-tickets %}">manage your tickets</a> directly from your profile.</p>
         </div>
     </div>
 {% endblock %}
