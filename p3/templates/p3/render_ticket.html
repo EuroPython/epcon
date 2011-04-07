@@ -1,4 +1,4 @@
-{% load assopy_tags %}
+{% load assopy_tags p3 %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ocomplete %}
@@ -11,15 +11,14 @@
     </div>
     {% else %}
     <div class="ticket-status inactive">
-        &darr; Ticket not active; waiting for wire transfer (order {{ order.code }})
+        &darr; Ticket not active; waiting for wire transfer (order {{ ticket.orderitem.order.code }})
     </div>
     {% endif %}
 
     <div class="preview">
+    {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
         <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
-
-    {% if ticket.fare.ticket_type == "conference" %}
         <div class="ticket-tagline">{{ form.tagline|field_value|default:"something about me" }}</div>
         <div class="ticket-python-experience">
             Python power
@@ -45,8 +44,13 @@
         </div>
         {% endif %}
     {% else %}
+        <h2>{{ ticket.fare.name }}</h2>
+        <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
+        <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
         <div class="ticket-commands">            
-            <p><a href="#">Edit information</a></p>
+            <p>
+                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a>
+            </p>
         </div>
     {% endif %}
     </div>
@@ -64,6 +68,14 @@
             <dt>Shirt size:</dt>
             <dd>{{ form.shirt_size|field_display_value }}</dd>
         </dl>
+    </div>
+    {% else %}
+    <div class="ticket-additional-info">
+        <p>
+            {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
+            Deposit: € 30, <b>Balance: € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
+            {% endwith %}
+        </p>
     </div>
     {% endif %}
 

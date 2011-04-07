@@ -11,7 +11,8 @@
     </div>
 {% endblock %}
 {% block breadcumbs %}
-    <a href="{% url rosetta-pick-file %}">{% trans "Home" %}</a> &rsaquo; 
+    <a href="{% url admin:index %}">{% trans "Admin Home" %}</a> &rsaquo;
+    <a href="{% url rosetta-pick-file %}">{% trans "Rosetta Home" %}</a> &rsaquo; 
     {{ rosetta_i18n_lang_name }} &rsaquo; 
     {{ rosetta_i18n_app|title }} &rsaquo; 
     {% blocktrans with rosetta_i18n_pofile.percent_translated|floatformat:2 as percent_translated  %}Progress: {{ percent_translated }}%{% endblocktrans %}

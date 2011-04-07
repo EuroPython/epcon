@@ -1197,10 +1197,17 @@ section.teaser p {
 /*     text-align: center; */
     
     color: #fff;
-    background: #4895A3;
     font-size: 21px;
     
     letter-spacing: 1px;
+}
+
+.ticket.conference .preview h2 {
+    background: #4895A3;
+}
+
+.ticket.partner .preview h2 {
+    background: #301D1D;
 }
 
 
@@ -1278,7 +1285,8 @@ section.teaser p {
 
 .ticket-name,
 .ticket-tagline,
-.ticket-python-experience {
+.ticket-python-experience,
+.ticket-footer {
     padding: 0 15px;
 }
 
@@ -1286,8 +1294,16 @@ section.teaser p {
 .ticket-name {
     font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;		
 	text-transform: uppercase;	
-	
 	margin: 10px 0 40px 0;
+}
+
+.ticket-footer {
+    font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;		
+	text-transform: uppercase;	
+	margin: 0;
+	position: absolute;
+	bottom: 5px;
+	right: 0;
 }
 
 .ticket-tagline {
