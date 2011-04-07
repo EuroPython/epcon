@@ -361,7 +361,7 @@ class Coupon(models.Model):
 
 class OrderManager(models.Manager):
     @transaction.commit_on_success
-    def create(self, user, payment, items, billing_notes='', coupons=None, remote=True):
+    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
         if coupons:
             for c in coupons:
                 if not c.valid():
@@ -379,9 +379,9 @@ class OrderManager(models.Manager):
         o.card_name = user.card_name or user.name()
         o.vat_number = user.vat_number
         o.tin_number = user.tin_number
-        o.country = user.country
+        o.country = country if country else user.country
         o.zip_code = user.zip_code
-        o.address = user.address
+        o.address = address if address else user.address
         o.city = user.city
         o.state = user.state
 
@@ -470,7 +470,9 @@ class Order(models.Model):
     card_name = models.CharField(_('Card name'), max_length=200)
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
     tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
-    country = models.ForeignKey(Country, verbose_name=_('Country'))
+    # la country deve essere null perché un ordine può essere creato via admin
+    # e in quel caso non è detto che si conosca
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
     zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
     city = models.CharField(_('City'), max_length=40, blank=True)
