@@ -2,26 +2,23 @@
 # Copyright (C) 2009 Python Italia.
 # This file is distributed under the same license as the p3 package.
 # dvd <dvd@gnx.it>, 2009.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-01 15:52+0200\n"
-"PO-Revision-Date: 2010-03-31 16:36\n"
-"Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
+"PO-Revision-Date: 2011-04-06 14:42\n"
+"Last-Translator: David Mugnai <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "X-Translated-Using: django-rosetta 0.5.3\n"
 
 #: forms.py:15
-msgid ""
-"We require a mobile number for all speakers for important last minutes "
-"contacts.<br />Use the international format, eg: +39-055-123456.<br />This "
-"number will <strong>never</strong> be published."
+msgid "We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published."
 msgstr ""
 
 #: forms.py:19
@@ -29,10 +26,7 @@ msgid "Date of birth"
 msgstr ""
 
 #: forms.py:20
-msgid ""
-"We require date of birth for speakers to accomodate for Italian laws "
-"regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</"
-"strong> be published."
+msgid "We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published."
 msgstr ""
 
 #: forms.py:24 forms.py:73 forms.py:92
@@ -48,10 +42,7 @@ msgid "I agree to let you publish my data on the web site."
 msgstr ""
 
 #: forms.py:33
-msgid ""
-"This speaker profile will be publicly accesible if one of your talks is "
-"accepted. Your mobile phone and date of birth will <strong>never</strong> be "
-"published"
+msgid "This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <strong>never</strong> be published"
 msgstr ""
 
 #: forms.py:36 forms.py:79
@@ -59,9 +50,7 @@ msgid "I agree to release all the talk material after the event."
 msgstr ""
 
 #: forms.py:37 forms.py:80
-msgid ""
-"If the talk is accepted, speakers a required to timely release all the talk "
-"material (including slides) for publishing on this web site."
+msgid "If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site."
 msgstr ""
 
 #: forms.py:40 forms.py:83
@@ -74,10 +63,7 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 
 #: templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
-msgstr ""
-"If you have any problems please contact us via <a onclick=\"habla_window.show"
-"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
-"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+msgstr "If you have any problems please contact us via <a onclick=\"habla_window.show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
 #: templates/conference/render_hotels.html:5
 msgid "Nome"
@@ -113,9 +99,8 @@ msgid "Sito personale"
 msgstr "Personal website"
 
 #: templates/conference/speaker.html:48
-#, fuzzy
 msgid "Sito Azienda"
-msgstr "Company"
+msgstr "Company site"
 
 #: templates/conference/talk.html:35
 msgid "di"
@@ -210,8 +195,7 @@ msgstr "Add a comment"
 #, python-format
 msgid ""
 "\n"
-"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s "
-"&mdash;\n"
+"        Scritto da <b>%(first_name)s %(last_name)s</b> il %(post_date)s &mdash;\n"
 "        "
 msgstr ""
 "\n"
@@ -291,24 +275,12 @@ msgid "Vedi tutte le scadenze &rarr;"
 msgstr "All the deadlines &rarr;"
 
 #: templates/p3/index.html:55
-msgid ""
-"Following the great success of the last year we will waiting for you at "
-"PyCon Italy, the biggest national conference in Europe dedicated to the "
-"Python programming language."
-msgstr ""
-"Following the great success of the last year we will waiting for you at "
-"PyCon Italy, the biggest national conference in Europe dedicated to the "
-"Python programming language."
+msgid "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
+msgstr "Following the great success of the last year we will waiting for you at PyCon Italy, the biggest national conference in Europe dedicated to the Python programming language."
 
 #: templates/p3/index.html:62
-msgid ""
-"We expect more than 400 visitors among companies, professionals and "
-"hobbystis that will have a chance to attend to numerous talks about the most "
-"up to date topics  in the Python world."
-msgstr ""
-"We expect more than 400 visitors among companies, professionals and "
-"hobbystis that will have a chance to attend to numerous talks about the most "
-"up to date topics in the Python world."
+msgid "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics  in the Python world."
+msgstr "We expect more than 400 visitors among companies, professionals and hobbystis that will have a chance to attend to numerous talks about the most up to date topics in the Python world."
 
 #: templates/p3/index.html:80
 msgid "Dal Blog"
@@ -327,16 +299,11 @@ msgid "Archivio blog"
 msgstr "Blog archive"
 
 #: templates/registration/login.html:61
-msgid ""
-"You will be able to specify billing and personal info later; e.g.: you can "
-"use your personal Facebook account to buy tickets for your company and the "
-"Facebook name will not appear anywhere."
+msgid "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere."
 msgstr ""
 
 #: templates/registration/login.html:79
-msgid ""
-"If you really really don't want to use an existing web account but you "
-"prefer a standard registration/login form,"
+msgid "If you really really don't want to use an existing web account but you prefer a standard registration/login form,"
 msgstr ""
 
 #: templates/registration/login.html:79
@@ -369,25 +336,17 @@ msgstr ""
 #~ msgid "Aggiungi un commentoddddddddd"
 #~ msgstr "Add a comment"
 
-#, fuzzy
 #~ msgid "Comments"
 #~ msgstr "Comments"
 
-#, fuzzy
 #~ msgid "Add Comment"
 #~ msgstr "Comments"
 
-#, fuzzy
 #~ msgid "Archive "
 #~ msgstr "Archive"
 
-#~ msgid ""
-#~ "La conferenza Italiana sul linguaggio di programmazione Python dove "
-#~ "sviluppatori, aziende e università si incontrano per imparare, "
-#~ "collaborare e crescere insieme."
-#~ msgstr ""
-#~ "The Italian conference on Python programming language where developers, "
-#~ "companies and universities meet to learn, work and grow up together."
+#~ msgid "La conferenza Italiana sul linguaggio di programmazione Python dove sviluppatori, aziende e università si incontrano per imparare, collaborare e crescere insieme."
+#~ msgstr "The Italian conference on Python programming language where developers, companies and universities meet to learn, work and grow up together."
 
 #~ msgid "I nostri sponsor"
 #~ msgstr "Our sponsors"
@@ -423,11 +382,7 @@ msgstr ""
 #~ msgstr "Web site"
 
 #~ msgid "saluto di guido in homepage"
-#~ msgstr ""
-#~ "This year's PyCon Italy will have an exceptional guest in <b><a href="
-#~ "\"http://en.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></"
-#~ "b>, author of the language, who will give a Keynote about the latest "
-#~ "developments of the language."
+#~ msgstr "This year's PyCon Italy will have an exceptional guest in <b><a href=\"http://en.wikipedia.org/wiki/Guido_van_Rossum\">Guido van Rossum</a></b>, author of the language, who will give a Keynote about the latest developments of the language."
 
 #~ msgid "Pycon Tre"
 #~ msgstr "Pycon Tre"
