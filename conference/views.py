@@ -495,7 +495,10 @@ def voting(request):
                     o.vote = vote
                     o.save()
                     talks.user_vote = o
-            return HttpResponseRedirectSeeOther(reverse('conference-voting'))
+            if request.is_ajax():
+                return http.HttpResponse('')
+            else:
+                return HttpResponseRedirectSeeOther(reverse('conference-voting'))
 
         return {
             'talks': talks,
