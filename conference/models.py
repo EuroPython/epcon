@@ -466,6 +466,7 @@ FARE_TICKET_TYPES = (
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
     ('event', 'Event'),
+    ('other', 'Other'),
 )
 
 FARE_PAYMENT_TYPE = (
