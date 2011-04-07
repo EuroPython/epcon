@@ -466,7 +466,7 @@ def voting(request):
         if not settings.VOTING_ALLOWED(request.user):
             return http.HttpResponseBadRequest('voting not allowed')
 
-        talks = models.Talk.objects.proposed(conference=conf.code)
+        talks = models.Talk.objects.proposed(conference=conf.code).select_related('speakers').order_by('speakers__name').distinct()
         votes = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=request.user))
         for t in talks:
             t.user_vote = votes.get(t.id)
