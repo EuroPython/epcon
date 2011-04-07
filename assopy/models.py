@@ -620,7 +620,7 @@ def _order_feedback(sender, **kwargs):
         'Utente: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
         'Ragione sociale: "%s"' % (sender.card_name,),
         'Metodo di pagamento: "%s"' % (sender.method,),
-        'Nazione: "%s"' % (sender.country.name,),
+        'Nazione: "%s"' % (sender.country.name if sender.country else '',),
         'Indirizzo: "%s"' % (sender.address,),
         'Note di fatturazione:\n%s\n' % (sender.billing_notes,),
         'Biglietti acquistati:',
