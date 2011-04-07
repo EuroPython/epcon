@@ -22,11 +22,11 @@
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
                 </form>                
                 <dl>
-                    <dt rel="p[data-talk={{ t.id }}]" class="toggle">Dettagli del talk</dt>
+                    <dt rel="div[data-talk={{ t.id }}]" class="toggle">Dettagli del talk</dt>
                     <dd>
-                        <p data-talk="{{ t.id }}">
-                            {{ t.getAbstract.body }}
-                        </p>                    
+                        <div data-talk="{{ t.id }}">
+                            {{ t.getAbstract.body|linebreaks }}
+                        </div>                    
                     </dd>                    
                 </dl>
             </li>
