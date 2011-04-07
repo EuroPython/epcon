@@ -223,10 +223,15 @@ def cart(request):
 def billing(request):
     tickets = []
     total = 0
-    for fare, quantity in request.session['user-cart']['tickets']:
-        t = fare.price * quantity
-        tickets.append((fare, quantity, t))
-        total += t
+    try:
+        for fare, quantity in request.session['user-cart']['tickets']:
+            t = fare.price * quantity
+            tickets.append((fare, quantity, t))
+            total += t
+    except KeyError:
+        # la sessione non ha più la chiave user-cart, invece che sollevare un
+        # errore 500 rimando l'utente sul carrello
+        return redirect('p3-cart')
 
     # non si possono comprare biglietti destinati ad entità diverse
     # (persone/ditte)
