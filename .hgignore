@@ -2,11 +2,10 @@ syntax: glob
 *.pyc
 offline_stuff/*
 stuff/*
-media/*
 Thumbs.db
 settings_locale.py
 db/*.db
-*.mo
+p3/locale/*/*/*.mo
 *.swp
 Session.vim
 .DS_Store
