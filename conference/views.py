@@ -102,7 +102,7 @@ def speaker(request, slug):
             'industry': spk.industry,
             'company': spk.company,
             'company_homepage': spk.company_homepage,
-            'bio': spk.getBio().body,
+            'bio': getattr(spk.getBio(), 'body', ''),
         })
     elif request.method == 'POST':
         if not full_access:
@@ -161,7 +161,14 @@ def talk(request, slug, talk_form=TalkForm):
     elif request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
-        form = talk_form(data=request.POST, files=request.FILES, instance=tlk)
+        if conf.cfp():
+            data = request.POST
+        else:
+            data = request.POST.copy()
+            data['level'] = tlk.level
+            data['duration'] = tlk.duration
+            data['language'] = tlk.language
+        form = talk_form(data=data, files=request.FILES, instance=tlk)
         if form.is_valid():
             talk = form.save()
             return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': tlk.slug}))
