@@ -544,13 +544,19 @@ def splitonspace(value):
     return value.split(' ')
 
 @register.filter
-def image_resized(value):
+def image_resized(value, size='resized'):
+    if isinstance(value, basestring):
+        url = value
+        if url.startswith('http'):
+            return url
+    else:
+        url = value.url
     try:
-        dirname, basename = os.path.split(value.url)
+        dirname, basename = os.path.split(url)
     except:
         return ''
     else:
-        return dirname + '/resized/' + os.path.splitext(basename)[0] + '.jpg'
+        return dirname + '/%s/%s' % (size, os.path.splitext(basename)[0] + '.jpg')
 
 @register.filter
 def intersected(value, arg):
