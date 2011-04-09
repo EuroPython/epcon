@@ -12,6 +12,16 @@
 {% block PAGE_TITLE %}Talk voting &mdash; {% endblock %}
 
 {% block MAIN_CONTENT %}
+    {% if not voting_allowed %}
+    <section class="notice">
+        {% if request.user.is_authenticated %}
+        <p>To join the community voting, you must buy a ticket. You can buy one <a href="{% url p3-cart %}">here</a>.</p>
+        {% else %}
+        <p>To join the community voting, you must buy a ticket.</p>
+        <p>If you already bought a ticket please <a href="/accounts/login/">log in</a>, otherwise you can buy one <a href="{% url p3-cart %}">here</a>.</p>
+        {% endif %}
+    </section>
+    {% endif %}
     <h1>Talk Voting</h1>
     
     <div class="page-summary">        
@@ -36,9 +46,21 @@
         <ul id="talk-voting">
             {% for t in talks %}
             <li>
-                <h2>{{ forloop.counter }} - <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>{% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}</h2>
+                <h2>
+                    {{ forloop.counter }} -
+                    {% if voting_allowed %}
+                    <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
+                    {% else %}
+                    {{ t.title }}
+                    {% endif %}
+                    {% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}
+                </h2>
                 <div class="meta">
+                    {% if voting_allowed %}
                     By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b>{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% else %}
+                    By {% for s in t.get_all_speakers %}<b>{{ s.name }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% endif %}
                     | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
                     for <b>{{ t.get_level_display }}</b>
                 </div>
@@ -46,12 +68,14 @@
                     <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote|default:"0" }}" step="0.5" />
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
                 </form>
+                {% if voting_allowed %}
                 <dl>
                     <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
                     <dd>
                         <div class="cms" data-talk="{{ t.id }}"> </div>                    
                     </dd>                    
                 </dl>
+                {% endif %}
             </li>
             {% endfor %}        
         </ul>
@@ -66,6 +90,7 @@
                         field.val(val);
                     form.ajaxSubmit();
                 }
+                {% if voting_allowed %}
                 $('#talk-voting .rateit')
                     .rateit()
                     .bind('rated', function() {
@@ -74,6 +99,11 @@
                     .bind('reset', function() {
                         rate($(this), 0);
                     });
+                {% else %}
+                $('#talk-voting .rateit')
+                    .rateit();
+                {% endif %}
+                {% if voting_allowed %}
                 $('#talk-voting .toggle').click(function(e) {
                     var trigger = $(e.target);
                     var dest = $(trigger.attr('rel'));
@@ -92,6 +122,7 @@
                         }
                     });
                 });
+                {% endif %}
             })();
         </script>
     </div>
