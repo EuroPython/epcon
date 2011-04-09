@@ -3,12 +3,17 @@
 {% block MAIN_CONTENT %}
     
     <h1>Your tickets</h1>
+    
+    {% if not tickets %}
+    <section class="notice">
+        <p>You still have not bought any ticket with this account. Please proceed to the <a href="{% url p3-cart %}">cart</a> to place an order.</p>
+    </section>
+    {% endif %}
 
     {% for t in tickets %}
         <div class="span-6 {% cycle '' 'last' %}">
             {% render_ticket t %}
         </div>
-        
         {% cycle '' '<hr />' %}    
     {% endfor %}
     <script type="text/javascript">//<![CDATA[
