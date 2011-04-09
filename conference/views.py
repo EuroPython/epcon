@@ -47,10 +47,16 @@ def render_to(template):
         def wrapper(request, *args, **kw):
             output = func(request, *args, **kw)
             if isinstance(output, (list, tuple)):
-                return render_to_response(output[1], output[0], RequestContext(request))
-            elif isinstance(output, dict):
-                return render_to_response(template, output, RequestContext(request))
-            return output
+                output, tpl = output
+            else:
+                tpl = template
+            ct = 'text/html'
+            if tpl.endswith('xml'):
+                ct = 'text/xml' if dsettings.DEBUG else 'application/xml'
+            if isinstance(output, dict):
+                return render_to_response(tpl, output, RequestContext(request), mimetype=ct)
+            else:
+                return output
         return wrapper
     return renderer
 
