@@ -36,7 +36,7 @@
         <ul id="talk-voting">
             {% for t in talks %}
             <li>
-                <h2>{{ forloop.counter }} - <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></h2>
+                <h2>{{ forloop.counter }} - <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>{% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}</h2>
                 <div class="meta">
                     By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b>{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
                     | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
