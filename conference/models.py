@@ -14,6 +14,8 @@ from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
+from django_urls import UrlMixin
+
 import tagging
 from tagging.fields import TagField
 
@@ -241,7 +243,7 @@ SPEAKER_INDUSTRY = (
     ('turismo',         'Turismo'),
     ('altro',           'Altro'),
 )
-class Speaker(models.Model):
+class Speaker(models.Model, UrlMixin):
     user = models.OneToOneField('auth.User', null=True)
     name = models.CharField('nome e cognome speaker', max_length=100)
     slug = models.SlugField()
@@ -272,6 +274,8 @@ class Speaker(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('conference-speaker', (), { 'slug': self.slug })
+
+    get_url_path = get_absolute_url
 
     def setBio(self, body, language=None):
         MultilingualContent.objects.setContent(self, 'bios', language, body)
@@ -392,7 +396,7 @@ TALK_TYPE = (
     ('s', 'Standard'),
     ('i', 'Interactive'),
 )
-class Talk(models.Model):
+class Talk(models.Model, UrlMixin):
     title = models.CharField('titolo del talk', max_length=100)
     slug = models.SlugField(max_length=100)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
@@ -429,6 +433,8 @@ class Talk(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('conference-talk', (), { 'slug': self.slug })
+
+    get_url_path = get_absolute_url
 
     def get_event(self):
         try:
