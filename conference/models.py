@@ -739,7 +739,7 @@ class Quote(models.Model):
 class VotoTalk(models.Model):
     user = models.ForeignKey('auth.User')
     talk = models.ForeignKey(Talk)
-    vote = models.PositiveIntegerField()
+    vote = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
         unique_together = (('user', 'talk'),)
