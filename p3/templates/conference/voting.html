@@ -1,4 +1,5 @@
 {% extends "p3/base.html" %}
+{% load conference assopy_tags %}
 
 {% block PAGE_TITLE %}Talk voting &mdash; {% endblock %}
 
@@ -9,12 +10,24 @@
         <p>{Summary} Loren Ipsum</p>
     </div>
     
-    
+    <form action="{% url conference-voting %}" method="GET" >
+        <div>
+            Filter by:
+            {{ form.abstracts|field }}
+            {{ form.talk_type|field }}
+            {{ form.language|field }}
+        </div>
+        <div>
+            Order by:
+            {{ form.order|field }}
+        </div>
+        <input type="submit" value="refresh" />
+    </form>
     <div class="span-8">
         <ul id="talk-voting">
             {% for t in talks %}
             <li>
-                <h2><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></h2>
+                <h2>{{ forloop.counter }} - <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></h2>
                 <div class="meta">
                     By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b>{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
                     | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
@@ -25,34 +38,52 @@
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
                 </form>
                 <dl>
-                    <dt rel="div[data-talk={{ t.id }}]" class="toggle">Abstract</dt>
+                    <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
                     <dd>
-                        <div class="cms" data-talk="{{ t.id }}">
-                            {{ t.getAbstract.body|linebreaks }}
-                        </div>                    
+                        <div class="cms" data-talk="{{ t.id }}"> </div>                    
                     </dd>                    
                 </dl>
             </li>
             {% endfor %}        
         </ul>
         <script type="text/javascript">
-            function rate(e, val) {
-                var field = $(e.rateit('backingfld'));
-                var form = field.parents('form');
-                if(val == undefined) 
-                    field.val(e.rateit('value'))
-                else
-                    field.val(val);
-                form.ajaxSubmit();
-            }
-            $('#talk-voting .rateit')
-                .rateit()
-                .bind('rated', function() {
-                    rate($(this));
-                })
-                .bind('reset', function() {
-                    rate($(this), 0);
+            (function() {
+                function rate(e, val) {
+                    var field = $(e.rateit('backingfld'));
+                    var form = field.parents('form');
+                    if(val == undefined) 
+                        field.val(e.rateit('value'))
+                    else
+                        field.val(val);
+                    form.ajaxSubmit();
+                }
+                $('#talk-voting .rateit')
+                    .rateit()
+                    .bind('rated', function() {
+                        rate($(this));
+                    })
+                    .bind('reset', function() {
+                        rate($(this), 0);
+                    });
+                $('#talk-voting .toggle').click(function(e) {
+                    var trigger = $(e.target);
+                    var dest = $(trigger.attr('rel'));
+                    if(dest.attr('load'))
+                        return;
+                    dest.attr('load', '1');
+                    dest.html('loading...');
+                    $.ajax({
+                        url: trigger.attr('data-src'),
+                        dataType: 'xml',
+                        success: function(data, text, jqXHR) {
+                            dest.html($('talk abstract', data).html());
+                        },
+                        error: function(jqXHR, text, error) {
+                            dest.attr('load', null);
+                        }
+                    });
                 });
+            })();
         </script>
     </div>
     
