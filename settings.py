@@ -193,6 +193,15 @@ CONFERENCE_GOOGLE_MAPS = {
 CONFERENCE_CONFERENCE = 'ep2011'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 
+def CONFERENCE_VOTING_ALLOWED(user):
+    if user.is_authenticated():
+        from p3 import models
+        tickets = models.TicketConference.objects\
+            .available(user, CONFERENCE_CONFERENCE)\
+            .filter(orderitem__order___complete=True)
+        return tickets.count() > 0
+    return False
+
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
