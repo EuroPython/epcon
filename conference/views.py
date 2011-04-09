@@ -5,12 +5,15 @@ import tempfile
 import urllib
 import zipfile
 from cStringIO import StringIO
+from decimal import Decimal
 from xml.etree import cElementTree as ET
+
 from conference import models
 from conference import settings
 from conference.forms import SpeakerForm, SubmissionForm, TalkForm
 from conference.utils import send_email
 
+from django import forms
 from django import http
 from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -497,10 +500,9 @@ def paper_submission(request, submission_form=SubmissionForm, submission_additio
         'proposed_talks': proposed,
     }, context_instance=RequestContext(request))
 
+@render_to('conference/voting.html')
 def voting(request):
     conf = models.Conference.objects.current()
-    if not conf.voting_start or not conf.voting_end:
-        raise http.Http404()
 
     if not conf.voting():
         if settings.VOTING_CLOSED:
@@ -508,51 +510,97 @@ def voting(request):
         else:
             raise http.Http404()
 
-    # "wrapper" serve solo a verificare le condizioni che portano ad un 404
-    # prima di se l'utente è autenticato. Non mi piace l'idea di chidere
-    # username/password per poi far vedere un "page not found".
-    @login_required
-    @render_to('conference/voting.html')
-    def wrapper(request):
-        if not settings.VOTING_ALLOWED(request.user):
-            return http.HttpResponseBadRequest('voting not allowed')
+    voting_allowed = settings.VOTING_ALLOWED(request.user)
 
-        talks = models.Talk.objects.proposed(conference=conf.code).select_related('speakers').order_by('speakers__name').distinct()
-        votes = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=request.user))
+    talks = models.Talk.objects\
+                .proposed(conference=conf.code)
+
+    if request.method == 'POST':
+        if not voting_allowed:
+            return http.HttpResponseBadRequest('anonymous user not allowed')
+
+        data = dict((x.id, x) for x in talks)
+        for k, v in filter(lambda x: x[0].startswith('vote-'), request.POST.items()):
+            try:
+                talk = data[int(k[5:])]
+            except KeyError:
+                return http.HttpResponseBadRequest('invalid talk')
+            except ValueError:
+                return http.HttpResponseBadRequest('id malformed')
+            if not v:
+                models.VotoTalk.objects.filter(user=request.user, talk=talk).delete()
+                talks.user_vote = None
+            else:
+                try:
+                    vote = Decimal(v)
+                except ValueError:
+                    return http.HttpResponseBadRequest('vote malformed')
+                try:
+                    o = models.VotoTalk.objects.get(user=request.user, talk=talk)
+                except models.VotoTalk.DoesNotExist:
+                    o = models.VotoTalk(user=request.user, talk=talk)
+                o.vote = vote
+                o.save()
+                talks.user_vote = o
+        if request.is_ajax():
+            return http.HttpResponse('')
+        else:
+            return HttpResponseRedirectSeeOther(reverse('conference-voting'))
+    else:
+        class OptionForm(forms.Form):
+            abstracts = forms.ChoiceField(
+                choices=(('not-voted', 'To be voted'), ('all', 'All'),),
+                required=False,
+            )
+            talk_type = forms.ChoiceField(
+                choices=(('all', 'All'), ('talk', 'Talks'), ('training', 'Trainings'),),
+                required=False,
+            )
+            language = forms.ChoiceField(
+                choices=(('all', 'All'), ('en', 'English'), ('it', 'Italian'),),
+                required=False,
+            )
+            order = forms.ChoiceField(
+                choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
+                required=False,
+            )
+
+        form = OptionForm(data=request.GET)
+
+        user_votes = models.VotoTalk.objects.filter(user=request.user)
+        talks = talks\
+                    .select_related('speakers')\
+                    .order_by('speakers__name')\
+                    .distinct()
+
+        form.is_valid()
+        options = form.cleaned_data
+        if options['abstracts'] != 'all':
+            talks = talks.exclude(id__in=user_votes.values('talk_id'))
+        if options['talk_type'] == 'talk':
+            talks = talks.filter(training_available=False)
+        elif options['talk_type'] == 'training':
+            talks = talks.filter(training_available=True)
+
+        if options['language'] == 'en':
+            talks = talks.filter(language='en')
+        elif options['language'] == 'it':
+            talks = talks.filter(language='it')
+
+        votes = dict((x.talk_id, x) for x in user_votes)
         for t in talks:
             t.user_vote = votes.get(t.id)
 
-        if request.method == 'POST':
-            data = dict((x.id, x) for x in talks)
-            for k, v in filter(lambda x: x[0].startswith('vote-'), request.POST.items()):
-                try:
-                    talk = data[int(k[5:])]
-                except KeyError:
-                    return http.HttpResponseBadRequest('invalid talk')
-                except ValueError:
-                    return http.HttpResponseBadRequest('id malformed')
-                if not v:
-                    models.VotoTalk.objects.filter(user=request.user, talk=talk).delete()
-                    talks.user_vote = None
+        if options['order'] != 'speaker':
+            def key(x):
+                if x.user_vote:
+                    return x.user_vote.vote
                 else:
-                    try:
-                        vote = int(v)
-                    except ValueError:
-                        return http.HttpResponseBadRequest('vote malformed')
-                    try:
-                        o = models.VotoTalk.objects.get(user=request.user, talk=talk)
-                    except models.VotoTalk.DoesNotExist:
-                        o = models.VotoTalk(user=request.user, talk=talk)
-                    o.vote = vote
-                    o.save()
-                    talks.user_vote = o
-            if request.is_ajax():
-                return http.HttpResponse('')
-            else:
-                return HttpResponseRedirectSeeOther(reverse('conference-voting'))
+                    return Decimal('-99.99')
+            talks = reversed(sorted(reversed(talks), key=key))
 
         return {
+            'voting_allowed': voting_allowed,
             'talks': talks,
+            'form': form,
         }
-
-    return wrapper(request)
