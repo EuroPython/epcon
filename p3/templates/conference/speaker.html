@@ -70,7 +70,7 @@
     </div>
     <div class="column span-3 last">
         <div class="speaker-picture">
-            <img class="block" src="{{ auser.photo_url }}" alt="{{ auser.name }}" width="170" height="170" />
+            <img class="block" src="{{ auser.photo_url|image_resized:"r_small" }}" alt="{{ auser.name }}" width="170" height="170" />
         </div>
     </div>
 {% endwith %}
