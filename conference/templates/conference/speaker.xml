@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8" ?>
 {% spaceless %}
 {% load conference %}
-<schedule conference="{{ schedule.conference }}" id="{{ schedule.slug }}" time_slot="15">
-    {% conference_schedule schedule.conference schedule.slug as tt %}
-    {% for time, events in tt %}
-        {% if time %}
-        <slot time="{{ time }}"{% if event.class %} class="{{ events.class|join:"," }}"{% endif %}>
-            {% for event in events.events %}
-                {% if event %}
-                <event tracks="{{ event.track_slots }}" tags="{{ event.tags|join:"," }}" duration="{{ event.time_slots }}" title="{{ event.title|striptags }}">
-                {% if event.sponsor %}
-                <sponsor name="{{ event.sponsor }}" url="{{ event.sponsor.url }}" />
-                {% endif %}
-                {% if event.talk %}
-                <talk url="{{ DEFAULT_URL_PREFIX }}{{ event.talk.get_absolute_url }}">
-                    {% for spk in event.talk.get_all_speakers %}
-                    <speaker name="{{ spk.name }}" url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image|image_resized }}" homepage="{{ spk.homepage }}" twitter="{{ spk.twitter }}">
-                            <activity url="{{ spk.activity_homepage }}">{{ spk.activity }}</activity>
-                            {% if spk.industry %}
-                            <industry>{{ spk.industry }}</industry>
-                            {% endif %}
-                            {% if spk.location %}
-                            <location>{{ spk.location }}</location>
-                            {% endif %}
-                            {% for b in spk.bios.all %}
-                            <{{ b.content }} lang="{{ b.language }}">{{ b.body|striptags }}</{{ b.content }}>
-                            {% endfor %}
-                    </speaker>
-                    {% endfor %}
-                    {% for b in event.talk.abstracts.all %}
-                    <abstract lang="{{ b.language }}">{{ b.body|striptags }}</abstract>
-                    {% endfor %}
-                </talk>
-                {% endif %}
-                </event>
-                {% endif %}
-            {% endfor %}
-        </slot>
-        {% endif %}
+<speaker>
+    <name>{{ speaker.name }}</name>
+    <public_url>{{ speaker.get_url }}</public_url>
+    {% if speaker.homepage %}
+    <homepage>{{ speaker.homepage }}</homepage>
+    {% endif %}
+    {% if speaker.activity %}
+    <activity>{{ speaker.activity }}</activity>
+    {% endif %}
+    {% if speaker.activity_homepage %}
+    <activity_homepage>{{ speaker.activity_homepage }}</activity_homepage>
+    {% endif %}
+    {% if speaker.company %}
+    <company>{{ speaker.company }}</company>
+    {% endif %}
+    {% if speaker.company_homepage %}
+    <company_homepage>{{ speaker.company_homepage }}</company_homepage>
+    {% endif %}
+    {% if speaker.industry %}
+    <industry>{{ speaker.industry }}</industry>
+    {% endif %}
+    {% if speaker.location %}
+    <location>{{ speaker.location }}</location>
+    {% endif %}
+    {% if speaker.twitter %}
+    <twitter>{{ speaker.twitter }}</twitter>
+    {% endif %}
+    {% if speaker.image %}
+    <image>{{ speaker.image.url|full_url }}</image>
+    {% endif %}
+    {% for b in speaker.bios.all %}
+    <bio xmlns="http://www.w3.org/1999/xhtml" lang="{{ b.language }}">{{ b.body|linebreaks }}</bio>
     {% endfor %}
-</schedule>
+    {% for t in talks %}
+    <talk>
+        <title>{{ t.title }}</title>
+        <public_url>{{ t.get_url }}</public_url>
+        <url>{% url conference-talk-xml t.slug as x %}{{ x|full_url }}</url>
+    </talk>
+    {% endfor %}
+</speaker>
 {% endspaceless %}
-
