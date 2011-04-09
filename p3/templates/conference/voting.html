@@ -1,6 +1,14 @@
 {% extends "p3/base.html" %}
 {% load conference assopy_tags %}
 
+{% block EXTRA_HEAD %}
+    {{ block.super }}
+    <style type="text/css">
+        #form-options .inline .field {
+            float: left;
+        }
+    </style>
+{% endblock %}
 {% block PAGE_TITLE %}Talk voting &mdash; {% endblock %}
 
 {% block MAIN_CONTENT %}
@@ -10,18 +18,19 @@
         <p>{Summary} Loren Ipsum</p>
     </div>
     
-    <form action="{% url conference-voting %}" method="GET" >
-        <div>
-            Filter by:
+    <form action="{% url conference-voting %}" method="GET" id="form-options">
+        <div class="span-5 inline">
             {{ form.abstracts|field }}
             {{ form.talk_type|field }}
             {{ form.language|field }}
         </div>
-        <div>
-            Order by:
+        <div class="span-7 last inline">
             {{ form.order|field }}
+            <div class="field">
+                <label>&nbsp;</label>
+                <input type="submit" value="refresh" />
+            </div>
         </div>
-        <input type="submit" value="refresh" />
     </form>
     <div class="span-8">
         <ul id="talk-voting">
