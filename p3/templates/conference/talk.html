@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load i18n conference assopy_tags %}
+{% load i18n conference assopy_tags hcomments_tags %}
 
 {% block PAGE_TITLE %}{{ talk.title }} &mdash; {% endblock %}
 
@@ -13,6 +13,26 @@ var PROJEKKTOR_CONFIG = {
     playerFlashMP3:    "{{ STATIC_URL }}conference/projekktor/playerMP3.swf"
 };
 </script>
+<script type="text/javascript">//<![CDATA[
+    $(function() {
+        hcomments.comments({
+            'form': $('#add-comment form'),
+            'wrapper': $('#comments'),
+            'comments': $('#comments li'),
+            'remove': "{% url hcomments-delete-comment %}"
+        });
+        hcomments.onCommentModerated = function(comment) {
+            var e = comment ? comment : $('.form-box');
+            var msg = $('<div class="comment-moderated">{% trans "Lo staff sta controllando il tuo commento, a breve verrà pubblicato." %}</div>');
+            e.prepend(msg)
+            setTimeout(function() {
+                $('.comment-moderated', e).remove();
+            }, 10000);
+            $('.form-box form').get(0).reset();
+        }
+    });
+//]]>
+    </script>
 {% endblock %}
 
 {% block MAIN_CONTENT %}
@@ -81,6 +101,12 @@ var PROJEKKTOR_CONFIG = {
             </form>
         </div>
         {% endif %}
+        {% get_comment_list talk as comments %}
+        {% if comments %}
+            <h3>Comments</h3>
+            {% show_comment_list talk %}
+        {% endif %}
+        {% show_comment_form talk %}
     </div>
     <div class="span-4 last">
         <div class="talk details">
