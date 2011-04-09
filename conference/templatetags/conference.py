@@ -906,3 +906,57 @@ def conference_quotes(parser, token):
             context[self.var_name] = list(quotes)
             return ''
     return QuotesNode(limit, var_name)
+
+@register.tag
+def talk_vote(parser, token):
+    """
+    {% talk_vote talk [ user ] as var %}
+    Restituisce il voto che l'utente, se manca viene recuperato dalla request,
+    ha dato al talk.
+    """
+    contents = token.split_contents()
+    tag_name = contents[0]
+    if contents[-2] != 'as':
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
+    var_name = contents[-1]
+    contents = contents[1:-2]
+
+
+    talk = contents.pop(0)
+    if contents:
+        user = contents.pop(0)
+    else:
+        user = None
+
+    class Node(TNode):
+        def __init__(self, talk, user, var_name):
+            self.var_name = var_name
+            self.talk = self._set_var(talk)
+            if user:
+                self.user = self._set_var(user)
+            else:
+                self.user = None
+
+        def render(self, context):
+            talk = self._get_var(self.talk, context)
+            request = context.get('request')
+            if self.user:
+                user = self._get_var(self.user, context)
+            else:
+                if not request:
+                    raise ValueError('request not found')
+                else:
+                    user = request.user
+
+            try:
+                cached = request._user__talks_votes
+            except AttributeError:
+                cached = {}
+
+            if talk.id not in cached:
+                cached = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=user))
+                request._user__talks_votes = cached
+            context[self.var_name] = cached.get(talk.id)
+            return ''
+
+    return Node(talk, user, var_name)
