@@ -2,7 +2,7 @@
 {% load pages_tags markup p3 conference %}
 
 {% block MAIN_CONTENT %}
-    <h1>{% show_content current_page "title" %}</h1>
+    <h1>{% if current_page %}{% show_content current_page "title" %}{% endif %}</h1>
 
     {% block PAGE_SUMMARY_TOP %}{% endblock %}
     <div class="page-summary">
