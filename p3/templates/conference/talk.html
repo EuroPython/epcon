@@ -108,7 +108,8 @@ var PROJEKKTOR_CONFIG = {
             <div id="talk-voting">
                 <form action="{% url conference-voting %}" method="post">{% csrf_token %}
                     Vote this talk:
-                    <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{{ talk.user_vote.vote|default:"0" }}" step="0.5" />
+                    {% talk_vote talk as vote %}
+                    <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{{ vote.vote|default:"0" }}" step="0.5" />
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ talk.id }}"></div>
                     <div>
                         <a href="{% url conference-voting %}">Back to the voting list</a>
