@@ -960,3 +960,9 @@ def talk_vote(parser, token):
             return ''
 
     return Node(talk, user, var_name)
+
+@register.filter
+def full_url(url):
+    if not url.startswith(dsettings.DEFAULT_URL_PREFIX):
+        url = dsettings.DEFAULT_URL_PREFIX + url
+    return url
