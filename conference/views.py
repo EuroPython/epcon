@@ -89,26 +89,39 @@ def json(f):
         return http.HttpResponse(content = result, content_type = ct, status = status)
     return decorator(wrapper, f)
 
+def speaker_access(f):
+    """
+    decoratore che protegge la view relativa ad uno speaker.
+    """
+    def wrapper(request, slug, **kwargs):
+        spk = get_object_or_404(models.Speaker, slug=slug)
+        if request.user.is_staff or request.user == spk.user:
+            full_access = True
+            talks = spk.talks()
+        else:
+            full_access = False
+            conf = models.Conference.objects.current()
+            if conf.voting() and settings.VOTING_ALLOWED(request.user):
+                talks = spk.talks()
+            else:
+                talks = spk.talks(status='accepted')
+                if talks.count() == 0:
+                    raise http.Http404()
+
+        return f(request, slug, speaker=spk, talks=talks, full_access=full_access, **kwargs)
+    return wrapper
+
 @render_to('conference/speaker.html')
-def speaker(request, slug):
-    spk = get_object_or_404(models.Speaker, slug=slug)
-    accepted = spk.talks(status='accepted')
-    if request.user.is_staff or request.user == spk.user:
-        full_access = True
-        talks = spk.talks()
-    else:
-        full_access = False
-        if accepted.count() == 0:
-            raise http.Http404()
-        talks = accepted
+@speaker_access
+def speaker(request, slug, speaker, talks, full_access):
     if request.method == 'GET':
         form = SpeakerForm(initial={
-            'activity': spk.activity,
-            'activity_homepage': spk.activity_homepage,
-            'industry': spk.industry,
-            'company': spk.company,
-            'company_homepage': spk.company_homepage,
-            'bio': getattr(spk.getBio(), 'body', ''),
+            'activity': speaker.activity,
+            'activity_homepage': speaker.activity_homepage,
+            'industry': speaker.industry,
+            'company': speaker.company,
+            'company_homepage': speaker.company_homepage,
+            'bio': getattr(speaker.getBio(), 'body', ''),
         })
     elif request.method == 'POST':
         if not full_access:
@@ -116,54 +129,72 @@ def speaker(request, slug):
         form = SpeakerForm(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            spk.activity = data['activity']
-            spk.activity_homepage = data['activity_homepage']
-            spk.industry = data['industry']
-            spk.company = data['company']
-            spk.company_homepage = data['company_homepage']
-            spk.save()
-            spk.setBio(data['bio'])
-            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': spk.slug}))
+            speaker.activity = data['activity']
+            speaker.activity_homepage = data['activity_homepage']
+            speaker.industry = data['industry']
+            speaker.company = data['company']
+            speaker.company_homepage = data['company_homepage']
+            speaker.save()
+            speaker.setBio(data['bio'])
+            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     return {
         'form': form,
         'full_access': full_access,
-        'speaker': spk,
+        'speaker': speaker,
         'talks': talks,
-        'accepted': accepted,
+        'accepted': talks.filter(status='accepted'),
     }
 
-@render_to('conference/talk.html')
-def talk(request, slug, talk_form=TalkForm):
-    tlk = get_object_or_404(models.Talk, slug=slug)
-    if request.user.is_anonymous():
-        full_access = False
-    elif request.user.is_staff:
-        full_access = True
-    else:
-        try:
-            tlk.get_all_speakers().get(user__id=request.user.id)
-        except (models.Speaker.DoesNotExist, models.Speaker.MultipleObjectsReturned):
-            # Il MultipleObjectsReturned può capitare se l'utente non è loggato
-            # e .id vale None
+@speaker_access
+@render_to('conference/speaker.xml')
+def speaker_xml(request, slug, speaker, full_access, talks):
+    return {
+        'speaker': speaker,
+        'talks': talks,
+    }
+
+def talk_access(f):
+    """
+    decoratore che protegge la view relativa ad un talk.
+    """
+    def wrapper(request, slug, **kwargs):
+        tlk = get_object_or_404(models.Talk, slug=slug)
+        if request.user.is_anonymous():
             full_access = False
-        else:
+        elif request.user.is_staff:
             full_access = True
+        else:
+            try:
+                tlk.get_all_speakers().get(user__id=request.user.id)
+            except (models.Speaker.DoesNotExist, models.Speaker.MultipleObjectsReturned):
+                # Il MultipleObjectsReturned può capitare se l'utente non è loggato
+                # e .id vale None
+                full_access = False
+            else:
+                full_access = True
 
-    if tlk.status == 'proposed' and not full_access:
-        raise http.Http404()
+        if tlk.status == 'proposed' and not full_access:
+            conf = models.Conference.objects.current()
+            if not (conf.voting() and settings.VOTING_ALLOWED(request.user)):
+                raise http.Http404()
 
+        return f(request, slug, talk=tlk, full_access=full_access, **kwargs)
+    return wrapper
+
+@render_to('conference/talk.html')
+@talk_access
+def talk(request, slug, talk, full_access, talk_form=TalkForm):
     conf = models.Conference.objects.current()
-
     if request.method == 'GET':
         form = talk_form(initial={
-            'title': tlk.title,
-            'training': tlk.training_available,
-            'duration': tlk.duration,
-            'language': tlk.language,
-            'level': tlk.level,
-            'abstract': tlk.getAbstract().body,
+            'title': talk.title,
+            'training': talk.training_available,
+            'duration': talk.duration,
+            'language': talk.language,
+            'level': talk.level,
+            'abstract': talk.getAbstract().body,
         })
-        form = talk_form(instance=tlk)
+        form = talk_form(instance=talk)
     elif request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
@@ -171,19 +202,26 @@ def talk(request, slug, talk_form=TalkForm):
             data = request.POST
         else:
             data = request.POST.copy()
-            data['level'] = tlk.level
-            data['duration'] = tlk.duration
-            data['language'] = tlk.language
-        form = talk_form(data=data, files=request.FILES, instance=tlk)
+            data['level'] = talk.level
+            data['duration'] = talk.duration
+            data['language'] = talk.language
+        form = talk_form(data=data, files=request.FILES, instance=talk)
         if form.is_valid():
             talk = form.save()
-            return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': tlk.slug}))
+            return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': talk.slug}))
     return {
         'form': form,
         'full_access': full_access,
-        'talk': tlk,
+        'talk': talk,
         'cfp': conf.cfp(),
         'voting': conf.voting(),
+    }
+
+@render_to('conference/talk.xml')
+@talk_access
+def talk_xml(request, slug, talk, full_access):
+    return {
+        'talk': talk,
     }
 
 def talk_report(request):
