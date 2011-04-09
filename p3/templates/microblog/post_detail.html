@@ -7,13 +7,12 @@
 {% endblock %}
 {% block EXTRA_HEAD %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
     {% if post.allow_comments %}
     <script type="text/javascript">//<![CDATA[
         $(function() {
             hcomments.comments({
                 'form': $('#add-comment form'),
-                'wrapper': $('#comments ol'),
+                'wrapper': $('#comments'),
                 'comments': $('#comments li'),
                 'remove': "{% url hcomments-delete-comment %}"
             });
