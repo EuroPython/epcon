@@ -1,0 +1,29 @@
+{% load i18n comments %}
+<div id="add-comment">
+    <h3>{% trans "Aggiungi un commento" %} </h3>
+    <div class="form-box">
+        {% get_comment_form for object as form %}
+        <form action="{% comment_form_target %}#preview-comment" method="post">{% csrf_token %}
+            <div class="clearfix">
+                <div class="column" style="float: left; width: 490px; margin: 0 10px 0 0">
+                    <fieldset>
+                        {% with form.comment as field %}
+                        <div class="field {% if field.errors %}error{% endif %}">
+                            {% if field.errors %}{{ field.errors }}{% endif %}
+                            {{ field.label_tag }} {{ field }}
+                        </div>
+                        {% endwith %}
+                        {% for field in form %}
+                            {% if field.is_hidden %}
+                            {{ field }}
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                </div>
+            </div>
+            <fieldset class="border">
+                <button type="submit" class="ok">{% trans "Post comment" %}</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
