@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-01 15:52+0200\n"
-"PO-Revision-Date: 2011-04-06 14:42\n"
-"Last-Translator: David Mugnai <dvd@gnx.it>\n"
+"PO-Revision-Date: 2011-04-07 17:17\n"
+"Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,35 +19,35 @@ msgstr ""
 
 #: forms.py:15
 msgid "We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published."
-msgstr ""
+msgstr "We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published."
 
 #: forms.py:19
 msgid "Date of birth"
-msgstr ""
+msgstr "Date of birth"
 
 #: forms.py:20
 msgid "We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published."
-msgstr ""
+msgstr "We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published."
 
 #: forms.py:24 forms.py:73 forms.py:92
 msgid "Suggested duration"
-msgstr ""
+msgstr "Suggested duration"
 
 #: forms.py:25 forms.py:74 forms.py:93
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
-msgstr ""
+msgstr "This is the <b>net duration</b> of the talk, excluding Q&A"
 
 #: forms.py:32
 msgid "I agree to let you publish my data on the web site."
-msgstr ""
+msgstr "I agree to let you publish my data on the web site."
 
 #: forms.py:33
 msgid "This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <strong>never</strong> be published"
-msgstr ""
+msgstr "This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <strong>never</strong> be published"
 
 #: forms.py:36 forms.py:79
 msgid "I agree to release all the talk material after the event."
-msgstr ""
+msgstr "I agree to release all the talk material after the event."
 
 #: forms.py:37 forms.py:80
 msgid "If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site."
@@ -55,7 +55,7 @@ msgstr ""
 
 #: forms.py:40 forms.py:83
 msgid "I agree to let the organization record my talk and publish the video."
-msgstr ""
+msgstr "I agree to let the organization record my talk and publish the video."
 
 #: templates/conference/genro_wrapper.html:6
 msgid "genro-account"
@@ -112,7 +112,7 @@ msgstr "in the track"
 
 #: templates/conference/talk.html:56
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: templates/conference/talk.html:96
 msgid "Lingua"
@@ -211,7 +211,7 @@ msgstr "Share this post"
 
 #: templates/p3/box_cal.html:3
 msgid "Next deadline"
-msgstr ""
+msgstr "Next deadline"
 
 #: templates/p3/box_didyouknow.html:4
 msgid "Lo sai che"
@@ -219,11 +219,11 @@ msgstr "Did you know?"
 
 #: templates/p3/box_talks_conference.html:3
 msgid "Your talks"
-msgstr ""
+msgstr "Your talks"
 
 #: templates/p3/cart.html:49
 msgid "Student"
-msgstr ""
+msgstr "Student"
 
 #: templates/p3/cart.html:50
 #, fuzzy
@@ -252,7 +252,7 @@ msgstr ""
 
 #: templates/p3/cart.html:157
 msgid "Partner Program intro"
-msgstr ""
+msgstr "You can book every tour with an advance of 30€. You can pay directly with our cart. Balance will be payed diretly at the registration desk."
 
 #: templates/p3/cart.html:164
 msgid "Event date"
