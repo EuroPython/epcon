@@ -173,7 +173,6 @@
 #reactions h3 span,
 #add-comment  h3 span,
 #comments h3 span {
-
 	text-transform: none;
 }
 
@@ -198,26 +197,17 @@
 
 .social-networks {
 	margin: 30px 0 20px 0;
-
     font-size: 12px;
 	padding: 5px 0 5px 0;
-
     border-top: 2px dotted #aba18f; 
     border-bottom: 2px dotted #aba18f; 
-    
-	
 }
 
 .social-networks h3 {
-
     font-size: 21px;
-
     text-align: center;
-
     color: #7d6f60;    
     margin: 0 0 5px 0;
-    
-    
 }
 
 .social-networks .column ul {
@@ -229,23 +219,14 @@
     margin: 0 0 5px 0;
 }
 
-
-
 .social-networks li img {
     vertical-align: middle;
 }
 
-
-
-
 #blog-post-info {
-
     margin: 0 0 30px 0;
-
     font-size: 12px;
     color: #7d6f60;
-
-	
 }
 
 #blog-post-info  h3 {
@@ -255,52 +236,32 @@
 }
 
 #blog-post-info  dt {
-
     font-weight: bold;
 }
-
 
 #blog-post-info  dd {
     margin: 0 0 10px 0;
 }
 
-
 #blog-archives-browser {
-
     margin: 0 0 30px 0;
-
 	color: #383829;
-
 	font-size: 13px;
 	line-height: 18px;
-	
 }
 
-
-
 #blog-archives-browser h3 {
-
 /*     font-size: 18px; */
 /*     color: #ece9f5; */
 /*     text-transform: uppercase; */
-
     margin: 0 0 5px 0;
 }
 
-
 #blog-archives-browser ul {
-
     list-style: none;
     margin: 0 0 30px 0;
 }
 
-
 #blog-archives-browser li {
-
     margin: 0 0 5px 0;
 }
-
-
-
-
-
