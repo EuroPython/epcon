@@ -77,10 +77,12 @@
         var ticket = $(e.target).parents('.ticket');
         var form = $('form', ticket);
         ticket_field(form, 'assigned_to').val(email);
-        form.ajaxSubmit(function() {
-            feedback('ticket assigned to ' + email);
-            $('.ticket-assigned-to', ticket).show().children('b').html(email);
-            $('.ticket-commands', ticket).hide();
+        form.ajaxSubmit({
+            target: form.parents('div.ticket'),
+            replaceTarget: true,
+            success: function() {
+                feedback('ticket assigned to ' + email);
+            }
         });
     });
     $('div.ticket .reclaim-button').live('click', function(e) {
@@ -89,10 +91,12 @@
             var ticket = $(e.target).parents('.ticket');
             var form = $('form', ticket);
             ticket_field(form, 'assigned_to').val('');
-            form.ajaxSubmit(function() {
-                feedback('ticket reclaimed');
-                $('.ticket-assigned-to', ticket).hide().children('b').html('');
-                $('.ticket-commands', ticket).show();
+            form.ajaxSubmit({
+                target: form.parents('div.ticket'),
+                replaceTarget: true,
+                success: function() {
+                    feedback('ticket reclaimed')
+                }
             });
         }
     });
