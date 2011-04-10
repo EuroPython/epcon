@@ -197,9 +197,13 @@ CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 def CONFERENCE_VOTING_ALLOWED(user):
     if user.is_authenticated():
         from p3 import models
+        from django.db.models import Q
+        # può votare chi ha almeno un biglietto confermato e che non ha
+        # assegnato a qualcun'altro
         tickets = models.TicketConference.objects\
             .available(user, CONFERENCE_CONFERENCE)\
-            .filter(orderitem__order___complete=True)
+            .filter(Q(orderitem__order___complete=True)|Q(orderitem__order__method='admin'))\
+            .filter(Q(p3_conference__assigned_to='')|Q(p3_conference__assigned_to=user.email))
         return tickets.count() > 0
     return False
 
