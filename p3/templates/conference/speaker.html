@@ -54,7 +54,7 @@
         </div>
         {% if full_access %}
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-            <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post">
+            <form class="speaker-profile" action="{% url conference-speaker slug=speaker.slug %}" method="post">{% csrf_token %}
                 <fieldset>
                 {{ form.activity|field }}
                 {{ form.company|field }}

@@ -83,7 +83,7 @@ var PROJEKKTOR_CONFIG = {
         {% endwith %}
         {% if full_access %}
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-            <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">
+            <form class="talk-details" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
                 {{ form.title|field }}
                 {% if cfp %}
@@ -104,7 +104,7 @@ var PROJEKKTOR_CONFIG = {
         {% get_comment_list talk as comments %}
         {% if comments %}
             <h3>Comments</h3>
-            {% show_comment_list talk %}
+            {% show_comment_list talk talk.get_all_speakers.0.user %}
         {% endif %}
         {% show_comment_form talk %}
     </div>
