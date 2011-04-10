@@ -95,7 +95,9 @@
 #comments li.replying {
 }
 
-
+#comments li.owner-comment {
+    background: #e1dbc5;
+}
 
 .blog-archive {
 	list-style: none	
