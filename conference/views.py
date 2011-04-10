@@ -567,7 +567,7 @@ def voting(request):
 
         form = OptionForm(data=request.GET)
 
-        user_votes = models.VotoTalk.objects.filter(user=request.user)
+        user_votes = models.VotoTalk.objects.filter(user=request.user.id)
         talks = talks\
                     .select_related('speakers')\
                     .order_by('speakers__name')\
