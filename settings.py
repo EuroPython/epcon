@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Django settings for pycon_site project.
 
 DEBUG = False
