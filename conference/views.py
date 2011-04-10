@@ -568,10 +568,7 @@ def voting(request):
         form = OptionForm(data=request.GET)
 
         user_votes = models.VotoTalk.objects.filter(user=request.user.id)
-        talks = talks\
-                    .select_related('speakers')\
-                    .order_by('speakers__name')\
-                    .distinct()
+        talks = talks.order_by('speakers__name')
 
         form.is_valid()
         options = form.cleaned_data
@@ -588,8 +585,22 @@ def voting(request):
             talks = talks.filter(language='it')
 
         votes = dict((x.talk_id, x) for x in user_votes)
-        for t in talks:
+
+        # Poichè talks è ordinato per un modello collegato tramite una
+        # ManyToMany posso avere dei talk ripetuti, purtroppo per un limite di
+        # django la .distinct() non funziona perché l'orm aggiunge alle colonne
+        # della select anche il campo per cui si ordina.
+        #
+        # Non mi rimane che filtrare in python, a questo punto ne approfitto
+        # per agganciare i voti dell'utente utilizzando un unico loop.
+        dups = set()
+        def filter_vote(t):
+            if t.id in dups:
+                return False
+            dups.add(t.id)
             t.user_vote = votes.get(t.id)
+            return True
+        talks = filter(filter_vote, talks)
 
         if options['order'] != 'speaker':
             def key(x):
