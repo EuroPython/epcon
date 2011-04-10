@@ -25,6 +25,72 @@ $(document).ready(function() {
             }
         });
     });
+
+     $('.show-tooltip').each(function() {
+         var e = $(this);
+         var rel = e.attr('rel');
+         var fx = jQuery.browser.msie ? "toggle" : "fade";
+         
+         e.tooltip({
+             position: "bottom center",
+             offset: [5, 0],
+             predelay: 200,
+             relative: e.hasClass('relative'),
+             tip: rel ? rel : null,
+             effect: fx,
+             opacity: 0.9
+         }).dynamic();
+     });
+
+    $('.trigger-overlay').each(function() {
+        var e = $(this);
+        var rel = e.attr('rel') || $('#global-overlay');
+        var href = e.attr('href');
+        e.overlay({
+            target: rel,
+            onBeforeLoad: function() {
+                if(href && href != '#') {
+                    var wrap = this.getOverlay().find(".contentWrap");
+                    if(!wrap)
+                        throw "to use a remote content the overlay must have a .contentWrap element";
+                    wrap.load(this.getTrigger().attr("href"));
+                }
+            }
+        });
+    });
+    $('form').each(function() {
+        var i = $('.help-text', this).prev(':input');
+        var relative = i.parents('.overlay').length != 0;
+        i.tooltip({
+            position: "center right",
+            offset: [0, 10],
+            effect: "fade",
+            relative: relative,
+            opacity: 0.9
+        })
+    });
+});
+
+$('html').ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+        // Only send the token to relative URLs i.e. locally.
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
 });
 
 /*

@@ -41,29 +41,6 @@
 
     <meta property="og:image" content="http://a1.twimg.com/profile_images/1231560986/Twitter-Avatar_bigger.png" />
     <meta property="fb:admins" content="789244177" />
-    <script type="text/javascript">
-    $('html').ajaxSend(function(event, xhr, settings) {
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-            // Only send the token to relative URLs i.e. locally.
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
-    });
-    </script>
 </head>
 <body id="{% block BODY_ID %}{% endblock %}">
 <!--[if lt IE 7]>
@@ -274,37 +251,5 @@
         $('#habla_unavailable_div').hide();
     });
     </script> 
-    <script type='text/javascript'>
-        $('form').each(function() {
-            var i = $('.help-text', this).prev(':input');
-            /*
-             * a causa di qualche problema tra tooltip e overlay (sempre di
-             * jQueryTools) non li inizializzo qui.
-             */
-            if(i.parents('.overlay').length != 0) {
-                return
-            }
-            i.tooltip({
-                position: "center right",
-                offset: [0, 10],
-                effect: "fade",
-                opacity: 0.9
-            })
-        });
-        $('.show-tooltip').tooltip({
-            position: "bottom center",
-            offset: [5, 0],
-            effect: "fade",
-            opacity: 0.9
-        });
-        $('a.global-overlay').overlay({
-            target: $('#global-overlay'),
-            onBeforeLoad: function() {
-                var wrap = this.getOverlay().find(".contentWrap");
-                wrap.load(this.getTrigger().attr("href"));
-            }
-        });
-        $('a.trigger-overlay').overlay();
-    </script>
 </body>
 </html>

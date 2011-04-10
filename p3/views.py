@@ -42,7 +42,7 @@ def tickets(request):
     tickets = list(tickets)
     for ix, t in list(enumerate(tickets))[::-1]:
         order = t.orderitem.order
-        if order.method != 'bank' and not _get_cached_order_status(request, order.id):
+        if order.method not in ('bank', 'admin') and not _get_cached_order_status(request, order.id):
             del tickets[ix]
     return {
         'tickets': tickets,
@@ -248,7 +248,7 @@ def billing(request):
             max_length=200,
         )
         payment = forms.ChoiceField(choices=ORDER_PAYMENT, initial='paypal')
-        code_conduct = forms.BooleanField(label='I have read and accepted the <a class="global-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
+        code_conduct = forms.BooleanField(label='I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
 
         def __init__(self, *args, **kwargs):
             super(P3BillingData, self).__init__(*args, **kwargs)
