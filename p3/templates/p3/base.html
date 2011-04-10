@@ -23,15 +23,12 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
 <![endif]-->
     <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest/" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-    <script src="http://cdn.jquerytools.org/1.2.5/all/jquery.tools.min.js"></script>
-    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquerytools/1.2.5/jquery.tools.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.form.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/utils.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/rateit/src/jquery.rateit.min.js"></script>
-    {% comment %}
-    <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/jquery.form.js"></script>
-    {% endcomment %}
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
     {% if current_page|check_map %}
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
