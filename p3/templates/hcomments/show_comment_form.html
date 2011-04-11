@@ -1,9 +1,10 @@
 {% load i18n comments %}
+{% load hcomments_tags %}
 <div id="add-comment">
     <h3>{% trans "New comment" %} </h3>
     <div class="form-box">
         {% get_comment_form for object as form %}
-        <form action="{% comment_form_target %}#preview-comment" method="post">{% csrf_token %}
+        <form class="new-comment" action="{% comment_form_target %}#preview-comment" method="post">{% csrf_token %}
             <div class="clearfix">
                 {% if request.user.is_authenticated %}
                 <div class="column" style="float: left; width: 490px; margin: 0 10px 0 0">
@@ -55,4 +56,5 @@
             </fieldset>
         </form>
     </div>
+    {% show_subscribe_form object %}
 </div>
