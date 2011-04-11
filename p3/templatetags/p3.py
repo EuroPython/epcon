@@ -324,3 +324,16 @@ def eval_(x, code):
         return eval(code, {'x': x})
     except:
         return None
+
+@register.filter
+def attrib_(ob, attrib):
+    try:
+        iter(ob)
+    except TypeError:
+        return getattr(ob, attrib, None)
+    else:
+        return [ getattr(x, attrib, None) for x in ob ]
+
+@register.filter
+def contains_(it, key):
+    return key in it
