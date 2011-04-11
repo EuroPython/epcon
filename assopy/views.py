@@ -380,7 +380,7 @@ def geocode(request):
 @render_to('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    if o.user.user != request.user or o.method != 'paypal':
+    if o.user.user != request.user or o.method not in ('paypal', 'cc'):
         raise http.Http404()
     # aspettiamo un po' per dare tempo a Paypal di inviarci la notifica IPN
     from time import sleep
