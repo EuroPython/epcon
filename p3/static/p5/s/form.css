@@ -112,17 +112,22 @@ select {
 
 /* Top red bordered error notice on invalid forms  */
 
+.info-notice {
+    padding: 5px 0 5px 5px;
+    margin: 0 0 20px 0;
+    border: 2px solid #46A0AC;
+    background: #fff;
+    color: #46A0AC;
+    font-size: 13px;
+}
+
 .error-notice {
     padding: 5px 0 5px 5px;
 /*     text-align: center; */
     margin: 0 0 20px 0;
-    
     border: 2px solid #d9415a;    
-    
     background: #fff;
-    
     color: #d9415a;
-    
     font-size: 13px;
 }
 
