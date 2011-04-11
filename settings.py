@@ -204,7 +204,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
         tickets = models.TicketConference.objects\
             .available(user, CONFERENCE_CONFERENCE)\
             .filter(Q(orderitem__order___complete=True)|Q(orderitem__order__method='admin'))\
-            .filter(Q(p3_conference__assigned_to='')|Q(p3_conference__assigned_to=user.email))
+            .filter(Q(p3_conference=None)|Q(p3_conference__assigned_to='')|Q(p3_conference__assigned_to=user.email))
         return tickets.count() > 0
     return False
 
