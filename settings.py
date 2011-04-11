@@ -194,7 +194,7 @@ CONFERENCE_GOOGLE_MAPS = {
 
 CONFERENCE_CONFERENCE = 'ep2011'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
-
+CONFERENCE_VOTING_DISALLOWED = 'http://ep2011.europython.eu/voting-disallowed'
 def CONFERENCE_VOTING_ALLOWED(user):
     if user.is_authenticated():
         from p3 import models
