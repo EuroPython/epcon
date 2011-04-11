@@ -70,7 +70,7 @@ h1 span {
                 <p><a href="{% url assopy-tickets %}">Your tickets</a></p>
                 {% endif %}
                 {% if invoices|length %}
-                <p>Your invoices</p>
+                <h4>Your invoices</h4>
                 <ul>
                 {% for i in invoices %}
                 <li><a href="{% url assopy-invoice-pdf assopy_id=i.id %}">Order: {{ i.order.code }} of {{ i.order.created|date:"d M Y" }}</a></li>
@@ -104,3 +104,4 @@ h1 span {
         </script>
     </div>
 {% endblock %}
+
