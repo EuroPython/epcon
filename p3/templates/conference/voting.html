@@ -46,7 +46,7 @@
         <ul id="talk-voting">
             {% for t in talks %}
             <li>
-                <h2>
+                <h2 id="t{{ t.id }}">
                     {{ forloop.counter }} -
                     {% if voting_allowed %}
                     <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
@@ -57,24 +57,26 @@
                 </h2>
                 <div class="meta">
                     {% if voting_allowed %}
-                    By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b>{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b class="speaker-name">{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
                     {% else %}
-                    By {% for s in t.get_all_speakers %}<b>{{ s.name }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    By {% for s in t.get_all_speakers %}<b class="speaker-name">{{ s.name }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}
                     {% endif %}
                     | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
                     for <b>{{ t.get_level_display }}</b>
+                    {% get_comment_count for t as ccount %}
+                    {% if ccount > 0 %}
+                        |
+                        {% if voting_allowed %}
+                        <a href="{% url conference-talk slug=t.slug %}#comments">{{ ccount }} comment{{ ccount|pluralize }}</a>
+                        {% else %}
+                        {{ ccount }} comment{{ ccount|pluralize }}
+                        {% endif %}
+                    {% endif %}
                 </div>
                 <form action="{% url conference-voting %}" method="post">{% csrf_token %}
                     <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote|default:"0" }}" step="0.5" />
                     <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
-                    {% get_comment_count for t as ccount %}
-                    {% if ccount > 0 %}
-                        {% if voting_allowed %}
-                        <a href="{% url conference-talk slug=t.slug %}#comments">{{ ccount }} comments</a>
-                        {% else %}
-                        {{ ccount }} comments
-                        {% endif %}
-                    {% endif %}
+                    <span class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></span>
                 </form>
                 {% if voting_allowed %}
                 <dl>
@@ -89,6 +91,34 @@
         </ul>
         <script type="text/javascript">
             (function() {
+                {% if voting_allowed %}
+                $('.feedback-vote').click(function(e) {
+                    e.preventDefault();
+                    var talk = $(e.target).parents('li');
+                    var tid = $('h2', talk).attr('id');
+                    var title = $('h2 a', talk).html();
+                    var speakers = [];
+                    $('.meta .speaker-name', talk).each(function() {
+                        speakers.push($(this).html());
+                    });
+                    var speaker = speakers.join(', ');
+                    var url = document.location.href + '#' + tid;
+                    var vote = $($('.rateit', talk).attr('data-rateit-backingfld')).val();
+                    RPXNOW.loadAndRun(['Social'], function () {
+                        var activity = new RPXNOW.Social.Activity(
+                            'Share your vote',
+                            'Just voted ' + vote + '/10 "' + title + '" of "' + speaker + '" #ep2011',
+                            url);
+                        activity.setTitle('Europython 2011 - Community voting');
+                        activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
+                        {% url conference-voting as u %}
+                        activity.addActionLink('Vote a talk', '{{ u|full_url }}');
+                        var media = new RPXNOW.Social.ImageMediaCollection();
+                        media.addImage('http://ep2011.europython.eu/media/versions/uploads/twitter-avatar_thumbnail.png', url);
+                        activity.setMediaItem(media);
+                        RPXNOW.Social.publishActivity(activity);
+                    });
+                });
                 function rate(e, val) {
                     var field = $(e.rateit('backingfld'));
                     var form = field.parents('form');
@@ -96,9 +126,12 @@
                         field.val(e.rateit('value'))
                     else
                         field.val(val);
-                    form.ajaxSubmit();
+                    form.ajaxSubmit({
+                        success: function(data, text, jqXHR) {
+                            e.siblings('.feedback-vote').show();
+                        }
+                    });
                 }
-                {% if voting_allowed %}
                 $('#talk-voting .rateit')
                     .rateit()
                     .bind('rated', function() {

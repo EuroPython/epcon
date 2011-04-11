@@ -1507,4 +1507,8 @@ h1 button.edit {
     overflow-y: auto;
 }
 
-
+.feedback-vote {
+    display: none;
+    color: #7D6F60;
+    margin-left: 20px;
+}
