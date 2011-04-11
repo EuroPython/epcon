@@ -66,11 +66,13 @@ def _assign_ticket(ticket, email):
             recipient = None
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
+        just_created = True
         u = User.objects.create_user(email=email, token=True, send_mail=False)
         recipient = u.user
         name = email
     else:
         log.info('Found a local user (%s) for the email "%s"', recipient, email)
+        just_created = False
         try:
             auser = recipient.assopy_user
         except User.DoesNotExist:
@@ -84,6 +86,7 @@ def _assign_ticket(ticket, email):
         name = recipient.assopy_user.name()
     ctx = {
         'name': name,
+        'just_created': just_created,
         'ticket': ticket,
         'conference': 'Europython 2011',
         'link': settings.DEFAULT_URL_PREFIX + reverse('p3-user', kwargs={'token': recipient.assopy_user.token}),
