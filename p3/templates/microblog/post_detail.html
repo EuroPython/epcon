@@ -1,5 +1,5 @@
 {% extends "microblog/base.html" %}
-{% load i18n microblog tagging_tags %}
+{% load hcomments_tags i18n microblog tagging_tags %}
 {% block PAGE_TITLE %}{{ content.headline }} &mdash; {% endblock %}
 {% block PAGE_DESCRIPTION %}
     <meta name="keywords" content="{{ content.post.tags }}" />
@@ -11,7 +11,7 @@
     <script type="text/javascript">//<![CDATA[
         $(function() {
             hcomments.comments({
-                'form': $('#add-comment form'),
+                'form': $('#add-comment form.new-comment'),
                 'wrapper': $('#comments'),
                 'comments': $('#comments li'),
                 'remove': "{% url hcomments-delete-comment %}"
@@ -49,46 +49,7 @@
     {% show_reactions_list content %}
 
     {% if post.allow_comments %}
-        {% load comments %}
-        <div id="add-comment">
-            <h3>{% trans "Aggiungi un commento" %} </h3>
-            <div class="form-box">
-                {% get_comment_form for post as form %}
-                <form action="{% comment_form_target %}#preview-comment" method="post">
-                    <div class="clearfix">
-                        <div class="column" style="float: left; width: 310px; margin: 0 10px 0 0">
-                            <fieldset>
-                                {% with form.comment as field %}
-                                <div class="field {% if field.errors %}error{% endif %}">
-                                  {% if field.errors %}{{ field.errors }}{% endif %}
-                                  {{ field.label_tag }} {{ field }}
-                                </div>
-                                {% endwith %}
-                            </fieldset>
-                        </div>
-                        <div class="column" style="float: left; width: 180px;">
-                            <fieldset>
-                                {% for field in form %}
-                                    {% ifnotequal field.name "comment" %}
-                                    {% if field.is_hidden %}
-                                        {{ field }}
-                                    {% else %}
-                                        <div class="field {% if field.errors %}error{% endif %}" {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
-                                          {% if field.errors %}{{ field.errors }}{% endif %}
-                                          {{ field.label_tag }} {{ field }}
-                                        </div>
-                                    {% endif %}
-                                    {% endifnotequal %}
-                                {% endfor %}
-                            </fieldset>
-                        </div>
-                    </div><!-- /clearfix -->
-                    <fieldset class="border">
-                        <button type="submit" class="ok">{% trans "Post comment" %}</button>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
+        {% show_comment_form post %}
     {% endif %}
 
 {% endblock %}
