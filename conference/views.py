@@ -104,8 +104,14 @@ def speaker_access(f):
         else:
             full_access = False
             conf = models.Conference.objects.current()
-            if conf.voting() and settings.VOTING_ALLOWED(request.user):
-                talks = spk.talks()
+            if conf.voting():
+                if settings.VOTING_ALLOWED(request.user):
+                    talks = spk.talks()
+                else:
+                    if settings.VOTING_DISALLOWED:
+                        return redirect(settings.VOTING_DISALLOWED)
+                    else:
+                        raise http.Http404()
             else:
                 talks = spk.talks(status='accepted')
                 if talks.count() == 0:
@@ -178,8 +184,13 @@ def talk_access(f):
 
         if tlk.status == 'proposed' and not full_access:
             conf = models.Conference.objects.current()
-            if not (conf.voting() and settings.VOTING_ALLOWED(request.user)):
+            if not conf.voting():
                 raise http.Http404()
+            if not settings.VOTING_ALLOWED(request.user):
+                if settings.VOTING_DISALLOWED:
+                    return redirect(settings.VOTING_DISALLOWED)
+                else:
+                    raise http.Http404()
 
         return f(request, slug, talk=tlk, full_access=full_access, **kwargs)
     return wrapper
