@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load comments conference assopy_tags %}
+{% load comments conference assopy_tags p3 %}
 
 {% block EXTRA_HEAD %}
     {{ block.super }}
@@ -46,20 +46,22 @@
         <ul id="talk-voting">
             {% for t in talks %}
             <li>
+                {% with t.get_all_speakers as tspeakers %}
+                {% with tspeakers|attrib_:"user"|contains_:request.user as special_user %}
                 <h2 id="t{{ t.id }}">
                     {{ forloop.counter }} -
-                    {% if voting_allowed %}
+                    {% if voting_allowed or special_user %}
                     <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
                     {% else %}
-                    {{ t.title }}
+                    {{ t.title }} 
                     {% endif %}
                     {% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}
                 </h2>
                 <div class="meta">
-                    {% if voting_allowed %}
-                    By {% for s in t.get_all_speakers %}<a href="{% url conference-speaker slug=s.slug %}"><b class="speaker-name">{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% if voting_allowed or special_user %}
+                    By {% for s in tspeakers %}<a href="{% url conference-speaker slug=s.slug %}"><b class="speaker-name">{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
                     {% else %}
-                    By {% for s in t.get_all_speakers %}<b class="speaker-name">{{ s.name }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    By {% for s in tspeakers %}<b class="speaker-name">{{ s.name }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}
                     {% endif %}
                     | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
                     for <b>{{ t.get_level_display }}</b>
@@ -73,6 +75,8 @@
                         {% endif %}
                     {% endif %}
                 </div>
+                {% endwith %}
+                {% endwith %}
                 <form action="{% url conference-voting %}" method="post">{% csrf_token %}
                     <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote|default:"0" }}" step="0.5" />
                     <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
