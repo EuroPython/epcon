@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-02-24 13:13+0100\n"
-"PO-Revision-Date: 2011-02-24 17:56\n"
+"PO-Revision-Date: 2011-04-09 12:30\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "es: CEO, Sviluppatore, Studente, Ruby Ninja, Coffee Addicted, etc"
 
 #: forms.py:14 forms.py:139
 msgid "Personal homepage"
-msgstr "Personal website"
+msgstr "Sito web personale"
 
 #: forms.py:15 forms.py:140
 msgid "Your company"
@@ -35,7 +35,7 @@ msgstr "Azienda"
 
 #: forms.py:16 forms.py:141
 msgid "Company homepage"
-msgstr "Company website"
+msgstr "Sito web aziendale"
 
 #: forms.py:19 forms.py:144
 msgid "Compact biography"
@@ -55,7 +55,7 @@ msgstr "Inserisci una o più esperienze di intervento come speaker in conferenze
 
 #: forms.py:28
 msgid "Last year talks"
-msgstr "Talk 2010"
+msgstr "Talk nel 2010"
 
 #: forms.py:29
 msgid "How many talks you have held during the last year?"
@@ -107,7 +107,7 @@ msgstr "Audience"
 
 #: forms.py:63 forms.py:173
 msgid "Talk abstract"
-msgstr "Talk abstract"
+msgstr "Abstract del talk"
 
 #: forms.py:64 forms.py:174
 msgid "<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>"
