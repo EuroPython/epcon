@@ -6,7 +6,6 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core import mail
 from django.core.urlresolvers import reverse
 from django.forms.formsets import BaseFormSet, formset_factory
 from django.db import transaction
@@ -21,9 +20,8 @@ from assopy import janrain
 from assopy import models
 from assopy import settings
 from assopy.clients import genro
-from assopy.utils import send_email
-
 from conference import models as cmodels
+from email_template import utils
 
 import json
 import logging
@@ -306,14 +304,16 @@ def janrain_incomplete_profile(request):
                 current = auth.models.User.objects.get(email=email)
             except auth.models.User.DoesNotExist:
                 current = None
-            ctx = {
-                'name': name,
-                'provider': p['providerName'],
-                'token': token,
-                'current': current,
-            }
-            body = template.loader.render_to_string('assopy/email/janrain_incomplete_profile.txt', ctx)
-            mail.send_mail(_('Verify your email'), body, 'info@pycon.it', [ email ])
+            utils.email(
+                'janrain-incomplete',
+                ctx={
+                    'name': name,
+                    'provider': p['providerName'],
+                    'token': token,
+                    'current': current,
+                },
+                to=[email]
+            ).send()
             del request.session['incomplete-profile']
             return HttpResponseRedirectSeeOther(reverse('assopy-janrain-incomplete-profile-feedback'))
     else:
