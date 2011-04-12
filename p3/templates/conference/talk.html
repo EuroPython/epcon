@@ -16,7 +16,7 @@ var PROJEKKTOR_CONFIG = {
 <script type="text/javascript">//<![CDATA[
     $(function() {
         hcomments.comments({
-            'form': $('#add-comment form'),
+            'form': $('#add-comment form.new-comment'),
             'wrapper': $('#comments'),
             'comments': $('#comments li'),
             'remove': "{% url hcomments-delete-comment %}"
