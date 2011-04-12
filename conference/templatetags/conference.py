@@ -972,3 +972,11 @@ def full_url(url):
     if not url.startswith(dsettings.DEFAULT_URL_PREFIX):
         url = dsettings.DEFAULT_URL_PREFIX + url
     return url
+
+@register.filter
+def fare_blob(fare, field):
+    match = re.search(r'%s\s*=\s*(.*)$' % field, fare.blob, re.M)
+    if match:
+        return match.group(1).strip()
+    return ''
+
