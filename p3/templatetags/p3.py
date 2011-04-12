@@ -312,13 +312,6 @@ def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", 
     return render_to_string('p3/render_fb_like.html', ctx)
 
 @register.filter
-def fare_blob(fare, field):
-    match = re.search(r'%s\s*=\s*(.*)$' % field, fare.blob, re.M)
-    if match:
-        return match.group(1).strip()
-    return ''
-
-@register.filter
 def eval_(x, code):
     try:
         return eval(code, {'x': x})
