@@ -556,7 +556,7 @@ def voting(request):
         if request.is_ajax():
             return http.HttpResponse('')
         else:
-            return HttpResponseRedirectSeeOther(reverse('conference-voting'))
+            return HttpResponseRedirectSeeOther(reverse('conference-voting') + '?' + request.GET.urlencode())
     else:
         class OptionForm(forms.Form):
             abstracts = forms.ChoiceField(
