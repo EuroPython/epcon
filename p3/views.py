@@ -11,13 +11,13 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext, Template
 from django.template.loader import render_to_string
 
+import forms as p3forms
+import models
 from assopy.forms import BillingData
 from assopy.models import Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
-
-import forms as p3forms
-import models
 from conference.models import Fare, Ticket
+from email_template import utils
 
 import logging
 import uuid
@@ -84,15 +84,16 @@ def _assign_ticket(ticket, email):
             recipient.assopy_user.token = str(uuid.uuid4())
             recipient.assopy_user.save()
         name = recipient.assopy_user.name()
-    ctx = {
-        'name': name,
-        'just_created': just_created,
-        'ticket': ticket,
-        'conference': 'Europython 2011',
-        'link': settings.DEFAULT_URL_PREFIX + reverse('p3-user', kwargs={'token': recipient.assopy_user.token}),
-    }
-    body = render_to_string('p3/emails/ticket_assigned.txt', ctx)
-    send_mail('Ticket assigned to you', body, 'info@pycon.it', [email])
+    utils.email(
+        'ticket-assigned',
+        ctx={
+            'name': name,
+            'just_created': just_created,
+            'ticket': ticket,
+            'link': settings.DEFAULT_URL_PREFIX + reverse('p3-user', kwargs={'token': recipient.assopy_user.token}),
+        },
+        to=[email]
+    ).send()
 
 @login_required
 @transaction.commit_on_success
