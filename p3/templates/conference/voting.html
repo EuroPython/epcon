@@ -65,15 +65,7 @@
                     {% endif %}
                     | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
                     for <b>{{ t.get_level_display }}</b>
-                    {% get_comment_count for t as ccount %}
-                    {% if ccount > 0 %}
-                        |
-                        {% if voting_allowed %}
-                        <a href="{% url conference-talk slug=t.slug %}#comments">{{ ccount }} comment{{ ccount|pluralize }}</a>
-                        {% else %}
-                        {{ ccount }} comment{{ ccount|pluralize }}
-                        {% endif %}
-                    {% endif %}
+
                 </div>
                 {% endwith %}
                 {% endwith %}
@@ -86,7 +78,11 @@
                 <dl>
                     <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
                     <dd>
-                        <div class="cms" data-talk="{{ t.id }}"> </div>                    
+                        <div class="cms" data-talk="{{ t.id }}" style="display: none">
+                            <div class="abstract"></div>
+                            {% get_comment_count for t as ccount %}
+                            <div><a href="{% url conference-talk slug=t.slug %}#comments">{{ ccount }} comment{{ ccount|pluralize }}</a></div>
+                        </div>                    
                     </dd>                    
                 </dl>
                 {% endif %}
@@ -111,7 +107,7 @@
                     RPXNOW.loadAndRun(['Social'], function () {
                         var activity = new RPXNOW.Social.Activity(
                             'Share your vote',
-                            'Just voted ' + vote + '/10 "' + title + '" of "' + speaker + '" #ep2011',
+                            'Just voted ' + vote + '/10 "' + title + '" of "' + speaker + '" #europython',
                             url);
                         activity.setTitle('Europython 2011 - Community voting');
                         activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
@@ -151,7 +147,7 @@
                 {% if voting_allowed %}
                 $('#talk-voting .toggle').click(function(e) {
                     var trigger = $(e.target);
-                    var dest = $(trigger.attr('rel'));
+                    var dest = $(trigger.attr('rel')).children('.abstract');
                     if(dest.attr('load'))
                         return;
                     dest.attr('load', '1');
@@ -160,6 +156,7 @@
                         url: trigger.attr('data-src'),
                         dataType: 'xml',
                         success: function(data, text, jqXHR) {
+                            console.log('x');
                             dest.html($('talk abstract', data).html());
                         },
                         error: function(jqXHR, text, error) {
