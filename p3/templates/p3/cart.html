@@ -3,33 +3,32 @@
 
 {% block BODY_CLASS %}wizard{% endblock %}
 
-
 {% block ASSOPY_MAIN_CONTENT %}
-
-    <h1>Buy tickets (1 of 2)</h1>
+    <h1>{% trans "Buy tickets (1 of 2)" %}</h1>
 
     <div class="page-summary">
-        <p>Select conference tickets and additional services.</p>    
+        <p>{% trans "Select conference tickets and additional services." %}</p>
     </div>
-        
-    
+
+    <div>
         {% if not account_type %}
         <section class="notice">
-            <p>In order to buy the tickets you have to <a href="/accounts/login/?next={% url p3-cart %}">log in</a></p>
+            {% url p3-cart as u %}
+            <p>{% blocktrans %}In order to buy the tickets you have to <a href="/accounts/login/?next={{ u }}">log in</a></p>{% endblocktrans %}
         </section>
         {% endif %}
 
         {{ form|form_errors }}
         <form id="form-cart" action="{% url p3-cart %}" method="post"{% if not account_type %} class="disabled"{% endif%}>{% csrf_token %}
             <fieldset class="order-type">
-                <legend>Select billing type</legend>
-                <p>Please, select the entity you are purchasing tickets for:</p>
+                <legend>{% trans "Select billing type" %}</legend>
+                <p>{% trans "Please, select the entity you are purchasing tickets for:" %}</p>
                 {{ form.order_type|field }}
-                <p>Invoices for personal purchases will be explicitly marked as "non tax-deductible".</p>
+                <p>{% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}</p>
             </fieldset>
             <fieldset class="tickets">
-                <legend>Conference tickets</legend>
-                <p class="vat-info">All prices are 20% VAT included. </p>
+                <legend>{% trans "Conference tickets" %}</legend>
+                <p class="vat-info">{% trans "All prices are 20% VAT included." %}</p>
                 <div class="cms">    
                     <table id="conference-tickets">
                         <col />
@@ -108,7 +107,7 @@
                 </div>
                 
                 <div class="total"> 
-                    Conference tickets total (VAT inc.): <b>€ 0</b>
+                    {% trans "Conference tickets total (VAT inc.)" %}: <b>€ 0</b>
                 </div> 
             </fieldset>
             {% comment %}
@@ -152,7 +151,7 @@
 
             <fieldset class="tickets">
                             
-                <legend>Partner Program</legend>
+                <legend>{% trans "Partner Program" %}</legend>
 
                 <p>{% trans "Partner Program intro" %}</p>
                 
@@ -176,17 +175,17 @@
                 </div>
 
                 <div class="total"> 
-                    Partner Program total (VAT inc.): <b>€ 0</b> 
+                    {% trans "Partner Program total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
 
                 <div class="total grand"> 
-                    Grand total (VAT inc.): <b>€ 0</b> 
+                    {% trans "Grand total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
         
             </fieldset>
 
             <fieldset class="border">
-                <button value="" name="" type="submit">Proceed to Checkout &rarr;</button>
+                <button value="" name="" type="submit">{% trans "Proceed to Checkout &rarr;" %}</button>
             </fieldset>
         </form>
         <script type="text/javascript">

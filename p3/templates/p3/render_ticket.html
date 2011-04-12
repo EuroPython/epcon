@@ -11,7 +11,9 @@
     </div>
     {% else %}
     <div class="ticket-status inactive">
-        &darr; Ticket not active; waiting for wire transfer (order {{ ticket.orderitem.order.code }})
+        {% with ticket.orderitem.order.code as code %}
+        &darr; {% blocktrans %}Ticket not active; waiting for wire transfer (order {{ code }}){% endblocktrans %}
+        {% endwith %}
     </div>
     {% endif %}
 
@@ -30,15 +32,17 @@
         {% if blocked %}
         <div class="ticket-commands ticket-assigned-to">
             <p>
-            Currently assigned to <b>{{ form.assigned_to|field_value }}</b> | <a href="#" class="reclaim-button">Reclaim</a>.
+            {% with form.assigned_to|field_value as assigned_to %}
+            {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} | <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
+            {% endwith %}
             </p>
         </div>
         {% else %}
         <div class="ticket-commands">
             <p>
-                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a>
+                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
                 {% if user == ticket.user %}
-                | <a href="#" class="button mini assign-button">Assign to user</a>
+                | <a href="#" class="button mini assign-button">{% trans "Assign to user" %}</a>
                 {% endif %}
             </p>
         </div>
@@ -49,7 +53,7 @@
         <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
         <div class="ticket-commands">            
             <p>
-                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">Edit information</a>
+                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
             </p>
         </div>
     {% endif %}
@@ -57,15 +61,13 @@
 
     {% if ticket.fare.ticket_type == "conference" %}
     <div class="ticket-additional-info">
-        <p>
-            Additional information (they won&#8217;t show up on the ticket)
-        </p>
+        <p>{% trans "Additional information (they won&#8217;t show up on the ticket)" %}</p>
         <dl>
-            <dt>Attending on days:</dt>
+            <dt>{% trans "Attending on days:" %}</dt>
             <dd>{{ form.days|field_display_value|join:"; " }}.</dd>
-            <dt>Diet:</dt>
+            <dt>{% trans "Diet:" %}</dt>
             <dd>{{ form.diet|field_display_value }}</dd>
-            <dt>Shirt size:</dt>
+            <dt>{% trans "Shirt size:" %}</dt>
             <dd>{{ form.shirt_size|field_display_value }}</dd>
         </dl>
     </div>
@@ -73,7 +75,7 @@
     <div class="ticket-additional-info">
         <p>
             {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
-            Deposit: € 30, <b>Balance: € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
+            {% trans "Deposit:" %} € 30, <b>{% trans "Balance:" %} € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
             {% endwith %}
         </p>
     </div>
@@ -94,13 +96,13 @@
                 <div class="span-3">
                     {{ form.python_experience|field }}
                 </div>
-                <div class="span-3 show-tooltip" title="This ticket grants you full access to the conference. The above selection is just for helping out the organizers.">
+                <div class="span-3 show-tooltip" title="{% trans "This ticket grants you full access to the conference. The above selection is just for helping out the organizers." %}">
                     {{ form.days|field }}
                 </div>
                 {{ form.assigned_to|field }}
             </fieldset>
             <fieldset class="border">
-                <button name="" value="" type="submit">Save Changes</button>
+                <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
             </fieldset>
         {% else %}
             <fieldset>
@@ -109,7 +111,7 @@
                 {% endfor %}
             </fieldset>
             <fieldset class="border">
-                <button value="" type="submit">Save Changes</button>
+                <button name="" value="" type="submit">Save Changes</button>
             </fieldset>
         {% endif %}
         </form>

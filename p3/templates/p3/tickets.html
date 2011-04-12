@@ -1,12 +1,12 @@
 {% extends "assopy/base.html" %}
-{% load p3 %}
+{% load i18n p3 %}
 {% block MAIN_CONTENT %}
-    
-    <h1>Your tickets</h1>
+    <h1>{% trans "Your tickets" %}</h1>
     
     {% if not tickets %}
     <section class="notice">
-        <p>You still have not bought any ticket with this account. Please proceed to the <a href="{% url p3-cart %}">cart</a> to place an order.</p>
+        {% url p3-cart as u %}
+        <p>{% blocktrans %}You still have not bought any ticket with this account. Please proceed to the <a href="{{ u }}">cart</a> to place an order.{% endblocktrans %}</p>
     </section>
     {% endif %}
 
@@ -50,14 +50,14 @@
                     var f = ticket_field(form, 'name');
                 var n = f.val().trim();
                 if(n == '') {
-                    alert('Please enter the name');
+                    alert('{% trans "Please enter the name" %}');
                     f.focus();
                     return false;
                 }
                 return true;
             },
             error: function(xhr, status, error) {
-                alert('Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance.');
+                alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
             }
         });
     });
@@ -67,11 +67,11 @@
     }
     $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
-        var email = prompt('Enter the email of the person you want to assign the ticket').trim();
+        var email = prompt('{% trans "Enter the email of the person you want to assign the ticket" %}').trim();
         if(!email)
             return;
         if(email == "{{ request.user.email }}") {
-            alert('Please don\'t use your email address.');
+            alert("{% trans "Please don't use your email address." %}");
             return;
         }
         var ticket = $(e.target).parents('.ticket');
@@ -81,13 +81,13 @@
             target: form.parents('div.ticket'),
             replaceTarget: true,
             success: function() {
-                feedback('ticket assigned to ' + email);
+                feedback('{% trans "ticket assigned to" %} ' + email);
             }
         });
     });
     $('div.ticket .reclaim-button').live('click', function(e) {
         e.preventDefault();
-        if(window.confirm('Are you sure to reclaim this ticket')) {
+        if(window.confirm('{% trans "Are you sure to reclaim this ticket" %}')) {
             var ticket = $(e.target).parents('.ticket');
             var form = $('form', ticket);
             ticket_field(form, 'assigned_to').val('');
