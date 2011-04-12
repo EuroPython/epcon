@@ -100,12 +100,13 @@ var PROJEKKTOR_CONFIG = {
                 </fieldset>
             </form>
         </div>
-        <h4>Do you have some questions on this talk? Leave a comment to the speaker!</h4>
         {% endif %}
         {% get_comment_list talk as comments %}
         {% if comments %}
             <h3>Comments</h3>
             {% show_comment_list talk talk.get_all_speakers.0.user %}
+        {% else %}
+            <h3>Do you have some questions on this talk? Leave a comment to the speaker!</h3>
         {% endif %}
         {% show_comment_form talk %}
     </div>
@@ -166,4 +167,5 @@ var PROJEKKTOR_CONFIG = {
         </div>
     </div>
 {% endblock %}
+
 
