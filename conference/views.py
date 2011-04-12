@@ -238,6 +238,15 @@ def talk_xml(request, slug, talk, full_access):
         'talk': talk,
     }
 
+@render_to('conference/conference.xml')
+def conference_data(request, conference):
+    conference = get_object_or_404(models.Conference, code=conference)
+    talks = models.Talk.objects.filter(conference=conference)
+    return {
+        'conference': conference,
+        'talks': talks,
+    }
+
 def talk_report(request):
     conference = request.GET.getlist('conference')
     tags = request.GET.getlist('tag')
