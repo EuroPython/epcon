@@ -313,8 +313,11 @@ post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
 TALK_DURATION = (
     (5,   _('5 minutes')),
+    (10,  _('10 minutes')),
     (15,  _('15 minutes')),
+    (25,  _('25 minutes')),
     (30,  _('30 minutes')),
+    (40,  _('40 minutes')),
     (45,  _('45 minutes')),
     (60,  _('60 minutes')),
     (90,  _('90 minutes')),

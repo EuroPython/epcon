@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+{% spaceless %}
+{% load conference %}
+<conference>
+    <name>{{ conference.name }}</name>
+    {% if conference.cfp_start %}
+    <callforpaper>
+        <start>{{ conference.cfp_start }}</start>
+        <end>{{ conference.cfp_end }}</end>
+    </callforpaper>
+    {% endif %}
+    {% if conference.conference_start %}
+    <conference_dates>
+        <start>{{ conference.conference_start }}</start>
+        <end>{{ conference.conference_end }}</end>
+    </conference_dates>
+    {% endif %}
+    {% if conference.voting_start %}
+    <voting>
+        <start>{{ conference.voting_start }}</start>
+        <end>{{ conference.voting_end }}</end>
+    </voting>
+    {% endif %}
+    <talks>
+        {% for talk in talks %}
+        <talk>
+            <status>{{ talk.status }}</status>
+            <public_url>{{ talk.get_url }}</public_url>
+            <url>{% url conference-talk-xml talk.slug as x %}{{ x|full_url }}</url>
+            <title>{{ talk.title }}</title>
+        </talk>
+        {% endfor %}
+    </talks>
+</conference>
+{% endspaceless %}
