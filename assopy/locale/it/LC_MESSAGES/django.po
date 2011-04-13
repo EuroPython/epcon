@@ -2,148 +2,263 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 11:59+0100\n"
+"POT-Creation-Date: 2011-04-13 14:40+0200\n"
 "PO-Revision-Date: 2011-04-09 12:29\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "X-Translated-Using: django-rosetta 0.5.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: forms.py:72
+#: forms.py:84
 msgid "First Name"
 msgstr "Nome"
 
-#: forms.py:73
-msgid "Please do not enter a company name here.<br />You will be able to specify billing details during the checkout."
-msgstr "Inserisci il tuo nome, non quello dell'azienda. Potrai specificare successivamente i dati di fatturazione."
+#: forms.py:85
+msgid ""
+"Please do not enter a company name here.<br />You will be able to specify "
+"billing details during the checkout."
+msgstr ""
+"Inserisci il tuo nome, non quello dell'azienda. Potrai specificare "
+"successivamente i dati di fatturazione."
 
-#: forms.py:76
+#: forms.py:88
 msgid "Last Name"
 msgstr "Cognome"
 
-#: models.py:59
+#: models.py:66
 msgid "ISO alpha-2"
 msgstr ""
 
-#: models.py:64
+#: models.py:71
 msgid "ISO alpha-3"
 msgstr ""
 
-#: models.py:65
+#: models.py:72
 msgid "ISO numeric"
 msgstr ""
 
-#: models.py:66
+#: models.py:73
 msgid "Country name"
 msgstr "Nazione"
 
-#: models.py:161
+#: models.py:176
 msgid "Photo"
 msgstr "Foto / Avatar"
 
-#: models.py:162
+#: models.py:177
 msgid "Twitter"
 msgstr "twitter.com/ ... "
 
-#: models.py:163
+#: models.py:178
 msgid "Skype"
 msgstr "Skype"
 
-#: models.py:164
+#: models.py:179
 msgid "Jabber"
 msgstr "GTalk"
 
-#: models.py:165
+#: models.py:180
 msgid "Www"
 msgstr "Www"
 
-#: models.py:167
+#: models.py:182
 msgid "Phone"
 msgstr "Telefono"
 
-#: models.py:169
-msgid "Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456"
-msgstr "Inserisci un numero al quale poterti contattare per comunicazioni urgenti. Il numero non sarà pubblicato. Usa il formato internazionale: <i>+39-333-1234567</i>"
+#: models.py:184
+msgid ""
+"Enter a phone number where we can contact you in case of administrative "
+"issues.<br />Use the international format, eg: +39-055-123456"
+msgstr ""
+"Inserisci un numero al quale poterti contattare per comunicazioni urgenti. "
+"Il numero non sarà pubblicato. Usa il formato internazionale: <i>"
+"+39-333-1234567</i>"
 
-#: models.py:171
+#: models.py:186
 msgid "Birthday"
 msgstr "Data di nascita"
 
-#: models.py:172
+#: models.py:187 models.py:487
 msgid "Card name"
 msgstr "Azienda"
 
-#: models.py:173
+#: models.py:188
 msgid "Account type"
 msgstr "Tipologia"
 
-#: models.py:174
+#: models.py:189 models.py:488
 msgid "Vat Number"
 msgstr "Partita IVA"
 
-#: models.py:175
-msgid "Codice Fiscale"
-msgstr "Codice Fiscale"
+#: models.py:190 models.py:489
+msgid "Tax Identification Number"
+msgstr ""
 
-#: models.py:176
+#: models.py:191 models.py:492
 msgid "Country"
 msgstr "Nazione"
 
-#: models.py:177
+#: models.py:192 models.py:493
 msgid "Zip Code"
 msgstr "CAP"
 
-#: models.py:178
-msgid "Address"
+#: models.py:194
+#, fuzzy
+msgid "Address and City"
 msgstr "Indirizzo"
 
-#: models.py:179
+#: models.py:197
+msgid ""
+"Insert the full address, including city and zip code. We will help you "
+"through google."
+msgstr ""
+
+#: models.py:198 models.py:495
 msgid "City"
 msgstr "Città"
 
-#: models.py:180
-msgid "Provincia"
-msgstr "Provincia"
+#: models.py:199 models.py:496
+msgid "State"
+msgstr ""
 
-#: models.py:206
+#: models.py:228
 msgid "According to VIES, this is not a valid vat number"
 msgstr "Secondo il VIES questo non è un numero valido di Partita IVA."
 
-#: views.py:293
-msgid "Verify your email"
-msgstr "Verifica la tua mail"
+#: models.py:494
+msgid "Address"
+msgstr "Indirizzo"
+
+#: templates/assopy/bank_feedback_ok.html:4
+msgid "Order completed"
+msgstr ""
+
+#: templates/assopy/bank_feedback_ok.html:9
+#, python-format
+msgid ""
+"\n"
+"            <p>Thank you for your order. You will receieve an email with all "
+"the details for the wire transfer.</p>\n"
+"            <p>If you don't receive this email please check yout spam folder "
+"and <a href=\"mailto:info@pycon.it\">write to us</a> specifying your order "
+"number: <b>%(ocode)s</b></p>\n"
+"            \n"
+"            <h2>What to do next</h2>\n"
+"            <p>Meanwhile you can <a href=\"%(u)s\">manage your tickets</a> "
+"directly from your profile.</p>\n"
+"            "
+msgstr ""
 
 #: templates/assopy/new_account_feedback.html:4
 msgid "Activation required"
 msgstr "E' richiesta l'attivazione"
 
 #: templates/assopy/new_account_feedback.html:7
-msgid "your account is created, you need to activate it following the instruction sent to you by email at"
-msgstr "Il tuo account è stato creato, devi attivarlo seguendo le istruzioni che ti abbiamo inviato via mail su "
+msgid ""
+"your account is created, you need to activate it following the instruction "
+"sent to you by email at"
+msgstr ""
+"Il tuo account è stato creato, devi attivarlo seguendo le istruzioni che ti "
+"abbiamo inviato via mail su "
 
-#: templates/assopy/profile.html:21
-msgid "save"
-msgstr "Salva"
+#: templates/assopy/paypal_feedback_ok.html:12
+msgid "Waiting for Paypal response..."
+msgstr ""
 
-#: templates/assopy/profile.html:29
+#: templates/assopy/paypal_feedback_ok.html:16
+#, python-format
+msgid ""
+"\n"
+"            <p>Are you waiting for too long? <a href=\"mailto:info@pycon.it"
+"\">Write to us</a> specifying your order number %(ocode)s</p>\n"
+"            "
+msgstr ""
+
+#: templates/assopy/paypal_feedback_ok.html:23
+msgid "Purchase completed"
+msgstr ""
+
+#: templates/assopy/paypal_feedback_ok.html:27
+#, python-format
+msgid ""
+"\n"
+"            <p>Thank you for the purchase. The transaction was completed and "
+"a receipt from paypal will be sent to your email address.</p>\n"
+"            <p>Now you can manage <a href=\"%(u)s\">your tickets</a> "
+"directly from your profile.</p>\n"
+"            "
+msgstr ""
+
+#: templates/assopy/profile.html:19
+msgid "Your profile"
+msgstr ""
+
+#: templates/assopy/profile.html:27
+msgid "Save Changes"
+msgstr ""
+
+#: templates/assopy/profile.html:44
 msgid "Web accounts for login"
 msgstr "Account collegati:"
+
+#: templates/assopy/profile.html:47
+#, fuzzy
+msgid "Delete account"
+msgstr "Aggiungi un account"
+
+#: templates/assopy/profile.html:58
+msgid "Speaker profile"
+msgstr ""
+
+#: templates/assopy/profile.html:60
+msgid "Your public page"
+msgstr ""
+
+#: templates/assopy/profile.html:66
+msgid "Utilities"
+msgstr ""
+
+#: templates/assopy/profile.html:68
+msgid "Your tickets"
+msgstr ""
+
+#: templates/assopy/profile.html:71
+msgid "Your invoices"
+msgstr ""
+
+#: templates/assopy/profile.html:76
+#, python-format
+msgid "Order: %(ocode)s of %(odate)s"
+msgstr ""
+
+#: templates/assopy/profile.html:98
+msgid "Web access removed"
+msgstr ""
+
+#: templates/assopy/profile.html:102
+msgid ""
+"Cannot remove the requested item, please contact info@pycon.it for assistance"
+msgstr ""
 
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"
 msgstr "Aggiungi un account"
 
-#: templates/registration/login.html:9
-msgid "You will be able to specify billing and personal info later; eg: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere."
+#: templates/registration/login.html:52
+#, fuzzy
+msgid ""
+"You will be able to specify billing and personal info later; e.g.: you can "
+"use your personal Facebook account to buy tickets for your company and the "
+"Facebook name will not appear anywhere."
 msgstr ""
 "<p>Puoi fare login utilizzando uno dei tuoi account web attivi.</p>\n"
 "\n"
@@ -154,27 +269,18 @@ msgstr ""
 "acquistare biglietti, ma il tuo Nickname non verrà riportato in alcun\n"
 "modo nei dati di fatturazione.</p>"
 
-#: templates/registration/login.html:10
-msgid "If you really really don't want to use an existing web account but you prefer a standard registration/login form,"
-msgstr ""
-"Se non hai mai partecipato a Better Software e non vuoi usare uno dei\n"
-"tuoi account web, questa è la procedura per creare un nuovo profilo."
-
-#: templates/registration/login.html:10
-msgid "click here"
-msgstr "Clicca qui"
-
-#: templates/registration/login.html:15
+#: templates/registration/login.html:70
 msgid "Invalid credentials"
 msgstr "Credenziali non valide per l'accesso"
 
-#: templates/registration/login.html:30
-msgid "If you don't have an account, please register:"
-msgstr "Se non hai un account registrati qui:"
+#: templates/registration/login.html:92
+msgid "Don&#8217;t you have an account?"
+msgstr ""
 
 #: templates/registration/password_reset_email.html:2
 msgid "You're receiving this e-mail because you requested a password reset"
-msgstr "Stai ricevendo questa mail perchè hai richiesto un reset della tua password"
+msgstr ""
+"Stai ricevendo questa mail perchè hai richiesto un reset della tua password"
 
 #: templates/registration/password_reset_email.html:3
 #, python-format
@@ -193,3 +299,28 @@ msgstr "Grazie per aver utilizzato il sito!"
 #, python-format
 msgid "The %(site_name)s team"
 msgstr " %(site_name) team"
+
+#~ msgid "Codice Fiscale"
+#~ msgstr "Codice Fiscale"
+
+#~ msgid "Provincia"
+#~ msgstr "Provincia"
+
+#~ msgid "Verify your email"
+#~ msgstr "Verifica la tua mail"
+
+#~ msgid "save"
+#~ msgstr "Salva"
+
+#~ msgid ""
+#~ "If you really really don't want to use an existing web account but you "
+#~ "prefer a standard registration/login form,"
+#~ msgstr ""
+#~ "Se non hai mai partecipato a Better Software e non vuoi usare uno dei\n"
+#~ "tuoi account web, questa è la procedura per creare un nuovo profilo."
+
+#~ msgid "click here"
+#~ msgstr "Clicca qui"
+
+#~ msgid "If you don't have an account, please register:"
+#~ msgstr "Se non hai un account registrati qui:"

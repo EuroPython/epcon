@@ -2,123 +2,153 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 11:59+0100\n"
+"POT-Creation-Date: 2011-04-13 14:40+0200\n"
 "PO-Revision-Date: 2011-04-07 17:18\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "X-Translated-Using: django-rosetta 0.5.3\n"
 
-#: forms.py:72
+#: forms.py:84
 msgid "First Name"
 msgstr ""
 
-#: forms.py:73
-msgid "Please do not enter a company name here.<br />You will be able to specify billing details during the checkout."
+#: forms.py:85
+msgid ""
+"Please do not enter a company name here.<br />You will be able to specify "
+"billing details during the checkout."
 msgstr ""
 
-#: forms.py:76
+#: forms.py:88
 msgid "Last Name"
 msgstr ""
 
-#: models.py:59
+#: models.py:66
 msgid "ISO alpha-2"
 msgstr ""
 
-#: models.py:64
+#: models.py:71
 msgid "ISO alpha-3"
 msgstr ""
 
-#: models.py:65
+#: models.py:72
 msgid "ISO numeric"
 msgstr ""
 
-#: models.py:66
+#: models.py:73
 msgid "Country name"
 msgstr ""
 
-#: models.py:161
+#: models.py:176
 msgid "Photo"
 msgstr ""
 
-#: models.py:162
+#: models.py:177
 msgid "Twitter"
 msgstr ""
 
-#: models.py:163
+#: models.py:178
 msgid "Skype"
 msgstr ""
 
-#: models.py:164
+#: models.py:179
 msgid "Jabber"
 msgstr ""
 
-#: models.py:165
+#: models.py:180
 msgid "Www"
 msgstr ""
 
-#: models.py:167
+#: models.py:182
 msgid "Phone"
 msgstr ""
 
-#: models.py:169
-msgid "Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456"
+#: models.py:184
+msgid ""
+"Enter a phone number where we can contact you in case of administrative "
+"issues.<br />Use the international format, eg: +39-055-123456"
 msgstr ""
 
-#: models.py:171
+#: models.py:186
 msgid "Birthday"
 msgstr ""
 
-#: models.py:172
+#: models.py:187 models.py:487
 msgid "Card name"
 msgstr ""
 
-#: models.py:173
+#: models.py:188
 msgid "Account type"
 msgstr ""
 
-#: models.py:174
+#: models.py:189 models.py:488
 msgid "Vat Number"
 msgstr ""
 
-#: models.py:175
-msgid "Codice Fiscale"
-msgstr "Tax Code"
+#: models.py:190 models.py:489
+msgid "Tax Identification Number"
+msgstr ""
 
-#: models.py:176
+#: models.py:191 models.py:492
 msgid "Country"
 msgstr ""
 
-#: models.py:177
+#: models.py:192 models.py:493
 msgid "Zip Code"
 msgstr ""
 
-#: models.py:178
-msgid "Address"
+#: models.py:194
+msgid "Address and City"
 msgstr ""
 
-#: models.py:179
+#: models.py:197
+msgid ""
+"Insert the full address, including city and zip code. We will help you "
+"through google."
+msgstr ""
+
+#: models.py:198 models.py:495
 msgid "City"
 msgstr ""
 
-#: models.py:180
-msgid "Provincia"
-msgstr "Province"
+#: models.py:199 models.py:496
+msgid "State"
+msgstr ""
 
-#: models.py:206
+#: models.py:228
 msgid "According to VIES, this is not a valid vat number"
 msgstr ""
 
-#: views.py:293
-msgid "Verify your email"
+#: models.py:494
+msgid "Address"
+msgstr ""
+
+#: templates/assopy/bank_feedback_ok.html:4
+msgid "Order completed"
+msgstr ""
+
+#: templates/assopy/bank_feedback_ok.html:9
+#, python-format
+msgid ""
+"\n"
+"            <p>Thank you for your order. You will receieve an email with all "
+"the details for the wire transfer.</p>\n"
+"            <p>If you don't receive this email please check yout spam folder "
+"and <a href=\"mailto:info@pycon.it\">write to us</a> specifying your order "
+"number: <b>%(ocode)s</b></p>\n"
+"            \n"
+"            <h2>What to do next</h2>\n"
+"            <p>Meanwhile you can <a href=\"%(u)s\">manage your tickets</a> "
+"directly from your profile.</p>\n"
+"            "
 msgstr ""
 
 #: templates/assopy/new_account_feedback.html:4
@@ -126,39 +156,106 @@ msgid "Activation required"
 msgstr ""
 
 #: templates/assopy/new_account_feedback.html:7
-msgid "your account is created, you need to activate it following the instruction sent to you by email at"
+msgid ""
+"your account is created, you need to activate it following the instruction "
+"sent to you by email at"
 msgstr ""
 
-#: templates/assopy/profile.html:21
-msgid "save"
+#: templates/assopy/paypal_feedback_ok.html:12
+msgid "Waiting for Paypal response..."
 msgstr ""
 
-#: templates/assopy/profile.html:29
+#: templates/assopy/paypal_feedback_ok.html:16
+#, python-format
+msgid ""
+"\n"
+"            <p>Are you waiting for too long? <a href=\"mailto:info@pycon.it"
+"\">Write to us</a> specifying your order number %(ocode)s</p>\n"
+"            "
+msgstr ""
+
+#: templates/assopy/paypal_feedback_ok.html:23
+msgid "Purchase completed"
+msgstr ""
+
+#: templates/assopy/paypal_feedback_ok.html:27
+#, python-format
+msgid ""
+"\n"
+"            <p>Thank you for the purchase. The transaction was completed and "
+"a receipt from paypal will be sent to your email address.</p>\n"
+"            <p>Now you can manage <a href=\"%(u)s\">your tickets</a> "
+"directly from your profile.</p>\n"
+"            "
+msgstr ""
+
+#: templates/assopy/profile.html:19
+msgid "Your profile"
+msgstr ""
+
+#: templates/assopy/profile.html:27
+msgid "Save Changes"
+msgstr ""
+
+#: templates/assopy/profile.html:44
 msgid "Web accounts for login"
+msgstr ""
+
+#: templates/assopy/profile.html:47
+msgid "Delete account"
+msgstr ""
+
+#: templates/assopy/profile.html:58
+msgid "Speaker profile"
+msgstr ""
+
+#: templates/assopy/profile.html:60
+msgid "Your public page"
+msgstr ""
+
+#: templates/assopy/profile.html:66
+msgid "Utilities"
+msgstr ""
+
+#: templates/assopy/profile.html:68
+msgid "Your tickets"
+msgstr ""
+
+#: templates/assopy/profile.html:71
+msgid "Your invoices"
+msgstr ""
+
+#: templates/assopy/profile.html:76
+#, python-format
+msgid "Order: %(ocode)s of %(odate)s"
+msgstr ""
+
+#: templates/assopy/profile.html:98
+msgid "Web access removed"
+msgstr ""
+
+#: templates/assopy/profile.html:102
+msgid ""
+"Cannot remove the requested item, please contact info@pycon.it for assistance"
 msgstr ""
 
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"
 msgstr ""
 
-#: templates/registration/login.html:9
-msgid "You will be able to specify billing and personal info later; eg: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere."
+#: templates/registration/login.html:52
+msgid ""
+"You will be able to specify billing and personal info later; e.g.: you can "
+"use your personal Facebook account to buy tickets for your company and the "
+"Facebook name will not appear anywhere."
 msgstr ""
 
-#: templates/registration/login.html:10
-msgid "If you really really don't want to use an existing web account but you prefer a standard registration/login form,"
-msgstr ""
-
-#: templates/registration/login.html:10
-msgid "click here"
-msgstr ""
-
-#: templates/registration/login.html:15
+#: templates/registration/login.html:70
 msgid "Invalid credentials"
 msgstr ""
 
-#: templates/registration/login.html:30
-msgid "If you don't have an account, please register:"
+#: templates/registration/login.html:92
+msgid "Don&#8217;t you have an account?"
 msgstr ""
 
 #: templates/registration/password_reset_email.html:2
@@ -182,3 +279,9 @@ msgstr ""
 #, python-format
 msgid "The %(site_name)s team"
 msgstr ""
+
+#~ msgid "Codice Fiscale"
+#~ msgstr "Tax Code"
+
+#~ msgid "Provincia"
+#~ msgstr "Province"

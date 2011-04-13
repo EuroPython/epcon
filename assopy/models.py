@@ -4,6 +4,7 @@ from assopy import janrain
 from assopy.clients import genro, vies
 from assopy.utils import send_email
 from conference.models import Fare, Ticket, Speaker
+from email_template import utils
 
 from django import dispatch
 from django import template
@@ -137,12 +138,14 @@ class UserManager(models.Manager):
         if assopy_id is not None:
             genro.user_remote2local(user)
         if send_mail:
-            ctx = {
-                'user': duser,
-                'token': Token.objects.create(ctype='v', user=duser),
-            }
-            body = template.loader.render_to_string('assopy/email/verify_user.txt', ctx)
-            mail.send_mail('Verify your account', body, 'info@pycon.it', [ email ])
+            utils.email(
+                'verify-account',
+                ctx={
+                    'user': duser,
+                    'token': Token.objects.create(ctype='v', user=duser),
+                },
+                to=[email]
+            ).send()
         return user
 
 def _fs_upload_to(subdir, attr=None):
