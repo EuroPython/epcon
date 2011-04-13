@@ -43,18 +43,6 @@ table.schedule caption {
     letter-spacing: 1px;
 }
 
-.schedule thead th.t-scoprire {
-    border-bottom-color: #749091;	
-}
-
-.schedule thead th.t-diffondere {
-
-    border-bottom-color: #96204B;	
-}
-
-.schedule thead th.t-imparare {
-    border-bottom-color: #94946f;	
-}
 
 
 .schedule thead th.hhmm {
