@@ -1,4 +1,4 @@
-{% load assopy_tags conference p3 %}
+{% load assopy_tags conference i18n p3 %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ocomplete or ticket.orderitem.order.method == "admin" %}
