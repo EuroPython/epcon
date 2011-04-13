@@ -1,0 +1,11 @@
+-cands a b b' c d e f
+
+d e b b' f a c
+e b b' f c a d
+b b' f c a d e
+c f a d e b b'
+d c a e b b' f
+a b' b c d e f
+a c b' b d e f
+f e a c b' b d
+f e b' b d c a
