@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
 from django.db import transaction
+from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
@@ -360,6 +361,19 @@ class Coupon(models.Model):
         return v
 
 class OrderManager(models.Manager):
+    def get_query_set(self):
+        return self._QuerySet(self.model)
+
+    def __getattr__(self, name):
+        return getattr(self.all(), name)
+
+    class _QuerySet(QuerySet):
+        def use_coupon(self, coupon):
+            return self.filter(orderitem__ticket=None, orderitem__code=coupon.code)
+
+        def conference(self, conference):
+            return self.filter(orderitem__ticket__fare__conference=conference).distinct()
+
     @transaction.commit_on_success
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
         if coupons:
