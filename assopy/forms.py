@@ -69,7 +69,7 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
 class SetPasswordForm(auth.forms.SetPasswordForm):
     def save(self, *args, **kwargs):
         user = super(SetPasswordForm, self).save(*args, **kwargs)
-        u = self.user.assopy_user
+#        u = self.user.assopy_user
         # non voglio riabilitare un utente con is_active=False, voglio tenermi
         # questo flag come uno strumento di amministrazione per impedire
         # l'accesso al sito
