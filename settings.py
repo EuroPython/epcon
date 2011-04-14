@@ -92,6 +92,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'assopy.middleware.DebugInfo',
 )
 
 ROOT_URLCONF = 'pycon_site.urls'
