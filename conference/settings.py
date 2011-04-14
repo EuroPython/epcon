@@ -32,4 +32,6 @@ STUFF_DIR = getattr(settings, 'CONFERENCE_STUFF_DIR', settings.MEDIA_ROOT)
 
 STUFF_URL = getattr(settings, 'CONFERENCE_STUFF_URL', settings.MEDIA_URL)
 
+TALKS_RANKING_FILE = getattr(settings, 'CONFERENCE_TALKS_RANKING_FILE', None)
+
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)

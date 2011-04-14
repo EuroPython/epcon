@@ -14,12 +14,15 @@ from django.template import defaultfilters
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from conference import models
+from conference import utils
 from conference import settings
 from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
-from conference import models
 from pages import models as PagesModels
 
 from tagging.models import Tag, TaggedItem
+
+from fancy_tag import fancy_tag
 
 mimetypes.init()
 
@@ -980,3 +983,24 @@ def fare_blob(fare, field):
         return match.group(1).strip()
     return ''
 
+@fancy_tag(register)
+def voting_data(conference):
+    conf = models.Conference.objects.get(code=conference)
+    votes = models.VotoTalk.objects.filter(talk__conference=conference)
+    users = len(set(x.user_id for x in votes))
+    if not settings.TALKS_RANKING_FILE:
+        talks = utils.ranking_of_talks(models.Talk.objects.filter(id__in=votes.values('talk')))
+    else:
+        talks_id = []
+        for line in file(settings.TALKS_RANKING_FILE):
+            pieces = line.split('-')
+            if len(pieces) > 2:
+                talks_id.append(int(pieces[1].strip()))
+        talks = list(models.Talk.objects.filter(id__in=talks_id))
+        talks.sort(key=lambda x: talks_id.index(x.id))
+
+    return {
+        'votes': votes.count(),
+        'users': users,
+        'talks': talks,
+    }
