@@ -2,12 +2,18 @@
 from __future__ import absolute_import
 
 from django import forms
+from django import http
 from django.contrib import admin
 from django.conf import settings
+from django.core import urlresolvers
+from django.db import transaction
+from django.shortcuts import redirect
 
 from conference import models
 
+import csv
 import re
+from cStringIO import StringIO
 
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('code', 'name')
@@ -183,11 +189,13 @@ class TalkAdminForm(forms.ModelForm):
         return self.cleaned_data['video']
 
 class TalkAdmin(MultiLingualAdminContent):
-    prepopulated_fields = {"slug": ("title",)}
-    list_display = ('title', 'conference', '_speakers', 'duration', '_slides', '_video')
+    actions = ('do_accept_talks_in_schedule', 'do_speakers_data',)
+    list_display = ('title', 'conference', '_speakers', 'duration', 'status', '_slides', '_video')
+    list_editable = ('status',)
     list_filter = ('conference', )
-    search_fields = ('title',)
     ordering = ('-conference', 'title')
+    prepopulated_fields = {"slug": ("title",)}
+    search_fields = ('title',)
 
     form = TalkAdminForm
     
@@ -206,6 +214,39 @@ class TalkAdmin(MultiLingualAdminContent):
     def _video(self, obj):
         return bool(obj.video_type) and (bool(obj.video_url) or bool(obj.video_file))
     _video.boolean = True
+
+    @transaction.commit_on_success
+    def do_accept_talks_in_schedule(self, request, queryset):
+        conf = set(t.conference for t in queryset)
+        next = urlresolvers.reverse('admin:conference_talk_changelist')
+        if len(conf) > 1:
+            self.message_user(request, 'Selected talks spans multiple conferences')
+            return redirect(next)
+        conference_talks = set(x['id'] for x in models.Talk.objects\
+                                                    .filter(id__in=models.Event.objects\
+                                                            .filter(schedule__conference=conf.pop())\
+                                                            .exclude(talk=None)\
+                                                            .values('talk'))\
+                                                    .values('id'))
+        for t in queryset:
+            if t.id in conference_talks:
+                t.status = 'accepted'
+            else:
+                t.status = 'proposed'
+            t.save()
+        return redirect(next)
+    do_accept_talks_in_schedule.short_description = 'Accept talks that takes place in conference schedule'
+
+    def do_speakers_data(self, request, queryset):
+        buff = StringIO()
+        writer = csv.writer(buff)
+        for t in queryset:
+            for s in t.get_all_speakers():
+                writer.writerow((t.status, t.title.encode('utf-8'), s.name.encode('utf-8'), s.user.email.encode('utf-8') if s.user else ''))
+        response = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
+        response['Content-Disposition'] = 'attachment; filename=speakers.csv'
+        return response
+    do_speakers_data.short_description = 'Speakers data'
 
 admin.site.register(models.Talk, TalkAdmin)
 
