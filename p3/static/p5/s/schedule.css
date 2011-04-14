@@ -18,7 +18,7 @@ table.schedule caption {
 
 .schedule th.hhmm {
 	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;				
-	padding: 5px 20px 5px 0;	
+	padding: 5px 15px 5px 5px;	
     border-bottom: 2px solid #7d6f60;	    	
     color: #7d6f60;
 }
@@ -29,12 +29,27 @@ table.schedule caption {
 }
 
 .schedule td {
-	padding: 5px 10px 20px 0;		
+	padding: 5px 15px 20px 5px;		
     color: #7d6f60;    
     min-width: 50px;        
     border-bottom: 1px solid #7d6f60;	    	
+    
+    /* for star/unstar div */
+/*     position: relative; */
 }
 
+.schedule td.alt {
+    background: #fcfad9;
+}
+
+
+
+.schedule .star {
+/*     position: absolute; */
+    right: 2px;
+    bottom: 2px;
+    cursor: pointer;
+}
 
 /* ============== */
 /* ! Talk title   */
@@ -45,16 +60,18 @@ table.schedule caption {
 	margin: 0 0 5px 0;
 	text-transform: none;		
 }
-/*
 
-.schedule h3 a {
-
+.schedule td a {
+    border-bottom-style: none;    
+    /* IE<8 */
+    *border-bottom-style: solid;
 }
 
-.schedule h3 a:hover {
-
+.schedule td:hover a {
+    border-bottom-style: solid;
 }
-*/
+
+
 
 /* =================== */
 /* ! Talk speaker(s)   */
@@ -62,46 +79,48 @@ table.schedule caption {
 
 .schedule .s a {
 	color: #5e5c32;
-    border-bottom-color:#9BABAB;	
+    border-bottom-color: #7d6f60;
 }
 
 .schedule td.track {
-/*     vertical-align: middle; */
+    padding-left: 0;
+    color: #301d1d;
 }
 
 /* cont'd */
 .schedule td .c  {
-/*     color: #9dcc4f; */
 }
 
 
-/*
 
 .schedule td.t-special, 
 .schedule td.t-break {
 
-    border-top: 3px solid #679191;
-    
     vertical-align: middle;
     text-align: center;
-
+    color: #301d1d;
     text-transform: uppercase;
-
     letter-spacing: 2px;
-    
-    color: #435e5e;
-        
-	padding: 0;
-	    
+    font-size: 12px;
+	padding: 0;    
+    background: transparent url(../i/empty-track.png) bottom left;		    
+
 }
-*/
+
+.schedule td.t-special span, 
+.schedule td.t-break span {
+    display: block;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+}
+
+
 
 .schedule .sponsored-talk {
-    text-transform: uppercase;
-    
-    font-size: 12px;
-    
-    margin: 5px 0 0 0;
+/*     text-transform: uppercase;     */
+    font-size: 12px;    
+    margin: 10px 0 0 0;
+    color: #301d1d;
 }
 
 
