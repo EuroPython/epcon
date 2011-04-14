@@ -87,6 +87,9 @@
                         {% if request.user.is_staff %}
                         <a href="/admin/"><b>Admin</b></a> &bull;
                         {% endif %}
+                        {% if request.session.resurrect_user %}
+                        <a href="{% url admin:assopy-resurrect-user %}">[ <b>Resurrect</b> ]</a> &bull;
+                        {% endif %}
                         <a href="/accounts/logout/?next=/">Log out</a>
                     {% else %}
                         <a href="/accounts/login/?next=/">Log in</a>
