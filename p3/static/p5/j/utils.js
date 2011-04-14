@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
     /*
      * ogni tag con classe "toggle" diventa un toggle-button
