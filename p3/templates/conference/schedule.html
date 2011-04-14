@@ -1,9 +1,16 @@
 {% extends "p3/base.html" %}
 {% load conference %}
+
+
 {% block MAIN_CONTENT %}
-<div class="column span-12">
+<!-- <div class="column span-12"> -->
     <div class="page clearfix">
         {% render_schedule schedule %}
     </div>
-</div>  
+<!-- </div>   -->
+{% endblock %}
+
+
+{% block SPONSORS %}
+<!-- Omit sponsors col -->
 {% endblock %}

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/wizard.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/schedule.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" />
     <link rel="stylesheet" href="{{ STATIC_URL}}p5/s/blog.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/j/rateit/src/rateit.css" type="text/css" />
@@ -133,6 +134,8 @@
     </div>
 </div>
 
+{% block SPONSORS %}
+
 <section class="sponsors">
 
     <h5>Our Sponsors</h5>
@@ -152,6 +155,8 @@
 
 <!-- /sponsors -->
 </section>
+
+{% endblock %}
 
     
 {% block FOOTER_BLOCK %}

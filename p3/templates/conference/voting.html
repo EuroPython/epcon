@@ -81,7 +81,7 @@
                         <div class="cms" data-talk="{{ t.id }}" style="display: none">
                             <div class="abstract"></div>
                             {% get_comment_count for t as ccount %}
-                            <div><a href="{% url conference-talk slug=t.slug %}#comments">{{ ccount }} comment{{ ccount|pluralize }}</a></div>
+                            <div><b>Questions on this talk?</b> <a href="{% url conference-talk slug=t.slug %}#comments">Leave a comment</a> to the speaker ({{ ccount }} comment{{ ccount|pluralize }} now)</a></div>
                         </div>                    
                     </dd>                    
                 </dl>
@@ -189,5 +189,6 @@
         </aside>
     </div>    
 {% endblock %}
+
 
 

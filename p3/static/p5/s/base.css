@@ -28,8 +28,7 @@
 
 body {
 		
-    background: #fcfad9 url(../i/body.png) top left repeat fixed;
-    
+    background: #fcfad9 url(../i/body.png) top left repeat fixed;    
 	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
 	color: #301d1d;
 }
@@ -1377,15 +1376,11 @@ section.notice {
 
 }
 
-/*
-section.notice a {
-	color:#FCF8C0;
-	border-bottom: 1px solid #fcf8c0;
-}
-*/
 
+/* ========================= */
+/* ! Overlay box (lighbox)   */
+/* ========================= */
 
-/* Overlay box (lighbox)  */
 
 .overlay {
 	display:none;
@@ -1413,18 +1408,21 @@ section.notice a {
     top: -18px;
     right: -18px;
 }
-/* ================== */
-/* ! Talk managment   */
-/* ================== */
 
 
-h1 button.edit {
-    margin: 0 15px;
-    position: relative;
-    top: -8px;
+#global-overlay {
+    padding: 20px;
 }
 
-/* Hovering help text */
+#global-overlay .contentWrap {
+    height: 450px;
+    overflow-y: auto;
+}
+
+/* ====================== */
+/* ! Hovering help text   */
+/* ====================== */
+
 
 .tooltip,
 .help-text {
@@ -1451,41 +1449,11 @@ h1 button.edit {
 }
 
 
-.talk-compact {
-    margin: 0 0 10px 0;
-    background: #E1DBC5;
-    padding: 5px;
-}
 
-.talk-compact .title {
-    font-weight: bold;
-}
+/* ======= */
+/* ! ???   */
+/* ======= */
 
-.talk-compact .info {
-    margin: 0 0 0 5px;
-}
-
-.talk-compact .abstract {
-    /* two lines: line-height * 2*/
-    height: 40px;
-    overflow: hidden;
-}
-
-.talk-compact .buttons {
-    text-align: right;
-}
-
-.talk-compact button {
-    padding: 0;
-}
-
-.talk-compact .edit {
-    background: darkorange;
-}
-
-.talk-compact .delete {
-    background: firebrick;
-}
 
 #id_payment_cc {
     display: none;
@@ -1498,14 +1466,7 @@ h1 button.edit {
 }
 
 
-#global-overlay {
-    padding: 20px;
-}
 
-#global-overlay .contentWrap {
-    height: 450px;
-    overflow-y: auto;
-}
 
 .feedback-vote {
     display: none;
