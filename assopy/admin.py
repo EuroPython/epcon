@@ -175,15 +175,27 @@ class UserAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             url(r'^(?P<uid>\d+)/login/$', self.admin_site.admin_view(self.login_as_user), name='assopy-login-user'),
             url(r'^(?P<uid>\d+)/order/$', self.admin_site.admin_view(self.new_order), name='assopy-user-order'),
+            url(r'^resurrect/$', self.resurrect_user, name='assopy-resurrect-user'),
         )
         return my_urls + urls
 
     def login_as_user(self, request, uid):
+        udata = (request.user.id, '%s %s' % (request.user.first_name, request.user.last_name),)
         user = get_object_or_404(models.User, pk=uid)
         from django.contrib import auth 
         auth.logout(request)
         user = auth.authenticate(uid=user.user.id)
         auth.login(request, user)
+        request.session['resurrect_user'] = udata
+        return http.HttpResponseRedirect('/')
+
+    def resurrect_user(self, request):
+        uid = request.session['resurrect_user'][0]
+        from django.contrib import auth
+        auth.logout(request)
+        user = auth.authenticate(uid=uid)
+        if user.is_superuser:
+            auth.login(request, user)
         return http.HttpResponseRedirect('/')
 
     @transaction.commit_on_success
