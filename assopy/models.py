@@ -371,8 +371,8 @@ class OrderManager(models.Manager):
         return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
-        def use_coupon(self, coupon):
-            return self.filter(orderitem__ticket=None, orderitem__code=coupon.code)
+        def use_coupons(self, *coupons):
+            return self.filter(orderitem__ticket=None, orderitem__code__in=(c.code for c in coupons))
 
         def conference(self, conference):
             return self.filter(orderitem__ticket__fare__conference=conference).distinct()
