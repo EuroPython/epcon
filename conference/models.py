@@ -612,6 +612,7 @@ class Schedule(models.Model):
     conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
     slug = models.SlugField()
     date = models.DateField()
+    description = models.TextField(blank=True)
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
