@@ -64,6 +64,20 @@ class TicketConference(models.Model):
 
     objects = TicketConferenceManager()
 
+TICKET_SIM_TYPE = (
+    ('std', 'SIM Standard'),
+    ('micro', 'Micro SIM'),
+)
+TICKET_SIM_PLAN_TYPE = (
+    ('std', 'Standard'),
+    ('bb', 'BlackBerry'),
+)
+class TicketSIM(models.Model):
+    ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
+    document = models.FileField(upload_to='p3/personal_documents')
+    sim_type = models.CharField(max_length=5, default='std')
+    plan_type = models.CharField(max_length=3, default='std')
+
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')
     date = models.DateField()
