@@ -8,12 +8,15 @@ import random
 import sys
 import urllib2
 from collections import defaultdict
+from datetime import datetime
+from itertools import groupby
 
 from django import template
 from django.conf import settings
 from django.core.cache import cache
 from django.template import Context
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
 from conference import models as ConferenceModels
@@ -248,3 +251,16 @@ def attrib_(ob, attrib):
 @register.filter
 def contains_(it, key):
     return key in it
+
+@register.inclusion_tag('p3/render_partner_program.html', takes_context=True)
+def render_partner_program(context):
+    from conference.templatetags.conference import fare_blob
+    fares = list(ConferenceModels.Fare.objects.filter(ticket_type='partner'))
+
+    def key(f):
+        date = datetime.strptime(fare_blob(f, 'data').split(',')[0][:-2] + ' 2011', '%B %d %Y').date()
+        return (slugify(f.name), date)
+    fares.sort(key=key)
+    return {
+        'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x.name)) ],
+    }
