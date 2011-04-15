@@ -1004,3 +1004,18 @@ def voting_data(conference):
         'users': users,
         'talks': talks,
     }
+
+@fancy_tag(register)
+def latest_tweets(screen_name, count=1):
+    if settings.LATEST_TWEETS_FILE:
+        data = simplejson.loads(file(settings.LATEST_TWEETS_FILE).read())[:count]
+    else:
+        data = utls.latest_tweets(screen_name, count)
+    return data
+
+@register.filter
+def convert_twitter_links(text, args=None):
+    text = re.sub(r'(https?://[^\s]*)', r'<a href="\1">\1</a>', text)
+    text = re.sub(r'@([^\s]*)', r'@<a href="http://twitter.com/\1">\1</a>', text)
+    text = re.sub(r'([^&])#([^\s]*)', r'\1<a href="http://twitter.com/search?q=%23\2">#\2</a>', text)
+    return mark_safe(text)
