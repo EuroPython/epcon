@@ -18,7 +18,7 @@
         {% endif %}
         {% endwith %}
     </ul>
-    <div class="call-to-action">
+    <div class="call-to-action partner-program">
     {% for fare in group %}
         <a href="{% url p3-cart %}?f={{ fare.code }}">{{ fare|fare_blob:"data" }}→</a>
     {% endfor %}

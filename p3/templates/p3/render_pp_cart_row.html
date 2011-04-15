@@ -3,7 +3,23 @@
     <tr>
         <td>
             {{ f.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]">(details)</a>
-            <div class="overlay" data-fare="{{ f.code }}"><h1>{{ f.name }} ({{ f|fare_blob:"data" }})</h1>{{ f.description|safe }}</div>
+            <div class="overlay cms" data-fare="{{ f.code }}">
+                <h1>{{ f.name }} ({{ f|fare_blob:"data" }})</h1>
+                <div>{{ f.description|safe }}</div>
+                <ul>
+                    <li>Cost per person: <strong>€{{ f|fare_blob:"prezzo" }}</strong></li>
+                    {% with f|fare_blob:"include" as t %}
+                    {% if t %}
+                    <li>Includes: <strong>{{ t }}</strong></li>
+                    {% endif %}
+                    {% endwith %}
+                    {% with f|fare_blob:"departure" as t %}
+                    {% if t %}
+                    <li>Departure: <strong>{{ t }}</strong></li>
+                    {% endif %}
+                    {% endwith %}
+                </ul>
+            </div>
         </td>
         <td>{{ f|fare_blob:"data" }}</td>
         <td>€ <span>{{ f|fare_blob:"prezzo" }}</span></td>
