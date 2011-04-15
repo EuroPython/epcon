@@ -210,6 +210,12 @@ def render_pp_cart_row(context, fare):
         'f': fare,
     }
 
+@register.inclusion_tag('p3/render_og_cart_row.html', takes_context=True)
+def render_og_cart_row(context, fare):
+    return {
+        'f': fare,
+    }
+
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']

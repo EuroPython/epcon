@@ -178,6 +178,39 @@
                     {% trans "Partner Program total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
 
+            </fieldset>
+            {% if request.META.HTTP_HOST == "localhost:8000" %}
+            <fieldset class="tickets">
+                            
+                <legend>{% trans "Other Goodies" %}</legend>
+
+                <p>{% trans "Other Goodies intro" %}</p>
+                
+                <div class="cms">                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{% trans "Goodies name" %}</th>
+                                <th>{% trans "Price" %}</th>
+                                <th>{% trans "Q.ty" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in fares_ordered %}
+                            {% render_og_cart_row f %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="total"> 
+                    {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b> 
+                </div> 
+            </fieldset>
+            {% endif %}
+
+            <fieldset class="tickets">
+
                 <div class="total grand"> 
                     {% trans "Grand total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
