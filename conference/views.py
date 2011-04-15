@@ -199,17 +199,7 @@ def talk_access(f):
 @talk_access
 def talk(request, slug, talk, full_access, talk_form=TalkForm):
     conf = models.Conference.objects.current()
-    if request.method == 'GET':
-        form = talk_form(initial={
-            'title': talk.title,
-            'training': talk.training_available,
-            'duration': talk.duration,
-            'language': talk.language,
-            'level': talk.level,
-            'abstract': talk.getAbstract().body,
-        })
-        form = talk_form(instance=talk)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
         if conf.cfp():
@@ -223,6 +213,8 @@ def talk(request, slug, talk, full_access, talk_form=TalkForm):
         if form.is_valid():
             talk = form.save()
             return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': talk.slug}))
+    else:
+        form = talk_form(instance=talk)
     return {
         'form': form,
         'full_access': full_access,
