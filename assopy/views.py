@@ -238,7 +238,12 @@ def janrain_token(request):
         token = request.POST['token']
     except KeyError:
         return http.HttpResponseBadRequest()
-    profile = janrain.auth_info(settings.JANRAIN['secret'], token)
+    try:
+        profile = janrain.auth_info(settings.JANRAIN['secret'], token)
+    except Exception, e:
+        log.warn('exception during janrain auth info: "%s"', str(e))
+        return HttpResponseRedirectSeeOther(dsettings.LOGIN_URL)
+
     log.info('janrain profile from %s: %s', profile['providerName'], profile['identifier'])
 
     current = request.user
