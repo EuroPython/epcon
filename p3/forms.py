@@ -152,3 +152,7 @@ class FormTicketPartner(forms.ModelForm):
     class Meta:
         model = Ticket
         fields = ('name',)
+
+class FormTicketSIM(forms.ModelForm):
+    class Meta:
+        model = models.TicketSIM
