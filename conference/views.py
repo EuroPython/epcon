@@ -10,7 +10,7 @@ from xml.etree import cElementTree as ET
 
 from conference import models
 from conference import settings
-from conference.forms import SpeakerForm, SubmissionForm, TalkForm
+from conference.forms import EventForm, SpeakerForm, SubmissionForm, TalkForm
 from conference.utils import send_email
 
 from django import forms
@@ -24,7 +24,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.template import RequestContext, Template
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
@@ -366,11 +366,45 @@ def talk_admin_upload(request):
     request.user.message_set.create(message = 'talk importati')
     return HttpResponseRedirectSeeOther(request.META.get('HTTP_REFERER', '/'))
 
+@render_to('conference/schedule.html')
+@transaction.commit_on_success
 def schedule(request, conference, slug):
-    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
-    return render_to_response(
-        'conference/schedule.html', { 'schedule': sch },
-        context_instance = RequestContext(request))
+    sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
+    if request.method == 'POST':
+        if not request.user.is_staff:
+            return http.HttpResponseBadRequest()
+        from tagging.models import TaggedItem
+        from tagging.utils import parse_tag_input
+        form = EventForm(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            time = data['start_time']
+            # non possono esistere due eventi nella stessa track e nello stesso
+            # momento.
+            tracks = parse_tag_input(data['track'])
+            for t in tracks:
+                events = TaggedItem.objects.get_by_model(models.Event.objects.filter(start_time=data['start_time']), t)
+                for e in events:
+                    e.delete()
+            evt = form.save(commit=False)
+            # Un evento deve avere almeno un talk o un evento custom, non
+            # impongo questa cosa a livello di clean_ nella form perchè posso
+            # usarla per cancellare eventi associati
+            if evt.talk or evt.custom:
+                evt.schedule = sch
+                evt.save()
+            if request.is_ajax():
+                return http.HttpResponse('')
+    else:
+        if request.is_ajax():
+            tpl = Template('{% load conference %}{% render_schedule2 schedule %}')
+            return http.HttpResponse(tpl.render(RequestContext(request, {'schedule': sch})))
+        form = EventForm()
+    return {
+        'schedule': sch,
+        'slug': slug,
+        'form': form,
+    }
 
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)

@@ -246,3 +246,8 @@ class TalkForm(forms.Form):
         instance.setAbstract(data['abstract'])
 
         return instance
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = models.Event
+        exclude = ('schedule',)
