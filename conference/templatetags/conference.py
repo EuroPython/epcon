@@ -5,15 +5,17 @@ import os
 import os.path
 import re
 import httplib2
+import random
 import simplejson
 from django import template
 from django.conf import settings as dsettings
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.template import defaultfilters
+from django.template import defaultfilters, Context
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from conference import forms
 from conference import models
 from conference import utils
 from conference import settings
@@ -498,6 +500,32 @@ def render_schedule(context, schedule):
         'timetable': schedule_context(schedule),
         'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
     }
+
+@register.inclusion_tag('conference/render_schedule2.html', takes_context=True)
+def render_schedule2(context, schedule):
+    from conference.utils import TimeTable
+    from tagging.utils import parse_tag_input
+    from datetime import time
+
+    tracks = list(x for x in schedule.track_set.all())
+    tt = TimeTable(time_spans=(time(8,00), time(10,30)), rows=tracks)
+    for e in models.Event.objects.filter(schedule=schedule):
+        duration = e.talk.duration if e.talk else None
+        event_traks = set(parse_tag_input(e.track))
+        if 'break' in event_traks or 'special' in event_traks:
+            rows = list(tracks)
+        else:
+            rows = [ x for x in tracks if x.track in event_traks ]
+        print 'x', e.custom, e.track, duration, e.talk
+        if not rows:
+            continue
+        tt.setEvent(e.start_time, e, duration, rows=rows)
+    ctx = Context(context)
+    ctx.update({
+        'schedule': schedule,
+        'timetable': tt,
+    })
+    return ctx
 
 @register.tag
 def conference_schedule(parser, token):
@@ -1010,7 +1038,7 @@ def latest_tweets(screen_name, count=1):
     if settings.LATEST_TWEETS_FILE:
         data = simplejson.loads(file(settings.LATEST_TWEETS_FILE).read())[:count]
     else:
-        data = utls.latest_tweets(screen_name, count)
+        data = utils.latest_tweets(screen_name, count)
     return data
 
 @register.filter

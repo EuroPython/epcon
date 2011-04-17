@@ -97,3 +97,118 @@ def latest_tweets(screen_name, count):
                 } for tweet in tweets]
         cache.set(key, data, 60 * 5)
     return data
+
+from datetime import datetime, date, timedelta
+
+class TimeTable(object):
+    class Event(object):
+        def __init__(self, time, row, ref, columns, rows):
+            self.time = time
+            self.row = row
+            self.ref = ref
+            self.columns = columns
+            self.rows = rows
+
+    class Reference(object):
+        def __init__(self, time, row, evt, flex=False):
+            self.time = time
+            self.row = row
+            self.evt = evt
+            self.flex = flex
+
+    def __init__(self, time_spans, rows, slot_length=15):
+        self.start, self.end = time_spans
+        assert self.start < self.end
+        self.rows = rows
+        assert self.rows
+        self.slot = timedelta(seconds=slot_length*60)
+
+        self._data = {}
+        self.errors = []
+
+    def sumTime(self, t, td):
+        return ((datetime.combine(date.today(), t)) + td).time()
+
+    def diffTime(self, t1, t2):
+        return ((datetime.combine(date.today(), t1)) - (datetime.combine(date.today(), t2)))
+
+    def setEvent(self, time, o, duration, rows):
+        assert rows
+        assert not (set(rows) - set(self.rows))
+        if not duration:
+            next = self.findFirstEvent(time, rows[0])
+            if not next:
+                duration = self.diffTime(self.end, time).seconds / 60
+            else:
+                duration = self.diffTime(next.time, time).seconds / 60
+            flex = True
+        else:
+            flex = False
+        count = duration / (self.slot.seconds / 60)
+
+        evt = TimeTable.Event(time, rows[0], o, count, len(rows))
+        self._setEvent(evt)
+        for r in rows[1:]:
+            ref = TimeTable.Reference(time, r, evt, flex)
+            self._setEvent(ref)
+            
+        step = self.sumTime(time, self.slot)
+        while count > 1:
+            for r in rows:
+                ref = TimeTable.Reference(step, r, evt, flex)
+                self._setEvent(ref)
+            step = self.sumTime(step, self.slot)
+            count -= 1
+
+    def _setEvent(self, evt):
+        event = evt.ref if isinstance(evt, TimeTable.Event) else evt.evt.ref
+        try:
+            prev = self._data[(evt.time, evt.row)]
+        except KeyError:
+            pass
+        else:
+            if isinstance(prev, TimeTable.Event):
+                self.errors.append('Event %s overlap %s on time %s' % (event, prev.ref, evt.time))
+                return
+            elif isinstance(prev, TimeTable.Reference):
+                if not prev.flex:
+                    self.errors.append('Event %s overlap %s on time %s' % (event, prev.evt.ref, evt.time))
+                evt0 = prev.evt
+                columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
+                evt0.columns = columns
+        self._data[(evt.time, evt.row)] = evt
+
+    def findFirstEvent(self, start, row):
+        while start < self.end:
+            try:
+                evt = self._data[(start, row)]
+            except KeyError:
+                pass
+            else:
+                if isinstance(evt, TimeTable.Reference):
+                    return evt.evt
+                else:
+                    return evt
+            start = self.sumTime(start, self.slot)
+
+    def columns(self):
+        step = self.start
+        while step < self.end:
+            yield step
+            step = self.sumTime(step, self.slot)
+
+    def byRows(self):
+        output = []
+        data = self._data
+        for row in self.rows:
+            step = self.start
+
+            cols = []
+            line = [ row, cols ]
+            while step < self.end:
+                cols.append({'time': step, 'data': data.get((step, row))})
+                step = self.sumTime(step, self.slot)
+
+            output.append(line)
+
+        return output
