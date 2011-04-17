@@ -111,8 +111,8 @@ table.schedule caption {
 
 }
 
-.schedule td.t-special span, 
-.schedule td.t-break span {
+.schedule td.t-special > div, 
+.schedule td.t-break > div {
     display: block;
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
