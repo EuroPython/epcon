@@ -644,6 +644,10 @@ class Event(models.Model):
         else:
             return self.custom
 
+    def get_all_tracks_names(self):
+        from tagging.utils import parse_tag_input
+        return parse_tag_input(self.track)
+
     def get_track(self):
         """
         ritorna la prima istanza di track tra quelle specificate o None se l'evento
