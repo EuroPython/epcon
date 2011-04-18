@@ -399,3 +399,11 @@ aside .cms ul {
     margin: 0 0 40px 0;
 }
 
+.cms.partner-program h3 a {
+    color: #635443;
+    margin-left: 10px;
+    border: 0;
+}
+.cms.partner-program h3 a:hover {
+    border-bottom: 1px solid #635443;
+}
