@@ -168,11 +168,23 @@ class TimeTable(object):
             pass
         else:
             if isinstance(prev, TimeTable.Event):
-                self.errors.append('Event %s overlap %s on time %s' % (event, prev.ref, evt.time))
+                self.errors.append({
+                    'type': 'overlap-event',
+                    'time': evt.time,
+                    'event': event,
+                    'previous': prev.ref,
+                    'msg': 'Event %s overlap %s on time %s' % (event, prev.ref, evt.time),
+                })
                 return
             elif isinstance(prev, TimeTable.Reference):
                 if not prev.flex:
-                    self.errors.append('Event %s overlap %s on time %s' % (event, prev.evt.ref, evt.time))
+                    self.errors.append({
+                        'type': 'overlap-reference',
+                        'time': evt.time,
+                        'event': event,
+                        'previous': prev.evt.ref,
+                        'msg': 'Event %s overlap %s on time %s' % (event, prev.evt.ref, evt.time),
+                    })
                 evt0 = prev.evt
                 columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
                 evt0.columns = columns

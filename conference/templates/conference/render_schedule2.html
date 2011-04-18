@@ -1,10 +1,19 @@
 {% if request.user.is_staff and timetable.errors %}
-<h2>TimeTable errors</h2>
-<ul>
-    {% for e in timetable.errors %}
-    <li>{{ e }}</li>
-    {% endfor %}
-</ul>
+<div class="error-notice">
+    <h2>TimeTable errors</h2>
+    <ul>
+        {% for e in timetable.errors %}
+        <li style="margin-bottom: 10px;">
+            {% if e.type == "overlap-event" %}
+            Error at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overwrite <b>{{ e.previous.get_description }}</b>.
+            {% endif %}
+            {% if e.type == "overlap-reference" %}
+            Warning at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overwrite <b>{{ e.previous.get_description }}</b>.
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endif %}
 <table class="schedule tracks-{{ timetable.rows|length }}">
     <caption>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</caption>
