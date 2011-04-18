@@ -632,7 +632,7 @@ class Event(models.Model):
     talk = models.ForeignKey(Talk, blank = True, null = True)
     custom = models.TextField(blank = True)
     start_time = models.TimeField()
-    track = TagField(help_text = 'Inserire uno o più nomi di track, oppure "keynote"')
+    track = TagField(help_text = 'One or more track names. Also accept "break" or "special" for coffee/lunch break or special events.')
     sponsor = models.ForeignKey(Sponsor, blank = True, null = True)
 
     class Meta:
