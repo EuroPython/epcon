@@ -39,14 +39,14 @@
                     <img src="/static/p5/i/icon-star.png" alt="Star this" width="16" height="16" />
                 </div>  
     -->             
-                    <h3><a href="{% url conference-talk slug=talk.slug">{{ talk.title }}</a></h3>
+                    <h3 data-talk="{{ talk.id }}"><a href="{% url conference-talk slug=talk.slug %}">{{ talk.title }}</a></h3>
                     of 
                     {% for s in talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
                     {% endfor %}
                     {% endwith %}
                 {% else %}
-                    <div>{{ col.data.ref.custom|safe }}</div>
+                    <div class="custom-event">{{ col.data.ref.custom|safe }}</div>
                 {% endif %}
             {% endif %}
             </td>
