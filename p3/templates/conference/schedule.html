@@ -3,7 +3,20 @@
 
 {% block MAIN_CONTENT %}
 <div id="schedule-wrapper" class="page clearfix">
-    {% render_schedule2 schedule %}
+    <div class="cms">
+        <h2>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
+        {% if schedule.description %}
+        <p>{{ schedule.description|safe }}</p>
+        {% endif %}
+    </div>
+    {% render_schedule2 schedule "" "13:00" %}
+    <div class="cms">
+        <h2>Afternoon &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
+        {% if schedule.description %}
+        <p>{{ schedule.description|safe }}</p>
+        {% endif %}
+    </div>
+    {% render_schedule2 schedule "14:00" "" %}
 </div>
 {% if request.user.is_staff %}
 <div class="overlay" id="schedule-form-box">
@@ -21,13 +34,16 @@
 <script type="text/javascript">
     (function() {
         function initSchedule() {
-            $('.schedule td.event').append($('<a href="#" class="schedule-edit">Y</a>'));
+            $('.schedule td.event').append($('<div><a href="#" class="schedule-edit">Y</a></div>'));
             $('.schedule .schedule-edit').click(function(e) {
                 e.preventDefault();
                 var cell = $(e.target).parents('td');
                 var track = cell.parents('tr').attr('data-track');
                 var time = cell.attr('data-time');
-                editEvent(track, time);
+                var talk = $('h3', cell).attr('data-talk');
+                if(!talk)
+                    talk = $('div.custom-event', cell).text();
+                editEvent(track, time, talk);
             });
             $('.schedule thead .hhmm').click(function(e) {
                 var td = $(e.currentTarget);
@@ -50,11 +66,22 @@
             });
             return false;
         });
-        function editEvent(track, time) {
-            console.log('edit', track, time);
+        function editEvent(track, time, talk) {
             var editor = $('#schedule-form-box');
             $('input[name=start_time]', editor).val(time);
             $('input[name=track]', editor).val(track);
+            if(talk) {
+                var cbox = $('select[name=talk]');
+                var custom = $('textarea[name=custom]');
+                if($('option[value=' + talk + ']', cbox).length > 0) {
+                    cbox.val(talk);
+                    custom.val('');
+                }
+                else {
+                    cbox.val('');
+                    custom.val(talk);
+                }
+            }
             editor.overlay({ load: true });
             /*
              * jQueryTools sta vincendo il premio come software più bacato: le
