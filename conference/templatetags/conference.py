@@ -502,13 +502,31 @@ def render_schedule(context, schedule):
     }
 
 @register.inclusion_tag('conference/render_schedule2.html', takes_context=True)
-def render_schedule2(context, schedule):
+def render_schedule2(context, schedule, start=None, end=None):
     from conference.utils import TimeTable
     from tagging.utils import parse_tag_input
-    from datetime import time
+    from datetime import datetime, time
+
+    if start:
+        start = datetime.strptime(start, '%H:%M').time()
+    else:
+        start = None
+
+    if end:
+        end = datetime.strptime(end, '%H:%M').time()
+    else:
+        end = None
 
     tracks = list(x for x in schedule.track_set.all())
-    tt = TimeTable(time_spans=(time(8,00), time(10,30)), rows=tracks)
+    events = list(models.Event.objects.filter(schedule=schedule))
+    ts = [time(8,00), time(18,30)]
+    if events:
+        if events[0].start_time < ts[0]:
+            ts[0] = events[0].start_time
+        if events[-1].start_time > ts[1]:
+            ts[1] = events[-1].start_time
+
+    tt = TimeTable(time_spans=ts, rows=tracks)
     for e in models.Event.objects.filter(schedule=schedule):
         duration = e.talk.duration if e.talk else None
         event_traks = set(parse_tag_input(e.track))
@@ -516,10 +534,13 @@ def render_schedule2(context, schedule):
             rows = list(tracks)
         else:
             rows = [ x for x in tracks if x.track in event_traks ]
-        print 'x', e.custom, e.track, duration, e.talk
         if not rows:
             continue
         tt.setEvent(e.start_time, e, duration, rows=rows)
+
+    if start or end:
+        tt = tt.slice(start, end)
+
     ctx = Context(context)
     ctx.update({
         'schedule': schedule,

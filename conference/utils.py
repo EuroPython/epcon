@@ -126,6 +126,21 @@ class TimeTable(object):
         self._data = {}
         self.errors = []
 
+    def slice(self, start=None, end=None):
+        t2 = TimeTable(
+            (start if start else self.start, end if end else self.end),
+            self.rows,
+            self.slot.seconds/60,
+        )
+        t2._data = dict(self._data)
+        t2.errors = list(self.errors)
+
+        for key in list(t2._data):
+            if (start and key[0] < start) or (end and key[0] >= end):
+                del t2._data[key]
+
+        return t2
+
     def sumTime(self, t, td):
         return ((datetime.combine(date.today(), t)) + td).time()
 
