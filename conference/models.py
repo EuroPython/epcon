@@ -644,6 +644,12 @@ class Event(models.Model):
         else:
             return self.custom
 
+    def get_description(self):
+        if self.talk:
+            return self.talk.title
+        else:
+            return self.custom
+
     def get_all_tracks_names(self):
         from tagging.utils import parse_tag_input
         return parse_tag_input(self.track)
