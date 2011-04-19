@@ -1,0 +1,15 @@
+{% load conference %}
+<div class="cms">
+    <h2>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
+    {% if schedule.description %}
+    <p>{{ schedule.description|safe }}</p>
+    {% endif %}
+</div>
+{% render_schedule2 schedule "" "13:00" %}
+<div class="cms">
+    <h2>Afternoon &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
+    {% if schedule.description %}
+    <p>{{ schedule.description|safe }}</p>
+    {% endif %}
+</div>
+{% render_schedule2 schedule "14:00" "" %}

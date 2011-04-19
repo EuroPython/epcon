@@ -1,0 +1,146 @@
+{% extends "p3/base.html" %}
+{% load conference assopy_tags %}
+
+{% if request.user.is_staff %}
+{% block EXTRA_HEAD %}
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.event.drag-2.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.event.drop-2.0.min.js"></script>
+{% endblock %}
+{% endif %}
+
+{% block MAIN_CONTENT %}
+<div class="page clearfix">
+    {% for schedule in schedules %}
+    <div class="schedule-wrapper" data-slug="{{ schedule.slug }}" data-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}">
+        <div class="cms">
+            <h2>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
+            {% if schedule.description %}
+            <p>{{ schedule.description|safe }}</p>
+            {% endif %}
+        </div>
+        {% render_schedule2 schedule "" "13:00" %}
+        <div class="cms">
+            <h2>Afternoon &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
+            {% if schedule.description %}
+            <p>{{ schedule.description|safe }}</p>
+            {% endif %}
+        </div>
+        {% render_schedule2 schedule "14:00" "" %}
+    </div>
+    {% endfor %}
+</div>
+{% if request.user.is_staff %}
+<div class="overlay" id="schedule-form-box">
+    <form action="" method="post">
+        <fieldset>
+        {% for f in form %}
+        {{ f|field }}
+        {% endfor %}
+        </fieldset>
+        <fieldset class="border">
+            <button type="submit">Save</button>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    (function() {
+        function initSchedule(target) {
+            if(!target)
+                target = $(document.body);
+            $('.schedule td.event', target).append($('<div><a href="#" class="schedule-edit">Y</a></div>'));
+            $('.schedule .schedule-edit', target).click(function(e) {
+                e.preventDefault();
+                var cell = $(e.target).parents('td');
+                var track = cell.parents('tr').attr('data-track');
+                var time = cell.attr('data-time');
+                var talk = $('h3', cell).attr('data-talk');
+                var schedule = cell.parents('.schedule-wrapper').attr('data-slug');
+                if(!talk)
+                    talk = $('div.custom-event', cell).text();
+                editEvent(schedule, track, time, talk);
+            });
+            $('.schedule thead .hhmm', target).click(function(e) {
+                var cell = $(e.currentTarget);
+                var time = cell.text(); 
+                var schedule = cell.parents('.schedule-wrapper').attr('data-slug');
+                editEvent(schedule, '', time);
+            });
+            $('td.event.not-empty', target)
+                .drag("start",function(){
+                    return $('<div style="position: absolute; background: red">TALK</div>')
+                        .css("opacity", .75 )
+                        .appendTo(document.body);
+                })
+                .drag(function( ev, dd ){
+                    $( dd.proxy).css({
+                        top: dd.offsetY,
+                        left: dd.offsetX
+                    });
+                })
+                .drag("end",function( ev, dd ){
+                    $( this ).animate({
+                        top: dd.offsetY,
+                        left: dd.offsetX
+                    }, 420 );
+                    $( dd.proxy ).remove();
+                });
+            $('td.event.empty', target)
+                .drop(function(e, dd){
+                    var drop = $(this);
+                    var drag = $(dd.drag);
+                    var dropTime = drop.attr('data-time');
+                    var dropTrack = drop.parents('tr').attr('data-track');
+                    var dragTime = drag.attr('data-time');
+                    var dragTrack = drag.parents('tr').attr('data-track');
+                    console.log('drop to', dropTime, dropTrack, 'from', dragTime, dragTrack);
+                });
+        }
+        $('#schedule-form-box form').submit(function() {
+            var form = $(this);
+            var wrapper = $('.schedule-wrapper[data-slug=' + form.attr('data-slug') + ']');
+            form.attr('action', wrapper.attr('data-url'));
+            form.ajaxSubmit({
+                success: function(data, status, jqXHR) {
+                    $('#schedule-form-box').overlay().close();
+                    wrapper.html(data);
+                    initSchedule(wrapper);
+                }
+            });
+            return false;
+        });
+        function editEvent(schedule, track, time, talk) {
+            var editor = $('#schedule-form-box');
+            $('form', editor).attr('data-slug', schedule);
+            $('input[name=start_time]', editor).val(time);
+            $('input[name=track]', editor).val(track);
+            if(talk) {
+                var cbox = $('select[name=talk]');
+                var custom = $('textarea[name=custom]');
+                if($('option[value=' + talk + ']', cbox).length > 0) {
+                    cbox.val(talk);
+                    custom.val('');
+                }
+                else {
+                    cbox.val('');
+                    custom.val(talk);
+                }
+            }
+            editor.overlay({ load: true });
+            /*
+             * jQueryTools sta vincendo il premio come software più bacato: le
+             * due righe che seguono servono a mostrare l'overlay dopo la prima
+             * volta.
+             * http://flowplayer.org/tools/forum/40/40917
+             */
+            editor.data("overlay").load();
+            editor.css('style', 'block');
+        };
+        initSchedule();
+    })();
+</script>
+{% endif %}
+{% endblock %}
+
+{% block SPONSORS %}
+<!-- Omit sponsors col -->
+{% endblock %}

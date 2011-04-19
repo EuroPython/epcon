@@ -16,7 +16,7 @@ import models
 from assopy.forms import BillingData
 from assopy.models import Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, HttpResponseRedirectSeeOther
-from conference.models import Fare, Ticket
+from conference.models import Fare, Ticket, Schedule
 from email_template import utils
 
 import logging
@@ -304,3 +304,11 @@ def billing(request):
         'form': form,
     }
 
+@render_to('p3/schedule.html')
+def schedule(request):
+    from conference.forms import EventForm
+    schedules = Schedule.objects.filter(conference=settings.CONFERENCE_CONFERENCE)
+    return {
+        'schedules': schedules,
+        'form': EventForm(),
+    }
