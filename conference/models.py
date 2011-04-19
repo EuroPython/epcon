@@ -431,7 +431,7 @@ class Talk(models.Model, UrlMixin):
         ordering = ['title']
 
     def __unicode__(self):
-        return '(%s) %s [%s]' % (self.duration, self.title, self.conference)
+        return '(%s) %s [%s][%s]' % (self.duration, self.title, self.conference, self.language)
 
     @models.permalink
     def get_absolute_url(self):
