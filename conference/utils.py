@@ -211,11 +211,12 @@ class TimeTable(object):
                     })
                 evt0 = prev.evt
                 columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
-                for e in self.iterOnRow(evt.row, start=evt.time):
-                    if isinstance(e, TimeTable.Reference) and e.evt is evt0:
-                        del self._data[(e.time, e.row)]
-                    else:
-                        break
+                for row in self.rows:
+                    for e in self.iterOnRow(row, start=evt.time):
+                        if isinstance(e, TimeTable.Reference) and e.evt is evt0:
+                            del self._data[(e.time, e.row)]
+                        else:
+                            break
                 evt0.columns = columns
         self._data[(evt.time, evt.row)] = evt
 
