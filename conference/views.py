@@ -404,7 +404,7 @@ def schedule(request, conference, slug):
                 'conference/schedule_body.html', { 'schedule': sch },
                 context_instance = RequestContext(request),
             )
-        form = EventForm()
+        form = EventForm(conference=schedule.conference)
     return {
         'schedule': sch,
         'slug': slug,
