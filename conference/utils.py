@@ -21,16 +21,17 @@ def send_email(force=False, *args, **kwargs):
         kwargs['from_email'] = dsettings.DEFAULT_FROM_EMAIL
     real_send_mail(*args, **kwargs)
 
-def ranking_of_talks(talks, missing_vote=5):
+def _input_for_ranking_of_talks(talks, missing_vote=5):
     import conference
     vengine = os.path.join(os.path.dirname(conference.__file__), 'utils', 'voteengine-0.99', 'voteengine.py')
-    talks_map = dict((t.id, t) for t in talks)
-    cands = ' '.join(map(str, talks_map.keys()))
+    cands = ' '.join(map(str, (t.id for t in talks)))
     tie = ' '.join(str(t.id) for t in sorted(talks, key=lambda x: x.created))
     vinput = [
         '-m schulze',
         '-cands %s -tie %s' % (cands, tie),
     ]
+    for t in talks:
+        vinput.append('# %s - %s' % (t.id, t.title.encode('utf-8')))
 
     votes = models.VotoTalk.objects.filter(talk__in=talks).order_by('user', '-vote')
     users = defaultdict(lambda: defaultdict(list)) #dict((t.id, 5) for t in talks))
@@ -48,8 +49,16 @@ def ranking_of_talks(talks, missing_vote=5):
             input_line.append('='.join(map(str, talks)))
         vinput.append('>'.join(input_line))
 
+    return '\n'.join(vinput)
+
+def ranking_of_talks(talks, missing_vote=5):
+    import conference
+    vengine = os.path.join(os.path.dirname(conference.__file__), 'utils', 'voteengine-0.99', 'voteengine.py')
+    talks_map = dict((t.id, t) for t in talks)
+    in_ = _input_for_ranking_of_talks(talks, missing_vote=missing_vote)
+
     pipe = subprocess.Popen([ vengine ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
-    out, err = pipe.communicate('\n'.join(vinput))
+    out, err = pipe.communicate(in_)
 
     return [ talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2]) ]
 
