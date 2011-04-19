@@ -614,6 +614,9 @@ class Schedule(models.Model):
     date = models.DateField()
     description = models.TextField(blank=True)
 
+    class Meta:
+        ordering = ['date']
+
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length = 20)
