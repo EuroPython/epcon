@@ -30,7 +30,7 @@
             <td>{{ row }}</td>
             {% for col in columns %}
             {% if not col.data or col.data.ref %}
-            <td class="event {% cycle 'alt' '' %}{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}" data-time="{{ col.time|time:"H:i" }}"{% if col.data.ref %} colspan="{{ col.data.columns }}" rowspan="{{ col.data.rows }}"{% endif %}>
+            <td class="event{% if col.data %} not-empty{% else %} empty{% endif %} {% cycle 'alt' '' %}{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}" data-time="{{ col.time|time:"H:i" }}"{% if col.data.ref %} colspan="{{ col.data.columns }}" rowspan="{{ col.data.rows }}"{% endif %}>
             {% if col.data %}
                 {% if col.data.ref.talk %}
                     {% with col.data.ref.talk as talk %}
