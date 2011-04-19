@@ -851,29 +851,61 @@ def render_hotels(hotels):
     }
 
 @register.filter
-def embed_video(value, args=None):
+def embed_video(value, args=""):
     """
-    {{ talk|embed_video:"width,height" }}
+    {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
     """
-    tmap = {
-        'viddler_oembed': ('oEmbed', 'http://lab.viddler.com/services/oembed/'),
+    args = dict( map(lambda _: _.strip(), x.split('=')) for x in args.split(',') if '=' in x )
+    providers = {
+        'viddler': ('oEmbed', 'http://lab.viddler.com/services/oembed/'),
+        'youtube': ('oEmbed', 'http://www.youtube.com/oembed'),
         'download': ('download', None),
     }
-    if args:
-        w, h = map(int, args.split(','))
+    source = None
+    video_slug = None
+    if isinstance(value, models.Talk):
+        if value.video_type == 'download':
+            video_url = value.video_file
+            video_slug = value.slug
+            source = 'download'
+        else:
+            video_url = value.video_url
     else:
-        w = h = None
-    vtype, burl = tmap.get(value.video_type, tmap['download'])
-    if vtype == 'oEmbed':
+        video_url = value
+    if source is None:
+        try:
+            source = args['source']
+        except KeyError:
+            if 'viddler' in video_url:
+                source = 'viddler'
+            elif 'youtube' in video_url:
+                source = 'youtube'
+            else:
+                source = 'download'
+    try:
+        vtype = providers[source]
+    except KeyError:
+        if source.startswith('http'):
+            vtype = ('oEmbed', source)
+        else:
+            raise
+
+    w = h = None
+    if 'width' in args:
+        w = int(args['width'])
+    if 'height' in args:
+        h = int(args['height'])
+
+    if vtype[0] == 'oEmbed':
         http = httplib2.Http()
-        url = burl + '?url=' + value.video_url + '&format=json'
+        url = vtype[1] + '?url=' + video_url + '&format=json'
         if w and h:
             url += '&width=%s&height=%s&maxwidth=%s&maxheight=%s' % (w, h, w, h)
         try:
             response, content = http.request(url)
             data = simplejson.loads(content)
         except:
-            # Qualsiasi cosa succeda, che non riesca a connettermi a burl o che
+            # Qualsiasi cosa succeda, che non riesca a connettermi a vtype[1] o che
             # non possa decodificare content preferisco non mostrare il video
             # che causare un error 500.
             # Per la cronaca .loads solleva TypeError se content non è né un
@@ -891,15 +923,15 @@ def embed_video(value, args=None):
         #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
     else:
         src = fpath = None
-        if value.video_file or settings.VIDEO_DOWNLOAD_FALLBACK:
-            if value.video_file:
-                src = settings.STUFF_URL + 'conference/videos/' + value.video_file.name
-                fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', value.video_file.name)
+        if video_url or settings.VIDEO_DOWNLOAD_FALLBACK:
+            if video_url:
+                src = settings.STUFF_URL + 'conference/videos/' + video_url.name
+                fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', video_url.name)
             else:
                 for ext in ('.avi', '.mp4'):
-                    fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', value.slug + ext)
+                    fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', video_slug + ext)
                     if os.path.exists(fpath):
-                        src = settings.STUFF_URL + 'conference/videos/' + value.slug + ext
+                        src = settings.STUFF_URL + 'conference/videos/' + video_slug + ext
                         break
         if not src:
             html = ''
