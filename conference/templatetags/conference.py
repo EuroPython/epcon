@@ -872,6 +872,9 @@ def embed_video(value, args=""):
             video_url = value.video_url
     else:
         video_url = value
+    if not video_url:
+        return ''
+
     if source is None:
         try:
             source = args['source']
@@ -925,13 +928,13 @@ def embed_video(value, args=""):
         src = fpath = None
         if video_url or settings.VIDEO_DOWNLOAD_FALLBACK:
             if video_url:
-                src = settings.STUFF_URL + 'conference/videos/' + video_url.name
-                fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', video_url.name)
-            else:
+                src = dsettings.MEDIA_URL + 'conference/videos/' + video_url.name
+                fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
+            elif video_slug:
                 for ext in ('.avi', '.mp4'):
-                    fpath = os.path.join(settings.STUFF_DIR, 'conference/videos', video_slug + ext)
+                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_slug + ext)
                     if os.path.exists(fpath):
-                        src = settings.STUFF_URL + 'conference/videos/' + video_slug + ext
+                        src = dsettings.MEDIA_URL + 'conference/videos/' + video_slug + ext
                         break
         if not src:
             html = ''
