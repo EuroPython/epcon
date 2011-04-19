@@ -90,9 +90,18 @@
                     var drag = $(dd.drag);
                     var dropTime = drop.attr('data-time');
                     var dropTrack = drop.parents('tr').attr('data-track');
+                    var dropSchedule = drop.parents('.schedule-wrapper').attr('data-slug');
                     var dragTime = drag.attr('data-time');
                     var dragTrack = drag.parents('tr').attr('data-track');
-                    console.log('drop to', dropTime, dropTrack, 'from', dragTime, dragTrack);
+                    var dragSchedule = drop.parents('.schedule-wrapper').attr('data-slug');
+                    var evt = $('.custom-event', drag);
+                    if(evt.length == 0) {
+                        evt = $('h3', drag).attr('data-talk');
+                    }
+                    else {
+                        evt = evt.html();
+                    }
+                    moveEvent(dragSchedule, dragTime, dragTrack, dropSchedule, dropTime, dropTrack, evt);
                 });
         }
         $('#schedule-form-box form').submit(function() {
@@ -108,23 +117,65 @@
             });
             return false;
         });
+        function _setForm(schedule, time, track, evt) {
+            var form = $('#schedule-form-box form');
+            var wrapper = $('.schedule-wrapper[data-slug=' + schedule + ']');
+            form.attr('action', wrapper.attr('data-url'));
+            $('input[name=start_time]', form).val(time);
+            $('input[name=track]', form).val(track);
+
+            var is_talk = false;
+            $('select[name=talk] option').each(function() {
+                if(this.value == evt) {
+                    is_talk = true;
+                }
+            });
+
+            if(is_talk) {
+                $('select[name=talk]', form).val(evt);
+                $('textarea[name=custom]', form).val('');
+            }
+            else {
+                $('select[name=talk]', form).val('');
+                $('textarea[name=custom]', form).val(evt);
+            }
+            return form;
+        }
+        function moveEvent(from_schedule, from_time, from_track, to_schedule, to_time, to_track, evt) {
+            var wrapper = $('.schedule-wrapper[data-slug=' + from_schedule + ']');
+            var form = _setForm(from_schedule, from_time, from_track, '');
+            form.ajaxSubmit({
+                success: function(data, status, jqXHR) {
+                    wrapper.html(data);
+                    initSchedule(wrapper);
+                }
+            });
+            var wrapper = $('.schedule-wrapper[data-slug=' + to_schedule + ']');
+            var form = _setForm(to_schedule, to_time, to_track, evt);
+            form.ajaxSubmit({
+                success: function(data, status, jqXHR) {
+                    wrapper.html(data);
+                    initSchedule(wrapper);
+                }
+            });
+        }
         function editEvent(schedule, track, time, talk) {
             var editor = $('#schedule-form-box');
             $('form', editor).attr('data-slug', schedule);
             $('input[name=start_time]', editor).val(time);
             $('input[name=track]', editor).val(track);
-            if(talk) {
-                var cbox = $('select[name=talk]');
-                var custom = $('textarea[name=custom]');
-                if($('option[value=' + talk + ']', cbox).length > 0) {
-                    cbox.val(talk);
-                    custom.val('');
-                }
-                else {
-                    cbox.val('');
-                    custom.val(talk);
-                }
+
+            var cbox = $('select[name=talk]');
+            var custom = $('textarea[name=custom]');
+            cbox.val('');
+            custom.val('');
+            if($('option[value=' + talk + ']', cbox).length > 0) {
+                cbox.val(talk);
             }
+            else {
+                custom.val(talk);
+            }
+
             editor.overlay({ load: true });
             /*
              * jQueryTools sta vincendo il premio come software più bacato: le
