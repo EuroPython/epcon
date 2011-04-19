@@ -394,11 +394,16 @@ def schedule(request, conference, slug):
                 evt.schedule = sch
                 evt.save()
             if request.is_ajax():
-                return http.HttpResponse('')
+                return render_to_response(
+                    'conference/schedule_body.html', { 'schedule': sch },
+                    context_instance = RequestContext(request),
+                )
     else:
         if request.is_ajax():
-            tpl = Template('{% load conference %}{% render_schedule2 schedule %}')
-            return http.HttpResponse(tpl.render(RequestContext(request, {'schedule': sch})))
+            return render_to_response(
+                'conference/schedule_body.html', { 'schedule': sch },
+                context_instance = RequestContext(request),
+            )
         form = EventForm()
     return {
         'schedule': sch,
