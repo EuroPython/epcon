@@ -379,7 +379,7 @@ def schedule(request, conference, slug):
             evt.schedule = sch
             evt.save()
     else:
-        form = EventForm(schedule=schedule)
+        form = EventForm(schedule=sch)
     if request.is_ajax():
         return render_to_response(
             'conference/schedule_body.html', { 'schedule': sch },
