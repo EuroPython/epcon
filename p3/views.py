@@ -308,7 +308,7 @@ def billing(request):
 def schedule(request):
     from conference.forms import EventForm
     schedules = Schedule.objects.filter(conference=settings.CONFERENCE_CONFERENCE)
-    form = EventForm(conference=settings.CONFERENCE_CONFERENCE)
+    form = EventForm(schedule=schedules[0])
     return {
         'schedules': schedules,
         'form': form,
