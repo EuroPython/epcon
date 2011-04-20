@@ -11,7 +11,7 @@
 {% block MAIN_CONTENT %}
 <div class="page clearfix">
     {% for schedule in schedules %}
-    <div class="schedule-wrapper" data-slug="{{ schedule.slug }}" data-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}">
+    <div class="schedule-wrapper" data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}">
         <div class="cms">
             <h2>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
             {% if schedule.description %}
@@ -44,26 +44,50 @@
 </div>
 <script type="text/javascript">
     (function() {
+        function _setForm(url, time, track, evt) {
+            var form = $('#schedule-form-box form');
+            form.attr('action', url)
+            $('input[name=start_time]', form).val(time);
+            $('input[name=track]', form).val(track);
+
+            var is_talk = false;
+            $('select[name=talk] option').each(function() {
+                if(this.value == evt) {
+                    is_talk = true;
+                }
+            });
+
+            if(is_talk) {
+                $('select[name=talk]', form).val(evt);
+                $('textarea[name=custom]', form).val('');
+            }
+            else {
+                $('select[name=talk]', form).val('');
+                $('textarea[name=custom]', form).val(evt);
+            }
+            return form;
+        }
         function initSchedule(target) {
             if(!target)
                 target = $(document.body);
-            $('.schedule td.event', target).append($('<div><a href="#" class="schedule-edit">Y</a></div>'));
+            $('.schedule td.event', target).append($('<div><a href="#" class="schedule-edit"><img src="{{ STATIC_URL }}p5/i/edit-icon.png" /></a></div>'));
             $('.schedule .schedule-edit', target).click(function(e) {
                 e.preventDefault();
                 var cell = $(e.target).parents('td');
+                var event_url = cell.attr('data-event-url');
+                var schedule = cell.parents('.schedule-wrapper');
                 var track = cell.parents('tr').attr('data-track');
                 var time = cell.attr('data-time');
-                var talk = $('h3', cell).attr('data-talk');
-                var schedule = cell.parents('.schedule-wrapper').attr('data-slug');
-                if(!talk)
-                    talk = $('div.custom-event', cell).text();
-                editEvent(schedule, track, time, talk);
+                var evt = $('h3', cell).attr('data-talk');
+                if(!evt)
+                    evt = $('div.custom-event', cell).text();
+                editEvent(schedule, event_url, track, time, evt, true);
             });
             $('.schedule thead .hhmm', target).click(function(e) {
                 var cell = $(e.currentTarget);
                 var time = cell.text(); 
-                var schedule = cell.parents('.schedule-wrapper').attr('data-slug');
-                editEvent(schedule, '', time);
+                var schedule_url = cell.parents('.schedule-wrapper').attr('data-schedule-url');
+                editEvent(schedule_url, '', time, '', false);
             });
             $('td.event.not-empty', target)
                 .drag("start",function(){
@@ -104,43 +128,6 @@
                     moveEvent(dragSchedule, dragTime, dragTrack, dropSchedule, dropTime, dropTrack, evt);
                 });
         }
-        $('#schedule-form-box form').submit(function() {
-            var form = $(this);
-            var wrapper = $('.schedule-wrapper[data-slug=' + form.attr('data-slug') + ']');
-            form.attr('action', wrapper.attr('data-url'));
-            form.ajaxSubmit({
-                success: function(data, status, jqXHR) {
-                    $('#schedule-form-box').overlay().close();
-                    wrapper.html(data);
-                    initSchedule(wrapper);
-                }
-            });
-            return false;
-        });
-        function _setForm(schedule, time, track, evt) {
-            var form = $('#schedule-form-box form');
-            var wrapper = $('.schedule-wrapper[data-slug=' + schedule + ']');
-            form.attr('action', wrapper.attr('data-url'));
-            $('input[name=start_time]', form).val(time);
-            $('input[name=track]', form).val(track);
-
-            var is_talk = false;
-            $('select[name=talk] option').each(function() {
-                if(this.value == evt) {
-                    is_talk = true;
-                }
-            });
-
-            if(is_talk) {
-                $('select[name=talk]', form).val(evt);
-                $('textarea[name=custom]', form).val('');
-            }
-            else {
-                $('select[name=talk]', form).val('');
-                $('textarea[name=custom]', form).val(evt);
-            }
-            return form;
-        }
         function moveEvent(from_schedule, from_time, from_track, to_schedule, to_time, to_track, evt) {
             var wrapper = $('.schedule-wrapper[data-slug=' + from_schedule + ']');
             var form = _setForm(from_schedule, from_time, from_track, '');
@@ -159,23 +146,20 @@
                 }
             });
         }
-        function editEvent(schedule, track, time, talk) {
+        function editEvent(schedule, event_url, track, time, evt, exists) {
+            var url = event_url || schedule.attr('data-schedule-url');
             var editor = $('#schedule-form-box');
-            $('form', editor).attr('data-slug', schedule);
-            $('input[name=start_time]', editor).val(time);
-            $('input[name=track]', editor).val(track);
-
-            var cbox = $('select[name=talk]');
-            var custom = $('textarea[name=custom]');
-            cbox.val('');
-            custom.val('');
-            if($('option[value=' + talk + ']', cbox).length > 0) {
-                cbox.val(talk);
-            }
-            else {
-                custom.val(talk);
-            }
-
+            var form = _setForm(url, time, track, evt);
+            form.one('submit', function() {
+                form.ajaxSubmit({
+                    success: function(data, status, jqXHR) {
+                        editor.overlay().close();
+                        schedule.html(data);
+                        initSchedule(schedule);
+                    }
+                });
+                return false;
+            });
             editor.overlay({ load: true });
             /*
              * jQueryTools sta vincendo il premio come software più bacato: le
