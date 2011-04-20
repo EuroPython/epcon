@@ -38,12 +38,15 @@ table.schedule caption {
 /*     position: relative; */
 }
 
-.schedule td.alt {
+.schedule td:nth-child(even) {
     background: #fcfad9;
 }
 
-.schedule td.highlight {
+.schedule td.highlighted {
     background: #d7f5fa;
+}
+.schedule td.shadowed {
+    opacity: .7;
 }
 
 
@@ -128,4 +131,29 @@ table.schedule caption {
 }
 
 
+
+#schedule-navigator {
+    position: fixed;
+    left: 10px;
+    top: 33%;
+    background: white;
+    padding: 10px;
+    border: 1px solid #7D6F60;
+}
+
+.talk-interest button {
+    padding-left: 18px;
+}
+.talk-interest button.up {
+    background: #66b0bd url(../i/arrow-up-off.png) no-repeat left center;
+}
+.talk-interest button.up.active {
+    background: #66b0bd url(../i/arrow-up.png) no-repeat left center;
+}
+.talk-interest button.down {
+    background: #66b0bd url(../i/arrow-down-off.png) no-repeat left center;
+}
+.talk-interest button.down.active {
+    background: #66b0bd url(../i/arrow-down.png) no-repeat left center;
+}
 

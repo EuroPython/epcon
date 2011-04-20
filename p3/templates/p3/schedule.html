@@ -9,9 +9,40 @@
 {% endif %}
 
 {% block MAIN_CONTENT %}
+<nav id="schedule-navigator">
+    <h3>Filter by</h3>
+    <form>
+        <fieldset>
+            <div class="field">
+                <label>Keyword<label>
+                <input />
+            </div>
+            <div class="field">
+                <label>Level<label>
+                <select>
+                    <option>Beginner</option>
+                </select>
+            </div>
+            <h4>Type</h4>
+            <div class="field">
+                <label>Type<label>
+                <input type="checkbox">
+            </div>
+        </fieldset>
+    </form>
+    <h3>Jump to</h3>
+    <ul>
+        {% for schedule in schedules %}
+        <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l" }}</a></li>
+        {% endfor %}
+    </ul>
+</nav>
 <div class="page clearfix">
     {% for schedule in schedules %}
-    <div class="schedule-wrapper" data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}" data-schedule-conference="{{ schedule.conference }}" data-schedule-slug="{{ schedule.slug }}">
+    <div id="{{ schedule.slug }}" class="schedule-wrapper"
+        data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
+        data-schedule-conference="{{ schedule.conference }}"
+        data-schedule-slug="{{ schedule.slug }}">
         <div class="cms">
             <h2>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
             {% if schedule.description %}
