@@ -56,7 +56,7 @@ def user_local2remote(user):
     # idem per phone che è di 20 caratteri
     #data['phone'] = user.phone
     if user.card_name:
-        data['card_name'] = user.card_name
+        data['card_name'] = user.card_name[:80]
     else:
         data['card_name'] = '%s %s' % (user.user.first_name, user.user.last_name)
     data['is_company'] = user.account_type == 'c'
