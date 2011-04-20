@@ -38,7 +38,8 @@
         {% endfor %}
         </fieldset>
         <fieldset class="border">
-            <button type="submit">Save</button>
+            <button type="submit" name="save">Save</button>
+            <button type="submit" name="delete">Delete</button>
         </fieldset>
     </form>
 </div>
@@ -86,8 +87,8 @@
             $('.schedule thead .hhmm', target).click(function(e) {
                 var cell = $(e.currentTarget);
                 var time = cell.text(); 
-                var schedule_url = cell.parents('.schedule-wrapper').attr('data-schedule-url');
-                editEvent(schedule_url, '', time, '', false);
+                var schedule = cell.parents('.schedule-wrapper');
+                editEvent(schedule, schedule.attr('data-schedule-url'), '', time, '', false);
             });
             $('td.event.not-empty', target)
                 .drag("start",function(){
@@ -146,16 +147,33 @@
                 }
             });
         }
+        $('#schedule-form-box button[name=delete]').click(function(e) {
+            var form = $(this).parents('form');
+            form.attr('method', 'DELETE');
+        });
+        $('#schedule-form-box button[name=save]').click(function(e) {
+            var form = $(this).parents('form');
+            form.attr('method', 'POST');
+        });
         function editEvent(schedule, event_url, track, time, evt, exists) {
             var url = event_url || schedule.attr('data-schedule-url');
             var editor = $('#schedule-form-box');
+            if(exists)
+                $('button[name=delete]', editor).show();
+            else
+                $('button[name=delete]', editor).hide();
             var form = _setForm(url, time, track, evt);
             form.one('submit', function() {
                 form.ajaxSubmit({
                     success: function(data, status, jqXHR) {
                         editor.overlay().close();
-                        schedule.html(data);
-                        initSchedule(schedule);
+                        $.ajax({
+                            url: schedule.attr('data-schedule-url'),
+                            success: function(data) {
+                                schedule.html(data);
+                                initSchedule(schedule);
+                            }
+                        });
                     }
                 });
                 return false;
