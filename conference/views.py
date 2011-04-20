@@ -425,6 +425,30 @@ def schedule_event(request, conference, slug, eid):
         'track': evt.track,
     }
 
+@login_required
+@json
+def schedule_event_interest(request, conference, slug, eid):
+    evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
+    if request.method == 'POST':
+        val = int(request.POST['interest'])
+        try:
+            ei = evt.eventinterest_set.get(user=request.user)
+        except models.EventInterest.DoesNotExist:
+            ei = None
+        if val == 0 and ei:
+            ei.delete()
+        elif val != 0:
+            if not ei:
+                ei = models.EventInterest(event=evt, user=request.user)
+            ei.interest = val
+            ei.save()
+    else:
+        try:
+            val = evt.eventinterest_set.get(user=request.user).interest
+        except models.EventInterest.DoesNotExist:
+            val = 0
+    return { 'interest': val }
+
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
     return render_to_response(
