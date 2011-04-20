@@ -276,13 +276,13 @@ class EventForm(forms.ModelForm):
     def clean(self):
         data = super(EventForm, self).clean()
         if not data['talk'] and not data['custom']:
-            raise forms.ValidationError('set the talk or teh custom text')
+            raise forms.ValidationError('set the talk or the custom text')
 
         tracks = set(parse_tag_input(data['track']))
         if 'special' in tracks or 'break' in tracks:
             tracks |= set(t.track for t in self.schedule.track_set.all())
         for t in tracks:
-            conflicts = set(TaggedItem.objects.get_by_model(models.Event.objects.filter(start_time=data['start_time']), t))
+            conflicts = set(TaggedItem.objects.get_by_model(models.Event.objects.filter(schedule=self.schedule, start_time=data['start_time']), t))
             if conflicts:
                 raise forms.ValidationError('conflicts on "%s"' % data['start_time'])
 
