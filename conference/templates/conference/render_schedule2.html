@@ -30,7 +30,12 @@
             <td>{{ row }}</td>
             {% for col in columns %}
             {% if not col.data or col.data.ref %}
-            <td class="event{% if col.data %} not-empty{% else %} empty{% endif %} {% cycle 'alt' '' %}{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}" data-time="{{ col.time|time:"H:i" }}"{% if col.data.ref %} colspan="{{ col.data.columns }}" rowspan="{{ col.data.rows }}"{% endif %}>
+            <td
+                data-time="{{ col.time|time:"H:i" }}"
+                {% if col.data %}data-event-url="{% url conference-schedule-event conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}"{% endif %}
+                class="event{% if col.data %} not-empty{% else %} empty{% endif %} {% cycle 'alt' '' %}{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}"
+                colspan="{{ col.data.columns }}"
+                rowspan="{{ col.data.rows }}">
             {% if col.data %}
                 {% if col.data.ref.talk %}
                     {% with col.data.ref.talk as talk %}

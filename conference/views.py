@@ -373,42 +373,44 @@ def schedule(request, conference, slug):
     if request.method == 'POST':
         if not request.user.is_staff:
             return http.HttpResponseBadRequest()
-        from tagging.models import TaggedItem
-        from tagging.utils import parse_tag_input
-        form = EventForm(data=request.POST)
+        form = EventForm(data=request.POST, schedule=sch)
         if form.is_valid():
-            data = form.cleaned_data
-            time = data['start_time']
-            # non possono esistere due eventi nella stessa track e nello stesso
-            # momento.
-            tracks = parse_tag_input(data['track'])
-            for t in tracks:
-                events = TaggedItem.objects.get_by_model(models.Event.objects.filter(start_time=data['start_time']), t)
-                for e in events:
-                    e.delete()
             evt = form.save(commit=False)
-            # Un evento deve avere almeno un talk o un evento custom, non
-            # impongo questa cosa a livello di clean_ nella form perchè posso
-            # usarla per cancellare eventi associati
-            if evt.talk or evt.custom:
-                evt.schedule = sch
-                evt.save()
-            if request.is_ajax():
-                return render_to_response(
-                    'conference/schedule_body.html', { 'schedule': sch },
-                    context_instance = RequestContext(request),
-                )
+            evt.schedule = sch
+            evt.save()
     else:
-        if request.is_ajax():
-            return render_to_response(
-                'conference/schedule_body.html', { 'schedule': sch },
-                context_instance = RequestContext(request),
-            )
-        form = EventForm(conference=schedule.conference)
+        form = EventForm(schedule=schedule)
+    if request.is_ajax():
+        return render_to_response(
+            'conference/schedule_body.html', { 'schedule': sch },
+            context_instance = RequestContext(request),
+        )
     return {
         'schedule': sch,
         'slug': slug,
         'form': form,
+    }
+
+@json
+def schedule_event(request, conference, slug, eid):
+    evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
+    if request.user.is_staff:
+        if request.method == 'POST':
+            form = EventForm(instance=evt, data=request.POST)
+            if form.is_valid():
+                evt = form.save()
+            else:
+                return http.HttpResponseBadRequest(simplejson.dumps(dict(form.errors)))
+        elif request.method == 'DELETE':
+            evt.delete()
+            return {}
+    elif request.method not in ('GET', 'HEAD'):
+        return http.HttpResponseNotAllowed(('GET', 'HEAD',))
+    return {
+        'id': evt.id,
+        'talk': evt.talk_id,
+        'custom': evt.custom,
+        'track': evt.track,
     }
 
 def schedule_xml(request, conference, slug):
