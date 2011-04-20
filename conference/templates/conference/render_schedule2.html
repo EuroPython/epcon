@@ -1,3 +1,4 @@
+{% load conference %}
 {% if request.user.is_staff and timetable.errors %}
 <div class="error-notice">
     <h2>TimeTable errors</h2>
@@ -15,7 +16,8 @@
     </ul>
 </div>
 {% endif %}
-<table class="schedule tracks-{{ timetable.rows|length }}">
+{% randint as r %}
+<table id="s{{ r }}" class="schedule tracks-{{ timetable.rows|length }}">
     <thead>
         <tr>
             <th class="hhmm">&nbsp;</th>
@@ -29,14 +31,22 @@
         <tr data-track="{{ row.track }}">
             <td>{{ row }}</td>
             {% for col in columns %}
-            {% if not col.data or col.data.ref %}
+            {% if not col.data %}
             <td
                 data-time="{{ col.time|time:"H:i" }}"
-                {% if col.data %}data-event-url="{% url conference-schedule-event conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}"{% endif %}
-                class="event{% if col.data %} not-empty{% else %} empty{% endif %} {% cycle 'alt' '' %}{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}"
+                class="event"
                 colspan="{{ col.data.columns }}"
                 rowspan="{{ col.data.rows }}">
-            {% if col.data %}
+            </td>
+            {% endif %}
+            {% if col.data.ref %}
+            {% with col.data.ref|user_interest:request.user as interest %}
+            <td
+                data-time="{{ col.time|time:"H:i" }}"
+                data-event-url="{% url conference-schedule-event conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}"
+                class="event{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}{% if interest > 0 %} highlighted{% endif %}{% if interest < 0 %} shadowed{% endif %}"
+                colspan="{{ col.data.columns }}"
+                rowspan="{{ col.data.rows }}">
                 {% if col.data.ref.talk %}
                     {% with col.data.ref.talk as talk %}
     <!--
@@ -48,56 +58,54 @@
                     of 
                     {% for s in talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
+                    <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}">
+                        <button class="down {% if interest < 0 %}active{% endif %}">Down</button>
+                        <button class="up {% if interest > 0 %}active{% endif %}">Up</button>
+                    </div>
                     {% endfor %}
                     {% endwith %}
                 {% else %}
                     <div class="custom-event">{{ col.data.ref.custom|safe }}</div>
                 {% endif %}
-            {% endif %}
             </td>
+            {% endwith %}
             {% endif %}
             {% endfor %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{% comment %}
-<table class="schedule tracks-{{ schedule.track_set.all|length }}">
-    <caption>{{ schedule.date|date:"l d F Y" }}</caption>
-    <thead>
-        <tr>
-            <th class="hhmm">&nbsp;</th>
-            {% for t in schedule.track_set.all %}
-            <th class="track t-{{ t.track }}">{{ t.title|safe }}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-    {% for t, row in timetable %}
-    {% if not t%}
-        <tr><td> </td></tr>
-    {% else %}
-        <tr class="{{ row.class|join:" " }}">
-            <td class="hhmm"><strong>{{ t|time:"H" }}</strong>:{{ t|time:"i" }}</td>
-            {% for e in row.events %}
-            {% if e %}
-            <td class="track {% for t in e.tags %} t-{{ t }}{% endfor %}{% if e.sponsor %} sponsored-event{% endif %}" rowspan="{{ e.time_slots }}" colspan="{{ e.track_slots }}" {% if e.sponsor %}style="background-attachment: scroll; background-image: url({{ SPONSOR_LOGO_URL }}stamp/{{ e.sponsor.slug}}.jpg); background-position: 50% 50%; background-repeat: no-repeat;"{% endif %}>
-                {% if e.talk %}
-                <a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a>
-                <br /> di
-                {% for s in e.talk.get_all_speakers %}
-                    <a href="{{ s.get_absolute_url }}">{{ s.name }}</a>
-                    {% if not forloop.last %} e {% endif %}
-                {% endfor %}
-                {% else %}
-                <span>{{ e.title|safe }}</span>
-                {% endif %}
-            </td>
-            {% endif %}
-            {% endfor %}
-        </tr>
-    {% endif %}
-    {% endfor %}
-    </tbody>
-</table>
-{% endcomment %}
+<script type="text/javascript">
+    (function() {
+        var table = $('#s{{ r }}');
+        $('.talk-interest button', table).click(function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var wrap = $(this).parents('.talk-interest'); 
+            var val = 0;
+            if(!btn.hasClass('active')) {
+                val = btn.hasClass('up') ? 1 : -1;
+            }
+            $.ajax({
+                url: wrap.attr('data-url'),
+                type: 'POST',
+                data: {
+                    interest: val
+                },
+                success: function() {
+                    $('button', wrap).removeClass('active');
+                    var td = wrap.parents('td');
+                    td.removeClass('highlighted').removeClass('shadowed');
+                    if(val > 0) {
+                        $('button.up', wrap).addClass('active');
+                        td.addClass('highlighted');
+                    }
+                    else if(val < 0) {
+                        $('button.down', wrap).addClass('active');
+                        td.addClass('shadowed');
+                    }
+                }
+            });
+        });
+    })();
+</script>
