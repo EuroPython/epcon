@@ -667,6 +667,14 @@ class Event(models.Model):
             if t.name in dbtracks:
                 return dbtracks[t.name]
 
+class EventInterest(models.Model):
+    event = models.ForeignKey(Event)
+    user = models.ForeignKey('auth.User')
+    interest = models.IntegerField()
+
+    class Meta:
+        unique_together = (('user', 'event'),)
+
 class Hotel(models.Model):
     """
     Gli hotel permettono di tenere traccia dei posti convenzionati e non dove
