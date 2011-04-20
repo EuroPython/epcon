@@ -6,6 +6,7 @@ import os.path
 import re
 import httplib2
 import random
+import sys
 import simplejson
 from django import template
 from django.conf import settings as dsettings
@@ -1105,3 +1106,7 @@ def user_interest(event, user):
         return event.eventinterest_set.get(user=user).interest
     except models.EventInterest.DoesNotExist:
         return 0
+
+@fancy_tag(register)
+def randint():
+    return random.randint(0, sys.maxint)
