@@ -862,11 +862,20 @@ def embed_video(value, args=""):
         'download': ('download', None),
     }
     source = None
-    video_slug = None
+    video_url = None
+    video_path = None
     if isinstance(value, models.Talk):
-        if value.video_type == 'download':
-            video_url = value.video_file
-            video_slug = value.slug
+        if not value.video_type or value.video_type == 'download':
+            if value.video_file:
+                video_url = dsettings.MEDIA_URL + 'conference/videos/' + video_url.name
+                video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
+            elif settings.VIDEO_DOWNLOAD_FALLBACK:
+                for ext in ('.avi', '.mp4'):
+                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', value.slug + ext)
+                    if os.path.exists(fpath):
+                        video_url = dsettings.MEDIA_URL + 'conference/videos/' + value.slug + ext
+                        video_path = fpath
+                        break
             source = 'download'
         else:
             video_url = value.video_url
@@ -925,51 +934,37 @@ def embed_video(value, args=""):
         #    html = re.sub('width=\W*"\d+"', 'width="%s"' % w, html)
         #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
     else:
-        src = fpath = None
-        if video_url or settings.VIDEO_DOWNLOAD_FALLBACK:
-            if video_url:
-                src = dsettings.MEDIA_URL + 'conference/videos/' + video_url.name
-                fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
-            elif video_slug:
-                for ext in ('.avi', '.mp4'):
-                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_slug + ext)
-                    if os.path.exists(fpath):
-                        src = dsettings.MEDIA_URL + 'conference/videos/' + video_slug + ext
-                        break
-        if not src:
-            html = ''
+        try:
+            stat = os.stat(video_path)
+        except (AttributeError, OSError), e:
+            finfo = ''
         else:
-            try:
-                stat = os.stat(fpath)
-            except (AttributeError, OSError), e:
-                finfo = ''
-            else:
-                fsize = stat.st_size
-                ftype = mimetypes.guess_type(fpath)[0]
-                finfo = ' (%s %s)' % (ftype, defaultfilters.filesizeformat(fsize))
+            fsize = stat.st_size
+            ftype = mimetypes.guess_type(video_path)[0]
+            finfo = ' (%s %s)' % (ftype, defaultfilters.filesizeformat(fsize))
 
-            opts = {
-                'controls': 'controls',
-                'class': 'projekktor',
-            }
-            if w and h:
-                opts['width'] = w
-                opts['height'] = h
+        opts = {
+            'controls': 'controls',
+            'class': 'projekktor',
+        }
+        if w and h:
+            opts['width'] = w
+            opts['height'] = h
 
-            data = {
-                'attrs': ' '.join('%s="%s"' % x for x in opts.items()),
-                'href': src,
-                'info': finfo,
-            }
+        data = {
+            'attrs': ' '.join('%s="%s"' % x for x in opts.items()),
+            'href': video_url,
+            'info': finfo,
+        }
 
-            html = """
-                <div>
-                    <video %(attrs)s>
-                        <source src="%(href)s" />
-                    </video>
-                    <a href="%(href)s">download video%(info)s</a>
-                </div>
-                """ % data
+        html = """
+            <div>
+                <video %(attrs)s>
+                    <source src="%(href)s" />
+                </video>
+                <a href="%(href)s">download video%(info)s</a>
+            </div>
+            """ % data
     return mark_safe(html)
 
 @register.tag
