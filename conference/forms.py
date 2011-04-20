@@ -251,3 +251,10 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = models.Event
         exclude = ('schedule',)
+
+    def __init__(self, *args, **kwargs):
+        self.conference = kwargs.pop('conference', None)
+        super(EventForm, self).__init__(*args, **kwargs)
+        if self.conference:
+            self.fields['talk'].queryset = models.Talk.objects\
+                .filter(conference=self.conference)

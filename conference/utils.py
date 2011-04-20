@@ -211,21 +211,33 @@ class TimeTable(object):
                     })
                 evt0 = prev.evt
                 columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
+                for row in self.rows:
+                    for e in self.iterOnRow(row, start=evt.time):
+                        if isinstance(e, TimeTable.Reference) and e.evt is evt0:
+                            del self._data[(e.time, e.row)]
+                        else:
+                            break
                 evt0.columns = columns
         self._data[(evt.time, evt.row)] = evt
 
-    def findFirstEvent(self, start, row):
-        while start < self.end:
+    def iterOnRow(self, row, start=None, end=None):
+        if start is None:
+            start = self.start
+        if end is None:
+            end = self.end
+        while start < end:
             try:
-                evt = self._data[(start, row)]
+                yield self._data[(start, row)]
             except KeyError:
                 pass
-            else:
-                if isinstance(evt, TimeTable.Reference):
-                    return evt.evt
-                else:
-                    return evt
             start = self.sumTime(start, self.slot)
+
+    def findFirstEvent(self, start, row):
+        for evt in self.iterOnRow(row, start=start):
+            if isinstance(evt, TimeTable.Reference):
+                return evt.evt
+            else:
+                return evt
 
     def columns(self):
         step = self.start
