@@ -58,11 +58,13 @@
                     of 
                     {% for s in talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
+                    {% endfor %}
+                    <div class="talk-vote">#{% talk_vote talk as x %}{{ x.vote}}</div>
+                    <div class="talk-level">{{ talk.get_level_display }}</div>
                     <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}">
                         <button class="down {% if interest < 0 %}active{% endif %}">Down</button>
                         <button class="up {% if interest > 0 %}active{% endif %}">Up</button>
                     </div>
-                    {% endfor %}
                     {% endwith %}
                 {% else %}
                     <div class="custom-event">{{ col.data.ref.custom|safe }}</div>
