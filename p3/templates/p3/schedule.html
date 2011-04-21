@@ -10,25 +10,17 @@
 
 {% block MAIN_CONTENT %}
 <nav id="schedule-navigator">
-    <h3>Filter by</h3>
+    <h3>Search</h3>
     <form>
-        <fieldset>
-            <div class="field">
-                <label>Keyword<label>
-                <input />
-            </div>
-            <div class="field">
-                <label>Level<label>
-                <select>
-                    <option>Beginner</option>
-                </select>
-            </div>
-            <h4>Type</h4>
-            <div class="field">
-                <label>Type<label>
-                <input type="checkbox">
-            </div>
-        </fieldset>
+        <input />
+    </form>
+    <h3>Show</h3>
+    <form class="show-flags">
+        <label><input type="checkbox" name="ita" value="" checked> Italian Track</label>
+        <label><input type="checkbox" name="trainings" value="" checked> Trainings</label>
+        <label><input type="checkbox" name="partner" value="" checked> Partner Program</label>
+        <label><input type="checkbox" name="talklevel" value="" checked> Talk Level</label>
+        <label><input type="checkbox" name="myvotes" value="" checked> My votes</label>
     </form>
     <h3>Jump to</h3>
     <ul>
@@ -60,6 +52,62 @@
     </div>
     {% endfor %}
 </div>
+<script type="text/javascript">
+    (function() {
+        function _get() {
+            var opts = {}
+            var raw = $.cookie('schedule_opts');
+            if(raw) {
+                $.each(raw.split(','), function(ix, val) {
+                    opts[val] = '';
+                });
+            }
+            return opts;
+        }
+        function _set(opts) {
+            var raw = [];
+            for(var k in opts) {
+                raw.push(k);
+            }
+            $.cookie('schedule_opts', raw.join(','), { expires: 60 });
+        }
+        var nav = $('#schedule-navigator');
+        var opts = _get();
+        var flags = {
+            'ita': function() { return [$('.schedule tr[data-track=track-ita]')]; },
+            'trainings': function() {
+                return [$('.schedule tr[data-track=training1]'), $('.schedule tr[data-track=training2]')];
+            },
+            'partner': function() {
+            },
+            'talklevel': function() { return [$('.schedule .talk-level')]; },
+            'myvotes': function() { return [$('.schedule .talk-vote')]; }
+        }
+        function show_flag(name, v) {
+            $.each(flags[name](), function(ix, dom) {
+                if(!v)
+                    dom.hide();
+                else
+                    dom.show();
+            });
+        }
+        for(var k in opts) {
+            $('.show-flags input[name=' + k + ']', nav).attr('checked', null);
+            show_flag(k, false);
+        }
+        $('.show-flags input', nav).change(function() {
+            if($(this).is(':checked')) {
+                delete opts[this.name];
+                show_flag(this.name, true);
+            }
+            else {
+                opts[this.name] = '';
+                show_flag(this.name, false);
+            }
+            _set(opts);
+        });
+    })();
+</script>
 {% if request.user.is_staff %}
 <div class="overlay" id="schedule-form-box">
     <form action="" method="post">
