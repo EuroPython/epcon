@@ -15,8 +15,8 @@ import forms as p3forms
 import models
 from assopy.forms import BillingData
 from assopy.models import Order, ORDER_PAYMENT, User, UserIdentity
-from assopy.views import render_to, HttpResponseRedirectSeeOther
-from conference.models import Fare, Ticket, Schedule
+from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
+from conference.models import Fare, Talk, Ticket, Schedule
 from email_template import utils
 
 import logging
@@ -313,3 +313,9 @@ def schedule(request):
         'schedules': schedules,
         'form': form,
     }
+
+@render_to_json
+def schedule_search(request):
+    from haystack.query import SearchQuerySet
+    sqs = SearchQuerySet().models(Talk).auto_query(request.GET.get('q'))
+    return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]

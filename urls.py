@@ -15,13 +15,14 @@ urlpatterns = patterns('',
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^blog/', include('microblog.urls')),
+    (r'^comments/', include('django.contrib.comments.urls')),
     url(r'^conference/paper-submission/$', 'conference.views.paper_submission', {'submission_form': P3SubmissionForm, 'submission_additional_form': P3SubmissionAdditionalForm, }, name='conference-paper-submission'),
     url(r'^conference/talks/(?P<slug>[\w-]+)$', 'conference.views.talk', {'talk_form': P3TalkForm}, name='conference-talk'),
     (r'^conference/', include('conference.urls')),
-    (r'^comments/', include('django.contrib.comments.urls')),
     (r'^hcomments/', include('hcomments.urls')),
-    (r'^p3/', include('p3.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
+    (r'^p3/', include('p3.urls')),
+    (r'^search/', include('haystack.urls')),
 )
 
 if settings.DEBUG:

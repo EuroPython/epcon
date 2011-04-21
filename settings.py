@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'taggit',
     'pages',
     'mptt',
+    'haystack',
     'conference',
     'p3',
     'microblog',
@@ -222,6 +223,9 @@ P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.hgcommit.HgCommitHook',
 )
+
+HAYSTACK_SITECONF = 'pycon_site.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'whoosh'
 
 import logging
 logging.getLogger('south').setLevel(logging.INFO)

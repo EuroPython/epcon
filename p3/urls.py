@@ -9,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^tickets/(?P<tid>\d+)/$', 'p3.views.ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'p3.views.user', name='p3-user'),
     url(r'^schedule/$', 'p3.views.schedule', name='p3-schedule'),
+    url(r'^schedule/search/$', 'p3.views.schedule_search', name='p3-schedule-search'),
 )
