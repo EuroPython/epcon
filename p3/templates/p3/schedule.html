@@ -11,8 +11,8 @@
 {% block MAIN_CONTENT %}
 <nav id="schedule-navigator">
     <h3>Search</h3>
-    <form>
-        <input />
+    <form class="search">
+        <input name="q" value="" />
     </form>
     <h3>Show</h3>
     <form class="show-flags">
@@ -41,7 +41,7 @@
             <p>{{ schedule.description|safe }}</p>
             {% endif %}
         </div>
-        {% render_schedule2 schedule "" "13:00" %}
+        {% render_schedule2 schedule "09:00" "13:15" %}
         <div class="cms">
             <h2>Afternoon &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
             {% if schedule.description %}
@@ -54,6 +54,40 @@
 </div>
 <script type="text/javascript">
     (function() {
+        var nav = $('#schedule-navigator');
+        var autocomplete = { 'timeout': null, 'last_search': '' };
+        function _searchSchedule() {
+            var i = $('.search input', nav);
+            if(i.val() != autocomplete['last_search']) {
+                autocomplete['last_search'] = i.val();
+                $.ajax({
+                    url: '{% url p3-schedule-search %}?q=' + i.val(),
+                    success: function() {
+                    },
+                    complete: function() {
+                        autocomplete['timeout'] = null;
+                    }
+                });
+            }
+        }
+        $('.search', nav).submit(function() {
+            return false;
+        });
+        $('.search input', nav).keydown(function(e) {
+            var i = $(e.target);
+            if(i.val().length < 2) {
+                if(autocomplete['timeout']) {
+                    clearTimeout(autocomplete['timeout']);
+                    autocomplete['timeout'] = null;
+                }
+                return;
+            }
+            else {
+                if(!autocomplete['timeout']) {
+                    autocomplete['timeout'] = setTimeout(_searchSchedule, 400);
+                }
+            }
+        });
         function _get() {
             var opts = {}
             var raw = $.cookie('schedule_opts');
@@ -71,7 +105,6 @@
             }
             $.cookie('schedule_opts', raw.join(','), { expires: 60 });
         }
-        var nav = $('#schedule-navigator');
         var opts = _get();
         var flags = {
             'ita': function() { return [$('.schedule tr[data-track=track-ita]')]; },

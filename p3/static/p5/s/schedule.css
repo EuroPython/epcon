@@ -157,3 +157,91 @@ table.schedule caption {
     background: #66b0bd url(../i/arrow-down.png) no-repeat left center;
 }
 
+/*
+ *
+ */
+div.schedule {
+	position: relative;
+    margin: 0 0 40px 0;
+    border: 10px solid #fff;
+    background: #fff;
+    font-size: 0.85em;
+}
+
+div.schedule .cell {
+    position: absolute;
+    border-bottom: 1px solid #7D6F60;
+    color: #7D6F60;
+    height: 60px;
+    width: 70px;
+    padding: 0;
+}
+
+div.schedule .event {
+    background: #FCFAD9;
+    z-index: 100;
+}
+
+div.schedule .event.empty {
+    background: white;
+    border: 0;
+}
+
+div.schedule .event .wrapper{
+    margin: 6px 0 6px 4px;
+    padding-left: 4px;
+    height: 100%;
+    overflow: hide;
+}
+
+div.schedule .event .talk-level {
+    float: left;
+    height: 20px;
+    width: 5px;
+    margin: 16px 4px 0 0;
+    background: transparent;
+}
+div.schedule .event .talk-level.beginner {
+    background: #c9f76f;
+}
+div.schedule .event .talk-level.intermediate {
+    background: #679b00;
+}
+div.schedule .event .talk-level.advanced {
+    background: #a68000;
+}
+div.schedule .t-special, 
+div.schedule .t-break {
+    vertical-align: middle;
+    text-align: center;
+    color: #301d1d;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+	padding: 0;    
+    background: transparent url(../i/empty-track.png) bottom left;		    
+    z-index: 1;
+}
+
+div.schedule .t-special > div, 
+div.schedule .t-break > div {
+    display: block;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+}
+
+div.schedule h3 {
+	font: normal 13px/15px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;			
+	margin: 0 0 2px 0;
+	text-transform: none;		
+}
+
+div.schedule a {
+    border-bottom-style: none;    
+    /* IE<8 */
+    *border-bottom-style: solid;
+}
+
+div.schedule .cell:hover a {
+    border-bottom-style: solid;
+}
