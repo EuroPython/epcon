@@ -1078,3 +1078,10 @@ def user_interest(event, user):
 @fancy_tag(register)
 def randint():
     return random.randint(0, sys.maxint)
+
+@register.filter
+def truncate_chars(text, length):
+    if len(text) > length:
+        return text[:length-3] + '...'
+    else:
+        return text
