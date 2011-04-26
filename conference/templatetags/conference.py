@@ -1085,3 +1085,96 @@ def truncate_chars(text, length):
         return text[:length-3] + '...'
     else:
         return text
+
+@register.filter
+def timetable_columns(timetable):
+    """
+    Restituisce le colonne di una timetable, ogni elemento ha questo formato:
+        (columns, events, collapse)
+
+    events è il numero di TimeTable.Event associati alla colonna
+    collapse (True/False) indica se la colonna può essere collassata graficamente
+    """
+    output = []
+    for c in timetable.columns():
+        cells = events = flex_times = 0
+        for evt in timetable.eventsAtTime(c, include_reference=True):
+            cells += 1
+            if isinstance(evt, utils.TimeTable.Event):
+                events += 1
+            elif isinstance(evt, utils.TimeTable.Reference) and evt.flex:
+                flex_times += 1
+        collapse = cells == flex_times
+        output.append((c, events, collapse))
+    return output
+
+@fancy_tag(register)
+def timetable_cells(timetable, width, height, outer_width=None, outer_height=None):
+    if outer_width is None:
+        outer_width = width
+    if outer_height is None:
+        outer_height = height
+    extra_width = outer_width - width
+
+    columns = list(timetable.columns())
+    col_pos = [{'time': None, 'pos': 0, 'collapse': False,}]
+    next_pos = outer_width
+    for c in columns:
+        cells = flex_times = 0
+        for evt in timetable.eventsAtTime(c, include_reference=True):
+            cells += 1
+            if isinstance(evt, utils.TimeTable.Reference) and evt.flex:
+                flex_times += 1
+        collapse = cells == flex_times
+        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse})
+        next_pos = next_pos + (outer_width if not collapse else (10 + extra_width))
+
+    def size(time, row, cols=1, rows=1):
+        for ix, _ in enumerate(col_pos):
+            if _['time'] == time:
+                break
+        l = col_pos[ix]['pos']
+        t = row * outer_height
+        w = 0
+        for _ in col_pos[ix:ix+cols]:
+            w += width if not _['collapse'] else 10
+        w += extra_width * (cols-1)
+        return "left: %dpx; top: %dpx; width: %dpx; height: %dpx" % (l, t, w, rows*height)
+
+    cells = [{
+        'type': '',
+        'size': size(None, 0),
+    }]
+    add = cells.append
+    for c in columns:
+        add({
+            'type': 'hhmm',
+            'time': c,
+            'size': size(c, 0),
+        })
+
+    for irow, _ in enumerate(timetable.byRows()):
+        row, cols = _
+        add({
+            'type': 'track',
+            'track': row.track,
+            'size': size(None, irow+1),
+        })
+        for c in cols:
+            evt = {
+                'type': 'event',
+                'time': c['time'],
+                'row': c['row'],
+            }
+            if c['data'] is None:
+                evt['event'] = None
+                evt['size'] = size(c['time'], irow+1)
+            elif isinstance(c['data'], utils.TimeTable.Event):
+                evt['event'] = c['data']
+                evt['size'] = size(c['time'], irow+1, cols=c['data'].columns, rows=c['data'].rows)
+            else:
+                continue
+            add(evt)
+    s_w = (len(columns) + 1) * outer_width
+    s_h = (len(timetable.rows) + 1) * outer_height
+    return cells, "width: %dpx; height: %dpx" % (s_w, s_h)

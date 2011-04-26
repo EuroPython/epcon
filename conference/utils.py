@@ -245,6 +245,21 @@ class TimeTable(object):
             yield step
             step = self.sumTime(step, self.slot)
 
+    def eventsAtTime(self, start, include_reference=False):
+        """
+        ritorna le righe che contengono un Event (e un Reference se
+        include_reference=True) al tempo passata.
+        """
+        output = []
+        for r in self.rows:
+            try:
+                cell = self._data[(start, r)]
+            except KeyError:
+                continue
+            if include_reference or isinstance(cell, TimeTable.Event):
+                output.append(cell)
+        return output
+
     def byRows(self):
         output = []
         data = self._data
@@ -254,7 +269,7 @@ class TimeTable(object):
             cols = []
             line = [ row, cols ]
             while step < self.end:
-                cols.append({'time': step, 'data': data.get((step, row))})
+                cols.append({'time': step, 'row': row, 'data': data.get((step, row))})
                 step = self.sumTime(step, self.slot)
 
             output.append(line)
