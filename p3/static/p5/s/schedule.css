@@ -194,7 +194,6 @@ div.schedule .event {
 
 div.schedule .event.empty {
     background: white;
-    border: 0;
 }
 
 div.schedule .event .wrapper{
