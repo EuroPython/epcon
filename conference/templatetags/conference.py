@@ -1118,6 +1118,8 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         outer_height = height
     extra_width = outer_width - width
 
+    compress_width = 10
+
     columns = list(timetable.columns())
     col_pos = [{'time': None, 'pos': 0, 'collapse': False,}]
     next_pos = outer_width
@@ -1129,7 +1131,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
                 flex_times += 1
         collapse = cells == flex_times
         col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse, })
-        next_pos = next_pos + (outer_width if not collapse else (10 + extra_width))
+        next_pos = next_pos + (outer_width if not collapse else (compress_width + extra_width))
 
     max_size = [0, 0]
     def size(time, row, cols=1, rows=1):
@@ -1140,7 +1142,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         t = row * outer_height
         w = 0
         for _ in col_pos[ix:ix+cols]:
-            w += width if not _['collapse'] else 10
+            w += width if not _['collapse'] else compress_width
         w += extra_width * (cols-1)
         h = rows * height
         max_size[0] = max(max_size[0], l+w)
