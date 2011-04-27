@@ -54,7 +54,7 @@
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
                     {% endfor %}
                     <div class="tools">
-                        <div class="talk-vote">#{% talk_vote ref.talk as x %}{{ x.vote}}</div>
+                        <div class="talk-vote">{% talk_vote ref.talk as x %}{% if x %}{{ x.vote}}/10{% endif %}</div>
                         <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=ref.id %}">
                             <button class="down {% if interest < 0 %}active{% endif %}"></button>
                             <button class="up {% if interest > 0 %}active{% endif %}"></button>
