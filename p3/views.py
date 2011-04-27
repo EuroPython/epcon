@@ -305,20 +305,18 @@ def billing(request):
     }
 
 @render_to('p3/schedule.html')
-def schedule(request):
+def schedule(request, conference):
     from conference.forms import EventForm
-    schedules = Schedule.objects.filter(conference=settings.CONFERENCE_CONFERENCE)
+    schedules = Schedule.objects.filter(conference=conference)
     form = EventForm(schedule=schedules[0])
     return {
-        'conference': settings.CONFERENCE_CONFERENCE,
+        'conference': conference,
         'schedules': schedules,
         'form': form,
     }
 
 @render_to_json
-def schedule_search(request):
+def schedule_search(request, conference):
     from haystack.query import SearchQuerySet
-    sqs = SearchQuerySet().models(Event).auto_query(request.GET.get('q'))
-    if 'conference' in request.GET:
-        sqs = sqs.filter(conference=request.GET['conference'])
+    sqs = SearchQuerySet().models(Event).auto_query(request.GET.get('q')).filter(conference=conference)
     return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]
