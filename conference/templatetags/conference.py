@@ -8,6 +8,7 @@ import httplib2
 import random
 import sys
 import simplejson
+from datetime import datetime, time
 from django import template
 from django.conf import settings as dsettings
 from django.core.cache import cache
@@ -21,9 +22,11 @@ from conference import models
 from conference import utils
 from conference import settings
 from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
+from conference.utils import TimeTable
 from pages import models as PagesModels
 
 from tagging.models import Tag, TaggedItem
+from tagging.utils import parse_tag_input
 
 from fancy_tag import fancy_tag
 
@@ -504,10 +507,6 @@ def render_schedule(context, schedule):
 
 @register.inclusion_tag('conference/render_schedule2.html', takes_context=True)
 def render_schedule2(context, schedule, start=None, end=None):
-    from conference.utils import TimeTable
-    from tagging.utils import parse_tag_input
-    from datetime import datetime, time
-
     if start:
         start = datetime.strptime(start, '%H:%M').time()
     else:
@@ -550,6 +549,10 @@ def render_schedule2(context, schedule, start=None, end=None):
     })
     return ctx
 
+@register.filter
+def event_has_track(event, track):
+    return track in set(parse_tag_input(event.track))
+    
 @register.tag
 def conference_schedule(parser, token):
     """
