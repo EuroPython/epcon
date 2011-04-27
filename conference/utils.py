@@ -253,9 +253,9 @@ class TimeTable(object):
 
     def findFirstEvent(self, start, row):
         for evt in self.iterOnRow(row, start=start):
-            if isinstance(evt, TimeTable.Reference):
+            if isinstance(evt, TimeTable.Reference) and evt.evt.time >= start:
                 return evt.evt
-            else:
+            elif isinstance(evt, TimeTable.Event):
                 return evt
 
     def columns(self):
