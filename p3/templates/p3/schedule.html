@@ -14,6 +14,7 @@
     <form class="search">
         <input name="q" value="" />
     </form>
+    {% comment %}
     <h3>Show</h3>
     <form class="show-flags">
         <label><input type="checkbox" name="ita" value="" checked> Italian Track</label>
@@ -22,6 +23,7 @@
         <label><input type="checkbox" name="talklevel" value="" checked> Talk Level</label>
         <label><input type="checkbox" name="myvotes" value="" checked> My votes</label>
     </form>
+    {% endcomment %}
     <h3>Jump to</h3>
     <ul>
         {% for schedule in schedules %}
