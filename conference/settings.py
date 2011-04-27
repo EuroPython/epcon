@@ -7,6 +7,8 @@ try:
 except AttributeError:
     raise ImproperlyConfigured('Current conference not set (CONFERENCE_CONFERENCE)')
 
+TEMPLATE_FOR_AJAX_REQUEST = getattr(settings, 'CONFERENCE_TEMPLATE_FOR_AJAX_REQUEST', True)
+
 GOOGLE_MAPS = getattr(settings, 'CONFERENCE_GOOGLE_MAPS', None)
 
 MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYPE_NAME_CONVERSION_DICT', {

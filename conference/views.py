@@ -57,6 +57,8 @@ def render_to(template):
             if tpl.endswith('xml'):
                 ct = 'text/xml' if dsettings.DEBUG else 'application/xml'
             if isinstance(output, dict):
+                if request.is_ajax() and settings.TEMPLATE_FOR_AJAX_REQUEST:
+                    tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)
                 return render_to_response(tpl, output, RequestContext(request), mimetype=ct)
             else:
                 return output
