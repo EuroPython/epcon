@@ -48,7 +48,7 @@
                 <div class="wrapper">
                 {% if ref.talk %}
                     <div class="talk-level {{ ref.talk.level }}">&nbsp;</div>
-                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="trigger-overlay" title="{{ talk.title }}">{{ ref.talk.title|truncate_chars:50 }}</a></h3>
+                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="trigger-overlay" title="{% if ref|event_has_track:"teaser" %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if ref|event_has_track:"teaser" %}{{ ref.talk.title|truncate_chars:15 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a></h3>
                     of 
                     {% for s in ref.talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>

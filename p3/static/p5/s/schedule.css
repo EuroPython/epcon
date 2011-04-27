@@ -211,7 +211,7 @@ div.schedule .event .talk-level {
     float: left;
     height: 20px;
     width: 5px;
-    margin: 16px 4px 0 0;
+    margin: 20px 8px 0 0;
     background: transparent;
 }
 div.schedule .event .talk-level.beginner {
@@ -245,6 +245,10 @@ div.schedule .t-break .wrapper {
     bottom: auto;
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
+}
+
+div.schedule .t-teaser .wrapper {
+    background: transparent url(../i/icon-teaser.png) no-repeat top left;
 }
 
 div.schedule h3 {
@@ -287,6 +291,7 @@ div.schedule .tools button {
 div.schedule .event.highlighted {
     background: #d7f5fa;
 }
+
 div.schedule .event.shadowed {
     opacity: .7;
 }
@@ -294,9 +299,11 @@ div.schedule .event.shadowed {
 div.schedule .event.search-result-ko {
     opacity: 1;
 }
+
 div.schedule .event.search-result-ko .wrapper {
     background: #bbb;
 }
+
 div.schedule .event.search-result-ok {
     -webkit-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1)
 }
