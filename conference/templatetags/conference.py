@@ -1131,12 +1131,25 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
     col_pos = [{'time': None, 'pos': 0, 'collapse': False,}]
     next_pos = outer_width
     for c in columns:
+        events = {
+            'total': 0,
+            'reference': 0,
+            'flex': 0,
+            'special': 0,
+            'fixed': 0,
+        }
         cells = flex_times = 0
         for evt in timetable.eventsAtTime(c, include_reference=True):
-            cells += 1
-            if isinstance(evt, utils.TimeTable.Reference) and evt.flex:
-                flex_times += 1
-        collapse = cells == flex_times
+            events['total'] += 1
+            if isinstance(evt, utils.TimeTable.Reference):
+                if evt.flex:
+                    events['flex'] += 1
+                if 'break' in evt.evt.ref.track or 'special' in evt.evt.ref.track:
+                    events['special'] += 1
+                events['reference'] += 1
+            else:
+                events['fixed'] += 1
+        collapse = events['fixed'] == 0 and events['special'] > 0
         col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse, })
         next_pos = next_pos + (outer_width if not collapse else (compress_width + extra_width))
 
