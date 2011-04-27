@@ -4,6 +4,8 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+import search_sites
+
 admin.site.index_template = 'p3/admin/index.html'
 
 from p3.forms import P3SubmissionForm, P3SubmissionAdditionalForm, P3TalkForm
