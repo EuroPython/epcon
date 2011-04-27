@@ -6,6 +6,5 @@ comuni (tipo le deadlines) templatetags di utilità (come la navigazione) e
 codice particolare come l'accesso ad assopy. Questo package *non* dovrebbe
 includere ne' template ne' file statici.
 """
-
 import models
 import views
