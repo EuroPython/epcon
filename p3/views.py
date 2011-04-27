@@ -16,7 +16,7 @@ import models
 from assopy.forms import BillingData
 from assopy.models import Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
-from conference.models import Fare, Talk, Ticket, Schedule
+from conference.models import Fare, Event, Ticket, Schedule
 from email_template import utils
 
 import logging
@@ -310,6 +310,7 @@ def schedule(request):
     schedules = Schedule.objects.filter(conference=settings.CONFERENCE_CONFERENCE)
     form = EventForm(schedule=schedules[0])
     return {
+        'conference': settings.CONFERENCE_CONFERENCE,
         'schedules': schedules,
         'form': form,
     }
@@ -317,5 +318,7 @@ def schedule(request):
 @render_to_json
 def schedule_search(request):
     from haystack.query import SearchQuerySet
-    sqs = SearchQuerySet().models(Talk).auto_query(request.GET.get('q'))
+    sqs = SearchQuerySet().models(Event).auto_query(request.GET.get('q'))
+    if 'conference' in request.GET:
+        sqs = sqs.filter(conference=request.GET['conference'])
     return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]

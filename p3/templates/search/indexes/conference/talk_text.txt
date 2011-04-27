@@ -1,7 +1,0 @@
-{{ object.title }}
-{% for s in object.get_all_speakers %}
-{{ s.name }}
-{% endfor %}
-{% for a in object.abstracts.all %}
-{{ a.body }}
-{% endfor %}

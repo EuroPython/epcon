@@ -1,0 +1,11 @@
+{% if object.talk %}
+    {{ object.talk.title }}
+    {% for s in object.talk.get_all_speakers %}
+    {{ s.name }}
+    {% endfor %}
+    {% for a in object.talk.abstracts.all %}
+    {{ a.body }}
+    {% endfor %}
+{% else %}
+    {{ object.custom }}
+{% endif %}
