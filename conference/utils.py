@@ -203,6 +203,14 @@ class TimeTable(object):
                 })
                 return
             elif isinstance(prev, TimeTable.Reference):
+                # sto cercando di inserire un evento su una cella occupata da
+                # un reference, un estensione temporale di un altro evento. 
+                #
+                # Se nessuno dei due eventi (il nuovo e il precedente) è flex
+                # notifico un warning (nel caso uno dei due sia flex non dico
+                # nulla perché gli eventi flessibili sono nati proprio per
+                # adattarsi agli altri); dopodiché accorcio, se possibile,
+                # l'evento precedente.
                 if not prev.flex and not flex:
                     self.errors.append({
                         'type': 'overlap-reference',
@@ -211,7 +219,15 @@ class TimeTable(object):
                         'previous': prev.evt.ref,
                         'msg': 'Event %s overlap %s on time %s' % (event, prev.evt.ref, evt.time),
                     })
-                if not flex:
+
+                # accorcio l'evento precedente solo se è di tipo flex oppure se
+                # l'evento che sto inserendo non *è* flex. Questo copre il caso
+                # in cui un talk va a posizionarsi in una cella occupata da un
+                # estensione di un pranzo (evento flex) oppure quando un
+                # evento flex a sua volta va a coprire un estensione di un
+                # altro evento flex (ad esempio due eventi custom uno dopo
+                # l'altro).
+                if not flex or prev.flex:
                     evt0 = prev.evt
                     columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
                     for row in self.rows:
