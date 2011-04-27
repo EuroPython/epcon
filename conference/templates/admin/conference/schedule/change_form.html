@@ -17,17 +17,15 @@ Uno sporco workaround per eliminare dalle select degli eventi i talk non interes
 <script type="text/javascript">
     $(document).ready(function() {
         var conference = document.getElementById('id_conference').value;
-        var r = new RegExp(' \\[' + conference + '\\]$');
+        var r = new RegExp(' \\[' + conference + '\\]');
         $('td.talk select option').each(function() {
             if(this.value == '')
                 return;
             var opt = $(this);
             var t = opt.text();
             var s = t.replace(r, '');
-            if(s == t)
+            if(t.search(r) == -1)
                 opt.remove();
-            else
-                opt.text(s);
         });
     });
 </script>
