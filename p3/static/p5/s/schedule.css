@@ -263,7 +263,7 @@ div.schedule a {
     *border-bottom-style: solid;
 }
 
-div.schedule .cell:hover a {
+div.schedule .cell a:hover {
     border-bottom-style: solid;
 }
 
