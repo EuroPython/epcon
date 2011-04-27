@@ -320,3 +320,10 @@ div.schedule .event.search-result-ok {
     font: normal 46px/50px "League Gothic", "Arial Narrow", sans-serif;
 }
 
+div.schedule .track {
+    padding-left: 0;
+}
+
+div.schedule .track span {
+    font-weight: bold;
+}
