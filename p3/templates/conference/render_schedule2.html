@@ -20,7 +20,7 @@
         </div>
         {% endif %}
         {% if cell.type == 'track' %}
-        <div class="cell track" data-track="{{ cell.track }}" style="{{ cell.size }}">TRACK{{ forloop.counter }}</div>
+        <div class="cell track" data-track="{{ cell.track }}" style="{{ cell.size }}">{{ cell.track.title }}</div>
         {% endif %}
         {% if cell.type == 'event' %}
             {% if not cell.event %}
