@@ -18,12 +18,6 @@
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
                 <p>{{ ab.body|linebreaks }}</p>
             </div>
-            {% if talk.status == "accepted" %}
-            <section class="talk when">
-                <a href="/{{ e.schedule.conference }}/schedule"><b>{{ e.schedule.conference }}</b></a>
-                {% if e.schedule.conference == CONFERENCE %}{% trans "nella track" %} <i>{{ e.get_track.title }}</i>{% endif %}
-            </section>
-            {% endif %}
         </div>
         {% endwith %}
         {% endwith %}

@@ -68,8 +68,8 @@ var PROJEKKTOR_CONFIG = {
             </div>
             {% if talk.status == "accepted" %}
             <section class="talk when">
-                <a href="/{{ e.schedule.conference }}/schedule"><b>{{ e.schedule.conference }}</b></a>
-                {% if e.schedule.conference == CONFERENCE %}{% trans "nella track" %} <i>{{ e.get_track.title }}</i>{% endif %}
+                {% if e.schedule.conference == CONFERENCE %}{% trans "in" %} <i>{{ e.get_track.title|safe }}</i>{% endif %}
+                <a href="{% url p3-schedule conference=e.schedule.conference %}"><b>See schedule</b></a>
             </section>
             {% if talk|embed_video %}
             <section class="talk video">
