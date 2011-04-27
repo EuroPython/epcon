@@ -4,7 +4,7 @@
     <div class="span-8">
         <div class="page-summary">
             <p>
-                {% trans "di" %}
+                {% trans "by" %}
                 {% for spk in talk.get_all_speakers %}
                 <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
                 {% if not forloop.last %}-{% endif %}
