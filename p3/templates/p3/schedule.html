@@ -57,6 +57,17 @@
 </div>
 <script type="text/javascript">
     (function() {
+
+        $('.t-break .wrapper, .t-special .wrapper').each(function() {
+            var w = $(this);
+            var width = w.parents('.event').height();
+            w
+                .width(width)
+                .css('position', 'static')
+                .css('margin-left', -(width-80) / 2)
+                .css('margin-top', (width-80) / 2)
+        });
+
         var nav = $('#schedule-navigator');
         var autocomplete = { 'timeout': null, 'last_search': '' };
         function highlight_search_results(ids) {

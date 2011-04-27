@@ -238,10 +238,10 @@ div.schedule .t-break {
 div.schedule .t-special .wrapper,
 div.schedule .t-break .wrapper {
     /*
-     * XXX
+     * utilizzo un pezzetto di js per posizionare il .wrapper al centro del suo
+     * parent in modo tale che la rotazione funzioni per bene
      */
-    top: 40%;
-    bottom: auto;
+    position: static;
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
 }
