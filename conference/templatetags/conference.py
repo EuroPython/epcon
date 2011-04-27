@@ -1078,6 +1078,8 @@ def convert_twitter_links(text, args=None):
 
 @register.filter
 def user_interest(event, user):
+    if not user.is_authenticated():
+        return 0
     try:
         return event.eventinterest_set.get(user=user).interest
     except models.EventInterest.DoesNotExist:
