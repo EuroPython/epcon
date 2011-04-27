@@ -63,7 +63,7 @@
                 $('.event[data-event-id]').removeClass('search-result-ok').removeClass('search-result-ko');
             }
             else {
-                $('.event[data-event-id]').each(function() {
+                $('.event[data-event-id]').not('.event.t-break').not('.event.t-special').each(function() {
                     var e = $(this);
                     if(ids.indexOf(e.attr('data-event-id')) == -1) {
                         e.removeClass('search-result-ok').addClass('search-result-ko');
