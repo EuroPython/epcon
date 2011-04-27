@@ -162,7 +162,7 @@ class TimeTable(object):
         assert rows
         assert not (set(rows) - set(self.rows))
         if not duration:
-            next = self.findFirstEvent(time, rows[0])
+            next = self.findFirstEvent(self.sumTime(time, self.slot), rows[0])
             if not next:
                 duration = self.diffTime(self.end, time).seconds / 60
             else:
@@ -173,20 +173,20 @@ class TimeTable(object):
         count = duration / (self.slot.seconds / 60)
 
         evt = TimeTable.Event(time, rows[0], o, count, len(rows))
-        self._setEvent(evt)
+        self._setEvent(evt, flex)
         for r in rows[1:]:
             ref = TimeTable.Reference(time, r, evt, flex)
-            self._setEvent(ref)
+            self._setEvent(ref, flex)
             
         step = self.sumTime(time, self.slot)
         while count > 1:
             for r in rows:
                 ref = TimeTable.Reference(step, r, evt, flex)
-                self._setEvent(ref)
+                self._setEvent(ref, flex)
             step = self.sumTime(step, self.slot)
             count -= 1
 
-    def _setEvent(self, evt):
+    def _setEvent(self, evt, flex):
         event = evt.ref if isinstance(evt, TimeTable.Event) else evt.evt.ref
         try:
             prev = self._data[(evt.time, evt.row)]
@@ -203,7 +203,7 @@ class TimeTable(object):
                 })
                 return
             elif isinstance(prev, TimeTable.Reference):
-                if not prev.flex:
+                if not prev.flex and not flex:
                     self.errors.append({
                         'type': 'overlap-reference',
                         'time': evt.time,
@@ -211,15 +211,16 @@ class TimeTable(object):
                         'previous': prev.evt.ref,
                         'msg': 'Event %s overlap %s on time %s' % (event, prev.evt.ref, evt.time),
                     })
-                evt0 = prev.evt
-                columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
-                for row in self.rows:
-                    for e in self.iterOnRow(row, start=evt.time):
-                        if isinstance(e, TimeTable.Reference) and e.evt is evt0:
-                            del self._data[(e.time, e.row)]
-                        else:
-                            break
-                evt0.columns = columns
+                if not flex:
+                    evt0 = prev.evt
+                    columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
+                    for row in self.rows:
+                        for e in self.iterOnRow(row, start=evt.time):
+                            if isinstance(e, TimeTable.Reference) and e.evt is evt0:
+                                del self._data[(e.time, e.row)]
+                            else:
+                                break
+                    evt0.columns = columns
         self._data[(evt.time, evt.row)] = evt
 
     def iterOnRow(self, row, start=None, end=None):
