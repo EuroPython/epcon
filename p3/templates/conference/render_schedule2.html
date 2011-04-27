@@ -1,4 +1,21 @@
 {% load conference %}
+{% if request.user.is_staff and timetable.errors %}
+<div class="error-notice">
+    <h2>TimeTable errors</h2>
+    <ul>
+        {% for e in timetable.errors %}
+        <li style="margin-bottom: 10px;">
+            {% if e.type == "overlap-event" %}
+            Error at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overwrite <b>{{ e.previous.get_description }}</b>.
+            {% endif %}
+            {% if e.type == "overlap-reference" %}
+            Warning at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overlap <b>{{ e.previous.get_description }}</b>.
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 
 {% randint as r %}
 {% timetable_cells timetable 70 60 70 61 as schedule_cells %}
@@ -49,7 +66,7 @@
                 {% if ref.talk %}
                     <div class="talk-level {{ ref.talk.level }}">&nbsp;</div>
                     <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="trigger-overlay" title="{% if ref|event_has_track:"teaser" %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if ref|event_has_track:"teaser" %}{{ ref.talk.title|truncate_chars:15 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a></h3>
-                    of 
+                    by 
                     {% for s in ref.talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
                     {% endfor %}
