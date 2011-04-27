@@ -1,12 +1,12 @@
 {% extends "p3/base.html" %}
 {% load conference assopy_tags %}
 
-{% if request.user.is_staff %}
 {% block EXTRA_HEAD %}
+{% if request.user.is_staff %}
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.event.drag-2.0.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.event.drop-2.0.min.js"></script>
-{% endblock %}
 {% endif %}
+{% endblock %}
 
 {% block MAIN_CONTENT %}
 <nav id="schedule-navigator">
@@ -74,9 +74,33 @@
                 });
             }
         }
-        function scroll_to_event(eid) {
-            var e = $('.event[data-event-id=' + eid + ']')
-            window.scrollTo(0, e.offset().top);
+
+        var _search_results = {
+            'data': [],
+            'scrollTo': -1
+        };
+        var _search_results = [];
+        var _show_search_result = -1;
+        function set_search_results(events_ids) {
+            _search_results.data = events_ids;
+            _search_results.scrollTo = -1;
+            highlight_search_results(events_ids);
+            scroll_to_next_result();
+        }
+        function scroll_to_next_result() {
+            var data = _search_results.data;
+
+            if(data.length <= 0)
+                return;
+
+            _search_results.scrollTo += 1;
+            if(_search_results.scrollTo >= data.length)
+                _search_results.scrollTo = 0;
+
+            var e = $('.event[data-event-id=' + data[_search_results.scrollTo] + ']')
+            $('html, body').animate({
+                scrollTop: e.offset().top
+            }, 1000);
         }
         function _searchSchedule() {
             var i = $('.search input', nav);
@@ -86,33 +110,39 @@
                     url: '{% url p3-schedule-search %}?conference={{ conference }}&q=' + i.val(),
                     dataType: 'json',
                     success: function(data, status, jqXHR) {
-                        console.log(data);
                         var events_ids = [];
                         for(var ix=0; ix<data.length; ix++) {
                             events_ids.push(data[ix].pk);
                         }
-                        highlight_search_results(events_ids);
-                        if(events_ids.length)
-                            scroll_to_event(events_ids[0]);
+                        set_search_results(events_ids);
                     },
                     complete: function() {
-                        console.log('complete');
                         autocomplete['timeout'] = null;
                     }
                 });
             }
+            else {
+                scroll_to_next_result();
+            }
         }
         $('.search', nav).submit(function() {
+            if(autocomplete['timeout']) {
+                clearTimeout(autocomplete['timeout']);
+                autocomplete['timeout'] = null;
+            }
+            _searchSchedule();
             return false;
         });
         $('.search input', nav).keyup(function(e) {
+            if(e.keyCode == 13)
+                return;
             var i = $(e.target);
             if(i.val().length < 2) {
                 if(autocomplete['timeout']) {
                     clearTimeout(autocomplete['timeout']);
                     autocomplete['timeout'] = null;
                 }
-                highlight_search_results([]);
+                set_search_results([]);
                 return;
             }
             else {
