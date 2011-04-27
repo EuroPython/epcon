@@ -104,7 +104,13 @@
         }
         function _searchSchedule() {
             var i = $('.search input', nav);
-            if(i.val() != autocomplete['last_search']) {
+            var value = $.trim(i.val());
+            autocomplete['timeout'] = null;
+            if(value == '') {
+                set_search_results([]);
+                autocomplete['last_search'] = i.val();
+            }
+            else if(value != autocomplete['last_search']) {
                 autocomplete['last_search'] = i.val();
                 $.ajax({
                     url: '{% url p3-schedule-search %}?conference={{ conference }}&q=' + i.val(),
@@ -117,7 +123,6 @@
                         set_search_results(events_ids);
                     },
                     complete: function() {
-                        autocomplete['timeout'] = null;
                     }
                 });
             }
@@ -136,20 +141,10 @@
         $('.search input', nav).keyup(function(e) {
             if(e.keyCode == 13)
                 return;
-            var i = $(e.target);
-            if(i.val().length < 2) {
-                if(autocomplete['timeout']) {
-                    clearTimeout(autocomplete['timeout']);
-                    autocomplete['timeout'] = null;
-                }
-                set_search_results([]);
-                return;
+            if(autocomplete['timeout']) {
+                clearTimeout(autocomplete['timeout']);
             }
-            else {
-                if(!autocomplete['timeout']) {
-                    autocomplete['timeout'] = setTimeout(_searchSchedule, 400);
-                }
-            }
+            autocomplete['timeout'] = setTimeout(_searchSchedule, 400);
         });
         function _get() {
             var opts = {}
