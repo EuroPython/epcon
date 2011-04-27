@@ -1123,6 +1123,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
     if outer_height is None:
         outer_height = height
     extra_width = outer_width - width
+    extra_height = outer_height - height
 
     compress_width = 10
 
@@ -1151,6 +1152,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
             w += width if not _['collapse'] else compress_width
         w += extra_width * (cols-1)
         h = rows * height
+        h += extra_height * (rows-1)
         max_size[0] = max(max_size[0], l+w)
         max_size[1] = max(max_size[1], t+h)
         return "left: %dpx; top: %dpx; width: %dpx; height: %dpx" % (l, t, w, h)
