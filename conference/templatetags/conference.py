@@ -1126,9 +1126,10 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
             if isinstance(evt, utils.TimeTable.Reference) and evt.flex:
                 flex_times += 1
         collapse = cells == flex_times
-        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse})
+        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse, })
         next_pos = next_pos + (outer_width if not collapse else (10 + extra_width))
 
+    max_size = [0, 0]
     def size(time, row, cols=1, rows=1):
         for ix, _ in enumerate(col_pos):
             if _['time'] == time:
@@ -1139,7 +1140,10 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         for _ in col_pos[ix:ix+cols]:
             w += width if not _['collapse'] else 10
         w += extra_width * (cols-1)
-        return "left: %dpx; top: %dpx; width: %dpx; height: %dpx" % (l, t, w, rows*height)
+        h = rows * height
+        max_size[0] = max(max_size[0], l+w)
+        max_size[1] = max(max_size[1], t+h)
+        return "left: %dpx; top: %dpx; width: %dpx; height: %dpx" % (l, t, w, h)
 
     cells = [{
         'type': '',
@@ -1151,6 +1155,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
             'type': 'hhmm',
             'time': c,
             'size': size(c, 0),
+            'events': len(timetable.eventsAtTime(c)),
         })
 
     for irow, _ in enumerate(timetable.byRows()):
@@ -1175,6 +1180,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
             else:
                 continue
             add(evt)
-    s_w = (len(columns) + 1) * outer_width
-    s_h = (len(timetable.rows) + 1) * outer_height
-    return cells, "width: %dpx; height: %dpx" % (s_w, s_h)
+    return {
+        'cells': cells,
+        'schedule_size': 'width: %dpx; height: %dpx' % (max_size[0], max_size[1]),
+    }
