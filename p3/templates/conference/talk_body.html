@@ -1,0 +1,34 @@
+{% load i18n conference %}
+<div class="page">
+    <h1>{{ talk.title }}</h1>
+    <div class="span-8">
+        <div class="page-summary">
+            <p>
+                {% trans "di" %}
+                {% for spk in talk.get_all_speakers %}
+                <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+                {% if not forloop.last %}-{% endif %}
+                {% endfor %}
+            </p>
+        </div>
+        {% with talk.get_event as e %}
+        {% with e.get_track as track %}
+        <div class="readonly">
+            <div class="cms">
+                {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
+                <p>{{ ab.body|linebreaks }}</p>
+            </div>
+            {% if talk.status == "accepted" %}
+            <section class="talk when">
+                <a href="/{{ e.schedule.conference }}/schedule"><b>{{ e.schedule.conference }}</b></a>
+                {% if e.schedule.conference == CONFERENCE %}{% trans "nella track" %} <i>{{ e.get_track.title }}</i>{% endif %}
+            </section>
+            {% endif %}
+        </div>
+        {% endwith %}
+        {% endwith %}
+    </div>
+    <p>
+        <a href="{% url conference-talk slug=talk.slug %}">Go to the talk full page</a>
+    </p>
+</div>
