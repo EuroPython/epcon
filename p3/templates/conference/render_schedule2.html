@@ -71,11 +71,13 @@
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
                     {% endfor %}
                     <div class="tools">
+                        {% if request.user.is_authenticated %}
                         <div class="talk-vote">{% talk_vote ref.talk as x %}{% if x %}{{ x.vote}}/10{% endif %}</div>
                         <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=ref.id %}">
                             <button class="down {% if interest < 0 %}active{% endif %}"></button>
                             <button class="up {% if interest > 0 %}active{% endif %}"></button>
                         </div>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="custom-event">{{ ref.custom|safe }}</div>
