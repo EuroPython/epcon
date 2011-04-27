@@ -91,7 +91,7 @@
                 },
                 success: function() {
                     $('button', wrap).removeClass('active');
-                    var td = wrap.parents('td');
+                    var td = wrap.parents('.event');
                     td.removeClass('highlighted').removeClass('shadowed');
                     if(val > 0) {
                         $('button.up', wrap).addClass('active');
