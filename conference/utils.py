@@ -150,10 +150,12 @@ class TimeTable(object):
 
         return t2
 
-    def sumTime(self, t, td):
+    @classmethod
+    def sumTime(cls, t, td):
         return ((datetime.combine(date.today(), t)) + td).time()
 
-    def diffTime(self, t1, t2):
+    @classmethod
+    def diffTime(cls, t1, t2):
         return ((datetime.combine(date.today(), t1)) - (datetime.combine(date.today(), t2)))
 
     def setEvent(self, time, o, duration, rows):
