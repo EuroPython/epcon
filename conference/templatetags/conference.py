@@ -530,14 +530,13 @@ def render_schedule2(context, schedule, start=None, end=None):
     tt = TimeTable(time_spans=ts, rows=tracks)
     for e in models.Event.objects.filter(schedule=schedule):
         duration = e.talk.duration if e.talk else None
-        event_traks = set(parse_tag_input(e.track))
-        if 'break' in event_traks or 'special' in event_traks:
+        event_tracks = set(parse_tag_input(e.track))
+        rows = [ x for x in tracks if x.track in event_tracks ]
+        if ('break' in event_tracks or 'special' in event_tracks) and not rows:
             rows = list(tracks)
-        else:
-            rows = [ x for x in tracks if x.track in event_traks ]
         if not rows:
             continue
-        if 'teaser' in event_traks:
+        if 'teaser' in event_tracks:
             duration = 30
         tt.setEvent(e.start_time, e, duration, rows=rows)
 

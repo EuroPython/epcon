@@ -280,7 +280,9 @@ class EventForm(forms.ModelForm):
 
         tracks = set(parse_tag_input(data['track']))
         if 'special' in tracks or 'break' in tracks:
-            tracks |= set(t.track for t in self.schedule.track_set.all())
+            schedule_tracks = set(t.track for t in self.schedule.track_set.all())
+            if not tracks & schedule_tracks:
+                tracks |= schedule_tracks
         tracks -= set(('teaser',))
         for t in tracks:
             conflicts = set(TaggedItem.objects.get_by_model(models.Event.objects.filter(schedule=self.schedule, start_time=data['start_time']), t))
