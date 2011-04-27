@@ -320,6 +320,7 @@ TALK_DURATION = (
     (40,  _('40 minutes')),
     (45,  _('45 minutes')),
     (60,  _('60 minutes')),
+    (75,  _('75 minutes')),
     (90,  _('90 minutes')),
     (120, _('120 minutes')),
     (240, _('240 minutes')),
