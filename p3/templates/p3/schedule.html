@@ -56,15 +56,45 @@
     (function() {
         var nav = $('#schedule-navigator');
         var autocomplete = { 'timeout': null, 'last_search': '' };
+        function highlight_search_results(ids) {
+            if(!ids.length) {
+                $('.event[data-event-id]').removeClass('search-result-ok').removeClass('search-result-ko');
+            }
+            else {
+                $('.event[data-event-id]').each(function() {
+                    var e = $(this);
+                    if(ids.indexOf(e.attr('data-event-id')) == -1) {
+                        e.removeClass('search-result-ok').addClass('search-result-ko');
+                    }
+                    else {
+                        e.removeClass('search-result-ko').addClass('search-result-ok');
+                    }
+                });
+            }
+        }
+        function scroll_to_event(eid) {
+            var e = $('.event[data-event-id=' + eid + ']')
+            window.scrollTo(0, e.offset().top);
+        }
         function _searchSchedule() {
             var i = $('.search input', nav);
             if(i.val() != autocomplete['last_search']) {
                 autocomplete['last_search'] = i.val();
                 $.ajax({
-                    url: '{% url p3-schedule-search %}?q=' + i.val(),
-                    success: function() {
+                    url: '{% url p3-schedule-search %}?conference={{ conference }}&q=' + i.val(),
+                    dataType: 'json',
+                    success: function(data, status, jqXHR) {
+                        console.log(data);
+                        var events_ids = [];
+                        for(var ix=0; ix<data.length; ix++) {
+                            events_ids.push(data[ix].pk);
+                        }
+                        highlight_search_results(events_ids);
+                        if(events_ids.length)
+                            scroll_to_event(events_ids[0]);
                     },
                     complete: function() {
+                        console.log('complete');
                         autocomplete['timeout'] = null;
                     }
                 });
@@ -73,13 +103,14 @@
         $('.search', nav).submit(function() {
             return false;
         });
-        $('.search input', nav).keydown(function(e) {
+        $('.search input', nav).keyup(function(e) {
             var i = $(e.target);
             if(i.val().length < 2) {
                 if(autocomplete['timeout']) {
                     clearTimeout(autocomplete['timeout']);
                     autocomplete['timeout'] = null;
                 }
+                highlight_search_results([]);
                 return;
             }
             else {
@@ -183,13 +214,13 @@
         function initSchedule(target) {
             if(!target)
                 target = $(document.body);
-            $('.schedule td.event', target).append($('<div><a href="#" class="schedule-edit"><img src="{{ STATIC_URL }}p5/i/edit-icon.png" /></a></div>'));
+            $('.schedule .event .tools', target).append($('<div><a href="#" class="schedule-edit"><img src="{{ STATIC_URL }}p5/i/edit-icon.png" /></a></div>'));
             $('.schedule .schedule-edit', target).click(function(e) {
                 e.preventDefault();
-                var cell = $(e.target).parents('td');
+                var cell = $(e.target).parents('.event');
                 var event_url = cell.attr('data-event-url');
                 var schedule = cell.parents('.schedule-wrapper');
-                var track = cell.parents('tr').attr('data-track');
+                var track = cell.attr('data-track');
                 var time = cell.attr('data-time');
                 var evt = $('h3', cell).attr('data-talk');
                 if(!evt)

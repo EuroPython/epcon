@@ -2,8 +2,8 @@
 
 {% randint as r %}
 {% timetable_cells timetable 70 60 70 61 as schedule_cells %}
-<div id="s{{ r }}" class="schedule" style="{{ schedule_cells.1 }}">
-    {% for cell in schedule_cells.0 %}
+<div id="s{{ r }}" class="schedule" style="{{ schedule_cells.schedule_size }}">
+    {% for cell in schedule_cells.cells %}
         {% if cell.type == '' %}
         <div class="cell track hhmm" style="{{ cell.size }}">&nbsp;</div>
         {% endif %}
@@ -12,7 +12,11 @@
             class="cell hhmm"
             style="{{ cell.size }}"
             data-time="{{ cell.time|time:"H:i" }}">
+            {% if cell.events >= 1 %}
             <span>{{ cell.time|time:"H" }}</span>:{{ cell.time|time:"i" }}
+            {% else %}
+            &nbsp;
+            {% endif %}
         </div>
         {% endif %}
         {% if cell.type == 'track' %}
@@ -26,7 +30,11 @@
                 data-track="{{ cell.row }}"
                 data-colspan="1"
                 data-rowspan="1"
-                style="{{ cell.size }}">&nbsp;</div>
+                style="{{ cell.size }}">
+                <div class="wrapper">
+                    <div class="tools">&nbsp;</div>
+                </div>
+            </div>
             {% else %}
             {% with cell.event.ref as ref %}
             {% with ref|user_interest:request.user as interest %}
@@ -34,26 +42,24 @@
                 class="cell event{% for t in ref.get_all_tracks_names %} t-{{ t }}{% endfor %}{% if interest > 0 %} highlighted{% endif %}{% if interest < 0 %} shadowed{% endif %}"
                 data-time="{{ cell.time|time:"H:i" }}"
                 data-track="{{ cell.row }}"
-                {% if ref.talk %}data-duration="{{ ref.talk.duration }}"{% endif %}
-                data-colspan="{{ cell.event.columns }}"
-                data-rowspan="{{ cell.event.rows }}"
+                data-event-id="{{ ref.id }}"
                 data-event-url="{% url conference-schedule-event conference=schedule.conference slug=schedule.slug eid=ref.id %}"
                 style="{{ cell.size }}">
                 <div class="wrapper">
                 {% if ref.talk %}
                     <div class="talk-level {{ ref.talk.level }}">&nbsp;</div>
-                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" title="{{ talk.title }}">{{ ref.talk.title|truncate_chars:50 }}</a></h3>
+                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="trigger-overlay" title="{{ talk.title }}">{{ ref.talk.title|truncate_chars:50 }}</a></h3>
                     of 
                     {% for s in ref.talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
                     {% endfor %}
-                    {% comment %}
-                    <div class="talk-vote">#{% talk_vote talk as x %}{{ x.vote}}</div>
-                    <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}">
-                        <button class="down {% if interest < 0 %}active{% endif %}">Down</button>
-                        <button class="up {% if interest > 0 %}active{% endif %}">Up</button>
+                    <div class="tools">
+                        <div class="talk-vote">#{% talk_vote ref.talk as x %}{{ x.vote}}</div>
+                        <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=ref.id %}">
+                            <button class="down {% if interest < 0 %}active{% endif %}"></button>
+                            <button class="up {% if interest > 0 %}active{% endif %}"></button>
+                        </div>
                     </div>
-                    {% endcomment %}
                 {% else %}
                     <div class="custom-event">{{ ref.custom|safe }}</div>
                 {% endif %}
@@ -65,3 +71,37 @@
         {% endif %}
     {% endfor %}
 </div>
+<script type="text/javascript">
+    (function() {
+        var table = $('#s{{ r }}');
+        $('.talk-interest button', table).click(function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var wrap = $(this).parents('.talk-interest'); 
+            var val = 0;
+            if(!btn.hasClass('active')) {
+                val = btn.hasClass('up') ? 1 : -1;
+            }
+            $.ajax({
+                url: wrap.attr('data-url'),
+                type: 'POST',
+                data: {
+                    interest: val
+                },
+                success: function() {
+                    $('button', wrap).removeClass('active');
+                    var td = wrap.parents('td');
+                    td.removeClass('highlighted').removeClass('shadowed');
+                    if(val > 0) {
+                        $('button.up', wrap).addClass('active');
+                        td.addClass('highlighted');
+                    }
+                    else if(val < 0) {
+                        $('button.down', wrap).addClass('active');
+                        td.addClass('shadowed');
+                    }
+                }
+            });
+        });
+    })();
+</script>
