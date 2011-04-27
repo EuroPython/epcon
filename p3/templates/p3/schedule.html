@@ -110,7 +110,7 @@
 </script>
 {% if request.user.is_staff %}
 <div class="overlay" id="schedule-form-box">
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
         <fieldset>
         {% for f in form %}
         {{ f|field }}
