@@ -1172,7 +1172,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         row, cols = _
         add({
             'type': 'track',
-            'track': row.track,
+            'track': row,
             'size': size(None, irow+1),
         })
         for c in cols:
