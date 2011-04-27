@@ -537,6 +537,8 @@ def render_schedule2(context, schedule, start=None, end=None):
             rows = [ x for x in tracks if x.track in event_traks ]
         if not rows:
             continue
+        if 'teaser' in event_traks:
+            duration = 30
         tt.setEvent(e.start_time, e, duration, rows=rows)
 
     if start or end:

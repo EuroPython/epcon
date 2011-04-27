@@ -268,7 +268,7 @@ class EventForm(forms.ModelForm):
     def clean_track(self):
         data = self.cleaned_data
         tracks = set(parse_tag_input(data['track']))
-        allowed = set(t.track for t in self.schedule.track_set.all()) | set(('special', 'break'))
+        allowed = set(t.track for t in self.schedule.track_set.all()) | set(('special', 'break', 'teaser'))
         if tracks - allowed:
             raise forms.ValidationError('invalid tracks names: "%s"' % ' '.join(tracks - allowed))
         return data['track']
@@ -283,6 +283,8 @@ class EventForm(forms.ModelForm):
             tracks |= set(t.track for t in self.schedule.track_set.all())
         for t in tracks:
             conflicts = set(TaggedItem.objects.get_by_model(models.Event.objects.filter(schedule=self.schedule, start_time=data['start_time']), t))
+            if self.instance:
+                conflicts = conflicts - set((self.instance,))
             if conflicts:
                 raise forms.ValidationError('conflicts on "%s"' % data['start_time'])
 

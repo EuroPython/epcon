@@ -322,6 +322,7 @@ TALK_DURATION = (
     (60,  _('60 minutes')),
     (90,  _('90 minutes')),
     (120, _('120 minutes')),
+    (240, _('240 minutes')),
 )
 TALK_LANGUAGES = (
     ('it', _('Italian')),
@@ -431,7 +432,7 @@ class Talk(models.Model, UrlMixin):
         ordering = ['title']
 
     def __unicode__(self):
-        return '(%s) %s [%s][%s]' % (self.duration, self.title, self.conference, self.language)
+        return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
 
     @models.permalink
     def get_absolute_url(self):
