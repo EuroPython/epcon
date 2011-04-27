@@ -8,7 +8,7 @@ import httplib2
 import random
 import sys
 import simplejson
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from django import template
 from django.conf import settings as dsettings
 from django.core.cache import cache
@@ -523,8 +523,12 @@ def render_schedule2(context, schedule, start=None, end=None):
     if events:
         if events[0].start_time < ts[0]:
             ts[0] = events[0].start_time
-        if events[-1].start_time > ts[1]:
-            ts[1] = events[-1].start_time
+        if events[-1].start_time >= ts[1]:
+            if events[-1].talk:
+                td = timedelta(seconds=60*events[-1].talk.duration)
+            else:
+                td = timedelta(seconds=3600)
+            ts[1] = TimeTable.sumTime(events[-1].start_time, td)
 
     tt = TimeTable(time_spans=ts, rows=tracks)
     for e in models.Event.objects.filter(schedule=schedule):
