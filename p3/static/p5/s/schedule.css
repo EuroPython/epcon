@@ -47,9 +47,8 @@ table.schedule caption {
 }
 .schedule td.shadowed {
     opacity: .7;
+    background: #999;
 }
-
-
 
 .schedule .star {
 /*     position: absolute; */
