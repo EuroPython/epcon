@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-13 14:40+0200\n"
+"POT-Creation-Date: 2011-04-28 14:02+0200\n"
 "PO-Revision-Date: 2011-04-07 17:18\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,7 +81,7 @@ msgstr ""
 msgid "Birthday"
 msgstr ""
 
-#: models.py:187 models.py:487
+#: models.py:187 models.py:498
 msgid "Card name"
 msgstr ""
 
@@ -89,19 +89,19 @@ msgstr ""
 msgid "Account type"
 msgstr ""
 
-#: models.py:189 models.py:488
+#: models.py:189 models.py:499
 msgid "Vat Number"
 msgstr ""
 
-#: models.py:190 models.py:489
+#: models.py:190 models.py:500
 msgid "Tax Identification Number"
 msgstr ""
 
-#: models.py:191 models.py:492
+#: models.py:191 models.py:503
 msgid "Country"
 msgstr ""
 
-#: models.py:192 models.py:493
+#: models.py:192 models.py:504
 msgid "Zip Code"
 msgstr ""
 
@@ -115,11 +115,11 @@ msgid ""
 "through google."
 msgstr ""
 
-#: models.py:198 models.py:495
+#: models.py:198 models.py:506
 msgid "City"
 msgstr ""
 
-#: models.py:199 models.py:496
+#: models.py:199 models.py:507
 msgid "State"
 msgstr ""
 
@@ -127,7 +127,7 @@ msgstr ""
 msgid "According to VIES, this is not a valid vat number"
 msgstr ""
 
-#: models.py:494
+#: models.py:505
 msgid "Address"
 msgstr ""
 
@@ -278,6 +278,10 @@ msgstr ""
 #: templates/registration/password_reset_email.html:12
 #, python-format
 msgid "The %(site_name)s team"
+msgstr ""
+
+#: templatetags/assopy_tags.py:33
+msgid "(required)"
 msgstr ""
 
 #~ msgid "Codice Fiscale"
