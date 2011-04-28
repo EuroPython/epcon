@@ -1,0 +1,40 @@
+body {
+    background-color: white !important;
+    background-image: none !important;
+}
+footer {
+    display: none;
+}
+
+.container {
+    margin: 0;
+}
+
+nav {
+    display: none;
+}
+
+.badge {
+    display: none !important;
+}
+
+#habla_window_div {
+    display: none !important;
+}
+
+.schedule {
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.schedule-date {
+    display: block !important;
+}
+
+.schedule-date span {
+    display: inline !important;
+}
+
+.schedule-wrapper .csm h2 {
+    display: none !important;
+}

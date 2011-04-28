@@ -325,3 +325,10 @@ div.schedule .track {
 div.schedule .track span {
     font-weight: bold;
 }
+
+.schedule-date span {
+    display: none;
+}
+.schedule-date.afternoon {
+    display: none;
+}
