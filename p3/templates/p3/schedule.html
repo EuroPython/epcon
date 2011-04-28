@@ -17,16 +17,12 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     <form class="search">
         <input name="q" value="" />
     </form>
-    {% comment %}
     <h3>Show</h3>
     <form class="show-flags">
         <label><input type="checkbox" name="ita" value="" checked> Italian Track</label>
         <label><input type="checkbox" name="trainings" value="" checked> Trainings</label>
-        <label><input type="checkbox" name="partner" value="" checked> Partner Program</label>
-        <label><input type="checkbox" name="talklevel" value="" checked> Talk Level</label>
         <label><input type="checkbox" name="myvotes" value="" checked> My votes</label>
     </form>
-    {% endcomment %}
     <h3>Jump to</h3>
     <ul>
         {% for schedule in schedules %}
@@ -61,18 +57,35 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </div>
 <script type="text/javascript">
     (function() {
-
+        /*
+         * Calcolo della dimensione e posizionamento tramite margini dei div
+         * ruotati di 90 gradi via css; La rotazione avviene intorno al centro
+         * dell'elemento, quindi devo posizionarlo al centro del contenitore.
+         */
         $('.t-break .wrapper, .t-special .wrapper').each(function() {
             var w = $(this);
             var width = w.parents('.event').height();
-            w
-                .width(width)
+            w.width(width)
                 .css('position', 'static')
                 .css('margin-left', -(width-80) / 2)
                 .css('margin-top', (width-80) / 2)
         });
 
         var nav = $('#schedule-navigator');
+
+        /*
+         * Ricerca full text nello schedule: l'utente inserisce i termini da
+         * ricercare, quando tenta di fare il submit della form:
+         *  * se il testo inserito è diverso dall'ultima ricerca fatta viene
+         *  esgeuita una richiesta AJAX, i risultati vengono evidenziati e il
+         *  browser scorre alla prima occorrenza
+         * 
+         *  * se il testo è uguale viene scrollato il browser alla occorrenza
+         *  successiva
+         *
+         * la form viene automaticamente submittata, dopo 400ms, se vengono
+         * inseriti almeno 3 caratteri
+         */
         var autocomplete = { 'timeout': null, 'last_search': '' };
         function highlight_search_results(ids) {
             if(!ids.length) {
@@ -162,6 +175,12 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             }
             autocomplete['timeout'] = setTimeout(_searchSchedule, 400);
         });
+
+        /*
+         * Gestione Filtri di visualizzazione: ad ogni filtro corrisponde una
+         * funzione js che viene eseguita quando cambia il valore.  Le scelte
+         * dell'utente vengono salvate in un cookie locale.
+         */
         function _get() {
             var opts = {}
             var raw = $.cookie('schedule_opts');
@@ -179,37 +198,51 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             }
             $.cookie('schedule_opts', raw.join(','), { expires: 60 });
         }
+        function setQueryArgument(qs, name, value) {
+            var t = name + '=' + value;
+            if(qs.indexOf(name) != -1) {
+                var r = new RegExp("(&?)" + name + "=[^&]*&?");
+                qs = qs.replace(r, '$1');
+            }
+            if(qs.length == 0)
+                qs = '?' + t;
+            else if(qs == '?' || qs.slice(-1) == '&')
+                qs += t;
+            else
+                qs += '&' + t;
+            return qs;
+        }
+        window.setQueryArgument = setQueryArgument;
         var opts = _get();
         var flags = {
-            'ita': function() { return [$('.schedule tr[data-track=track-ita]')]; },
+            'ita': function(visible) {
+                var qs = document.location.search;
+                console.log(document.location);
+            },
             'trainings': function() {
                 return [$('.schedule tr[data-track=training1]'), $('.schedule tr[data-track=training2]')];
             },
-            'partner': function() {
-            },
-            'talklevel': function() { return [$('.schedule .talk-level')]; },
-            'myvotes': function() { return [$('.schedule .talk-vote')]; }
-        }
-        function show_flag(name, v) {
-            $.each(flags[name](), function(ix, dom) {
-                if(!v)
-                    dom.hide();
-                else
-                    dom.show();
-            });
+            'myvotes': function(visible) {
+                $('.schedule .talk-vote').each(function(ix, dom) {
+                    if(!visible)
+                        dom.hide();
+                    else
+                        dom.show();
+                });
+            }
         }
         for(var k in opts) {
             $('.show-flags input[name=' + k + ']', nav).attr('checked', null);
-            show_flag(k, false);
+            flags[k](false);
         }
         $('.show-flags input', nav).change(function() {
             if($(this).is(':checked')) {
                 delete opts[this.name];
-                show_flag(this.name, true);
+                flags[this.name](true);
             }
             else {
                 opts[this.name] = '';
-                show_flag(this.name, false);
+                flags[this.name](false);
             }
             _set(opts);
         });
