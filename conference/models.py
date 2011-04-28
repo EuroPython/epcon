@@ -552,6 +552,8 @@ class Sponsor(models.Model):
         upload_to=_fs_upload_to('sponsor'), blank=True,
         help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
     )
+    alt_text = models.CharField(max_length=150, blank=True)
+    title_text = models.CharField(max_length=150, blank=True)
 
     class Meta:
         ordering = ['sponsor']
