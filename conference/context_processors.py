@@ -20,3 +20,8 @@ def stuff(request):
     if settings.GOOGLE_MAPS:
         ctx['GOOGLE_MAPS_KEY'] = settings.GOOGLE_MAPS['key']
     return ctx
+
+def current_url(request):
+    return {
+        'CURRENT_URL': dsettings.DEFAULT_URL_PREFIX + request.path,
+    }

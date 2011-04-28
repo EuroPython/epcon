@@ -14,6 +14,7 @@ from django.conf import settings as dsettings
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import defaultfilters, Context
+from django.template.loader import render_to_string
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
@@ -1211,3 +1212,13 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         'cells': cells,
         'schedule_size': 'width: %dpx; height: %dpx' % (max_size[0], max_size[1]),
     }
+
+@fancy_tag(register, takes_context=True)
+def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", action="recommend", font="", colorscheme="light"):
+    if not href:
+        href = context['CURRENT_URL']
+    data = dict(locals())
+    data.pop('context')
+    ctx = Context(context)
+    ctx.update(data)
+    return render_to_string('conference/render_fb_like.html', ctx)
