@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-13 14:40+0200\n"
+"POT-Creation-Date: 2011-04-28 14:02+0200\n"
 "PO-Revision-Date: 2011-04-09 12:29\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,7 +87,7 @@ msgstr ""
 msgid "Birthday"
 msgstr "Data di nascita"
 
-#: models.py:187 models.py:487
+#: models.py:187 models.py:498
 msgid "Card name"
 msgstr "Azienda"
 
@@ -95,19 +95,19 @@ msgstr "Azienda"
 msgid "Account type"
 msgstr "Tipologia"
 
-#: models.py:189 models.py:488
+#: models.py:189 models.py:499
 msgid "Vat Number"
 msgstr "Partita IVA"
 
-#: models.py:190 models.py:489
+#: models.py:190 models.py:500
 msgid "Tax Identification Number"
 msgstr ""
 
-#: models.py:191 models.py:492
+#: models.py:191 models.py:503
 msgid "Country"
 msgstr "Nazione"
 
-#: models.py:192 models.py:493
+#: models.py:192 models.py:504
 msgid "Zip Code"
 msgstr "CAP"
 
@@ -122,11 +122,11 @@ msgid ""
 "through google."
 msgstr ""
 
-#: models.py:198 models.py:495
+#: models.py:198 models.py:506
 msgid "City"
 msgstr "Città"
 
-#: models.py:199 models.py:496
+#: models.py:199 models.py:507
 msgid "State"
 msgstr ""
 
@@ -134,7 +134,7 @@ msgstr ""
 msgid "According to VIES, this is not a valid vat number"
 msgstr "Secondo il VIES questo non è un numero valido di Partita IVA."
 
-#: models.py:494
+#: models.py:505
 msgid "Address"
 msgstr "Indirizzo"
 
@@ -299,6 +299,10 @@ msgstr "Grazie per aver utilizzato il sito!"
 #, python-format
 msgid "The %(site_name)s team"
 msgstr " %(site_name) team"
+
+#: templatetags/assopy_tags.py:33
+msgid "(required)"
+msgstr ""
 
 #~ msgid "Codice Fiscale"
 #~ msgstr "Codice Fiscale"
