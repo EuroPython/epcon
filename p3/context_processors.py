@@ -7,11 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 def static(request):
     return { 'STATIC_URL': settings.STATIC_URL }
 
-def current_url(request):
-    return {
-        'CURRENT_URL': settings.DEFAULT_URL_PREFIX + request.path,
-    }
-
 def highlight(request):
     """
     Aggiunge il messaggio da mostrare in tutte le pagine

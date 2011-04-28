@@ -77,10 +77,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'pages.context_processors.media',
+    'conference.context_processors.current_url',
     'conference.context_processors.stuff',
     'p3.context_processors.highlight',
     'p3.context_processors.static',
-    'p3.context_processors.current_url',
     'django.contrib.messages.context_processors.messages',
 )
 

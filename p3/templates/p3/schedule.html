@@ -40,7 +40,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
         data-schedule-conference="{{ schedule.conference }}"
         data-schedule-slug="{{ schedule.slug }}">
-        <h1>{{ schedule.date|date:"l d F Y" }}</h1>
+        <h1 class="schedule-date morning">{{ schedule.date|date:"l d F Y" }} <span>Morning</span></h1>
         <div class="cms">
             <h2>{{ schedule.date|date:"l" }} Morning</h2>
             {% if schedule.description %}
@@ -48,6 +48,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             {% endif %}
         </div>
         {% render_schedule2 schedule "09:00" "14:30" %}
+        <h1 class="schedule-date afternoon">{{ schedule.date|date:"l d F Y" }} <span>Afternoon</span></h1>
         <div class="cms">
             <h2>{{ schedule.date|date:"l" }} Afternoon</h2>
             {% if schedule.description %}

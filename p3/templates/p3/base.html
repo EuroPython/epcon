@@ -10,14 +10,15 @@
     <link rel="icon" href="{{ STATIC_URL }}p5/i/favicon.png" type="image/png" />
 
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/reset.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/grid.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/form.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/wizard.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/schedule.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/grid.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/form.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/base.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/cms.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/wizard.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/schedule.css" type="text/css" media="all" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/mobile.css" type="text/css" />
-    <link rel="stylesheet" href="{{ STATIC_URL}}p5/s/blog.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{ STATIC_URL}}p5/s/blog.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ STATIC_URL}}p5/s/print.css" type="text/css" media="print" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/j/rateit/src/rateit.css" type="text/css" />
 <!--[if lt IE 9]>
     <script src="{{ STATIC_URL }}p5/j/html5.js"></script>
@@ -232,6 +233,7 @@
 {% endblock %}
     <div id="global-overlay" class="overlay"><div class="contentWrap"></div></div>
     <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
+    {% comment %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
         document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -257,6 +259,7 @@
         $('#habla_unavailable_div').hide();
     });
     </script> 
+    {% endcomment %}
     <script type="text/javascript">
         var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
         document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
