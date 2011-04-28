@@ -308,7 +308,10 @@ def billing(request):
 def schedule(request, conference):
     from conference.forms import EventForm
     schedules = Schedule.objects.filter(conference=conference)
-    form = EventForm(schedule=schedules[0])
+    try:
+        form = EventForm(schedule=schedules[0])
+    except IndexError:
+        raise http.Http404()
     return {
         'conference': conference,
         'schedules': schedules,
