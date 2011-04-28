@@ -377,6 +377,17 @@ class OrderManager(models.Manager):
         def conference(self, conference):
             return self.filter(orderitem__ticket__fare__conference=conference).distinct()
 
+        def usable(self, include_admin=False):
+            """
+            restituisce tutti gli ordini "usabili", cioè tutti gli ordini con
+            metodo bonifico (a prescindere se risultano pagati o meno) e tutti
+            gli ordini con metodo paypal (o cc) completati.
+            """
+            qs = self.filter(models.Q(method='bank')|models.Q(method__in=('cc', 'paypal'), _complete=True))
+            if include_admin:
+                qs = qs.filter(method='admin')
+            return qs
+
     @transaction.commit_on_success
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
         if coupons:
