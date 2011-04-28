@@ -205,7 +205,7 @@ class User(models.Model):
 
     def photo_url(self):
         if self.photo:
-            return self.photo.url
+            return dsettings.DEFAULT_URL_PREFIX + self.photo.url
         try:
             return self.identities.exclude(photo='')[0].photo
         except IndexError:
