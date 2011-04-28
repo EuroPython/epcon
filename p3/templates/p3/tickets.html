@@ -48,7 +48,7 @@
                     var f = ticket_field(form, 'ticket_name');
                 else
                     var f = ticket_field(form, 'name');
-                var n = f.val().trim();
+                var n = $.trim(f.val());
                 if(n == '') {
                     alert('{% trans "Please enter the name" %}');
                     f.focus();
@@ -67,7 +67,7 @@
     }
     $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
-        var email = prompt('{% trans "Enter the email of the person you want to assign the ticket" %}').trim();
+        var email = $.trim(prompt('{% trans "Enter the email of the person you want to assign the ticket" %}'));
         if(!email)
             return;
         if(email == "{{ request.user.email }}") {
