@@ -6,6 +6,7 @@ from django import forms
 from django import template
 from django.conf import settings as dsettings
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from urllib import quote_plus
 
@@ -13,7 +14,7 @@ register = template.Library()
 
 _field_tpl = template.Template("""
     <div class="{{ classes|join:" " }}">
-        <label for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %}<span class="required">(required)</span>{% endif %}</label>
+        <label for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %}<span class="required">{{ required_text }}</span>{% endif %}</label>
         {{ field }}
         {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
         {{ field.errors }}
@@ -29,6 +30,7 @@ def field(field, cls=None):
     classes.append(field.field.__class__.__name__.lower())
     if field.errors:
         classes.append('error')
+    required_text = _('(required)')
     if isinstance(field.field.widget, (forms.HiddenInput,)):
         return str(field)
     else:
