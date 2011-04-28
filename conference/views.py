@@ -125,16 +125,7 @@ def speaker_access(f):
 @render_to('conference/speaker.html')
 @speaker_access
 def speaker(request, slug, speaker, talks, full_access):
-    if request.method == 'GET':
-        form = SpeakerForm(initial={
-            'activity': speaker.activity,
-            'activity_homepage': speaker.activity_homepage,
-            'industry': speaker.industry,
-            'company': speaker.company,
-            'company_homepage': speaker.company_homepage,
-            'bio': getattr(speaker.getBio(), 'body', ''),
-        })
-    elif request.method == 'POST':
+    if request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
         form = SpeakerForm(data=request.POST)
@@ -148,6 +139,15 @@ def speaker(request, slug, speaker, talks, full_access):
             speaker.save()
             speaker.setBio(data['bio'])
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
+    else:
+        form = SpeakerForm(initial={
+            'activity': speaker.activity,
+            'activity_homepage': speaker.activity_homepage,
+            'industry': speaker.industry,
+            'company': speaker.company,
+            'company_homepage': speaker.company_homepage,
+            'bio': getattr(speaker.getBio(), 'body', ''),
+        })
     return {
         'form': form,
         'full_access': full_access,
