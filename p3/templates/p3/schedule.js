@@ -1,5 +1,5 @@
 (function() {
-
+    var supports_history_api = !!(window.history && history.pushState);
 
     var nav = $('#schedule-navigator');
 
@@ -106,45 +106,6 @@
         autocomplete['timeout'] = setTimeout(_searchSchedule, 400);
     });
 
-    /*
-     * Gestione Filtri di visualizzazione: ad ogni filtro corrisponde una
-     * funzione js che viene eseguita quando cambia il valore.  Le scelte
-     * dell'utente vengono salvate in un cookie locale.
-     */
-    function _get() {
-        var opts = {}
-        var raw = $.cookie('schedule_opts');
-        if(raw) {
-            $.each(raw.split(','), function(ix, val) {
-                opts[val] = '';
-            });
-        }
-        return opts;
-    }
-    function _set(opts) {
-        var raw = [];
-        for(var k in opts) {
-            raw.push(k);
-        }
-        $.cookie('schedule_opts', raw.join(','), { expires: 60 });
-    }
-    function setQueryArgument(qs, name, value) {
-        if(qs.indexOf(name) != -1) {
-            var r = new RegExp("(&?)" + name + "=[^&]*&?");
-            qs = qs.replace(r, '$1');
-        }
-        if(value==null)
-            return;
-        var t = name + '=' + value;
-        if(qs.length == 0)
-            qs = '?' + t;
-        else if(qs == '?' || qs.slice(-1) == '&')
-            qs += t;
-        else
-            qs += '&' + t;
-        return qs;
-    }
-    var opts = _get();
     var flags = {
         'show-training': function(visible) {
             var form = $('.show-flags', nav);
@@ -157,16 +118,8 @@
                     form.append('<input type="hidden" name="' + name + '" value="' + v + '" />')
             });
             return true;
-        },
-        'show-votes': function(visible, init) {
-            $('.schedule .talk-vote').each(function(ix, dom) {
-                if(!visible)
-                    $(dom).hide();
-                else
-                    $(dom).show();
-            });
         }
-    }
+    };
     var form_flags = $('.show-flags', nav);
     function changeShowFlag(name, value) {
         var input = $('input[name=' + name + ']', form_flags);
@@ -178,16 +131,13 @@
                 visible = input.val() == 0;
 
         if(visible) {
-            delete opts[name];
             input.val(1);
             action.text('Hide');
         }
         else {
-            opts[name] = '';
             input.val(0);
             action.text('Show');
         }
-        _set(opts);
         if(name in flags)
             var submit = flags[name](visible);
         else
@@ -195,12 +145,59 @@
         if(submit && value == null)
             form_flags.submit();
     }
-    for(var k in opts) {
-        changeShowFlag(k, false);
+    function syncFormWithQueryString() {
+        var opts = parseQueryString();
+        for(var k in opts) {
+            if(opts[k] != '1')
+                changeShowFlag(k, false);
+        }
     }
+
+    syncFormWithQueryString();
+
     $('label', form_flags).click(function(e) {
         e.preventDefault();
+        if(form_flags.attr('data-wait') > 0)
+            return;
         changeShowFlag($('input', this).attr('name'))
     });
+
+    function refreshSchedule() {
+        var qa = $.param($.extend(parseQueryString(), parseQueryString(form_flags.serialize())));
+        if(supports_history_api) {
+            var url = document.location.href;
+            if(url.indexOf('?') != -1) {
+                url = url.slice(0, url.indexOf('?'));
+            }
+            url += '?' + qa;
+            history.pushState(null, null, url);
+        }
+        var schedules = $('.schedule-wrapper')
+        if(schedules.length) {
+            var h3 = form_flags.prev();
+            h3.prepend('<img src="{{ STATIC_URL }}p5/i/ajax-loader.gif" width="16" />');
+            form_flags.attr('data-wait', schedules.length);
+            schedules.each(function() {
+                var schedule = $(this);
+                schedule.load(schedule.attr('data-schedule-url') + '?' + qa, function() {
+                    var queue = form_flags.attr('data-wait') - 1;
+                    if(queue <= 0)
+                        $('img', h3).remove();
+                    form_flags.attr('data-wait', queue);
+                }); 
+            });
+        }
+    }
+
+    form_flags.submit(function() {
+        refreshSchedule();
+        return false;
+    });
+    if(supports_history_api) {
+        $(window).bind('popstate', function(e) {
+            syncFormWithQueryString();
+            refreshSchedule();
+        });
+    }
 })();
 

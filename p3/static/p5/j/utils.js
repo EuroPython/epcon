@@ -118,3 +118,18 @@ if(typeof(String.prototype.trim) === "undefined")
         return String(this).replace(/^\s+|\s+$/g, '');
     };
 }
+// http://stackoverflow.com/questions/901115/get-querystring-values-in-javascript
+function parseQueryString(qs) {
+    if(!qs)
+        qs = document.location.search;
+    var urlParams = {};
+    var e,
+        a = /\+/g,  // Regex for replacing addition symbol with a space
+        r = /([^&=]+)=?([^&]*)/g,
+        d = function (s) { return decodeURIComponent(s.replace(a, " ")); };
+    var q = qs.slice(0, 1) == '?' ? qs.substring(1) : qs;
+
+    while(e = r.exec(q))
+        urlParams[d(e[1])] = d(e[2]);
+    return urlParams;
+}
