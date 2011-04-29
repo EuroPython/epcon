@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
     url(r'^map.js/', 'p3.views.map_js', name='p3-map-js'),
@@ -9,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^tickets/(?P<tid>\d+)/$', 'p3.views.ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'p3.views.user', name='p3-user'),
     url(r'^schedule/(?P<conference>[\w-]+)/$', 'p3.views.schedule', name='p3-schedule'),
+    url(r'^schedule/(?P<conference>[\w-]+)/schedule.js$', direct_to_template, {'template': 'p3/schedule.js' }, name='p3-schedule-js'),
     url(r'^schedule/(?P<conference>[\w-]+)/search/$', 'p3.views.schedule_search', name='p3-schedule-search'),
 )
