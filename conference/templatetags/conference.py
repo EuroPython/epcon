@@ -519,6 +519,12 @@ def render_schedule2(context, schedule, start=None, end=None):
         end = None
 
     tracks = list(x for x in schedule.track_set.all())
+    request = context.get('request')
+    if request:
+        for ix, t in list(enumerate(tracks))[::-1]:
+            if request.GET.get('show-%s' % t.track) == '0':
+                del tracks[ix]
+
     events = list(models.Event.objects.filter(schedule=schedule))
     ts = [time(8,00), time(18,30)]
     if events:
