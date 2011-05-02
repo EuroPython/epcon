@@ -508,7 +508,7 @@ def render_schedule(context, schedule):
     }
 
 @fancy_tag(register, takes_context=True)
-def render_schedule2(context, schedule, start=None, end=None, collapse='auto'):
+def schedule_timetable(context, schedule, start=None, end=None):
     if start:
         start = datetime.strptime(start, '%H:%M').time()
     else:
@@ -526,6 +526,8 @@ def render_schedule2(context, schedule, start=None, end=None, collapse='auto'):
             if request.GET.get('show-%s' % t.track) == '0':
                 del tracks[ix]
 
+    if not tracks:
+        return None
     timetable_prepare.send(schedule, tracks=tracks)
 
     events = list(models.Event.objects.filter(schedule=schedule))
@@ -564,13 +566,27 @@ def render_schedule2(context, schedule, start=None, end=None, collapse='auto'):
     if start or end:
         tt = tt.slice(start, end)
 
+    return tt
+
+@fancy_tag(register, takes_context=True)
+def render_schedule_timetable(context, schedule, timetable, start=None, end=None, collapse='auto'):
+    if start:
+        start = datetime.strptime(start, '%H:%M').time()
+    else:
+        start = None
+    if end:
+        end = datetime.strptime(end, '%H:%M').time()
+    else:
+        end = None
+    if start or end:
+        timetable = timetable.slice(start, end)
     ctx = Context(context)
     ctx.update({
         'schedule': schedule,
-        'timetable': tt,
+        'timetable': timetable,
         'collapse': collapse,
     })
-    return render_to_string('conference/render_schedule2.html', ctx)
+    return render_to_string('conference/render_schedule_timetable.html', ctx)
 
 @register.filter
 def event_has_track(event, track):
@@ -1099,9 +1115,31 @@ def convert_twitter_links(text, args=None):
 def user_interest(event, user):
     if not user.is_authenticated():
         return 0
+    return models.EventInterest.objects.get_for_user(event, user)
+
+@fancy_tag(register, takes_context=True)
+def user_interest(context, event, user=None):
+    """
+    {% user_interest event [ user ] as var %}
+    Restituisce l'interesse di un utente, se manca viene recuperato dalla
+    request, per l'evento passato.
+    """
+    request = context.get('request')
+    if user is None:
+        if not request:
+            raise ValueError('request not found')
+        else:
+            user = request.user
+
     try:
-        return event.eventinterest_set.get(user=user).interest
-    except models.EventInterest.DoesNotExist:
+        cached = request._user__events_interests
+    except AttributeError:
+        cached = dict((x['event_id'], x) for x in models.EventInterest.objects.filter(user=user).values())
+        request._user__events_interests = cached
+
+    try:
+        return cached[event.id]['interest']
+    except KeyError:
         return 0
 
 @fancy_tag(register)
