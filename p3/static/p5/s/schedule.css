@@ -292,6 +292,7 @@ div.schedule .event.highlighted {
 
 div.schedule .event.shadowed {
     opacity: .7;
+    background: #999;
 }
 
 div.schedule .event.search-result-ko {
