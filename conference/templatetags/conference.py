@@ -507,8 +507,8 @@ def render_schedule(context, schedule):
         'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
     }
 
-@register.inclusion_tag('conference/render_schedule2.html', takes_context=True)
-def render_schedule2(context, schedule, start=None, end=None):
+@fancy_tag(register, takes_context=True)
+def render_schedule2(context, schedule, start=None, end=None, collapse='auto'):
     if start:
         start = datetime.strptime(start, '%H:%M').time()
     else:
@@ -568,8 +568,9 @@ def render_schedule2(context, schedule, start=None, end=None):
     ctx.update({
         'schedule': schedule,
         'timetable': tt,
+        'collapse': collapse,
     })
-    return ctx
+    return render_to_string('conference/render_schedule2.html', ctx)
 
 @register.filter
 def event_has_track(event, track):
@@ -1137,7 +1138,7 @@ def timetable_columns(timetable):
     return output
 
 @fancy_tag(register)
-def timetable_cells(timetable, width, height, outer_width=None, outer_height=None):
+def timetable_cells(timetable, width, height, outer_width=None, outer_height=None, collapse='auto'):
     if outer_width is None:
         outer_width = width
     if outer_height is None:
@@ -1146,6 +1147,13 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
     extra_height = outer_height - height
 
     compress_width = 10
+    def calc_width(col):
+        if not col['collapse']:
+            return width
+        elif col['events'] == 0:
+            return 0
+        else:
+            return 10
 
     columns = list(timetable.columns())
     col_pos = [{'time': None, 'pos': 0, 'collapse': False,}]
@@ -1169,9 +1177,14 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
                 events['reference'] += 1
             else:
                 events['fixed'] += 1
-        collapse = events['fixed'] == 0 and events['special'] > 0
-        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse, })
-        next_pos = next_pos + (outer_width if not collapse else (compress_width + extra_width))
+        if collapse == 'auto':
+            collapse_flag = (events['fixed'] == 0 and events['special'] > 0) or (events['total'] == 0)
+        elif collapse == 'always':
+            collapse_flag = events['fixed'] == 0
+        else:
+            collapse_flag = False
+        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse_flag, 'events': events['total'], })
+        next_pos = next_pos + calc_width(col_pos[-1])
 
     max_size = [0, 0]
     def size(time, row, cols=1, rows=1):
@@ -1182,7 +1195,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         t = row * outer_height
         w = 0
         for _ in col_pos[ix:ix+cols]:
-            w += width if not _['collapse'] else compress_width
+            w += calc_width(_)
         w += extra_width * (cols-1)
         h = rows * height
         h += extra_height * (rows-1)
