@@ -94,6 +94,19 @@
 <script type="text/javascript">
     (function() {
         var table = $('#s{{ r }}');
+        /*
+         * Calcolo della dimensione e posizionamento tramite margini dei div
+         * ruotati di 90 gradi via css; La rotazione avviene intorno al centro
+         * dell'elemento, quindi devo posizionarlo al centro del contenitore.
+         */
+        $('.t-break .wrapper, .t-special .wrapper', table).each(function() {
+            var w = $(this);
+            var width = w.parents('.event').height();
+            w.width(width)
+                .css('position', 'static')
+                .css('margin-left', -(width-80) / 2)
+                .css('margin-top', (width-80) / 2)
+        });
         $('.talk-interest button', table).click(function(e) {
             e.preventDefault();
             var btn = $(this);

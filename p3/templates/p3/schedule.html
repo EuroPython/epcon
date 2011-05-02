@@ -54,21 +54,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     </div>
     {% endfor %}
 </div>
-<script type="text/javascript">
-    /*
-     * Calcolo della dimensione e posizionamento tramite margini dei div
-     * ruotati di 90 gradi via css; La rotazione avviene intorno al centro
-     * dell'elemento, quindi devo posizionarlo al centro del contenitore.
-     */
-    $('.t-break .wrapper, .t-special .wrapper').each(function() {
-        var w = $(this);
-        var width = w.parents('.event').height();
-        w.width(width)
-            .css('position', 'static')
-            .css('margin-left', -(width-80) / 2)
-            .css('margin-top', (width-80) / 2)
-    });
-</script>
 <script type="text/javascript" src="{% url p3-schedule-js conference=conference %}"></script>
 {% if request.user.is_staff %}
 <div class="overlay" id="schedule-form-box">
