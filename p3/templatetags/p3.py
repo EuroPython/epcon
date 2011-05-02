@@ -267,3 +267,11 @@ def render_partner_program(context):
     return {
         'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x.name)) ],
     }
+
+@register.filter
+def event_partner_program(e):
+    fare_id = re.search(r'f(\d+)', e.track)
+    if fare_id is None:
+        return ''
+    f = ConferenceModels.Fare.objects.get(pk=fare_id.group(1))
+    return mark_safe('<a href="/partner-program/#%s">%s</a>' % (slugify(f.name), e.custom,))

@@ -1,4 +1,4 @@
-{% load conference %}
+{% load conference p3 %}
 {% if request.user.is_staff and timetable.errors %}
 <div class="error-notice">
     <h2>TimeTable errors</h2>
@@ -80,7 +80,7 @@
                         {% endif %}
                     </div>
                 {% else %}
-                    <div class="custom-event">{{ ref.custom|safe }}</div>
+                    <div class="custom-event">{% if ref|event_has_track:"partner-program" %}{{ ref|event_partner_program }}{% else %}{{ ref.custom|safe }}{% endif %}</div>
                     <div class="tools">&nbsp;</div>
                 {% endif %}
                 </div>
