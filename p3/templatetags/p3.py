@@ -14,6 +14,7 @@ from itertools import groupby
 from django import template
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Q
 from django.template import Context
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
@@ -275,3 +276,12 @@ def event_partner_program(e):
         return ''
     f = ConferenceModels.Fare.objects.get(pk=fare_id.group(1))
     return mark_safe('<a href="/partner-program/#%s">%s</a>' % (slugify(f.name), e.custom,))
+
+@register.filter
+def schedule_to_be_splitted(s):
+    tracks = s.track_set.all()
+    s = []
+    for t in tracks:
+        if t.track.startswith('partner') or t.track.startswith('sprint'):
+            s.append(t)
+    return len(tracks) != len(s)

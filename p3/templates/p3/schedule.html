@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load conference assopy_tags %}
+{% load conference assopy_tags p3 %}
 
 {% block EXTRA_HEAD %}
 {% if request.user.is_staff %}
@@ -35,6 +35,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
         data-schedule-conference="{{ schedule.conference }}"
         data-schedule-slug="{{ schedule.slug }}">
+        {% if schedule|schedule_to_be_splitted %}
         <h1 class="schedule-date morning">{{ schedule.date|date:"l d F Y" }} <span>Morning</span></h1>
         <div class="cms">
             <h2>{{ schedule.date|date:"l" }} Morning</h2>
@@ -51,6 +52,10 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             {% endif %}
         </div>
         {% render_schedule2 schedule "14:30" "" %}
+        {% else %}
+        <h1 class="schedule-date">{{ schedule.date|date:"l d F Y" }}</h1>
+        {% render_schedule2 schedule collapse="always" %}
+        {% endif %}
     </div>
     {% endfor %}
 </div>

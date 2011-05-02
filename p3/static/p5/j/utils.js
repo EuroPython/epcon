@@ -1,3 +1,21 @@
+function setup_trigger_overlay(jq) {
+    jq.each(function() {
+        var e = $(this);
+        var rel = e.attr('rel') || $('#global-overlay');
+        var href = e.attr('href');
+        e.overlay({
+            target: rel,
+            onBeforeLoad: function() {
+                if(href && href != '#') {
+                    var wrap = this.getOverlay().find(".contentWrap");
+                    if(!wrap)
+                        throw "to use a remote content the overlay must have a .contentWrap element";
+                    wrap.load(this.getTrigger().attr("href"));
+                }
+            }
+        });
+    });
+}
 $(document).ready(function() {
     /*
      * ogni tag con classe "toggle" diventa un toggle-button
@@ -41,22 +59,8 @@ $(document).ready(function() {
          }).dynamic();
      });
 
-    $('.trigger-overlay').each(function() {
-        var e = $(this);
-        var rel = e.attr('rel') || $('#global-overlay');
-        var href = e.attr('href');
-        e.overlay({
-            target: rel,
-            onBeforeLoad: function() {
-                if(href && href != '#') {
-                    var wrap = this.getOverlay().find(".contentWrap");
-                    if(!wrap)
-                        throw "to use a remote content the overlay must have a .contentWrap element";
-                    wrap.load(this.getTrigger().attr("href"));
-                }
-            }
-        });
-    });
+    setup_trigger_overlay($('.trigger-overlay'));
+
     $('form').each(function() {
         var i = $('.help-text', this).prev(':input');
         var relative = i.parents('.overlay').length != 0;

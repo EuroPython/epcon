@@ -18,7 +18,7 @@
 {% endif %}
 
 {% randint as r %}
-{% timetable_cells timetable 70 60 70 61 as schedule_cells %}
+{% timetable_cells timetable 70 60 70 61 collapse=collapse as schedule_cells %}
 <div id="s{{ r }}" class="schedule" style="{{ schedule_cells.schedule_size }}">
     {% for cell in schedule_cells.cells %}
         {% if cell.type == '' %}
@@ -65,7 +65,7 @@
                 <div class="wrapper">
                 {% if ref.talk %}
                     <div class="talk-level {{ ref.talk.level }}">&nbsp;</div>
-                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="trigger-overlay" title="{% if ref|event_has_track:"teaser" %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if ref|event_has_track:"teaser" %}{{ ref.talk.title|truncate_chars:15 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a></h3>
+                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="event-trigger-overlay" title="{% if ref|event_has_track:"teaser" %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if ref|event_has_track:"teaser" %}{{ ref.talk.title|truncate_chars:15 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a></h3>
                     by 
                     {% for s in ref.talk.get_all_speakers %}
                     <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
@@ -94,6 +94,9 @@
 <script type="text/javascript">
     (function() {
         var table = $('#s{{ r }}');
+        $(function() {
+            setup_trigger_overlay($('.event-trigger-overlay'), table);
+        });
         /*
          * Calcolo della dimensione e posizionamento tramite margini dei div
          * ruotati di 90 gradi via css; La rotazione avviene intorno al centro
