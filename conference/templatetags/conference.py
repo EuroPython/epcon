@@ -543,7 +543,7 @@ def render_schedule2(context, schedule, start=None, end=None):
         event_tracks = set(parse_tag_input(e.track))
         rows = [ x for x in tracks if x.track in event_tracks ]
         if ('break' in event_tracks or 'special' in event_tracks) and not rows:
-            rows = list(tracks)
+            rows = list(t for t in tracks if not t.outdoor)
         if not rows:
             continue
         if 'teaser' in event_tracks:

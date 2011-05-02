@@ -265,26 +265,23 @@ class EventForm(forms.ModelForm):
         self.fields['talk'].queryset = models.Talk.objects\
             .filter(conference=self.schedule.conference)
 
-    def clean_track(self):
-        data = self.cleaned_data
-        tracks = set(parse_tag_input(data['track']))
-        allowed = set(t.track for t in self.schedule.track_set.all()) | set(('special', 'break', 'teaser'))
-        if tracks - allowed:
-            raise forms.ValidationError('invalid tracks names: "%s"' % ' '.join(tracks - allowed))
-        return data['track']
-        
     def clean(self):
         data = super(EventForm, self).clean()
         if not data['talk'] and not data['custom']:
             raise forms.ValidationError('set the talk or the custom text')
 
+        schedule_tracks = set()
+        indoor_tracks = set()
+        for t in self.schedule.track_set.all():
+            schedule_tracks.add(t.track)
+            if not t.outdoor:
+                indoor_tracks.add(t.track)
+
         tracks = set(parse_tag_input(data['track']))
         if 'special' in tracks or 'break' in tracks:
-            schedule_tracks = set(t.track for t in self.schedule.track_set.all())
             if not tracks & schedule_tracks:
-                tracks |= schedule_tracks
-        tracks -= set(('teaser',))
-        for t in tracks:
+                tracks |= indoor_tracks
+        for t in schedule_tracks:
             conflicts = set(TaggedItem.objects.get_by_model(models.Event.objects.filter(schedule=self.schedule, start_time=data['start_time']), t))
             if self.instance:
                 conflicts = conflicts - set((self.instance,))
