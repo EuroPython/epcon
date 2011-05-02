@@ -2,7 +2,7 @@ import django
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models, IntegrityError, transaction
-from django.template.defaultfilters import slugify
+from django.template.defaultfilters import slugify as default_slugify
 from django.utils.translation import ugettext_lazy as _, ugettext
 
 
@@ -18,7 +18,7 @@ class TagBase(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.slug:
-            self.slug = slug = slugify(self.name)
+            self.slug = self.slugify(self.name)
             if django.VERSION >= (1, 2):
                 from django.db import router
                 using = kwargs.get("using") or router.db_for_write(
@@ -32,6 +32,7 @@ class TagBase(models.Model):
                 trans_kwargs = {}
             i = 0
             while True:
+                i += 1
                 try:
                     sid = transaction.savepoint(**trans_kwargs)
                     res = super(TagBase, self).save(*args, **kwargs)
@@ -39,10 +40,16 @@ class TagBase(models.Model):
                     return res
                 except IntegrityError:
                     transaction.savepoint_rollback(sid, **trans_kwargs)
-                    i += 1
-                    self.slug = "%s_%d" % (slug, i)
+                    self.slug = self.slugify(self.name, i)
         else:
             return super(TagBase, self).save(*args, **kwargs)
+
+    def slugify(self, tag, i=None):
+        slug = default_slugify(tag)
+        if i is not None:
+            slug += "_%d" % i
+        return slug
+
 
 class Tag(TagBase):
     class Meta:
@@ -73,6 +80,12 @@ class ItemBase(models.Model):
     def lookup_kwargs(cls, instance):
         return {
             'content_object': instance
+        }
+
+    @classmethod
+    def bulk_lookup_kwargs(cls, instances):
+        return {
+            "content_object__in": instances,
         }
 
 
@@ -123,6 +136,14 @@ class GenericTaggedItemBase(ItemBase):
         }
 
     @classmethod
+    def bulk_lookup_kwargs(cls, instances):
+        # TODO: instances[0], can we assume there are instances.
+        return {
+            "object_id__in": [instance.pk for instance in instances],
+            "content_type": ContentType.objects.get_for_model(instances[0]),
+        }
+
+    @classmethod
     def tags_for(cls, model, instance=None):
         ct = ContentType.objects.get_for_model(model)
         kwargs = {
@@ -137,4 +158,3 @@ class TaggedItem(GenericTaggedItemBase, TaggedItemBase):
     class Meta:
         verbose_name = _("Tagged Item")
         verbose_name_plural = _("Tagged Items")
-

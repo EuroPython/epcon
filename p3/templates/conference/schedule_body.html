@@ -1,15 +1,25 @@
-{% load conference %}
-<div class="cms">
-    <h2>Morning &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
-    {% if schedule.description %}
-    <p>{{ schedule.description|safe }}</p>
-    {% endif %}
-</div>
-{% render_schedule2 schedule "09:00" "14:30" %}
-<div class="cms">
-    <h2>Afternoon &mdash; {{ schedule.date|date:"l d F Y" }}</h2>
-    {% if schedule.description %}
-    <p>{{ schedule.description|safe }}</p>
-    {% endif %}
-</div>
-{% render_schedule2 schedule "14:30" "" %}
+{% load conference p3 %}
+{% schedule_timetable schedule as timetable %}
+{% if timetable %}
+{% if schedule|schedule_to_be_splitted %}
+    <h1 class="schedule-date morning">{{ schedule.date|date:"l d F Y" }} <span>Morning</span></h1>
+    <div class="cms">
+        <h2>{{ schedule.date|date:"l" }} Morning</h2>
+        {% if schedule.description %}
+        <p>{{ schedule.description|safe }}</p>
+        {% endif %}
+    </div>
+    {% render_schedule_timetable schedule timetable start="09:00" end="14:30" %}
+    <h1 class="schedule-date afternoon">{{ schedule.date|date:"l d F Y" }} <span>Afternoon</span></h1>
+    <div class="cms">
+        <h2>{{ schedule.date|date:"l" }} Afternoon</h2>
+        {% if schedule.description %}
+        <p>{{ schedule.description|safe }}</p>
+        {% endif %}
+    </div>
+    {% render_schedule_timetable schedule timetable start="14:30" %}
+{% else %}
+    <h1 class="schedule-date">{{ schedule.date|date:"l d F Y" }}</h1>
+    {% render_schedule_timetable schedule timetable collapse="always" %}
+{% endif %}
+{% endif %}

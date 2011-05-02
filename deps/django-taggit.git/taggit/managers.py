@@ -1,8 +1,9 @@
 from django.contrib.contenttypes.generic import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.fields.related import ManyToManyRel, RelatedField
+from django.db.models.fields.related import ManyToManyRel, RelatedField, add_lazy_relation
 from django.db.models.related import RelatedObject
+from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
 from taggit.forms import TagField
@@ -26,8 +27,7 @@ except NameError:
 
 
 class TaggableRel(ManyToManyRel):
-    def __init__(self, to):
-        self.to = to
+    def __init__(self):
         self.related_name = None
         self.limit_choices_to = {}
         self.symmetrical = True
@@ -36,11 +36,13 @@ class TaggableRel(ManyToManyRel):
 
 
 class TaggableManager(RelatedField):
-    def __init__(self, verbose_name=_("Tags"), through=None):
-        self.use_gfk = through is None or issubclass(through, GenericTaggedItemBase)
+    def __init__(self, verbose_name=_("Tags"),
+        help_text=_("A comma-separated list of tags."), through=None, blank=False):
         self.through = through or TaggedItem
-        self.rel = TaggableRel(to=self.through._meta.get_field("tag").rel.to)
+        self.rel = TaggableRel()
         self.verbose_name = verbose_name
+        self.help_text = help_text
+        self.blank = blank
         self.editable = True
         self.unique = False
         self.creates_table = False
@@ -65,7 +67,23 @@ class TaggableManager(RelatedField):
         self.model = cls
         cls._meta.add_field(self)
         setattr(cls, name, self)
-        if self.use_gfk and not cls._meta.abstract:
+        if not cls._meta.abstract:
+            if isinstance(self.through, basestring):
+                def resolve_related_class(field, model, cls):
+                    self.through = model
+                    self.post_through_setup(cls)
+                add_lazy_relation(
+                    cls, self, self.through, resolve_related_class
+                )
+            else:
+                self.post_through_setup(cls)
+
+    def post_through_setup(self, cls):
+        self.use_gfk = (
+            self.through is None or issubclass(self.through, GenericTaggedItemBase)
+        )
+        self.rel.to = self.through._meta.get_field("tag").rel.to
+        if self.use_gfk:
             tagged_items = GenericRelation(self.through)
             tagged_items.contribute_to_class(cls, "tagged_items")
 
@@ -74,8 +92,9 @@ class TaggableManager(RelatedField):
 
     def formfield(self, form_class=TagField, **kwargs):
         defaults = {
-            "label": _("Tags"),
-            "help_text": _("A comma-separated list of tags.")
+            "label": capfirst(self.verbose_name),
+            "help_text": self.help_text,
+            "required": not self.blank
         }
         defaults.update(kwargs)
         return form_class(**defaults)
@@ -90,6 +109,12 @@ class TaggableManager(RelatedField):
 
     def m2m_reverse_name(self):
         return self.through._meta.get_field_by_name("tag")[0].column
+
+    def m2m_target_field_name(self):
+        return self.model._meta.pk.name
+
+    def m2m_reverse_target_field_name(self):
+        return self.rel.to._meta.pk.name
 
     def m2m_column_name(self):
         if self.use_gfk:
@@ -111,6 +136,9 @@ class TaggableManager(RelatedField):
             return [("%s__content_type" % prefix, cts[0])]
         return [("%s__content_type__in" % prefix, cts)]
 
+    def bulk_related_objects(self, new_objs, using):
+        return []
+
 
 class _TaggableManager(models.Manager):
     def __init__(self, through, model, instance):
@@ -126,9 +154,23 @@ class _TaggableManager(models.Manager):
 
     @require_instance_manager
     def add(self, *tags):
-        for tag in tags:
-            if not isinstance(tag, self.through.tag_model()):
-                tag, _ = self.through.tag_model().objects.get_or_create(name=tag)
+        str_tags = set([
+            t
+            for t in tags
+            if not isinstance(t, self.through.tag_model())
+        ])
+        tag_objs = set(tags) - str_tags
+        # If str_tags has 0 elements Django actually optimizes that to not do a
+        # query.  Malcolm is very smart.
+        existing = self.through.tag_model().objects.filter(
+            name__in=str_tags
+        )
+        tag_objs.update(existing)
+
+        for new_tag in str_tags - set(t.name for t in existing):
+            tag_objs.add(self.through.tag_model().objects.create(name=new_tag))
+
+        for tag in tag_objs:
             self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs())
 
     @require_instance_manager
