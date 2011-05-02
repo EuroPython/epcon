@@ -32,8 +32,8 @@ class Command(BaseCommand):
         for sch in models.Schedule.objects.filter(conference=conference):
             events = list(models.Event.objects.filter(schedule=sch))
             for fare, time in partner_events[sch.date]:
+                track_id = 'f%s' % fare.id
                 for e in events:
-                    track_id = 'f%s' % fare.id
                     if track_id in e.get_all_tracks_names():
                         event = e
                         break
@@ -42,6 +42,10 @@ class Command(BaseCommand):
                     event.track = 'partner-program ' + track_id
                 event.custom = fare.name
                 event.start_time = time
-                event.duration = 60
+                if time.hour < 13:
+                    d = (13 - time.hour) * 60
+                else:
+                    d = (19 - time.hour) * 60
+                event.duration = d
                 event.save()
 
