@@ -27,7 +27,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     <h3>Jump to</h3>
     <ul class="jump-list">
         {% for schedule in schedules %}
-        <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l" }}</a></li>
+        <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l d" }}</a></li>
         {% endfor %}
     </ul>
 </nav>
