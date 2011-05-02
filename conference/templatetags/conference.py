@@ -23,6 +23,7 @@ from conference import models
 from conference import utils
 from conference import settings
 from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
+from conference.signals import timetable_prepare
 from conference.utils import TimeTable
 from pages import models as PagesModels
 
@@ -525,9 +526,14 @@ def render_schedule2(context, schedule, start=None, end=None):
             if request.GET.get('show-%s' % t.track) == '0':
                 del tracks[ix]
 
+    timetable_prepare.send(schedule, tracks=tracks)
+
     events = list(models.Event.objects.filter(schedule=schedule))
+    timetable_prepare.send(schedule, events=events, tracks=tracks)
+
     ts = [time(8,00), time(18,30)]
     if events:
+        events.sort(key=lambda x: x.start_time)
         if events[0].start_time < ts[0]:
             ts[0] = events[0].start_time
         if events[-1].start_time >= ts[1]:
@@ -538,8 +544,11 @@ def render_schedule2(context, schedule, start=None, end=None):
             ts[1] = TimeTable.sumTime(events[-1].start_time, td)
 
     tt = TimeTable(time_spans=ts, rows=tracks)
-    for e in models.Event.objects.filter(schedule=schedule):
-        duration = e.talk.duration if e.talk else None
+    for e in events:
+        if e.duration:
+            duration = e.duration
+        else:
+            duration = e.talk.duration if e.talk else None
         event_tracks = set(parse_tag_input(e.track))
         rows = [ x for x in tracks if x.track in event_tracks ]
         if ('break' in event_tracks or 'special' in event_tracks) and not rows:
@@ -549,6 +558,8 @@ def render_schedule2(context, schedule, start=None, end=None):
         if 'teaser' in event_tracks:
             duration = 30
         tt.setEvent(e.start_time, e, duration, rows=rows)
+
+    timetable_prepare.send(schedule, timetable=tt)
 
     if start or end:
         tt = tt.slice(start, end)
