@@ -23,7 +23,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         <label><input type="hidden" name="show-training" value="1" /> <span>Hide</span> Trainings</label>
     </form>
     <h3>Jump to</h3>
-    <ul>
+    <ul class="jump-list">
         {% for schedule in schedules %}
         <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l" }}</a></li>
         {% endfor %}

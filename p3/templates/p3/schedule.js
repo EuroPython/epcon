@@ -56,10 +56,7 @@
         if(_search_results.scrollTo >= data.length)
             _search_results.scrollTo = 0;
 
-        var e = $('.event[data-event-id=' + data[_search_results.scrollTo] + ']')
-        $('html, body').animate({
-            scrollTop: e.offset().top
-        }, 1000);
+        scroll_to($('.event[data-event-id=' + data[_search_results.scrollTo] + ']'));
     }
     function _searchSchedule() {
         var i = $('.search input', nav);
@@ -193,11 +190,22 @@
         refreshSchedule();
         return false;
     });
+
     if(supports_history_api) {
         $(window).bind('popstate', function(e) {
             syncFormWithQueryString();
             refreshSchedule();
         });
     }
+
+    /*
+     * devo simulare quello che già fa il browser, perchè anche il click su un
+     * anchor che cambia solo il fragment causa un evento popstate (e non
+     * voglio cercare di capire in che caso mi trovo nell'event listener)
+     */
+    $('.jump-list li').click(function(e) {
+        e.preventDefault();
+        scroll_to($(e.target.href.substring(e.target.href.indexOf('#'))));
+    });
 })();
 

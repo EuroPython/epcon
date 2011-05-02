@@ -133,3 +133,10 @@ function parseQueryString(qs) {
         urlParams[d(e[1])] = d(e[2]);
     return urlParams;
 }
+
+
+function scroll_to(e, duration) {
+    $('html, body').animate({
+        scrollTop: e.offset().top
+    }, duration || 1000);
+}
