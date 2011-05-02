@@ -107,7 +107,31 @@
         'show-training': function(visible) {
             var form = $('.show-flags', nav);
             var v = visible ? 1 : 0;
-            $.each([ 'show-training1', 'show-training2', 'show-trackx'], function(ix, name) {
+            $.each(['show-training1', 'show-training2', 'show-trackx'], function(ix, name) {
+                var i = $('input[name=' + name + ']');
+                if(i.length) 
+                    i.val(v)
+                else
+                    form.append('<input type="hidden" name="' + name + '" value="' + v + '" />')
+            });
+            return true;
+        },
+        'show-partner-program': function(visible) {
+            var form = $('.show-flags', nav);
+            var v = visible ? 1 : 0;
+            $.each(['show-partner0', 'show-partner1'], function(ix, name) {
+                var i = $('input[name=' + name + ']');
+                if(i.length) 
+                    i.val(v)
+                else
+                    form.append('<input type="hidden" name="' + name + '" value="' + v + '" />')
+            });
+            return true;
+        },
+        'show-sprint': function(visible) {
+            var form = $('.show-flags', nav);
+            var v = visible ? 1 : 0;
+            $.each(['show-sprint0', 'show-sprint1'], function(ix, name) {
                 var i = $('input[name=' + name + ']');
                 if(i.length) 
                     i.val(v)

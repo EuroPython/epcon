@@ -54,7 +54,7 @@
             </div>
             {% else %}
             {% with cell.event.ref as ref %}
-            {% with ref|user_interest:request.user as interest %}
+            {% user_interest ref as interest %}
             <div
                 class="cell event{% for t in ref.get_all_tracks_names %} t-{{ t }}{% endfor %}{% if interest > 0 %} highlighted{% endif %}{% if interest < 0 %} shadowed{% endif %}"
                 data-time="{{ cell.time|time:"H:i" }}"
@@ -85,7 +85,6 @@
                 {% endif %}
                 </div>
             </div>
-            {% endwith %}
             {% endwith %}
             {% endif %}
         {% endif %}
