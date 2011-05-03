@@ -136,8 +136,21 @@ table.schedule caption {
     left: 10px;
     top: 33%;
     background: white;
-    padding: 10px;
+    padding: 10px 10px 0 10px;
     border: 1px solid #7D6F60;
+    z-index: 2000;
+}
+#schedule-navigator .opener {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    background: red;
+}
+#schedule-navigator .content {
+    margin-right: 20px;
+    display: none;
 }
 
 .talk-interest button {
