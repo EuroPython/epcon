@@ -101,13 +101,19 @@
          * ruotati di 90 gradi via css; La rotazione avviene intorno al centro
          * dell'elemento, quindi devo posizionarlo al centro del contenitore.
          */
-        $('.t-break .wrapper, .t-special .wrapper', table).each(function() {
+        $('.wrapper', table).each(function() {
             var w = $(this);
-            var width = w.parents('.event').height();
-            w.width(width)
-                .css('position', 'static')
-                .css('margin-left', -(width-80) / 2)
-                .css('margin-top', (width-80) / 2)
+            var evt = w.parents('.event');
+            if(evt.hasClass('t-break') || evt.hasClass('t-special')) {
+                var width = evt.height();
+                w.width(width)
+                    .css('position', 'static')
+                    .css('margin-left', -(width-80) / 2)
+                    .css('margin-top', (width-80) / 2)
+            }
+            else {
+                w.css('top', evt.height() / 2 - w.height() / 2);
+            }
         });
         $('.talk-interest button', table).click(function(e) {
             e.preventDefault();
