@@ -189,6 +189,7 @@ div.schedule .hhmm span {
 div.schedule .event {
     background: #FCFAD9;
     z-index: 100;
+    font-variant: small-caps;
 }
 
 div.schedule .event.empty {
@@ -197,8 +198,6 @@ div.schedule .event.empty {
 
 div.schedule .event .wrapper{
     position: absolute;
-    top: 0;
-    bottom: 0;
     left: 0;
     right: 0;
     padding-left: 4px;
@@ -330,6 +329,15 @@ div.schedule .track span {
 .schedule-date span {
     display: none;
 }
+
 .schedule-date.afternoon {
     display: none;
+}
+
+.schedule div[data-track=training1] {
+    /*border-top: 2px solid #7D6F60;*/
+}
+
+.schedule .event[data-track=training1], .schedule .event[data-track=training2]{
+    background: url(../i/training.png) center center repeat-x;
 }
