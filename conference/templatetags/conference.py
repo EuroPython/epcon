@@ -1131,6 +1131,9 @@ def user_interest(context, event, user=None):
         else:
             user = request.user
 
+    if not user.is_authenticated():
+        return 0
+
     try:
         cached = request._user__events_interests
     except AttributeError:
