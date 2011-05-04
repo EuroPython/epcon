@@ -3,6 +3,17 @@
 
     var nav = $('#schedule-navigator');
 
+    $('#schedule-navigator .opener').click(function(e) {
+        $("#schedule-navigator .content").animate({width:'toggle'}, 350, function() {
+            var e = $(this);
+            if(e.css('display') == 'none') {
+                e.prev().removeClass('opened').addClass('closed');
+            }
+            else {
+                e.prev().removeClass('closed').addClass('opened');
+            }
+        });
+    });
     /*
         * Ricerca full text nello schedule: l'utente inserisce i termini da
         * ricercare, quando tenta di fare il submit della form:

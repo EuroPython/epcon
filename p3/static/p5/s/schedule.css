@@ -135,22 +135,31 @@ table.schedule caption {
     position: fixed;
     left: 10px;
     top: 33%;
+    height: 350px;
     background: white;
-    padding: 10px 10px 0 10px;
+    padding: 0;
     border: 1px solid #7D6F60;
     z-index: 2000;
 }
 #schedule-navigator .opener {
-    position: absolute;
-    right: 0;
-    top: 0;
+    float: right;
     width: 20px;
     height: 100%;
     background: red;
 }
+#schedule-navigator .opener.closed {
+    background: transparent url(../i/schedule-navigator-open.png) no-repeat center center;
+}
+#schedule-navigator .opener.opened {
+    background: transparent url(../i/schedule-navigator-close.png) no-repeat center center;
+}
 #schedule-navigator .content {
-    margin-right: 20px;
+    padding: 10px;
+    float: right;
     display: none;
+}
+#schedule-navigator .content .wrapper {
+    width: 184px;
 }
 
 .talk-interest button {

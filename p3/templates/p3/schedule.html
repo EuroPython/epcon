@@ -13,57 +13,56 @@
 Beta version, small changes could be introduced to meet speakers' necessities.
 </section>
 <nav id="schedule-navigator">
-    <div class="opener"> </div>
+    <div class="opener closed"> </div>
     <div class="content">
-        <h3>Search</h3>
-        <form class="search">
-            <input name="q" value="" />
-        </form>
-        <h3>Show</h3>
-        <form class="show-flags" action="" method="get">
-            <label><input type="hidden" name="show-track-ita" value="1" /> <span>Hide</span> Italian Track</label>
-            <label><input type="hidden" name="show-training" value="1" /> <span>Hide</span> Trainings</label>
-            <label><input type="hidden" name="show-partner-program" value="1" /> <span>Hide</span> Partner Program</label>
-            <label><input type="hidden" name="show-sprint" value="1" /> <span>Hide</span> Sprint</label>
-        </form>
-        <h3>Jump to</h3>
-        <ul class="jump-list">
-            {% for schedule in schedules %}
-            <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l d" }}</a></li>
-            {% endfor %}
-        </ul>
-    </nav>
-    <div class="page clearfix">
-        {% for schedule in schedules %}
-        <div id="{{ schedule.slug }}" class="schedule-wrapper"
-            data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
-            data-schedule-conference="{{ schedule.conference }}"
-            data-schedule-slug="{{ schedule.slug }}">
-            {% include "conference/schedule_body.html" %}
+        <div class="wrapper">
+            <h3>Search</h3>
+            <form class="search">
+                <input name="q" value="" />
+            </form>
+            <h3>Show</h3>
+            <form class="show-flags" action="" method="get">
+                <label><input type="hidden" name="show-track-ita" value="1" /> <span>Hide</span> Italian Track</label>
+                <label><input type="hidden" name="show-training" value="1" /> <span>Hide</span> Trainings</label>
+                <label><input type="hidden" name="show-partner-program" value="1" /> <span>Hide</span> Partner Program</label>
+                <label><input type="hidden" name="show-sprint" value="1" /> <span>Hide</span> Sprint</label>
+            </form>
+            <h3>Jump to</h3>
+            <ul class="jump-list">
+                {% for schedule in schedules %}
+                <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l d" }}</a></li>
+                {% endfor %}
+            </ul>
         </div>
+    </div>
+</nav>
+<div class="page clearfix">
+    {% for schedule in schedules %}
+    <div id="{{ schedule.slug }}" class="schedule-wrapper"
+        data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
+        data-schedule-conference="{{ schedule.conference }}"
+        data-schedule-slug="{{ schedule.slug }}">
+        {% include "conference/schedule_body.html" %}
+    </div>
+    {% endfor %}
+</div>
+<script type="text/javascript" src="{% url p3-schedule-js conference=conference %}"></script>
+{% if request.user.is_staff %}
+<div class="overlay" id="schedule-form-box">
+    <form action="" method="post">{% csrf_token %}
+        <fieldset>
+        {% for f in form %}
+        {{ f|field }}
         {% endfor %}
-    </div>
-    <script type="text/javascript" src="{% url p3-schedule-js conference=conference %}"></script>
-    {% if request.user.is_staff %}
-    <div class="overlay" id="schedule-form-box">
-        <form action="" method="post">{% csrf_token %}
-            <fieldset>
-            {% for f in form %}
-            {{ f|field }}
-            {% endfor %}
-            </fieldset>
-            <fieldset class="border">
-                <button type="submit" name="save">Save</button>
-                <button type="submit" name="delete">Delete</button>
-            </fieldset>
-        </form>
-    </div>
+        </fieldset>
+        <fieldset class="border">
+            <button type="submit" name="save">Save</button>
+            <button type="submit" name="delete">Delete</button>
+        </fieldset>
+    </form>
 </div>
 <script type="text/javascript">
     (function() {
-        $('#schedule-navigator .opener').click(function(e) {
-            $("#schedule-navigator .content").animate({width:'toggle'}, 350);
-        });
         function _setForm(url, time, track, evt) {
             var form = $('#schedule-form-box form');
             form.attr('action', url)
@@ -207,4 +206,3 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 {% block SPONSORS %}
 <!-- Omit sponsors col -->
 {% endblock %}
-
