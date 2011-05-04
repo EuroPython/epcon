@@ -158,8 +158,11 @@ class MultiLingualAdminContent(admin.ModelAdmin):
 
 class SpeakerAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ('avatar', 'name', 'slug')
+    list_display = ('avatar', 'name', '_email', 'slug')
     list_display_links = ('name', )
+
+    def _email(self, obj):
+        return obj.user.email
 
     def avatar(self, obj):
         if obj.image:
