@@ -66,7 +66,7 @@ var PROJEKKTOR_CONFIG = {
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
                 <p>{{ ab.body|linebreaks }}</p>
             </div>
-            {% if talk.status == "accepted" %}
+            {% if talk.status == "accepted" and e.schedule.conference %}
             <section class="talk when">
                 {% if e.schedule.conference == CONFERENCE %}{% trans "in" %} <i>{{ e.get_track.title|safe }}</i>{% endif %}
                 <a href="{% url p3-schedule conference=e.schedule.conference %}"><b>See schedule</b></a>
