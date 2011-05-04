@@ -129,8 +129,6 @@ table.schedule caption {
     color: #301d1d;
 }
 
-
-
 #schedule-navigator {
     position: fixed;
     left: 10px;
@@ -160,6 +158,19 @@ table.schedule caption {
 }
 #schedule-navigator .content .wrapper {
     width: 184px;
+}
+
+#schedule-navigator .show-flags label {
+    cursor: pointer;
+    padding-left: 16px;
+}
+
+#schedule-navigator .show-flags label.active {
+    background: transparent url(../i/checkbox_yes.png) no-repeat left center;
+}
+
+#schedule-navigator .show-flags label.inactive {
+    background: transparent url(../i/checkbox_no.png) no-repeat left center;
 }
 
 .talk-interest button {

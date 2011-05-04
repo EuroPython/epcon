@@ -157,18 +157,18 @@
         var input = $('input[name=' + name + ']', form_flags);
         if(input.length == 0)
             return;
-        var action = input.next();
+        var label = input.parents('label');
         var visible = value;
         if(visible == null)
                 visible = input.val() == 0;
 
         if(visible) {
             input.val(1);
-            action.text('Hide');
+            label.removeClass('inactive').addClass('active');
         }
         else {
             input.val(0);
-            action.text('Show');
+            label.removeClass('active').addClass('inactive');
         }
         if(name in flags)
             var submit = flags[name](visible);
