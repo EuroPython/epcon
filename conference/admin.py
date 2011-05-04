@@ -156,10 +156,19 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 instance.body = data.get(key, '')
                 instance.save()
 
+class SpeakerAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Speaker
+
+    def __init__(self, *args, **kwargs):
+        super(SpeakerAdminForm, self).__init__(*args, **kwargs)
+        self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
+
 class SpeakerAdmin(MultiLingualAdminContent):
     prepopulated_fields = {"slug": ("name",)}
     list_display = ('avatar', 'name', 'slug')
     list_display_links = ('name', )
+    form = SpeakerAdminForm
 
     def avatar(self, obj):
         if obj.image:
