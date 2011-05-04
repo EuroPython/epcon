@@ -25,7 +25,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('code', '_user', '_created', 'method', '_items', '_complete_order', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
     list_select_related = True
     list_filter = ('method',)
-    search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email')
+    search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
 
