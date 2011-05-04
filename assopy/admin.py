@@ -135,6 +135,10 @@ class CouponAdminForm(forms.ModelForm):
     class Meta:
         model = models.Coupon
 
+    def __init__(self, *args, **kwargs):
+        super(CouponAdminForm, self).__init__(*args, **kwargs)
+        self.fields['user'].queryset = models.User.objects.all().select_related('user')
+
     def clean_code(self):
         return self.cleaned_data['code'].upper()
 
