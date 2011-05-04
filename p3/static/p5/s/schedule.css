@@ -157,16 +157,16 @@ table.schedule caption {
     padding-left: 18px;
 }
 .talk-interest button.up {
-    background: transparent url(../i/arrow-up-off.png) no-repeat left center;
+    background: transparent url(../i/icon-thumb-up.png) no-repeat left center;
 }
 .talk-interest button.up.active {
-    background: transparent url(../i/arrow-up.png) no-repeat left center;
+    background: transparent url(../i/icon-thumb-up-lit.png) no-repeat left center;
 }
 .talk-interest button.down {
-    background: transparent url(../i/arrow-down-off.png) no-repeat left center;
+    background: transparent url(../i/icon-thumb-down.png) no-repeat left center;
 }
 .talk-interest button.down.active {
-    background: transparent url(../i/arrow-down.png) no-repeat left center;
+    background: transparent url(../i/icon-thumb-down-lit.png) no-repeat left center;
 }
 
 /*
