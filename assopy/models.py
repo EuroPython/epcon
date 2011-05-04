@@ -329,6 +329,8 @@ class Coupon(models.Model):
     description = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
 
+    user = models.ForeignKey(User, null=True, blank=True)
+
     def __unicode__(self):
         return '%s (%s)' % (self.code, self.value)
 
@@ -342,7 +344,7 @@ class Coupon(models.Model):
         else:
             return 'val'
 
-    def valid(self):
+    def valid(self, user=None):
         if self.start_validity and self.end_validity:
             today = date.today()
             if today < self.start_validity or today > self.end_validity:
@@ -351,6 +353,13 @@ class Coupon(models.Model):
         if self.max_usage:
             if OrderItem.objects.exclude(ticket=None).filter(code=self.code).count() >= self.max_usage:
                 return False
+
+        if self.user_id:
+            if not user:
+                return False
+            elif self.user_id != user.id:
+                return False
+
         return True
 
     def apply(self, total, guard=None):
@@ -392,7 +401,7 @@ class OrderManager(models.Manager):
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
         if coupons:
             for c in coupons:
-                if not c.valid():
+                if not c.valid(user):
                     log.warn('Invalid coupon: %s', c.code)
                     raise ValueError(c)
 
