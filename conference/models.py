@@ -623,10 +623,11 @@ class Schedule(models.Model):
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
-    track = models.CharField('nome track', max_length = 20)
-    title = models.TextField('titolo della track', help_text = 'HTML supportato')
-    order = models.PositiveIntegerField('ordine', default = 0)
-    translate = models.BooleanField(default = False)
+    track = models.CharField('nome track', max_length=20)
+    title = models.TextField('titolo della track', help_text='HTML supportato')
+    order = models.PositiveIntegerField('ordine', default=0)
+    translate = models.BooleanField(default=False)
+    outdoor = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['order']
@@ -636,11 +637,12 @@ class Track(models.Model):
 
 class Event(models.Model):
     schedule = models.ForeignKey(Schedule)
-    talk = models.ForeignKey(Talk, blank = True, null = True)
-    custom = models.TextField(blank = True)
+    talk = models.ForeignKey(Talk, blank= True, null=True)
+    custom = models.TextField(blank=True)
     start_time = models.TimeField()
-    track = TagField(help_text = 'One or more track names. Also accept "break" or "special" for coffee/lunch break or special events.')
-    sponsor = models.ForeignKey(Sponsor, blank = True, null = True)
+    duration = models.PositiveIntegerField(default=0, help_text='duration of the event (in minutes). Override the talk duration if present')
+    track = TagField(help_text='One or more track names. Also accept "break" or "special" for coffee/lunch break or special events.')
+    sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
 
     class Meta:
         ordering = ['start_time']

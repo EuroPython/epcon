@@ -23,6 +23,7 @@ from conference import models
 from conference import utils
 from conference import settings
 from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
+from conference.signals import timetable_prepare
 from conference.utils import TimeTable
 from pages import models as PagesModels
 
@@ -506,8 +507,8 @@ def render_schedule(context, schedule):
         'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
     }
 
-@register.inclusion_tag('conference/render_schedule2.html', takes_context=True)
-def render_schedule2(context, schedule, start=None, end=None):
+@fancy_tag(register, takes_context=True)
+def schedule_timetable(context, schedule, start=None, end=None):
     if start:
         start = datetime.strptime(start, '%H:%M').time()
     else:
@@ -519,9 +520,22 @@ def render_schedule2(context, schedule, start=None, end=None):
         end = None
 
     tracks = list(x for x in schedule.track_set.all())
-    events = list(models.Event.objects.filter(schedule=schedule))
+    request = context.get('request')
+    if request:
+        for ix, t in list(enumerate(tracks))[::-1]:
+            if request.GET.get('show-%s' % t.track) == '0':
+                del tracks[ix]
+
+    if not tracks:
+        return None
+    timetable_prepare.send(schedule, tracks=tracks)
+
+    events = list(models.Event.objects.filter(schedule=schedule).select_related('talk'))
+    timetable_prepare.send(schedule, events=events, tracks=tracks)
+
     ts = [time(8,00), time(18,30)]
     if events:
+        events.sort(key=lambda x: x.start_time)
         if events[0].start_time < ts[0]:
             ts[0] = events[0].start_time
         if events[-1].start_time >= ts[1]:
@@ -532,27 +546,47 @@ def render_schedule2(context, schedule, start=None, end=None):
             ts[1] = TimeTable.sumTime(events[-1].start_time, td)
 
     tt = TimeTable(time_spans=ts, rows=tracks)
-    for e in models.Event.objects.filter(schedule=schedule):
-        duration = e.talk.duration if e.talk else None
+    for e in events:
+        if e.duration:
+            duration = e.duration
+        else:
+            duration = e.talk.duration if e.talk else None
         event_tracks = set(parse_tag_input(e.track))
         rows = [ x for x in tracks if x.track in event_tracks ]
         if ('break' in event_tracks or 'special' in event_tracks) and not rows:
-            rows = list(tracks)
+            rows = list(t for t in tracks if not t.outdoor)
         if not rows:
             continue
         if 'teaser' in event_tracks:
             duration = 30
         tt.setEvent(e.start_time, e, duration, rows=rows)
 
+    timetable_prepare.send(schedule, timetable=tt)
+
     if start or end:
         tt = tt.slice(start, end)
 
+    return tt
+
+@fancy_tag(register, takes_context=True)
+def render_schedule_timetable(context, schedule, timetable, start=None, end=None, collapse='auto'):
+    if start:
+        start = datetime.strptime(start, '%H:%M').time()
+    else:
+        start = None
+    if end:
+        end = datetime.strptime(end, '%H:%M').time()
+    else:
+        end = None
+    if start or end:
+        timetable = timetable.slice(start, end)
     ctx = Context(context)
     ctx.update({
         'schedule': schedule,
-        'timetable': tt,
+        'timetable': timetable,
+        'collapse': collapse,
     })
-    return ctx
+    return render_to_string('conference/render_schedule_timetable.html', ctx)
 
 @register.filter
 def event_has_track(event, track):
@@ -1081,9 +1115,34 @@ def convert_twitter_links(text, args=None):
 def user_interest(event, user):
     if not user.is_authenticated():
         return 0
+    return models.EventInterest.objects.get_for_user(event, user)
+
+@fancy_tag(register, takes_context=True)
+def user_interest(context, event, user=None):
+    """
+    {% user_interest event [ user ] as var %}
+    Restituisce l'interesse di un utente, se manca viene recuperato dalla
+    request, per l'evento passato.
+    """
+    request = context.get('request')
+    if user is None:
+        if not request:
+            raise ValueError('request not found')
+        else:
+            user = request.user
+
+    if not user.is_authenticated():
+        return 0
+
     try:
-        return event.eventinterest_set.get(user=user).interest
-    except models.EventInterest.DoesNotExist:
+        cached = request._user__events_interests
+    except AttributeError:
+        cached = dict((x['event_id'], x) for x in models.EventInterest.objects.filter(user=user).values())
+        request._user__events_interests = cached
+
+    try:
+        return cached[event.id]['interest']
+    except KeyError:
         return 0
 
 @fancy_tag(register)
@@ -1120,7 +1179,7 @@ def timetable_columns(timetable):
     return output
 
 @fancy_tag(register)
-def timetable_cells(timetable, width, height, outer_width=None, outer_height=None):
+def timetable_cells(timetable, width, height, outer_width=None, outer_height=None, collapse='auto'):
     if outer_width is None:
         outer_width = width
     if outer_height is None:
@@ -1129,6 +1188,13 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
     extra_height = outer_height - height
 
     compress_width = 10
+    def calc_width(col):
+        if not col['collapse']:
+            return width
+        elif col['events'] == 0:
+            return 0
+        else:
+            return 10
 
     columns = list(timetable.columns())
     col_pos = [{'time': None, 'pos': 0, 'collapse': False,}]
@@ -1152,9 +1218,14 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
                 events['reference'] += 1
             else:
                 events['fixed'] += 1
-        collapse = events['fixed'] == 0 and events['special'] > 0
-        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse, })
-        next_pos = next_pos + (outer_width if not collapse else (compress_width + extra_width))
+        if collapse == 'auto':
+            collapse_flag = (events['fixed'] == 0 and events['special'] > 0) or (events['total'] == 0)
+        elif collapse == 'always':
+            collapse_flag = events['fixed'] == 0
+        else:
+            collapse_flag = False
+        col_pos.append({'time': c, 'pos': next_pos, 'collapse': collapse_flag, 'events': events['total'], })
+        next_pos = next_pos + calc_width(col_pos[-1])
 
     max_size = [0, 0]
     def size(time, row, cols=1, rows=1):
@@ -1165,7 +1236,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         t = row * outer_height
         w = 0
         for _ in col_pos[ix:ix+cols]:
-            w += width if not _['collapse'] else compress_width
+            w += calc_width(_)
         w += extra_width * (cols-1)
         h = rows * height
         h += extra_height * (rows-1)
