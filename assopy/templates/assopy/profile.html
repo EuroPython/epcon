@@ -12,6 +12,14 @@ h1 span {
     border: 5px solid #aba18f;
 }
 
+.coupon span {
+    font-weight: bold;
+}
+
+.coupon.invalid {
+    text-decoration: line-through;
+}
+
 </style>
 {% endblock %}
 
@@ -60,13 +68,24 @@ h1 span {
                     <a href="{% url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
                 </p>
                 {% endif %}
+                {% with request.user.assopy_user|user_coupons as coupons %}
+                    {% if coupons|length %}
+                    <h4>{% trans "Your Coupons" %}</h4>
+                    {% for c in coupons.valid %}
+                    <p class="coupon valid"><span>Code: {{ c.code }}</span><br />{{ c.description }}</p>
+                    {% endfor %}
+                    {% for c in coupons.invalid %}
+                    <p class="coupon invalid"><span>Code: {{ c.code }}</span><br />{{ c.description }}</p>
+                    {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 {% with request.user.assopy_user.tickets as tickets %}
-                {% with request.user.assopy_user.invoices as invoices %}
-                    {% if tickets|length or invoices|length %}
-                    <h4>{% trans "Utilities" %}</h4>
                     {% if tickets|length %}
+                    <h4>{% trans "Utilities" %}</h4>
                     <p><a href="{% url assopy-tickets %}">{% trans "Your tickets" %}</a></p>
                     {% endif %}
+                {% endwith %}
+                {% with request.user.assopy_user.invoices as invoices %}
                     {% if invoices|length %}
                     <h4>{% trans "Your invoices" %}</h4>
                     <ul>
@@ -79,8 +98,6 @@ h1 span {
                     {% endfor %}
                     </ul>
                     {% endif %}
-                    {% endif %}
-                {% endwith %}
                 {% endwith %}
             </div>
         </aside>

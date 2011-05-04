@@ -180,3 +180,13 @@ def order_complete(parser, token):
 @register.filter()
 def include_fare(order, type):
     return order.orderitem_set.filter(ticket__fare__payment_type=type).exists()
+
+@register.filter
+def user_coupons(user):
+    output = {'valid': [], 'invalid': []}
+    for c in user.coupon_set.all():
+        if c.valid(user):
+            output['valid'].append(c)
+        else:
+            output['invalid'].append(c)
+    return output
