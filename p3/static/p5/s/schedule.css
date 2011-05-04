@@ -145,7 +145,7 @@ table.schedule caption {
     float: right;
     width: 20px;
     height: 100%;
-    background: red;
+    cursor: pointer;
 }
 #schedule-navigator .opener.closed {
     background: transparent url(../i/schedule-navigator-open.png) no-repeat center center;
