@@ -530,7 +530,7 @@ def schedule_timetable(context, schedule, start=None, end=None):
         return None
     timetable_prepare.send(schedule, tracks=tracks)
 
-    events = list(models.Event.objects.filter(schedule=schedule))
+    events = list(models.Event.objects.filter(schedule=schedule).select_related('talk'))
     timetable_prepare.send(schedule, events=events, tracks=tracks)
 
     ts = [time(8,00), time(18,30)]
