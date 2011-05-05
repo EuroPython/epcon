@@ -382,6 +382,10 @@ def geocode(request):
     data = json.loads(urllib.urlopen(url).read())
     return data
 
+# sembra che a volte la redirezione di paypal si concluda con una POST da parte
+# del browser (qualcuno ha detto HttpResponseRedirectSeeOther?), dato che non
+# eseguo niente di pericoloso evito di controllare il csrf
+@csrf_exempt
 @render_to('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
