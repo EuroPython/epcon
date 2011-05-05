@@ -209,22 +209,21 @@
             </fieldset>
             {% endif %}
 
-            <fieldset class="tickets">
+            <fieldset class="tickets coupon">
                 <legend>{% trans "Coupon code" %}</legend>
                 <div class="cms">                    
-                    {{ form.coupon|field }}
+                    {{ form.coupon|field }} <span></span>
+                    <hr />
                 </div>
-                <div class="total coupon"> 
+                <div class="total"> 
                     {% trans "Save (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
 
             <fieldset class="tickets">
-
                 <div class="total grand"> 
                     {% trans "Grand total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
-        
             </fieldset>
 
             <fieldset class="border">
@@ -265,7 +264,9 @@
                         url: '{% url p3-calculator %}',
                         dataType: 'json',
                         success: function(data, text, jqHXR) {
-                            $('.coupon.total b', form).html('€ ' + data.coupon);
+                            var feedback = $('.coupon .cms span');
+                            feedback.text(data.coupon != 0 ? 'coupon accepted' : '');
+                            $('.coupon .total b', form).html('€ ' + data.coupon);
                             $('.grand.total b', form).html('€ ' + data.total);
                         }
                     });

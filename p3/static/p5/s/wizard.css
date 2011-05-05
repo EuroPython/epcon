@@ -65,3 +65,17 @@
     opacity: .3;
 
 }
+
+.wizard .coupon label, .wizard .coupon .field {
+    float: left;
+}
+
+.wizard .coupon label, .wizard .coupon .cms span {
+    height: 26px;
+    line-height: 26px;
+}
+
+.wizard .coupon .cms span {
+    margin-left: 10px;
+    color: green;
+}
