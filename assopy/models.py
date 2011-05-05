@@ -353,7 +353,7 @@ class Coupon(models.Model):
                 return False
 
         if self.max_usage:
-            if OrderItem.objects.exclude(ticket=None).filter(code=self.code).count() >= self.max_usage:
+            if OrderItem.objects.filter(ticket=None, code=self.code).count() >= self.max_usage:
                 return False
 
         if self.user_id:
