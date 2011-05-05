@@ -6,7 +6,9 @@ from email_template import utils
 from assopy.models import order_created, purchase_completed, ticket_for_user
 
 def on_order_created(sender, **kwargs):
-    if sender.method == 'bank':
+    if sender.total() == 0:
+        on_purchase_completed(sender)
+    elif sender.method == 'bank':
         utils.email(
             'bank-order-complete',
             ctx={'order': sender,},
