@@ -382,7 +382,7 @@ class Coupon(models.Model):
         item = OrderItem(order=order, ticket=None)
         item.code = self.code
         item.description = self.description
-        item.price = -1 * discount
+        item.price = discount
         return item
 
     def applyToRows(self, user, rows):
