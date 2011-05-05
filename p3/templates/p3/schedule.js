@@ -185,7 +185,7 @@
         }
     }
 
-    syncFormWithQueryString();
+    var page_load = true;
 
     $('label', form_flags).click(function(e) {
         e.preventDefault();
@@ -229,7 +229,12 @@
     if(supports_history_api) {
         $(window).bind('popstate', function(e) {
             syncFormWithQueryString();
-            refreshSchedule();
+            if(page_load) {
+                page_load = false
+            }
+            else {
+                refreshSchedule();
+            }
         });
     }
 
