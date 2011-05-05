@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 import forms as p3forms
 import models
 from assopy.forms import BillingData
-from assopy.models import Order, ORDER_PAYMENT, User, UserIdentity
+from assopy.models import Coupon, Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
 from conference.models import Fare, Event, Ticket, Schedule
 from email_template import utils
@@ -177,27 +177,51 @@ def user(request, token):
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
+from assopy.forms import FormTickets
+class P3FormTickets(FormTickets):
+    coupon = forms.CharField(
+        label='Insert your discount code and save money!',
+        max_length=10,
+        required=False,
+        widget=forms.TextInput(attrs={'size': 10}),
+    )
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(P3FormTickets, self).__init__(*args, **kwargs)
+        del self.fields['payment']
+
+    def clean_coupon(self):
+        data = self.cleaned_data.get('coupon', '').strip()
+        if not data:
+            return None
+        if data[0] == '_':
+            raise forms.ValidationError('invalid coupon')
+        try:
+            coupon = Coupon.objects.get(code__iexact=data)
+        except Coupon.DoesNotExist:
+            raise forms.ValidationError('invalid coupon')
+        if not coupon.valid(self.user):
+            raise forms.ValidationError('invalid coupon')
+        return coupon
+
+    def clean(self):
+        data = super(P3FormTickets, self).clean()
+        order_type = data['order_type']
+        company = order_type == 'deductible'
+        for ix, row in list(enumerate(data['tickets']))[::-1]:
+            fare, quantity = row
+            if (company ^ (fare.code[-1] == 'C')):
+                del data['tickets'][ix]
+                del data[fare.code]
+            return data
+
 @render_to('p3/cart.html')
 def cart(request):
-    from assopy.forms import FormTickets
     try:
         at = request.user.assopy_user.account_type
     except AttributeError:
         at = None
-    class P3FormTickets(FormTickets):
-        def __init__(self, *args, **kwargs):
-            super(P3FormTickets, self).__init__(*args, **kwargs)
-            del self.fields['payment']
-        def clean(self):
-            data = super(P3FormTickets, self).clean()
-            order_type = data['order_type']
-            company = order_type == 'deductible'
-            for ix, row in list(enumerate(data['tickets']))[::-1]:
-                fare, quantity = row
-                if (company ^ (fare.code[-1] == 'C')):
-                    del data['tickets'][ix]
-                    del data[fare.code]
-            return data
+
     # user-cart serve alla pagina di conferma con i dati di fatturazione,
     # voglio essere sicuro che l'unico modo per impostarlo sia quando viene
     # fatta una POST valida
@@ -323,3 +347,41 @@ def schedule_search(request, conference):
     from haystack.query import SearchQuerySet
     sqs = SearchQuerySet().models(Event).auto_query(request.GET.get('q')).filter(conference=conference)
     return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]
+
+@login_required
+@render_to_json
+def calculator(request):
+    output = {
+        'tickets': 0,
+        'coupon': 0,
+    }
+    if request.method == 'POST':
+        form = P3FormTickets(data=request.POST, user=request.user.assopy_user)
+        if not form.is_valid():
+            # se la form non valida a causa del coupon lo elimino dai dati per
+            # dare cmq un feedback all'utente
+            if 'coupon' in form.errors:
+                qdata = request.POST.copy()
+                del qdata['coupon']
+                form = P3FormTickets(data=qdata, user=request.user.assopy_user)
+        if form.is_valid():
+            data = form.cleaned_data
+            coupons = []
+            if data['coupon']:
+                coupons.append(data['coupon'])
+            totals = Order.calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
+            output['tickets'] = sum(x[0] for x in totals['tickets'].values())
+            if data['coupon']:
+                output['coupon'] = totals['coupons'][data['coupon'].code][0]
+        else:
+            # report form.errors ?
+            pass
+
+    output['total'] = sum(output.values())
+    for k, v in output.items():
+        if v == 0:
+            # v è un Decimal e ottengo una rappresentazione diversa tra 0 e -0
+            output[k] = '0'
+        else:
+            output[k] = '%.2f' % v
+    return output

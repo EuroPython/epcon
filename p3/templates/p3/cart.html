@@ -210,6 +210,16 @@
             {% endif %}
 
             <fieldset class="tickets">
+                <legend>{% trans "Coupon code" %}</legend>
+                <div class="cms">                    
+                    {{ form.coupon|field }}
+                </div>
+                <div class="total coupon"> 
+                    {% trans "Save (VAT inc.)" %}: <b>€ 0</b> 
+                </div> 
+            </fieldset>
+
+            <fieldset class="tickets">
 
                 <div class="total grand"> 
                     {% trans "Grand total (VAT inc.)" %}: <b>€ 0</b> 
@@ -228,8 +238,9 @@
             {% else %}
             (function() {
                 function calcTotal() {
-                    var totals = [ 0, 0, 0];
-                    $('#form-cart fieldset.tickets').each(function(ix, e) {
+                    var totals = [0, 0, 0];
+                    var form = $('#form-cart');
+                    $('fieldset.tickets', form).each(function(ix, e) {
                         if(ix >= totals.length)
                             return;
                         $('input', this).each(function() {
@@ -243,19 +254,25 @@
                             }
                         });
                     });
-                    $('#form-cart .total').each(function(ix, e) {
-                        var e = $(this);
-                        if(e.hasClass('grand')) {
-                            var t = totals[0] + totals[1] + totals[2];
-                        }
-                        else {
+                    $('.total', form).each(function(ix, e) {
+                        if(ix<totals.length) {
+                            var e = $(this);
                             var t = totals[ix];
+                            $('b', e).html('€ ' + t);
                         }
-                        $('b', e).html('€ ' + t);
-                    })
+                    });
+                    form.ajaxSubmit({
+                        url: '{% url p3-calculator %}',
+                        dataType: 'json',
+                        success: function(data, text, jqHXR) {
+                            $('.coupon.total b', form).html('€ ' + data.coupon);
+                            $('.grand.total b', form).html('€ ' + data.total);
+                        }
+                    });
                 }
                 $('#form-cart input')
                     .change(calcTotal)
+                    .not('[name=coupon]')
                     .keypress(function(e) {
                         if((e.which < 48 || e.which > 57) && e.which != 13 && e.which != 0 && e.which != 8) {
                             e.preventDefault()
@@ -300,5 +317,4 @@
         </script>
     </div>
 {% endblock %}
-
 
