@@ -325,11 +325,13 @@ class Coupon(models.Model):
     code = models.CharField(max_length=10)
     start_validity = models.DateField(null=True, blank=True)
     end_validity = models.DateField(null=True, blank=True)
-    max_usage = models.PositiveIntegerField(default=0)
+    max_usage = models.PositiveIntegerField(default=0, help_text='numero di volte che questo coupon può essere usato')
+    items_per_usage = models.PositiveIntegerField(default=0, help_text='numero di righe d\'ordine su cui questo coupon ha effetto')
     description = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
 
     user = models.ForeignKey(User, null=True, blank=True)
+    fares = models.ManyToManyField('conference.Fare')
 
     def __unicode__(self):
         return '%s (%s)' % (self.code, self.value)
@@ -362,15 +364,49 @@ class Coupon(models.Model):
 
         return True
 
-    def apply(self, total, guard=None):
+    def applyToOrder(self, order):
+        if not self.valid(order.user):
+            raise ValueError('coupon not valid')
+
+        fares = self.fares.all()
+        apply_to = order.rows(include_discounts=False)
+        if fares:
+            apply_to = apply_to.filter(ticket__fare__in=fares) 
+        if self.items_per_usage:
+            apply_to = apply_to.order_by('-ticket__fare__price')[:self.items_per_usage]
+
+        total = sum(x.price for x in apply_to)
+        discount = self._applyToTotal(total, order.total())
+        if not discount:
+            return None
+        item = OrderItem(order=order, ticket=None)
+        item.code = self.code
+        item.description = self.description
+        item.price = -1 * discount
+        return item
+
+    def applyToRows(self, user, rows):
+        if not self.valid(user):
+            raise ValueError('coupon not valid')
+
+        fares = dict((f.code, f) for f in self.fares.all())
+        apply_to = rows
+        if fares:
+            apply_to = filter(lambda x: x.code in fares, apply_to)
+        if self.items_per_usage:
+            apply_to = sorted(apply_to, key=lambda x: x.price, reverse=True)[:self.items_per_usage]
+        return self._applyToTotal(sum(x.price for x in apply_to), sum(x.price for x in rows))
+
+    def _applyToTotal(self, total, guard):
         if self.type() == 'val':
-            v = Decimal(self.value)
+            discount = Decimal(self.value)
         else:
-            v = total / 100 * Decimal(self.value[:-1]) 
-        if guard is not None:
-            if v > guard:
-                v = guard
-        return v
+            discount = total / 100 * Decimal(self.value[:-1]) 
+        if discount > total:
+            discount = total
+        if discount > guard:
+            discount = guard
+        return -1 * discount
 
 class OrderManager(models.Manager):
     def get_query_set(self):
@@ -441,22 +477,13 @@ class OrderManager(models.Manager):
             #
             # queste regole servono a preparare un ordine (e una fattura) che
             # risulti il più capibile possibile per l'utente.
-            for c in coupons:
-                if c.type() == 'perc':
-                    item = OrderItem(order=o, ticket=None)
-                    item.code = c.code
-                    item.description = c.description
-                    item.price = -1 * c.apply(tickets_total, o.total())
-                    item.save()
-                    log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
-            for c in coupons:
-                if c.type() == 'val':
-                    item = OrderItem(order=o, ticket=None)
-                    item.code = c.code
-                    item.description = c.description
-                    item.price = -1 * c.apply(o.total(), o.total())
-                    item.save()
-                    log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
+            for t in ('perc', 'val'):
+                for c in coupons:
+                    if c.type() == t:
+                        item = c.applyToOrder(o)
+                        if item:
+                            item.save()
+                            log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
         log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
         if remote:
             genro.create_order(
@@ -611,8 +638,14 @@ class Order(models.Model):
             t = self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
+    def rows(self, include_discounts=True):
+        if include_discounts:
+            return self.orderitem_set.all()
+        else:
+            return self.orderitem_set.exclude(ticket=None)
+
     @classmethod
-    def calculator(self, items, coupons=None):
+    def calculator(self, items, coupons=None, user=None):
         """
         calcola l'importo di un ordine non ancora effettuato tenendo conto di
         eventuali coupons.
@@ -630,18 +663,17 @@ class Order(models.Model):
 
         total = tickets_total
         if coupons:
-            for c in coupons:
-                if c.type() == 'perc':
-                    v = -1 * c.apply(tickets_total, total)
-                    totals['coupons'][c.code] = (v, c)
-                    total += v
-
-            for c in coupons:
-                if c.type() == 'val':
-                    v = -1 * c.apply(total, total)
-                    totals['coupons'][c.code] = (v, c)
-                    total += v
-
+            rows = []
+            for f, q in items:
+                for _ in range(q):
+                    rows.append(f)
+            for t in ('perc', 'val'):
+                for c in coupons:
+                    if c.type() == t:
+                        result = c.applyToRows(user, rows)
+                        if result is not None:
+                            totals['coupons'][c.code] = (result, c)
+                            total += result
         totals['total'] = total
         return totals
 
