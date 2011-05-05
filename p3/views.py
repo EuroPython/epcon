@@ -320,7 +320,8 @@ def billing(request):
             request.user.assopy_user.card_name = request.user.assopy_user.name()
         form = P3BillingData(instance=request.user.assopy_user)
         
-    totals = Order.calculator(items=tickets, coupons=[request.session['user-cart']['coupon']], user=request.user.assopy_user)
+    coupon = request.session['user-cart']['coupon']
+    totals = Order.calculator(items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
     return {
         'totals': totals,
         'form': form,
