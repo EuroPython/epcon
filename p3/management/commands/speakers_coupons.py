@@ -21,6 +21,7 @@ class Command(BaseCommand):
             raise CommandError('conference missing')
         
         speakers = {}
+        fares = models.Fare.objects.filter(conference=conference.code, ticket_type='conference')
         talks = models.Talk.objects.accepted(conference.code)
         for t in talks:
             for s in t.get_all_speakers():
@@ -44,6 +45,8 @@ class Command(BaseCommand):
             c.code = code
             c.user = spk.user.assopy_user
             c.max_usage = 1
+            c.items_per_usage = 1
             c.value = value
             c.description = '[%s] speaker discount' % conference
             c.save()
+            c.fares = fares
