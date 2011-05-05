@@ -289,23 +289,46 @@ def billing(request):
         class Meta(BillingData.Meta):
             exclude = ('city', 'zip_code', 'state', 'vat_number', 'tin_number')
 
+    coupon = request.session['user-cart']['coupon']
+    totals = Order.calculator(items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
+
     if request.method == 'POST':
         # non voglio che attraverso questa view sia possibile cambiare il tipo
         # di account company/private
         auser = request.user.assopy_user
         post_data = request.POST.copy()
         post_data['account_type'] = auser.account_type
-        form = P3BillingData(instance=auser, data=post_data)
-        if form.is_valid():
-            data = form.cleaned_data
-            form.save()
+
+        order_data = None
+        if totals['total'] == 0:
+            # free order, mi interessa solo sapere che l'utente ha accettato il
+            # code of conduct
+            if 'code_conduct' in request.POST:
+                order_data = {
+                    'payment': 'bank',
+                }
+            else:
+                # se non lo ha accettato, preparo la form, e l'utente si
+                # troverà la checkbox colorata in rosso
+                form = P3BillingData(instance=auser, data=post_data)
+                form.is_valid()
+        else:
+            form = P3BillingData(instance=auser, data=post_data)
+            if form.is_valid():
+                order_data = form.cleaned_data
+                form.save()
+
+        if order_data:
             coupon = request.session['user-cart']['coupon']
             o = Order.objects.create(
-                user=auser, payment=data['payment'],
-                billing_notes=data.get('billing_notes', ''),
+                user=auser, payment=order_data['payment'],
+                billing_notes=order_data.get('billing_notes', ''),
                 items=request.session['user-cart']['tickets'],
                 coupons=[coupon] if coupon else None,
             )
+            if totals['total'] == 0:
+                return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
+
             if o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:
@@ -320,8 +343,6 @@ def billing(request):
             request.user.assopy_user.card_name = request.user.assopy_user.name()
         form = P3BillingData(instance=request.user.assopy_user)
         
-    coupon = request.session['user-cart']['coupon']
-    totals = Order.calculator(items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
     return {
         'totals': totals,
         'form': form,

@@ -52,31 +52,36 @@
             </fieldset>
 
             <fieldset>
-                <legend>{% trans "Billing data" %}</legend>
-                <div class="span-6">{{ form.payment|field }}
-                    <div id="id_payment_cc">
-                        {% blocktrans %}
-                        Paypal is used for credit card transactions.<br />
-                        <strong>No registration is required</strong>, you will just need to
-                        click on a small link for non-registered users, located somewhere in the
-                        page (the exact position varies depending on the browser's language),
-                        and then fill in the form.
-                        {% endblocktrans %}
+                {% if totals.total != 0 %}
+                    <legend>{% trans "Billing data" %}</legend>
+                    <div class="span-6">{{ form.payment|field }}
+                        <div id="id_payment_cc">
+                            {% blocktrans %}
+                            Paypal is used for credit card transactions.<br />
+                            <strong>No registration is required</strong>, you will just need to
+                            click on a small link for non-registered users, located somewhere in the
+                            page (the exact position varies depending on the browser's language),
+                            and then fill in the form.
+                            {% endblocktrans %}
+                        </div>
                     </div>
-                </div>
-                <div class="span-6">{{ form.card_name|field_widget:"size=58"|field }}</div>
-                <div class="span-6">{{ form.country|field }}</div>
-                <div class="span-6">{{ form.address|field_widget:"size=58"|field }}</div>
-                <div class="span-6 cms">
-                    <div id="google-guess" style="display: none">
-                        <p>{% trans "Google says" %}:</p>
-                        <ul></ul>
+                    <div class="span-6">{{ form.card_name|field_widget:"size=58"|field }}</div>
+                    <div class="span-6">{{ form.country|field }}</div>
+                    <div class="span-6">{{ form.address|field_widget:"size=58"|field }}</div>
+                    <div class="span-6 cms">
+                        <div id="google-guess" style="display: none">
+                            <p>{% trans "Google says" %}:</p>
+                            <ul></ul>
+                        </div>
                     </div>
-                </div>
-                {% if form.billing_notes %}
-                <div class="span-6">{{ form.billing_notes|field }}</div>
+                    {% if form.billing_notes %}
+                    <div class="span-6">{{ form.billing_notes|field }}</div>
+                    {% endif %}
+                    <div class="span-6">{{ form.code_conduct|field }}</div>
+                {% else %}
+                    <legend>{% trans "You have nothing to pay" %}</legend>
+                    <div class="span-6">{{ form.code_conduct|field }}</div>
                 {% endif %}
-                <div class="span-6">{{ form.code_conduct|field }}</div>
             </fieldset>
             <fieldset class="border">
                 <button value="" name="" type="submit">{% trans "Place Order &rarr;" %}</button>
