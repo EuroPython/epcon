@@ -29,16 +29,22 @@
                             </tr> 
                         </thead>
                         <tbody>
-                            {% for fare, quantity, price in tickets %}
+                            {% for price, quantity, fare in totals.tickets.values %}
                             <tr>
                                 <td>{{ fare.name }}</td>
                                 <td>{{ quantity }}</td>
                                 <td>€ {{ price|floatformat:"2" }}</td>
                             </tr>
                             {% endfor %}
+                            {% for price, coupon in totals.coupons.values %}
+                            <tr>
+                                <td colspan="2">{{ coupon.description }}</td>
+                                <td>€ {{ price|floatformat:"2" }}</td>
+                            </tr>
+                            {% endfor %}
                             <tr class="subtotal"> 
                                 <td colspan="2" style="text-align: right">{% trans "Total" %}</td>
-                                <td>€ {{ total|floatformat:"2" }}</td> 
+                                <td>€ {{ totals.total|floatformat:"2" }}</td> 
                             </tr>
                         </tbody>
                     </table>
@@ -88,7 +94,6 @@
                 })
             </script>
         </form>
-        
         
         <script type="text/javascript">
             function _geoCode() {

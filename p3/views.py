@@ -218,8 +218,10 @@ class P3FormTickets(FormTickets):
 @render_to('p3/cart.html')
 def cart(request):
     try:
-        at = request.user.assopy_user.account_type
+        u = request.user.assopy_user
+        at = u.account_type
     except AttributeError:
+        u = None
         at = None
 
     # user-cart serve alla pagina di conferma con i dati di fatturazione,
@@ -227,7 +229,7 @@ def cart(request):
     # fatta una POST valida
     request.session.pop('user-cart', None)
     if request.method == 'POST':
-        form = P3FormTickets(data=request.POST)
+        form = P3FormTickets(data=request.POST, user=u)
         if form.is_valid():
             request.session['user-cart'] = form.cleaned_data
             return redirect('p3-billing')
@@ -249,13 +251,8 @@ def cart(request):
 @login_required
 @render_to('p3/billing.html')
 def billing(request):
-    tickets = []
-    total = 0
     try:
-        for fare, quantity in request.session['user-cart']['tickets']:
-            t = fare.price * quantity
-            tickets.append((fare, quantity, t))
-            total += t
+        tickets = request.session['user-cart']['tickets']
     except KeyError:
         # la sessione non ha più la chiave user-cart, invece che sollevare un
         # errore 500 rimando l'utente sul carrello
@@ -264,7 +261,7 @@ def billing(request):
     # non si possono comprare biglietti destinati ad entità diverse
     # (persone/ditte)
     recipients = set()
-    for fare, _, _ in tickets:
+    for fare, foo in tickets:
         recipients.add('c' if fare.recipient_type == 'c' else 'p')
     if len(recipients) != 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
@@ -302,11 +299,12 @@ def billing(request):
         if form.is_valid():
             data = form.cleaned_data
             form.save()
-            payment = data['payment']
+            coupon = request.session['user-cart']['coupon']
             o = Order.objects.create(
                 user=auser, payment=data['payment'],
                 billing_notes=data.get('billing_notes', ''),
                 items=request.session['user-cart']['tickets'],
+                coupons=[coupon] if coupon else None,
             )
             if o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
@@ -322,9 +320,9 @@ def billing(request):
             request.user.assopy_user.card_name = request.user.assopy_user.name()
         form = P3BillingData(instance=request.user.assopy_user)
         
+    totals = Order.calculator(items=tickets, coupons=[request.session['user-cart']['coupon']], user=request.user.assopy_user)
     return {
-        'tickets': tickets,
-        'total': total,
+        'totals': totals,
         'form': form,
     }
 
