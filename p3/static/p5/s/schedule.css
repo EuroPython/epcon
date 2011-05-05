@@ -374,3 +374,7 @@ div.schedule .track span {
 .schedule .event[data-track=training1], .schedule .event[data-track=training2]{
     background: url(../i/training.png) center center repeat-x;
 }
+
+#schedule > .page > .container {
+    margin-left: 60px;
+}
