@@ -18,8 +18,26 @@ class CountryAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Country, CountryAdmin)
 
+class OrderItemAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.OrderItem
+
+    def __init__(self, *args, **kwargs):
+        super(OrderItemAdminForm, self).__init__(*args, **kwargs)
+        from conference.models import Ticket
+        self.fields['ticket'].queryset = Ticket.objects.all().select_related('fare')
+
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
+    form = OrderItemAdminForm
+
+class OrderAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Order
+
+    def __init__(self, *args, **kwargs):
+        super(OrderAdminForm, self).__init__(*args, **kwargs)
+        self.fields['user'].queryset = models.User.objects.all().select_related('user')
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('code', '_user', '_created', 'method', '_items', '_complete_order', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
@@ -28,6 +46,8 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
+
+    form = OrderAdminForm
 
     inlines = (
         OrderItemInlineAdmin,
