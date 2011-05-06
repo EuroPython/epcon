@@ -12,6 +12,11 @@ function setup_trigger_overlay(jq) {
                         throw "to use a remote content the overlay must have a .contentWrap element";
                     wrap.load(this.getTrigger().attr("href"));
                 }
+            },
+            onLoad: function() {
+                var code = e.attr('data-overlay-onload');
+                if(code)
+                    eval(code);
             }
         });
     });
