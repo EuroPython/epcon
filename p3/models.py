@@ -79,18 +79,18 @@ def _ticket_sim_upload_to(instance, filename):
     return os.path.join(subdir, fname + os.path.splitext(filename)[1])
 
 TICKET_SIM_TYPE = (
-    ('std', 'SIM Standard'),
+    ('std', 'Standard SIM (USIM)'),
     ('micro', 'Micro SIM'),
 )
 TICKET_SIM_PLAN_TYPE = (
-    ('std', 'Standard'),
-    ('bb', 'BlackBerry'),
+    ('std', 'Standard Plan'),
+    ('bb', 'BlackBerry Plan'),
 )
 class TicketSIM(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
-    document = models.FileField(verbose_name='ID Document', upload_to=_ticket_sim_upload_to, blank=True, help_text='')
-    sim_type = models.CharField(max_length=5, choices=TICKET_SIM_TYPE, default='std')
-    plan_type = models.CharField(max_length=3, choices=TICKET_SIM_PLAN_TYPE, default='std')
+    document = models.FileField(verbose_name='ID Document', upload_to=_ticket_sim_upload_to, blank=True, help_text='Italian regulations require a document ID to activate a phone SIM. You can use the same ID for up to three SIMs. Any document is fine (EU driving license, personal ID card, etc).')
+    sim_type = models.CharField(max_length=5, choices=TICKET_SIM_TYPE, default='std', help_text='Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4.')
+    plan_type = models.CharField(max_length=3, choices=TICKET_SIM_PLAN_TYPE, default='std', help_text='Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).')
 
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')
