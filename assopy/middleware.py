@@ -3,6 +3,8 @@
 import sys, traceback
 from cStringIO import StringIO
 
+from django.conf import settings
+
 def dump_exc_plus(exclude=None):
     """
     Returns a string containing the usual traceback information, followed by a
@@ -51,13 +53,12 @@ class DebugInfo(object):
     Add to settings.MIDDLEWARE_CLASSES and keep it outermost(i.e. on top if
     possible). This allows it to catch exceptions in other middlewares as well.
     """
-
     def process_exception(self, request, exception):
+        if settings.DEBUG:
+            return
         try:
             request.META['_TRACEBACK'] = dump_exc_plus(exclude=('request', 'environ')).replace('\t', '    ').split('\n')
-
             if request.user:
                 request.META['_USERNAME'] = str(request.user.username)
         except:
             pass
-
