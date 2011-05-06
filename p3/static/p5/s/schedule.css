@@ -387,3 +387,8 @@ div.schedule .tools > div.talk-interest {
     background: transparent url(../i/icon-thumb-down-lit.png) no-repeat left center;
 }
 
+.schedule-help {
+    position: absolute;
+    right: 30px;
+    bottom: 20px;
+}
