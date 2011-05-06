@@ -1296,7 +1296,7 @@ def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", 
 
 @register.filter
 def name_abbrv(name):
-    whitelist = set(('de', 'di', 'van', 'mc', 'mac'))
+    whitelist = set(('de', 'di', 'van', 'mc', 'mac', 'le', 'cotta'))
 
     splitted = name.split(' ')
     if len(splitted) == 1:
