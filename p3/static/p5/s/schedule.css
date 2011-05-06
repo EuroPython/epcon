@@ -173,22 +173,6 @@ table.schedule caption {
     background: transparent url(../i/checkbox_no.png) no-repeat left center;
 }
 
-.talk-interest button {
-    padding-left: 18px;
-}
-.talk-interest button.up {
-    background: transparent url(../i/icon-thumb-up.png) no-repeat left center;
-}
-.talk-interest button.up.active {
-    background: transparent url(../i/icon-thumb-up-lit.png) no-repeat left center;
-}
-.talk-interest button.down {
-    background: transparent url(../i/icon-thumb-down.png) no-repeat left center;
-}
-.talk-interest button.down.active {
-    background: transparent url(../i/icon-thumb-down-lit.png) no-repeat left center;
-}
-
 /*
  *
  */
@@ -217,6 +201,7 @@ div.schedule .hhmm {
 div.schedule .hhmm span {
     font-size: 14px;    
     color: #301d1d;
+    margin-left: -25px;
 }
 
 div.schedule .event {
@@ -378,3 +363,27 @@ div.schedule .track span {
 #schedule > .page > .container {
     margin-left: 60px;
 }
+
+div.schedule .event:hover .tools .talk-interest {
+    display: inline-block;
+}
+
+div.schedule .tools > div.talk-interest {
+    display: none;
+}
+.talk-interest button {
+    padding-left: 18px;
+}
+.talk-interest button.up {
+    background: transparent url(../i/icon-thumb-up.png) no-repeat left center;
+}
+.talk-interest button.up.active {
+    background: transparent url(../i/icon-thumb-up-lit.png) no-repeat left center;
+}
+.talk-interest button.down {
+    background: transparent url(../i/icon-thumb-down.png) no-repeat left center;
+}
+.talk-interest button.down.active {
+    background: transparent url(../i/icon-thumb-down-lit.png) no-repeat left center;
+}
+

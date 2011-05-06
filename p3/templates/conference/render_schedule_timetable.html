@@ -18,7 +18,7 @@
 {% endif %}
 
 {% randint as r %}
-{% timetable_cells timetable 70 60 70 61 collapse=collapse as schedule_cells %}
+{% timetable_cells timetable 60 60 60 61 collapse=collapse as schedule_cells %}
 <div id="s{{ r }}" class="schedule" style="{{ schedule_cells.schedule_size }}">
     {% for cell in schedule_cells.cells %}
         {% if cell.type == '' %}
@@ -64,21 +64,27 @@
                 style="{{ cell.size }}">
                 <div class="wrapper">
                 {% if ref.talk %}
+                    {% with ref|event_has_track:"teaser" as teaser %}
                     <div class="talk-level {{ ref.talk.level }}">&nbsp;</div>
-                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="event-trigger-overlay" title="{% if ref|event_has_track:"teaser" %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if ref|event_has_track:"teaser" %}{{ ref.talk.title|truncate_chars:15 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a></h3>
+                    <h3 data-talk="{{ ref.talk.id }}"><a href="{% url conference-talk slug=ref.talk.slug %}" class="event-trigger-overlay" title="{% if teaser %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if teaser %}{{ ref.talk.title|truncate_chars:30 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a></h3>
+                    {% if not teaser %}
                     by 
                     {% for s in ref.talk.get_all_speakers %}
-                    <a href="{% url conference-speaker slug=s.slug %}">{{ s.name }}</a>
+                    <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
+                    {% endif %}
                     <div class="tools">
                         {% if request.user.is_authenticated %}
+                        {% if not teaser %}
                         <div class="talk-vote">{% talk_vote ref.talk as x %}{% if x %}{{ x.vote}}/10{% endif %}</div>
+                        {% endif %}
                         <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=ref.id %}">
                             <button class="down {% if interest < 0 %}active{% endif %}"></button>
                             <button class="up {% if interest > 0 %}active{% endif %}"></button>
                         </div>
                         {% endif %}
                     </div>
+                    {% endwith %}
                 {% else %}
                     <div class="custom-event">{% if ref|event_has_track:"partner-program" %}{{ ref|event_partner_program }}{% else %}{{ ref.custom|safe }}{% endif %}</div>
                     <div class="tools">&nbsp;</div>
