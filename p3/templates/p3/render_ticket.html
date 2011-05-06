@@ -137,6 +137,10 @@
         </form>
     </div>
     <script type='text/javascript'>
-        $('div[data-ticket={{ ticket.id }}] .edit-button').overlay();
+        try {
+            $('div[data-ticket={{ ticket.id }}] .edit-button').overlay();
+        }
+        catch(e) {
+        }
     </script>
 </div>
