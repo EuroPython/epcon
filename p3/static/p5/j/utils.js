@@ -74,8 +74,15 @@ $(document).ready(function() {
             offset: [0, 10],
             effect: "fade",
             relative: relative,
-            opacity: 0.9
-        })
+            opacity: 0.9,
+            events: {
+                def:     "mouseenter,mouseleave",    // default show/hide events for an element
+                input:   "focus,blur",               // for all input elements
+                widget:  "focus mouseenter,blur mouseleave",  // select, checkbox, radio, button
+                file:    "focus mouseenter,blur mouseleave",
+                tooltip: "mouseenter,mouseleave"     // the tooltip element
+            }
+        });
     });
 });
 
