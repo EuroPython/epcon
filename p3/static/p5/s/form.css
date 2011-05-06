@@ -236,6 +236,10 @@ form hr {
     font-weight: bold;
 }
 
+.tickets tr.selected td .overlay {
+    font-weight: normal;
+}
+
 .tickets input.selected {
     background-color: #E1DBC5;
 }
