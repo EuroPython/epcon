@@ -1293,3 +1293,17 @@ def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", 
     ctx = Context(context)
     ctx.update(data)
     return render_to_string('conference/render_fb_like.html', ctx)
+
+@register.filter
+def name_abbrv(name):
+    whitelist = set(('de', 'di', 'van', 'mc', 'mac'))
+
+    splitted = name.split(' ')
+    if len(splitted) == 1:
+        return name
+
+    last_name = splitted[-1]
+    if splitted[-2].lower() in whitelist:
+        last_name = splitted[-2] + ' ' + last_name
+
+    return '%s. %s' % (name[0], last_name)
