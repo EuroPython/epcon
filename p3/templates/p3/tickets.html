@@ -43,7 +43,6 @@
                  * conoscere lo status code e non viene mai chiamato l'error
                  * handler.
                  */
-                console.log(response)
                 if((form.attr('enctype') == 'multipart/form-data') && (response.indexOf('errorlist') != -1)) {
                     _error();
                 }
