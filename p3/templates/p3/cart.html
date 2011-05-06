@@ -179,7 +179,6 @@
                 </div> 
 
             </fieldset>
-            {% if request.META.HTTP_HOST == "localhost:8000" %}
             <fieldset class="tickets">
                             
                 <legend>{% trans "Other Goodies" %}</legend>
@@ -207,7 +206,6 @@
                     {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
-            {% endif %}
 
             <fieldset class="tickets coupon">
                 <legend>{% trans "Coupon code" %}</legend>
