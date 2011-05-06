@@ -48,6 +48,19 @@
         </div>
         {% endif %}
     {% else %}
+        {% if ticket.fare.code == 'SIM01' %}
+        <h2>{{ ticket.fare.name }}</h2>
+        <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
+        <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
+        {% if not form.document|field_value %}
+        <div class="ticket-warning">INCOMPLETE TICKET!<br />Please edit and add a document</div>
+        {% endif %}
+        <div class="ticket-commands">            
+            <p>
+                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
+            </p>
+        </div>
+        {% else %}
         <h2>{{ ticket.fare.name }}</h2>
         <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
         <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
@@ -56,11 +69,12 @@
                 <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
             </p>
         </div>
+        {% endif %}
     {% endif %}
     </div>
 
-    {% if ticket.fare.ticket_type == "conference" %}
     <div class="ticket-additional-info">
+    {% if ticket.fare.ticket_type == "conference" %}
         <p>{% trans "Additional information (they won&#8217;t show up on the ticket)" %}</p>
         <dl>
             <dt>{% trans "Attending on days:" %}</dt>
@@ -70,19 +84,25 @@
             <dt>{% trans "Shirt size:" %}</dt>
             <dd>{{ form.shirt_size|field_display_value }}</dd>
         </dl>
-    </div>
     {% else %}
-    <div class="ticket-additional-info">
-        <p>
-            {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
-            {% trans "Deposit:" %} € 30, <b>{% trans "Balance:" %} € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
+        {% if ticket.fare.code == 'SIM01' %}
+            {% with form.document|field_value as doc %}
+            {% if doc %}
+                <p>Uploaded <a href="{{ doc.url }}">ID Document</a></p>
+            {% endif %}
             {% endwith %}
-        </p>
-    </div>
+        {% else %}
+            <p>
+                {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
+                {% trans "Deposit:" %} € 30, <b>{% trans "Balance:" %} € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
+                {% endwith %}
+            </p>
+        {% endif %}
     {% endif %}
+    </div>
 
     <div class="overlay">
-        <form action="{% url p3-ticket tid=ticket.id %}" method="post">{% csrf_token %}
+        <form action="{% url p3-ticket tid=ticket.id %}" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
         {% if ticket.fare.ticket_type == "conference" %}
             <fieldset>
                 {{ form.ticket_name|field }}

@@ -157,12 +157,18 @@ def render_ticket(context, ticket):
             blocked = inst.assigned_to != user.email
         else:
             blocked = False
-    elif ticket.fare.code in ('SIM',):
+    elif ticket.fare.code in ('SIM01',):
         try:
             inst = ticket.p3_conference_sim
         except:
             inst = None
-        form = forms.FormTicketSIM(instance=inst, prefix='t%d' % (ticket.id,))
+        form = forms.FormTicketSIM(
+            instance=inst,
+            initial={
+                'ticket_name': ticket.name, 
+            },
+            prefix='t%d' % (ticket.id,),
+        )
         blocked = False
     else:
         form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))

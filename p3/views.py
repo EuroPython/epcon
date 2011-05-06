@@ -148,19 +148,31 @@ def ticket(request, tid):
                 request.user.first_name = f
                 request.user.last_name = l
                 request.user.save()
+        elif t.fare.code in ('SIM01',):
+            try:
+                sim_ticket = t.p3_conference_sim
+            except models.TicketSIM.DoesNotExist:
+                sim_ticket = None
+            form = p3forms.FormTicketSIM(instance=sim_ticket, data=request.POST, files=request.FILES, prefix='t%d' % (t.id,))
+            if not form.is_valid():
+                return http.HttpResponseBadRequest(str(form.errors))
+            else:
+                data = form.cleaned_data
+                t.name = data['ticket_name']
+                t.save()
+                x = form.save(commit=False)
+                x.ticket = t
+                x.save()
         else:
             form = p3forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():
                 return http.HttpResponseBadRequest(str(form.errors))
             form.save()
             
-    if request.is_ajax():
-        # restituisco il rendering del nuovo biglietto, così il chiamante può
-        # mostrarlo facilmente
-        tpl = Template('{% load p3 %}{% render_ticket t %}')
-        return http.HttpResponse(tpl.render(RequestContext(request, {'t': t})))
-    else:
-        return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
+    # restituisco il rendering del nuovo biglietto, così il chiamante può
+    # mostrarlo facilmente
+    tpl = Template('{% load p3 %}{% render_ticket t %}')
+    return http.HttpResponse(tpl.render(RequestContext(request, {'t': t})))
 
 def user(request, token):
     """

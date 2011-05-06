@@ -1,4 +1,8 @@
 # -*- coding: UTF-8 -*-
+import os
+import os.path
+
+from django.conf import settings as dsettings
 from django.db import models
 from django.db.models.query import QuerySet
 
@@ -64,6 +68,16 @@ class TicketConference(models.Model):
 
     objects = TicketConferenceManager()
 
+def _ticket_sim_upload_to(instance, filename):
+    subdir = 'p3/personal_documents'
+    fname = instance.ticket.user.username
+    fdir = os.path.join(dsettings.MEDIA_ROOT, subdir)
+    for f in os.listdir(fdir):
+        if os.path.splitext(f)[0] == fname:
+            os.unlink(os.path.join(fdir, f))
+            break
+    return os.path.join(subdir, fname + os.path.splitext(filename)[1])
+
 TICKET_SIM_TYPE = (
     ('std', 'SIM Standard'),
     ('micro', 'Micro SIM'),
@@ -74,9 +88,9 @@ TICKET_SIM_PLAN_TYPE = (
 )
 class TicketSIM(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
-    document = models.FileField(upload_to='p3/personal_documents')
-    sim_type = models.CharField(max_length=5, default='std')
-    plan_type = models.CharField(max_length=3, default='std')
+    document = models.FileField(verbose_name='ID Document', upload_to=_ticket_sim_upload_to, blank=True, help_text='')
+    sim_type = models.CharField(max_length=5, choices=TICKET_SIM_TYPE, default='std')
+    plan_type = models.CharField(max_length=3, choices=TICKET_SIM_PLAN_TYPE, default='std')
 
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')

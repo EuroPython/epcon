@@ -32,11 +32,25 @@
         e.preventDefault();
         var form = $(e.target).parents('form');
         var container = form.parents('div.ticket');
+        function _error() {
+            alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
+        }
         form.ajaxSubmit({
-            target: container,
-            replaceTarget: true,
-            success: function() {
-                feedback('Ticket saved');
+            success: function(response, status, xhr, form) {
+                /*
+                 * se una form è di tipo multipart/form-data viene inviata
+                 * tramite un iframe (non via XHR), jQuery non ha modo di
+                 * conoscere lo status code e non viene mai chiamato l'error
+                 * handler.
+                 */
+                console.log(response)
+                if((form.attr('enctype') == 'multipart/form-data') && (response.indexOf('errorlist') != -1)) {
+                    _error();
+                }
+                else {
+                    container.replaceWith(response)
+                    feedback('Ticket saved');
+                }
             },
             beforeSubmit: function(arr, form, options) {
                 /*
@@ -44,21 +58,17 @@
                  * partecipante.
                  */
                 var ticket = form.parents('.ticket');
-                if(ticket.hasClass('conference'))
-                    var f = ticket_field(form, 'ticket_name');
-                else
-                    var f = ticket_field(form, 'name');
-                var n = $.trim(f.val());
-                if(n == '') {
+                var f = ticket_field(form, 'ticket_name');
+                if(f.length == 0)
+                    f = ticket_field(form, 'name');
+                if($.trim(f.val()) == '') {
                     alert('{% trans "Please enter the name" %}');
                     f.focus();
                     return false;
                 }
                 return true;
             },
-            error: function(xhr, status, error) {
-                alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
-            }
+            error: _error
         });
     });
     function ticket_field(form, field_name) {

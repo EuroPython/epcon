@@ -154,5 +154,8 @@ class FormTicketPartner(forms.ModelForm):
         fields = ('name',)
 
 class FormTicketSIM(forms.ModelForm):
+    ticket_name = forms.CharField(max_length=60, help_text='The SIM owner')
     class Meta:
         model = models.TicketSIM
+        exclude = ('ticket',)
+        fields = ('ticket_name', 'sim_type', 'plan_type', 'document',)

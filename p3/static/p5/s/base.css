@@ -1310,6 +1310,12 @@ section.teaser p {
     vertical-align: middle;
 }
 
+.ticket-warning {
+    color: #d9415a;
+    font-weight: bold;
+    padding: 0 15px;
+}
+
 
 /* ========== */
 /* ! Extras   */
