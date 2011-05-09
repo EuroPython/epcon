@@ -40,9 +40,10 @@ class OrderAdminForm(forms.ModelForm):
         self.fields['user'].queryset = models.User.objects.all().select_related('user')
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_created', 'method', '_items', '_complete_order', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
+    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
     list_select_related = True
     list_filter = ('method',)
+    list_per_page = 20
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
@@ -77,28 +78,11 @@ class OrderAdmin(admin.ModelAdmin):
     _total_payed.short_description = 'Payed'
 
     def _invoice(self, o):
-        # micro cache per evitare di richiedere continuamente al server remoto gli stessi dati
-        key = 'admin:assopy-order-invoices-%d' % o.id
-        data = cache.get(key)
-        if data is None:
-            output = []
-            for i in o.invoices():
-                output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i[0]), i[1], ' *' if not i[3] else ''))
-            data = ' '.join(output)
-            cache.set(key, data, 300)
-        return data
+        output = []
+        for i in o.invoices.all():
+            output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
+        return ' '.join(output)
     _invoice.allow_tags = True
-
-    def _complete_order(self, o):
-        # micro cache per evitare di richiedere continuamente al server remoto gli stessi dati
-        key = 'admin:assopy-order-complete-%d' % o.id
-        data = cache.get(key)
-        if data is None:
-            data = o.complete()
-            cache.set(key, data, 300)
-        return data
-    _complete_order.boolean = True
-    _complete_order.short_description = 'Payed'
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()

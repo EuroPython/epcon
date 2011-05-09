@@ -212,3 +212,14 @@ def invoice_url(id):
 def invoice(id):
     return _get('/invoice/%s/bag' % id)
 
+def order_invoices(id):
+    output = []
+    data = order(id)
+    ix = 0
+    while True:
+        invoice = data['invoices.i%d' % ix]
+        if not invoice:
+            break
+        output.append(invoice)
+        ix += 1
+    return output

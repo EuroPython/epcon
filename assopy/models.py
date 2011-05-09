@@ -544,6 +544,12 @@ class Order(models.Model):
 
     objects = OrderManager()
 
+    def __unicode__(self):
+        msg = 'Order %d' % self.id
+        if self.code:
+            msg += ' #' + self.code
+        return msg
+
     def billable(self):
         """
         Regola per verificare se un ordine è fatturabile:
@@ -583,19 +589,6 @@ class Order(models.Model):
         #else:
         #    return 20.0
 
-    def invoices(self):
-        output = []
-        if self.assopy_id:
-            data = genro.order(self.assopy_id)
-            ix = 0
-            while True:
-                invoice = data['invoices.i%d' % ix]
-                if not invoice:
-                    break
-                output.append((invoice['id'], invoice['number'], invoice['invoice_date'], invoice['payment_date']))
-                ix += 1
-        return output
-        
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
             return True
@@ -605,7 +598,7 @@ class Order(models.Model):
             return False
         # un ordine risulta pagato se tutte le sue fatture riportano la data
         # del pagamento
-        invoices = [ i[3] for i in self.invoices() ]
+        invoices = [ i.payment_date for i in self.invoices.all() ]
         r = len(invoices) > 0 and all(invoices)
         if r and not self._complete:
             log.info('purchase of order "%s" completed', self.code)
@@ -704,3 +697,52 @@ def _order_feedback(sender, **kwargs):
     )
 
 order_created.connect(_order_feedback)
+
+class InvoiceManager(models.Manager):
+    @transaction.commit_on_success
+    def creates_from_order(self, order, update=False):
+        if not order.assopy_id:
+            return
+        remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
+
+        def _copy(invoice, data):
+            invoice.code = data['number']
+            invoice.assopy_id = data['id']
+            invoice.emit_date = data['invoice_date']
+            invoice.payment_date = data['payment_date']
+            invoice.price = data['gross_price']
+            return invoice
+
+        invoices = []
+        if update:
+            for i in order.invoices.all():
+                try:
+                    data = remote.pop(i.code)
+                except KeyError:
+                    i.delete()
+                else:
+                    _copy(i, data)
+                    i.save()
+                    invoices.append(i)
+
+        for data in remote.values():
+            i = Invoice(order=order)
+            _copy(i, data)
+            i.save()
+            invoices.append(i)
+        return invoices
+
+class Invoice(models.Model):
+    order = models.ForeignKey(Order, related_name='invoices')
+    code = models.CharField(max_length=9, unique=True)
+    assopy_id = models.CharField(max_length=22, unique=True)
+    emit_date = models.DateField()
+    payment_date = models.DateField(null=True, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    objects = InvoiceManager()
+
+def _order_completed(sender, **kwargs):
+    Invoice.objects.creates_from_order(sender)
+
+purchase_completed.connect(_order_completed)
