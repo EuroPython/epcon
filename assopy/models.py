@@ -240,26 +240,7 @@ class User(models.Model):
         return tickets
 
     def invoices(self):
-        if self.orders.count() == 0:
-            return []
-        output = []
-        data = genro.user_invoices(self.assopy_id)
-        r = 0
-        while True:
-            i = data['r_%d' % r]
-            if not i:
-                break
-            r += 1
-            try:
-                o = Order.objects.get(assopy_id=i['order_id'])
-            except Order.DoesNotExist:
-                continue
-            output.append({
-                'id': i['id'],
-                'invoice': i['number'],
-                'order': o,
-            })
-        return output
+        return Invoice.objects.filter(order__in=self.orders)
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
