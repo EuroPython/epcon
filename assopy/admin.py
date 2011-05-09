@@ -120,9 +120,7 @@ class OrderAdmin(admin.ModelAdmin):
                 d = form.cleaned_data['date']
                 for o in orders:
                     genro.confirm_order(o.assopy_id, o.total(), d)
-                    # invalido le cache per poter vedere subito i risultati
-                    cache.delete('admin:assopy-order-invoices-%d' % o.id)
-                    cache.delete('admin:assopy-order-complete-%d' % o.id)
+                    o.complete()
                 return redirect('admin:assopy_order_changelist')
         else:
             form = FormPaymentDate()
