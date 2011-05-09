@@ -55,8 +55,10 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     def _user(self, o):
-        return o.user.name()
+        url = urlresolvers.reverse('admin:assopy_user_change', args=(o.user.id,))
+        return '<a href="%s">%s</a>' % (url, o.user.name())
     _user.short_description = 'buyer'
+    _user.allow_tags = True
 
     def _items(self, o):
         return o.orderitem_set.exclude(ticket=None).count()
@@ -154,9 +156,9 @@ class UserOAuthInfoAdmin(admin.TabularInline):
     model = models.UserOAuthInfo
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('_name', '_email', 'phone', 'address', '_identities',)
+    list_display = ('_name', '_email', 'phone', 'address', '_identities', '_login')
     list_select_related = True
-    search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address')
+    search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address',)
 
     inlines = (
         UserOAuthInfoAdmin,
@@ -171,6 +173,12 @@ class UserAdmin(admin.ModelAdmin):
         return o.user.email
     _email.short_description = 'email'
     _email.admin_order_field = 'user__email'
+
+    def _login(self, o):
+        url = urlresolvers.reverse('admin:assopy-login-user', kwargs={'uid': o.id})
+        return '<a href="%s">use this user</a>' % (url,)
+    _login.short_description = 'login as this user'
+    _login.allow_tags = True
 
     def _identities(self, o):
         return ','.join(i['provider'] for i in o.identities.values('provider'))
