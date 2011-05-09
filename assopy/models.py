@@ -573,7 +573,7 @@ class Order(models.Model):
         Se l'ordine è fatturabile l'aliquota è lo 0%
         Altrimenti l'aliquota è il 20%
         """
-        # contr'ordine, per quest'anno, 2011, l'IVA, per le conferenze, è
+        # contr'ordine, per quest'anno (2011) l'IVA (per le conferenze) è
         # sempre il 20% indipendentemente da tutto
         return 20.0
         #if self.country_id == 'IT':
