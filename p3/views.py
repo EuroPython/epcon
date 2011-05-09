@@ -274,6 +274,8 @@ def billing(request):
     # (persone/ditte)
     recipients = set()
     for fare, foo in tickets:
+        if fare.ticket_type != 'conference':
+            continue
         recipients.add('c' if fare.recipient_type == 'c' else 'p')
     if len(recipients) != 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
