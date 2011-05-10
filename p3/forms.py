@@ -91,7 +91,7 @@ class P3TalkForm(TalkForm):
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
         help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
-        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '240 minutes')),
         coerce=int,
         initial=60,)
     type = forms.TypedChoiceField(required=False)
