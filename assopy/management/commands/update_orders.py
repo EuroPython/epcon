@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.db import transaction
+from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 from assopy import models
 from assopy.clients import genro
@@ -39,7 +40,11 @@ class Command(BaseCommand):
             qs = models.Order.objects.filter(orderitem__ticket__fare__conference=options['conference'])
         else:
             qs = models.Order.objects.all()
-
+        if args:
+            q = Q()
+            for x in args:
+                q |= Q(code__contains=x)
+            qs = qs.filter(q)
         # tutti gli ordini che diventano "completi" durante questo ciclo for
         # hanno sicuramente l'elenco delle fatture aggiornato con il backend
         certainly_ok = set()
