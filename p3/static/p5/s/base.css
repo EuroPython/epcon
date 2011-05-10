@@ -1245,6 +1245,7 @@ section.teaser p {
 
 .preview:hover .ticket-commands {
     opacity: 1;
+    filter: alpha(opacity=100);
 }
 
 .ticket-commands {
@@ -1263,6 +1264,7 @@ section.teaser p {
 
     -webkit-transition: opacity .2s ease-out;
     opacity: 0;
+    filter: alpha(opacity=0);
 }
 
 .ticket-commands p {
@@ -1274,6 +1276,7 @@ section.teaser p {
 
 .ticket-assigned-to.ticket-commands {
     opacity: 1;
+    filter: alpha(opacity=100);
 }
 
 .ticket-name,
