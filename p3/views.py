@@ -277,10 +277,14 @@ def billing(request):
         if fare.ticket_type != 'conference':
             continue
         recipients.add('c' if fare.recipient_type == 'c' else 'p')
-    if len(recipients) != 1:
+    if len(recipients) > 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
 
-    recipient = recipients.pop()
+    try:
+        recipient = recipients.pop()
+    except:
+        recipient = 'p'
+
     class P3BillingData(BillingData):
         card_name = forms.CharField(
             label='Your Name' if recipient != 'c' else 'Company Name',
