@@ -11,5 +11,6 @@ class Command(BaseCommand):
             raise CommandError('codice conferenza non specificato')
 
         for f in models.Fare.objects.filter(conference=conf):
-            print '*', f.code, f.name
-            genro.update_fare(f)
+            if not f.code.startswith('_'):
+                print '*', f.code, f.name
+                genro.update_fare(f)
