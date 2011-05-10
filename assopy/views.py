@@ -435,6 +435,6 @@ def order_complete(request, assopy_id):
     if request.method != 'POST':
         return http.HttpResponseNotAllowed(('POST',))
     order = get_object_or_404(models.Order, assopy_id=assopy_id)
-    log.info('remote notice! order "%s" complete!', order.code)
-    order.complete()
+    r = order.complete()
+    log.info('remote notice! order "%s" (%s) complete! result=%s', order.code, order.assopy_id, r)
     return http.HttpResponse('')
