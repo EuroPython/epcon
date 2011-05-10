@@ -38,3 +38,7 @@ nav {
 .schedule-wrapper .csm h2 {
     display: none !important;
 }
+
+.sponsors {
+    display: none;
+}

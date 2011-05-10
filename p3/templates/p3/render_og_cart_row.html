@@ -1,5 +1,5 @@
 {% load conference %}
-{% if f.ticket_type == "other" %}
+{% if f.ticket_type == "other" or f.ticket_type == "event" %}
     <tr>
         <td>
             {{ f.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]">(details)</a>

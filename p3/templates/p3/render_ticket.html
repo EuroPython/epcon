@@ -1,5 +1,5 @@
 {% load assopy_tags conference i18n p3 %}
-<div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}">
+<div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ocomplete or ticket.orderitem.order.method == "admin" %}
     <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
@@ -92,11 +92,18 @@
             {% endif %}
             {% endwith %}
         {% else %}
+            {% if ticket.fare.ticket_type == 'partner' %}
             <p>
                 {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
                 {% trans "Deposit:" %} € 30, <b>{% trans "Balance:" %} € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
                 {% endwith %}
             </p>
+            {% endif %}
+            {% if ticket.fare.payment_type == 'v' %}
+            <p>
+                <a href="{% url assopy-orderitem-voucher order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">Download your voucher</a>
+            </p>
+            {% endif %}
         {% endif %}
     {% endif %}
     </div>

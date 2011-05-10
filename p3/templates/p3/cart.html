@@ -150,11 +150,32 @@
             {% endcomment %}
 
             <fieldset class="tickets">
-                            
-                <legend>{% trans "Partner Program" %}</legend>
+                <legend>{% trans "Other Goodies" %}</legend>
+                <p>{% trans "Other Goodies intro" %}</p>
+                <div class="cms">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{% trans "Goodies name" %}</th>
+                                <th>{% trans "Price" %}</th>
+                                <th>{% trans "Q.ty" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in fares_ordered %}
+                            {% render_og_cart_row f %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="total"> 
+                    {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b> 
+                </div> 
+            </fieldset>
 
+            <fieldset class="tickets">
+                <legend>{% trans "Partner Program" %}</legend>
                 <p>{% trans "Partner Program intro" %}</p>
-                
                 <div class="cms">                    
                     <table>
                         <thead>
@@ -173,37 +194,8 @@
                         </tbody>
                     </table>
                 </div>
-
                 <div class="total"> 
                     {% trans "Partner Program total (VAT inc.)" %}: <b>€ 0</b> 
-                </div> 
-
-            </fieldset>
-            <fieldset class="tickets">
-                            
-                <legend>{% trans "Other Goodies" %}</legend>
-
-                <p>{% trans "Other Goodies intro" %}</p>
-                
-                <div class="cms">                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>{% trans "Goodies name" %}</th>
-                                <th>{% trans "Price" %}</th>
-                                <th>{% trans "Q.ty" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for f in fares_ordered %}
-                            {% render_og_cart_row f %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="total"> 
-                    {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
 

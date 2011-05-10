@@ -1203,10 +1203,15 @@ section.teaser p {
     background: #301D1D;
 }
 
+.ticket[data-fare=SIM] .preview h2 {
+    background: #EC7324;
+}
+
+.ticket[data-fare=PE01] .preview h2 {
+    background: #194175;
+}
 
 .ticket-additional-info {
-    
-
 }
 
 .ticket-additional-info dt,
