@@ -193,7 +193,7 @@ def update_fare(fare):
         
     b = Bag()
     b['price'] = fare.price
-    b['description'] = name[:40]
+    b['description'] = name[:140]
     b['personal_fare'] = fare.recipient_type != 'c'
     b['deposit_fare'] = fare.payment_type == 'd'
     b['long_desc'] = fare.description
