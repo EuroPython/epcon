@@ -183,7 +183,7 @@ def include_payment(order, type):
 
 @register.filter()
 def include_fare(order, codes):
-    return order.orderitem_set.filter(ticket__fare__code=codes.split(',')).exists()
+    return order.orderitem_set.filter(ticket__fare__code__in=codes.split(',')).exists()
 
 @register.filter
 def user_coupons(user):

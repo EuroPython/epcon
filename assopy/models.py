@@ -681,7 +681,7 @@ order_created.connect(_order_feedback)
 
 class InvoiceManager(models.Manager):
     @transaction.commit_on_success
-    def creates_from_order(self, order, update=False):
+    def creates_from_order(self, order, update=True):
         if not order.assopy_id:
             return
         remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
