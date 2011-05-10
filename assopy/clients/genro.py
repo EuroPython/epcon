@@ -33,7 +33,7 @@ def _post(subpath, bag=None):
     body = {}
     if bag is not None:
         body['data'] = bag.toXml()
-        log.debug('post -> %s data: %s', url, body['data'])
+        log.debug('post -> %s data: %s', unicode(url).encode('utf-8'), body['data'] if isinstance(body['data'], str) else body['data'].encode('utf-8'))
     else:
         log.debug('post -> %s', url)
     f = urllib.urlopen(url, urllib.urlencode(body))
@@ -184,8 +184,6 @@ def confirm_order(id, value, date=None):
     return _post('/orders/confirm/%s/' % (id,), b)
 
 def update_fare(fare):
-    # le tariffe di tipo vaucher non devono arrivare al backend
-    assert fare.payment_type != 'v'
     name = fare.name
     if fare.ticket_type == 'conference':
         if fare.recipient_type == 's':
