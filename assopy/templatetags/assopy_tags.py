@@ -178,8 +178,12 @@ def order_complete(parser, token):
     return Node(order_id, var_name)
 
 @register.filter()
-def include_fare(order, type):
+def include_payment(order, type):
     return order.orderitem_set.filter(ticket__fare__payment_type=type).exists()
+
+@register.filter()
+def include_fare(order, codes):
+    return order.orderitem_set.filter(ticket__fare__code=codes.split(',')).exists()
 
 @register.filter
 def user_coupons(user):
