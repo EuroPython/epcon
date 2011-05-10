@@ -273,7 +273,7 @@
                     $('#conference-tickets td.fare').each(function() {
                         var td = $(this);
                         var fare_code = td.attr('data-fare');
-                        var e = ((fare_code[3] == 'C' && !personal) || (fare_code[3] != 'C' && personal));
+                        var e = ((fare_code.substr(3, 1) == 'C' && !personal) || (fare_code.substr(3, 1) != 'C' && personal));
                         var inputs = $('input', td);
                         if(e) {
                             td.removeClass('disabled');

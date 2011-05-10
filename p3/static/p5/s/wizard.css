@@ -63,7 +63,7 @@
 
 .wizard .disabled {
     opacity: .3;
-
+    filter: alpha(opacity=30);
 }
 
 .wizard .coupon label, .wizard .coupon .field {
