@@ -579,7 +579,7 @@ class Order(models.Model):
             return False
         # un ordine risulta pagato se tutte le sue fatture riportano la data
         # del pagamento
-        invoices = [ i.payment_date for i in self.invoices.all() ]
+        invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
         r = len(invoices) > 0 and all(invoices)
         if r and not self._complete:
             log.info('purchase of order "%s" completed', self.code)
@@ -722,8 +722,3 @@ class Invoice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     objects = InvoiceManager()
-
-def _order_completed(sender, **kwargs):
-    Invoice.objects.creates_from_order(sender)
-
-purchase_completed.connect(_order_completed)

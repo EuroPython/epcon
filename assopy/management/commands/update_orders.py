@@ -45,19 +45,13 @@ class Command(BaseCommand):
             for x in args:
                 q |= Q(code__contains=x)
             qs = qs.filter(q)
-        # tutti gli ordini che diventano "completi" durante questo ciclo for
-        # hanno sicuramente l'elenco delle fatture aggiornato con il backend
-        certainly_ok = set()
-        for o in qs.exclude(assopy_id='').filter(_complete=False):
-            if o.complete():
-                certainly_ok.add(o.id)
 
         # Tutti gli altri ordini devono essere controllati.
         # Controllo per eventuali variazioni di fattura sia gli ordini completi
         # che quelli incompleti: questi ultimi potrebbero avere una fattura
         # associata anche se non sono marcati come completi
-        for o in qs.exclude(id__in=certainly_ok):
-            models.Invoice.objects.creates_from_order(o, update=True)
+        for o in qs.exclude(assopy_id='').filter(_complete=False):
+            o.complete(ignore_cache=True)
 
     @transaction.commit_on_success
     def _delete(self, *args, **options):
