@@ -251,7 +251,8 @@ def cart(request):
         })
     fares = {}
     for f in form.available_fares():
-        fares[f.code] = f
+        if not f.code.startswith('_'):
+            fares[f.code] = f
     fares_ordered = sorted(fares.values(), key=lambda x: x.name)
     return {
         'form': form,
