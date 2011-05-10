@@ -312,7 +312,7 @@ class Coupon(models.Model):
     value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
 
     user = models.ForeignKey(User, null=True, blank=True)
-    fares = models.ManyToManyField('conference.Fare')
+    fares = models.ManyToManyField('conference.Fare', blank=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.code, self.value)
