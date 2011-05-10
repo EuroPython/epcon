@@ -30,4 +30,5 @@ urlpatterns = patterns('',
     url(r'bank_return/(?P<code>.+)/$', 'assopy.views.bank_feedback_ok', name='assopy-bank-feedback-ok'),
 
     url(r'invoice/(?P<assopy_id>.+)/$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
+    url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$', 'assopy.views.voucher', name='assopy-orderitem-voucher'),
 )
