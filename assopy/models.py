@@ -691,7 +691,7 @@ class InvoiceManager(models.Manager):
             invoice.assopy_id = data['id']
             invoice.emit_date = data['invoice_date']
             invoice.payment_date = data['payment_date']
-            invoice.price = data['gross_price']
+            invoice.price = str(data['gross_price'])
             return invoice
 
         invoices = []
