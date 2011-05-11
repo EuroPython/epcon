@@ -651,12 +651,23 @@ class Order(models.Model):
         totals['total'] = total
         return totals
 
+    def delete(self, **kwargs):
+        for item in self.orderitem_set.all():
+            item.delete()
+        super(Order, self).delete(**kwargs)
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
-    ticket = models.OneToOneField('conference.ticket', null=True)
+    ticket = models.OneToOneField('conference.ticket', null=True, blank=True)
     code = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.CharField(max_length=100, blank=True)
+
+    def delete(self, **kwargs):
+        if self.ticket:
+            self.ticket.delete()
+        else:
+            super(OrderItem, self).delete(**kwargs)
 
 def _order_feedback(sender, **kwargs):
     rows = [
