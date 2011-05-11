@@ -140,6 +140,7 @@ class OrderAdmin(admin.ModelAdmin):
         orders = models.Order.objects.filter(_complete=True)
         tickets = Ticket.objects.filter(orderitem__order__in=orders)
         order_items_details = models.OrderItem.objects\
+            .filter(order___complete=True)\
             .values('ticket__fare__code', 'ticket__fare__name')\
             .annotate(total=Sum('price'), count=Count('pk'))\
             .order_by('-total')
