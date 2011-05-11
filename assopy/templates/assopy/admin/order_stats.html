@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../">Home</a> &rsaquo;
+     <a href="../../">Assopy</a>&rsaquo;
+     <a href="../">Orders</a>&rsaquo;
+     stats
+</div>
+{% endblock %}{% block content %}
+    <h1>Totals</h1>
+    <table>
+        <tr>
+            <th>Confirmed orders</th>
+            <td>#{{ orders.count }}</td>
+        </tr>
+        <tr>
+            <th>Tickets</th>
+            <td>#{{ tickets.count }}</td>
+        </tr>
+        <tr>
+            <th>Gross sales</th>
+            <td>€ {{ orders.total|floatformat:"2" }}</td>
+        </tr>
+    </table>
+    <h1>Orders details</h1>
+    <table>
+        <tr>
+            <th>Fare</th>
+            <th>Ticket #</th>
+            <th>Sales</th>
+        </tr>
+        {% for row in order_items_details %}
+        <tr>
+            <td>{% if not row.ticket__fare__code %}Discount coupon{% else %}{{ row.ticket__fare__code }} - {{ row.ticket__fare__name }}{% endif %}</td>
+            <td>#{{ row.count }}</td>
+            <td>€ {{ row.total|floatformat:"2" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

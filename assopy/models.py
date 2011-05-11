@@ -414,6 +414,13 @@ class OrderManager(models.Manager):
                 qs = qs.filter(method='admin')
             return qs
 
+        def total(self, apply_discounts=True):
+            qs = OrderItem.objects.filter(order__in=self)
+            if not apply_discounts:
+                qs = qs.filter(price__gt=0)
+            t = qs.aggregate(t=models.Sum('price'))['t']
+            return t if t is not None else 0
+
     @transaction.commit_on_success
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
         if coupons:
@@ -651,12 +658,23 @@ class Order(models.Model):
         totals['total'] = total
         return totals
 
+    def delete(self, **kwargs):
+        for item in self.orderitem_set.all():
+            item.delete()
+        super(Order, self).delete(**kwargs)
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
-    ticket = models.OneToOneField('conference.ticket', null=True)
+    ticket = models.OneToOneField('conference.ticket', null=True, blank=True)
     code = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.CharField(max_length=100, blank=True)
+
+    def delete(self, **kwargs):
+        if self.ticket:
+            self.ticket.delete()
+        else:
+            super(OrderItem, self).delete(**kwargs)
 
 def _order_feedback(sender, **kwargs):
     rows = [
