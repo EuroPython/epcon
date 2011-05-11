@@ -356,7 +356,7 @@ div.schedule .track span {
     /*border-top: 2px solid #7D6F60;*/
 }
 
-.schedule .event[data-track=training1], .schedule .event[data-track=training2]{
+.schedule .event[data-track=training1], .schedule .event[data-track=training2], .schedule .event[data-track=trackx]{
     background: url(../i/training.png) center center repeat-x;
 }
 
