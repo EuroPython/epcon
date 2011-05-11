@@ -50,7 +50,7 @@ class Command(BaseCommand):
         # Controllo per eventuali variazioni di fattura sia gli ordini completi
         # che quelli incompleti: questi ultimi potrebbero avere una fattura
         # associata anche se non sono marcati come completi
-        for o in qs.exclude(assopy_id='').filter(_complete=False):
+        for o in qs.exclude(assopy_id=''):
             o.complete(ignore_cache=True)
 
     @transaction.commit_on_success

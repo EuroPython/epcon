@@ -68,7 +68,7 @@ class IdBackend(_AssopyBackend):
 class EmailBackend(_AssopyBackend):
     def authenticate(self, email=None, password=None):
         try:
-            user = User.objects.select_related('assopy_user').get(email=email, is_active=True)
+            user = User.objects.select_related('assopy_user').get(email__iexact=email, is_active=True)
             if user.check_password(password):
                 auser = user.assopy_user
                 if auser is None:
