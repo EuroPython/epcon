@@ -158,7 +158,7 @@ class CouponAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CouponAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = models.User.objects.all().select_related('user')
+        self.fields['user'].queryset = models.User.objects.all().select_related('user').order_by('user__first_name', 'user__last_name')
 
     def clean_code(self):
         return self.cleaned_data['code'].upper()
