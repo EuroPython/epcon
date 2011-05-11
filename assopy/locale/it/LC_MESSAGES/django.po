@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-28 14:02+0200\n"
-"PO-Revision-Date: 2011-04-28 16:20\n"
+"PO-Revision-Date: 2011-05-11 15:42\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -279,7 +279,7 @@ msgstr "Grazie per aver utilizzato il sito!"
 #: templates/registration/password_reset_email.html:12
 #, python-format
 msgid "The %(site_name)s team"
-msgstr " %(site_name) team"
+msgstr " %(site_name)s team"
 
 #: templatetags/assopy_tags.py:33
 msgid "(required)"
