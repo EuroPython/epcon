@@ -90,6 +90,7 @@ class OrderAdmin(admin.ModelAdmin):
         urls = super(OrderAdmin, self).get_urls()
         my_urls = patterns('',
             url(r'^invoices/$', self.admin_site.admin_view(self.edit_invoices), name='assopy-edit-invoices'),
+            url(r'^stats/$', self.admin_site.admin_view(self.stats), name='assopy-order-stats'),
         )
         return my_urls + urls
 
@@ -132,6 +133,22 @@ class OrderAdmin(admin.ModelAdmin):
             'ids': request.GET.get('id'),
         }
         return render_to_response('assopy/admin/edit_invoices.html', ctx, context_instance=template.RequestContext(request))
+
+    def stats(self, request):
+        from conference.models import Ticket
+        from django.db.models import Sum, Count
+        orders = models.Order.objects.filter(_complete=True)
+        tickets = Ticket.objects.filter(orderitem__order__in=orders)
+        order_items_details = models.OrderItem.objects\
+            .values('ticket__fare__code', 'ticket__fare__name')\
+            .annotate(total=Sum('price'), count=Count('pk'))\
+            .order_by('-total')
+        ctx = {
+            'orders': orders,
+            'tickets': tickets,
+            'order_items_details': order_items_details,
+        }
+        return render_to_response('assopy/admin/order_stats.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.register(models.Order, OrderAdmin)
 
