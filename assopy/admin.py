@@ -40,11 +40,11 @@ class OrderAdminForm(forms.ModelForm):
         self.fields['user'].queryset = models.User.objects.all().select_related('user')
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
+    list_display = ('code', '_user', '_email', 'card_name', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
     list_select_related = True
     list_filter = ('method',)
     list_per_page = 20
-    search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
+    search_fields = ('code', 'card_name', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
 
@@ -59,6 +59,11 @@ class OrderAdmin(admin.ModelAdmin):
         return '<a href="%s">%s</a>' % (url, o.user.name())
     _user.short_description = 'buyer'
     _user.allow_tags = True
+
+    def _email(self, o):
+        return '<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email)
+    _email.short_description = 'buyer email'
+    _email.allow_tags = True
 
     def _items(self, o):
         return o.orderitem_set.exclude(ticket=None).count()
