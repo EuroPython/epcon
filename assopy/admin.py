@@ -149,10 +149,22 @@ class OrderAdmin(admin.ModelAdmin):
             .values('ticket__fare__code', 'ticket__fare__name')\
             .annotate(total=Sum('price'), count=Count('pk'))\
             .order_by('-total')
+        order_items_grouped_by_ticket_type = models.OrderItem.objects\
+            .filter(order___complete=True)\
+            .values('ticket__fare__ticket_type')\
+            .annotate(total=Sum('price'), count=Count('pk'))\
+            .order_by('-total')
+        order_items_grouped_by_recipient_type = models.OrderItem.objects\
+            .filter(order___complete=True)\
+            .values('ticket__fare__recipient_type')\
+            .annotate(total=Sum('price'), count=Count('pk'))\
+            .order_by('-total')
         ctx = {
             'orders': orders,
             'tickets': tickets,
             'order_items_details': order_items_details,
+            'order_items_grouped_by_ticket_type': order_items_grouped_by_ticket_type,
+            'order_items_grouped_by_recipient_type': order_items_grouped_by_recipient_type,
         }
         return render_to_response('assopy/admin/order_stats.html', ctx, context_instance=template.RequestContext(request))
 
@@ -170,8 +182,29 @@ class CouponAdminForm(forms.ModelForm):
         return self.cleaned_data['code'].upper()
 
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage')
+    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_email', '_valid')
+    search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email',)
     form = CouponAdminForm
+
+    def _user(self, o):
+        if not o.user:
+            return ''
+        url = urlresolvers.reverse('admin:assopy_user_change', args=(o.user.id,))
+        return '<a href="%s">%s</a>' % (url, o.user.name())
+    _user.short_description = 'user'
+    _user.allow_tags = True
+
+    def _email(self, o):
+        if not o.user:
+            return ''
+        return '<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email)
+    _email.short_description = 'email'
+    _email.allow_tags = True
+
+    def _valid(self, o):
+        return o.valid(o.user)
+    _valid.short_description = 'valid (maybe not used?)'
+    _valid.boolean = True
 
 admin.site.register(models.Coupon, CouponAdmin)
 

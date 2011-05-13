@@ -38,4 +38,44 @@
         </tr>
         {% endfor %}
     </table>
+    <h1>Orders details grouped by ticket type</h1>
+    <table>
+        <tr>
+            <th>Fare</th>
+            <th>Ticket #</th>
+            <th>Sales</th>
+        </tr>
+        {% for row in order_items_grouped_by_ticket_type %}
+        {% if row.ticket__fare__ticket_type %}
+        <tr>
+            <td>{{ row.ticket__fare__ticket_type }}</td>
+            <td>#{{ row.count }}</td>
+            <td>€ {{ row.total|floatformat:"2" }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
+    <h1>Orders details grouped by recipients</h1>
+    <table>
+        <tr>
+            <th>Fare</th>
+            <th>Ticket #</th>
+            <th>Sales</th>
+        </tr>
+        {% for row in order_items_grouped_by_recipient_type %}
+        {% if row.ticket__fare__recipient_type %}
+        <tr>
+            <td>
+                {% with row.ticket__fare__recipient_type as t %}
+                {% if t == "c" %}company{% endif %}
+                {% if t == "p" %}personal{% endif %}
+                {% if t == "s" %}student{% endif %}
+                {% endwith %}
+            </td>
+            <td>#{{ row.count }}</td>
+            <td>€ {{ row.total|floatformat:"2" }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
 {% endblock %}
