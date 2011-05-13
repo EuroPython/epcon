@@ -141,7 +141,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def stats(self, request):
         from conference.models import Ticket
-        from django.db.models import Sum, Count
+        from django.db.models import Sum, Count, Q
         orders = models.Order.objects.filter(_complete=True)
         tickets = Ticket.objects.filter(orderitem__order__in=orders)
         order_items_details = models.OrderItem.objects\
@@ -159,12 +159,71 @@ class OrderAdmin(admin.ModelAdmin):
             .values('ticket__fare__recipient_type')\
             .annotate(total=Sum('price'), count=Count('pk'))\
             .order_by('-total')
+
+        from django.db import connection
+        from collections import defaultdict
+        from decimal import Decimal
+        cursor = connection.cursor()
+        cursor.execute('''
+        SELECT "conference_fare"."code", "conference_fare"."name", "assopy_orderitem"."price", "assopy_orderitem"."order_id"
+        FROM "assopy_orderitem" INNER JOIN "assopy_order"
+            ON ("assopy_orderitem"."order_id" = "assopy_order"."id")
+        LEFT OUTER JOIN "conference_ticket"
+            ON ("assopy_orderitem"."ticket_id" = "conference_ticket"."id")
+        LEFT OUTER JOIN "conference_fare"
+            ON ("conference_ticket"."fare_id" = "conference_fare"."id")
+        WHERE ("assopy_order"."_complete" = 1 AND ("conference_fare"."ticket_type" = 'conference'  OR "conference_ticket"."id" IS NULL))
+        ORDER BY "assopy_orderitem"."order_id"
+''')
+        def _calc_prices(order_id):
+            if order_id is None:
+                return
+
+            rows = grouped[order_id]
+            prices = set()
+            discount = Decimal('0')
+            total = Decimal('0')
+            for item in rows:
+                if item['price'] > 0:
+                    prices.add(item['price'])
+                    total += item['price']
+                else:
+                    discount += item['price'] * -1
+            for ix, item in reversed(list(enumerate(rows))):
+                if item['price'] > 0:
+                    item['price'] = item['price'] * (total - discount) / total
+                else:
+                    del rows[ix]
+        grouped = defaultdict(list)
+        last_order = None
+        for row in cursor.fetchall():
+            if row[3] != last_order:
+                _calc_prices(last_order)
+                last_order = row[3]
+            grouped[row[3]].append({ 'code': row[0], 'name': row[1], 'price': row[2] })
+        _calc_prices(last_order)
+
+        tcp = {}
+        for rows in grouped.values():
+            for item in rows:
+                code = item['code']
+                if code not in tcp:
+                    tcp[code] = {
+                        'code': code,
+                        'name': item['name'],
+                        'prices': {}
+                    }
+                price = item['price']
+                if price not in tcp[code]['prices']:
+                    tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
+                tcp[code]['prices'][price]['count'] += 1
         ctx = {
             'orders': orders,
             'tickets': tickets,
             'order_items_details': order_items_details,
             'order_items_grouped_by_ticket_type': order_items_grouped_by_ticket_type,
             'order_items_grouped_by_recipient_type': order_items_grouped_by_recipient_type,
+            'tickets_calculated_prices': tcp.values(),
         }
         return render_to_response('assopy/admin/order_stats.html', ctx, context_instance=template.RequestContext(request))
 

@@ -78,4 +78,17 @@
         {% endif %}
         {% endfor %}
     </table>
+    <h1>Tickets calculated prices</h1>
+    <table>
+        <tr>
+            <th>Fare</th>
+            <th>Prices</th>
+        </tr>
+        {% for row in tickets_calculated_prices|dictsort:"code" %}
+        <tr>
+            <td>{{ row.code }} - {{ row.name }}</td>
+            <td>{% for entry in row.prices.values|dictsortreversed:"price" %}#{{ entry.count }} x €{{ entry.price|floatformat:"2" }}, {% endfor %}</td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
