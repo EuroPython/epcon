@@ -980,7 +980,7 @@ def embed_video(value, args=""):
     else:
         try:
             stat = os.stat(video_path)
-        except (AttributeError, OSError), e:
+        except (TypeError, AttributeError, OSError), e:
             finfo = ''
         else:
             fsize = stat.st_size
