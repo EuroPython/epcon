@@ -213,6 +213,7 @@ class TalkForm(forms.Form):
                 'language': instance.language,
                 'level': instance.level,
                 'abstract': getattr(instance.getAbstract(), 'body', ''),
+                'promo_video': instance.promo_video_url,
             }
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
