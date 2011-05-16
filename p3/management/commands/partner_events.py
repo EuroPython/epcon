@@ -9,6 +9,7 @@ from conference.templatetags.conference import fare_blob
 
 from collections import defaultdict
 from datetime import datetime
+from xml.sax.saxutils import escape
 
 class Command(BaseCommand):
     """
@@ -40,7 +41,7 @@ class Command(BaseCommand):
                 else:
                     event = models.Event(schedule=sch, talk=None)
                     event.track = 'partner-program ' + track_id
-                event.custom = fare.name
+                event.custom = escape(fare.name)
                 event.start_time = time
                 if time.hour < 13:
                     d = (13 - time.hour) * 60
