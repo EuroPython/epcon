@@ -8,7 +8,7 @@ import httplib2
 import random
 import sys
 import simplejson
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 from django import template
 from django.conf import settings as dsettings
 from django.core.cache import cache
@@ -591,7 +591,18 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
 @register.filter
 def event_has_track(event, track):
     return track in set(parse_tag_input(event.track))
-    
+
+@fancy_tag(register)
+def event_row_span(timetable, event):
+    ix = timetable.rows.index(event.row)
+    return timetable.rows[ix:ix+event.rows]
+
+@fancy_tag(register)
+def event_time_span(timetable, event, time_slot=15):
+    start = datetime.combine(date.today(), event.time)
+    end = start + timedelta(minutes=time_slot * event.columns)
+    return start.time(), end.time()
+
 @register.tag
 def conference_schedule(parser, token):
     """
