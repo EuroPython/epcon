@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8" ?>
 {% spaceless %}
 {% load conference %}
-<schedule conference="{{ schedule.conference }}" id="{{ schedule.slug }}" time_slot="15">
-    {% conference_schedule schedule.conference schedule.slug as tt %}
-    {% for time, events in tt %}
-        {% if time %}
-        <slot time="{{ time }}"{% if event.class %} class="{{ events.class|join:"," }}"{% endif %}>
-            {% for event in events.events %}
-                {% if event %}
-                <event tracks="{{ event.track_slots }}" tags="{{ event.tags|join:"," }}" duration="{{ event.time_slots }}" title="{{ event.title|striptags }}">
-                {% if event.sponsor %}
-                <sponsor name="{{ event.sponsor }}" url="{{ event.sponsor.url }}" />
+<schedule>
+    <code>{{ schedule.slug }}</code>
+    <conference>{% url conference-data-xml conference=schedule.conference as x %}{{ x|full_url }}</conference>
+    {% schedule_timetable schedule as timetable %}
+    <tracks>
+    {% for row, cols in timetable.byRows %}
+        <track>
+            <code>{{ row.track }}</code>
+            <title xmlns="http://www.w3.org/1999/xhtml">{{ row.title|safe }}</title>
+            {% if row.translate %}<translations />{% endif %}
+            {% if row.outdoor %}<outdoor />{% endif %}
+        </track>
+    {% endfor %}
+    </tracks>
+    <slots>
+        {% for row, cols in timetable.byRows %}
+        {% for cell in cols %}
+        {% if cell.data and cell.data.ref %}
+        <slot>
+            {% event_time_span timetable cell.data as time_span %}
+            <start>{{ time_span.0|time:"H:i:s" }}</start>
+            <end>{{ time_span.1|time:"H:i:s" }}</end>
+            <main_track>{{ cell.row.track }}</main_track>
+            {% event_row_span timetable cell.data as tracks %}
+            <tracks>
+                {% for t in tracks %}
+                <track>{{ t.track }}</track>
+                {% endfor %}
+            </tracks>
+            <event>
+                {% if cell.data.ref.talk %}
+                <talk>{% url conference-talk-xml cell.data.ref.talk.slug as x %}{{ x|full_url }}</talk>
+                {% else %}
+                <custom xmlns="http://www.w3.org/1999/xhtml">{{ cell.data.ref.custom|safe }}</custom>
                 {% endif %}
-                {% if event.talk %}
-                <talk url="{{ DEFAULT_URL_PREFIX }}{{ event.talk.get_absolute_url }}">
-                    {% for spk in event.talk.get_all_speakers %}
-                    <speaker url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" name="{{ spk.name }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image|image_resized }}" />
-                    {% endfor %}
-                    {% for b in event.talk.abstracts.all %}
-                    <abstract lang="{{ b.language }}">{{ b.body|striptags }}</abstract>
-                    {% endfor %}
-                </talk>
-                {% endif %}
-                </event>
-                {% endif %}
-            {% endfor %}
+            </event>
         </slot>
         {% endif %}
-    {% endfor %}
+        {% endfor %}
+        {% endfor %}
+    </slots>
 </schedule>
 {% endspaceless %}

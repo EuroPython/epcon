@@ -2,23 +2,24 @@
 {% spaceless %}
 {% load conference %}
 <conference>
+    <code>{{ conference.code }}</code>
     <name>{{ conference.name }}</name>
     {% if conference.cfp_start %}
     <callforpaper>
-        <start>{{ conference.cfp_start }}</start>
-        <end>{{ conference.cfp_end }}</end>
+        <start>{{ conference.cfp_start|date:"Y/m/d" }}</start>
+        <end>{{ conference.cfp_end|date:"Y/m/d" }}</end>
     </callforpaper>
     {% endif %}
     {% if conference.conference_start %}
     <conference_dates>
-        <start>{{ conference.conference_start }}</start>
-        <end>{{ conference.conference_end }}</end>
+        <start>{{ conference.conference_start|date:"Y/m/d" }}</start>
+        <end>{{ conference.conference_end|date:"Y/m/d" }}</end>
     </conference_dates>
     {% endif %}
     {% if conference.voting_start %}
     <voting>
-        <start>{{ conference.voting_start }}</start>
-        <end>{{ conference.voting_end }}</end>
+        <start>{{ conference.voting_start|date:"Y/m/d" }}</start>
+        <end>{{ conference.voting_end|date:"Y/m/d" }}</end>
     </voting>
     {% endif %}
     <talks>
@@ -31,5 +32,17 @@
         </talk>
         {% endfor %}
     </talks>
+    <schedules>
+        {% for sch in schedules %}
+        <schedule>
+            <url>{% url conference-schedule-xml conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</url>
+            <public_url>{% url conference-schedule conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</public_url>
+            <date>{{ sch.date|date:"Y/m/d" }}</date>
+            {% if sch.description %}
+            <description xmlns="http://www.w3.org/1999/xhtml">{{ sch.description|safe }}</description>
+            {% endif %}
+        </schedule>
+        {% endfor %}
+    </schedules>
 </conference>
 {% endspaceless %}

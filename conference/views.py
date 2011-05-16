@@ -187,12 +187,12 @@ def talk_access(f):
         if tlk.status == 'proposed' and not full_access:
             conf = models.Conference.objects.current()
             if not conf.voting():
-                raise http.Http404()
+                return http.HttpResponseForbidden()
             if not settings.VOTING_ALLOWED(request.user):
                 if settings.VOTING_DISALLOWED:
                     return redirect(settings.VOTING_DISALLOWED)
                 else:
-                    raise http.Http404()
+                    return http.HttpResponseForbidden()
 
         return f(request, slug, talk=tlk, full_access=full_access, **kwargs)
     return wrapper
@@ -233,12 +233,14 @@ def talk_xml(request, slug, talk, full_access):
     }
 
 @render_to('conference/conference.xml')
-def conference_data(request, conference):
+def conference_xml(request, conference):
     conference = get_object_or_404(models.Conference, code=conference)
     talks = models.Talk.objects.filter(conference=conference)
+    schedules = models.Schedule.objects.filter(conference=conference.code)
     return {
         'conference': conference,
         'talks': talks,
+        'schedules': schedules,
     }
 
 def talk_report(request):
