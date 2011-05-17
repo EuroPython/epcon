@@ -71,7 +71,7 @@ def _assign_ticket(ticket, email):
         recipient = u.user
         name = email
     else:
-        log.info('Found a local user (%s) for the email "%s"', recipient, email)
+        log.info('Found a local user (%s) for the email "%s"', unicode(recipient).encode('utf-8'), email.encode('utf-8'))
         just_created = False
         try:
             auser = recipient.assopy_user
