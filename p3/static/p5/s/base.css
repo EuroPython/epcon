@@ -1211,6 +1211,10 @@ section.teaser p {
     background: #194175;
 }
 
+.ticket[data-fare=VOUPE02] .preview h2 {
+    background: #793f4b;
+}
+
 .ticket-additional-info {
 }
 
