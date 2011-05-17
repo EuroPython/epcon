@@ -222,10 +222,12 @@ class P3FormTickets(FormTickets):
         company = order_type == 'deductible'
         for ix, row in list(enumerate(data['tickets']))[::-1]:
             fare, quantity = row
+            if fare.ticket_type != 'company':
+                continue
             if (company ^ (fare.code[-1] == 'C')):
                 del data['tickets'][ix]
                 del data[fare.code]
-            return data
+        return data
 
 @render_to('p3/cart.html')
 def cart(request):
