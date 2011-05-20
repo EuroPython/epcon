@@ -149,6 +149,7 @@ class FormTicket(forms.ModelForm):
         return data
 
 class FormTicketPartner(forms.ModelForm):
+    name = forms.CharField(max_length=60, required=False, help_text='Real name of the person that will attend this specific event.')
     class Meta:
         model = Ticket
         fields = ('name',)
