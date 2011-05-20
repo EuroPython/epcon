@@ -257,6 +257,7 @@ header {
 
 header nav {
     background: #301d1d;		
+    height: 40px;
 }
 
 header .user {
@@ -1477,11 +1478,16 @@ section.notice {
     font-size: 1.1em;
 }
 
-
-
-
 .feedback-vote {
     display: none;
     color: #7D6F60;
     margin-left: 20px;
+}
+
+section.countdown {
+    height: 40px;
+    text-align: center;
+    font-size: 1.2em;
+    line-height: 40px;
+    background: #FFCF08;
 }
