@@ -16,6 +16,11 @@ class TicketConferenceAdmin(TicketAdmin):
         except models.TicketConference.DoesNotExist:
             return ''
 
+    def queryset(self, request):
+        qs = super(TicketConferenceAdmin, self).queryset(request)
+        qs = qs.select_related('orderitem__order', 'p3_conference', 'user',)
+        return qs
+
 admin.site.unregister(Ticket)
 admin.site.register(Ticket, TicketConferenceAdmin)
 
