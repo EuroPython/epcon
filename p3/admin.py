@@ -18,7 +18,7 @@ class TicketConferenceAdmin(TicketAdmin):
 
     def queryset(self, request):
         qs = super(TicketConferenceAdmin, self).queryset(request)
-        qs = qs.select_related('orderitem__order', 'p3_conference', 'user',)
+        qs = qs.select_related('orderitem__order', 'p3_conference', 'user', 'fare', )
         return qs
 
 admin.site.unregister(Ticket)
