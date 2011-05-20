@@ -6,14 +6,15 @@ from p3 import models
 
 class TicketConferenceAdmin(TicketAdmin):
     list_display = TicketAdmin.list_display + ('_order', '_assigned',)
+    list_filter = ('orderitem__order___complete', 'fare__code',)
     
     def _order(self, o):
         return o.orderitem.order.code
 
     def _assigned(self, o):
-        try:
+        if o.p3_conference:
             return o.p3_conference.assigned_to
-        except models.TicketConference.DoesNotExist:
+        else:
             return ''
 
     def queryset(self, request):
