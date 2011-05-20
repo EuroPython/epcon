@@ -1,0 +1,42 @@
+Metadata-Version: 1.0
+Name: django-page-cms
+Version: 1.4.2
+Summary: A tree based Django CMS application
+Home-page: http://packages.python.org/django-page-cms/
+Author: Batiste Bieler
+Author-email: batiste.bieler@gmail.com
+License: BSD
+Download-URL: http://pypi.python.org/packages/source/d/django-page-cms/django-page-cms-1.4.2.tar.gz
+Description: ===============
+        django-page-cms
+        ===============
+        
+        This Django CMS enable you to create and administrate hierarchical pages in a simple and powerful way.
+        
+        Django page CMS is based around a placeholders concept. A placeholder is special template tag that
+        you use in your page templates. Every time you add a placeholder in your template  a field
+        dynamically appears in the page admin.
+        
+        This CMS is know to work on Django 1.1.3, 1.2.5 and 1.3-beta-1
+        
+        .. image:: http://github.com/batiste/django-page-cms/raw/master/doc/admin-screenshot1.png
+        
+        Documentation
+        =============
+        
+        For more informations about the product:
+        
+        http://packages.python.org/django-page-cms/
+        
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Framework :: Django
+Classifier: Programming Language :: Python :: 2.3
+Classifier: Programming Language :: JavaScript
+Classifier: Topic :: Internet :: WWW/HTTP :: Site Management
