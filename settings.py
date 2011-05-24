@@ -227,6 +227,24 @@ TEMPLATESADMIN_EDITHOOKS = (
 HAYSTACK_SITECONF = 'pycon_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
 
+def HCOMMENTS_THREAD_OWNERS(o):
+    from conference.models import Talk
+    from microblog.models import Post
+    if isinstance(o, Talk):
+        return [ s.user for s in o.get_all_speakers() ]
+    elif isinstance(o, Post):
+        return [ o.author, ]
+    return None
+
+def HCOMMENTS_MODERATOR_REQUEST(request, comment):
+    if request.user.is_superuser:
+        return True
+    else:
+        owners = HCOMMENTS_THREAD_OWNERS(comment.content_object)
+        if owners:
+            return request.user in owners
+    return False
+
 import logging
 logging.getLogger('south').setLevel(logging.INFO)
 logging.getLogger('suds').setLevel(logging.INFO)
