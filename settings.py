@@ -155,7 +155,6 @@ PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_DEFAULT_LANGUAGE = 'it'
 PAGE_LANGUAGES = LANGUAGES
-PAGE_REAL_TIME_SEARCH = False
 
 MICROBLOG_LINK = 'http://www.europython.eu'
 MICROBLOG_TITLE = 'Europython blog'
@@ -227,6 +226,24 @@ TEMPLATESADMIN_EDITHOOKS = (
 
 HAYSTACK_SITECONF = 'pycon_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
+
+def HCOMMENTS_THREAD_OWNERS(o):
+    from conference.models import Talk
+    from microblog.models import Post
+    if isinstance(o, Talk):
+        return [ s.user for s in o.get_all_speakers() ]
+    elif isinstance(o, Post):
+        return [ o.author, ]
+    return None
+
+def HCOMMENTS_MODERATOR_REQUEST(request, comment):
+    if request.user.is_superuser:
+        return True
+    else:
+        owners = HCOMMENTS_THREAD_OWNERS(comment.content_object)
+        if owners:
+            return request.user in owners
+    return False
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

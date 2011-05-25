@@ -104,7 +104,7 @@ var PROJEKKTOR_CONFIG = {
         {% get_comment_list talk as comments %}
         {% if comments %}
             <h3>Comments</h3>
-            {% show_comment_list talk talk.get_all_speakers.0.user %}
+            {% show_comment_list talk %}
         {% else %}
             <h3>Do you have some questions on this talk? Leave a comment to the speaker!</h3>
         {% endif %}
