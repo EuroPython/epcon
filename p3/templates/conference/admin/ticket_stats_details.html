@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% load p3 %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../">Home</a> &rsaquo;
+     <a href="../../../">Conference</a> &rsaquo;
+     <a href="../../">Tickets</a>&rsaquo;
+     <a href="../">stats</a>&rsaquo;
+     details
+</div>
+{% endblock %}{% block content %}
+<h1>{{ stat.title }}</h1>
+{% paginate stat.details count=40 as page %}
+<table>
+    <tr>
+        <th>attendee</th>
+        <th>email</th>
+        <th>buyer</th>
+        <th>email</th>
+        <th>order</th>
+    </tr>
+    {% for ticket in page.object_list %}
+    <tr>
+        <td>{{ ticket.name }}</td>
+        <td>{{ ticket.p3_conference.assigned_to }}</td>
+        <td>{{ ticket.orderitem.order.user.name }}</td>
+        <td>{{ ticket.orderitem.order.user.user.email }}</td>
+        <td>{{ ticket.orderitem.order.code }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if page.has_previous %}
+            <a href="?{% add_page_number_to_query page.previous_page_number %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page.number }} of {{ page.paginator.num_pages }}.
+        </span>
+
+        {% if page.has_next %}
+            <a href="?{% add_page_number_to_query page.next_page_number %}">next</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
