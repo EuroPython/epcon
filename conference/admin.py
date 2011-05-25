@@ -377,9 +377,14 @@ class TicketAdmin(admin.ModelAdmin):
         return '%s %s' % (o.user.first_name, o.user.last_name)
 
     def _conference(self, o):
-        return o.ticket.conference
+        return o.fare.conference
 
     def _ticket(self, o):
-        return o.ticket.code
+        return o.fare.code
+
+    def queryset(self, request):
+        qs = super(TicketAdmin, self).queryset(request)
+        qs = qs.select_related('user', 'fare',)
+        return qs
 
 admin.site.register(models.Ticket, TicketAdmin)
