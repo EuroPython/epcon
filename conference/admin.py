@@ -4,12 +4,13 @@ from __future__ import absolute_import
 from django import forms
 from django import http
 from django.contrib import admin
-from django.conf import settings
+from django.conf import settings as dsettings
 from django.core import urlresolvers
 from django.db import transaction
 from django.shortcuts import redirect
 
 from conference import models
+from conference import settings
 
 import csv
 import re
@@ -26,7 +27,7 @@ class DeadlineAdmin(admin.ModelAdmin):
 
     def _headline(self, obj):
         contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in settings.LANGUAGES:
+        for l, lname in dsettings.LANGUAGES:
             try:
                 content = contents[l]
             except KeyError:
@@ -40,7 +41,7 @@ class DeadlineAdmin(admin.ModelAdmin):
 
     def _text(self, obj):
         contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in settings.LANGUAGES:
+        for l, lname in dsettings.LANGUAGES:
             try:
                 content = contents[l]
             except KeyError:
@@ -71,7 +72,7 @@ class DeadlineAdmin(admin.ModelAdmin):
         form = super(DeadlineAdmin, self).get_form(request, obj, **kwargs)
         if obj:
             contents = dict((c.language, (c.headline, c.body)) for c in obj.deadlinecontent_set.all())
-        for l, _ in settings.LANGUAGES:
+        for l, _ in dsettings.LANGUAGES:
             f = forms.CharField(max_length=200, required=False)
             if obj:
                 try:
@@ -91,7 +92,7 @@ class DeadlineAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         data = form.cleaned_data
-        for l, _ in settings.LANGUAGES:
+        for l, _ in dsettings.LANGUAGES:
             if change:
                 try:
                     instance = models.DeadlineContent.objects.get(deadline=obj, language=l)
@@ -125,7 +126,7 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 contents =  dict(
                     (c.language, c.body) for c in getattr(obj, field_name).all() if c.content == field_name
                 )
-            for l, _ in settings.LANGUAGES:
+            for l, _ in dsettings.LANGUAGES:
                 text = forms.CharField(widget = forms.Textarea, required = False)
                 if obj:
                     text.initial = contents.get(l, '')
@@ -140,7 +141,7 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 contents =  dict(
                     (c.language, c) for c in getattr(obj, field_name).all() if c.content == field_name
                 )
-            for l, _ in settings.LANGUAGES:
+            for l, _ in dsettings.LANGUAGES:
                 key =  '%s_%s' % (field_name, l)
                 if change:
                     try:
@@ -336,7 +337,7 @@ class DidYouKnowAdmin(MultiLingualAdminContent):
     def _message(self, o):
         messages = dict( (c.language, c) for c in o.messages.all() if c.body)
         try:
-            return messages[settings.LANGUAGES[0][0]].body
+            return messages[dsettings.LANGUAGES[0][0]].body
         except KeyError:
             if messages:
                 return messages.values()[0].body
