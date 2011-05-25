@@ -69,7 +69,7 @@ h1 span {
                 </p>
                 {% endif %}
                 {% with request.user.assopy_user|user_coupons as coupons %}
-                    {% if coupons|length %}
+                    {% if coupons.valid|length or coupons.invalid|length%}
                     <h4>{% trans "Your Coupons" %}</h4>
                     {% for c in coupons.valid %}
                     <p class="coupon valid"><span>Code: {{ c.code }}</span><br />{{ c.description }}</p>
