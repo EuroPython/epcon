@@ -424,7 +424,7 @@ def invoice_pdf(request, assopy_id):
 @render_to('assopy/voucher.html')
 def voucher(request, order_id, item_id):
     item = get_object_or_404(models.OrderItem, order=order_id, id=item_id)
-    if not item.ticket or item.ticket.fare.payment_type != 'v' or item.order.user.user != request.user or not request.user.is_superuser:
+    if (not item.ticket or item.ticket.fare.payment_type != 'v' or item.order.user.user != request.user) and not request.user.is_superuser:
         raise http.Http404()
     return {
         'item': item,
