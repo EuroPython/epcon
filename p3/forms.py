@@ -111,13 +111,20 @@ class FormTicket(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        single_day = kwargs.pop('single_day', False)
         if kwargs.get('instance'):
             data = {
                 'days': kwargs['instance'].days.split(','),
             }
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
+        if single_day:
+            if kwargs['initial'].get('days', []):
+                kwargs['initial']['days'] = kwargs['initial']['days'][0]
+            self.base_fields['days'] = forms.ChoiceField(
+                label=_('Days'), choices=tuple(), widget=forms.RadioSelect, required=False)
         super(FormTicket, self).__init__(*args, **kwargs)
+        self.single_day = single_day
 
         days = []
         conf = Conference.objects.current()
@@ -127,10 +134,12 @@ class FormTicket(forms.ModelForm):
             d = d + datetime.timedelta(days=1)
         self.fields['days'].choices = days
 
-
     def clean_days(self):
+        raw = self.cleaned_data.get('days')
+        if self.single_day:
+            raw = [ raw ]
         try:
-            data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), self.cleaned_data.get('days', []))
+            data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
         except Exception, e:
             raise forms.ValidationError('formato data non valido')
         conf = Conference.objects.current()
@@ -140,7 +149,10 @@ class FormTicket(forms.ModelForm):
                 days.append(x.strftime('%Y-%m-%d'))
             else:
                 raise forms.ValidationError('data non valida')
-        return ','.join(days)
+        if self.single_day:
+            return days[0] if days else ''
+        else:
+            return ','.join(days)
 
     def clean(self):
         data = self.cleaned_data

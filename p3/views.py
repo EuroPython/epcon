@@ -111,7 +111,12 @@ def ticket(request, tid):
             raise http.Http404()
     if request.method == 'POST':
         if t.fare.ticket_type == 'conference':
-            form = p3forms.FormTicket(instance=p3c, data=request.POST, prefix='t%d' % (t.id,))
+            form = p3forms.FormTicket(
+                instance=p3c,
+                data=request.POST,
+                prefix='t%d' % (t.id,),
+                single_day=t.fare.code[2] == 'D',
+            )
             if not form.is_valid():
                 return http.HttpResponseBadRequest(str(form.errors))
 

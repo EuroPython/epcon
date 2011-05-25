@@ -78,7 +78,7 @@
         <p>{% trans "Additional information (they won&#8217;t show up on the ticket)" %}</p>
         <dl>
             <dt>{% trans "Attending on days:" %}</dt>
-            <dd>{{ form.days|field_display_value|join:"; " }}.</dd>
+            <dd>{% if form.single_day %}{{ form.days|field_display_value }}{% else %}{{ form.days|field_display_value|join:"; " }}{% endif %}.</dd>
             <dt>{% trans "Diet:" %}</dt>
             <dd>{{ form.diet|field_display_value }}</dd>
             <dt>{% trans "Shirt size:" %}</dt>

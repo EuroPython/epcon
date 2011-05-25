@@ -151,7 +151,8 @@ def render_ticket(context, ticket):
             initial={
                 'ticket_name': ticket.name, 
             },
-            prefix='t%d' % (ticket.id,)
+            prefix='t%d' % (ticket.id,),
+            single_day=ticket.fare.code[2] == 'D',
         )
         if inst and inst.assigned_to:
             blocked = inst.assigned_to != user.email
