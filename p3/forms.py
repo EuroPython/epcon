@@ -121,10 +121,11 @@ class FormTicket(forms.ModelForm):
         if single_day:
             if kwargs['initial'].get('days', []):
                 kwargs['initial']['days'] = kwargs['initial']['days'][0]
-            self.base_fields['days'] = forms.ChoiceField(
-                label=_('Days'), choices=tuple(), widget=forms.RadioSelect, required=False)
         super(FormTicket, self).__init__(*args, **kwargs)
         self.single_day = single_day
+        if single_day:
+            self.fields['days'] = forms.ChoiceField(
+                label=_('Days'), choices=tuple(), widget=forms.RadioSelect, required=False)
 
         days = []
         conf = Conference.objects.current()
