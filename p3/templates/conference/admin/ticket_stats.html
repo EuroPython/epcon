@@ -15,7 +15,11 @@
 <table>
 {% for v in stats|dictsort:"title" %}
 <tr>
+    {% if v.have_details %}
+    <th><a href="{% url admin:p3-ticket-stats-details %}?conference={{ conference }}&code={{ v.code }}">{{ v.title }}</a></th>
+    {% else %}
     <th>{{ v.title }}</th>
+    {% endif %}
     <td>{{ v.count }}</td>
 </tr>
 {% endfor %}

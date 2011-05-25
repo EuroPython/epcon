@@ -6,6 +6,7 @@ import os.path
 import re
 import random
 import sys
+import urllib
 import urllib2
 from collections import defaultdict
 from datetime import datetime
@@ -13,6 +14,7 @@ from itertools import groupby
 
 from django import template
 from django.conf import settings
+from django.core import paginator
 from django.core.cache import cache
 from django.db.models import Q
 from django.template import Context
@@ -292,3 +294,25 @@ def schedule_to_be_splitted(s):
         if t.track.startswith('partner') or t.track.startswith('sprint'):
             s.append(t)
     return len(tracks) != len(s)
+
+@fancy_tag(register, takes_context=True)
+def paginate(context, qs, count=20):
+    pages = paginator.Paginator(qs, int(count))
+    try:
+        ix = int(context['request'].GET.get('page', 1))
+    except ValueError:
+        ix = 1
+    try:
+        return pages.page(ix)
+    except:
+        ix = 1 if ix < 1 else pages.num_pages
+        return pages.page(ix)
+
+@fancy_tag(register, takes_context=True)
+def add_page_number_to_query(context, page, get=None):
+    if get is None:
+        get = context['request'].GET.copy()
+    else:
+        get = dict(get)
+    get['page'] = page
+    return urllib.urlencode(get)

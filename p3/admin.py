@@ -33,11 +33,87 @@ class TicketConferenceAdmin(TicketAdmin):
     def get_urls(self):
         urls = super(TicketAdmin, self).get_urls()
         my_urls = patterns('',
-            url(r'^stats/$', self.admin_site.admin_view(self.stats), name='p3-ticket-stats'),
+            url(r'^stats/$', self.admin_site.admin_view(self.stats_list), name='p3-ticket-stats'),
+            url(r'^stats/details/$', self.admin_site.admin_view(self.stats_details), name='p3-ticket-stats-details'),
         )
         return my_urls + urls
 
-    def stats(self, request):
+    def stats(self, conference, stat=None):
+        stats = []
+        tickets = Ticket.objects.filter(
+            orderitem__order___complete=True,
+            fare__ticket_type='conference',
+            fare__conference=conference,
+        ).select_related('p3_conference', 'orderitem__order__user__user')
+        compiled = tickets.exclude(p3_conference=None).exclude(name='')
+        not_compiled = tickets.exclude(p3_conference=None).filter(name='') | tickets.filter(p3_conference=None)
+        if stat in (None, 'all'):
+            stats.append({
+                'code': 'all',
+                'title': 'Biglietti venduti',
+                'count': tickets.count(),
+                'have_details': True,
+                'details': tickets,
+            })
+        if stat in (None, 'not_compiled'):
+            stats.append({
+                'code': 'not_compiled',
+                'title': 'Biglietti non compilati',
+                'count': not_compiled.count(),
+                'have_details': True,
+                'details': not_compiled,
+            })
+        if stat in (None, 'compiled'):
+            stats.append({
+                'code': 'compiled',
+                'title': 'Biglietti compilati',
+                'count': compiled.count(),
+                'have_details': True,
+                'details': compiled,
+            })
+        if stat is None or stat.startswith('tshirt_'):
+            sizes = dict(models.TICKET_CONFERENCE_SHIRT_SIZES)
+            for x in compiled.values('p3_conference__shirt_size').annotate(c=Count('id')):
+                scode = 'tshirt_%s' % x['p3_conference__shirt_size']
+                if stat in (None, scode):
+                    stats.append({
+                        'code': scode,
+                        'title': 'Taglia maglietta: %s' % sizes.get(x['p3_conference__shirt_size']),
+                        'count': x['c'], 
+                        'have_details': False,
+                    })
+        if stat is None or stat.startswith('diet_'):
+            diets = dict(models.TICKET_CONFERENCE_DIETS)
+            for x in compiled.values('p3_conference__diet').annotate(c=Count('id')):
+                scode = 'diet_%s' % x['p3_conference__diet']
+                if stat in (None, scode):
+                    stats.append({
+                        'code': scode,
+                        'title': 'Dieta: %s' % diets.get(x['p3_conference__diet']),
+                        'count': x['c'], 
+                        'have_details': False,
+                    })
+        if stat is None or stat.startswith('days_'):
+            days = defaultdict(lambda: 0)
+            for x in compiled:
+                data = filter(None, map(lambda x: x.strip(), x.p3_conference.days.split(',')))
+                if not data:
+                    days['x'] += 1
+                else:
+                    for v in data:
+                        days[v] += 1
+            for day, count in days.items():
+                scode = 'days_%s' % day
+                if stat in (None, scode):
+                    stats.append({
+                        'code': scode,
+                        'title': 'Giorno di presenza: %s' % day,
+                        'count': count,
+                        'have_details': False,
+                    })
+        return stats
+
+    def stats_list(self, request):
         from conference.models import Conference, Ticket
         class FormConference(forms.Form):
             conference = forms.ChoiceField(
@@ -47,57 +123,27 @@ class TicketConferenceAdmin(TicketAdmin):
         form = FormConference(data=request.GET)
         stats = []
         if form.is_valid():
-            tickets = Ticket.objects.filter(orderitem__order___complete=True, fare__ticket_type='conference')
-            compiled = tickets.exclude(p3_conference=None).exclude(name='')
-            stats.append({
-                'code': 'all',
-                'title': 'Biglietti venduti',
-                'count': tickets.count(),
-            })
-            stats.append({
-                'code': 'not_compiled',
-                'title': 'Biglietti non compilati',
-                'count': (tickets.exclude(p3_conference=None).filter(name='') | tickets.filter(p3_conference=None)).count(),
-            })
-            stats.append({
-                'code': 'compiled',
-                'title': 'Biglietti compilati',
-                'count': compiled.count(),
-            })
-            sizes = dict(models.TICKET_CONFERENCE_SHIRT_SIZES)
-            for x in compiled.values('p3_conference__shirt_size').annotate(c=Count('id')):
-                stats.append({
-                    'code': 'tshirt_%s' % x['p3_conference__shirt_size'],
-                    'title': 'Taglia maglietta: %s' % sizes.get(x['p3_conference__shirt_size']),
-                    'count': x['c'], 
-                })
-            diets = dict(models.TICKET_CONFERENCE_DIETS)
-            for x in compiled.values('p3_conference__diet').annotate(c=Count('id')):
-                stats.append({
-                    'code': 'diet_%s' % x['p3_conference__diet'],
-                    'title': 'Dieta: %s' % diets.get(x['p3_conference__diet']),
-                    'count': x['c'], 
-                })
-            days = defaultdict(lambda: 0)
-            for x in compiled.select_related('p3_conference'):
-                data = filter(None, map(lambda x: x.strip(), x.p3_conference.days.split(',')))
-                if not data:
-                    days['x'] += 1
-                else:
-                    for v in data:
-                        days[v] += 1
-            for day, count in days.items():
-                stats.append({
-                    'code': 'days_%s' % day,
-                    'title': 'Giorno di presenza: %s' % day,
-                    'count': count,
-                })
-                
+            conference = form.cleaned_data['conference'] or settings.CONFERENCE_CONFERENCE
+            stats = self.stats(conference)
+        else:
+            stats = []
+
         ctx = {
             'form': form,
+            'conference': conference,
             'stats': stats,
         }
         return render_to_response('conference/admin/ticket_stats.html', ctx, context_instance=template.RequestContext(request))
+
+    def stats_details(self, request):
+        code = request.GET['code']
+        conference = request.GET['conference']
+        stats = self.stats(conference, stat=code)
+        ctx = {
+            'conference': conference,
+            'stat': stats[0],
+        }
+        return render_to_response('conference/admin/ticket_stats_details.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.unregister(Ticket)
 admin.site.register(Ticket, TicketConferenceAdmin)
