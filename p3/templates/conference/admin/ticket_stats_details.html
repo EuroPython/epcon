@@ -44,4 +44,15 @@
         {% endif %}
     </span>
 </div>
+
+{% if request.user.email %}
+<hr />
+<h1>Invia un email</h1>
+<form action="" method="POST">{% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="invia" />
+</form>
+{% endif %}
 {% endblock %}

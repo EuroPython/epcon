@@ -5,8 +5,10 @@ from django import template
 from django.conf import settings
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
+from django.core import mail
+from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from conference.admin import TicketAdmin
 from conference.models import Ticket
 from p3 import models
@@ -143,9 +145,58 @@ class TicketConferenceAdmin(TicketAdmin):
         code = request.GET['code']
         conference = request.GET['conference']
         stats = self.stats(conference, stat=code)
+
+        class SendMailForm(forms.Form):
+            from_ = forms.EmailField(max_length=50, initial=settings.DEFAULT_FROM_EMAIL)
+            subject = forms.CharField(max_length=200)
+            body = forms.CharField(widget=forms.Textarea)
+
+        if request.method == "POST":
+            form = SendMailForm(data=request.POST)
+            if form.is_valid():
+                data = form.cleaned_data
+                emails = set()
+                for ticket in stats[0]['details']:
+                    if ticket.p3_conference and ticket.p3_conference.assigned_to:
+                        emails.add(ticket.p3_conference.assigned_to)
+                    else:
+                        emails.add(ticket.orderitem.order.user.user.email)
+                messages = []
+                for e in emails:
+                    messages.append((
+                        data['subject'],
+                        data['body'],
+                        data['from_'],
+                        [ e ]
+                    ))
+                #mail.send_mass_mail(messages)
+                ctx = dict(form.cleaned_data)
+                ctx['addresses'] = '\n'.join(emails)
+                mail.send_mail(
+                    'feedback mail',
+                    '''
+message sent
+-------------------------------
+FROM: %(from_)s
+SUBJECT: %(subject)s
+BODY:
+%(body)s
+-------------------------------
+sent to:
+%(addresses)s
+                    ''' % ctx,
+                    settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[request.user.email],
+
+                )
+                u = reverse('admin:p3-ticket-stats-details') + '?conference=%s&code=%s' % (conference, code)
+                return redirect(u)
+        else:
+            form = SendMailForm()
         ctx = {
             'conference': conference,
             'stat': stats[0],
+            'form': form,
         }
         return render_to_response('conference/admin/ticket_stats_details.html', ctx, context_instance=template.RequestContext(request))
 
