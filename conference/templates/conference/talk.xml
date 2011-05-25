@@ -8,10 +8,8 @@
     <training>{{ talk.training_available }}</training>
     <public_url>{{ talk.get_url }}</public_url>
     <title>{{ talk.title }}</title>
-    <conference>{{ talk.conference }}</conference>
     <language>{{ talk.language }}</language>
     <duration>{{ talk.duration }}</duration>
-    <status>{{ talk.status }}</status>
     {% if talk.slides %}<slides url="{{ talk.slides.url|full_url }}" />{% endif %}
     {% for spk in talk.get_all_speakers %}
     <speaker>
