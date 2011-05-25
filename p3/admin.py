@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django import http
 from django import template
 from django.conf import settings
 from django.conf.urls.defaults import url, patterns
@@ -10,7 +11,9 @@ from conference.admin import TicketAdmin
 from conference.models import Ticket
 from p3 import models
 
+import csv
 from collections import defaultdict
+from cStringIO import StringIO
 
 class TicketConferenceAdmin(TicketAdmin):
     list_display = TicketAdmin.list_display + ('_order', '_assigned',)
@@ -35,6 +38,7 @@ class TicketConferenceAdmin(TicketAdmin):
         my_urls = patterns('',
             url(r'^stats/$', self.admin_site.admin_view(self.stats_list), name='p3-ticket-stats'),
             url(r'^stats/details/$', self.admin_site.admin_view(self.stats_details), name='p3-ticket-stats-details'),
+            url(r'^stats/details/csv$', self.admin_site.admin_view(self.stats_details_csv), name='p3-ticket-stats-details-csv'),
         )
         return my_urls + urls
 
@@ -144,6 +148,34 @@ class TicketConferenceAdmin(TicketAdmin):
             'stat': stats[0],
         }
         return render_to_response('conference/admin/ticket_stats_details.html', ctx, context_instance=template.RequestContext(request))
+
+    def stats_details_csv(self, request):
+        code = request.GET['code']
+        conference = request.GET['conference']
+        stats = self.stats(conference, stat=code)
+        columns = (
+            'attendee', 'attendee_email',
+            'buyer', 'buyer_email',
+            'order',
+        )
+        buff = StringIO()
+        writer = csv.DictWriter(buff, columns)
+        writer.writerow(dict(zip(columns, columns)))
+        for ticket in stats[0]['details']:
+            row = {
+                'attendee': ticket.name,
+                'attendee_email': ticket.p3_conference.assigned_to if ticket.p3_conference else '',
+                'buyer': ticket.orderitem.order.user.name(),
+                'buyer_email': ticket.orderitem.order.user.user.email,
+                'order': ticket.orderitem.order.code,
+            }
+            for k, v in row.items():
+                try:
+                    row[k] = v.encode('utf-8')
+                except:
+                    pass
+            writer.writerow(row)
+        return http.HttpResponse(buff.getvalue(), mimetype="text/csv")
 
 admin.site.unregister(Ticket)
 admin.site.register(Ticket, TicketConferenceAdmin)

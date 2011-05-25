@@ -9,7 +9,7 @@
      details
 </div>
 {% endblock %}{% block content %}
-<h1>{{ stat.title }}</h1>
+<h1>{{ stat.title }} (<a href="{% url admin:p3-ticket-stats-details-csv %}?code={{ stat.code }}&conference={{ conference }}">csv</a>)</h1>
 {% paginate stat.details count=40 as page %}
 <table>
     <tr>
