@@ -16,6 +16,7 @@ from django import template
 from django.conf import settings
 from django.core import paginator
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.template import Context
 from django.template.loader import render_to_string
@@ -316,3 +317,15 @@ def add_page_number_to_query(context, page, get=None):
         get = dict(get)
     get['page'] = page
     return urllib.urlencode(get)
+
+@register.filter
+def tickets_url(user):
+    """
+    ritorna la url più diretta per mandare l'utente sulla sua pagina ticket
+    """
+    if user.token:
+        u = reverse('p3-user', kwargs={'token': user.token})
+    else:
+        u = reverse('p3-tickets')
+
+    return settings.DEFAULT_URL_PREFIX + u
