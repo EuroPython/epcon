@@ -13,6 +13,9 @@
 {% paginate stat.details count=40 as page %}
 <table>
     <tr>
+        {% if request.GET.voyeur %}
+        <th>&nbsp;</th>
+        {% endif %}
         <th>attendee</th>
         <th>email</th>
         <th>buyer</th>
@@ -21,6 +24,9 @@
     </tr>
     {% for ticket in page.object_list %}
     <tr>
+        {% if request.GET.voyeur %}
+        <td>{% with ticket|ticket_user as u %}<img src="{{ u.photo_url }}" width="48" />{% endwith %}</td>
+        {% endif %}
         <td>{{ ticket.name }}</td>
         <td>{{ ticket.p3_conference.assigned_to }}</td>
         <td>{{ ticket.orderitem.order.user.name }}</td>
@@ -47,7 +53,7 @@
 
 {% if request.user.email %}
 <hr />
-<h1>Invia un email</h1>
+<h1>Invia un email a tutti i partecipanti di questa lista</h1>
 <form action="" method="POST">{% csrf_token %}
     <table>
         {{ form.as_table }}
