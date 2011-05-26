@@ -76,8 +76,8 @@ h2 {
         <hr />
 
         <div>
-            <p>{% trans "If you really really don't want to use an existing web account but you prefer a standard registration/login form," %} <a id="show-classic-login" href="#">{% trans "click here" %}</a></p>
-            <div id="classic-login"{% if form.errors|length == 0 %} style="display: none"{% endif %}>
+            <p>{% trans "If you really really don't want to use an existing web account but you prefer a standard registration/login form," %}</p>
+            <div id="classic-login">
                 <div class="span-7 append-1">
                     <div class="form-box">
                         <h2>Your EuroPython account</h2>
@@ -105,16 +105,15 @@ h2 {
                         <div class="button">
                             <a href="{% url assopy-new-account %}?next={{ next }}" class="button">Create a new account now</a>
                         </div>
+                        <hr />
+                        <h2>{% trans "Did you forget your password?" %}</h2>
+                        <div class="button">
+                            <a href="{% url assopy-password-reset %}" class="button">Click here</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        $('#show-classic-login').click(function(e) {
-            e.preventDefault();
-            $('#classic-login').slideDown('slow');
-        })
-    </script>
 {% endblock %}
 
