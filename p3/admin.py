@@ -152,26 +152,35 @@ class TicketConferenceAdmin(TicketAdmin):
             body = forms.CharField(widget=forms.Textarea)
 
         if request.method == "POST":
+            from assopy.models import User
+            from django.template import Template, Context
+
             form = SendMailForm(data=request.POST)
             if form.is_valid():
                 data = form.cleaned_data
-                emails = set()
+                tSubject = Template(data['subject'])
+                tBody = Template(data['body'])
+
+                emails = {}
                 for ticket in stats[0]['details']:
                     if ticket.p3_conference and ticket.p3_conference.assigned_to:
-                        emails.add(ticket.p3_conference.assigned_to)
+                        emails[ticket.p3_conference.assigned_to] = User.objects.get(user__email=ticket.p3_conference.assigned_to)
                     else:
-                        emails.add(ticket.orderitem.order.user.user.email)
+                        emails[ticket.orderitem.order.user.user.email] = ticket.orderitem.order.user
                 messages = []
-                for e in emails:
+                for email, user in emails.items():
+                    ctx = Context({
+                        'user': user,
+                    })
                     messages.append((
-                        data['subject'],
-                        data['body'],
+                        tSubject.render(ctx),
+                        tBody.render(ctx),
                         data['from_'],
-                        [ e ]
+                        [ email ]
                     ))
-                #mail.send_mass_mail(messages)
+                mail.send_mass_mail(messages)
                 ctx = dict(form.cleaned_data)
-                ctx['addresses'] = '\n'.join(emails)
+                ctx['addresses'] = '\n'.join('%s - %s' % (k, v.name()) for k, v in emails.items())
                 mail.send_mail(
                     'feedback mail',
                     '''
