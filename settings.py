@@ -254,6 +254,11 @@ def HCOMMENTS_MODERATOR_REQUEST(request, comment):
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'with_level': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s',
+        },
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
@@ -265,6 +270,18 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        '': {
+            'level': 'DEBUG',
+        },
+        'suds': {
+            'level': 'INFO',
+        },
+        'south': {
+            'level': 'INFO',
+        },
+        'assopy.genro': {
+            'level': 'INFO',
         },
     }
 }
