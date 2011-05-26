@@ -119,7 +119,7 @@ class FormTicket(forms.ModelForm):
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
         if single_day:
-            if kwargs['initial'].get('days', []):
+            if 'initial' in kwargs and kwargs['initial'].get('days', []):
                 kwargs['initial']['days'] = kwargs['initial']['days'][0]
         super(FormTicket, self).__init__(*args, **kwargs)
         self.single_day = single_day
