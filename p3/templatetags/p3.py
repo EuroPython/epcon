@@ -329,3 +329,11 @@ def tickets_url(user):
         u = reverse('p3-tickets')
 
     return settings.DEFAULT_URL_PREFIX + u
+
+@register.filter
+def ticket_user(ticket):
+    if ticket.p3_conference.assigned_to:
+        from assopy.models import User
+        return User.objects.get(user__email=ticket.p3_conference.assigned_to)
+    else:
+        return ticket.orderitem.order.user
