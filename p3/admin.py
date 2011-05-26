@@ -86,7 +86,8 @@ class TicketConferenceAdmin(TicketAdmin):
                         'code': scode,
                         'title': 'Taglia maglietta: %s' % sizes.get(x['p3_conference__shirt_size']),
                         'count': x['c'], 
-                        'have_details': False,
+                        'have_details': True,
+                        'details': compiled.filter(p3_conference__shirt_size=x['p3_conference__shirt_size']),
                     })
         if stat is None or stat.startswith('diet_'):
             diets = dict(models.TICKET_CONFERENCE_DIETS)
@@ -97,7 +98,8 @@ class TicketConferenceAdmin(TicketAdmin):
                         'code': scode,
                         'title': 'Dieta: %s' % diets.get(x['p3_conference__diet']),
                         'count': x['c'], 
-                        'have_details': False,
+                        'have_details': True,
+                        'details': compiled.filter(p3_conference__diet=x['p3_conference__diet']),
                     })
         if stat is None or stat.startswith('days_'):
             days = defaultdict(lambda: 0)
