@@ -147,6 +147,8 @@ class TicketConferenceAdmin(TicketAdmin):
         code = request.GET['code']
         conference = request.GET['conference']
         stats = self.stats(conference, stat=code)
+        if not stats:
+            raise http.Http404()
 
         class SendMailForm(forms.Form):
             from_ = forms.EmailField(max_length=50, initial=settings.DEFAULT_FROM_EMAIL)
@@ -215,6 +217,8 @@ sent to:
         code = request.GET['code']
         conference = request.GET['conference']
         stats = self.stats(conference, stat=code)
+        if not stats:
+            raise http.Http404()
         columns = (
             'attendee', 'attendee_email',
             'buyer', 'buyer_email',
