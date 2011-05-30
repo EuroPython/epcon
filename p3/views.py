@@ -20,6 +20,8 @@ from conference.models import Fare, Event, Ticket, Schedule
 from email_template import utils
 
 import logging
+import mimetypes
+import os.path
 import uuid
 
 log = logging.getLogger('p3.views')
@@ -431,3 +433,11 @@ def calculator(request):
         else:
             output[k] = '%.2f' % v
     return output
+
+def secure_media(request, path):
+    if not request.user.is_superuser:
+        fname = os.path.splitext(os.path.basename(path))[0]
+        if fname != request.user.username:
+            return http.HttpResponseForbidden()
+    fpath = settings.SECURE_STORAGE.path(path)
+    return http.HttpResponse(file(fpath), mimetype=mimetypes.guess_type(fpath))
