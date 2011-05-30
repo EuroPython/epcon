@@ -21,12 +21,8 @@ function setup_trigger_overlay(jq) {
         });
     });
 }
-$(document).ready(function() {
-    /*
-     * ogni tag con classe "toggle" diventa un toggle-button
-     * che mostra nasconde l'elemento successivo
-     */
-    $(".toggle").each(function() {
+function setup_toggles(jq) {
+    jq.each(function() {
         // nasconde il contenuto e aggiunge il supporto per il mostra/nascondi
         if($(this).attr('rel'))
             var target = $($(this).attr('rel'));
@@ -47,6 +43,13 @@ $(document).ready(function() {
             }
         });
     });
+}
+$(document).ready(function() {
+    /*
+     * ogni tag con classe "toggle" diventa un toggle-button
+     * che mostra nasconde l'elemento successivo
+     */
+    setup_toggles($(".toggle"));
 
      $('.show-tooltip').each(function() {
          var e = $(this);
