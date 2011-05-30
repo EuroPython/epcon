@@ -51,6 +51,7 @@ MEDIA_ROOT = ''
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
+SECURE_MEDIA_URL = '/p3/secure_media/'
 
 STATIC_URL = '/static/'
 
@@ -290,3 +291,17 @@ try:
     from settings_locale import *
 except ImportError:
     pass
+
+# i file sotto SECURE_MEDIA_ROOT devono essere serviti da django, questo if
+# serve ad evitare che vengano messi in una subdir di MEDIA_ROOT che
+# normalmente è servita da un webserver esterno.
+import os.path
+check = os.path.commonprefix((MEDIA_ROOT, SECURE_MEDIA_ROOT))
+if check.startswith(MEDIA_ROOT):
+    if not DEBUG:
+        raise RuntimeError('don\'t put SECURE_MEDIA_ROOT as a subdir of MEDIA_ROOT')
+    else:
+        print 'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
+
+from django.core.files import storage
+SECURE_STORAGE = storage.FileSystemStorage(location=SECURE_MEDIA_ROOT, base_url=SECURE_MEDIA_URL)
