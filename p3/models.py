@@ -3,6 +3,7 @@ import os
 import os.path
 
 from django.conf import settings as dsettings
+from django.core.files import storage
 from django.db import models
 from django.db.models.query import QuerySet
 
@@ -71,12 +72,12 @@ class TicketConference(models.Model):
 def _ticket_sim_upload_to(instance, filename):
     subdir = 'p3/personal_documents'
     fname = instance.ticket.user.username
-    fdir = os.path.join(dsettings.MEDIA_ROOT, subdir)
+    fdir = os.path.join(dsettings.SECURE_MEDIA_ROOT, subdir)
     for f in os.listdir(fdir):
         if os.path.splitext(f)[0] == fname:
             os.unlink(os.path.join(fdir, f))
             break
-    return os.path.join(subdir, fname + os.path.splitext(filename)[1])
+    return os.path.join(subdir, fname + os.path.splitext(filename)[1].lower())
 
 TICKET_SIM_TYPE = (
     ('std', 'Standard SIM (USIM)'),
@@ -88,9 +89,25 @@ TICKET_SIM_PLAN_TYPE = (
 )
 class TicketSIM(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
-    document = models.FileField(verbose_name='ID Document', upload_to=_ticket_sim_upload_to, blank=True, help_text='Italian regulations require a document ID to activate a phone SIM. You can use the same ID for up to three SIMs. Any document is fine (EU driving license, personal ID card, etc).')
-    sim_type = models.CharField(max_length=5, choices=TICKET_SIM_TYPE, default='std', help_text='Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4.')
-    plan_type = models.CharField(max_length=3, choices=TICKET_SIM_PLAN_TYPE, default='std', help_text='Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).')
+    document = models.FileField(
+        verbose_name='ID Document',
+        upload_to=_ticket_sim_upload_to,
+        storage=dsettings.SECURE_STORAGE,
+        blank=True,
+        help_text='Italian regulations require a document ID to activate a phone SIM. You can use the same ID for up to three SIMs. Any document is fine (EU driving license, personal ID card, etc).',
+    )
+    sim_type = models.CharField(
+        max_length=5,
+        choices=TICKET_SIM_TYPE,
+        default='std',
+        help_text='Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4.',
+    )
+    plan_type = models.CharField(
+        max_length=3,
+        choices=TICKET_SIM_PLAN_TYPE,
+        default='std',
+        help_text='Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).',
+    )
 
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')
