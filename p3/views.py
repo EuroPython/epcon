@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext, Template
 from django.template.loader import render_to_string
@@ -465,6 +466,20 @@ def sprint_submission(request):
 @render_to('p3/sprints.html')
 def sprints(request):
     events = []
+    attendees = dict(
+        (x['sprint'], x['c']) for x in 
+        models.SprintPresence.objects\
+            .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
+            .values('sprint')\
+            .annotate(c=Count('pk'))
+    )
+    user_attends = set(
+       x['sprint'] for x in 
+       models.SprintPresence.objects\
+            .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
+            .values('sprint')\
+            .filter(user=request.user)\
+    )
     for e in models.Sprint.objects.filter(conference=settings.CONFERENCE_CONFERENCE).order_by('title'):
         if request.user.is_superuser or request.user == e.user:
             form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
@@ -473,23 +488,45 @@ def sprints(request):
         events.append({
             'object': e,
             'form': form,
+            'attendees': attendees.get(e.id, 0),
+            'user_attend': e.id in user_attends,
         })
     return {
         'events': events,
     }
 
 @login_required
+@render_to('p3/render_single_sprint.html')
 def sprint(request, sid):
     e = get_object_or_404(models.Sprint, pk=sid)
-    if request.user != e.user and not request.user.is_superuser:
-        return http.HttpResponseForbidden()
+    if request.method == 'POST':
+        if 'user-attend' in request.POST:
+            try:
+                p = models.SprintPresence.objects.get(sprint=e, user=request.user.assopy_user)
+            except models.SprintPresence.DoesNotExist:
+                models.SprintPresence(sprint=e, user=request.user.assopy_user).save()
+            else:
+                p.delete()
+        else:
+            if request.user != e.user and not request.user.is_superuser:
+                return http.HttpResponseForbidden()
 
-    if request.method != 'POST':
-        return http.HttpResponseNotAllowed(('POST',))
+            form = p3forms.FormSprint(instance=e, data=request.POST, prefix='f%d' % (e.id,))
+            if form.is_valid():
+                form.save()
+            else:
+                return http.HttpResponseBadRequest(repr(form.errors))
 
-    form = p3forms.FormSprint(instance=e, data=request.POST, prefix='f%d' % (e.id,))
-    if form.is_valid():
-        form.save()
-        return http.HttpResponse('')
+    if request.user.is_superuser or request.user == e.user:
+        form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
     else:
-        return http.HttpResponseBadRequest(repr(form.errors))
+        form = None
+    attendees = set(x['user'] for x in models.SprintPresence.objects.filter(sprint=e).values('user'))
+    return {
+        'data': {
+            'object': e,
+            'form': form,
+            'attendees': len(attendees),
+            'user_attend': request.user.id in attendees,
+        },
+    }

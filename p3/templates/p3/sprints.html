@@ -1,41 +1,27 @@
 {% extends "p3/base.html" %}
 {% load i18n assopy_tags %}
 {% block MAIN_CONTENT %}
-<h1>Sprints page</h1>
-<ol class="sprints">
-{% for e in events %}
-    <li>
-        <h2 class="toggle"><span class="title">{{ e.object.title }}</span>{% if e.form %} <a href="#" class="trigger-overlay" rel="div[data-form={{ e.form.prefix }}]">(edit)</a>{% endif %}</h2>
-        <p class="abstract" style="display:none">{{ e.object.abstract|linebreaksbr }}</p>
-        <div class="overlay" data-form="{{ e.form.prefix }}">
-            <form action="{% url p3-sprint sid=e.object.id %}" method="post">{% csrf_token %}
-                <fieldset>
-                    {% for f in e.form %}
-                        {{ f|field }}
-                    {% endfor %}
-                </fieldset>
-                <fieldset class="border">
-                    <button name="" value="" type="submit">{% trans "Submit" %}</button>
-                </fieldset>
-            </form>
-        </div>
-    </li>
-{% endfor %}
-</ol>
+<div class="cms">
+    <h1>Sprints page</h1>
+    <ol class="sprints">
+    {% for data in events %}
+        <li>{% include "p3/render_single_sprint.html" %}</li>
+    {% endfor %}
+    </ol>
+</div>
 <script type="text/javascript">//<![CDATA[
-    $('.sprints form').submit(function(e) {
+    $('.sprints form').live('submit', function(e) {
         e.preventDefault();
         var form = $(this);
+        var wrapper = form.parents('li');
         form.ajaxSubmit({
+            target: wrapper.children('.sprint'),
+            replaceTarget: true,
             success: function() {
-                var wrapper = form.parents('li');
-                var trigger = $('.trigger-overlay', wrapper);
-                trigger.overlay().close();
-                feedback('form saved');
-                $('.title', wrapper).text($('input[type=text]', form).fieldValue()[0]);
-                $('.abstract', wrapper).html(
-                    $('textarea', form).fieldValue()[0].replace(/\n/g, '<br/>')
-                );
+                if($('textarea', form).length)
+                    feedback('form saved');
+                setup_toggles($('.toggle', wrapper));
+                setup_trigger_overlay($('.trigger-overlay', wrapper));
             },
             error: function() {
                 alert('{% trans "Cannot save the form.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
