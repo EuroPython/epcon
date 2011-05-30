@@ -1,0 +1,6 @@
+{% with request.user.assopy_user.sprint_set as sprints %}
+{% if sprints %}
+<h4>Sprints</h4>
+<a href="{% url p3-sprints %}">check the sprint page</a>
+{% endif %}
+{% endwith %}

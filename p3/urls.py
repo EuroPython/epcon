@@ -14,4 +14,8 @@ urlpatterns = patterns('',
     url(r'^schedule/(?P<conference>[\w-]+)/schedule.js$', direct_to_template, {'template': 'p3/schedule.js' }, name='p3-schedule-js'),
     url(r'^schedule/(?P<conference>[\w-]+)/search/$', 'p3.views.schedule_search', name='p3-schedule-search'),
     url(r'^secure_media/(?P<path>.*)', 'p3.views.secure_media', name='p3-secure-media'),
+
+    url(r'^sprint-submission/$', 'p3.views.sprint_submission', name='p3-sprint-submission'),
+    url(r'^sprints/$', 'p3.views.sprints', name='p3-sprints'),
+    url(r'^sprints/(?P<sid>\d+)/$', 'p3.views.sprint', name='p3-sprint'),
 )

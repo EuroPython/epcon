@@ -3,6 +3,7 @@ from django import forms
 from django import http
 from django.conf import settings
 from django.contrib import auth
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
@@ -441,3 +442,54 @@ def secure_media(request, path):
             return http.HttpResponseForbidden()
     fpath = settings.SECURE_STORAGE.path(path)
     return http.HttpResponse(file(fpath), mimetype=mimetypes.guess_type(fpath))
+
+@login_required
+@render_to('p3/sprint_submission.html')
+def sprint_submission(request):
+    if request.method == 'POST':
+        form = p3forms.FormSprint(data=request.POST)
+        if form.is_valid():
+            s = form.save(commit=False)
+            s.user = request.user.assopy_user
+            s.save()
+            messages.info(request, 'Your sprint has been submitted, thank you!')
+            return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
+
+    else:
+        form = p3forms.FormSprint()
+            
+    return {
+        'form': form,
+    }
+
+@render_to('p3/sprints.html')
+def sprints(request):
+    events = []
+    for e in models.Sprint.objects.filter(conference=settings.CONFERENCE_CONFERENCE).order_by('title'):
+        if request.user.is_superuser or request.user == e.user:
+            form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
+        else:
+            form = None
+        events.append({
+            'object': e,
+            'form': form,
+        })
+    return {
+        'events': events,
+    }
+
+@login_required
+def sprint(request, sid):
+    e = get_object_or_404(models.Sprint, pk=sid)
+    if request.user != e.user and not request.user.is_superuser:
+        return http.HttpResponseForbidden()
+
+    if request.method != 'POST':
+        return http.HttpResponseNotAllowed(('POST',))
+
+    form = p3forms.FormSprint(instance=e, data=request.POST, prefix='f%d' % (e.id,))
+    if form.is_valid():
+        form.save()
+        return http.HttpResponse('')
+    else:
+        return http.HttpResponseBadRequest(repr(form.errors))

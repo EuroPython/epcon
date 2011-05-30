@@ -173,3 +173,8 @@ class FormTicketSIM(forms.ModelForm):
         model = models.TicketSIM
         exclude = ('ticket',)
         fields = ('ticket_name', 'sim_type', 'plan_type', 'document',)
+
+class FormSprint(forms.ModelForm):
+    class Meta:
+        model = models.Sprint
+        exclude = ('user',)
