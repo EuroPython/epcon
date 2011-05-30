@@ -194,3 +194,7 @@ def user_coupons(user):
         else:
             output['invalid'].append(c)
     return output
+
+@register.inclusion_tag('assopy/render_profile_last_block.html', takes_context=True)
+def render_profile_last_block(context):
+    return context
