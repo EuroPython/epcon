@@ -118,4 +118,10 @@ class Donation(models.Model):
     def __unicode__(self):
         return '%s donation of %s' % (self.user.name(), self.date)
 
+class Sprint(models.Model):
+    user = models.ForeignKey('assopy.User')
+    conference = models.ForeignKey('conference.Conference')
+    title = models.CharField(max_length=150)
+    abstract = models.TextField(blank=True)
+
 import p3.listeners
