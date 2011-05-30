@@ -124,4 +124,8 @@ class Sprint(models.Model):
     title = models.CharField(max_length=150)
     abstract = models.TextField(blank=True)
 
+class SprintPresence(models.Model):
+    sprint = models.ForeignKey(Sprint)
+    user = models.ForeignKey('assopy.User')
+
 import p3.listeners
