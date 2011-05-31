@@ -1265,7 +1265,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
             'type': 'hhmm',
             'time': c,
             'size': size(c, 0),
-            'events': len(timetable.eventsAtTime(c)),
+            'events': len(timetable.changesAtTime(c)),
         })
 
     for irow, _ in enumerate(timetable.byRows()):

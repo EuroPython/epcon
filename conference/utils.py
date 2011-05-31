@@ -267,7 +267,7 @@ class TimeTable(object):
     def eventsAtTime(self, start, include_reference=False):
         """
         ritorna le righe che contengono un Event (e un Reference se
-        include_reference=True) al tempo passata.
+        include_reference=True) al tempo passato.
         """
         output = []
         for r in self.rows:
@@ -277,6 +277,18 @@ class TimeTable(object):
                 continue
             if include_reference or isinstance(cell, TimeTable.Event):
                 output.append(cell)
+        return output
+
+    def changesAtTime(self, start):
+        """
+        ritorna le righe che introducono un cambiamento al tempo passato.
+        """
+        output = []
+        for key, item in self._data.items():
+            if not isinstance(item, TimeTable.Event):
+                continue
+            if key[0] == start or self.sumTime(key[0], timedelta(seconds=self.slot.seconds*item.columns)) == start:
+                output.append(key)
         return output
 
     def byRows(self):
