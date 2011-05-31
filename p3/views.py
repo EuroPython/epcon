@@ -540,7 +540,7 @@ def sim_report(request):
     tickets = Ticket.objects.filter(
         orderitem__order___complete=True,
         fare__in=Fare.objects.filter(code__startswith='SIM'),
-    ).select_related('p3_conference_sim')
+    ).order_by('orderitem__order').select_related('p3_conference_sim')
     return {
         'tickets': tickets,
     }
