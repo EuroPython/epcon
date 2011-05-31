@@ -178,6 +178,11 @@ button {
 }
 
 
+button.negate {
+	background: url("../i/badge-n.png") repeat-x scroll center top #ABA190;
+	border-color: #ABA18F;
+	text-shadow: 1px 1px 1px #634646;
+}
 /*
  * un layout più compatto per i booleanfield:
  *

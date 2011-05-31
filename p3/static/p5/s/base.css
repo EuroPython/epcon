@@ -1491,3 +1491,11 @@ section.countdown {
     line-height: 40px;
     background: #FFCF08;
 }
+
+.sprints > div {
+    margin-bottom: 60px;
+}
+
+.sprints h3 .user-attend {
+    color: green;
+}

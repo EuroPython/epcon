@@ -5,14 +5,14 @@
         {% if data.form %} <a href="#" class="trigger-overlay" rel="div[data-form={{ data.form.prefix }}]">(edit)</a>{% endif %}
     </h2>
     <p class="abstract" style="display:none">{{ data.object.abstract|linebreaksbr }}</p>
-    <h3>{{ data.attendees }} {% if data.user_attend %}(including myself) {% endif %}people want to take part in this sprint</h3>
+    <h3>{{ data.attendees }} people want to take part in this sprint {% if data.user_attend %}<span class="user-attend">(including you)</span>{% endif %}</h3>
     <form class="form-user-attend" action="{% url p3-sprint sid=data.object.id %}" method="post">{% csrf_token %}
         <input type="hidden" name="user-attend" />
         <fieldset class="border">
         {% if not data.user_attend %}
         <button type="submit">I will attend this sprint</button>
         {% else %}
-        <button type="submit">Cancel my registration</button>
+        <button type="submit" class="negate">Cancel my registration</button>
         {% endif %}
         </fieldset>
     </form>

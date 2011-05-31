@@ -2,20 +2,30 @@
 {% load i18n assopy_tags %}
 {% block MAIN_CONTENT %}
 <div class="cms">
-    <h1>Sprints page</h1>
-    <ol class="sprints">
+    <h1>List of sprints</h1>
+    <div class="sprints">
     {% for data in events %}
-        <li>{% include "p3/render_single_sprint.html" %}</li>
+        <div class="span-6 {% cycle "" "last" %}">
+        {% include "p3/render_single_sprint.html" %}
+        </div>
     {% endfor %}
-    </ol>
+    </div>
+    <div class="home">
+        <hr />
+    </div>
+    <div class="badge">
+      <b>Have you got an idea?</b>
+      <h5><a href="{% url p3-sprint-submission %}">Submit a sprint</a></h5>
+    </div>
 </div>
 <script type="text/javascript">//<![CDATA[
     $('.sprints form').live('submit', function(e) {
         e.preventDefault();
         var form = $(this);
-        var wrapper = form.parents('li');
+        var target = form.parents('.sprint');
+        var wrapper = target.parent();
         form.ajaxSubmit({
-            target: wrapper.children('.sprint'),
+            target: target,
             replaceTarget: true,
             success: function() {
                 if($('textarea', form).length)
