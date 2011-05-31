@@ -1,0 +1,35 @@
+{% extends "p3/base.html" %}
+{% load i18n assopy_tags %}
+{% block MAIN_CONTENT %}
+<div class="cms">
+    <h1>Ticket SIM</h1>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Attendee</th>
+            <th>SIM type</th>
+            <th>Plan type</th>
+            <th>Document</th>
+        </tr>
+        {% for t in tickets %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            {% if t.p3_conference_sim %}
+            <td>{{ t.name }}</td>
+            <td>{{ t.p3_conference_sim.get_sim_type_display }}</td>
+            <td>{{ t.p3_conference_sim.get_plan_type_display }}</td>
+            <td>
+                {% if t.p3_conference_sim.document %}
+                <a href="{{ t.p3_conference_sim.document.url }}">document</a>
+                {% else %}
+                <strong>missing</strong>
+                {% endif %}
+            </td>
+            {% else %}
+            <td colspan="4"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

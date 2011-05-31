@@ -437,7 +437,7 @@ def calculator(request):
     return output
 
 def secure_media(request, path):
-    if not request.user.is_superuser:
+    if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
         fname = os.path.splitext(os.path.basename(path))[0]
         if fname != request.user.username:
             return http.HttpResponseForbidden()
@@ -530,4 +530,17 @@ def sprint(request, sid):
             'attendees': len(attendees),
             'user_attend': request.user.id in attendees,
         },
+    }
+
+@login_required
+@render_to('p3/sim_report.html')
+def sim_report(request):
+    if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
+        return http.HttpResponseForbidden()
+    tickets = Ticket.objects.filter(
+        orderitem__order___complete=True,
+        fare__in=Fare.objects.filter(code__startswith='SIM'),
+    ).select_related('p3_conference_sim')
+    return {
+        'tickets': tickets,
     }
