@@ -452,6 +452,7 @@ def sprint_submission(request):
         if form.is_valid():
             s = form.save(commit=False)
             s.user = request.user.assopy_user
+            s.conference_id = settings.CONFERENCE_CONFERENCE
             s.save()
             messages.info(request, 'Your sprint has been submitted, thank you!')
             return HttpResponseRedirectSeeOther(reverse('assopy-profile'))

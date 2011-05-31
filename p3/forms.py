@@ -177,4 +177,4 @@ class FormTicketSIM(forms.ModelForm):
 class FormSprint(forms.ModelForm):
     class Meta:
         model = models.Sprint
-        exclude = ('user',)
+        exclude = ('user', 'conference',)
