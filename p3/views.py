@@ -455,7 +455,7 @@ def sprint_submission(request):
             s.conference_id = settings.CONFERENCE_CONFERENCE
             s.save()
             messages.info(request, 'Your sprint has been submitted, thank you!')
-            return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
+            return HttpResponseRedirectSeeOther(reverse('p3-sprint-submission'))
 
     else:
         form = p3forms.FormSprint()
