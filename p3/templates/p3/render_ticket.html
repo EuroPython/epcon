@@ -1,20 +1,26 @@
 {% load assopy_tags conference i18n p3 %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
-    {% if ocomplete or ticket.orderitem.order.method == "admin" %}
-    <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
-        {% if user != ticket.user %}
-        &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
-        {% else %}
-        &nbsp;
-        {% endif %}
-    </div>
+    {% if ticket.frozen %}
+        <div class="ticket-status inactive">
+            &darr; {% blocktrans %}Ticket frozen; editing disabled{% endblocktrans %}
+        </div>
     {% else %}
-    <div class="ticket-status inactive">
-        {% with ticket.orderitem.order.code as code %}
-        &darr; {% blocktrans %}Ticket not active; waiting for wire transfer (order {{ code }}){% endblocktrans %}
-        {% endwith %}
-    </div>
+        {% if ocomplete or ticket.orderitem.order.method == "admin" %}
+        <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
+            {% if user != ticket.user %}
+            &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
+            {% else %}
+            &nbsp;
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="ticket-status inactive">
+            {% with ticket.orderitem.order.code as code %}
+            &darr; {% blocktrans %}Ticket not active; waiting for wire transfer (order {{ code }}){% endblocktrans %}
+            {% endwith %}
+        </div>
+        {% endif %}
     {% endif %}
 
     <div class="preview">
@@ -29,41 +35,40 @@
             {% endfor %}
         </div>
         
-        {% if blocked %}
-        <div class="ticket-commands ticket-assigned-to">
-            <p>
-            {% with form.assigned_to|field_value as assigned_to %}
-            {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} | <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
-            {% endwith %}
-            </p>
-        </div>
-        {% else %}
-        <div class="ticket-commands">
-            <p>
-                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
-                {% if user == ticket.user %}
-                | <a href="#" class="button mini assign-button">{% trans "Assign to user" %}</a>
-                {% endif %}
-            </p>
-        </div>
+        {% if not ticket.frozen %}
+            {% if blocked %}
+            <div class="ticket-commands ticket-assigned-to">
+                <p>
+                {% with form.assigned_to|field_value as assigned_to %}
+                {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} | <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
+                {% endwith %}
+                </p>
+            </div>
+            {% else %}
+            <div class="ticket-commands">
+                <p>
+                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
+                    {% if user == ticket.user %}
+                    | <a href="#" class="button mini assign-button">{% trans "Assign to user" %}</a>
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
         {% endif %}
     {% else %}
         {% if ticket.fare.code == 'SIM01' %}
-        <h2>{{ ticket.fare.name }}</h2>
-        <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
-        <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
-        {% if not form.document|field_value %}
-        <div class="ticket-warning">INCOMPLETE TICKET!<br />Please edit and add a document</div>
-        {% endif %}
-        <div class="ticket-commands">            
-            <p>
-                <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
-            </p>
-        </div>
+            <h2>{{ ticket.fare.name }}</h2>
+            <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
+            <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
+            {% if not form.document|field_value %}
+            <div class="ticket-warning">INCOMPLETE TICKET!<br />Please edit and add a document</div>
+            {% endif %}
         {% else %}
-        <h2>{{ ticket.fare.name }}</h2>
-        <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
-        <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
+            <h2>{{ ticket.fare.name }}</h2>
+            <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
+            <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
+        {% endif %}
+        {% if not ticket.frozen %}
         <div class="ticket-commands">            
             <p>
                 <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
@@ -111,6 +116,7 @@
     </div>
 
     <div class="overlay">
+        {% if not ticket.frozen %}
         <form action="{% url p3-ticket tid=ticket.id %}" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
         {% if ticket.fare.ticket_type == "conference" %}
             <fieldset>
@@ -144,6 +150,7 @@
             </fieldset>
         {% endif %}
         </form>
+        {% endif %}
     </div>
     <script type='text/javascript'>
         try {

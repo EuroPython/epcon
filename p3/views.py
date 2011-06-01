@@ -114,6 +114,9 @@ def ticket(request, tid):
         if assigned_to is None or assigned_to != request.user.email:
             raise http.Http404()
     if request.method == 'POST':
+        if t.frozen:
+            return http.HttpResponseForbidden()
+
         if t.fare.ticket_type == 'conference':
             form = p3forms.FormTicket(
                 instance=p3c,
