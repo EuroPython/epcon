@@ -110,14 +110,21 @@ class TicketConferenceAdmin(TicketAdmin):
                 else:
                     for v in data:
                         days[v] += 1
+            compiled_count = compiled.count()
+            not_compiled_count = not_compiled.count() + days['x']
             for day, count in days.items():
                 scode = 'days_%s' % day
                 if stat in (None, scode):
+                    if day != 'x':
+                        info = 'proiezione: %.1f' % (float(count) / compiled_count  * (compiled_count + not_compiled_count))
+                    else:
+                        info = ''
                     stats.append({
                         'code': scode,
                         'title': 'Giorno di presenza: %s' % day,
                         'count': count,
                         'have_details': False,
+                        'additional_info': info,
                     })
 
         if stat in (None, 'sim_not_compiled'):
