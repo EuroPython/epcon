@@ -3,12 +3,13 @@
 {% block MAIN_CONTENT %}
 <div id="sim-report" class="cms">
     <h1>Ticket SIM</h1>
+    <h4>Ricarica iniziale per tutti: €15. Tariffe da attivare per tutti: Internet No Stop, Call your Country. Credito residuo: €6</h4>
     <table>
         <tr>
             <th>#</th>
             <th>Attendee</th>
             <th>SIM type</th>
-            <th>Plan type</th>
+            <th>Internet</th>
             <th>Document</th>
             <th>&nbsp;</th>
         </tr>
@@ -18,7 +19,7 @@
             {% if t.p3_conference_sim %}
             <td>{{ t.name }}</td>
             <td>{{ t.p3_conference_sim.get_sim_type_display }}</td>
-            <td>{{ t.p3_conference_sim.get_plan_type_display }}</td>
+            <td>{% if t.p3_conference_sim.plan_type == "std" %}Internet No Stop{% else %}Blackberry No Stop{% endif %}</td>
             <td>
                 {% if t.p3_conference_sim.document %}
                 <a href="{{ t.p3_conference_sim.document.url }}">document</a>
