@@ -26,6 +26,7 @@
                 {{ form.order_type|field }}
                 <p>{% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}</p>
             </fieldset>
+            {% if COUNTDOWN.conference > 0 %}
             <fieldset class="tickets">
                 <legend>{% trans "Conference tickets" %}</legend>
                 <p class="vat-info">{% trans "All prices are 20% VAT included." %}</p>
@@ -110,6 +111,7 @@
                     {% trans "Conference tickets total (VAT inc.)" %}: <b>€ 0</b>
                 </div> 
             </fieldset>
+            {% endif %}
             {% comment %}
             <fieldset class="tickets">
                 
