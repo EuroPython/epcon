@@ -1499,3 +1499,7 @@ section.countdown {
 .sprints h3 .user-attend {
     color: green;
 }
+
+#sim-report .frozen td {
+    color: green;
+}

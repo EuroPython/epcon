@@ -1,7 +1,7 @@
 {% extends "p3/base.html" %}
 {% load i18n assopy_tags %}
 {% block MAIN_CONTENT %}
-<div class="cms">
+<div id="sim-report" class="cms">
     <h1>Ticket SIM</h1>
     <table>
         <tr>
@@ -10,9 +10,10 @@
             <th>SIM type</th>
             <th>Plan type</th>
             <th>Document</th>
+            <th>&nbsp;</th>
         </tr>
         {% for t in tickets %}
-        <tr>
+        <tr class="{% if t.frozen %}frozen{% endif %}">
             <td>{{ forloop.counter }}</td>
             {% if t.p3_conference_sim %}
             <td>{{ t.name }}</td>
@@ -25,8 +26,14 @@
                 <strong>missing</strong>
                 {% endif %}
             </td>
+            <td>
+                <form action="{% url p3-sim-report %}" method="POST">{% csrf_token %}
+                    <input type="hidden" name="ticket" value="{{ t.id }}" />
+                    <input type="submit" value="{% if t.frozen %}unfreeze{% else %}freeze{% endif %}" />
+                </form>
+            </td>
             {% else %}
-            <td colspan="4"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
+            <td colspan="5"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
             {% endif %}
         </tr>
         {% endfor %}

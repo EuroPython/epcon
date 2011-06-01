@@ -544,6 +544,10 @@ def sim_report(request):
         orderitem__order___complete=True,
         fare__in=Fare.objects.filter(code__startswith='SIM'),
     ).order_by('orderitem__order').select_related('p3_conference_sim')
+    if request.method == 'POST':
+        t = tickets.get(id=request.POST['ticket'])
+        t.frozen = not t.frozen
+        t.save()
     return {
         'tickets': tickets,
     }

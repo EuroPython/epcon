@@ -19,5 +19,5 @@ urlpatterns = patterns('',
     url(r'^sprints/$', 'p3.views.sprints', name='p3-sprints'),
     url(r'^sprints/(?P<sid>\d+)/$', 'p3.views.sprint', name='p3-sprint'),
 
-    url(r'^sim_report/$', 'p3.views.sim_report'),
+    url(r'^sim_report/$', 'p3.views.sim_report', name='p3-sim-report'),
 )
