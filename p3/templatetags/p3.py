@@ -25,6 +25,7 @@ from django.utils.safestring import mark_safe
 
 from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
+from p3 import models
 
 import twitter
 from fancy_tag import fancy_tag
@@ -332,8 +333,12 @@ def tickets_url(user):
 
 @register.filter
 def ticket_user(ticket):
-    if ticket.p3_conference.assigned_to:
+    try:
+        p3c = ticket.p3_conference
+    except models.TicketConference.DoesNotExist:
+        p3c = None
+    if p3c and p3c.assigned_to:
         from assopy.models import User
-        return User.objects.get(user__email=ticket.p3_conference.assigned_to)
+        return User.objects.get(user__email=p3c.assigned_to)
     else:
         return ticket.orderitem.order.user

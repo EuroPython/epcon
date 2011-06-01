@@ -7,7 +7,7 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import render_to_response, redirect
 from conference.admin import TicketAdmin
 from conference.models import Ticket
@@ -119,6 +119,21 @@ class TicketConferenceAdmin(TicketAdmin):
                         'count': count,
                         'have_details': False,
                     })
+
+        if stat in (None, 'sim_not_compiled'):
+            tickets = Ticket.objects.filter(
+                orderitem__order___complete=True,
+                fare__code__startswith='SIM',
+                fare__conference=conference,
+            ).select_related('p3_conference_sim', 'orderitem__order__user__user')
+            qs = tickets.exclude(p3_conference_sim=None).filter(Q(name='')|Q(p3_conference_sim__document=None)) | tickets.filter(p3_conference_sim=None)
+            stats.append({
+                'code': 'sim_not_compiled',
+                'title': 'Biglietti SIM non completi',
+                'count': qs.count(),
+                'have_details': True,
+                'details': qs,
+            })
         return stats
 
     def stats_list(self, request):
@@ -167,8 +182,12 @@ class TicketConferenceAdmin(TicketAdmin):
 
                 emails = {}
                 for ticket in stats[0]['details']:
-                    if ticket.p3_conference and ticket.p3_conference.assigned_to:
-                        emails[ticket.p3_conference.assigned_to] = User.objects.get(user__email=ticket.p3_conference.assigned_to)
+                    try:
+                        p3c = ticket.p3_conference
+                    except models.TicketConference.DoesNotExist:
+                        p3c = None
+                    if p3c and p3c.assigned_to:
+                        emails[p3c.assigned_to] = User.objects.get(user__email=p3c.assigned_to)
                     else:
                         emails[ticket.orderitem.order.user.user.email] = ticket.orderitem.order.user
                 messages = []
@@ -228,9 +247,13 @@ sent to:
         writer = csv.DictWriter(buff, columns)
         writer.writerow(dict(zip(columns, columns)))
         for ticket in stats[0]['details']:
+            try:
+                p3c = ticket.p3_conference
+            except models.TicketConference.DoesNotExist:
+                p3c = None
             row = {
                 'attendee': ticket.name,
-                'attendee_email': ticket.p3_conference.assigned_to if ticket.p3_conference else '',
+                'attendee_email': p3c.assigned_to if p3c else '',
                 'buyer': ticket.orderitem.order.user.name(),
                 'buyer_email': ticket.orderitem.order.user.user.email,
                 'order': ticket.orderitem.order.code,
