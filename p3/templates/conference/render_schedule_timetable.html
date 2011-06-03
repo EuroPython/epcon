@@ -110,20 +110,11 @@
         $(function() {
             setup_trigger_overlay($('.event-trigger-overlay'), table);
         });
-        /*
-         * Calcolo della dimensione e posizionamento tramite margini dei div
-         * ruotati di 90 gradi via css; La rotazione avviene intorno al centro
-         * dell'elemento, quindi devo posizionarlo al centro del contenitore.
-         */
         $('.wrapper', table).each(function() {
             var w = $(this);
             var evt = w.parents('.event');
             if(evt.hasClass('t-break') || evt.hasClass('t-special')) {
-                var width = evt.height();
-                w.width(width)
-                    .css('position', 'static')
-                    .css('margin-left', -(width-80) / 2)
-                    .css('margin-top', (width-80) / 2)
+                return;
             }
             else {
                 w.css('top', evt.height() / 2 - w.height() / 2);

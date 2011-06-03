@@ -259,13 +259,13 @@ div.schedule .t-break .custom-event {
 
 div.schedule .t-special .wrapper,
 div.schedule .t-break .wrapper {
-    /*
-     * utilizzo un pezzetto di js per posizionare il .wrapper al centro del suo
-     * parent in modo tale che la rotazione funzioni per bene
-     */
-    position: static;
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
+     position: absolute;
+     top: 0;
+     bottom: 0;
+    -webkit-transform: rotate(-90deg) translate(0, 45%);
+    -moz-transform: rotate(-90deg) translate(0, 45%);
+    -o-transform: rotate(-90deg) translate(0, 45%);
+    -ms-transform: rotate(-90deg) translate(0, 45%);
 }
 
 div.schedule .t-teaser .wrapper {
