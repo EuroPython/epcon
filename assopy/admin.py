@@ -42,7 +42,7 @@ class OrderAdminForm(forms.ModelForm):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('code', '_user', '_email', 'card_name', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
     list_select_related = True
-    list_filter = ('method',)
+    list_filter = ('method', '_complete',)
     list_per_page = 20
     search_fields = ('code', 'card_name', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
     date_hierarchy = 'created'
