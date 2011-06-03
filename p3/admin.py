@@ -20,6 +20,7 @@ from cStringIO import StringIO
 class TicketConferenceAdmin(TicketAdmin):
     list_display = TicketAdmin.list_display + ('_order', '_assigned',)
     list_filter = ('orderitem__order___complete', 'fare__code',)
+    search_fields = ('user__first_name', 'user__last_name', 'user__email')
     
     def _order(self, o):
         return o.orderitem.order.code
