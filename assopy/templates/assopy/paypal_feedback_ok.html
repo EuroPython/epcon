@@ -26,9 +26,10 @@
             {% url assopy-tickets as u %}
             {% blocktrans %}
             <p>Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address.</p>
-            <p>Now you can manage <a href="{{ u }}">your tickets</a> directly from your profile.</p>
+            <div class="badge"><h5><a href="/p3/tickets/">Edit your tickets</a></h5></div>
             {% endblocktrans %}
         </div>
     </div>
     {% endif %}
 {% endblock %}
+
