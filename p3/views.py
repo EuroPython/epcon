@@ -21,6 +21,7 @@ from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
 from conference.models import Fare, Event, Ticket, Schedule
 from email_template import utils
 
+import datetime
 import logging
 import mimetypes
 import os.path
@@ -393,6 +394,25 @@ def schedule(request, conference):
         'conference': conference,
         'schedules': schedules,
         'form': form,
+    }
+
+@login_required
+@render_to('p3/my_schedule.html')
+def my_schedule(request):
+    qs = Event.objects\
+        .filter(eventinterest__user=request.user, eventinterest__interest__gt=0)\
+        .filter(schedule__conference=settings.CONFERENCE_CONFERENCE)\
+        .select_related('schedule', 'talk')
+
+    events = []
+    for e in qs:
+        events.append({
+            'time': datetime.datetime.combine(e.schedule.date, e.start_time),
+            'event': e,
+        })
+    return {
+        'conference': settings.CONFERENCE_CONFERENCE,
+        'events': events,
     }
 
 @render_to_json

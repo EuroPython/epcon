@@ -22,7 +22,11 @@ nav {
     display: none !important;
 }
 
-.schedule {
+.countdown {
+    display: none;
+}
+
+div.schedule {
     page-break-inside: avoid;
     page-break-after: always;
 }
@@ -41,4 +45,17 @@ nav {
 
 .sponsors {
     display: none;
+}
+
+a {
+    border: 0;
+    text-decoration: none;
+}
+
+.cms h1, .page h1 {
+    margin: 0 0 10px 0;
+}
+
+.cms h2 {
+    margin: 10px 0;
 }

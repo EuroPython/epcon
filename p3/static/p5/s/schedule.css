@@ -229,13 +229,20 @@ div.schedule .event .talk-level {
     margin: 20px 8px 0 0;
     background: transparent;
 }
-div.schedule .event .talk-level.beginner {
+ul.schedule .event .talk-level {
+    display: inline-block;
+    height: 20px;
+    width: 10px;
+    margin: 0 4px;
+    background: transparent;
+}
+.schedule .event .talk-level.beginner {
     background: #c9f76f;
 }
-div.schedule .event .talk-level.intermediate {
+.schedule .event .talk-level.intermediate {
     background: #679b00;
 }
-div.schedule .event .talk-level.advanced {
+.schedule .event .talk-level.advanced {
     background: #a68000;
 }
 div.schedule .custom-event {

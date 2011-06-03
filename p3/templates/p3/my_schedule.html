@@ -1,0 +1,36 @@
+{% extends "p3/base.html" %}
+{% load conference %}
+{% block MAIN_CONTENT %}
+<div class="cms">
+    <h1>My Europython schedule</h1>
+    {% regroup events|dictsort:"time" by event.schedule.date as grouped %}
+    {% for data in grouped %}
+    <h2>{{ data.grouper }}</h2>
+    <ul class="schedule">
+    {% for row in data.list %}
+    {% with row.event as e %}
+        <li class="event">
+            <strong>{{ e.start_time|time:"H:i" }}</strong> &mdash;
+            {% if e.talk %}
+            <div class="talk-level {{ e.talk.level }}">&nbsp;</div>
+            {% with e|event_has_track:"teaser" as teaser %}
+                <a
+                    href="{% url conference-talk slug=e.talk.slug %}"
+                    class="trigger-overlay"
+                    {% if teaser %}
+                    data-overlay-onload="$('#global-overlay h1').prepend('<a href=&quot;/training#teaser-talks&quot;>Teaser Talk:</a> ')"
+                    {% endif %}>
+                    {% if teaser %}[Teaser Talk] {% endif %}{{ e.talk.title }}</a>
+                by
+                {% for s in e.talk.get_all_speakers %}
+                <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endwith %}
+            {% endif %}
+        </li>
+    {% endwith %}
+    {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
+{% endblock %}
