@@ -238,17 +238,23 @@ div.schedule .event .talk-level.intermediate {
 div.schedule .event .talk-level.advanced {
     background: #a68000;
 }
+div.schedule .custom-event {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+    color: #4895A3;
+}
 div.schedule .t-special, 
 div.schedule .t-break {
     vertical-align: middle;
     text-align: center;
-    color: #301d1d;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 12px;
 	padding: 0;    
     background: transparent url(../i/empty-track.png) bottom left;		    
     z-index: 1;
+}
+div.schedule .t-special .custom-event,
+div.schedule .t-break .custom-event {
+    color: #301d1d;
 }
 
 div.schedule .t-special .wrapper,
