@@ -1,8 +1,4 @@
-{% with request.user.assopy_user.sprint_set as sprints %}
-{% if sprints %}
-<h4>Sprints</h4>
-<a href="{% url p3-sprints %}">check the sprint page</a>
-{% endif %}
 <h4>The conference</h4>
-<a href="{% url p3-my-schedule %}">my schedule</a>
-{% endwith %}
+<p>
+    <a href="{% url p3-my-schedule %}">my schedule</a>
+</p>
