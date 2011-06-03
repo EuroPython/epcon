@@ -1318,3 +1318,15 @@ def name_abbrv(name):
         last_name = splitted[-2] + ' ' + last_name
 
     return '%s. %s' % (name[0], last_name)
+
+@register.filter
+def main_event(events):
+    for e in events:
+        if not event_has_track(e, 'teaser'):
+            return e
+
+@register.filter
+def teaser_event(events):
+    for e in events:
+        if event_has_track(e, 'teaser'):
+            return e
