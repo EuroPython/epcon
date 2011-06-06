@@ -1,0 +1,8 @@
+{% load conference p3 %}
+<ul>
+{% for line in timetable.byTimes %}
+{% if line.1.0.data.ref %}
+<li>{{ line.0 }} - {{ line.1.0.data.ref }}</li>
+{% endif %}
+{% endfor %}
+</ul>

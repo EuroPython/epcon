@@ -9,6 +9,7 @@
         <p>{{ schedule.description|safe }}</p>
         {% endif %}
     </div>
+    {% render_schedule_timetable_as_list schedule timetable end="09:00" %}
     {% render_schedule_timetable schedule timetable start="09:00" end="14:30" %}
     <h1 class="schedule-date afternoon">{{ schedule.date|date:"l d F Y" }} <span>Afternoon</span></h1>
     <div class="cms">
@@ -17,7 +18,8 @@
         <p>{{ schedule.description|safe }}</p>
         {% endif %}
     </div>
-    {% render_schedule_timetable schedule timetable start="14:30" %}
+    {% render_schedule_timetable schedule timetable start="14:30" end="20:00" %}
+    {% render_schedule_timetable_as_list schedule timetable start="21:00" %}
 {% else %}
     <h1 class="schedule-date">{{ schedule.date|date:"l d F Y" }}</h1>
     {% render_schedule_timetable schedule timetable collapse="always" %}
