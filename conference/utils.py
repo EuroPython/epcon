@@ -306,3 +306,17 @@ class TimeTable(object):
             output.append(line)
 
         return output
+
+    def byTimes(self):
+        output = []
+        data = self._data
+        step = self.start
+        while step < self.end:
+            rows = []
+            line = [ step, rows ]
+            for row in self.rows:
+                rows.append({'row': row, 'data': data.get((step, row))})
+            output.append(line)
+            step = self.sumTime(step, self.slot)
+
+        return output

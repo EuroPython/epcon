@@ -588,6 +588,25 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
     })
     return render_to_string('conference/render_schedule_timetable.html', ctx)
 
+@fancy_tag(register, takes_context=True)
+def render_schedule_timetable_as_list(context, schedule, timetable, start=None, end=None):
+    if start:
+        start = datetime.strptime(start, '%H:%M').time()
+    else:
+        start = None
+    if end:
+        end = datetime.strptime(end, '%H:%M').time()
+    else:
+        end = None
+    if start or end:
+        timetable = timetable.slice(start, end)
+    ctx = Context(context)
+    ctx.update({
+        'schedule': schedule,
+        'timetable': timetable,
+    })
+    return render_to_string('conference/render_schedule_timetable_as_list.html', ctx)
+
 @register.filter
 def event_has_track(event, track):
     return track in set(parse_tag_input(event.track))
