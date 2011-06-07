@@ -134,7 +134,7 @@ class TicketConferenceAdmin(TicketAdmin):
                 fare__code__startswith='SIM',
                 fare__conference=conference,
             ).select_related('p3_conference_sim', 'orderitem__order__user__user')
-            qs = tickets.exclude(p3_conference_sim=None).filter(Q(name='')|Q(p3_conference_sim__document=None)) | tickets.filter(p3_conference_sim=None)
+            qs = tickets.exclude(p3_conference_sim=None).filter(Q(name='')|Q(p3_conference_sim__document='')) | tickets.filter(p3_conference_sim=None)
             stats.append({
                 'code': 'sim_not_compiled',
                 'title': 'Biglietti SIM non completi',
