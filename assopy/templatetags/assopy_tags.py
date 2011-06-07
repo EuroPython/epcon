@@ -5,10 +5,12 @@ from assopy import settings
 from django import forms
 from django import template
 from django.conf import settings as dsettings
+from django.core import paginator
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 from urllib import quote_plus
+from fancy_tag import fancy_tag
 
 register = template.Library()
 
@@ -198,3 +200,26 @@ def user_coupons(user):
 @register.inclusion_tag('assopy/render_profile_last_block.html', takes_context=True)
 def render_profile_last_block(context):
     return context
+
+@fancy_tag(register, takes_context=True)
+def paginate(context, qs, count=20):
+    pages = paginator.Paginator(qs, int(count))
+    try:
+        ix = int(context['request'].GET.get('page', 1))
+    except ValueError:
+        ix = 1
+    try:
+        return pages.page(ix)
+    except:
+        ix = 1 if ix < 1 else pages.num_pages
+        return pages.page(ix)
+
+@fancy_tag(register, takes_context=True)
+def add_page_number_to_query(context, page, get=None):
+    if get is None:
+        get = context['request'].GET.copy()
+    else:
+        get = dict(get)
+    get['page'] = page
+    return urllib.urlencode(get)
+
