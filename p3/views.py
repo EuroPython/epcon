@@ -497,13 +497,16 @@ def sprints(request):
             .values('sprint')\
             .annotate(c=Count('pk'))
     )
-    user_attends = set(
-       x['sprint'] for x in 
-       models.SprintPresence.objects\
-            .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
-            .values('sprint')\
-            .filter(user=request.user)\
-    )
+    if request.user.is_authenticated():
+        user_attends = set(
+           x['sprint'] for x in
+           models.SprintPresence.objects\
+                .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
+                .values('sprint')\
+                .filter(user=request.user)\
+        )
+    else:
+        user_attends = set()
     for e in models.Sprint.objects.filter(conference=settings.CONFERENCE_CONFERENCE).order_by('title'):
         if request.user.is_superuser or request.user == e.user:
             form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
