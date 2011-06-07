@@ -136,8 +136,14 @@ class TimeTable(object):
         self.errors = []
 
     def slice(self, start=None, end=None):
+        if not start:
+            start = self.start
+        if not end:
+            end = self.end
+        if end < start:
+            start, end = end, start
         t2 = TimeTable(
-            (start if start else self.start, end if end else self.end),
+            (start, end),
             self.rows,
             self.slot.seconds/60,
         )
