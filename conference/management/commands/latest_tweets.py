@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import json
+import signal
 import sys
 from optparse import make_option
 
@@ -7,6 +8,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 from conference import utils
 from conference import settings
+
+signal.alarm(5*60)
 
 class Command(BaseCommand):
     """
