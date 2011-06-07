@@ -32,7 +32,7 @@ class Command(BaseCommand):
         codes = set(c['code'] for c in Coupon.objects.filter(conference=conference.code).values('code'))
         for spk, tt in speakers.items():
             while True:
-                code = ''.join(random.sample(string.letters, 6))
+                code = ''.join(random.sample(string.uppercase, 6))
                 if code not in codes:
                     codes.add(code)
                     break
