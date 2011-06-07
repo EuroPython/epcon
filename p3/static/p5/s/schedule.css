@@ -405,3 +405,14 @@ div.schedule .tools > div.talk-interest {
     right: 30px;
     bottom: 20px;
 }
+
+div.schedule-list {
+    background: #E1DBC5;
+    border: 10px solid #E1DBC5;
+    margin: 0 0 20px 0;
+    font-size: 1.3em;
+    text-align: center;
+}
+.schedule-list  li {
+    margin: 0 0 10px 0;
+}

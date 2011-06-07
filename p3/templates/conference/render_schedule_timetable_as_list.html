@@ -1,8 +1,10 @@
 {% load conference p3 %}
-<ul>
-{% for line in timetable.byTimes %}
-{% if line.1.0.data.ref %}
-<li>{{ line.0 }} - {{ line.1.0.data.ref }}</li>
-{% endif %}
-{% endfor %}
-</ul>
+<div class="schedule-list">
+    <ul class="schedule">
+        {% for line in timetable.byTimes %}
+        {% if line.1.0.data.ref %}
+        <li class="event"><strong>{{ line.0|time:"H:i" }}</strong> &mdash; {{ line.1.0.data.ref.custom|safe }}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
