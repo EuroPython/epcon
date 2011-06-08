@@ -319,3 +319,24 @@ def ticket_user(ticket):
         return User.objects.get(user__email=p3c.assigned_to)
     else:
         return ticket.orderitem.order.user
+
+@register.filter
+def com_com_registration(user):
+    url = 'https://hotspot.com-com.it/signup/?'
+    name = user.name()
+    try:
+        fn, ln = name.split(' ', 1)
+    except ValueError:
+        fn = name
+        ln = ''
+    params = {
+        'autofill': 'yes',
+        'firstname': fn,
+        'lastname': ln,
+        'email': user.user.email,
+    }
+    if user.country:
+        params['nationality'] = user.country.pk
+    if user.phone and user.phone.startswith('+39'):
+        params['ita_mobile'] = user.phone
+    return url + urllib.urlencode(params)
