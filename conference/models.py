@@ -42,6 +42,16 @@ class Conference(models.Model):
     def __unicode__(self):
         return self.code
 
+    def days(self):
+        output = []
+        if self.conference_start and self.conference_end:
+            d = self.conference_start
+            step = datetime.timedelta(days=1)
+            while d<= self.conference_end:
+                output.append(d)
+                d += step
+        return output
+
     def clean(self):
         if self.conference_start and self.conference_end:
             if self.conference_start > self.conference_end:
