@@ -9,7 +9,7 @@ from django.core import paginator
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
-from urllib import quote_plus
+import urllib
 from fancy_tag import fancy_tag
 
 register = template.Library()
@@ -112,7 +112,7 @@ def render_janrain_box(context, next=None, mode='embed'):
         domain = settings.JANRAIN['domain']
         if not domain.endswith('/'):
             domain += '/'
-        u = '%sopenid/embed?token_url=%s' % (domain, quote_plus(dsettings.DEFAULT_URL_PREFIX + reverse('assopy-janrain-token')))
+        u = '%sopenid/embed?token_url=%s' % (domain, urllib.quote_plus(dsettings.DEFAULT_URL_PREFIX + reverse('assopy-janrain-token')))
     else:
         u = None
     return {
