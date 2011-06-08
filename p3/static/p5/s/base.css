@@ -190,18 +190,19 @@ a.tag:hover {
 /* ! toggle   */
 /* ========== */
 
-dt.toggle {
-    font-weight: bold;
-    margin: 10px 0 0 0;
+.toggle {
     padding: 0 0 0 15px;
-    
     cursor: pointer;
-
     background: transparent url(../i/icon-arr-down.png) left center no-repeat;
 }
 
-dt.toggle.trigger-expanded {
+.toggle.trigger-expanded {
     background-image: url(../i/icon-arr-up.png);
+}
+
+dt.toggle {
+    font-weight: bold;
+    margin: 10px 0 0 0;
 }
 
 dt.toggle img {
@@ -215,9 +216,6 @@ dt.toggle+dd {
     margin: 10px 0 0 20px;
     
 }
-
-
-
 
 /* ============= */
 /* ! utilities   */
