@@ -39,3 +39,12 @@ TALKS_RANKING_FILE = getattr(settings, 'CONFERENCE_TALKS_RANKING_FILE', None)
 LATEST_TWEETS_FILE = getattr(settings, 'CONFERENCE_LATEST_TWEETS_FILE', None)
 
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
+
+TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', False)
+
+TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION', lambda tickets: [])
+
+import os.path
+import conference
+
+TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG', os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))

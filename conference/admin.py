@@ -13,7 +13,10 @@ from conference import models
 from conference import settings
 
 import csv
+import json
 import re
+import subprocess
+import tempfile
 from cStringIO import StringIO
 
 class ConferenceAdmin(admin.ModelAdmin):
@@ -366,6 +369,8 @@ admin.site.register(models.Fare, FareAdmin)
 
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('_name', '_buyer', '_conference', '_ticket')
+    if settings.TICKET_BADGE_ENABLED:
+        actions = ('do_ticket_badge',)
 
     def _name(self, o):
         if o.name:
@@ -386,5 +391,30 @@ class TicketAdmin(admin.ModelAdmin):
         qs = super(TicketAdmin, self).queryset(request)
         qs = qs.select_related('user', 'fare',)
         return qs
+
+    def do_ticket_badge(self, request, qs):
+        files = []
+        for group in settings.TICKET_BADGE_PREPARE_FUNCTION(qs):
+            tfile = tempfile.NamedTemporaryFile(suffix='.tar')
+            args = [settings.TICKED_BADGE_PROG, '-o', tfile.name, '-e', '0',] + list(group['args'])
+            p = subprocess.Popen(
+                args,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                close_fds=True,
+            )
+            sout, serr = p.communicate(json.dumps(group['tickets']))
+            print serr
+            tfile.seek(0)
+            files.append(tfile)
+        if len(files) == 1:
+            response = http.HttpResponse(files[0], mimetype="application/x-gzip")
+            response['Content-Disposition'] = 'attachment; filename=badge.tar.gz'
+        else:
+            # TODO zip all the tar files together
+            raise RuntimeError()
+        return response
+    do_ticket_badge.short_description = 'Ticket Badge'
 
 admin.site.register(models.Ticket, TicketAdmin)
