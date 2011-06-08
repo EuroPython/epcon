@@ -368,7 +368,9 @@ class FareAdmin(admin.ModelAdmin):
 admin.site.register(models.Fare, FareAdmin)
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('_name', '_buyer', '_conference', '_ticket')
+    list_display = ('_name', '_buyer', '_conference', '_ticket', 'ticket_type',)
+    list_editable = ('ticket_type',)
+    search_fields = ('name', 'user__first_name', 'user__last_name', 'user__email')
     if settings.TICKET_BADGE_ENABLED:
         actions = ('do_ticket_badge',)
 
