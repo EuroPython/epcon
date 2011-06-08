@@ -1494,7 +1494,10 @@ section.countdown {
     margin-bottom: 60px;
 }
 
-.sprints h3 .user-attend {
+.sprints ol {
+    margin: 10px 0;
+}
+.sprints .user-attend {
     color: green;
 }
 

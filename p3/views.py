@@ -26,6 +26,7 @@ import logging
 import mimetypes
 import os.path
 import uuid
+from collections import defaultdict
 
 log = logging.getLogger('p3.views')
 
@@ -490,13 +491,11 @@ def sprint_submission(request):
 @render_to('p3/sprints.html')
 def sprints(request):
     events = []
-    attendees = dict(
-        (x['sprint'], x['c']) for x in 
-        models.SprintPresence.objects\
-            .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
-            .values('sprint')\
-            .annotate(c=Count('pk'))
-    )
+    attendees = defaultdict(list)
+    for sp in models.SprintPresence.objects\
+                .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
+                .select_related('user__user'):
+        attendees[sp.sprint_id].append(sp.user)
     if request.user.is_authenticated():
         user_attends = set(
            x['sprint'] for x in
@@ -515,7 +514,7 @@ def sprints(request):
         events.append({
             'object': e,
             'form': form,
-            'attendees': attendees.get(e.id, 0),
+            'attendees': attendees.get(e.id, []),
             'user_attend': e.id in user_attends,
         })
     return {
@@ -548,13 +547,13 @@ def sprint(request, sid):
         form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
     else:
         form = None
-    attendees = set(x['user'] for x in models.SprintPresence.objects.filter(sprint=e).values('user'))
+    attendees = list(x.user for x in models.SprintPresence.objects.filter(sprint=e).select_related('user__user'))
     return {
         'data': {
             'object': e,
             'form': form,
-            'attendees': len(attendees),
-            'user_attend': request.user.id in attendees,
+            'attendees': attendees,
+            'user_attend': request.user.id in set(x.user.id for x in attendees),
         },
     }
 
