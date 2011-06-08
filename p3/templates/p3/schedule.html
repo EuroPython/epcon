@@ -18,7 +18,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     <div class="opener closed"> </div>
     <div class="content">
         <div class="wrapper">
-            <a href="{% url p3-my-schedule %}">My schedule</a>
             <h3>Search</h3>
             <form class="search">
                 <input name="q" value="" />
@@ -36,6 +35,9 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l d" }}</a></li>
                 {% endfor %}
             </ul>
+            <div class="button mini" style="margin-top: 10px;">
+                <a href="{% url p3-my-schedule %}">My schedule</a>
+            </div>
             <a class="trigger-overlay schedule-help" href="/schedule-help">How to use</a>
         </div>
     </div>
