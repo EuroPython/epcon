@@ -59,7 +59,7 @@
     <nav class="darker">
         <div class="container clearfix">
 
-            <div class="span-8">
+            <div class="span-9">
                 <ul>
                     {% with request.META.PATH_INFO as pth %}
                     <li class="{% ifequal pth "/" %}current{% endifequal %}">
@@ -82,15 +82,15 @@
                 <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><div style="display: inline;"><input type="hidden" name="language" value="" /></div></form>
             </div>
 
-            <div class="span-4 last">
+            <div class="span-3 last">
                 <div class="user">
                     {% if request.user.is_authenticated %}
                         <a href="{% url assopy-profile %}"><b>{{ request.user.assopy_user.name }}</b></a> &bull;
                         {% if request.user.is_staff %}
-                        <a href="/admin/"><b>Admin</b></a> &bull;
+                        <a href="/admin/"><b>A</b></a> &bull;
                         {% endif %}
                         {% if request.session.resurrect_user %}
-                        <a href="{% url admin:assopy-resurrect-user %}">[ <b>Resurrect</b> ]</a> &bull;
+                        <a href="{% url admin:assopy-resurrect-user %}"><b>R</b></a> &bull;
                         {% endif %}
                         <a href="/accounts/logout/?next=/">Log out</a>
                     {% else %}
