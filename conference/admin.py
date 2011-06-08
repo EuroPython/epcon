@@ -405,7 +405,6 @@ class TicketAdmin(admin.ModelAdmin):
                 close_fds=True,
             )
             sout, serr = p.communicate(json.dumps(group['tickets']))
-            print serr
             tfile.seek(0)
             files.append(tfile)
         if len(files) == 1:
