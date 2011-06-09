@@ -316,6 +316,8 @@ class TimeTable(object):
     def byTimes(self):
         output = []
         data = self._data
+        if not data:
+            return output
         step = self.start
         while step < self.end:
             rows = []
