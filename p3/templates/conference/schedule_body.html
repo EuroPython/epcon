@@ -23,5 +23,6 @@
 {% else %}
     <h1 class="schedule-date">{{ schedule.date|date:"l d F Y" }}</h1>
     {% render_schedule_timetable schedule timetable collapse="always" %}
+    {% render_schedule_timetable_as_list schedule timetable end="09:00" %}
 {% endif %}
 {% endif %}
