@@ -11,7 +11,7 @@ def countdown(request):
     from assopy.models import OrderItem
     from django.db.models import Count
     qs = OrderItem.objects.filter(order___complete=True)
-    conference = 650 - sum(x['c'] for x in qs.values('ticket__fare__code')\
+    conference = 660 - sum(x['c'] for x in qs.values('ticket__fare__code')\
                                         .filter(ticket__fare__ticket_type='conference')\
                                         .annotate(c=Count('pk')))
     pyfiorentina = 220 - sum(x['c'] for x in qs.values('ticket__fare__code')\
