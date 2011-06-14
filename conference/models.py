@@ -3,6 +3,7 @@ import datetime
 import os
 import os.path
 import subprocess
+from collections import defaultdict
 
 from django.conf import settings as dsettings
 from django.core import exceptions
@@ -18,6 +19,7 @@ from django_urls import UrlMixin
 
 import tagging
 from tagging.fields import TagField
+from tagging.utils import parse_tag_input
 
 import conference
 import conference.gmap
@@ -637,10 +639,93 @@ class Schedule(models.Model):
     class Meta:
         ordering = ['date']
 
+    def attendees(self, forecast=False):
+        """
+        restituisce il numero di partecipanti a questa giornata; se forecast è
+        True il numero di partecipanti è quello previsto.
+        """
+        return settings.SCHEDULE_ATTENDEES(self, forecast)
+
+    def overbooked_events(self):
+        """
+        restituisce l'elenco degli eventi per i quali è prevista un affluenza
+        maggiore della capienza della track.  La previsione viene fatta
+        sulla base degli EventInterest.
+        """
+        # entrano in gioco solo gli eventi associati a track per cui è
+        # impostato un numero di posti
+        tracks = dict(
+            (x['track'], x['seats'])
+            for x in Track.objects.filter(seats__gt=0).values('track', 'seats')
+        )
+        tracks_to_check = set(tracks.keys())
+
+        # Considero una manifestazione di interesse, interest > 0, come la
+        # volontà di partecipare ad un evento e aggiungo l'utente tra i
+        # partecipanti. Se l'utente ha "votato" più eventi contemporanei
+        # considero la sua presenza in proporzione (quindi gli eventi potranno
+        # avere "punteggio" frazionario)
+        qs = EventInterest.objects\
+            .filter(event__schedule=self, interest__gt=0)\
+            .select_related('event')
+
+        # il punteggio ottenuto da un evento deve essere diviso tra i votanti
+        # per poi essere rapportato al numero di partecipanti previsti (questo
+        # perché non tutti i partecipanti esplicitano il proprio interesse in
+        # un evento)
+        #
+        # divido gli utenti due fasce temporali, morning e afternoon, in base
+        # all'evento che hanno votato, questo per non diluire eccessivamente i
+        # voti di chi ha guardato solo mezzo schedule.
+        events = {
+            'a': {
+                'events': defaultdict(lambda: 0),
+                'attendees': 0,
+            },
+            'm': {
+                'events': defaultdict(lambda: 0),
+                'attendees': 0,
+            }
+        }
+        user_votes = defaultdict(lambda: defaultdict(set))
+        for x in qs:
+            if tracks_to_check & set(parse_tag_input(x.event.track)):
+                user_votes[x.user_id][x.event.start_time].add(x.event)
+
+        for uid in user_votes:
+            presence = {
+                'm': 0,
+                'a': 0,
+            }
+            for time, evts in user_votes[uid].items():
+                if time.hour < 13 and time.minute < 30:
+                    t = 'm'
+                else:
+                    t = 'a'
+                presence[t] = 1
+                score = 1.0 / len(evts)
+                for e in evts:
+                    events[t]['events'][e] += score
+            for k in presence:
+                events[k]['attendees'] += presence[k]
+
+        a = self.attendees(forecast=True)
+        output = {}
+        for data in events.values():
+            for evt, score in data['events'].items():
+                p = score / data['attendees'] * a
+                seats = 0
+                for t in set(parse_tag_input(evt.track)):
+                    seats += tracks.get(t, 0)
+                if p > seats:
+                    output[evt] = p
+        return output
+
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length=20)
     title = models.TextField('titolo della track', help_text='HTML supportato')
+    seats = models.PositiveIntegerField(default=0)
     order = models.PositiveIntegerField('ordine', default=0)
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
