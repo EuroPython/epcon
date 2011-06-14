@@ -211,6 +211,21 @@ def CONFERENCE_VOTING_ALLOWED(user):
         return tickets.count() > 0
     return False
 
+def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
+    from p3.utils import conference_stats
+    code = 'days_' + schedule.date.strftime('%Y-%m-%d')
+    stats = conference_stats(schedule.conference, code)
+    if not stats:
+        return 0
+    if forecast:
+        return stats[0]['additional_info']
+    else:
+        return stats[0]['count']
+
+def CONFERENCE_ADMIN_STATS(conference, stat=None):
+    from p3.utils import conference_stats
+    return conference_stats(conference, stat)
+
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'

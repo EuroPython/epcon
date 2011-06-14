@@ -1,4 +1,5 @@
 {% load conference p3 %}
+{% schedule_overbooked_events schedule as overbooked %}
 {% if request.user.is_staff and timetable.errors %}
 <div class="error-notice">
     <h2>TimeTable errors</h2>
@@ -89,6 +90,11 @@
                         <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=ref.id %}">
                             <button class="down {% if interest < 0 %}active{% endif %}"></button>
                             <button class="up {% if interest > 0 %}active{% endif %}"></button>
+                        </div>
+                        {% endif %}
+                        {% if ref in overbooked %}
+                        <div class="room-full">
+                            <img src="{{ STATIC_URL }}p5/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
                         </div>
                         {% endif %}
                     </div>

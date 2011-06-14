@@ -341,3 +341,4 @@ def com_com_registration(user):
         params['ita_mobile'] = user.phone
     params['username'] = name.lower().replace(' ', '.')[:12]
     return url + urllib.urlencode(params)
+
