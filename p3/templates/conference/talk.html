@@ -65,29 +65,33 @@ var PROJEKKTOR_CONFIG = {
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
                 <p>{{ ab.body|linebreaks }}</p>
             </div>
-            {% with events|main_event as e %}
-            {% if talk.status == "accepted" and e.schedule.conference %}
-                {% with events|teaser_event as et %}
-                {% if et.schedule.conference == CONFERENCE %}
-                <section class="talk when">
-                    Teaser talk {% trans "in" %} <i>{{ et.get_track.title|safe }}</i> on <strong>{{ et.schedule.date|date:"l j F" }}</strong> at {{ et.start_time|time:"H:i" }}
-                </section>
+            {% if talk.status == "accepted" %}
+                {% for e in events %}
+                    {% if e.schedule.conference == CONFERENCE %}
+                    <section class="talk when">
+                        {% if e|event_has_track:"teaser" %}
+                        Teaser talk
+                        {% endif %}
+
+                        {% trans "in" %} <i>{{ e.get_track.title|safe }}</i>
+                        on <strong>{{ e.schedule.date|date:"l j F" }}</strong>
+                        at {{ e.start_time|time:"H:i" }}
+
+                        (expected attendance {{ e.expected_attendance.expected|floatformat:"0" }} people)
+                    </section>
+                    {% endif %}
+                {% endfor %}
+                {% with events|main_event as e %}
+                {% if e.schedule.conference %}
+                    {% if talk|embed_video %}
+                    <section class="talk video">
+                        <h2>{% trans "Video" %}</h2>
+                        {{ talk|embed_video:"720,576" }}
+                    </section>
+                    {% endif %}
                 {% endif %}
                 {% endwith %}
-                <section class="talk when">
-                    {% if e.schedule.conference == CONFERENCE %}
-                    {% trans "in" %} <i>{{ e.get_track.title|safe }}</i> on <strong>{{ e.schedule.date|date:"l j F" }}</strong> at {{ e.start_time|time:"H:i" }}
-                    {% endif %}
-                    <a href="{% url p3-schedule conference=e.schedule.conference %}"><b>See schedule</b></a>
-                </section>
-                {% if talk|embed_video %}
-                <section class="talk video">
-                    <h2>{% trans "Video" %}</h2>
-                    {{ talk|embed_video:"720,576" }}
-                </section>
-                {% endif %}
             {% endif %}
-            {% endwith %}
         </div>
         {% endwith %}
         {% if full_access %}
