@@ -3,11 +3,13 @@ from __future__ import absolute_import
 
 from django import forms
 from django import http
+from django import template
 from django.contrib import admin
 from django.conf import settings as dsettings
+from django.conf.urls.defaults import url, patterns
 from django.core import urlresolvers
 from django.db import transaction
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render_to_response
 
 from conference import models
 from conference import settings
@@ -417,5 +419,37 @@ class TicketAdmin(admin.ModelAdmin):
             raise RuntimeError()
         return response
     do_ticket_badge.short_description = 'Ticket Badge'
+
+    def get_urls(self):
+        urls = super(TicketAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^stats/$', self.admin_site.admin_view(self.stats_list), name='conference-ticket-stats'),
+        )
+        return my_urls + urls
+
+    def stats(self, conference, stat=None):
+        return settings.ADMIN_STATS(conference, stat=stat)
+
+    def stats_list(self, request):
+        from conference.models import Conference, Ticket
+        class FormConference(forms.Form):
+            conference = forms.ChoiceField(
+                choices=Conference.objects.all().values_list('code', 'name'),
+                required=False
+            )
+        form = FormConference(data=request.GET)
+        stats = []
+        if form.is_valid():
+            conference = form.cleaned_data['conference'] or settings.CONFERENCE
+            stats = self.stats(conference)
+        else:
+            stats = []
+
+        ctx = {
+            'form': form,
+            'conference': conference,
+            'stats': stats,
+        }
+        return render_to_response('conference/admin/ticket_stats.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.register(models.Ticket, TicketAdmin)
