@@ -466,7 +466,13 @@ def secure_media(request, path):
         if fname != request.user.username:
             return http.HttpResponseForbidden()
     fpath = settings.SECURE_STORAGE.path(path)
-    return http.HttpResponse(file(fpath), mimetype=mimetypes.guess_type(fpath))
+    try:
+        return http.HttpResponse(file(fpath), mimetype=mimetypes.guess_type(fpath))
+    except IOError, e:
+        if e.errno == 2:
+            raise http.Http404()
+        else:
+            raise
 
 @login_required
 @render_to('p3/sprint_submission.html')
