@@ -48,4 +48,7 @@ import os.path
 import conference
 
 TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG', os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))
+
+SCHEDULE_ATTENDEES = getattr(settings, 'CONFERENCE_SCHEDULE_ATTENDEES', lambda schedule, forecast=False: 0)
+
 ADMIN_STATS = getattr(settings, 'CONFERENCE_ADMIN_STATS', lambda conference, stat=None: [])

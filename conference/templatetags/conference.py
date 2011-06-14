@@ -8,6 +8,7 @@ import httplib2
 import random
 import sys
 import simplejson
+from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from django import template
 from django.conf import settings as dsettings
@@ -318,7 +319,6 @@ def render_talk_report(context, speaker, conference, tags):
     return context
 
 def schedule_context(schedule):
-    from collections import defaultdict
     from datetime import time
 
     TIME_STEP = 15
@@ -606,6 +606,15 @@ def render_schedule_timetable_as_list(context, schedule, timetable, start=None, 
         'timetable': timetable,
     })
     return render_to_string('conference/render_schedule_timetable_as_list.html', ctx)
+
+@fancy_tag(register, takes_context=True)
+def schedule_overbooked_events(context, schedule):
+    """
+    restituisce l'elenco degli eventi per i quali è prevista un affluenza
+    maggiore della capienza della track.  la previsione viene fatta utilizzando
+    gli EventInterest.
+    """
+    return schedule.overbooked_events()
 
 @register.filter
 def event_has_track(event, track):
