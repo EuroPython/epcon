@@ -646,20 +646,20 @@ class Schedule(models.Model):
         """
         return settings.SCHEDULE_ATTENDEES(self, forecast)
 
-    def overbooked_events(self, factor=0.8, qs=None):
+    def expected_attendance(self, factor=0.8, overbook=False):
         """
-        restituisce l'elenco degli eventi per i quali è prevista un affluenza
-        maggiore della capienza della track.  La previsione viene fatta
-        sulla base degli EventInterest.
+        restituisce per ogni evento la previsione di partecipazione basata
+        sugli EventInterest.
 
-        `qs` può essere utilizzato per prefiltrare gli EventInterest.
+        `overbook` controlla se devono essere ritornati tutti gli eventi o solo
+        quelli in overbook.
         """
-        # entrano in gioco solo gli eventi associati a track per cui è
-        # impostato un numero di posti
-        tracks = dict(
-            (x['track'], x['seats'])
-            for x in Track.objects.filter(schedule=self,seats__gt=0).values('track', 'seats')
-        )
+        track_qs = Track.objects.filter(schedule=self).values('track', 'seats')
+        if overbook:
+            # entrano in gioco solo gli eventi associati a track per cui è
+            # impostato un numero di posti
+            track_qs = track_qs.filter(seats__gt=0)
+        tracks = dict((x['track'], x['seats']) for x in track_qs)
         tracks_to_check = set(tracks.keys())
 
         # Considero una manifestazione di interesse, interest > 0, come la
@@ -667,9 +667,7 @@ class Schedule(models.Model):
         # partecipanti. Se l'utente ha "votato" più eventi contemporanei
         # considero la sua presenza in proporzione (quindi gli eventi potranno
         # avere "punteggio" frazionario)
-        if qs is None:
-            qs = EventInterest.objects.all()
-        qs = qs\
+        qs = EventInterest.objects.all()\
             .filter(event__schedule=self, interest__gt=0)\
             .select_related('event')
 
@@ -721,8 +719,12 @@ class Schedule(models.Model):
                 seats = 0
                 for t in set(parse_tag_input(evt.track)):
                     seats += tracks.get(t, 0)
-                if p > seats:
-                    output[evt] = p
+                if overbook is False or p > seats:
+                    output[evt] = {
+                        'votes': score,
+                        'seats': seats,
+                        'expected': p,
+                    }
         return output
 
 class Track(models.Model):
@@ -777,6 +779,9 @@ class Event(models.Model):
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:
                 return dbtracks[t.name]
+
+    def expected_attendance(self):
+        return self.schedule.expected_attendance().get(self)
 
 class EventInterest(models.Model):
     event = models.ForeignKey(Event)

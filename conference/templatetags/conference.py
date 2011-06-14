@@ -614,7 +614,7 @@ def schedule_overbooked_events(context, schedule):
     maggiore della capienza della track.  la previsione viene fatta utilizzando
     gli EventInterest.
     """
-    return schedule.overbooked_events()
+    return schedule.expected_attendance(overbook=True)
 
 @register.filter
 def event_has_track(event, track):
