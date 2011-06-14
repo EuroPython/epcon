@@ -646,17 +646,19 @@ class Schedule(models.Model):
         """
         return settings.SCHEDULE_ATTENDEES(self, forecast)
 
-    def overbooked_events(self):
+    def overbooked_events(self, factor=0.8, qs=None):
         """
         restituisce l'elenco degli eventi per i quali è prevista un affluenza
         maggiore della capienza della track.  La previsione viene fatta
         sulla base degli EventInterest.
+
+        `qs` può essere utilizzato per prefiltrare gli EventInterest.
         """
         # entrano in gioco solo gli eventi associati a track per cui è
         # impostato un numero di posti
         tracks = dict(
             (x['track'], x['seats'])
-            for x in Track.objects.filter(seats__gt=0).values('track', 'seats')
+            for x in Track.objects.filter(schedule=self,seats__gt=0).values('track', 'seats')
         )
         tracks_to_check = set(tracks.keys())
 
@@ -665,7 +667,9 @@ class Schedule(models.Model):
         # partecipanti. Se l'utente ha "votato" più eventi contemporanei
         # considero la sua presenza in proporzione (quindi gli eventi potranno
         # avere "punteggio" frazionario)
-        qs = EventInterest.objects\
+        if qs is None:
+            qs = EventInterest.objects.all()
+        qs = qs\
             .filter(event__schedule=self, interest__gt=0)\
             .select_related('event')
 
@@ -713,7 +717,7 @@ class Schedule(models.Model):
         output = {}
         for data in events.values():
             for evt, score in data['events'].items():
-                p = score / data['attendees'] * a
+                p = score / data['attendees'] * a * factor
                 seats = 0
                 for t in set(parse_tag_input(evt.track)):
                     seats += tracks.get(t, 0)
