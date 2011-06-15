@@ -18,7 +18,7 @@ import models
 from assopy.forms import BillingData
 from assopy.models import Coupon, Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
-from conference.models import Fare, Event, Ticket, Schedule
+from conference.models import Fare, Event, Talk, Ticket, Schedule, Speaker, TalkSpeaker
 from email_template import utils
 
 import datetime
@@ -395,6 +395,38 @@ def schedule(request, conference):
         'conference': conference,
         'schedules': schedules,
         'form': form,
+    }
+
+@render_to('p3/schedule_speakers.html')
+def schedule_speakers(request, conference):
+    events = Event.objects\
+        .filter(schedule__conference=settings.CONFERENCE_CONFERENCE)\
+        .exclude(talk=None)\
+        .select_related('schedule', 'track', 'talk')
+    tmap = defaultdict(list)
+    for x in events:
+        tmap[x.talk_id].append(x)
+
+    speakers = Speaker.objects\
+                .filter(talkspeaker__talk__in=tmap.keys())\
+                .select_related('user')\
+                .extra(select={'talk_id': 'conference_talkspeaker.talk_id'})
+
+    data = {}
+    for s in speakers:
+        if s.id not in data:
+            data[s.id] = {
+                'speaker': s,
+                'events': [],
+            }
+        data[s.id]['events'].extend(tmap[s.talk_id])
+
+    speakers_sorted = sorted(
+        data.values(),
+        key=lambda x: '%s %s' % (x['speaker'].user.first_name, x['speaker'].user.last_name)
+    )
+    return {
+        'speakers': speakers_sorted,
     }
 
 @login_required
