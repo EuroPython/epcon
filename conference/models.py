@@ -308,18 +308,16 @@ class Speaker(models.Model, UrlMixin):
         non è lo speaker principale. Se status è diverso da None vengono
         ritornati solo i talk con lo stato richiesto.
         """
-        if status is None:
-            m = 'all'
-        elif status in ('proposed', 'accepted'):
-            m = status
-        else:
+        qs = TalkSpeaker.objects.filter(speaker=self)
+        if status in ('proposed', 'accepted'):
+            qs = qs.filter(talk__status=m)
+        elif status is not None:
             raise ValueError('status unknown')
-        qs = getattr(self.talk_set, m)()
-        if include_secondary:
-            qs |= getattr(self.additional_speakers, m)()
+        if not include_secondary:
+            qs = qs.filter(helper=False)
         if conference is not None:
-            qs = qs.filter(conference=conference)
-        return qs
+            qs = qs.filter(talk__conference=conference)
+        return Talk.objects.filter(id__in=qs.values('talk'))
 
 post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
@@ -417,8 +415,7 @@ class Talk(models.Model, UrlMixin):
     title = models.CharField('titolo del talk', max_length=100)
     slug = models.SlugField(max_length=100)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
-    speakers = models.ManyToManyField(Speaker)
-    additional_speakers = models.ManyToManyField(Speaker, related_name='additional_speakers', blank=True)
+    speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
     duration = models.IntegerField(choices=TALK_DURATION)
     language = models.CharField('lingua del talk', max_length=3, choices=TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
@@ -460,13 +457,21 @@ class Talk(models.Model, UrlMixin):
             return None
 
     def get_all_speakers(self):
-        return (self.speakers.all() | self.additional_speakers.all()).distinct()
+        return self.speakers.all().select_related('speaker')
 
     def setAbstract(self, body, language=None):
         MultilingualContent.objects.setContent(self, 'abstracts', language, body)
 
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
+
+class TalkSpeaker(models.Model):
+    talk = models.ForeignKey(Talk)
+    speaker = models.ForeignKey(Speaker)
+    helper = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (('talk', 'speaker'),)
 
 class FareManager(models.Manager):
     def get_query_set(self):
@@ -775,6 +780,7 @@ class Event(models.Model):
         ritorna la prima istanza di track tra quelle specificate o None se l'evento
         è di tipo speciale
         """
+        # XXX: utilizzare il template tag get_event_track che cacha la query 
         dbtracks = dict( (t.track, t) for t in self.schedule.track_set.all())
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:
