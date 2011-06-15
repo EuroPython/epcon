@@ -310,7 +310,7 @@ class Speaker(models.Model, UrlMixin):
         """
         qs = TalkSpeaker.objects.filter(speaker=self)
         if status in ('proposed', 'accepted'):
-            qs = qs.filter(talk__status=m)
+            qs = qs.filter(talk__status=status)
         elif status is not None:
             raise ValueError('status unknown')
         if not include_secondary:
