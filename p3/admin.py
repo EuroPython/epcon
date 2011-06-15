@@ -19,7 +19,7 @@ from cStringIO import StringIO
 
 class TicketConferenceAdmin(TicketAdmin):
     list_display = TicketAdmin.list_display + ('_order', '_assigned',)
-    list_filter = ('orderitem__order___complete', 'fare__code',)
+    list_filter = ('ticket_type', 'orderitem__order___complete', 'fare__code',)
     
     def _order(self, o):
         return o.orderitem.order.code
