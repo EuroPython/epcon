@@ -25,6 +25,8 @@
                 {% for s in e.talk.get_all_speakers %}
                 <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
+                in
+                <strong><i>{{ e.get_track.title|safe }}</i></strong>
             {% endwith %}
             {% endif %}
         </li>
