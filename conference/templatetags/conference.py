@@ -37,6 +37,20 @@ mimetypes.init()
 
 register = template.Library()
 
+def _schedule_cache(request, sid):
+    """
+    ritorna (o crea) un dizionario collegato all'oggetto passato utilizzabile
+    come cache per dati relativi allo schedule specificato (usato per creare
+    cache che vivono quanto una request)
+    """
+    try:
+        return request._schedule_cache[sid]
+    except KeyError:
+        request._schedule_cache[sid] = {}
+    except AttributeError:
+        request._schedule_cache = {sid: {}}
+    return request._schedule_cache[sid]
+
 class LatestDeadlinesNode(template.Node):
     """
     Inserisce in una variabile di contesto le deadlines presenti.
@@ -615,6 +629,34 @@ def schedule_overbooked_events(context, schedule):
     gli EventInterest.
     """
     return schedule.expected_attendance(overbook=True)
+
+@fancy_tag(register, takes_context=True)
+def get_event_track(context, event):
+    """
+    ritorna la prima istanza di track tra quelle specificate dall'evento o None
+    se è di tipo speciale
+    """
+
+    try:
+        cache = _schedule_cache(context['request'], event.schedule_id)
+    except KeyError:
+        dbtracks = dict((t.track, t) for t in event.schedule.track_set.all())
+    else:
+        try:
+            dbtracks = cache['tracks']
+        except KeyError:
+            # devo accedere al db, a questo punto carico tutti gli schedule
+            # della stessa conferenza
+            data = defaultdict(dict)
+            for t in models.Track.objects.filter(schedule__conference=event.schedule.conference):
+                data[t.schedule_id][t.track] = t
+            for sid, dbtracks in data.items():
+                _schedule_cache(context['request'], sid)['tracks'] = dbtracks
+            dbtracks = data[event.schedule_id]
+
+    for t in set(parse_tag_input(event.track)):
+        if t in dbtracks:
+            return dbtracks[t]
 
 @register.filter
 def event_has_track(event, track):
