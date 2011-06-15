@@ -1,7 +1,12 @@
 # -*- coding: UTF-8 -*-
-from conference.models import Ticket
-from p3 import models
+from django.conf import settings
 from django.db.models import Count, Q
+
+from conference.models import Conference, Ticket
+from p3 import models
+
+import datetime
+import os.path
 from collections import defaultdict
 
 def conference_stats(conference, stat=None):
@@ -103,3 +108,42 @@ def conference_stats(conference, stat=None):
         })
     return stats
 
+def conference_ticket_badge(tickets):
+    conferences = {}
+    for c in Conference.objects.all():
+        conferences[c.code] = {
+            'obj': c,
+            'days': c.days(),
+        }
+    groups = {}
+    qs = tickets\
+            .filter(orderitem__order___complete=True)\
+            .select_related('fare', 'p3_conference', 'orderitem__order__user__user')
+    for t in qs:
+        if t.fare.conference not in groups:
+            groups[t.fare.conference] = {
+                'args': ['-c', os.path.join(settings.OTHER_STUFF, 'badge', t.fare.conference, 'conf.py'), ],
+                'tickets': []
+            }
+        if t.p3_conference is None:
+            tagline = ''
+            days = '1'
+            experience = 0
+        else:
+            tagline = t.p3_conference.tagline
+            experience = t.p3_conference.python_experience
+            tdays = map(lambda x: datetime.date(*map(int, x.split('-'))), filter(None, t.p3_conference.days.split(',')))
+            cdays = conferences[t.fare.conference]['days']
+            days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
+        groups[t.fare.conference]['tickets'].append({
+            'name': t.name or t.orderitem.order.user.name(),
+            'tagline': tagline,
+            'days': days,
+            'fare': {
+                'code': t.fare.code,
+                'type': t.fare.recipient_type,
+            },
+            'experience': experience,
+            'staff': t.ticket_type == 'staff',
+        })
+    return groups.values()

@@ -226,6 +226,11 @@ def CONFERENCE_ADMIN_STATS(conference, stat=None):
     from p3.utils import conference_stats
     return conference_stats(conference, stat)
 
+CONFERENCE_TICKET_BADGE_ENABLED = True
+def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
+    from p3.utils import conference_ticket_badge
+    return conference_ticket_badge(tickets)
+
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
