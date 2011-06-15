@@ -120,13 +120,13 @@ def assemble_page(images):
     x0 = (PAGE_SIZE[0] - w0 * cols) / 2
     y0 = (PAGE_SIZE[1] - h0 * rows) / 2
 
-    page = Image.new('RGB', PAGE_SIZE, (255, 255, 255))
+    page = Image.new('RGBA', PAGE_SIZE, (255, 255, 255, 255))
     for ix, i in enumerate(images):
         col = ix % cols
         row = ix / rows
         x = x0 + col * w0
         y = y0 + row * h0
-        page.paste(i, (x, y))
+        page.paste(i, (x, y), i)
 
     if not opts.no_marker and WASTE:
         draw = ImageDraw.Draw(page)
@@ -182,9 +182,13 @@ for group_type, data in groups.items():
         for ix, a in enumerate(block):
             i = image.copy()
             if a is not None:
-                texts = ticket(i, a)
-                for t, pos, font, color in texts:
-                    draw_info(i, data['max_width'], t, pos, font, color)
+                rows = ticket(i, a)
+                for row in rows:
+                    if isinstance(row[0], Image.Image):
+                        i.paste(row[0], row[1], row[0])
+                    else:
+                        t, pos, font, color  = row
+                        draw_info(i, data['max_width'], t, pos, font, color)
             if opts.resize:
                 i = i.resize(map(lambda x: int(x*opts.resize), i.size), Image.ANTIALIAS)
             images.append(i)

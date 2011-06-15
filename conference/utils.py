@@ -6,11 +6,16 @@ from django.core.mail import send_mail as real_send_mail
 from conference import models
 from conference import settings
 
+import json
+import logging
 import os.path
 import re
 import subprocess
+import tempfile
 import urllib2
 from collections import defaultdict
+
+log = logging.getLogger('conference')
 
 def send_email(force=False, *args, **kwargs):
     if force is False and not settings.SEND_EMAIL_TO:
@@ -328,3 +333,23 @@ class TimeTable(object):
             step = self.sumTime(step, self.slot)
 
         return output
+
+def render_badge(tickets):
+    files = []
+    for group in settings.TICKET_BADGE_PREPARE_FUNCTION(tickets):
+        tfile = tempfile.NamedTemporaryFile(suffix='.tar')
+        args = [settings.TICKED_BADGE_PROG, '-o', tfile.name, '-e', '0',] + list(group['args'])
+        p = subprocess.Popen(
+            args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        )
+        sout, serr = p.communicate(json.dumps(group['tickets']))
+        if p.returncode:
+            log.warn('badge maker exit with "%s"', p.returncode)
+            log.warn('badge maker stderr: %s', serr)
+        tfile.seek(0)
+        files.append(tfile)
+    return files

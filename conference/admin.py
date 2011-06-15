@@ -13,13 +13,14 @@ from django.shortcuts import redirect, render_to_response
 
 from conference import models
 from conference import settings
+from conference import utils
 
 import csv
-import json
+import logging
 import re
-import subprocess
-import tempfile
 from cStringIO import StringIO
+
+log = logging.getLogger('conference')
 
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('code', 'name')
@@ -397,20 +398,7 @@ class TicketAdmin(admin.ModelAdmin):
         return qs
 
     def do_ticket_badge(self, request, qs):
-        files = []
-        for group in settings.TICKET_BADGE_PREPARE_FUNCTION(qs):
-            tfile = tempfile.NamedTemporaryFile(suffix='.tar')
-            args = [settings.TICKED_BADGE_PROG, '-o', tfile.name, '-e', '0',] + list(group['args'])
-            p = subprocess.Popen(
-                args,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                close_fds=True,
-            )
-            sout, serr = p.communicate(json.dumps(group['tickets']))
-            tfile.seek(0)
-            files.append(tfile)
+        files = utiles.render_badge(qs)
         if len(files) == 1:
             response = http.HttpResponse(files[0], mimetype="application/x-gzip")
             response['Content-Disposition'] = 'attachment; filename=badge.tar.gz'
