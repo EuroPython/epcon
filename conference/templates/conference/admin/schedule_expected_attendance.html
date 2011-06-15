@@ -1,0 +1,63 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../">Home</a> &rsaquo;
+     <a href="../../">Conference</a>&rsaquo;
+     <a href="../">Schedule</a>&rsaquo;
+     expected attendance
+</div>
+{% endblock %}{% block content %}
+{% comment %}
+<form action="{% url admin:conference-schedule-expected_attendance %}" method="GET">
+    {{ form }}
+    <input type="submit" />
+</form>
+{% endcomment %}
+{% for schedule, data in schedules %}
+<h1>{{ schedule.date }}</h1>
+<h2>Morning</h2>
+<table>
+    <tr>
+        <th>time</th>
+        <th>event</th>
+        <th>author</th>
+        <th>tracks</th>
+        <th>seats</th>
+        <th>expected</th>
+    </tr>
+    {% for item in data.morning|dictsort:"event.track" %}
+    <tr style="{% if item.expected > item.seats %}color: red;{% endif %}">
+        <td>{{ item.event.start_time|time:"H:i" }}</td>
+        <td>{{ item.event.get_description }}</td>
+        <td>{% for a in item.event.talk.get_all_speakers %}{{ a.user.assopy_user.name }}{% endfor %}</td>
+        <td>{{ item.event.track }}</td>
+        <td>{{ item.seats }}</td>
+        <td>{{ item.expected|floatformat:"0" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<h2>Afternoon</h2>
+<table>
+    <tr>
+        <th>time</th>
+        <th>event</th>
+        <th>author</th>
+        <th>tracks</th>
+        <th>seats</th>
+        <th>expected</th>
+    </tr>
+    {% for item in data.afternoon|dictsort:"event.track" %}
+    <tr style="{% if item.expected > item.seats %}color: red;{% endif %}">
+        <td>{{ item.event.start_time|time:"H:i" }}</td>
+        <td>{{ item.event.get_description }}</td>
+        <td>{% for a in item.event.talk.get_all_speakers %}{{ a.user.assopy_user.name }}{% endfor %}</td>
+        <td>{{ item.event.track }}</td>
+        <td>{{ item.seats }}</td>
+        <td>{{ item.expected|floatformat:"0" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<hr />
+{% endfor %}
+{% endblock %}

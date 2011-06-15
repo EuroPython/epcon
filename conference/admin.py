@@ -317,6 +317,34 @@ class ScheduleAdmin(admin.ModelAdmin):
         EventInlineAdmin
     ]
 
+    def get_urls(self):
+        urls = super(ScheduleAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^stats/$', self.admin_site.admin_view(self.expected_attendance), name='conference-schedule-expected_attendance'),
+        )
+        return my_urls + urls
+
+    def expected_attendance(self, request):
+        schedules = models.Schedule.objects.all()
+        data = {}
+        for s in schedules:
+            events = s.expected_attendance()
+            data[s] = entry = {
+                'morning': [],
+                'afternoon': [],
+            }
+            for e, info in events.items():
+                item = dict(info)
+                item['event'] = e
+                if e.start_time.hour < 13 and e.start_time.minute < 30:
+                    entry['morning'].append(item)
+                else:
+                    entry['afternoon'].append(item)
+        ctx = {
+            'schedules': sorted(data.items(), key=lambda x: x[0].date),
+        }
+        return render_to_response('conference/admin/schedule_expected_attendance.html', ctx, context_instance=template.RequestContext(request))
+
 admin.site.register(models.Schedule, ScheduleAdmin)
 
 class HotelAdmin(admin.ModelAdmin):
