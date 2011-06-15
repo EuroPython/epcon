@@ -334,11 +334,13 @@ class TimeTable(object):
 
         return output
 
-def render_badge(tickets):
+def render_badge(tickets, cmdargs=None):
+    if cmdargs is None:
+        cmdargs = []
     files = []
     for group in settings.TICKET_BADGE_PREPARE_FUNCTION(tickets):
         tfile = tempfile.NamedTemporaryFile(suffix='.tar')
-        args = [settings.TICKED_BADGE_PROG, '-o', tfile.name, '-e', '0',] + list(group['args'])
+        args = [settings.TICKED_BADGE_PROG, '-o', tfile.name] + cmdargs + list(group['args'])
         p = subprocess.Popen(
             args,
             stdin=subprocess.PIPE,

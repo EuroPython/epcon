@@ -37,16 +37,18 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('conference code is missing')
 
+        cmdargs = []
         tickets = models.Ticket.objects.filter(fare__conference=conference, fare__ticket_type=options['type'])
         if options['fare']:
-            tickets = tickets.filter(fare__code=options['fare'])
+            tickets = tickets.filter(fare__code__startswith=options['fare'])
         if options['names']:
             names = options['names'].split(',')
             q = Q()
             for n in options['names'].split(','):
                 q |= Q(name__icontains=n)
             tickets = tickets.filter(q)
-        files = utils.render_badge(tickets)
+            cmdargs.extend(['-e', '0'])
+        files = utils.render_badge(tickets, cmdargs=cmdargs)
         f = files[0]
         f.seek(0)
         while True:
