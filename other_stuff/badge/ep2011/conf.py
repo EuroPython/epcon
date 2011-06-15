@@ -1,13 +1,15 @@
 import Image, ImageFont
 
-_FONT_NAME = 'League_Gothic.ttf'
+_FONT_NAME = 'Arial_Unicode.ttf'
 _FONTS = {
-    'name': ImageFont.truetype(_FONT_NAME, 18 * 8),
-    'name_small': ImageFont.truetype(_FONT_NAME, 12 * 8),
-    'info': ImageFont.truetype(_FONT_NAME, 12 * 8),
+    'name': ImageFont.truetype(_FONT_NAME, 16 * 8),
+    'name_small': ImageFont.truetype(_FONT_NAME, 10 * 8),
+    'info': ImageFont.truetype(_FONT_NAME, 8 * 8),
 }
 _ICONS = {
     None: Image.open('logo.png').convert('RGBA').resize((64, 64)),
+    'apple': Image.open('apple.png').convert('RGBA').resize((64, 64)),
+    'ciuccio': Image.open('ciuccio.png').convert('RGBA').resize((64, 64)),
 }
 
 WASTE = 3
@@ -97,7 +99,14 @@ def ticket(image, ticket):
     else:
         font = _FONTS['name']
         name_y = 460, 590
-    logo = _ICONS[None]
+    
+    check = tagline.lower()
+    if 'drop table' in tagline.lower():
+        logo = _ICONS['ciuccio']
+    elif ticket['name'].lower() == 'lorenzo berni':
+        logo = _ICONS['apple']
+    else:
+        logo = _ICONS[None]
     output = [
         (first_name, (50, name_y[0]), font, color_name),
         (last_name, (50, name_y[1]), font, color_name),
