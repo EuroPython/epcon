@@ -339,7 +339,7 @@ def com_com_registration(user):
         params['nationality'] = user.country.pk
     if user.phone and user.phone.startswith('+39'):
         params['ita_mobile'] = user.phone
-    params['username'] = name.lower().replace(' ', '.')[:12]
+    params['username'] = name.lower().replace(' ', '').replace('.', '')[:12]
     for k, v in params.items():
         params[k] = v.encode('utf-8')
     return url + urllib.urlencode(params)
