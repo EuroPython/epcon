@@ -213,7 +213,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
 
 def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     from p3.utils import conference_stats
-    code = 'days_' + schedule.date.strftime('%Y-%m-%d')
+    code = 'nostaff_days_' + schedule.date.strftime('%Y-%m-%d')
     stats = conference_stats(schedule.conference, code)
     if not stats:
         return 0

@@ -66,7 +66,8 @@ def conference_stats(conference, stat=None):
                     'have_details': True,
                     'details': compiled.filter(p3_conference__diet=x['p3_conference__diet']),
                 })
-    if stat is None or stat.startswith('days_'):
+    def _days_stats(compiled, not_compiled):
+        output = []
         days = defaultdict(lambda: 0)
         for x in compiled:
             data = filter(None, map(lambda x: x.strip(), x.p3_conference.days.split(',')))
@@ -79,19 +80,31 @@ def conference_stats(conference, stat=None):
         not_compiled_count = not_compiled.count()
         for day, count in days.items():
             scode = 'days_%s' % day
-            if stat in (None, scode):
-                if day != 'x':
-                    info = float(count) / (compiled_count - days['x']) * (compiled_count + not_compiled_count)
-                else:
-                    info = 0.0
-                stats.append({
-                    'code': scode,
-                    'title': 'Giorno di presenza: %s' % day,
-                    'count': count,
-                    'have_details': False,
-                    'additional_info': info,
-                })
+            if day != 'x':
+                info = float(count) / (compiled_count - days['x']) * (compiled_count + not_compiled_count)
+            else:
+                info = 0.0
+            output.append({
+                'code': scode,
+                'title': 'Giorno di presenza: %s' % day,
+                'count': count,
+                'have_details': False,
+                'additional_info': info,
+            })
+        return output
 
+    if stat is None or stat.startswith('days_'):
+        ds = _days_stats(compiled, not_compiled)
+        for s in ds:
+            if stat in (None, s['code']):
+                stats.append(s)
+    if stat is None or stat.startswith('nostaff_days_'):
+        ds = _days_stats(compiled.exclude(ticket_type='staff'), not_compiled.exclude(ticket_type='staff'))
+        for s in ds:
+            if stat in (None, 'nostaff_' + s['code']):
+                s['code'] = 'nostaff_' + s['code']
+                s['title'] = s['title'] + ' (escluso staff)'
+                stats.append(s)
     if stat in (None, 'sim_not_compiled'):
         tickets = Ticket.objects.filter(
             orderitem__order___complete=True,
