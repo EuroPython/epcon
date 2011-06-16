@@ -87,16 +87,30 @@ def grouper(n, iterable, fillvalue=None):
 
 def wrap_text(font, text, width):
     words = re.split(' ', text)
-    lines = [ '' ]
+    lines = []
     while words:
-        word = words.pop(0)
-        line = lines[-1]
-        w, h = font.getsize(line + ' ' + word)
-        if w <= width:
-            lines[-1] += ' ' + word
-        else:
+        word = words.pop(0).strip()
+        if not word:
+            continue
+        if not lines:
             lines.append(word)
-    return map(lambda x: x.strip(), lines)
+        else:
+            line = lines[-1]
+            w, h = font.getsize(line + ' ' + word)
+            if w <= width:
+                lines[-1] += ' ' + word
+            else:
+                lines.append(word)
+
+    for ix, line in enumerate(lines):
+        line = line.strip()
+        while True:
+            w, h = font.getsize(line)
+            if w <= width:
+                break
+            line = line[:-1]
+        lines[ix] = line
+    return lines
 
 def draw_info(image, max_width, text, pos, font, color):
     d = ImageDraw.Draw(image)
