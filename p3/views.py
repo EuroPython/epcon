@@ -495,7 +495,7 @@ def calculator(request):
 def secure_media(request, path):
     if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
         fname = os.path.splitext(os.path.basename(path))[0]
-        if fname != request.user.username:
+        if fname.rsplit('-', 1)[0] != request.user.username:
             return http.HttpResponseForbidden()
     fpath = settings.SECURE_STORAGE.path(path)
     try:

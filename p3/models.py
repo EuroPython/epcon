@@ -71,7 +71,9 @@ class TicketConference(models.Model):
 
 def _ticket_sim_upload_to(instance, filename):
     subdir = 'p3/personal_documents'
-    fname = instance.ticket.user.username
+    # inserisco anche l'id del biglietto nel nome del file perché un utente può
+    # acquistare più sim e probabilmente non sono tutte per lui.
+    fname = '%s-%s' % (instance.ticket.user.username, instance.ticket.id)
     fdir = os.path.join(dsettings.SECURE_MEDIA_ROOT, subdir)
     for f in os.listdir(fdir):
         if os.path.splitext(f)[0] == fname:
