@@ -18,7 +18,7 @@ from collections import defaultdict
 from cStringIO import StringIO
 
 class TicketConferenceAdmin(TicketAdmin):
-    list_display = TicketAdmin.list_display + ('_order', '_assigned',)
+    list_display = TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
     list_filter = ('ticket_type', 'orderitem__order___complete', 'fare__code',)
     
     def _order(self, o):
@@ -27,6 +27,12 @@ class TicketConferenceAdmin(TicketAdmin):
     def _assigned(self, o):
         if o.p3_conference:
             return o.p3_conference.assigned_to
+        else:
+            return ''
+
+    def _tagline(self, o):
+        if o.p3_conference:
+            return o.p3_conference.tagline
         else:
             return ''
 
