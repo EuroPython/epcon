@@ -651,7 +651,7 @@ class Schedule(models.Model):
         """
         return settings.SCHEDULE_ATTENDEES(self, forecast)
 
-    def expected_attendance(self, factor=0.8, overbook=False):
+    def expected_attendance(self, factor=0.95, overbook=False):
         """
         restituisce per ogni evento la previsione di partecipazione basata
         sugli EventInterest.
@@ -674,63 +674,67 @@ class Schedule(models.Model):
         # avere "punteggio" frazionario)
         qs = EventInterest.objects.all()\
             .filter(event__schedule=self, interest__gt=0)\
-            .select_related('event')
+            .select_related('event__talk')
 
-        # il punteggio ottenuto da un evento deve essere diviso tra i votanti
-        # per poi essere rapportato al numero di partecipanti previsti (questo
-        # perché non tutti i partecipanti esplicitano il proprio interesse in
-        # un evento)
-        #
-        # divido gli utenti due fasce temporali, morning e afternoon, in base
-        # all'evento che hanno votato, questo per non diluire eccessivamente i
-        # voti di chi ha guardato solo mezzo schedule.
-        events = {
-            'a': {
-                'events': defaultdict(lambda: 0),
-                'attendees': 0,
-            },
-            'm': {
-                'events': defaultdict(lambda: 0),
-                'attendees': 0,
-            }
-        }
-        user_votes = defaultdict(lambda: defaultdict(set))
+        events = defaultdict(set)
+
         for x in qs:
             if tracks_to_check & set(parse_tag_input(x.event.track)):
-                user_votes[x.user_id][x.event.start_time].add(x.event)
+                events[x.event].add(x.user_id)
 
-        for uid in user_votes:
-            presence = {
-                'm': 0,
-                'a': 0,
-            }
-            for time, evts in user_votes[uid].items():
-                if time.hour < 13 and time.minute < 30:
-                    t = 'm'
-                else:
-                    t = 'a'
-                presence[t] = 1
-                score = 1.0 / len(evts)
-                for e in evts:
-                    events[t]['events'][e] += score
-            for k in presence:
-                events[k]['attendees'] += presence[k]
+        def group_by_times(events):
+            sorted_events = sorted(
+                filter(
+                    lambda x: x[0].get_duration(),
+                    map(lambda x: (x[0], set(x[1])),events.items())
+                ),
+                key=lambda x: x[0].get_duration()
+            )
+            while sorted_events:
+                item0 = sorted_events.pop()
+                e0 = item0[0]
+                group = [item0]
+                drange = e0.get_time_range()
+                for ix in reversed(range(len(sorted_events))):
+                    evt = sorted_events[ix][0]
+                    r = evt.get_time_range()
+                    if (drange[0] <= r[0] and drange[1] >= r[1]) or\
+                        (drange[0]>r[0] and drange[0]<r[1]) or\
+                        (drange[1]>r[0] and drange[1]<r[1]):
+                        group.append(sorted_events.pop(ix))
+                yield group
 
-        a = self.attendees(forecast=True)
+        scores = defaultdict(lambda: 0)
+        for group in group_by_times(events):
+            voters = len(set.union(*[x[1] for x in group]))
+            while group:
+                evt, users = group.pop()
+                for u in users:
+                    found = [ evt ]
+                    for other in group:
+                        try:
+                            other[1].remove(u)
+                        except KeyError:
+                            pass
+                        else:
+                            found.append(other[0])
+                    score = 1.0 / len(found)
+                    for f in found:
+                        scores[f] += score / voters
+
+        forecast = self.attendees(forecast=True) * factor
         output = {}
-        for data in events.values():
-            for evt, score in data['events'].items():
-                p = score / data['attendees'] * a * factor
-                seats = 0
-                for t in set(parse_tag_input(evt.track)):
-                    seats += tracks.get(t, 0)
-                if overbook is False or p > seats:
-                    output[evt] = {
-                        'votes': score,
-                        'seats': seats,
-                        'expected': p,
-                    }
-        return output
+        for event, score in scores.items():
+            expected = score * forecast
+            seats = 0
+            for t in set(parse_tag_input(event.track)):
+                seats += tracks.get(t, 0)
+            if overbook is False or p > seats:
+                output[event] = {
+                    'score': score,
+                    'seats': seats,
+                    'expected': expected,
+                }
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
@@ -764,6 +768,21 @@ class Event(models.Model):
             return '%s - %smin' % (self.talk.title, self.talk.duration)
         else:
             return self.custom
+
+    def get_duration(self):
+        if self.duration:
+            return self.duration
+        elif self.talk:
+            return self.talk.duration
+        else:
+            return 0
+
+    def get_time_range(self):
+        n = datetime.datetime.combine(datetime.date.today(), self.start_time)
+        return (
+            n.time(),
+            (n + datetime.timedelta(seconds=self.get_duration() * 60)).time()
+        )
 
     def get_description(self):
         if self.talk:
