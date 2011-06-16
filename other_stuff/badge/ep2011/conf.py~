@@ -14,7 +14,6 @@ _ICONS = {
     'campi': Image.open('campi.png').convert('RGBA').resize((64, 64)),
     'challenge': Image.open('challenge.png').convert('RGBA').resize((64, 64)),
     'ciuccio': Image.open('ciuccio.png').convert('RGBA').resize((64, 64)),
-    'plaster': Image.open('plaster.png').convert('RGBA').resize((64, 64)),
     'postgres': Image.open('postgres.png').convert('RGBA').resize((64, 64)),
     'skeleton': Image.open('skeleton.png').convert('RGBA').resize((64, 64)),
     'wizard': Image.open('wizard.png').convert('RGBA').resize((64, 64)),
@@ -101,6 +100,9 @@ def ticket(image, ticket):
 
     w = image.size[0] / 2
     name_width = max(_FONTS['name'].getsize(first_name)[0], _FONTS['name'].getsize(last_name)[0])
+    #import sys
+    #print >> sys.stderr, first_name, last_name, name_width, w
+    #1/0
     if name_width > w - 60:
         font = _FONTS['name_small']
         name_y = 400, 510
@@ -123,8 +125,6 @@ def ticket(image, ticket):
     elif lname == 'dario trovato':
         logo = _ICONS['camcorder']
         ticket['experience'] = 5
-    elif lname == 'simone federici':
-        logo = _ICONS['plaster']
     elif 'drop table' in ltag:
         logo = _ICONS['ciuccio']
     elif 'challenge accepted' in ltag:
