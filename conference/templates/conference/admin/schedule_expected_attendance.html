@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-
+{% load conference %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
      <a href="../../../">Home</a> &rsaquo;
@@ -30,7 +30,10 @@
     <tr style="{% if item.expected > item.seats %}color: red;{% endif %}">
         <td>{{ item.event.start_time|time:"H:i" }}</td>
         <td>{{ item.event.get_description }}</td>
-        <td>{% for a in item.event.talk.get_all_speakers %}{{ a.user.assopy_user.name }}{% endfor %}</td>
+        <td>
+            {% get_talk_speakers item.event.talk as speakers %}
+            {% for ts in speakers %}{{ ts.speaker.user.firtst_name }} {{ a.speaker.user.last_name }}{% endfor %}
+        </td>
         <td>{{ item.event.track }}</td>
         <td>{{ item.seats }}</td>
         <td>{{ item.expected|floatformat:"0" }}</td>
@@ -51,7 +54,10 @@
     <tr style="{% if item.expected > item.seats %}color: red;{% endif %}">
         <td>{{ item.event.start_time|time:"H:i" }}</td>
         <td>{{ item.event.get_description }}</td>
-        <td>{% for a in item.event.talk.get_all_speakers %}{{ a.user.assopy_user.name }}{% endfor %}</td>
+        <td>
+            {% get_talk_speakers item.event.talk as speakers %}
+            {% for ts in speakers %}{{ ts.speaker.user.firtst_name }} {{ a.speaker.user.last_name }}{% endfor %}
+        </td>
         <td>{{ item.event.track }}</td>
         <td>{{ item.seats }}</td>
         <td>{{ item.expected|floatformat:"0" }}</td>

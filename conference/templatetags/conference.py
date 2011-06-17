@@ -37,20 +37,19 @@ mimetypes.init()
 
 register = template.Library()
 
-def _schedule_cache(request, sid):
+def _request_cache(request, key):
     """
     ritorna (o crea) un dizionario collegato all'oggetto passato utilizzabile
-    come cache per dati relativi allo schedule specificato (usato per creare
-    cache che vivono quanto una request)
+    come cache con visibilità pari a quella della request.
     """
     try:
-        return request._schedule_cache[sid]
+        return request._conf_cache[key]
     except KeyError:
-        request._schedule_cache[sid] = {}
+        request._conf_cache[key] = {}
     except AttributeError:
-        request._schedule_cache = {sid: {}}
-    return request._schedule_cache[sid]
-
+        request._conf_cache = {key: {}}
+    return request._conf_cache[key]
+    
 class LatestDeadlinesNode(template.Node):
     """
     Inserisce in una variabile di contesto le deadlines presenti.
@@ -533,7 +532,7 @@ def schedule_timetable(context, schedule, start=None, end=None):
     else:
         end = None
 
-    tracks = list(x for x in schedule.track_set.all())
+    tracks = models.Track.objects.by_schedule(schedule)
     request = context.get('request')
     if request:
         for ix, t in list(enumerate(tracks))[::-1]:
@@ -622,13 +621,16 @@ def render_schedule_timetable_as_list(context, schedule, timetable, start=None, 
     return render_to_string('conference/render_schedule_timetable_as_list.html', ctx)
 
 @fancy_tag(register, takes_context=True)
-def schedule_overbooked_events(context, schedule):
+def overbooked_events(context, conference):
     """
     restituisce l'elenco degli eventi per i quali è prevista un affluenza
     maggiore della capienza della track.  la previsione viene fatta utilizzando
     gli EventInterest.
     """
-    return schedule.expected_attendance(overbook=True)
+    c = _request_cache(context['request'], 'schedules_overbook')
+    if not c:
+        c['items'] = models.Schedule.objects.expected_attendance(conference, overbook=True)
+    return c['items']
 
 @fancy_tag(register, takes_context=True)
 def get_event_track(context, event):
@@ -636,24 +638,7 @@ def get_event_track(context, event):
     ritorna la prima istanza di track tra quelle specificate dall'evento o None
     se è di tipo speciale
     """
-
-    try:
-        cache = _schedule_cache(context['request'], event.schedule_id)
-    except KeyError:
-        dbtracks = dict((t.track, t) for t in event.schedule.track_set.all())
-    else:
-        try:
-            dbtracks = cache['tracks']
-        except KeyError:
-            # devo accedere al db, a questo punto carico tutti gli schedule
-            # della stessa conferenza
-            data = defaultdict(dict)
-            for t in models.Track.objects.filter(schedule__conference=event.schedule.conference):
-                data[t.schedule_id][t.track] = t
-            for sid, dbtracks in data.items():
-                _schedule_cache(context['request'], sid)['tracks'] = dbtracks
-            dbtracks = data[event.schedule_id]
-
+    dbtracks = dict((t.track, t) for t in models.Track.objects.by_schedule(event.schedule))
     for t in set(parse_tag_input(event.track)):
         if t in dbtracks:
             return dbtracks[t]
@@ -1400,3 +1385,10 @@ def teaser_event(events):
     for e in events:
         if event_has_track(e, 'teaser'):
             return e
+
+@fancy_tag(register, takes_context=True)
+def get_talk_speakers(context, talk):
+    c = _request_cache(context['request'], 'talk_speakers_%s' % talk.conference)
+    if not c:
+        c['items'] = models.TalkSpeaker.objects.speakers_by_talks(talk.conference)
+    return c['items'].get(talk.id, [])

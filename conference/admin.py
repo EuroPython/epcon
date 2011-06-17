@@ -18,6 +18,7 @@ from conference import utils
 import csv
 import logging
 import re
+from collections import defaultdict
 from cStringIO import StringIO
 
 log = logging.getLogger('conference')
@@ -326,10 +327,11 @@ class ScheduleAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def expected_attendance(self, request):
-        schedules = models.Schedule.objects.all()
+        allevents = defaultdict(dict)
+        for e, info in models.Schedule.objects.expected_attendance(settings.CONFERENCE).items():
+            allevents[e.schedule][e] = info
         data = {}
-        for s in schedules:
-            events = s.expected_attendance()
+        for s, events in allevents.items():
             data[s] = entry = {
                 'morning': [],
                 'afternoon': [],

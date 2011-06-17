@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from django.conf import settings as dsettings
 from django.core import exceptions
+from django.core.cache import cache
 from django.db import connection
 from django.db import models
 from django.db import transaction
@@ -465,10 +466,35 @@ class Talk(models.Model, UrlMixin):
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
+class TalkSpeakerManager(models.Manager):
+    def _conference_cache_key(self, conference):
+        cid = conference.pk if isinstance(conference, Conference) else conference
+        return 'conf:ts:%s' % cid
+
+    def clear_cache(self, conference):
+        if conference:
+            cache.delete(self._conference_cache_key(conference))
+        else:
+            for c in Conference.objects.all():
+                cache.delete(self._conference_cache_key(c))
+
+    def speakers_by_talks(self, conference):
+        key = self._conference_cache_key(conference)
+        output = cache.get(key)
+        if output is None:
+            output = defaultdict(list)
+            for ts in TalkSpeaker.objects.filter(talk__conference=conference).select_related('speaker__user'):
+                output[ts.talk_id].append({ 'speaker': ts.speaker, 'helper': ts.helper })
+            output = dict(output)
+            cache.set(key, output)
+        return output
+
 class TalkSpeaker(models.Model):
     talk = models.ForeignKey(Talk)
     speaker = models.ForeignKey(Speaker)
     helper = models.BooleanField(default=False)
+
+    objects = TalkSpeakerManager()
 
     class Meta:
         unique_together = (('talk', 'speaker'),)
@@ -624,34 +650,21 @@ class MediaPartnerConference(models.Model):
     class Meta:
         ordering = ['conference']
 
-class Schedule(models.Model):
-    """
-    Direttamente dentro lo schedule abbiamo l'indicazione della conferenza,
-    una campo alfanumerico libero, e il giorno a cui si riferisce.
+class ScheduleManager(models.Manager):
+    def _conference_cache_key(self, conference):
+        cid = conference.pk if isinstance(conference, Conference) else conference
+        return 'conf:schedules:%s' % cid
 
-    Attraverso le ForeignKey lo schedule è collegato alle track e agli
-    eventi.
+    def clear_cache(self, conference):
+        cache.delete(self._conference_cache_key(conference))
 
-    Questi ultimi possono essere dei talk o degli eventi "custom", come la
-    pyBirra, e sono collegati alle track in modalità "weak", attraverso un
-    tagfield.
-    """
-    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
-    slug = models.SlugField()
-    date = models.DateField()
-    description = models.TextField(blank=True)
-
-    class Meta:
-        ordering = ['date']
-
-    def attendees(self, forecast=False):
+    def attendees(self, conference, forecast=False):
         """
-        restituisce il numero di partecipanti a questa giornata; se forecast è
-        True il numero di partecipanti è quello previsto.
+        restituisce il numero di partecipanti per ogni schedule della conferenza.
         """
-        return settings.SCHEDULE_ATTENDEES(self, forecast)
+        return settings.SCHEDULE_ATTENDEES(conference, forecast)
 
-    def expected_attendance(self, factor=0.95, overbook=False):
+    def expected_attendance(self, conference, factor=0.95, overbook=False):
         """
         restituisce per ogni evento la previsione di partecipazione basata
         sugli EventInterest.
@@ -659,13 +672,23 @@ class Schedule(models.Model):
         `overbook` controlla se devono essere ritornati tutti gli eventi o solo
         quelli in overbook.
         """
-        track_qs = Track.objects.filter(schedule=self).values('track', 'seats')
+        key = self._conference_cache_key(conference)
+        output = cache.get(key)
+        if output:
+            return output
+
+        track_qs = Track.objects.filter(schedule__conference=conference).values('schedule', 'track', 'seats')
         if overbook:
             # entrano in gioco solo gli eventi associati a track per cui è
             # impostato un numero di posti
             track_qs = track_qs.filter(seats__gt=0)
-        tracks = dict((x['track'], x['seats']) for x in track_qs)
-        tracks_to_check = set(tracks.keys())
+        tracks = defaultdict(dict)
+        for t in track_qs:
+            tracks[t['schedule']][t['track']] = t['seats']
+
+        tracks_to_check = {}
+        for k, v in tracks.items():
+            tracks_to_check[k] = set(v.keys())
 
         # Considero una manifestazione di interesse, interest > 0, come la
         # volontà di partecipare ad un evento e aggiungo l'utente tra i
@@ -673,13 +696,13 @@ class Schedule(models.Model):
         # considero la sua presenza in proporzione (quindi gli eventi potranno
         # avere "punteggio" frazionario)
         qs = EventInterest.objects.all()\
-            .filter(event__schedule=self, interest__gt=0)\
-            .select_related('event__talk')
+            .filter(event__schedule__conference=conference, interest__gt=0)\
+            .select_related('event__talk', 'event__schedule')
 
         events = defaultdict(set)
 
         for x in qs:
-            if tracks_to_check & set(parse_tag_input(x.event.track)):
+            if tracks_to_check[x.event.schedule_id] & set(parse_tag_input(x.event.track)):
                 events[x.event].add(x.user_id)
 
         def group_by_times(events):
@@ -722,19 +745,62 @@ class Schedule(models.Model):
                     for f in found:
                         scores[f] += score / voters
 
-        forecast = self.attendees(forecast=True) * factor
+        forecasts = self.attendees(conference, forecast=True)
         output = {}
         for event, score in scores.items():
-            expected = score * forecast
+            expected = score * forecasts[event.schedule_id] * factor
             seats = 0
             for t in set(parse_tag_input(event.track)):
-                seats += tracks.get(t, 0)
+                seats += tracks[event.schedule_id].get(t, 0)
             if overbook is False or expected > seats:
                 output[event] = {
                     'score': score,
                     'seats': seats,
                     'expected': expected,
                 }
+
+        cache.set(key, output)
+        return output
+
+class Schedule(models.Model):
+    """
+    Direttamente dentro lo schedule abbiamo l'indicazione della conferenza,
+    una campo alfanumerico libero, e il giorno a cui si riferisce.
+
+    Attraverso le ForeignKey lo schedule è collegato alle track e agli
+    eventi.
+
+    Questi ultimi possono essere dei talk o degli eventi "custom", come la
+    pyBirra, e sono collegati alle track in modalità "weak", attraverso un
+    tagfield.
+    """
+    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
+    slug = models.SlugField()
+    date = models.DateField()
+    description = models.TextField(blank=True)
+
+    objects = ScheduleManager()
+
+    class Meta:
+        ordering = ['date']
+
+class TrackManager(models.Manager):
+    def _schedule_cache_key(self, schedule):
+        sid = schedule.id if not isinstance(schedule, int) else schedule
+        return 'conf:track-schedule:%s' % sid
+
+    def clear_cache(self, schedule):
+        cache.delete(self._schedule_cache_key(schedule))
+
+    def by_schedule(self, schedule):
+        """
+        ritorna le track associate allo schedule; questo metodo cacha i risultati
+        """
+        key = self._schedule_cache_key(schedule)
+        output = cache.get(key)
+        if output is None:
+            output = list(Track.objects.filter(schedule=schedule))
+            cache.set(key, output)
         return output
 
 class Track(models.Model):
@@ -745,6 +811,8 @@ class Track(models.Model):
     order = models.PositiveIntegerField('ordine', default=0)
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
+
+    objects = TrackManager()
 
     class Meta:
         ordering = ['order']
@@ -779,10 +847,9 @@ class Event(models.Model):
             return 0
 
     def get_time_range(self):
-        n = datetime.datetime.combine(datetime.date.today(), self.start_time)
+        n = datetime.datetime.combine(self.schedule.date, self.start_time)
         return (
-            n.time(),
-            (n + datetime.timedelta(seconds=self.get_duration() * 60)).time()
+            n, (n + datetime.timedelta(seconds=self.get_duration() * 60))
         )
 
     def get_description(self):
@@ -911,3 +978,26 @@ class VotoTalk(models.Model):
     class Meta:
         unique_together = (('user', 'talk'),)
 
+def _clear_track_cache(sender, **kwargs):
+    Track.objects.clear_cache(sender.schedule_id)
+post_save.connect(_clear_track_cache, sender=Track)
+
+def _clear_talkspeaker_cache(sender, **kwargs):
+    o = kwargs['instance']
+    if isinstance(o, Talk):
+        conference = o.conference
+    else:
+        conference = None
+    TalkSpeaker.objects.clear_cache(conference)
+post_save.connect(_clear_talkspeaker_cache, sender=Talk)
+post_save.connect(_clear_talkspeaker_cache, sender=Speaker)
+
+def _clear_schedule_cache(sender, **kwargs):
+    o = kwargs['instance']
+    if isinstance(o, Event):
+        conference = o.schedule.conference
+    else:
+        conference = o.event.schedule.conference
+    Schedule.objects.clear_cache(conference)
+post_save.connect(_clear_schedule_cache, sender=Event)
+post_save.connect(_clear_schedule_cache, sender=EventInterest)
