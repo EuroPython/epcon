@@ -49,4 +49,16 @@ if settings.DEBUG:
     ))
     urlpatterns += patterns('', *args)
 
+from pages import views as pviews
+# Questa view reimplementa il vecchio supporto di pages per le richieste ajax.
+# Se una richiesta è ajax viene utilizzato un template ad hoc
+class DetailsWithAjaxSupport(pviews.Details):
+    def get_template(self, request, context):
+        tpl = super(DetailsWithAjaxSupport, self).get_template(request, context)
+        if request.is_ajax():
+            import os.path
+            bname, fname = os.path.split(tpl)
+            tpl = os.path.join(bname, 'body_' + fname)
+        return tpl
+pviews.details = DetailsWithAjaxSupport()
 urlpatterns += patterns('', (r'', include('pages.urls')))
