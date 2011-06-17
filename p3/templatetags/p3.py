@@ -279,17 +279,22 @@ def render_partner_program(context):
         'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x.name)) ],
     }
 
-@register.filter
-def event_partner_program(e):
-    fare_id = re.search(r'f(\d+)', e.track)
+@fancy_tag(register, takes_context=True)
+def event_partner_program(context, event):
+    fare_id = re.search(r'f(\d+)', event.track)
     if fare_id is None:
         return ''
-    f = ConferenceModels.Fare.objects.get(pk=fare_id.group(1))
-    return mark_safe('<a href="/partner-program/#%s">%s</a>' % (slugify(f.name), e.custom,))
+    from conference.templatetags.conference import _request_cache
+    c = _request_cache(context['request'], 'fares')
+    if not c:
+        for f in ConferenceModels.Fare.objects.all():
+            c[str(f.id)] = f
+    fare = c[fare_id.group(1)]
+    return mark_safe('<a href="/partner-program/#%s">%s</a>' % (slugify(fare.name), event.custom,))
 
 @register.filter
 def schedule_to_be_splitted(s):
-    tracks = s.track_set.all()
+    tracks = ConferenceModels.Track.objects.by_schedule(s)
     s = []
     for t in tracks:
         if t.track.startswith('partner') or t.track.startswith('sprint'):

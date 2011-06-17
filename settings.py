@@ -213,6 +213,12 @@ def CONFERENCE_VOTING_ALLOWED(user):
 
 def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     from p3.utils import conference_stats
+    from conference.models import Schedule
+    if not isinstance(schedule, Schedule):
+        output = {}
+        for s in Schedule.objects.filter(conference=schedule):
+            output[s.id] = CONFERENCE_SCHEDULE_ATTENDEES(s, forecast)
+        return output
     code = 'nostaff_days_' + schedule.date.strftime('%Y-%m-%d')
     stats = conference_stats(schedule.conference, code)
     if not stats:

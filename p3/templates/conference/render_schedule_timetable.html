@@ -1,5 +1,5 @@
 {% load conference p3 %}
-{% schedule_overbooked_events schedule as overbooked %}
+{% overbooked_events schedule.conference as overbooked %}
 {% if request.user.is_staff and timetable.errors %}
 <div class="error-notice">
     <h2>TimeTable errors</h2>
@@ -78,8 +78,9 @@
                     </h3>
                     {% if not teaser %}
                     by 
-                    {% for s in ref.talk.get_all_speakers %}
-                    <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                    {% get_talk_speakers ref.talk as speakers %}
+                    {% for ts in speakers %}
+                    <a href="{% url conference-speaker slug=ts.speaker.slug %}">{{ ts.speaker.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                     {% endif %}
                     <div class="tools">
@@ -100,7 +101,7 @@
                     </div>
                     {% endwith %}
                 {% else %}
-                    <div class="custom-event">{% if ref|event_has_track:"partner-program" %}{{ ref|event_partner_program }}{% else %}{{ ref.custom|safe }}{% endif %}</div>
+                    <div class="custom-event">{% if ref|event_has_track:"partner-program" %}{% event_partner_program ref %}{% else %}{{ ref.custom|safe }}{% endif %}</div>
                     <div class="tools">&nbsp;</div>
                 {% endif %}
                 </div>
