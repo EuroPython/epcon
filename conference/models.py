@@ -729,7 +729,7 @@ class Schedule(models.Model):
             seats = 0
             for t in set(parse_tag_input(event.track)):
                 seats += tracks.get(t, 0)
-            if overbook is False or p > seats:
+            if overbook is False or expected > seats:
                 output[event] = {
                     'score': score,
                     'seats': seats,
