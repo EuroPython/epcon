@@ -735,6 +735,7 @@ class Schedule(models.Model):
                     'seats': seats,
                     'expected': expected,
                 }
+        return output
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
