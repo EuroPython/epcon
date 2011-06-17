@@ -874,7 +874,10 @@ class Event(models.Model):
                 return dbtracks[t.name]
 
     def expected_attendance(self):
-        return self.schedule.expected_attendance().get(self)
+        if self.talk:
+            return Schedule.objects.expected_attendance(conference=self.talk.conference).get(self)
+        else:
+            return 0
 
 class EventInterest(models.Model):
     event = models.ForeignKey(Event)
