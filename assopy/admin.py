@@ -339,7 +339,8 @@ class UserAdmin(admin.ModelAdmin):
             coupon = forms.CharField(label='Coupon(s)', required=False)
             country = forms.CharField(max_length=2, required=False)
             address = forms.CharField(max_length=150, required=False)
-            billing_notes = forms.CharField(required=False)
+            card_name = forms.CharField(max_length=200, required=True, initial=user.card_name or user.name())
+            billing_notes = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
             remote = forms.BooleanField(required=False, initial=True, help_text='debug only, fill the order on the remote backend')
             def __init__(self, *args, **kwargs):
                 super(FormTickets, self).__init__(*args, **kwargs)
@@ -372,6 +373,8 @@ class UserAdmin(admin.ModelAdmin):
             form = FormTickets(data=request.POST)
             if form.is_valid():
                 data = form.cleaned_data
+                # non salvo l'utente per non sovrascrivere il suo card_name
+                user.card_name = data['card_name']
                 models.Order.objects.create(
                     user=user,
                     payment=data['payment'], 
