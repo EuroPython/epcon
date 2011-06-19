@@ -1396,3 +1396,70 @@ def get_talk_speakers(context, talk):
     if not c:
         c['items'] = models.TalkSpeaker.objects.speakers_by_talks(talk.conference)
     return c['items'].get(talk.id, [])
+
+
+@fancy_tag(register, takes_context=True)
+def current_events(context, time=None):
+    if time is None:
+        time = datetime.now()
+    try:
+        schedule = models.Schedule.objects.get(date=time.date())
+    except Schedule.DoesNotExist:
+        return {}
+    output = {}
+    tt = schedule_timetable(context, schedule)
+    for col in tt.byTimes():
+        if col[0] > time.time():
+            break
+        output = dict(
+            (r['row'], r['data']) for r in col[1]
+        )
+    else:
+        output = {}
+    return output
+
+@fancy_tag(register, takes_context=True)
+def next_events(context, time=None):
+    if time is None:
+        time = datetime.now()
+    try:
+        schedule = models.Schedule.objects.get(date=time.date())
+    except Schedule.DoesNotExist:
+        return {}
+    found = {}
+    output = {}
+    tt = schedule_timetable(context, schedule)
+    for col in tt.byTimes():
+        if col[0] >= time.time():
+            for item in col[1]:
+                row = item['row']
+                data = item['data']
+                if row in found and found[row] is None:
+                    continue
+                if data:
+                    if hasattr(data, 'evt'):
+                        data = data.evt.ref
+                    else:
+                        data = data.ref
+                if data != found.get(row):
+                    output[row] = item['data']
+                    found[row] = None
+            if not any(found.values()):
+                break
+        else:
+            found = {}
+            for item in col[1]:
+                row = item['row']
+                data = item['data']
+                if data:
+                    if hasattr(data, 'evt'):
+                        data = data.evt.ref
+                    else:
+                        data = data.ref
+                found[row] = data
+
+    return output
+
+@fancy_tag(register)
+def current_conference():
+    return models.Conference.objects.current()
