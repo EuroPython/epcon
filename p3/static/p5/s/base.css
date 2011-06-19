@@ -1504,3 +1504,30 @@ section.countdown {
 #sim-report .frozen td {
     color: green;
 }
+
+.scrollable {
+    overflow: hidden;
+    position: relative;
+}
+
+.scrollable .items {
+    position: absolute;
+    width: 20000em;
+}
+
+.scrollable .items > div {
+    float: left;
+}
+
+#on-air .scrollable {
+    height: 420px;
+}
+
+#on-air .event {
+    height: 420px;
+}
+
+#on-air .speaker-picture {
+    width: 80px;
+    margin: 0 0 20px 0;
+}

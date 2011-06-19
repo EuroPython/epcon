@@ -9,7 +9,7 @@ import sys
 import urllib
 import urllib2
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, date
 from itertools import groupby
 
 from django import template
@@ -349,3 +349,45 @@ def com_com_registration(user):
         params[k] = v.encode('utf-8')
     return url + urllib.urlencode(params)
 
+@register.inclusion_tag('p3/box_next_events.html', takes_context=True)
+def box_next_events(context):
+    from conference.templatetags import conference as ctags
+    t = datetime.now()
+    try:
+        sch = ConferenceModels.Schedule.objects.get(date=t.date())
+    except ConferenceModels.Schedule.DoesNotExist:
+        current = next = {}
+    else:
+        current = ctags.current_events(context, t)
+        next = ctags.next_events(context, t)
+    tracks = dict(
+        (x, None)
+        for x in ConferenceModels.Track.objects.by_schedule(sch)
+        if x.outdoor == False
+    )
+    for track in tracks:
+        c = current.get(track)
+        if c:
+            if hasattr(c, 'evt'):
+                c = c.evt.ref
+            else:
+                c = c.ref
+        n = next.get(track)
+        if n:
+            n_time = n.time
+            if hasattr(n, 'evt'):
+                n = n.evt.ref
+            else:
+                n = n.ref
+        else:
+            n_time = None
+        tracks[track] = {
+            'current': c,
+            'next': (n, n_time),
+        }
+    events = sorted(tracks.items(), key=lambda x: x[0].order)
+    ctx = Context(context)
+    ctx.update({
+        'events': events,
+    })
+    return ctx

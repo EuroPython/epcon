@@ -1,0 +1,72 @@
+{% load conference i18n %}
+<div id="on-air" class="section cms">
+    <div class="scrollable">
+        <div class="items">
+        {% for track, item in events %}
+            <div>
+                <div class="column span-6 event">
+                    <h2>ON AIR - {{ track.title|safe }}</h2>
+                    {% if item.current %}
+                        {% if item.current.talk %}
+                            {% with item.current.talk as talk %}
+                            {% get_talk_speakers talk as speakers %}
+                            <div class="column span-2">
+                                {% for s in speakers %}
+                                    <div class="speaker-picture">
+                                        <img class="block" src="{{ s.speaker.user.assopy_user.photo_url|image_resized:"r_small" }}" alt="" width="80" />
+                                    </div>
+                                    <p>{{ s.speaker.user.assopy_user.name }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="column span-4 last">
+                                <h3>{{ talk.title }}</h3>
+                                <p style="overflow: hidden">{{ talk.getAbstract.body|truncatewords:60|linebreaks }}</p>
+                            </div>
+                            {% endwith %}
+                        {% else %}
+                            <h3>{{ item.current.custom|safe }}</h3>
+                        {% endif %}
+                    {% else %}
+                        <h3>Nothing Special</h3>
+                    {% endif %}
+                </div>
+                <div class="column span-6 event last">
+                    {% if item.next.0 %}
+                        <h2>SOON@{{ item.next.1|time:"H:i" }}</h2>
+                        {% if item.next.0.talk %}
+                            {% with item.next.0.talk as talk %}
+                            {% get_talk_speakers talk as speakers %}
+                            <div class="column span-2">
+                                {% for s in speakers %}
+                                    <div class="speaker-picture">
+                                        <img class="block" src="{{ s.speaker.user.assopy_user.photo_url|image_resized:"r_small" }}" alt="" width="80" />
+                                    </div>
+                                    <p>{{ s.speaker.user.assopy_user.name }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="column span-4 last">
+                                <h3>{{ talk.title }}</h3>
+                                <p style="overflow: hidden">{{ talk.getAbstract.body|truncatewords:60|linebreaks }}</p>
+                            </div>
+                            {% endwith %}
+                        {% else %}
+                            <h3>{{ item.next.0.custom|safe }}</h3>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function() {
+        $('#on-air .scrollable').scrollable({
+            circular: true,
+            mousewheel: true
+        }).autoscroll({
+            interval: 10000
+        });
+        setTimeout(document.location.reload, 5*60*1000);
+    })();
+</script>

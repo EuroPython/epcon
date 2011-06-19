@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load cache microblog conference %}
+{% load p3 cache microblog conference %}
 
 {% block TEASER %}
 <div class="container">
@@ -22,20 +22,25 @@
     
 <section class="teaser">
     <div class="container clearfix">
-        <div class="span-5">
-            <h2><span>Confirmed</span> Speakers</h2>
-            <img src="{{ STATIC_URL }}p5/i/speakers-europython.png" alt="" width="320" height="160" />
-            <div class="button">
-                <a href="/call-for-paper/"><b>Join us as a speaker!</b></a>
+        {% current_conference as conf %}
+        {% if not conf.conference %}
+            <div class="span-5">
+                <h2><span>Confirmed</span> Speakers</h2>
+                <img src="{{ STATIC_URL }}p5/i/speakers-europython.png" alt="" width="320" height="160" />
+                <div class="button">
+                    <a href="/call-for-paper/"><b>Join us as a speaker!</b></a>
+                </div>
             </div>
-        </div>
 
-        <div class="europython-is span-7 last">
-            <h2><span>EuroPython</span> is&hellip;</h2>
-            <p>
-               An occasion to follow interesting <a href="/talks/">talks</a>, <a href="/trainings">hands-on trainings</a>, do some <a href="/networking/">networking</a>, <a href="/work-python/">recruite</a> qualified staff or be recruited by great firms, and last but not least follow funky <a href="/pyevents/">PyEvents</a>.
-            </p>
-        </div>
+            <div class="europython-is span-7 last">
+                <h2><span>EuroPython</span> is&hellip;</h2>
+                <p>
+                An occasion to follow interesting <a href="/talks/">talks</a>, <a href="/trainings">hands-on trainings</a>, do some <a href="/networking/">networking</a>, <a href="/work-python/">recruite</a> qualified staff or be recruited by great firms, and last but not least follow funky <a href="/pyevents/">PyEvents</a>.
+                </p>
+            </div>
+        {% else %}
+            {% box_next_events %}
+        {% endif %}
     </div>
 </section>
 {% endblock%}
@@ -66,6 +71,8 @@
 {% endcomment %}
 
 
+{% current_conference as conf %}
+{% if not conf.conference %}
 <section class="where clearfix">
     <h2>Let’s meet in <span>Florence</span></h2>
     <div class="span-6">
@@ -90,6 +97,7 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <hr />
 
