@@ -5,7 +5,7 @@
         {% for track, item in events %}
             <div>
                 <div class="column span-6 event">
-                    <h2>ON AIR - {{ track.title|safe }}</h2>
+                    <h2>{{ track.title|safe }} - ON AIR</h2>
                     {% if item.current %}
                         {% if item.current.talk %}
                             {% with item.current.talk as talk %}
