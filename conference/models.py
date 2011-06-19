@@ -664,7 +664,7 @@ class ScheduleManager(models.Manager):
         """
         return settings.SCHEDULE_ATTENDEES(conference, forecast)
 
-    def expected_attendance(self, conference, factor=0.95, overbook=False):
+    def expected_attendance(self, conference, factor=0.95):
         """
         restituisce per ogni evento la previsione di partecipazione basata
         sugli EventInterest.
@@ -677,18 +677,17 @@ class ScheduleManager(models.Manager):
         if output:
             return output
 
-        track_qs = Track.objects.filter(schedule__conference=conference).values('schedule', 'track', 'seats')
-        if overbook:
-            # entrano in gioco solo gli eventi associati a track per cui è
-            # impostato un numero di posti
-            track_qs = track_qs.filter(seats__gt=0)
+        track_qs = Track.objects\
+                    .filter(schedule__conference=conference)\
+                    .values('schedule', 'track', 'seats')
+
         tracks = defaultdict(dict)
         for t in track_qs:
             tracks[t['schedule']][t['track']] = t['seats']
 
-        tracks_to_check = {}
-        for k, v in tracks.items():
-            tracks_to_check[k] = set(v.keys())
+        #tracks_to_check = {}
+        #for k, v in tracks.items():
+        #    tracks_to_check[k] = set(v.keys())
 
         # Considero una manifestazione di interesse, interest > 0, come la
         # volontà di partecipare ad un evento e aggiungo l'utente tra i
@@ -702,10 +701,15 @@ class ScheduleManager(models.Manager):
         events = defaultdict(set)
 
         for x in qs:
-            if tracks_to_check[x.event.schedule_id] & set(parse_tag_input(x.event.track)):
-                events[x.event].add(x.user_id)
+            events[x.event].add(x.user_id)
+            #if tracks_to_check[x.event.schedule_id] & set(parse_tag_input(x.event.track)):
+            #    events[x.event].add(x.user_id)
 
         def group_by_times(events):
+            """
+            generatore che organizza gli eventi passati in gruppi che temporali
+            contigui.
+            """
             sorted_events = sorted(
                 filter(
                     lambda x: x[0].get_duration(),
@@ -727,9 +731,13 @@ class ScheduleManager(models.Manager):
                         group.append(sorted_events.pop(ix))
                 yield group
 
-        scores = defaultdict(lambda: 0)
+        # associo ad ogni evento il numero di voti che ha ottenuto;
+        # l'operazione è complicata dal fatto che non tutti i voti hanno lo
+        # stesso peso; se un utente ha marcato come +1 due eventi che avvengano
+        # in parallelo ovviamente non potrà partecipare ad entrambi, quindi il
+        # suo voto deve essere scalato
+        scores = defaultdict(lambda: 0.0)
         for group in group_by_times(events):
-            voters = len(set.union(*[x[1] for x in group]))
             while group:
                 evt, users = group.pop()
                 for u in users:
@@ -743,21 +751,57 @@ class ScheduleManager(models.Manager):
                             found.append(other[0])
                     score = 1.0 / len(found)
                     for f in found:
-                        scores[f] += score / voters
+                        scores[f] += score 
 
-        forecasts = self.attendees(conference, forecast=True)
         output = {}
-        for event, score in scores.items():
-            expected = score * forecasts[event.schedule_id] * factor
+        # adesso devo fare la previsione dei partecipanti per ogni evento, per
+        # farla divido il punteggio di un evento per il numero di votanti che
+        # hanno espresso un voto per un evento *nella medesima fascia
+        # temporale*; il numero che ottengo è un fattore k che se moltiplicato
+        # per la previsione di presenze al giorno mi da un'indicazione di
+        # quante persone sono previste per l'evento.
+        forecasts = self.attendees(conference, forecast=True)
+        # per calcolare il punteggio relativo ad una fascia temporale devo fare
+        # un doppio for sugli eventi, per limitare il numero delle iterazioni
+        # interno raggruppo gli eventi per giorno
+        event_by_day = defaultdict(set)
+        for e in events:
+            event_by_day[e.schedule_id].add(e)
+        for event in events:
+            score = scores[event]
+            group_score = score
+            drange = event.get_time_range()
+            for evt in event_by_day[event.schedule_id]:
+                if evt is event:
+                    continue
+                r = evt.get_time_range()
+                if (drange[0] <= r[0] and drange[1] >= r[1]) or\
+                    (drange[0]>r[0] and drange[0]<r[1]) or\
+                    (drange[1]>r[0] and drange[1]<r[1]):
+                    group_score += scores[evt]
+            k = score / group_score
+            expected = k * forecasts[event.schedule_id] * factor
             seats = 0
             for t in set(parse_tag_input(event.track)):
                 seats += tracks[event.schedule_id].get(t, 0)
-            if overbook is False or expected > seats:
-                output[event] = {
-                    'score': score,
-                    'seats': seats,
-                    'expected': expected,
-                }
+            output[event] = {
+                'score': score,
+                'seats': seats,
+                'expected': expected,
+                'overbook': seats and expected > seats,
+            }
+#                
+#        for event, score in scores.items():
+#            expected = score * forecasts[event.schedule_id] * factor
+#            seats = 0
+#            for t in set(parse_tag_input(event.track)):
+#                seats += tracks[event.schedule_id].get(t, 0)
+#            output[event] = {
+#                'score': score,
+#                'seats': seats,
+#                'expected': expected,
+#                'overbook': seats and expected > seats,
+#            }
 
         cache.set(key, output)
         return output

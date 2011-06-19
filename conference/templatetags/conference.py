@@ -629,7 +629,11 @@ def overbooked_events(context, conference):
     """
     c = _request_cache(context['request'], 'schedules_overbook')
     if not c:
-        c['items'] = models.Schedule.objects.expected_attendance(conference, overbook=True)
+        data = models.Schedule.objects.expected_attendance(conference)
+        for k, v in data.items():
+            if not v['overbook']:
+                del data[k]
+        c['items'] = data
     return c['items']
 
 @fancy_tag(register, takes_context=True)

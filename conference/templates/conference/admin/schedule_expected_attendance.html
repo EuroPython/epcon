@@ -26,13 +26,13 @@
         <th>seats</th>
         <th>expected</th>
     </tr>
-    {% for item in data.morning|dictsort:"event.track" %}
+    {% for item in data.morning|dictsort:"event.start_time" %}
     <tr style="{% if item.expected > item.seats %}color: red;{% endif %}">
         <td>{{ item.event.start_time|time:"H:i" }}</td>
         <td>{{ item.event.get_description }}</td>
         <td>
             {% get_talk_speakers item.event.talk as speakers %}
-            {% for ts in speakers %}{{ ts.speaker.user.firtst_name }} {{ a.speaker.user.last_name }}{% endfor %}
+            {% for ts in speakers %}{{ ts.speaker.user.first_name }} {{ ts.speaker.user.last_name }}{% endfor %}
         </td>
         <td>{{ item.event.track }}</td>
         <td>{{ item.seats }}</td>
@@ -50,13 +50,13 @@
         <th>seats</th>
         <th>expected</th>
     </tr>
-    {% for item in data.afternoon|dictsort:"event.track" %}
+    {% for item in data.afternoon|dictsort:"event.start_time" %}
     <tr style="{% if item.expected > item.seats %}color: red;{% endif %}">
         <td>{{ item.event.start_time|time:"H:i" }}</td>
         <td>{{ item.event.get_description }}</td>
         <td>
             {% get_talk_speakers item.event.talk as speakers %}
-            {% for ts in speakers %}{{ ts.speaker.user.firtst_name }} {{ a.speaker.user.last_name }}{% endfor %}
+            {% for ts in speakers %}{{ ts.speaker.user.first_name }} {{ ts.speaker.user.last_name }}{% endfor %}
         </td>
         <td>{{ item.event.track }}</td>
         <td>{{ item.seats }}</td>
