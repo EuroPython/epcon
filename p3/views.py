@@ -397,6 +397,24 @@ def schedule(request, conference):
         'form': form,
     }
 
+@render_to('p3/schedule_list.html')
+def schedule_list(request, conference):
+    qs = Event.objects\
+        .filter(schedule__conference=conference)\
+        .select_related('schedule', 'talk')
+
+    events = []
+    for e in qs:
+        if 'partner' not in e.track:
+            events.append({
+                'time': datetime.datetime.combine(e.schedule.date, e.start_time),
+                'event': e,
+            })
+    return {
+        'conference': conference,
+        'events': events,
+    }
+
 @render_to('p3/schedule_speakers.html')
 def schedule_speakers(request, conference):
     events = Event.objects\
