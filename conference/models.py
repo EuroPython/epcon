@@ -82,6 +82,15 @@ class Conference(models.Model):
             # date non impostate
             return False
 
+    def conference(self):
+        today = datetime.date.today()
+        try:
+            return self.conference_start <= today <= self.conference_end
+        except TypeError:
+            raise
+            # date non impostate
+            return False
+
 class DeadlineManager(models.Manager):
     def valid_news(self):
         today = datetime.date.today()
