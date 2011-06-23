@@ -102,12 +102,12 @@
     </nav>
     <div class="container clearfix">
         <section class="notice countdown">
-            <!--           
-            <strong>Conference <a href="/registration/">sold out</a>!</strong>
+            <strong>Conference sold out</strong>
+            {% comment %}
             (<a href="http://ep2011.europython.eu/blog/2011/05/18/pyfiorentina-legendary-steak">PyFiorentina</a> seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!)
-            -->
             <strong>Hurry up!</strong> Conference tickets left: <strong>{{ COUNTDOWN.conference }}</strong>,
             <a href="http://ep2011.europython.eu/blog/2011/05/18/pyfiorentina-legendary-steak">PyFiorentina</a> seats left: <strong>sold out</strong>!
+            {% endcomment %}
         </section>
     </div>
 
@@ -119,7 +119,8 @@
         </div>
         <div class="span-3">
             <div class="buy badge">
-                <h5><a href="http://code.google.com/codejam/contest/registration?t=1275485">Code Jam registration</a></h5>
+                <h5><a href="/pyevents#challenge">Join the Python Challenge</a></h5>
+                <b>Win a MacBook!</b>
                 {% comment %}
                 <h5><a href="/registration/">Buy Tickets</a></h5>
                 Starting from <b>50€</b>
@@ -281,6 +282,7 @@
     </script>
 </body>
 </html>
+
 
 
 
