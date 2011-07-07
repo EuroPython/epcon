@@ -964,8 +964,8 @@ def render_hotels(hotels):
         'hotels': hotels,
     }
 
-@register.filter
-def embed_video(value, args=""):
+@fancy_tag(register, takes_context=True)
+def embed_video(context, value, args=""):
     """
     {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
     """
@@ -979,20 +979,36 @@ def embed_video(value, args=""):
     video_url = None
     video_path = None
     if isinstance(value, models.Talk):
+        if not settings.TALK_VIDEO_ACCESS(context['request'], value):
+            return ''
         if not value.video_type or value.video_type == 'download':
+            from django.core.urlresolvers import reverse
+            video_url = reverse('conference-talk-video-mp4', kwargs={'slug': value.slug })
             if value.video_file:
-                video_url = dsettings.MEDIA_URL + 'conference/videos/' + video_url.name
                 video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
             elif settings.VIDEO_DOWNLOAD_FALLBACK:
                 for ext in ('.avi', '.mp4'):
                     fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', value.slug + ext)
                     if os.path.exists(fpath):
-                        video_url = dsettings.MEDIA_URL + 'conference/videos/' + value.slug + ext
                         video_path = fpath
                         break
             source = 'download'
         else:
             video_url = value.video_url
+#        if not value.video_type or value.video_type == 'download':
+#            if value.video_file:
+#                video_url = dsettings.MEDIA_URL + 'conference/videos/' + video_url.name
+#                video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
+#            elif settings.VIDEO_DOWNLOAD_FALLBACK:
+#                for ext in ('.avi', '.mp4'):
+#                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', value.slug + ext)
+#                    if os.path.exists(fpath):
+#                        video_url = dsettings.MEDIA_URL + 'conference/videos/' + value.slug + ext
+#                        video_path = fpath
+#                        break
+#            source = 'download'
+#        else:
+#            video_url = value.video_url
     else:
         video_url = value
     if not video_url:
@@ -1071,14 +1087,20 @@ def embed_video(value, args=""):
             'info': finfo,
         }
 
+        data['attrs'] += ' src="%s"' % data['href']
         html = """
             <div>
                 <video %(attrs)s>
-                    <source src="%(href)s" />
+                    <_source src="%(href)s" />
                 </video>
                 <a href="%(href)s">download video%(info)s</a>
             </div>
             """ % data
+        html = """
+            <div>
+                <a href="%(href)s">download video%(info)s via BitTorrent</a>
+            </div>
+        """ % data
     return mark_safe(html)
 
 @register.tag

@@ -232,6 +232,51 @@ def talk_xml(request, slug, talk, full_access):
         'talk': talk,
     }
 
+def talk_video(request, slug):
+    tlk = get_object_or_404(models.Talk, slug=slug)
+
+    if not tlk.video_type or value.video_path == 'download':
+        if tlk.video_file:
+            vurl = dsettings.MEDIA_URL + tlk.video_file.url
+            vfile = tlk.video_file.path
+        elif settings.VIDEO_DOWNLOAD_FALLBACK:
+            for ext in ('.avi', '.mp4'):
+                fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', tlk.slug + ext)
+                if os.path.exists(fpath):
+                    vurl = dsettings.MEDIA_URL + 'conference/videos/' + tlk.slug + ext
+                    vfile = fpath
+                    break
+            else:
+                raise http.Http404()
+        else:
+            raise http.Http404()
+    else:
+        raise http.Http404()
+
+    if settings.TALK_VIDEO_ACCESS:
+        if not settings.TALK_VIDEO_ACCESS(request, tlk):
+            return http.HttpResponseForbidden()
+
+    vext = os.path.splitext(vfile)[1]
+    if vext == '.mp4':
+        mt = 'video/mp4'
+    elif vext == '.avi':
+        mt = 'video/x-msvideo'
+    else:
+        mt = None
+    if settings.X_SENDFILE is None:
+        r = http.HttpResponse(file(vfile), mimetype=mt)
+    elif settings.X_SENDFILE['type'] == 'x-accel':
+        r = http.HttpResponse('', mimetype=mt)
+        r['X-Accel-Redirect'] = vurl
+    elif settings.X_SENDFILE['type'] == 'custom':
+        return settings.X_SENDFILE['f'](tlk, url=vurl, fpath=vfile, mimetype=mt)
+    else:
+        raise RuntimeError('invalid X_SENDFILE')
+    fname = '%s%s' % (tlk.title.encode('utf-8'), vext)
+    r['content-disposition'] = 'attachment; filename="%s"' % fname
+    return r
+
 @render_to('conference/conference.xml')
 def conference_xml(request, conference):
     conference = get_object_or_404(models.Conference, code=conference)

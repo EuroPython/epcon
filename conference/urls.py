@@ -8,6 +8,8 @@ urlpatterns = patterns('',
 
     url(r'^talks/admin/upload', 'conference.views.talk_admin_upload', name = 'conference-talks-upload'),
     url(r'^talks/report', 'conference.views.talk_report', name = 'conference-talk-report'),
+    url(r'^talks/(?P<slug>[\w-]+)/video$', 'conference.views.talk_video', name = 'conference-talk-video'),
+    url(r'^talks/(?P<slug>[\w-]+)/video.mp4$', 'conference.views.talk_video', name = 'conference-talk-video-mp4'),
     url(r'^talks/(?P<slug>[\w-]+).xml$', 'conference.views.talk_xml', name = 'conference-talk-xml'),
     url(r'^talks/(?P<slug>[\w-]+)$', 'conference.views.talk', name = 'conference-talk'),
 
