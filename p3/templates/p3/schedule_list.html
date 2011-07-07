@@ -28,6 +28,12 @@
                 {% endfor %}
                 in
                 <strong><i>{{ e.get_track.title|safe }}</i></strong>
+                {% if e.talk %}
+                    {% embed_video e.talk args="width=500,height=400" as h %}
+                    {% if h %}
+                    <a href="{% url conference-talk-video slug=e.talk.slug %}?torrent=1">BitTorrent</a>
+                    {% endif %}
+                {% endif %}
             {% endwith %}
             {% else %}
                 <span class="custom-event">
