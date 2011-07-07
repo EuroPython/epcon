@@ -8,7 +8,7 @@ _FONTS = {
     'name_small': ImageFont.truetype(_FONT_NAME, 10 * 8),
     'info': ImageFont.truetype(_FONT_NAME, 8 * 8),
 }
-images = 'allyourbase.png apple.png bertos.png bofh.png bycicle.png cake.png camcorder.png campi.png challenge.png ciuccio.png disqus.png dontpanic.png enthought.png fedora.png fluidinfo.png f-secure.png giullare.png iphone.png lundh.png male.png maya.png merengue.png moinmoin.png openquake.png openstack.png panino.png perl.png plaster.png postgres.png pycharm.png pyhp.png pypy.png pyside.png rapple.png riverbank.png royale.png skeleton.png sourceforge.png spiderman.png spotify.png stackless.png taz.png ubuntu.png wizard.png'
+images = 'allyourbase.png apple.png bertos.png bofh.png bycicle.png cake.png camcorder.png campi.png challenge.png ciuccio.png disqus.png dontpanic.png enthought.png fedora.png fluidinfo.png f-secure.png giullare.png iphone.png lundh.png male.png maya.png merengue.png moinmoin.png openquake.png openstack.png panino.png perl.png plaster.png postgres.png pycharm.png pyhp.png pypy.png pyside.png rapple.png riverbank.png royale.png skeleton.png sourceforge.png spiderman.png spotify.png stackless.png taz.png ubuntu.png wizard.png female.png'
 _ICONS = {
     None: Image.open('logo.png').convert('RGBA').resize((64, 64)),
 }
@@ -124,6 +124,8 @@ def ticket(image, ticket):
         logo = _ICONS['cake']
     elif lname == 'lorenzo mancini':
         logo = _ICONS['male']
+    elif lname == 'fabio pliger':
+        logo = _ICONS['female']
     elif lname == 'giovanni bajo':
         logo = _ICONS['skeleton']
     elif lname == 'dario trovato':
