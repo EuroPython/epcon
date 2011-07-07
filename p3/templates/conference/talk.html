@@ -5,13 +5,21 @@
 
 {% block EXTRA_HEAD %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}conference/projekktor/projekktor.js"></script>
-<link rel="stylesheet" href="{{ STATIC_URL }}conference/projekktor/style/projekktor_theme_tll/style.css" type="text/css" media="screen" />
+<script type="text/javascript" src="{{ STATIC_URL }}conference/projekktor/projekktor.min.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}conference/projekktor/theme/style.css" type="text/css" media="screen" />
 <script type="text/javascript">
+/*
 var PROJEKKTOR_CONFIG = {
     playerFlashMP4:    "{{ STATIC_URL }}conference/projekktor/playerMP4.swf",
     playerFlashMP3:    "{{ STATIC_URL }}conference/projekktor/playerMP3.swf"
 };
+*/
+$(document).ready(function() {
+    projekktor('video', {
+        playerFlashMP4: "{{ STATIC_URL }}conference/projekktor/jarisplayer.swf",
+        playerFlashMP3: "{{ STATIC_URL }}conference/projekktor/jarisplayer.swf"
+    });
+});
 </script>
 <script type="text/javascript">//<![CDATA[
     $(function() {
@@ -84,10 +92,11 @@ var PROJEKKTOR_CONFIG = {
                 {% endfor %}
                 {% with events|main_event as e %}
                 {% if e.schedule.conference %}
-                    {% if talk|embed_video %}
+                    {% embed_video talk args="width=500,height=400" as h %}
+                    {% if h %}
                     <section class="talk video">
                         <h2>{% trans "Video" %}</h2>
-                        {{ talk|embed_video:"720,576" }}
+                        {{ h }}
                     </section>
                     {% endif %}
                 {% endif %}
