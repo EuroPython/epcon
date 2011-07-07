@@ -47,7 +47,7 @@ class Command(BaseCommand):
             for n in options['names'].split(','):
                 q |= Q(name__icontains=n)
             tickets = tickets.filter(q)
-            cmdargs.extend(['-e', '0'])
+            cmdargs.extend(['-e', '0', '-p', '297x210', '-n', '4'])
         files = utils.render_badge(tickets, cmdargs=cmdargs)
         f = files[0]
         f.seek(0)
