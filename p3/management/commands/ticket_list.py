@@ -17,12 +17,20 @@ class Command(BaseCommand):
             default=False,
             help='list by ticket instead of person',
         ),
+        make_option('--no-staff',
+            action='store_true',
+            dest='no_staff',
+            default=False,
+            help='exclude staff tickets',
+        ),
     )
     def handle(self, *args, **options):
         qs = models.Ticket.objects\
                     .filter(orderitem__order___complete=True)\
                     .exclude(fare__ticket_type='partner')\
                     .select_related('user', 'fare', 'p3_conference')
+        if options['no_staff']:
+            qs = qs.exclude(ticket_type='staff')
 
         buyers = defaultdict(list)
         names = defaultdict(list)
