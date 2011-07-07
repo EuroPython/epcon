@@ -237,6 +237,19 @@ def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
     from p3.utils import conference_ticket_badge
     return conference_ticket_badge(tickets)
 
+def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
+    return True
+    if talk.conference != CONFERENCE_CONFERENCE:
+        return True
+    u = request.user
+    if u.is_anonymous():
+        return False
+    from conference.models import Ticket
+    qs = Ticket.objects\
+            .filter(id__in=[x.id for x in u.assopy_user.tickets()])\
+            .filter(orderitem__order___complete=True, fare__ticket_type='conference')
+    return qs.exists()
+
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
