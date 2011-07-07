@@ -1035,7 +1035,8 @@ class VotoTalk(models.Model):
         unique_together = (('user', 'talk'),)
 
 def _clear_track_cache(sender, **kwargs):
-    Track.objects.clear_cache(sender.schedule_id)
+    if hasattr(sender, 'schedule_id'):
+        Track.objects.clear_cache(sender.schedule_id)
 post_save.connect(_clear_track_cache, sender=Track)
 
 def _clear_talkspeaker_cache(sender, **kwargs):
