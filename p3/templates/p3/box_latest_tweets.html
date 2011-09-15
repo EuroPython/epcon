@@ -1,7 +1,7 @@
 {% load i18n conference %}
 <div class="darker twitter">
     <h5><span>Overheard on</span> Twitter</h5>
-    {% latest_tweets screen_name 5 as tweets %}
+    {% latest_tweets screen_name 8 as tweets %}
     <ul>
         {% for tweet in tweets %}<li>{{ tweet.text|convert_twitter_links }}</li>{% endfor %}
     </ul>
@@ -9,3 +9,4 @@
         <img src="{{ STATIC_URL }}p5/i/twitter-16x16.png" alt="" width="16" height="16" />&nbsp;<a href="http://twitter.com/europython">Follow @europython on Twitter</a>
     </div>
 </div>
+
