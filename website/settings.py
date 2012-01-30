@@ -93,9 +93,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'assopy.middleware.DebugInfo',
+    'pingback.middleware.PingbackMiddleware',
 )
 
-ROOT_URLCONF = 'pycon_site.urls'
+ROOT_URLCONF = 'website.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -116,7 +117,7 @@ INSTALLED_APPS = (
     'taggit',
     'pages',
     'mptt',
-    'haystack',
+    #'haystack',
     'conference',
     'p3',
     'microblog',
@@ -264,7 +265,7 @@ TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.hgcommit.HgCommitHook',
 )
 
-HAYSTACK_SITECONF = 'pycon_site.search_sites'
+HAYSTACK_SITECONF = 'website.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
 
 def HCOMMENTS_THREAD_OWNERS(o):

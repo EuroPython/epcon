@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-import search_sites
+#import search_sites
 
 admin.site.index_template = 'p3/admin/index.html'
 
@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^p3/', include('p3.urls')),
-    (r'^search/', include('haystack.urls')),
+#    (r'^search/', include('haystack.urls')),
 )
 
 if settings.DEBUG:
