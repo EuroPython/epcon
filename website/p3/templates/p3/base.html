@@ -67,10 +67,10 @@
                     </li>
                     {% endwith %}
 
-                    {% navi_menu1_pages as pages %}
-                    {% for page, purl in pages %}
-                    <li class="{% ifequal current_page page %}current{% endifequal %}">
-                        <a href="{{ purl }}" title="">{% show_content page "title" %}</a>
+                    {% navigation "menu1" as pages %}
+                    {% for page in pages %}
+                    <li class="{% ifequal current_page.slug page.slug %}current{% endifequal %}">
+                        <a href="{{ page.url }}" title="">{{ page.title }}</a>
                     </li>
                     {% endfor %}
                     {% with request.META.PATH_INFO|slice:"1:5" as f %}
@@ -147,31 +147,20 @@
 
 <div class="page {% block BODY_CLASS %}{% endblock %}">
     <div class="container clearfix">        
-        {% block MAIN_CONTENT %}
-        {% endblock %}
+        {% block MAIN_CONTENT %}{% endblock %}
     </div>
 </div>
 
 {% block SPONSORS %}
 
 <section class="sponsors">
-
     <h5>Our Sponsors</h5>
-
     {% conference_sponsor "ep2011" as sponsors %}
     {% for s in sponsors %}
         <div class="ad">
-            <a href="{{ s.url }}"><img class="block" src="{{ s.logo|image_resized }}" alt="{{ s.sponsor }}" width="110" height="50" /></a>
+            <a href="{{ s.sponsor.url }}"><img class="block" src="{{ s.sponsor.logo|image_resized }}" alt="{{ s.sponsor.sponsor }}" width="110" height="50" /></a>
         </div>
     {% endfor %}
-
-<!--
-    <div class="ad">
-        <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-ph.png" alt="sponsor-ph" width="110" height="50" /></a>
-    </div>
--->
-
-<!-- /sponsors -->
 </section>
 
 {% endblock %}
@@ -185,9 +174,9 @@
                 <nav class="darker">
                     <h5>&nbsp;</h5>
                     <ul>
-                        {% navi_menu3_pages as pages %}
-                        {% for page, purl in pages %}
-                        <li><a href="{{ purl }}" title="">{% show_content page "title" %}</a></li>
+                        {% navigation "menu3" as pages %}
+                        {% for page in pages %}
+                        <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
                         {% endfor %}
                         
                         <li class="sep"><img src="{{ STATIC_URL }}p5/i/facebook-16x16.png" alt="" width="16" height="16" />&nbsp;<a href="http://www.facebook.com/pages/EuroPython/196457473701266">EuroPython on Facebook</a></li>
