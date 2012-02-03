@@ -1,6 +1,0 @@
-include *.txt
-recursive-include tests *.txt *.py
-recursive-include benchmark *.txt *.py
-recursive-include docs *.txt *.py *.rst
-recursive-include files *.txt *.py *.png *.jpg *.svg
-

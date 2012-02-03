@@ -1,4 +1,0 @@
-django-taggit
-django-staticfiles
-django-haystack
-django-authority
