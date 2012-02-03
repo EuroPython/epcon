@@ -1,12 +1,4 @@
 # -*- coding: UTF-8 -*-
-#from datetime import date
-#from conference import assopy
-from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
-
-def static(request):
-    return { 'STATIC_URL': settings.STATIC_URL }
-
 def countdown(request):
     from assopy.models import OrderItem
     from django.db.models import Count
