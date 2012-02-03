@@ -16,7 +16,7 @@ DEFAULT_FROM_EMAIL = 'info@pycon.it'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db/p3.db',
+        'NAME': '',
     }
 }
 
@@ -43,6 +43,11 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+# If you set this to False, Django will not format dates, numbers and
+# calendars according to the current locale
+USE_L10N = True
+
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = ''
@@ -53,17 +58,30 @@ MEDIA_ROOT = ''
 MEDIA_URL = '/media/'
 SECURE_MEDIA_URL = '/p3/secure_media/'
 
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/home/media/media.lawrence.com/static/"
+STATIC_ROOT = ''
+
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/admin_media/'
-
-#ADMIN_MEDIA_ROOT = os.path.join(PROJECT_DIR, '../admin_media/')
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'kc-yf%25(%6e870u&z$)!rq@dm(b2giam-p$q$!vg#dv+j0!57'
+SECRET_KEY = ''
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+)
 
 # List of callables that know how to import templates from various sources.
 #TEMPLATE_LOADERS = (
@@ -72,26 +90,26 @@ SECRET_KEY = 'kc-yf%25(%6e870u&z$)!rq@dm(b2giam-p$q$!vg#dv+j0!57'
 #)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.i18n',
+    'django.core.context_processors.debug',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    'django.core.context_processors.static',
     'pages.context_processors.media',
     'conference.context_processors.current_url',
     'conference.context_processors.stuff',
-    'p3.context_processors.countdown',
-    'p3.context_processors.static',
     'django.contrib.messages.context_processors.messages',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
     'pingback.middleware.PingbackMiddleware',
 )
@@ -113,6 +131,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.markup',
     'django.contrib.redirects',
+    'django.contrib.staticfiles',
     'tagging',
     'taggit',
     'pages',
@@ -138,8 +157,7 @@ AUTHENTICATION_BACKENDS = (
     'assopy.auth_backends.JanRainBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-## used by the blog
-#FEEDBURNER_BLOG_FEED = 'http://feeds.feedburner.com/pyconit'
+
 FILEBROWSER_URL_FILEBROWSER_MEDIA = '/static/filebrowser/'
 
 PAGE_USE_SITE_ID = False
@@ -173,15 +191,7 @@ MICROBLOG_TWITTER_USERNAME = 'europython'
 MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
 MICROBLOG_TWITTER_INTEGRATION = False
 
-# se si vuole far servire a django i file statici
-# popolare questo dizionario con coppie
-# nome app -> static dir
-STATIC_DIRS = {}
-
-# directory dove memorizzare la roba dei vari pycon
-STUFF_DIR = None
-
-SESSION_COOKIE_NAME = 'p3_sessionid'
+SESSION_COOKIE_NAME = 'ep_sessionid'
 
 GNR_CONFERENCE = {
     'src': 'http://assopy.pycon.it/conference/',
@@ -326,10 +336,7 @@ LOGGING = {
     }
 }
 
-try:
-    from settings_locale import *
-except ImportError:
-    pass
+from settings_locale import *
 
 # i file sotto SECURE_MEDIA_ROOT devono essere serviti da django, questo if
 # serve ad evitare che vengano messi in una subdir di MEDIA_ROOT che
@@ -338,9 +345,16 @@ import os.path
 check = os.path.commonprefix((MEDIA_ROOT, SECURE_MEDIA_ROOT))
 if check.startswith(MEDIA_ROOT):
     if not DEBUG:
-        raise RuntimeError('don\'t put SECURE_MEDIA_ROOT as a subdir of MEDIA_ROOT')
+        raise RuntimeError('SECURE_MEDIA_ROOT cannot be a subdir of MEDIA_ROOT')
     else:
         print 'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
 
 from django.core.files import storage
 SECURE_STORAGE = storage.FileSystemStorage(location=SECURE_MEDIA_ROOT, base_url=SECURE_MEDIA_URL)
+
+if not SECRET_KEY:
+    if not DEBUG:
+        raise RuntimeError('SECRET_KEY not set')
+    else:
+        print 'WARN, SECRET_KEY not set'
+
