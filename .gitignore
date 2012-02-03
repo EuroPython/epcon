@@ -1,0 +1,6 @@
+*.pyc
+*.swp
+settings_locale.py
+Session.vim
+env/*
+stuff/*
