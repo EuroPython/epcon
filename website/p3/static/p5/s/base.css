@@ -735,6 +735,17 @@ footer nav li img {
 
 }
 
+.talk.preview {
+    display: none;
+    border: 2px solid #635443;
+    margin: 5px 0;
+    padding: 2px;
+}
+
+.talk.preview .title {
+    text-align: center;
+}
+
 #talk-voting {
 
 }
@@ -750,7 +761,6 @@ footer nav li img {
 #talk-voting form {
     margin: 10px 0 0 0;
 }
-
 
 /*
 
