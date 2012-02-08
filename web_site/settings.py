@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'templatesadmin',
     'email_template',
     'filebrowser',
+    'develer_tools',
 )
 
 AUTHENTICATION_BACKENDS = (
