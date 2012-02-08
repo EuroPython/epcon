@@ -725,6 +725,8 @@ def splitbysize(value, arg):
 
 @fancy_tag(register)
 def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
+    if conference is None:
+        conference = settings.CONFERENCE
     data = dataaccess.sponsor(conference)
     if only_tags:
         t = set(only_tags)
