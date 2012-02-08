@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.auth.backends import ModelBackend
-from django.core.validators import email_re
 from django.contrib.auth.models import User
 from django.db import transaction
 
@@ -44,6 +43,24 @@ class _AssopyBackend(ModelBackend):
             user.assopy_id = rid
             user.save()
         return user
+
+    def get_user(self, user_id):
+        # ridefinisco la get_user per assicurarmi che l'utente django e quello
+        # assopy vengano recuperarti utilizzando una sola query. Da che
+        # l'utilizzo tipo nei template è:
+        #   {{ request.user.assopy_user.name }}
+        # questa select_related mi permette di ridurre il numero di query da 3
+        # a 1:
+        #   request.user        -> 1 query
+        #       .assopy_user    -> 1 query
+        #       .name           -> 1 query (tra l'altro per recuperare
+        #                          nuovamente l'utente django)
+        try:
+            return User.objects\
+                .select_related('assopy_user')\
+                .get(pk=user_id)
+        except User.DoesNotExist:
+            return None
 
 class IdBackend(_AssopyBackend):
     """
