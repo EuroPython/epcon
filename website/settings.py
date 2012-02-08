@@ -206,9 +206,10 @@ CONFERENCE_GOOGLE_MAPS = {
     'country': 'it',
 }
 
-CONFERENCE_CONFERENCE = 'ep2011'
+CONFERENCE_CONFERENCE = 'ep2012'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
-CONFERENCE_VOTING_DISALLOWED = 'http://ep2011.europython.eu/voting-disallowed'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2012.europython.eu/voting-disallowed'
+
 def CONFERENCE_VOTING_ALLOWED(user):
     if user.is_authenticated():
         from p3 import models
@@ -266,8 +267,8 @@ ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
 
-DEFAULT_URL_PREFIX = 'http://ep2011.europython.eu'
-PINGBACK_TARGET_DOMAIN = 'ep2011.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2012.europython.eu'
+PINGBACK_TARGET_DOMAIN = 'ep2012.europython.eu'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 
