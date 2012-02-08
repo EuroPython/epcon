@@ -12,21 +12,20 @@ from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from django import template
 from django.conf import settings as dsettings
-from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
 from django.template import defaultfilters, Context
 from django.template.loader import render_to_string
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
-from conference import forms
+from conference import dataaccess
 from conference import models
 from conference import utils
 from conference import settings
 from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conversion_dict
 from conference.signals import timetable_prepare
 from conference.utils import TimeTable
-from pages import models as PagesModels
+
+from pages.settings import PAGE_DEFAULT_LANGUAGE
 
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
@@ -36,6 +35,12 @@ from fancy_tag import fancy_tag
 mimetypes.init()
 
 register = template.Library()
+
+def _lang(ctx):
+    try:
+        return ctx['LANGUAGE_CODE']
+    except KeyError:
+        return PAGE_DEFAULT_LANGUAGE
 
 def _request_cache(request, key):
     """
@@ -121,34 +126,9 @@ def latest_deadlines(parser, token):
         raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     return LatestDeadlinesNode(limit, var_name, True)
 
-class NaviPages(template.Node):
-    def __init__(self, page_type, var_name):
-        self.page_type = page_type
-        self.var_name = var_name
-
-    def render(self, context):
-        lang = context.get('LANGUAGE_CODE', '')
-        key = 'navi_pages_%s_%s' % (self.page_type, lang)
-        output = cache.get(key)
-        if not output:
-            query = PagesModels.Page.objects.published().order_by('tree_id', 'lft')
-            query = query.filter(tags__name__in=[self.page_type])
-            output = [ (p, p.get_url_path(language=lang)) for p in query ]
-            cache.set(key, output, 600)
-        context[self.var_name] = output
-        return ''
-
-def navi_pages(parser, token):
-    contents = token.split_contents()
-    tag_name = contents[0]
-    if contents[-2] != 'as':
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    var_name = contents[-1]
-    return NaviPages(tag_name.split('_')[1], var_name)
-
-register.tag('navi_menu1_pages', navi_pages)
-register.tag('navi_menu2_pages', navi_pages)
-register.tag('navi_menu3_pages', navi_pages)
+@fancy_tag(register, takes_context=True)
+def navigation(context, page_type):
+    return dataaccess.navigation(_lang(context), page_type)
 
 @register.tag
 def stuff_info(parser, token):
@@ -743,60 +723,16 @@ def splitbysize(value, arg):
         value += [ None ] * (arg - (len(value) % arg))
     return grouper(arg, value)
 
-@register.tag
-def conference_sponsor(parser, token):
-    """
-    {% conference_sponsor [conference [[exclude] tag]] as var %}
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    if contents[-2] != 'as':
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    var_name = contents[-1]
-    contents = contents[1:-2]
-
-    conference = None
-    include_tag = None
-    exclude_tag = None
-
-    lc = len(contents)
-    if 0 < lc <= 3:
-        conference = contents.pop(0)
-        if lc == 2:
-            include_tag = contents.pop(0)
-        elif lc ==3:
-            if contents[0] != 'exclude':
-                raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-            else:
-                contents.pop(0)
-                exclude_tag = contents.pop(0)
-    elif lc:
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-
-    class SponsorNode(TNode):
-        def __init__(self, conference, include_tag, exclude_tag, var_name):
-            self.var_name = var_name
-            self.conference = self._set_var(conference)
-            self.include_tag = self._set_var(include_tag)
-            self.exclude_tag = self._set_var(exclude_tag)
-
-        def render(self, context):
-            sponsor = models.Sponsor.objects.all()
-            conference = self._get_var(self.conference, context)
-            if conference:
-                sponsor = sponsor.filter(sponsorincome__conference = conference)
-            include_tag = self._get_var(self.include_tag, context)
-            if include_tag:
-                q = TaggedItem.objects.get_by_model(models.SponsorIncome, include_tag)
-                sponsor = sponsor.filter(sponsorincome__in = q)
-            exclude_tag = self._get_var(self.exclude_tag, context)
-            if exclude_tag:
-                q = TaggedItem.objects.get_by_model(models.SponsorIncome, exclude_tag)
-                sponsor = sponsor.exclude(sponsorincome__in = q)
-            sponsor = sponsor.order_by('-sponsorincome__income', 'sponsor')
-            context[self.var_name] = sponsor
-            return ''
-    return SponsorNode(conference, include_tag, exclude_tag, var_name)
+@fancy_tag(register)
+def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
+    data = dataaccess.sponsor(conference)
+    if only_tags:
+        t = set(only_tags)
+        data = filter(lambda x: x['tags'] & t, data)
+    if exclude_tags:
+        t = set(exclude_tags)
+        data = filter(lambda x: not (x['tags'] & t), data)
+    return data
 
 @register.tag
 def conference_mediapartner(parser, token):
@@ -1485,3 +1421,25 @@ def next_events(context, time=None):
 @fancy_tag(register)
 def current_conference():
     return models.Conference.objects.current()
+
+@fancy_tag(register, takes_context=True)
+def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
+    ctx = Context(context)
+
+    events = dataaccess.events(conference)
+    if exclude_tags:
+        exclude = set(exclude_tags.split(','))
+        events = filter(lambda x: len(x['tags'] & exclude) == 0, events)
+
+    if exclude_tracks:
+        exclude = set(exclude_tracks.split(','))
+        events = filter(lambda x: len(set(x['tracks']) & exclude) == 0, events)
+
+    grouped = defaultdict(list)
+    for e in events:
+        grouped[e['time'].date()].append(e)
+    ctx.update({
+        'conference': conference,
+        'events': sorted(grouped.items()),
+    })
+    return render_to_string('conference/render_schedule_list.html', ctx)
