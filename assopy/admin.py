@@ -316,7 +316,7 @@ class UserAdmin(admin.ModelAdmin):
         user = auth.authenticate(uid=user.user.id)
         auth.login(request, user)
         request.session['resurrect_user'] = udata
-        return http.HttpResponseRedirect('/')
+        return http.HttpResponseRedirect(urlresolvers.reverse('assopy-tickets'))
 
     def resurrect_user(self, request):
         uid = request.session['resurrect_user'][0]

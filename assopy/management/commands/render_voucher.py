@@ -32,14 +32,19 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('codice conferenza non specificato')
 
+        oids = map(int, args[1:])
+
+        from django.db.models import Q
         qs = models.OrderItem.objects\
                 .filter(order___complete=True)\
                 .filter(ticket__fare__payment_type='v', ticket__fare__conference=conf)\
                 .select_related('order__user', 'ticket')
+        if oids:
+            qs = qs.filter(order__id__in=oids)
         for item in qs:
             name = item.ticket.name or item.order.user.name()
 
-            fname = '%s - %s (%s).html' % (name, unicode(item.ticket), item.ticket.id)
+            fname = '%s - %s (%s).pdf' % (name, unicode(item.ticket), item.ticket.id)
             fpath = os.path.join(options['output'], fname.encode('utf-8'))
 
             upath = reverse('assopy-orderitem-voucher', kwargs={'order_id': item.order_id, 'item_id': item.id})
