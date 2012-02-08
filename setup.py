@@ -26,10 +26,9 @@ setup(name='conference',
         'conference.management.commands',
         'conference.migrations',
         'conference.templatetags',
-        'conference.utils',
     ],
     package_data={
-        'conference': sum(map(recurse, ('deps', 'locale', 'static', 'templates')), []),
+        'conference': sum(map(recurse, ('deps', 'locale', 'static', 'templates', 'utils')), []),
     },
     install_requires=[
         'httplib2',
