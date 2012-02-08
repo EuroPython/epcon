@@ -4,6 +4,8 @@ pillow
 git+ssh://src.develer.com/git/projects/microblog@v0.1.3#egg=microblog
 git+ssh://src.develer.com/git/projects/hcomments@v0.1#egg=hcomments
 git+ssh://src.develer.com/git/projects/develer_tools#egg=develer_tools
+-e git+ssh://src.develer.com/git/projects/conference#egg=conference
+-e git+ssh://src.develer.com/git/projects/assopy#egg=assopy
 django-page-cms
 django-authority #serve a django-page-cms ma non è incluso nelle sue dipendenze
 django-taggit
