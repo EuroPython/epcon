@@ -24,7 +24,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404
-from django.template import RequestContext, Template
+from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
@@ -222,6 +222,15 @@ def talk(request, slug, talk, full_access, talk_form=TalkForm):
         'full_access': full_access,
         'talk': talk,
         'cfp': conf.cfp(),
+        'voting': conf.voting(),
+    }
+
+@render_to('conference/talk_preview.html')
+@talk_access
+def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
+    conf = models.Conference.objects.current()
+    return {
+        'talk': talk,
         'voting': conf.voting(),
     }
 

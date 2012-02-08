@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^talks/(?P<slug>[\w-]+)/video.mp4$', 'conference.views.talk_video', name = 'conference-talk-video-mp4'),
     url(r'^talks/(?P<slug>[\w-]+).xml$', 'conference.views.talk_xml', name = 'conference-talk-xml'),
     url(r'^talks/(?P<slug>[\w-]+)$', 'conference.views.talk', name = 'conference-talk'),
+    url(r'^talks/(?P<slug>[\w-]+)/preview$', 'conference.views.talk_preview', name = 'conference-talk-preview'),
 
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+).xml/?$', 'conference.views.schedule_xml', name = 'conference-schedule-xml'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/$', 'conference.views.schedule_event', name = 'conference-schedule-event'),
