@@ -7,7 +7,7 @@ import random
 from fabric.api import *
 from fabric.contrib import files
 
-env.hosts = [ 'pycon.it:443' ]
+env.hosts = [ 'pycon.it' ]
 
 # sshagent_run credits to http://lincolnloop.com/blog/2009/sep/22/easy-fabric-deployment-part-1-gitmercurial-and-ssh/
 # modified by dvd :)
