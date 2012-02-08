@@ -114,7 +114,7 @@ MIDDLEWARE_CLASSES = (
     'pingback.middleware.PingbackMiddleware',
 )
 
-ROOT_URLCONF = 'website.urls'
+ROOT_URLCONF = 'web_site.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -277,7 +277,7 @@ TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.hgcommit.HgCommitHook',
 )
 
-HAYSTACK_SITECONF = 'website.search_sites'
+HAYSTACK_SITECONF = 'web_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
 
 def HCOMMENTS_THREAD_OWNERS(o):
