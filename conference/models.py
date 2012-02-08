@@ -28,7 +28,14 @@ from conference import settings
 
 class ConferenceManager(models.Manager):
     def current(self):
-        return self.get(code=settings.CONFERENCE)
+        key = 'CONFERENCE_CURRENT'
+        data = cache.get(key)
+        if data is None:
+            data = self.get(code=settings.CONFERENCE)
+            # mantengo in cache abbastanza a lungo perchè la query non sia più
+            # un problema
+            cache.set(key, data, 60*60*24*7)
+        return data
 
 class Conference(models.Model):
     code = models.CharField(max_length=10, primary_key=True)
