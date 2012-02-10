@@ -33,6 +33,11 @@ log = logging.getLogger('assopy.views')
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
+    def __init__(self, url):
+        if not url.startswith('http'):
+            url = dsettings.DEFAULT_URL_PREFIX + url
+        super(HttpResponseRedirectSeeOther, self).__init__(url)
+
 # see: http://www.djangosnippets.org/snippets/821/
 def render_to(template):
     """
