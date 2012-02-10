@@ -24,5 +24,7 @@ urlpatterns = patterns('conference.views',
     url(r'^paper-submission/$', 'paper_submission', name='conference-paper-submission'),
     url(r'^voting/$', 'voting', name='conference-voting'),
 
+    url(r'^tags.js/$', 'tags_js', name='conference-tag.js'),
+
     url(r'^(?P<conference>[\w-]+).xml/$', 'conference_xml', name = 'conference-data-xml'),
 )

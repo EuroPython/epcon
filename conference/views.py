@@ -762,3 +762,15 @@ def voting(request):
             'talks': talks,
             'form': form,
         }
+
+def tags_js(request):
+    """
+    Restituisce un javascript con l'elenco dei tag utiilizzati nella conferenza.
+    """
+    tags = models.ConferenceTag.objects\
+        .all()\
+        .distinct()\
+        .values_list('tag__name', flat=True)
+    j = simplejson.dumps([ x.encode('utf-8') for x in tags ])
+    text = 'conference = { tags: %s };' % j
+    return http.HttpResponse(content=text, content_type='text/javascript')
