@@ -1,19 +1,21 @@
-{% load i18n microblog %}
+{% load i18n microblog_tags %}
 {% if content %}
-<div>
+<div class="microblog post-summary{% if post.featured %} featured{% endif %}">
+    {% if post.image %}
+    <img src="{{ post.image }}" alt="" />
+    {% endif %}
     <h2>
         {% if not post.is_published %}
-        <span class="draft">Draft: </span>
+        <span class="draft">[DRAFT]</span>
         {% endif %}
-        <a title="Permalink a questo articolo" href="{{ content.get_absolute_url }}">{{ content.headline }}</a>
+        <a title="Permalink a questo articolo" href="{{ url }}">{{ content.headline }}</a>
     </h2>
     <p class="metadata">
         {% blocktrans with post.author.first_name as first_name and post.author.last_name as last_name and post.date|date:"j M Y" as post_date %}
         Scritto da <b>{{ first_name }} {{ last_name }}</b> il {{ post_date }} &mdash;
         {% endblocktrans %}
 
-        {% get_post_comment_count content.post as comments %}
-        <a title="Commenti articolo" href="{{ content.get_absolute_url }}#comments">{% trans "Commenti" %} ({{ comments }})</a>
+        <a title="Commenti articolo" href="{{ url }}#comments">{% trans "Commenti" %} ({{ comments|length }})</a>
     </p>
     <div class="summary">{{ content|prepare_summary|safe }}</div>
 </div>

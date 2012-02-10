@@ -1,42 +1,26 @@
 {% extends "p3/base.html" %}
-{% load i18n microblog p3 conference %}
+{% load i18n microblog_tags p3 conference %}
 {% block PAGE_TITLE %}Blog &mdash; {% endblock %}
 
 {% block MAIN_CONTENT %}
 <div class="page">
     <div class="container clearfix">
-        {% block BLOG_HEADER %}
-        {% endblock %}
+        {% block BLOG_HEADER %}{% endblock %}
 
         <div class="column span-8">
             {% block BLOG_CONTENT %}{% endblock %}
         </div>
 
         <div class="column span-4 last">
-            {% comment %}
-            <div class="feed"><a href="/blog/feeds/latest/">Feed RSS</a></div>
-            {% endcomment %}
-
 			{% block BLOG_POST_INFO %}{% endblock %}
 
             <div id="blog-archives-browser">
-                {% comment %}
-                {% category_list as categories %}
-                {% if categories %}
-                    <h3>{% trans "Categorie" %}</h3>
-                    <ul>
-                        {% for c in categories %}
-                        <li><a href="{% url microblog-category category=c.name %}">{{ c.name }}</a> ({{ c.count }})</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% endcomment %}
                 {% render_fb_like ref="like_blog_col" %}
                 <h3>{% trans "Archivio" %}</h3>
                 {% year_list as years %}
                 <ul>
                     {% for d, count in years %}
-                    <li><a href="{% url microblog-list-by-year year=d %}">{{ d }}</a> ({{ count }})</li>
+                    <li><a href="{% url microblog-list-by-year year=d.year %}">{{ d.year }}</a> ({{ count }})</li>
                     {% endfor %}
                 </ul>
 

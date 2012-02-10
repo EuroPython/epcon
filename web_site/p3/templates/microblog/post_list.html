@@ -1,31 +1,11 @@
 {% extends "microblog/base.html" %}
-{% load i18n microblog %}
+{% load i18n microblog_tags %}
 
 {% block BLOG_HEADER %}
   <h1>{% trans "Archivio Blog" %}</h1>
 {% endblock %}
 
 {% block BLOG_CONTENT %}
-    <ul class="blog-archive">
-    {% for post in posts.object_list %}
-        <li>{% show_post_summary post %}</li>
-    {% empty %}
-        <li><i>{% trans "Nessun post trovato." %}</i></li>
-    {% endfor %}
-    </ul>
-    {% ifnotequal posts.paginator.num_pages 1 %}
-    <div class="pager">
-        {% if posts.has_previous %}
-            <span class="p"><a href="?page={{ posts.previous_page_number }}">&larr; Previous</a></span>
-        {% else %}
-            <span class="p">&nbsp;</span>
-        {% endif %}
-            <span>Pagina <b>{{ posts.number }}</b> di {{ posts.paginator.num_pages }}</span>
-        {% if posts.has_next %}
-            <span class="n"><a href="?page={{ posts.next_page_number }}">Next &rarr;</a></span>
-        {% else %}
-            <span class="p">&nbsp;</span>
-        {% endif %}
-    </div>
-    {% endifnotequal %}
+    {% post_list as posts %}
+    {% show_posts_list posts %}
 {% endblock %}

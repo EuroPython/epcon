@@ -1,6 +1,10 @@
 {% extends "microblog/post_list.html" %}
-{% load i18n microblog %}
-{% block PAGE_TITLE %}{% trans "Archivio" %} {{ year }} &mdash; PyCon Italia Quattro{% endblock %}
+{% load i18n microblog_tags %}
+{% block PAGE_TITLE %}{% trans "Archivio" %} {{ year }} &mdash; EuroPython{% endblock %}
 {% block BLOG_HEADER %}
-  <h1>{{ posts.count }} posts in {{ year }}{% if month %}/{{ month }}{% endif %}</h1>
+  <h1>Posts of {{ year }}{% if month %}/{{ month }}{% endif %}</h1>
+{% endblock %}
+{% block BLOG_CONTENT %}
+    {% post_list year=year as posts %}
+    {% show_posts_list posts %}
 {% endblock %}

@@ -1,6 +1,10 @@
-{% load i18n hcomments_tags %}
-{% get_comment_list post as comments %}
+{% load i18n microblog_tags hcomments_tags %}
+{% get_post_comment post as comments %}
 <div id="comments">
     <h3>{{ comments|length }} {% trans "Commenti" %} {% if post.allow_comments %}<span> &mdash; <a href="#add-comment">{% trans "Aggiungi Commento" %}</a></span>{% endif %}</h3>
-    {% show_comment_list post %}
+    <ol id="comments">
+        {% for c in comments %}
+        {% show_single_comment c %}
+        {% endfor %}
+    </ol>
 </div>

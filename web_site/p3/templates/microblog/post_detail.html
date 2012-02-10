@@ -1,5 +1,5 @@
 {% extends "microblog/base.html" %}
-{% load hcomments_tags i18n microblog tagging_tags %}
+{% load hcomments_tags i18n microblog_tags %}
 {% block PAGE_TITLE %}{{ content.headline }} &mdash; {% endblock %}
 {% block PAGE_DESCRIPTION %}
     <meta name="keywords" content="{{ content.post.tags }}" />
@@ -33,7 +33,7 @@
 {% block BLOG_HEADER %}
     <h1>
         {% if not post.is_published %}
-            <span class="draft"><strong>[Draft]</strong></span>
+            <span class="draft"><strong>[DRAFT]</strong></span>
         {% endif %}
         {{ content.headline }}
     </h1>
@@ -44,7 +44,7 @@
         {% show_post_detail content %}
     </div>
 
-    {% show_post_comments content.post %}
+    {% show_post_comments post %}
 
     {% show_reactions_list content %}
 
@@ -55,22 +55,18 @@
 {% endblock %}
 
 {% block BLOG_POST_INFO %}
-
+{% get_post_data post.id as data %}
 <div id="blog-post-info">
     <dl>
         <dt>{% trans "Scritto da" %}</dt>
-        <dd>{{ content.post.author.first_name }}</dd>
+        <dd>{{ post.author.first_name }}</dd>
 
         <dt>{% trans "Data" %}</dt>
-        <dd>{{ content.post.date|date:"d F Y" }}</dd>
-{% comment %}
-        <dt>{% trans "Categoria" %}</dt>
-        <dd><a href="{% url microblog-category category=post.category.name %}">{{ content.post.category.name }}</a></dd>
-{% endcomment %}
-        {% if content.post.tags %}
-        {% tags_for_object content.post as tags %}
+        <dd>{{ post.date|date:"d F Y" }}</dd>
+
+        {% if data.tags %}
         <dt>{% trans "Tag" %}</dt>
-        <dd>{% for t in tags %}<a class="tag" href="{% url microblog-tag tag=t.name %}">{{ t.name }}</a>{% endfor %}</dd>
+        <dd>{% for t in data.tags %}<a class="tag" href="{% url microblog-tag tag=t.name %}">{{ t.name }}</a>{% endfor %}</dd>
         {% endif %}
     </dl>
 </div>
