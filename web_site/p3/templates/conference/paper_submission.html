@@ -1,6 +1,7 @@
 {% extends "p3/base.html" %}
 {% load i18n conference assopy_tags %}
 
+{% block EXTRA_HEAD %}{{ form.media }}{% endblock %}
 {% block PAGE_TITLE %}paper submission &mdash; {% endblock %}
 
 {% block MAIN_CONTENT %}
@@ -31,32 +32,20 @@
                 <div class="span-9 last">{{ form.bio|field }}</div>
                 <div class="span-9 last">{{ form.personal_agreement|field }}</div>
             </fieldset>
-            <h2>Talk description</h2>
-            <fieldset>
-                <div>{{ form.title|field }}</div>
-                <div>{{ form.training|field }}</div>
-
-                <div class="span-3">{{ form.language|field }}</div>
-                <div class="span-3">{{ form.duration|field }}</div>
-                <div class="span-3 last">{{ form.level|field }}</div>
-                <div>{{ form.abstract|field }}</div>
-                <div>{{ form.video_agreement|field }}</div>
-                <div>{{ form.slides_agreement|field }}</div>
-            </fieldset>
-            {% else %}
-            <h2>Talk description</h2>
-            <fieldset>
-                <div>{{ form.title|field }}</div>
-                <div>{{ form.training|field }}</div>
-
-                <div class="span-3">{{ form.language|field }}</div>
-                <div class="span-3">{{ form.duration|field }}</div>
-                <div class="span-3 last">{{ form.level|field }}</div>
-                <div>{{ form.abstract|field }}</div>
-                <div>{{ form.video_agreement|field }}</div>
-                <div>{{ form.slides_agreement|field }}</div>
-            </fieldset>
             {% endif %}
+            <h2>Talk description</h2>
+            <fieldset>
+                <div>{{ form.title|field }}</div>
+                <div>{{ form.training|field }}</div>
+
+                <div class="span-3">{{ form.language|field }}</div>
+                <div class="span-3">{{ form.duration|field }}</div>
+                <div class="span-3 last">{{ form.level|field }}</div>
+                <div>{{ form.abstract|field }}</div>
+                <div>{{ form.tags|field }}</div>
+                <div>{{ form.video_agreement|field }}</div>
+                <div>{{ form.slides_agreement|field }}</div>
+            </fieldset>
             <fieldset class="border">
                 <p>Note: if you are available to give the same talk both in Italian and English, please submit the talk twice, with fully translated title and abstract.</p>
                 <button type="submit">Submit</button>
