@@ -37,6 +37,10 @@ class ConferenceManager(models.Manager):
             cache.set(key, data, 60*60*24*7)
         return data
 
+    @classmethod
+    def clear_cache(cls, sender, **kwargs):
+        cache.delete('CONFERENCE_CURRENT')
+
 class Conference(models.Model):
     code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=100)
@@ -97,6 +101,8 @@ class Conference(models.Model):
             raise
             # date non impostate
             return False
+
+post_save.connect(ConferenceManager.clear_cache, sender=Conference)
 
 class DeadlineManager(models.Manager):
     def valid_news(self):
