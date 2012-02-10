@@ -26,6 +26,17 @@ import conference
 import conference.gmap
 from conference import settings
 
+from taggit.models import TaggedItem
+from taggit.managers import TaggableManager
+
+class ConferenceTag(TaggedItem):
+    """
+    Derivazione utilizzata per creare un namespace per i tag relativi alla
+    conferenza; non ho bisogno di attributi o metodi speciali, solo di un
+    sistema comodo per recuperare tutti i tag che mi interessano.
+    """
+    pass
+
 class ConferenceManager(models.Manager):
     def current(self):
         key = 'CONFERENCE_CURRENT'
@@ -456,9 +467,9 @@ class Talk(models.Model, UrlMixin):
     # cosa giusta sarebbe creare un nuovo modello "Submission" legato al Talk e
     # mettere li i dati del cfp
     suggested_tags = models.CharField(max_length=100, blank=True)
-    tags = TagField()
     created = models.DateTimeField(auto_now_add=True)
 
+    tags = TaggableManager()
     objects = TalkManager()
 
     class Meta:

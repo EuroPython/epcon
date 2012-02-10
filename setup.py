@@ -33,5 +33,6 @@ setup(name='conference',
     install_requires=[
         'httplib2',
         'fancy_tag',
+        'django-taggit',
     ],
 )
