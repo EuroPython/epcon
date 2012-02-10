@@ -1,11 +1,6 @@
 Django==1.3
 south==0.7.3
 pillow
-git+ssh://src.develer.com/git/projects/microblog@v0.1.3#egg=microblog
-git+ssh://src.develer.com/git/projects/hcomments@v0.1#egg=hcomments
-git+ssh://src.develer.com/git/projects/develer_tools#egg=develer_tools
--e git+ssh://src.develer.com/git/projects/conference#egg=conference
--e git+ssh://src.develer.com/git/projects/assopy#egg=assopy
 django-page-cms
 django-authority #serve a django-page-cms ma non è incluso nelle sue dipendenze
 django-taggit
@@ -13,3 +8,9 @@ django-rosetta
 akismet
 git+https://github.com/SheepDogInc/django-filebrowser-no-grappelli-for-django13.git#egg=django-filebrowser-django13
 django-templatesadmin
+
+-e git+ssh://src.develer.com/git/projects/microblog@v0.1.3#egg=microblog
+-e git+ssh://src.develer.com/git/projects/hcomments@v0.1#egg=hcomments
+-e git+ssh://src.develer.com/git/projects/develer_tools#egg=develer_tools
+-e git+ssh://src.develer.com/git/projects/conference#egg=conference
+-e git+ssh://src.develer.com/git/projects/assopy#egg=assopy
