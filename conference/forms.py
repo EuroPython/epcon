@@ -5,6 +5,29 @@ from conference import models
 from conference import settings
 from django.utils.translation import ugettext as _
 
+from django.forms import widgets
+
+class TagWidget(widgets.TextInput):
+    def _media(self):
+        return forms.Media(
+            js=('conference/tag-it/js/tag-it.js', 'conference/init.js',),
+            css={'all': ('conference/tag-it/css/jquery.tagit.css',)},
+        )
+    media = property(_media)
+
+    def render(self, name, value, attrs=None):
+        from django.utils.encoding import force_unicode
+        from django.utils.safestring import mark_safe
+        from django.forms.util import flatatt
+        if value is None:
+            value = 'ciao,mondo'
+        final_attrs = self.build_attrs(attrs, type='text', name=name)
+        final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
+        if value != '':
+            # Only add the 'value' attribute if a value is non-empty.
+            final_attrs['value'] = force_unicode(self._format_value(value))
+        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+
 class SubmissionForm(forms.Form):
     first_name = forms.CharField(
         label=_('First name'),
@@ -74,6 +97,7 @@ class SubmissionForm(forms.Form):
         help_text=_('Promo video description'),
         required=False,
     )
+    tags = forms.CharField(widget=TagWidget)
 
     def __init__(self, user, *args, **kwargs):
         try:
