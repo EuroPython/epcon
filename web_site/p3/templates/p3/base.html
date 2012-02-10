@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
 
-    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %} &mdash; {% endif %}{% endblock %} EuroPython 2011: Florence, June 20&ndash;26</title>
+    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %} &mdash; {% endif %}{% endblock %} EuroPython 2012: Florence, July 2&ndash;8</title>
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}p5/i/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="{{ STATIC_URL }}p5/i/favicon.png" type="image/png" />
@@ -108,8 +108,8 @@
             </div>
         </div>
     </nav>
+    {% comment %}
     <div class="container clearfix">
-            {% comment %}
         <section class="notice countdown">
             <strong>Join us in 2012: http://www.youtube.com/watch?v=BDiEbi0yCY8</strong>
             <strong>Conference sold out</strong>
@@ -117,24 +117,24 @@
             <strong>Hurry up!</strong> Conference tickets left: <strong>{{ COUNTDOWN.conference }}</strong>,
             <a href="http://ep2011.europython.eu/blog/2011/05/18/pyfiorentina-legendary-steak">PyFiorentina</a> seats left: <strong>sold out</strong>!
         </section>
-            {% endcomment %}
     </div>
+    {% endcomment %}
 
     <div class="container clearfix">
         <div class="span-6">
             <div class="logo">
-                <a title="EuroPython home" href="/"><img src="{{ STATIC_URL }}p5/i/europython-logo.png" alt="EuroPython 2011" title="" width="330" height="110" /></a>
+                <a title="EuroPython home" href="/"><img src="{{ STATIC_URL }}p5/i/europython-logo.png" alt="EuroPython 2012" title="" width="330" height="110" /></a>
             </div>
         </div>
         <div class="span-3">
-                {% comment %}
+            {% comment %}
             <div class="buy badge">
                 <h5><a href="/pyevents#challenge">Join the Python Challenge</a></h5>
                 <b>Win a MacBook!</b>
                 <h5><a href="/registration/">Buy Tickets</a></h5>
                 Starting from <b>50€</b>
             </div>
-                {% endcomment %}
+            {% endcomment %}
         </div>
         <div class="span-3 last">
             <div id="habla_available_div" class="badge chat hidden">
@@ -169,6 +169,9 @@
             <a href="{{ s.sponsor.url }}"><img class="block" src="{{ s.sponsor.logo|image_resized }}" alt="{{ s.sponsor.sponsor }}" width="110" height="50" /></a>
         </div>
     {% endfor %}
+    <div class="ad">
+        <a href="/sponsor/"><img class="block" src="{{ STATIC_URL }}p5/i/sponsor-wanted.png" alt="Wanna sponsor?" width="110" height="50" /></a>
+    </div>
 </section>
 
 {% endblock %}
@@ -199,7 +202,7 @@
             <div class="span-4 last">
                 <div class="donate">
                     <h5><span>Please</span> Donate</h5>
-                    <p>EuroPython 2011 is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
+                    <p>EuroPython 2012 is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
                     <p class="we-accept">
                         <img src="{{ STATIC_URL }}p5/i/icon-visa.png" alt="Visa" width="32" height="32" />
                         <img src="{{ STATIC_URL }}p5/i/icon-mastercard.png" alt="Mastercard" width="32" height="32" />
@@ -280,18 +283,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

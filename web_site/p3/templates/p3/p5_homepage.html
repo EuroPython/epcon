@@ -2,145 +2,99 @@
 {% load p3 cache microblog_tags conference %}
 
 {% block TEASER %}
-<div class="container">
-    <div class="intro clear">
-        <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
-    </div>
-    {% comment %} 
-    {% cache 600 deadline %}
-    {% latest_deadlines 1 as l %}
-    <div class="cal">
-        <div class="deadline clearfix">
-            <h3><span>{{ l.0.date|date:"d" }}</span><br />{{ l.0.date|date:"b" }}</h3>
-            <div>
-                <h4>{% if l.0.headline %}{{ l.0.headline|safe }}{% else %}{{ l.0.body|safe }}{% endif %}</h4>
-                <p><a href="/calendar/">See all deadlines &rarr;</a></p>
-            </div>
+    <div class="container">
+        <div class="intro clear">
+            <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
         </div>
     </div>
-    {% endcache %}
-    {% endcomment %}
-</div>
-    
-<section class="teaser">
-    <div class="container clearfix">
-        {% current_conference as conf %}
-        {% if not conf.conference %}
-            <div class="span-5">
-                <h2><span>Confirmed</span> Speakers</h2>
-                <img src="{{ STATIC_URL }}p5/i/speakers-europython.png" alt="" width="320" height="160" />
-                {% comment %}
-                <div class="button">
-                    <a href="/call-for-paper/"><b>Join us as a speaker!</b></a>
+{% comment %}
+    <section class="teaser">
+        <div class="container clearfix">
+            {% current_conference as conf %}
+            {% if not conf.conference %}
+                <div class="span-5">
+                    <h2><span>Confirmed</span> Speakers</h2>
+                    <img src="{{ STATIC_URL }}p5/i/speakers-europython.png" alt="" width="320" height="160" />
+                    <div class="button">
+                        <a href="/call-for-paper/"><b>Join us as a speaker!</b></a>
+                    </div>
                 </div>
-                {% endcomment %}
-            </div>
 
-            <div class="europython-is span-7 last">
-                <h2><span>EuroPython</span> is&hellip;</h2>
-                <p>
-                An occasion to follow interesting talks, hands-on trainings, do some networking, recruite qualified staff or be recruited by great firms, and last but not least follow funky PyEvents all around the city!
-                {% comment %}
-                An occasion to follow interesting <a href="/talks/">talks</a>, <a href="/trainings">hands-on trainings</a>, do some <a href="/networking/">networking</a>, <a href="/work-python/">recruite</a> qualified staff or be recruited by great firms, and last but not least follow funky <a href="/pyevents/">PyEvents</a>.
-                {% endcomment %}
-                </p>
-            </div>
-        {% else %}
-            {% box_next_events %}
-        {% endif %}
-    </div>
-</section>
+                <div class="europython-is span-7 last">
+                    <h2><span>EuroPython</span> is&hellip;</h2>
+                    <p>
+                    An occasion to follow interesting talks, hands-on trainings, do some networking, recruite qualified staff or be recruited by great firms, and last but not least follow funky PyEvents all around the city!
+                    </p>
+                </div>
+            {% else %}
+                {% box_next_events %}
+            {% endif %}
+        </div>
+    </section>
+{% endcomment %}
 {% endblock%}
 
 {% block BODY_CLASS %} home{% endblock %}
 
 {% block MAIN_CONTENT %}
-
-{% comment %}
-        <section class="speakers clearfix">
-            <h2>Confirmed Speakers</h2>
-
-            <div class="span-6">
-                <img src="{{ STATIC_URL }}p5/i/speakers-ph.png" alt="" width="390" height="160" />
+    <section>
+        <div class="span-6">
+            <div class="home-notice">
+                <a href="http://"><img class="block" src="{{ STATIC_URL }}p5/i/notice-call-for-paper.png" alt="Call for paper is open. Submit your paper" width="315" height="130" /></a>                    
             </div>
+        </div>
 
-            <div class="span-6 last">
-                <p><b>Lorem ipsum</b> dolor sit amet, consectetuer adipiscing elit. Etiam sit amet elit vitae arcu interdum ullamcorper. Nullam ultrices, nisi quis scelerisque convallis, augue neque tempor enim, et mattis justo nibh eu elit.  Nam tincidunt rhoncus urna consectetuer.</p>
-
-                <div class="button">
-                    <a href="/schedule/">View <b>speakers</b> and <b>schedule</b></a>
+        <div class="span-6 last">
+            {% latest_deadlines 1 as l %}
+            {% if l %}
+            <div class="cal">
+                <h2>Next stop is&hellip;</h2>
+                <div class="deadline clearfix">
+                    <h3><span>{{ l.0.date|date:"d" }}</span><br />{{ l.0.date|date:"b" }}</h3>
+                    <p>{{ l.0.body|safe }}</p>
                 </div>
-
             </div>
-
-
-        </section>
-{% endcomment %}
-
-
-{% current_conference as conf %}
-{% if not conf.conference %}
-<section class="where clearfix">
-    <h2>Let’s meet in <span>Florence</span></h2>
-    <div class="span-6">
-        <p>EuroPython 2012 will be held in the world-famous beautiful city of Florence. Take 
-        the chance to visit the city and the marvellous Tuscany, bringing your partner and family with you.
-        We're preparing a great <b>partner program</b> with guided tours and visits to museums at cheap rates! </p>
-    </div>
-
-    <div class="span-6 last">
-        <img src="{{ STATIC_URL }}p5/i/home-where.jpg" alt="" width="390" height="200" />
-    </div>
-
-{% comment %}
-    <div class="span-6">
-        <div class="button">
-            <a href="/pages/where/">Check <b>map</b> and <b>accommodation</b></a>&nbsp;
+            {% endif %}
         </div>
-    </div>
+    </section>
 
-    <div class="span-6 last">
-        <div class="button">
-            <a href="/partner-program/"><b>Visiting</b> and <b>sightseeing</b> Florence</a>
+    <hr />
+
+    {% current_conference as conf %}
+    {% if not conf.conference %}
+    <section class="where clearfix">
+        <h2>Let’s meet in <span>Florence</span></h2>
+        <div class="span-6">
+            <p>EuroPython 2012 will be held in the world-famous beautiful city of Florence. Take 
+            the chance to visit the city and the marvellous Tuscany, bringing your partner and family with you.
+            We're preparing a great <b>partner program</b> with guided tours and visits to museums at cheap rates! </p>
         </div>
-    </div>
-{% endcomment %}
 
-</section>
-{% endif %}
+        <div class="span-6 last">
+            <iframe width="390" height="220" src="http://www.youtube.com/embed/BDiEbi0yCY8" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </section>
+    {% endif %}
 
-<hr />
+    <hr />
 
-<section class="clearfix">
-    {% cache 600 blog %}
-    {% post_list count=4 as posts %}
-    <div class="blog border span-6">
-        <ul>
-            {% for post in posts %}
-            {% get_post_data post.id as data %}
-            <li>
-                <h3><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
-                <div class="meta">Posted on <b>{{ post.date|date:"M j Y" }}</b>{% if data.comments %} &mdash; <a href="{{ data.url }}#comments">{{ data.comments|length }} comments</a>{% endif %}</div>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endcache %}
+    <section class="clearfix">
+        {% post_list count=3 as posts %}
+        <div class="blog border span-6">
+            <h2>From the blog</h2>
+            <ul>
+                {% for post in posts %}
+                {% get_post_data post.id as data %}
+                <li>
+                    <h3><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
+                    <div class="meta">Posted on <b>{{ post.date|date:"M j Y" }}</b>{% if data.comments %} &mdash; <a href="{{ data.url }}#comments">{{ data.comments|length }} comments</a>{% endif %}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <div class="side-h2 span-2">
-        <h2>EuroPython<br /><span><a href="/mobile/">on your phone</a></span></h2>
-    </div>
-
-    <div class="span-4 last">
-        <img class="block" src="{{ STATIC_URL }}p5/i/iphone.png" alt="" width="250" height="220" />
-    </div>
-</section>
+        <div class="home-notice span-6 last">
+            <a href="/ep2011/"><img src="{{ STATIC_URL }}p5/i/notice-archives-2011.png" alt="Browse the EuroPython 2011 archives" width="390" height="210" /></a>
+        </div>
+    </section>
 {% endblock %}
-
-
-
-
-
-
-
-

@@ -46,7 +46,7 @@ h1, h2, h3, h4, h5, h6 {
 /*
 A HaRd challenge - styling an HR element
 
-"...in IE there’s two problems. For some annoying reason I can’t understand, 
+"...in IE thereâ€™s two problems. For some annoying reason I canâ€™t understand, 
 it adds 7 pixels (even number, right?) to the top and bottom margin."
 
 http://www.robertnyman.com/2007/03/09/a-hard-challenge-styling-an-hr-element/
@@ -423,21 +423,6 @@ header #li-chat #habla_unavailable_div a {
 	border: none;	
 }
 
-/*
-.logo span {
-
-	font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;        
-    display: block;
-	
-	text-transform: uppercase;
-    
-    color: #7d6f60;
-}
-
-*/
-
-
-
 
 
 /* ========== */
@@ -463,10 +448,7 @@ footer {
 footer h5 {
     color: #9ae3f0;
 
-
     margin: 0 0 10px 0;
-    
-
 	text-shadow: #170b0b 1px 1px 1px;
 	
 	text-align: center;
@@ -474,7 +456,6 @@ footer h5 {
 }
 
 footer h5 span {
-/*     text-transform: none; */
     color: #aba18f;
 }
 
@@ -522,9 +503,6 @@ elsewhere img {
     color: #222d4d;
 }
 */
-
-
-
 
 
 footer nav ul {
@@ -688,13 +666,7 @@ footer nav li img {
 .talk.details {
 
     margin: 0 0 30px 0;
-
 	color: #383829;
-
-/*
-	font-size: 13px;
-	line-height: 18px;
-*/
 
 }
 
@@ -761,6 +733,7 @@ footer nav li img {
 #talk-voting form {
     margin: 10px 0 0 0;
 }
+
 
 /*
 
@@ -965,13 +938,6 @@ footer nav li img {
 /* ! home   */
 /* ======== */
 
-.page.home {
-/*     min-height: 600px; */
-
-    margin-bottom: 0;
-	
-}
-
 
 .intro {
 
@@ -983,7 +949,7 @@ footer nav li img {
 .home h2 {
     text-align: center;    
     
-    margin: 0 0 20px 0;
+    margin: 0 0 10px 0;
     
 }
 
@@ -1098,6 +1064,14 @@ section.teaser p {
     
 }
 
+.home-notice a {
+    border: none;
+}
+
+.home-notice img {
+ margin: 0 auto;
+}
+
 
 
 /* ======= */
@@ -1106,69 +1080,55 @@ section.teaser p {
 
 
 .cal {
+
+}
+
+.cal.all-deadlines {
     margin: 0 0 40px 0;
-/*     padding: 5px 0; */
 }
 
 .cal .deadline {
+    padding: 5px 0;
     background: #e1dbc5;
     margin: 0 0 20px 0;
+}
+
+.cal h3 {
+    width: 70px;
+    float: left;
+    color: #7D6F60;
+    text-align: center;
+    font-size: 24px;
+    line-height: 30px;
+    padding: 5px 0;
+}
+
+.cal h3 span {
+    color: #4895A3;            
+}
+
+.cal .deadline p {
+    margin-left: 70px;
+}
+
+.cal p {
+
+}
+
+.cal p:first-line {
+    font-weight: bold;
 }
 
 .cal .deadline.expired {
     opacity: .7;
 }
 
-
-.cal h3 {
-    width: 70px;
-    color: #7D6F60;
-    text-align: center;
-    font-size: 21px;
-    letter-spacing: 1px;
-    float: left;
-    padding: 5px 0 0 0;
-}
-
-.cal h3 span {
-    letter-spacing: 0;
-    font-size: 30px;
-    line-height: 30px;
-    color: #4895A3;            
-}
-
-.cal .deadline div {
-    margin-left: 70px;
-}
-
-.cal h4 {
-/*     padding: 5px 0 0 0; */
-    margin: 0 0 5px 0;
-}
-
-
-.cal .deadline.expired h4 {
+.cal .deadline.expired p {
     text-decoration: line-through;
 }
 
 
-.cal h4 b {
-    /* Force to *not* use bold for League Gothic, it doesn't exist */
-    font-weight: normal;
-    color: #4895A3;
-}
 
-.cal div p {
-    color: #635443;
-    padding: 0 10px 10px 0;
-}
-
-/* On home page we have more room  */
-/*
-.home .cal div.deadline div {
-    width: 700px;
-}
-*/
 
 /* ========== */
 /* ! ticket   */
@@ -1361,7 +1321,7 @@ section.teaser p {
 
 
 /*
- * questo id viene creato da un js, lo metto in posizione fixed così sono
+ * questo id viene creato da un js, lo metto in posizione fixed cosÃ¬ sono
  * sicuro che sia sempre visibile.
  */
 #feedback-js {
