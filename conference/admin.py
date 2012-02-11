@@ -471,3 +471,10 @@ class TicketAdmin(admin.ModelAdmin):
         return render_to_response('conference/admin/ticket_stats.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.register(models.Ticket, TicketAdmin)
+
+class ConferenceTagAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'name',)
+    list_editable = ('name',)
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ('name',)
+admin.site.register(models.ConferenceTag, ConferenceTagAdmin)

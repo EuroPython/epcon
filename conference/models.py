@@ -26,16 +26,31 @@ import conference
 import conference.gmap
 from conference import settings
 
-from taggit.models import TaggedItem
+from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
 from taggit.managers import TaggableManager
 
-class ConferenceTag(TaggedItem):
-    """
-    Derivazione utilizzata per creare un namespace per i tag relativi alla
-    conferenza; non ho bisogno di attributi o metodi speciali, solo di un
-    sistema comodo per recuperare tutti i tag che mi interessano.
-    """
+# ConferenceTag e ConferenceTaggedItem servono per creare un "namespace" per i
+# tag relativi a conference. In questo modo non devo preocuparmi di altri
+# utilizzi di taggit fattio da altre app.
+class ConferenceTag(TagBase):
     pass
+
+class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
+    tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
+
+    class Meta:
+        verbose_name = _("Tagged Item")
+        verbose_name_plural = _("Tagged Items")
+
+    @classmethod
+    def tags_for(cls, model, instance=None):
+        if instance is not None:
+            return cls.tag_model().objects.filter(**{
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+        return cls.tag_model().objects.filter(**{
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        }).distinct()
 
 class ConferenceManager(models.Manager):
     def current(self):
@@ -433,7 +448,7 @@ class TalkManager(models.Manager):
             # associo qui lo speaker così se c'è qualche problema, ad esempio
             # lo speaker non è valido, il tutto avviene in una transazione ed
             # il db rimane pulito.
-            talk.speakers.add(speaker)
+            TalkSpeaker(talk=talk, speaker=speaker).save()
         except:
             transaction.rollback()
             raise
@@ -469,7 +484,7 @@ class Talk(models.Model, UrlMixin):
     suggested_tags = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    tags = TaggableManager()
+    tags = TaggableManager(through=ConferenceTaggedItem)
     objects = TalkManager()
 
     class Meta:
