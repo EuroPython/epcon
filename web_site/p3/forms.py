@@ -21,15 +21,27 @@ class P3SubmissionForm(SubmissionForm):
         input_formats=('%Y-%m-%d',),
     )
     duration = forms.TypedChoiceField(
-        label=_('Suggested duration'),
-        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
-        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
+        label=_('Duration'),
+        help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '4 hours')),
         coerce=int,
-        initial=60,)
-    # per ep non c'è il tipo di talk
-    type = forms.TypedChoiceField(required=False)
+        initial=60,
+        required=False,
+    )
+    first_time = forms.BooleanField(
+        label=_('First time speaker'),
+        required=False,
+    )
+    type = forms.TypedChoiceField(
+        label=_('Talk Type'),
+        help_text='Choose between a standard talk or a 4-hours in-depth training',
+        choices=(('s', 'Standard talk'), ('t', 'Training')),
+        initial='s',
+        required=True,
+        widget=forms.RadioSelect,
+    )
     personal_agreement = forms.BooleanField(
-        label=_('I agree to let you publish my data on the web site.'),
+        label=_('I agree to let you publish my data (excluding birth date and phone number).'),
         help_text=_('This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <strong>never</strong> be published'),
     )
     slides_agreement = forms.BooleanField(
@@ -50,8 +62,11 @@ class P3SubmissionForm(SubmissionForm):
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
-    def clean_type(self):
-        return 's'
+    def clean(self):
+        data = super(P3SubmissionForm, self).clean()
+        if data['type'] == 't':
+            data['duration'] = 240
+        return data
 
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
@@ -59,7 +74,15 @@ class P3SubmissionForm(SubmissionForm):
 
         auser = self.user.assopy_user
         speaker = self.user.speaker
+        try:
+            p3s = speaker.p3_speaker
+        except models.SpeakerConference.DoesNotExist:
+            p3s = models.SpeakerConference(speaker=speaker)
+            
         data = self.cleaned_data
+
+        p3s.first_time = data['first_time']
+        p3s.save()
 
         auser.phone = data['mobile']
         auser.birthday = data['birthday']
@@ -70,11 +93,13 @@ class P3SubmissionForm(SubmissionForm):
 
 class P3SubmissionAdditionalForm(TalkForm):
     duration = forms.TypedChoiceField(
-        label=_('Suggested duration'),
-        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
-        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes')),
+        label=_('Duration'),
+        help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '4 hours')),
         coerce=int,
-        initial=60,)
+        initial=60,
+        required=False,
+    )
     slides_agreement = forms.BooleanField(
         label=_('I agree to release all the talk material after the event.'),
         help_text=_('If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site.'),
@@ -82,22 +107,44 @@ class P3SubmissionAdditionalForm(TalkForm):
     video_agreement = forms.BooleanField(
         label=_('I agree to let the organization record my talk and publish the video.'),
     )
-    type = forms.TypedChoiceField(required=False)
+    type = forms.TypedChoiceField(
+        label=_('Talk Type'),
+        help_text='Choose between a standard talk or a 4-hours in-depth training',
+        choices=(('s', 'Standard talk'), ('t', 'Training')),
+        initial='s',
+        required=True,
+        widget=forms.RadioSelect,
+    )
 
-    def clean_type(self):
-        return 's'
+    def clean(self):
+        data = super(P3SubmissionAdditionalForm, self).clean()
+        if data['type'] == 't':
+            data['duration'] = 240
+        return data
 
 class P3TalkForm(TalkForm):
     duration = forms.TypedChoiceField(
-        label=_('Suggested duration'),
-        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
-        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '240 minutes')),
+        label=_('Duration'),
+        help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '4 hours')),
         coerce=int,
-        initial=60,)
-    type = forms.TypedChoiceField(required=False)
+        initial=60,
+        required=False,
+    )
+    type = forms.TypedChoiceField(
+        label=_('Talk Type'),
+        help_text='Choose between a standard talk or a 4-hours in-depth training',
+        choices=(('s', 'Standard talk'), ('t', 'Training')),
+        initial='s',
+        required=True,
+        widget=forms.RadioSelect,
+    )
 
-    def clean_type(self):
-        return 's'
+    def clean(self):
+        data = super(P3TalkForm, self).clean()
+        if data['type'] == 't':
+            data['duration'] = 240
+        return data
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')

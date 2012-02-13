@@ -10,6 +10,7 @@
  */
 function setup_fragment(ctx) {
     ctx = ctx || document;
+    setup_talkform(ctx);
     setup_tooltip(ctx);
     setup_toggles(ctx);
     setup_trigger_overlay(ctx);
@@ -242,4 +243,41 @@ function scroll_to(e, duration) {
     $('html, body').animate({
         scrollTop: e.offset().top
     }, duration || 1000);
+}
+
+function setup_talkform(ctx) {
+    $('form.talk-form', ctx).each(function() {
+        var f = $(this);
+        var field_type = $('input[name=type]', f);
+        /* se viene scelto "training" voglio impostare la duration a 4 ore e
+         * renderla readonly */
+        function syncPage(last_run) {
+            var talk_type = $('input[name=type]:checked', f).val();
+            var field_duration = $('select[name=duration]', f);
+            switch(talk_type) {
+                case 's':
+                    $('option[value=240]', field_duration).remove();
+                    field_duration.attr('disabled', null);
+                    break;
+                case 't':
+                    var h = $('option[value=240]', field_duration);
+                    if(h.length == 0) {
+                        var h = $('<option value="240">4 hours</option>');
+                        field_duration.append(h);
+                    }
+                    h.attr('selected', 'selected');
+                    field_duration.attr('disabled', 'disabled');
+                    break;
+                default:
+                    $('input[name=type][value=s]', f).attr('checked', 'checked');
+                    /* last_run viene usato come misura cautelativa, per evitare
+                     * una ricorsione infinita nel caso il markup sia cambiato */
+                    if(last_run != 1)
+                        syncPage(1);
+                    break;
+            }
+        }
+        field_type.change(syncPage);
+        syncPage();
+    });
 }
