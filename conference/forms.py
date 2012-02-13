@@ -6,6 +6,7 @@ from conference import settings
 from django.utils.translation import ugettext as _
 
 from django.forms import widgets
+from taggit.forms import TagField
 
 class TagWidget(widgets.TextInput):
     def _media(self):
@@ -21,6 +22,15 @@ class TagWidget(widgets.TextInput):
         from django.forms.util import flatatt
         if value is None:
             value = ''
+        else:
+            if not isinstance(value, basestring):
+                names = []
+                for v in value:
+                    if isinstance(v, basestring):
+                        names.append(v)
+                    else:
+                        names.append(v.name)
+                value = ','.join(names)
         final_attrs = self.build_attrs(attrs, type='text', name=name)
         final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
         if value != '':
@@ -93,7 +103,7 @@ class SubmissionForm(forms.Form):
         help_text=_('Promo video description'),
         required=False,
     )
-    tags = forms.CharField(widget=TagWidget)
+    tags = TagField(widget=TagWidget)
 
     def __init__(self, user, *args, **kwargs):
         try:
@@ -172,6 +182,7 @@ class SubmissionForm(forms.Form):
             talk.slides = data['slides']
         talk.save()
         talk.setAbstract(data['abstract'])
+        talk.tags.set(*data['tags'])
 
         return talk
 
@@ -219,7 +230,7 @@ class TalkForm(forms.Form):
         help_text=_('Promo video description'),
         required=False,
     )
-    tags = forms.CharField(widget=TagWidget)
+    tags = TagField(widget=TagWidget)
 
     def __init__(self, instance=None, *args, **kwargs):
         if instance:
@@ -231,6 +242,7 @@ class TalkForm(forms.Form):
                 'level': instance.level,
                 'abstract': getattr(instance.getAbstract(), 'body', ''),
                 'promo_video': instance.promo_video_url,
+                'tags': instance.tags.all(),
             }
             data.update(kwargs.get('initial', {}))
             kwargs['initial'] = data
@@ -261,6 +273,7 @@ class TalkForm(forms.Form):
             instance.slides = data['slides']
         instance.save()
         instance.setAbstract(data['abstract'])
+        instance.tags.set(*data['tags'])
 
         return instance
 
