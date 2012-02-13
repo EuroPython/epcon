@@ -763,14 +763,25 @@ def voting(request):
             'form': form,
         }
 
-def tags_js(request):
+def init_js(request):
     """
-    Restituisce un javascript con l'elenco dei tag utiilizzati nella conferenza.
+    Conference javascript module.
     """
     tags = models.ConferenceTag.objects\
         .all()\
         .distinct()\
         .values_list('name', flat=True)
-    j = simplejson.dumps([ x.encode('utf-8') for x in tags ])
-    text = 'conference = { tags: %s };' % j
-    return http.HttpResponse(content=text, content_type='text/javascript')
+    code = """
+conference = { tags: %(tags)s };
+$(function() {
+    $('.tag-field').tagit({
+        tagSource: function(search, showChoices) {
+            var tags = conference ? conference.tags : [];
+            showChoices(tags);
+        }
+    });
+});
+    """ % {
+        'tags': simplejson.dumps([ x.encode('utf-8') for x in tags ])
+    }
+    return http.HttpResponse(content=code, content_type='text/javascript')

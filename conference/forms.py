@@ -10,7 +10,7 @@ from django.forms import widgets
 class TagWidget(widgets.TextInput):
     def _media(self):
         return forms.Media(
-            js=('conference/tag-it/js/tag-it.js', 'conference/init.js',),
+            js=('conference/tag-it/js/tag-it.js',),
             css={'all': ('conference/tag-it/css/jquery.tagit.css',)},
         )
     media = property(_media)
@@ -20,7 +20,7 @@ class TagWidget(widgets.TextInput):
         from django.utils.safestring import mark_safe
         from django.forms.util import flatatt
         if value is None:
-            value = 'ciao,mondo'
+            value = ''
         final_attrs = self.build_attrs(attrs, type='text', name=name)
         final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
         if value != '':
