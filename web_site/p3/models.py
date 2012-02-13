@@ -9,6 +9,10 @@ from django.db.models.query import QuerySet
 
 from conference.models import Ticket
 
+class SpeakerConference(models.Model):
+    speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
+    first_time = models.BooleanField(default=False)
+
 TICKET_CONFERENCE_SHIRT_SIZES = (
     ('fs', 'S (female)'),
     ('fm', 'M (female)'),
