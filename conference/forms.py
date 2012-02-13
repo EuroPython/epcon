@@ -224,6 +224,7 @@ class TalkForm(forms.Form):
     def __init__(self, instance=None, *args, **kwargs):
         if instance:
             data = {
+                'type': instance.type,
                 'title': instance.title,
                 'duration': instance.duration,
                 'language': instance.language,
