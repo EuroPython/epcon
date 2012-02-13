@@ -5,22 +5,7 @@
 
 {% block EXTRA_HEAD %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}conference/projekktor/projekktor.min.js"></script>
-<link rel="stylesheet" href="{{ STATIC_URL }}conference/projekktor/theme/style.css" type="text/css" media="screen" />
-<script type="text/javascript">
-/*
-var PROJEKKTOR_CONFIG = {
-    playerFlashMP4:    "{{ STATIC_URL }}conference/projekktor/playerMP4.swf",
-    playerFlashMP3:    "{{ STATIC_URL }}conference/projekktor/playerMP3.swf"
-};
-*/
-$(document).ready(function() {
-    projekktor('video', {
-        playerFlashMP4: "{{ STATIC_URL }}conference/projekktor/jarisplayer.swf",
-        playerFlashMP3: "{{ STATIC_URL }}conference/projekktor/jarisplayer.swf"
-    });
-});
-</script>
+{{ form.media }}
 <script type="text/javascript">//<![CDATA[
     $(function() {
         hcomments.comments({
@@ -114,6 +99,7 @@ $(document).ready(function() {
                 {{ form.duration|field }}
                 {{ form.language|field }}
                 {{ form.level|field }}
+                {{ form.tags|field }}
                 {% endif %}
                 {{ form.slides|field }}
                 {{ form.abstract|field }}
