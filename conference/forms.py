@@ -65,10 +65,6 @@ class SubmissionForm(forms.Form):
         required=False,)
 
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
-    training = forms.BooleanField(
-        label=_('Training'),
-        help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details.'),
-        required=False,)
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
         help_text=_('Talk Type description'),
@@ -168,7 +164,7 @@ class SubmissionForm(forms.Form):
         talk = models.Talk.objects.createFromTitle(
             title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', duration=data['duration'], language=data['language'],
-            level=data['level'], training_available=data['training'],
+            level=data['level'],
         )
         talk.type = data['type']
         talk.promo_video_url = data['promo_video']
@@ -197,10 +193,6 @@ class SpeakerForm(forms.Form):
 
 class TalkForm(forms.Form):
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
-    training = forms.BooleanField(
-        label=_('Training'),
-        help_text=_('Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details.'),
-        required=False,)
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
         help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
@@ -227,12 +219,12 @@ class TalkForm(forms.Form):
         help_text=_('Promo video description'),
         required=False,
     )
+    tags = forms.CharField(widget=TagWidget)
 
     def __init__(self, instance=None, *args, **kwargs):
         if instance:
             data = {
                 'title': instance.title,
-                'training': instance.training_available,
                 'duration': instance.duration,
                 'language': instance.language,
                 'level': instance.level,
@@ -254,14 +246,13 @@ class TalkForm(forms.Form):
             instance = models.Talk.objects.createFromTitle(
                 title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', duration=data['duration'], language=data['language'],
-                level=data['level'], training_available=data['training'],
+                level=data['level'],
             )
         else:
             instance.title = data['title']
             instance.duration = data['duration']
             instance.language = data['language']
             instance.level = data['level']
-            instance.training_available = data['training']
 
         instance.type = data['type']
         instance.promo_video_url = data['promo_video']
