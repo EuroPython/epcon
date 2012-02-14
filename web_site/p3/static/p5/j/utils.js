@@ -273,10 +273,13 @@ function setup_talkform(ctx) {
         function syncPage(last_run) {
             var talk_type = $('input[name=type]:checked', f).val();
             var field_duration = $('select[name=duration]', f);
+            var field_language = $('select[name=language]', f);
             switch(talk_type) {
                 case 's':
                     $('option[value=240]', field_duration).remove();
                     field_duration.attr('disabled', null);
+
+                    field_language.attr('disabled', null);
                     break;
                 case 't':
                     var h = $('option[value=240]', field_duration);
@@ -286,6 +289,10 @@ function setup_talkform(ctx) {
                     }
                     h.attr('selected', 'selected');
                     field_duration.attr('disabled', 'disabled');
+
+                    var h = $('option[value=en]', field_language);
+                    h.attr('selected', 'selected');
+                    field_language.attr('disabled', 'disabled');
                     break;
                 default:
                     $('input[name=type][value=s]', f).attr('checked', 'checked');
