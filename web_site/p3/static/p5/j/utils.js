@@ -38,21 +38,40 @@ function setup_tooltip(ctx) {
     });
 
     $('form', ctx).each(function() {
-        var i = $('.help-text', this).prev(':input');
-        var relative = i.parents('.overlay').length != 0;
-        i.tooltip({
-            position: "center right",
-            offset: [0, 10],
-            effect: "fade",
-            relative: relative,
-            opacity: 0.9,
-            events: {
-                def:     "mouseenter,mouseleave",    // default show/hide events for an element
-                input:   "focus,blur",               // for all input elements
-                widget:  "focus mouseenter,blur mouseleave",  // select, checkbox, radio, button
-                file:    "focus mouseenter,blur mouseleave",
-                tooltip: "mouseenter,mouseleave"     // the tooltip element
-            }
+        function setup(i, tip) {
+            var relative = i.parents('.overlay').length != 0;
+            i.tooltip({
+                position: "center right",
+                offset: [0, 10],
+                effect: "fade",
+                relative: relative,
+                opacity: 0.9,
+                tip: tip,
+                events: {
+                    def:     "mouseenter,mouseleave",    // default show/hide events for an element
+                    input:   "focus,blur",               // for all input elements
+                    widget:  "focus mouseenter,blur mouseleave",  // select, checkbox, radio, button
+                    file:    "focus mouseenter,blur mouseleave",
+                    tooltip: "mouseenter,mouseleave"     // the tooltip element
+                }
+            });
+        }
+        /* normalmente gli .help-text sono posti subito dopo i tag input,
+         * questo si sposa perfettamente con il comportamento di default dei
+         * tooltip che di solito cercano il testo da mostrare nell'elemento
+         * successivo al trigger, ma...
+         */
+        setup($('.help-text', this).prev(':input'));
+        /*
+         * i radio vengono renderizzati in maniera diversa, qui l'help-text è
+         * posto dopo un ul che contiene tutti gli input
+         */
+        $('.help-text', this).prev('ul').each(function() {
+            var inputs = $('input', this);
+            var ht = $(this).next();
+            inputs.each(function() {
+                setup($(this), ht);
+            });
         });
     });
 }
