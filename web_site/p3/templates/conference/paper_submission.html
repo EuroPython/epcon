@@ -12,10 +12,13 @@
             <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.<br />To edit your submission{{ proposed_talks.count|pluralize }}, please visit your <a href="{% url conference-speaker slug=speaker.slug %}">speaker profile</a>.</p>
         </section>
         {% endif %}
+
         <form class="talk-form" action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+
             {% if not proposed_talks %}
-            <h2>Speaker profile</h2>
             <fieldset>
+                <legend>Speaker profile</legend>
+                
                 <div class="span-3">{{ form.first_name|field }}</div>
                 <div class="span-6 last">{{ form.last_name|field }}</div>
                 {% comment %}
@@ -33,23 +36,26 @@
                 <div class="span-9 last">{{ form.first_time|field }}</div>
                 <div class="span-9 last">{{ form.personal_agreement|field }}</div>
             </fieldset>
+
             {% endif %}
-            <h2>Talk description</h2>
+
             <fieldset>
+                <legend>Talk description</legend>            
                 <div>{{ form.type|field }}</div>
                 <div>{{ form.title|field }}</div>
-
                 <div class="span-3">{{ form.language|field }}</div>
                 <div class="span-3">{{ form.duration|field }}</div>
                 <div class="span-3 last">{{ form.level|field }}</div>
                 <div>{{ form.abstract|field }}</div>
                 <div>{{ form.tags|field }}</div>
-                <div>{{ form.video_agreement|field }}</div>
+                <div>{{ form.video_agreement|field }}</div>                
                 <div>{{ form.slides_agreement|field }}</div>
             </fieldset>
             <fieldset class="border">
-                <p>Note: if you are available to give the same talk both in Italian and English, please submit the talk twice, with fully translated title and abstract.</p>
-                <button type="submit">Submit</button>
+                <p class="note"><b>Note</b>: if you are available to give the same talk both in Italian and English, 
+                please submit the talk twice, with fully translated title and abstract.
+                </p>
+                <button type="submit">Submit Talk</button>
             </fieldset>
         </form>
     </div>
