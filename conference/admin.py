@@ -124,7 +124,8 @@ class MultiLingualAdminContent(admin.ModelAdmin):
     def _get_relation_field(self):
         for name, f in self.model.__dict__.items():
             if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
-                yield name
+                if f.field.related.parent_model is models.MultilingualContent:
+                    yield name
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(MultiLingualAdminContent, self).get_form(request, obj, **kwargs)
