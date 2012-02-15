@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'tagging',
     'taggit',
+    'authority',
     'pages',
     'mptt',
     #'haystack',

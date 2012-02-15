@@ -30,6 +30,7 @@ class P3SubmissionForm(SubmissionForm):
     )
     first_time = forms.BooleanField(
         label=_('First time speaker'),
+        help_text=_('We are planning a special program to help first time speaker, check this if you\'d like to join'),
         required=False,
     )
     type = forms.TypedChoiceField(
