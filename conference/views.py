@@ -774,12 +774,33 @@ def init_js(request):
     code = """
 conference = { tags: %(tags)s };
 $(function() {
-    $('.tag-field').tagit({
+    var tfields = $('.tag-field');
+    tfields.tagit({
         tagSource: function(search, showChoices) {
-            var tags = conference ? conference.tags : [];
+            if(!conference)
+                return;
+            var needle = search.term.toLowerCase();
+            var tags = [];
+            for(var ix=0; ix<conference.tags.length; ix++) {
+                var t = conference.tags[ix];
+                if(t.toLowerCase().indexOf(needle) != -1)
+                    tags.push(t);
+            }
             showChoices(tags);
         }
     });
+    if(conference) {
+        var wrapper = $('<ul class="all-tags"></ul>');
+        wrapper.insertAfter(tfields.parent().children('ul.tagit').eq(0));
+        for(var ix=0; ix<conference.tags.length; ix++) {
+            var t = conference.tags[ix];
+            wrapper.append('<a class="tag" href="#">' + t + '</a>');
+        }
+        $('a.tag', wrapper).click(function(e) {
+            e.preventDefault();
+            tfields.tagit('createTag', $(this).text());
+        });
+    }
 });
     """ % {
         'tags': simplejson.dumps([ x.encode('utf-8') for x in tags ])
