@@ -11,6 +11,7 @@ from django.core import urlresolvers
 from django.db import transaction
 from django.shortcuts import redirect, render_to_response
 
+from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
@@ -221,12 +222,8 @@ class TalkAdmin(MultiLingualAdminContent):
     form = TalkAdminForm
     
     def _speakers(self, obj):
-        main = ', '.join((s.name for s in obj.speakers.all()))
-        additional = ','.join((s.name for s in obj.additional_speakers.all()))
-        if additional:
-            return '%s [%s]' % (main, additional)
-        else:
-            return main
+        data = dataaccess.talk_data(obj.id)
+        return ','.join([ x['name'] for x in data['speakers'] ])
 
     def _slides(self, obj):
         return bool(obj.slides)
