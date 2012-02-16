@@ -178,6 +178,8 @@ PAGE_DEFAULT_LANGUAGE = 'it'
 PAGE_LANGUAGES = LANGUAGES
 PAGE_REAL_TIME_SEARCH = False
 
+PAGE_USE_STRICT_URL = True
+
 MICROBLOG_LINK = 'http://www.europython.eu'
 MICROBLOG_TITLE = 'Europython blog'
 MICROBLOG_DESCRIPTION = 'latest news from europython'
