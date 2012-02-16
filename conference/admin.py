@@ -220,9 +220,17 @@ class TalkAdmin(MultiLingualAdminContent):
     search_fields = ('title',)
 
     form = TalkAdminForm
-    
+
+    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
+        # utilizzo dataaccess per fare una sola query verso il db, in questo
+        # modo ho subito tutti i dati pronti (utile ad esempio per mostrare i
+        # nomi degli speaker)
+        talks = dataaccess.talks_data(queryset.values_list('id', flat=True))
+        self.cached_talks = dict([(x['talk'].id, x) for x in talks])
+        return super(TalkAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
+
     def _speakers(self, obj):
-        data = dataaccess.talk_data(obj.id)
+        data = self.cached_talks.get(obj.id)
         return ','.join([ x['name'] for x in data['speakers'] ])
 
     def _slides(self, obj):
