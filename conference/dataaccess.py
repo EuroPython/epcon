@@ -185,6 +185,84 @@ def talks_data(tids):
 
     return output
 
+def speaker_data(sid, preload=None):
+    if preload is None:
+        preload = {}
+
+    try:
+        speaker = preload['speaker']
+    except KeyError:
+        speaker = models.Speaker.objects\
+            .select_related('user')\
+            .get(id=sid)
+
+    try:
+        talks_data = preload['talks_data']
+    except KeyError:
+        talks_data = models.TalkSpeaker.objects\
+            .filter(speaker=speaker)\
+            .values('talk__id', 'talk__title', 'talk__slug')
+
+    talks = []
+    for t in talks_data:
+        talks.append({
+            'id': t['talk__id'],
+            'title': t['talk__title'],
+            'slug': t['talk__slug'],
+        })
+
+    return {
+        'speaker': speaker,
+        'talks': talks,
+    }
+
+def _i_speaker_data(sender, **kw):
+    if sender is models.Speaker:
+        sids = [ kw['instance'].id ]
+    elif sender is models.Talk:
+        sids = kw['instance'].speakers.all().values_list('id', flat=True)
+    else:
+        sids = [ kw['instance'].speaker_id ]
+
+    return [ 'speaker_data:%s' % x for x in sids ]
+        
+speaker_data = cache_me(
+    models=(models.Speaker, models.Talk, models.TalkSpeaker),
+    key='speaker_data:%(sid)s')(speaker_data, _i_speaker_data)
+
+def speakers_data(sids):
+    cached = zip(sids, speaker_data.get_from_cache([ (x,) for x in sids ]))
+    missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
+
+    preload = {}
+    speakers = models.Speaker.objects\
+        .filter(id__in=missing)\
+        .select_related('user')
+    talks = models.TalkSpeaker.objects\
+        .filter(speaker__in=speakers.values('id'))\
+        .values('speaker', 'talk__id', 'talk__title', 'talk__slug')
+
+    for s in speakers:
+        preload[s.id] = {
+            'speaker': s,
+            'talks_data': [],
+        }
+    for t in talks:
+        preload[t['speaker']]['talks_data'].append({
+            'talk__id': t['talk__id'],
+            'talk__title': t['talk__title'],
+            'talk__slug': t['talk__slug'],
+        })
+
+    output = []
+    for ix, e in enumerate(cached):
+        sid, val = e
+        if val is cache_me.CACHE_MISS:
+            val = speaker_data(sid, preload=preload[sid])
+        output.append(val)
+
+    return output
+    
 def event_data(eid, preload=None):
     if preload is None:
         preload = {}
