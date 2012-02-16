@@ -214,7 +214,7 @@ class TalkAdmin(MultiLingualAdminContent):
     actions = ('do_accept_talks_in_schedule', 'do_speakers_data',)
     list_display = ('title', 'conference', '_speakers', 'duration', 'status', '_slides', '_video')
     list_editable = ('status',)
-    list_filter = ('conference', )
+    list_filter = ('conference', 'status',)
     ordering = ('-conference', 'title')
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ('title',)
@@ -227,11 +227,23 @@ class TalkAdmin(MultiLingualAdminContent):
         # nomi degli speaker)
         talks = dataaccess.talks_data(queryset.values_list('id', flat=True))
         self.cached_talks = dict([(x['talk'].id, x) for x in talks])
+        sids = [ s['id'] for t in talks for s in t['speakers'] ]
+        speakers = dataaccess.speakers_data(sids)
+        self.cached_speakers = dict([(x['speaker'].id, x) for x in speakers])
         return super(TalkAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def _speakers(self, obj):
         data = self.cached_talks.get(obj.id)
-        return ','.join([ x['name'] for x in data['speakers'] ])
+        output = []
+        for x in data['speakers']:
+            args = {
+                'url': urlresolvers.reverse('admin:conference_speaker_change', args=(x['id'],)),
+                'name': x['name'],
+                'mail': self.cached_speakers[x['id']]['speaker'].user.email,
+            }
+            output.append('<a href="%(url)s">%(name)s</a> (<a href="mailto:%(mail)s">mail</a>)' % args)
+        return '<br />'.join(output)
+    _speakers.allow_tags = True
 
     def _slides(self, obj):
         return bool(obj.slides)
