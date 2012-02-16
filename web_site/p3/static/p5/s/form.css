@@ -188,39 +188,6 @@ button.negate {
 	border-color: #ABA18F;
 	text-shadow: 1px 1px 1px #634646;
 }
-/*
- * un layout più compatto per i booleanfield:
- *
- * [ ] label
- *
- * invece di 
- *
- * label
- * [ ]
- */
-.field.booleanfield {
-    margin: 0;
-    padding: 0;
-    min-height: 20px;
-
-}
-.field.booleanfield label {
-    position: relative;
-    left: 25px;
-}
-.field.booleanfield input {
-    position: relative;
-    top: -19px;
-}
-.field.booleanfield label:after {
-    content: "";
-}
-
-.field.booleanfield .errorlist {
-    position: relative;
-    top: -19px;
-}
-
 
 form hr {
     margin: 0;
