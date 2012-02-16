@@ -73,6 +73,16 @@ function setup_tooltip(ctx) {
                 setup($(this), ht);
             });
         });
+        /*
+         * altri input vengono invece renderizzati dentro la label
+         */
+        $('.help-text', this).prev('label').each(function() {
+            var inputs = $('input', this);
+            var ht = $(this).next();
+            inputs.each(function() {
+                setup($(this), ht);
+            });
+        });
     });
 }
 /*
