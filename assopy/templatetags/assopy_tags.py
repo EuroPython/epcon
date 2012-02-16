@@ -14,29 +14,58 @@ from fancy_tag import fancy_tag
 
 register = template.Library()
 
-_field_tpl = template.Template("""
-    <div class="{{ classes|join:" " }}">
+_field_template_standard = template.Template("""
+    <div class="{{ classes }}">
         <label for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %}<span class="required">{{ required_text }}</span>{% endif %}</label>
         {{ field }}
         {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
         {{ field.errors }}
     </div>
 """)
+
+_field_template_label_inline = template.Template("""
+    <div class="{{ classes }}">
+        <label for="{{ field.auto_id }}">{{ field }} {{ field.label|safe }}{% if field.field.required %}<span class="required">{{ required_text }}</span>{% endif %}</label>
+        {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
+        {{ field.errors }}
+    </div>
+""")
+
+fields_template = {
+    None: _field_template_standard,
+    forms.widgets.CheckboxInput: _field_template_label_inline,
+    forms.widgets.RadioSelect: _field_template_label_inline,
+}
+
 @register.filter()
 def field(field, cls=None):
+    if not hasattr(field, 'field'):
+        return 'Invalid field "%r"' % field
+
     classes = [ 'field' ]
     if field.field.required:
         classes.append('required')
     if cls:
-        classes.extend(cls.split(','))
+        classes.extend(cls.split(None))
     classes.append(field.field.__class__.__name__.lower())
     if field.errors:
         classes.append('error')
-    required_text = _('(required)')
-    if isinstance(field.field.widget, (forms.HiddenInput,)):
+
+    widget = field.field.widget
+    if isinstance(widget, (forms.HiddenInput,)):
         return str(field)
     else:
-        return _field_tpl.render(template.Context(locals()))
+        try:
+            tpl = fields_template[type(widget)]
+        except KeyError:
+            tpl = fields_template[None]
+
+        ctx = {
+            'classes': ' '.join(classes),
+            'field': field,
+            'required_text': _('(required)'),
+        }
+        return tpl.render(template.Context(ctx))
 
 _form_errors_tpl = template.Template("""
     {% load i18n %}
