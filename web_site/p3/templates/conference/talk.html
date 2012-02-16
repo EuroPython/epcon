@@ -56,7 +56,7 @@
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-                <p>{{ ab.body|linebreaks }}</p>
+                <p>{{ ab.body|safe_markdown }}</p>
             </div>
             {% if talk.status == "accepted" %}
                 {% for e in events %}
@@ -102,6 +102,7 @@
                 {{ form.tags|field }}
                 {% endif %}
                 {{ form.slides|field }}
+                <hr />
                 {{ form.abstract|field }}
                 </fieldset>
                 <fieldset class="border">

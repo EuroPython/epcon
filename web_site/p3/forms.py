@@ -3,14 +3,14 @@ from django import forms
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
-from conference.forms import SubmissionForm, TalkForm
+import conference.forms as cforms 
 from conference.models import Conference, Ticket
 
 from p3 import models
 
 import datetime
 
-class P3SubmissionForm(SubmissionForm):
+class P3SubmissionForm(cforms.SubmissionForm):
     mobile = forms.CharField(
         help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
         max_length=30,
@@ -53,6 +53,15 @@ class P3SubmissionForm(SubmissionForm):
     video_agreement = forms.BooleanField(
         label=_('I agree to let the organization record my talk and publish the video.'),
     )
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=cforms.MarkEditWidget,)
+    abstract = forms.CharField(
+        max_length=5000,
+        label=_('Talk abstract'),
+        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        widget=cforms.MarkEditWidget,)
 
     def __init__(self, user, *args, **kwargs):
         data = {
@@ -68,6 +77,7 @@ class P3SubmissionForm(SubmissionForm):
         data = super(P3SubmissionForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
+
         return data
 
     @transaction.commit_on_success
@@ -93,7 +103,7 @@ class P3SubmissionForm(SubmissionForm):
 
         return talk
 
-class P3SubmissionAdditionalForm(TalkForm):
+class P3SubmissionAdditionalForm(cforms.TalkForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
@@ -117,6 +127,11 @@ class P3SubmissionAdditionalForm(TalkForm):
         required=True,
         widget=forms.RadioSelect,
     )
+    abstract = forms.CharField(
+        max_length=5000,
+        label=_('Talk abstract'),
+        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        widget=cforms.MarkEditWidget,)
 
     def clean(self):
         data = super(P3SubmissionAdditionalForm, self).clean()
@@ -124,7 +139,7 @@ class P3SubmissionAdditionalForm(TalkForm):
             data['duration'] = 240
         return data
 
-class P3TalkForm(TalkForm):
+class P3TalkForm(cforms.TalkForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
@@ -141,12 +156,23 @@ class P3TalkForm(TalkForm):
         required=True,
         widget=forms.RadioSelect,
     )
+    abstract = forms.CharField(
+        max_length=5000,
+        label=_('Talk abstract'),
+        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        widget=cforms.MarkEditWidget,)
 
     def clean(self):
         data = super(P3TalkForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
         return data
+
+class P3SpeakerForm(cforms.SpeakerForm):
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=cforms.MarkEditWidget,)
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')

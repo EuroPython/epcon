@@ -8,7 +8,7 @@ admin.autodiscover()
 
 admin.site.index_template = 'p3/admin/index.html'
 
-from p3.forms import P3SubmissionForm, P3SubmissionAdditionalForm, P3TalkForm
+import p3.forms as pforms
 
 urlpatterns = patterns('',
     (r'^accounts/', include('assopy.urls')),
@@ -19,11 +19,14 @@ urlpatterns = patterns('',
     (r'^blog/', include('microblog.urls')),
     (r'^comments/', include('django.contrib.comments.urls')),
     url(r'^conference/paper-submission/$', 'conference.views.paper_submission',
-        {'submission_form': P3SubmissionForm, 'submission_additional_form': P3SubmissionAdditionalForm, },
+        {'submission_form': pforms.P3SubmissionForm, 'submission_additional_form': pforms.P3SubmissionAdditionalForm, },
         name='conference-paper-submission'),
     url(r'^conference/talks/(?P<slug>[\w-]+)$', 'conference.views.talk',
-        {'talk_form': P3TalkForm},
+        {'talk_form': pforms.P3TalkForm},
         name='conference-talk'),
+    url(r'^speakers/(?P<slug>[\w-]+)', 'conference.views.speaker',
+        {'speaker_form': pforms.P3SpeakerForm},
+        name='conference-speaker'),
     (r'^conference/', include('conference.urls')),
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),

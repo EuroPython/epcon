@@ -40,12 +40,12 @@
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/utils.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/rateit/src/jquery.rateit.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
-    <script type="text/javascript" src="{% url conference-init.js %}"></script>
     {% if current_page|check_map %}
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="{% url p3-map-js %}"></script>
     {% endif %}
     {% block EXTRA_HEAD %}{% endblock %}
+    <script type="text/javascript" src="{% url conference-init.js %}"></script>
 
     <meta property="og:image" content="http://a1.twimg.com/profile_images/1231560986/Twitter-Avatar_bigger.png" />
     <meta property="fb:admins" content="789244177" />
