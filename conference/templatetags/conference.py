@@ -31,6 +31,7 @@ from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
 
 from fancy_tag import fancy_tag
+import markdown
 
 mimetypes.init()
 
@@ -1445,3 +1446,7 @@ def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=
         'events': sorted(grouped.items()),
     })
     return render_to_string('conference/render_schedule_list.html', ctx)
+
+@register.filter
+def safe_markdown(text, safe_mode="remove"):
+    return mark_safe(markdown.Markdown(safe_mode=safe_mode).convert(text))

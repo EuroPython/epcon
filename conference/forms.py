@@ -1,11 +1,16 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.contrib.admin import widgets as admin_widgets
 from django.db import transaction
-from conference import models
-from conference import settings
+from django.forms import widgets
+from django.forms.util import flatatt
+from django.utils.encoding import force_unicode
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from django.forms import widgets
+from conference import models
+from conference import settings
+
 from taggit.forms import TagField
 
 class TagWidget(widgets.TextInput):
@@ -17,9 +22,6 @@ class TagWidget(widgets.TextInput):
     media = property(_media)
 
     def render(self, name, value, attrs=None):
-        from django.utils.encoding import force_unicode
-        from django.utils.safestring import mark_safe
-        from django.forms.util import flatatt
         if value is None:
             value = ''
         else:
@@ -37,6 +39,30 @@ class TagWidget(widgets.TextInput):
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = force_unicode(self._format_value(value))
         return mark_safe(u'<input%s />' % flatatt(final_attrs))
+
+# MarkEditWidget adattameto del codice di esempio presente in 
+# http://tstone.github.com/jquery-markedit/
+
+class MarkEditWidget(forms.Textarea):
+    class Media:
+        css = {
+            'all': ('conference/jquery-markedit/jquery.markedit.css',),
+        }
+        js =  (
+            'conference/jquery-markedit/showdown.js',
+            'conference/jquery-markedit/jquery.markedit.js',
+        )
+
+    def render(self, name, value, attrs=None):
+        if attrs is None:
+            attrs = {}
+        else:
+            attrs = dict(attrs)
+        attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
+        return super(MarkEditWidget, self).render(name, value, attrs)
+
+class AdminMarkEdit(admin_widgets.AdminTextareaWidget, MarkEditWidget):
+    pass
 
 class SubmissionForm(forms.Form):
     first_name = forms.CharField(

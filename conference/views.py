@@ -124,11 +124,11 @@ def speaker_access(f):
 
 @render_to('conference/speaker.html')
 @speaker_access
-def speaker(request, slug, speaker, talks, full_access):
+def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
     if request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
-        form = SpeakerForm(data=request.POST)
+        form = speaker_form(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
             speaker.activity = data['activity']
@@ -140,7 +140,7 @@ def speaker(request, slug, speaker, talks, full_access):
             speaker.setBio(data['bio'])
             return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
     else:
-        form = SpeakerForm(initial={
+        form = speaker_form(initial={
             'activity': speaker.activity,
             'activity_homepage': speaker.activity_homepage,
             'industry': speaker.industry,
@@ -775,32 +775,40 @@ def init_js(request):
 conference = { tags: %(tags)s };
 $(function() {
     var tfields = $('.tag-field');
-    tfields.tagit({
-        tagSource: function(search, showChoices) {
-            if(!conference)
-                return;
-            var needle = search.term.toLowerCase();
-            var tags = [];
+    if(tfields.length) {
+        tfields.tagit({
+            tagSource: function(search, showChoices) {
+                if(!conference)
+                    return;
+                var needle = search.term.toLowerCase();
+                var tags = [];
+                for(var ix=0; ix<conference.tags.length; ix++) {
+                    var t = conference.tags[ix];
+                    if(t.toLowerCase().indexOf(needle) != -1)
+                        tags.push(t);
+                }
+                showChoices(tags);
+            }
+        });
+        if(conference) {
+            var wrapper = $('<ul class="all-tags"></ul>');
+            wrapper.insertAfter(tfields.parent().children('ul.tagit').eq(0));
             for(var ix=0; ix<conference.tags.length; ix++) {
                 var t = conference.tags[ix];
-                if(t.toLowerCase().indexOf(needle) != -1)
-                    tags.push(t);
+                wrapper.append('<a class="tag" href="#">' + t + '</a>');
             }
-            showChoices(tags);
+            $('a.tag', wrapper).click(function(e) {
+                e.preventDefault();
+                tfields.tagit('createTag', $(this).text());
+            });
         }
-    });
-    if(conference) {
-        var wrapper = $('<ul class="all-tags"></ul>');
-        wrapper.insertAfter(tfields.parent().children('ul.tagit').eq(0));
-        for(var ix=0; ix<conference.tags.length; ix++) {
-            var t = conference.tags[ix];
-            wrapper.append('<a class="tag" href="#">' + t + '</a>');
-        }
-        $('a.tag', wrapper).click(function(e) {
-            e.preventDefault();
-            tfields.tagit('createTag', $(this).text());
-        });
     }
+    $('.markedit-widget').markedit({
+        'preview_markup': '<div class="markedit-preview cms ui-widget-content"></div>',
+        'toolbar': {
+            'layout': 'heading bold italic bulletlist | link quote code image '
+        }
+    }).blur();
 });
     """ % {
         'tags': simplejson.dumps([ x.encode('utf-8') for x in tags ])
