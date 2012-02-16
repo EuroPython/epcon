@@ -19,6 +19,7 @@ class P3SubmissionForm(SubmissionForm):
         label=_('Date of birth'),
         help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
         input_formats=('%Y-%m-%d',),
+        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
     )
     duration = forms.TypedChoiceField(
         label=_('Duration'),
