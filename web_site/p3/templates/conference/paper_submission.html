@@ -30,15 +30,6 @@
                 <div class="span-3">{{ form.activity|field }}</div>
                 <div class="span-3">{{ form.birthday|field }}</div>
 
-<!--
-                <div class="span-3 last">
-                    <div class="field required">
-                        <label for="id_birthday">Date of birth<span class="required"> (required)</span></label>
-                        <input type="text" id="id_birthday" name="birthday" size="10" />        
-                    </div>
-                </div>
-        
--->        
                 <div class="span-3 last">{{ form.mobile|field }}</div>
                 <div class="span-3">{{ form.company|field }}</div>
                 <div class="span-6 last">{{ form.company_homepage|field }}</div>
@@ -46,16 +37,12 @@
                 <div class="span-9 last">{{ form.first_time|field }}</div>
                 <div class="span-9 last">{{ form.personal_agreement|field }}</div>
             </fieldset>
-
             {% endif %}
 
             <fieldset>
-                <legend>Talk description</legend>            
+                <legend>Talk description</legend>
                 <div>{{ form.type|field }}</div>
-                <!-- Il titolo "Talk Type(required)" IMO non serve, visto che il primo 
-                è un talk ma il secondo no. Idem per il requred, bisogna per forza sceglire uno dei
-                due visto che è un radio -->
-                            
+
                 <div>{{ form.title|field }}</div>
                 <div class="span-3">{{ form.language|field }}</div>
                 <div class="span-3">{{ form.duration|field }}</div>
@@ -63,22 +50,9 @@
                 
                 <div>{{ form.abstract|field }}</div>
                 <div>{{ form.tags|field }}</div>
-                <div>{{ form.video_agreement|field }}</div>                
-
-<!--
-                <div class="field required">
-                    <label for="id_video_agreement"><input type="checkbox" id="id_video_agreement" name="video_agreement" /> I agree to let the organization record my talk and publish the video.<span class="required">(required)</span></label>                    
-                </div>
--->
+                <div>{{ form.video_agreement|field }}</div>
 
                 <div>{{ form.slides_agreement|field }}</div>
-
-<!--
-                <div class="field required">
-                        <label for="id_slides_agreement"><input type="checkbox" id="id_slides_agreement" name="slides_agreement" /> I agree to release all the talk material after the event.<span class="required">(required)</span></label>
-                </div>                
--->
-                
             </fieldset>
             <fieldset class="border">
                 <p class="note"><b>Note</b>: if you are available to give the same talk both in Italian and English, 
