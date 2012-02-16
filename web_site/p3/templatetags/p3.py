@@ -7,18 +7,14 @@ import re
 import random
 import sys
 import urllib
-import urllib2
 from collections import defaultdict
-from datetime import datetime, date
+from datetime import datetime
 from itertools import groupby
 
 from django import template
 from django.conf import settings
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.template import Context
-from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
@@ -26,7 +22,6 @@ from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
 from p3 import models
 
-import twitter
 from fancy_tag import fancy_tag
 
 mimetypes.init()
