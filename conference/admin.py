@@ -232,6 +232,14 @@ class TalkAdmin(MultiLingualAdminContent):
         self.cached_speakers = dict([(x['speaker'].id, x) for x in speakers])
         return super(TalkAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
+    def changelist_view(self, request, extra_context=None):
+        if not request.GET.has_key('conference') and not request.GET.has_key('conference__exact'):
+            q = request.GET.copy()
+            q['conference'] = settings.CONFERENCE
+            request.GET = q
+            request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(TalkAdmin,self).changelist_view(request, extra_context=extra_context)
+
     def _speakers(self, obj):
         data = self.cached_talks.get(obj.id)
         output = []
