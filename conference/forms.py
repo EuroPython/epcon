@@ -30,8 +30,10 @@ class TagWidget(widgets.TextInput):
                 for v in value:
                     if isinstance(v, basestring):
                         names.append(v)
-                    else:
+                    elif isinstance(v, models.ConferenceTag):
                         names.append(v.name)
+                    else:
+                        names.append(v.tag.name)
                 value = ','.join(names)
         final_attrs = self.build_attrs(attrs, type='text', name=name)
         final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
