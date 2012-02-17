@@ -30,7 +30,7 @@ class P3SubmissionForm(cforms.SubmissionForm):
         required=False,
     )
     first_time = forms.BooleanField(
-        label=_('First time speaker'),
+        label=_('I\'m a first-time speaker'),
         help_text=_('We are planning a special program to help first time speaker, check this if you\'d like to join'),
         required=False,
     )
