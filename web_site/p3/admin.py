@@ -7,18 +7,17 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.db.models import Count, Q
 from django.shortcuts import render_to_response, redirect
-from conference.admin import TicketAdmin
-from conference.models import Ticket
+from django.utils.translation import ugettext as _
+from conference import admin as cadmin
+from conference import models as cmodels
 from p3 import models
 
 import csv
-from collections import defaultdict
 from cStringIO import StringIO
 
-class TicketConferenceAdmin(TicketAdmin):
-    list_display = TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
+class TicketConferenceAdmin(cadmin.TicketAdmin):
+    list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
     list_filter = ('ticket_type', 'orderitem__order___complete', 'fare__code',)
     
     def _order(self, o):
@@ -157,8 +156,16 @@ sent to:
             writer.writerow(row)
         return http.HttpResponse(buff.getvalue(), mimetype="text/csv")
 
-admin.site.unregister(Ticket)
-admin.site.register(Ticket, TicketConferenceAdmin)
+admin.site.unregister(cmodels.Ticket)
+admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
+
+from conference import forms as cforms
+
+class TalkConferenceAdmin(cadmin.TalkAdmin):
+    multilingual_widget = cforms.MarkEditWidget
+
+admin.site.unregister(cmodels.Talk)
+admin.site.register(cmodels.Talk, TalkConferenceAdmin)
 
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('_name', 'date', 'amount')

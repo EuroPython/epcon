@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+<link type="text/css" href="{{ STATIC_URL }}p5/j/jquery-ui/css/flick/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery-ui/js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery-ui/js/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="{% url conference-init.js %}"></script>
+{% endblock %}
+
+{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{% trans 'Django administration' %}</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
