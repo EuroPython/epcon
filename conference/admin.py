@@ -121,6 +121,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 class MultiLingualAdminContent(admin.ModelAdmin):
+
+    multilingual_widget = forms.Textarea
     
     def _get_relation_field(self):
         for name, f in self.model.__dict__.items():
@@ -136,7 +138,7 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                     (c.language, c.body) for c in getattr(obj, field_name).all() if c.content == field_name
                 )
             for l, _ in dsettings.LANGUAGES:
-                text = forms.CharField(widget = forms.Textarea, required = False)
+                text = forms.CharField(widget=self.multilingual_widget, required=False)
                 if obj:
                     text.initial = contents.get(l, '')
                 form.base_fields['%s_%s' % (field_name, l)] = text
