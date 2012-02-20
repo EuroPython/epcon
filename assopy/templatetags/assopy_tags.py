@@ -31,10 +31,19 @@ _field_template_label_inline = template.Template("""
     </div>
 """)
 
+_field_template_input_list = template.Template("""
+    <div class="{{ classes }}">
+        <label>{{ field.label|safe }}{% if field.field.required %}<span class="required">{{ required_text }}</span>{% endif %}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
+        {{ field.errors }}
+    </div>
+""")
+
 fields_template = {
     None: _field_template_standard,
     forms.widgets.CheckboxInput: _field_template_label_inline,
-    forms.widgets.RadioSelect: _field_template_label_inline,
+    forms.widgets.RadioSelect: _field_template_input_list,
 }
 
 @register.filter()
