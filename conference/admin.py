@@ -501,14 +501,71 @@ class TicketAdmin(admin.ModelAdmin):
 admin.site.register(models.Ticket, TicketAdmin)
 
 class ConferenceTagAdmin(admin.ModelAdmin):
+    actions = ('do_merge_tags',)
     list_display = ('slug', 'name', '_usage',)
     list_editable = ('name',)
     prepopulated_fields = {"slug": ("name",)}
     ordering = ('name',)
+
+    def get_urls(self):
+        urls = super(ConferenceTagAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
+        )
+        return my_urls + urls
 
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         self.cached = dataaccess.tags()
         return super(ConferenceTagAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
     def _usage(self, o):
         return len(self.cached.get(o, {}))
+
+    def do_merge_tags(self, request, queryset):
+        ids = queryset.values_list('id', flat=True)
+        if not ids:
+            self.message_user(request, "No tag selected")
+            return
+        q = http.QueryDict('', mutable=True)
+        q.setlist('tags', ids)
+        url = urlresolvers.reverse('admin:conference-conferencetag-merge') + '?' + q.urlencode()
+        return http.HttpResponseRedirect(url)
+    do_merge_tags.short_description = "Merge the selected tags"
+
+    def merge_tags(self, request):
+        if request.method == 'POST':
+            tags_id = request.session.get('conference_tag_merge_ids', [])
+        else:
+            tags_id = map(int, request.GET.getlist('tags'))
+        if not tags_id:
+            return http.HttpResponseBadRequest('no tags specified')
+        if request.method == 'POST':
+            target = int(request.POST.get('target', -1))
+            if target not in tags_id:
+                return http.HttpResponseBadRequest('invalid target tag')
+            tags = models.ConferenceTag.objects\
+                .filter(id__in=tags_id)
+            discard = [ t for t in tags if t.id != target ]
+
+            # Non voglio utilizzare le operazioni bulk per l'update di
+            # ConferenceTaggedItem e la cancellazione di ConferenceTag
+            # (objects.update, objects.delete) perché la cache gestita da
+            # dataaccess si appoggia ai segnali per rimanere coerente.
+            for item in models.ConferenceTaggedItem.objects.filter(tag__in=discard):
+                item.tag_id=target
+                item.save()
+
+            for t in discard:
+                t.delete()
+            self.message_user(request, "tag merged")
+            return http.HttpResponseRedirect(urlresolvers.reverse('admin:conference_conferencetag_changelist'))
+        else:
+            request.session['conference_tag_merge_ids'] = tags_id
+        tags = models.ConferenceTag.objects\
+            .filter(id__in=tags_id)\
+            .order_by_usage()
+        ctx = {
+            'tags': tags,
+        }
+        return render_to_response('admin/conference/conferencetag/merge.html', ctx, context_instance=template.RequestContext(request))
+
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
