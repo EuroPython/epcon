@@ -12,6 +12,8 @@ from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from django import template
 from django.conf import settings as dsettings
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.template import defaultfilters, Context
 from django.template.loader import render_to_string
 from django.utils.html import escape
@@ -921,7 +923,6 @@ def embed_video(context, value, args=""):
         if not settings.TALK_VIDEO_ACCESS(context['request'], value):
             return ''
         if not value.video_type or value.video_type == 'download':
-            from django.core.urlresolvers import reverse
             video_url = reverse('conference-talk-video-mp4', kwargs={'slug': value.slug })
             if value.video_file:
                 video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
@@ -1450,3 +1451,24 @@ def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=
 @register.filter
 def safe_markdown(text, safe_mode="remove"):
     return mark_safe(markdown.Markdown(safe_mode=safe_mode).convert(text))
+
+@fancy_tag(register, takes_context=True)
+def tagged_items(context, tag):
+    return dataaccess.tags().get(tag, {})
+
+@fancy_tag(register)
+def talk_data(tid):
+    return dataaccess.talk_data(tid)
+
+@register.filter
+def content_type(id):
+    return ContentType.objects.get(id=id)
+
+@fancy_tag(register)
+def admin_urlname_fromct(ct, action, id=None):
+    r = 'admin:%s_%s_%s' % (ct.app_label, ct.model, action)
+    if id is None:
+        args = ()
+    else:
+        args = (str(id),)
+    return reverse(r, args=args)
