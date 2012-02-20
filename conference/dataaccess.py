@@ -300,6 +300,25 @@ def event_data(eid, preload=None):
     })
     return output
 
+def tags():
+    """
+    Ritorna i tag utilizzati in conference associati agli oggetti che li
+    utilizzano.
+    """
+    qs = models.ConferenceTaggedItem.objects\
+        .all()\
+        .select_related('tag')
+
+    tags = defaultdict(set)
+    for item in qs:
+        t = tags[item.tag]
+        t.add((item.content_type_id, item.object_id))
+
+    return dict(tags)
+
+tags = cache_me(
+    models=(models.ConferenceTaggedItem,))(tags)
+
 def _i_event_data(sender, **kw):
     if sender is models.Event:
         ids = [ kw['instance'].id ]
