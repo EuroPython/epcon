@@ -39,9 +39,13 @@ function setup_tooltip(ctx) {
 
     $('form', ctx).each(function() {
         function setup(i, tip) {
+            var position = 'center right';
+            if(i.length && i.get(0).nodeName.toUpperCase() == 'LABEL') {
+                position = 'top center';
+            }
             var relative = i.parents('.overlay').length != 0;
             i.tooltip({
-                position: "center right",
+                position: position,
                 offset: [0, 10],
                 effect: "fade",
                 relative: relative,
@@ -67,22 +71,17 @@ function setup_tooltip(ctx) {
          * posto dopo un ul che contiene tutti gli input
          */
         $('.help-text', this).prev('ul').each(function() {
-            var inputs = $('input', this);
+            var inputs = $('label', this);
             var ht = $(this).next();
             inputs.each(function() {
                 setup($(this), ht);
             });
         });
         /*
-         * altri input vengono invece renderizzati dentro la label
+         * altri input vengono invece renderizzati dentro la label, in questo
+         * caso voglio che il tooltip sia attivo su tutta la label.
          */
-        $('.help-text', this).prev('label').each(function() {
-            var inputs = $('input', this);
-            var ht = $(this).next();
-            inputs.each(function() {
-                setup($(this), ht);
-            });
-        });
+        setup($('.help-text', this).prev('label'));
     });
 }
 /*
