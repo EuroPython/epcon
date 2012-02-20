@@ -501,8 +501,14 @@ class TicketAdmin(admin.ModelAdmin):
 admin.site.register(models.Ticket, TicketAdmin)
 
 class ConferenceTagAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'name',)
+    list_display = ('slug', 'name', '_usage',)
     list_editable = ('name',)
     prepopulated_fields = {"slug": ("name",)}
     ordering = ('name',)
+
+    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
+        self.cached = dataaccess.tags()
+        return super(ConferenceTagAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
+    def _usage(self, o):
+        return len(self.cached.get(o, {}))
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
