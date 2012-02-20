@@ -32,8 +32,23 @@ from taggit.managers import TaggableManager
 # ConferenceTag e ConferenceTaggedItem servono per creare un "namespace" per i
 # tag relativi a conference. In questo modo non devo preocuparmi di altri
 # utilizzi di taggit fattio da altre app.
+class ConferenceTagManager(models.Manager):
+    def get_query_set(self):
+        return self._QuerySet(self.model)
+
+    def __getattr__(self, name):
+        return getattr(self.all(), name)
+
+    class _QuerySet(QuerySet):
+        def annotate_with_usage(self):
+            return self\
+                .annotate(usage=models.Count('conference_conferencetaggeditem_items'))
+        def order_by_usage(self, asc=False):
+            key = 'usage' if asc else '-usage'
+            return self.annotate_with_usage().order_by(key)
+
 class ConferenceTag(TagBase):
-    pass
+    objects = ConferenceTagManager()
 
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
     tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
