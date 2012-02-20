@@ -161,8 +161,14 @@ admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
 from conference import forms as cforms
 
+class TalkConferenceAdminForm(cadmin.TalkAdminForm):
+    def __init__(self, *args, **kwargs):
+        super(TalkConferenceAdminForm, self).__init__(*args, **kwargs)
+        self.fields['tags'].required = False
+
 class TalkConferenceAdmin(cadmin.TalkAdmin):
     multilingual_widget = cforms.MarkEditWidget
+    form = TalkConferenceAdminForm
 
 admin.site.unregister(cmodels.Talk)
 admin.site.register(cmodels.Talk, TalkConferenceAdmin)
