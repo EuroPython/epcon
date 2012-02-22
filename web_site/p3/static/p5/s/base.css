@@ -1333,11 +1333,11 @@ section.teaser p {
 }
 
 .feedback {
-    background: rgba(255, 185, 69, 0.85);
+    background: rgba(225, 219, 197, 0.85);
     text-align: center;
-    line-height: 1.7em;
+    line-height: 30px;
     font-weight: bold;
-    color: black;
+/*     color: black; */
 }
 
 section.notice {
