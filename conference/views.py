@@ -244,7 +244,7 @@ def talk_xml(request, slug, talk, full_access):
 def talk_video(request, slug):
     tlk = get_object_or_404(models.Talk, slug=slug)
 
-    if not tlk.video_type or value.video_path == 'download':
+    if not tlk.video_type or tlk.video_type == 'download':
         if tlk.video_file:
             vurl = dsettings.MEDIA_URL + tlk.video_file.url
             vfile = tlk.video_file.path
