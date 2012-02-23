@@ -34,5 +34,7 @@ setup(name='conference',
         'httplib2',
         'fancy_tag',
         'django-taggit',
+        'markdown2',
+        'Pygments',
     ],
 )

@@ -1391,8 +1391,16 @@ def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=
     return render_to_string('conference/render_schedule_list.html', ctx)
 
 @register.filter
-def safe_markdown(text, safe_mode="remove"):
-    return mark_safe(markdown.Markdown(safe_mode=safe_mode).convert(text))
+def markdown2(text, arg=''):
+    from markdown2 import markdown
+    extensions = [e for e in arg.split(",") if e]
+    if len(extensions) > 0 and extensions[0] == "nosafe":
+        extensions = extensions[1:]
+        safe_mode = None
+    else:
+        safe_mode = "escape"
+
+    return mark_safe(markdown(text, safe_mode=safe_mode, extras=extensions))
 
 @fancy_tag(register, takes_context=True)
 def tagged_items(context, tag):
