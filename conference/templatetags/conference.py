@@ -33,7 +33,6 @@ from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
 
 from fancy_tag import fancy_tag
-import markdown
 
 mimetypes.init()
 
@@ -58,76 +57,19 @@ def _request_cache(request, key):
         request._conf_cache = {key: {}}
     return request._conf_cache[key]
     
-class LatestDeadlinesNode(template.Node):
-    """
-    Inserisce in una variabile di contesto le deadlines presenti.
-    Opzionalmente e' possibile specificare quante deadline si vogliono.
-
-    Le deadline vengono riportate nella lingua dell'utente con un fallback
-    nella lingua di default.
-    """
-    def __init__(self, limit, var_name, not_expired):
-        self.limit = limit
-        self.var_name = var_name
-        self.not_expired = not_expired
-
-    def render(self, context):
-        if self.not_expired:
-            query = models.Deadline.objects.valid_news()
-        else:
-            query = models.Deadline.objects.all()
-        if self.limit:
-            query = query[:self.limit]
-
-        dlang = dsettings.LANGUAGES[0][0]
-        lang = context.get('LANGUAGE_CODE', dlang)
-        # le preferenze per la lingua sono:
-        #   1. lingua scelta dall'utente
-        #   2. lingua di default
-        #   3. lingue in cui e' tradotta la deadline
-        #
-        # Se la traduzione di una deadline è vuota viene scartata
-        # e provo la lingua successiva.
-        # Se la deadline non ha alcuna traduzione (!) la scarto.
-        news = []
-        for n in query:
-            contents = dict((c.language, c) for c in n.deadlinecontent_set.all())
-
-            lang_try = (lang, dlang) + tuple(contents.keys())
-            for l in lang_try:
-                try:
-                    content = contents[l]
-                except KeyError:
-                    continue
-                if content.headline or content.body:
-                    break
-            else:
-                continue
-            n.headline = content.headline
-            n.body = content.body
-            news.append(n)
-        context[self.var_name] = news
-        return ""
-
-@register.tag
-def latest_deadlines(parser, token):
-    contents = token.split_contents()
-    tag_name = contents[0]
-    limit = None
-    try:
-        if contents[1] != 'as':
-            try:
-                limit = int(contents[1])
-            except (ValueError, TypeError):
-                raise template.TemplateSyntaxError("%r tag's argument should be an integer" % tag_name)
-        else:
-            limit = None
-        if contents[-2] != 'as':
-            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-        var_name = contents[-1]
-    except IndexError:
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    return LatestDeadlinesNode(limit, var_name, True)
+@fancy_tag(register, takes_context=True)
+def get_deadlines(context, year=None, limit=None, not_expired=True):
+    if year is None:
+        year = date.today().year
+    data = dataaccess.deadlines(_lang(context), year)
+    output = []
+    for d in data:
+        if not_expired and d['expired']:
+            continue
+        output.append(d)
+    if limit is not None:
+        output = output[:limit]
+    return output
 
 @fancy_tag(register, takes_context=True)
 def navigation(context, page_type):

@@ -6,6 +6,7 @@ from pages.models import Page
 from collections import defaultdict
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
@@ -37,6 +38,40 @@ def _i_navigation(sender, **kw):
 navigation = cache_me(
     models=(Page,),
     key='nav:%(lang)s:%(page_type)s')(navigation, _i_navigation)
+
+def _i_deadlines(sender, **kw):
+    years = set(x.year for x in models.Deadline.objects.all().values_list('date', flat=True))
+    years.add(None)
+    languages = set([ l[0] for l in settings.LANGUAGES ])
+    return [ 'deadlines:%s:%s' % (l, y) for l in languages for y in years ]
+
+def deadlines(lang, year=None):
+    qs = models.Deadline.objects\
+        .all()\
+        .order_by('date')
+    if year:
+        qs = qs.filter(date__year=year)
+    output = []
+    for d in qs:
+        try:
+            content = d.content(lang, False)
+        except models.DeadlineContent.DoesNotExist:
+            headline = body = ''
+        else:
+            headline = content.headline
+            body = content.body
+
+        output.append({
+            'date': d.date,
+            'expired': d.isExpired(),
+            'headline': headline,
+            'body': body,
+        })
+    return output
+
+deadlines = cache_me(
+    models=(models.Deadline, models.DeadlineContent),
+    key='deadlines:%(lang)s:%(year)s')(deadlines, _i_deadlines)
 
 def sponsor(conf):
     qs = models.SponsorIncome.objects\
