@@ -8,7 +8,6 @@ django-rosetta
 akismet
 git+https://github.com/SheepDogInc/django-filebrowser-no-grappelli-for-django13.git#egg=django-filebrowser-django13
 django-templatesadmin
-markdown
 django_tagging
 
 -e git+ssh://src.develer.com/git/projects/microblog@v0.1.3#egg=microblog
