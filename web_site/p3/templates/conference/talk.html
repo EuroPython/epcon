@@ -56,7 +56,7 @@
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-                <p>{{ ab.body|safe_markdown }}</p>
+                <p>{{ ab.body|markdown2:"smarty-pants,code-color" }}</p>
             </div>
             {% if talk.status == "accepted" %}
                 {% for e in events %}
