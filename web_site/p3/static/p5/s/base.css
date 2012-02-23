@@ -139,42 +139,68 @@ a.tag:hover {
 }
 
 
-
+.pseudo-checkbox,
+.pseudo-radio,
 .button a {
-
     color: #fff;
-
 	background: #4895a3 url(../i/button-b.png) center top repeat-x;
-	padding: 5px 10px;	
-	
-    border: 1px solid #3d7e8a;
-		
+	padding: 5px 10px;		
+    border: 1px solid #3d7e8a;		
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	
-	
-	text-shadow: #316770 1px 1px 1px;
-	
-    display: inline-block;
-    
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
+	border-radius: 4px;		
+	text-shadow: #316770 1px 1px 1px;	
+    display: inline-block;    
+    -webkit-box-shadow: 0 0 2px rgba(150,141,131,.8);
+    -moz-box-shadow: 0 0 2px rgba(150,141,131,.8);
 }
 
 .button.mini a {
     padding: 2px 5px;
-
 	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
 	border-color: #aba18f;
-
     color: #301d1d; 
-    
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
+	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;       
+    -webkit-box-shadow: 0 0 2px rgba(150,141,131,.8);
+    -moz-box-shadow: 0 0 2px rgba(150,141,131,.8);
+}
 
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
 
+.pseudo-checkbox,
+.pseudo-radio {
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+    color: #301d1d; 
+    text-shadow: 1px 1px 1px rgba(100%, 100%, 100%, .55);
+
+    font-weight: bold;   
+    margin-right: 5px;     
+    cursor: pointer;
+}
+
+.pseudo-checkbox span,
+.pseudo-radio span {
+    padding-left: 18px;
+    background: transparent url(../i/pseudo-radio.png) left center no-repeat;
+}
+
+/*
+.pseudo-checkbox span {
+    background-image: url(../i/presudo-checkbox.png);
+}
+*/
+
+.pseudo-checkbox.checked,
+.pseudo-radio.checked {
+    color: #fff;
+	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+    border: 1px solid #3d7e8a;	
+	text-shadow: #316770 1px 1px 1px;
+}
+
+/* .pseudo-checkbox.checked span, */
+.pseudo-radio.checked span {
+	background-image: url(../i/pseudo-radio-checked.png);
 }
 
 
@@ -350,8 +376,8 @@ header #li-chat #habla_unavailable_div a {
 	
     border: 1px solid #3d7e8a;
     
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
+    -webkit-box-shadow: 0 0 2px rgba(150,141,131,.8);
+    -moz-box-shadow: 0 0 2px rgba(150,141,131,.8);
 
     		
 	-moz-border-radius: 4px;
