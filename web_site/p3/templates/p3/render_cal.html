@@ -1,13 +1,16 @@
-{% load p3 conference %}
-{% latest_deadlines as deadlines %}
+{% load conference %}
+{% get_deadlines not_expired=0 as deadlines %}
+
 <div class="cal all-deadlines">
     {% for d in deadlines %}
-    <div class="deadline clearfix{% if d.isExpired %} expired{% endif %}">
+    <div class="deadline clearfix{% if d.expired %} expired{% endif %}">
         <h3><span>{{ d.date|date:"d" }}</span><br />{{ d.date|date:"b" }}</h3>
-        <div> 
-            <h4>{% if d.headline %}{{ d.headline|safe }}{% else %}{{ d.body|safe }}{% endif %}</h4>
-            {% if not d.isExpired and d.headline and d.body %}
-                <p>{{ d.body|safe }}</p>
+        <div>
+            {% if d.headline and d.body %}
+                <h4>{{ d.headline|safe }}</h4>
+                <div>{{ d.body|safe }}</div>
+            {% else %}
+                <h4>{{ d.body|safe }}</h4>
             {% endif %}
         </div>
     </div>
