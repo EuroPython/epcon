@@ -30,8 +30,8 @@ class ConferenceAdmin(admin.ModelAdmin):
 admin.site.register(models.Conference, ConferenceAdmin)
 
 class DeadlineAdmin(admin.ModelAdmin):
-
     list_display = ('date', '_headline', '_text', '_expired')
+    date_hierarchy = 'date'
 
     def _headline(self, obj):
         contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
