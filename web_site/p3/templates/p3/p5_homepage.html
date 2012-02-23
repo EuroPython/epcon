@@ -48,7 +48,7 @@
         </div>
 
         <div class="span-6 last">
-            {% latest_deadlines 1 as l %}
+            {% get_deadlines limit=1 as l %}
             {% if l %}
             <div class="cal">
                 <h2>Next stop is&hellip;</h2>
