@@ -1174,8 +1174,14 @@ section.teaser p {
     position: relative;
     min-height: 200px;
 
+/*
     -webkit-box-shadow: 1px 2px 3px #7d6f60;
     -moz-box-shadow: 1px 2px 3px #7d6f60;
+*/
+
+    -webkit-box-shadow: 0 1px 2px rgba(150,141,131,.9);
+    -moz-box-shadow: 0 1px 2px rgba(150,141,131,.9);
+    box-shadow: 0 1px 2px rgba(150,141,131,.9);
 
 /*     -webkit-transform:rotate(-.8deg); */
     
