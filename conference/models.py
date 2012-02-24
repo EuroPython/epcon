@@ -1118,3 +1118,5 @@ def _clear_schedule_cache(sender, **kwargs):
     Schedule.objects.clear_cache(conference)
 post_save.connect(_clear_schedule_cache, sender=Event)
 post_save.connect(_clear_schedule_cache, sender=EventInterest)
+
+from conference import listeners
