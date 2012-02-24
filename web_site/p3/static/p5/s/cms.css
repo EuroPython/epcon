@@ -60,7 +60,7 @@
 }
 
 .cms li {
-	margin: 0 0 10px 20px; 
+	margin: 0 0 5px 20px; 
 	
 	font: normal 12px/20px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;;
     color: #635443;	
@@ -201,7 +201,7 @@
 
 
 .cms code {		
-	font: normal 12px/16px Consolas, “Lucida Console”, Menlo, Monaco, monospace;	
+	font: normal 12px/16px Consolas, Menlo, “Lucida Console”, Monaco, monospace;	
 }
 
 
@@ -238,20 +238,13 @@
 
 aside .cms {
     color: #635443;	
-    
-	font-size: 12px;
-
+    font-size: 12px;
 }
 
 aside .cms h4 {
 /*     color: #4895a3; */
     margin: 0 0 10px 0; 
     font-size: 21px;
-
-}
-
-aside .cms li {
-/*     margin-left: 0; */
 
 }
 

@@ -35,9 +35,7 @@ body {
 
 
 h1, h2, h3, h4, h5, h6 {
-
-	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;	
-	
+	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;		
 	text-transform: uppercase;
 }
 
@@ -595,14 +593,20 @@ footer nav li img {
 }
 
 .page h1  {
-
 	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
 	margin: 0 0 30px 0;
+}
+
+.page h1 span {
+    color: #635443;
 }
 
 /* =================== */
 /* ! speaker           */
 /* =================== */
+
+
+/* @@TODO: Move speaker styles into user profile  */
 
 
 
@@ -681,6 +685,62 @@ footer nav li img {
     margin: 0 0 10px 0;
 }
 
+
+.profile-user-data {
+    background: #fff;
+    margin: 0 0 20px 0;
+    padding: 10px;
+    color: #635443;	   
+    border: 1px solid #ABA18F; 
+}
+
+.profile-user-data li {
+    margin: 0 0 5px 0;
+}
+
+.profile-user-data h4 {
+    margin: 0 0 10px 0; 
+    font-size: 21px;
+    text-align: center;
+}
+
+
+.profile-user-identity {
+    background: #E1DBC5;
+    margin: 0 0 20px 0;    
+}
+
+.profile-user-identity h1 {
+	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;   
+	margin: 0 0 10px 0;
+}
+
+.profile-user-identity dt {
+	font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;	
+	text-transform: uppercase;
+    color: #4895A3;	   	
+	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;      
+}
+
+.profile-user-identity dd {
+    font-size: 16px;
+    margin: 0 0 20px 0;
+}
+
+
+.profile-user-picture img {
+    border: 5px solid #aba18f;
+}
+
+.profile-user-data.coupons .coupon.invalid b {
+    text-decoration: line-through;
+}
+
+.profile-user-bio {
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ABA18F;     
+}
 
 /* ======== */
 /* ! talk   */
