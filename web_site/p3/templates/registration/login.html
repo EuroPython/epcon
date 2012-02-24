@@ -103,12 +103,12 @@ h2 {
                     <div class="create-account">
                         <h2>{% trans "Don&#8217;t you have an account?" %}</h2>
                         <div class="button">
-                            <a href="{% url assopy-new-account %}?next={{ next }}" class="button">Create a new account now</a>
+                            <a href="{% url assopy-new-account %}?next={{ next }}" class="">Create a new account now</a>
                         </div>
                         <hr />
                         <h2>{% trans "Did you forget your password?" %}</h2>
-                        <div class="button">
-                            <a href="{% url assopy-password-reset %}" class="button">Click here</a>
+                        <div class="button mini">
+                            <a href="{% url assopy-password-reset %}" class="">Reset your password</a>
                         </div>
                     </div>
                 </div>
