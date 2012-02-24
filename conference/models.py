@@ -920,12 +920,16 @@ class Track(models.Model):
 
 class Event(models.Model):
     schedule = models.ForeignKey(Schedule)
-    talk = models.ForeignKey(Talk, blank= True, null=True)
-    custom = models.TextField(blank=True)
     start_time = models.TimeField()
+
+    talk = models.ForeignKey(Talk, blank=True, null=True)
+    custom = models.TextField(blank=True)
     duration = models.PositiveIntegerField(default=0, help_text='duration of the event (in minutes). Override the talk duration if present')
+
     track = TagField(help_text='One or more track names. Also accept "break" or "special" for coffee/lunch break or special events.')
+    tracks = models.ManyToManyField(Track, through='EventTrack')
     sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
+    video = models.CharField(max_length=1000, blank=True)
 
     class Meta:
         ordering = ['start_time']
@@ -976,6 +980,13 @@ class Event(models.Model):
             return Schedule.objects.expected_attendance(conference=self.talk.conference).get(self)
         else:
             return 0
+
+class EventTrack(models.Model):
+    track = models.ForeignKey(Track)
+    event = models.ForeignKey(Event)
+
+    class Meta:
+        unique_together = (('track', 'event',),)
 
 class EventInterest(models.Model):
     event = models.ForeignKey(Event)
