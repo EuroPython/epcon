@@ -4,23 +4,23 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 
 import conference.forms as cforms 
-from conference.models import Conference, Ticket
+from conference.models import Conference, Ticket, TALK_LANGUAGES
 
 from p3 import models
 
 import datetime
 
 class P3SubmissionForm(cforms.SubmissionForm):
-    mobile = forms.CharField(
-        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
-        max_length=30,
-        required=True,)
-    birthday = forms.DateField(
-        label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
-        input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
-    )
+    #mobile = forms.CharField(
+    #    help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
+    #    max_length=30,
+    #    required=True,)
+    #birthday = forms.DateField(
+    #    label=_('Date of birth'),
+    #    help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+    #    input_formats=('%Y-%m-%d',),
+    #    widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
+    #)
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
@@ -63,15 +63,15 @@ class P3SubmissionForm(cforms.SubmissionForm):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
-    def __init__(self, user, *args, **kwargs):
-        data = {
-            'mobile': user.assopy_user.phone,
-            'birthday': user.assopy_user.birthday,
-            'activity_homepage': user.assopy_user.www,
-        }
-        data.update(kwargs.get('initial', {}))
-        kwargs['initial'] = data
-        super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
+#    def __init__(self, user, *args, **kwargs):
+#        data = {
+#            'mobile': user.assopy_user.phone,
+#            'birthday': user.assopy_user.birthday,
+#            'activity_homepage': user.assopy_user.www,
+#        }
+#        data.update(kwargs.get('initial', {}))
+#        kwargs['initial'] = data
+#        super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
     def clean(self):
         data = super(P3SubmissionForm, self).clean()
@@ -84,7 +84,7 @@ class P3SubmissionForm(cforms.SubmissionForm):
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 
-        auser = self.user.assopy_user
+        #auser = self.user.assopy_user
         speaker = self.user.speaker
         try:
             p3s = speaker.p3_speaker
@@ -96,10 +96,10 @@ class P3SubmissionForm(cforms.SubmissionForm):
         p3s.first_time = data['first_time']
         p3s.save()
 
-        auser.phone = data['mobile']
-        auser.birthday = data['birthday']
-        auser.www = data['activity_homepage']
-        auser.save()
+#        auser.phone = data['mobile']
+#        auser.birthday = data['birthday']
+#        auser.www = data['activity_homepage']
+#        auser.save()
 
         return talk
 
@@ -112,6 +112,10 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
         initial=60,
         required=False,
     )
+    language = forms.TypedChoiceField(
+        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        choices=TALK_LANGUAGES,
+        initial='en',)
     slides_agreement = forms.BooleanField(
         label=_('I agree to release all the talk material after the event.'),
         help_text=_('If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site.'),

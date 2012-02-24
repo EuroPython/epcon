@@ -214,6 +214,11 @@ CONFERENCE_CONFERENCE = 'ep2012'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2012.europython.eu/voting-disallowed'
 
+CONFERENCE_FORMS = {
+    'PaperSubmission': 'p3.forms.P3SubmissionForm',
+    'AdditionalPaperSubmission': 'p3.forms.P3SubmissionAdditionalForm',
+}
+
 def CONFERENCE_VOTING_ALLOWED(user):
     if user.is_authenticated():
         from p3 import models
