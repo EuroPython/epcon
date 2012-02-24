@@ -108,11 +108,21 @@ sponsor = cache_me(
     models=(models.Sponsor, models.SponsorIncome,),
     key='sponsor:%(conf)s')(sponsor, _i_sponsor)
 
-def schedule_data(sid):
-    schedule = models.Schedule.objects.get(id=sid)
-    tracks = models.Track.objects\
-        .filter(schedule=schedule)\
-        .order_by('order')
+def schedule_data(sid, preload=None):
+    if preload is None:
+        preload = {}
+
+    try:
+        schedule = preload['schedule']
+    except KeyError:
+        schedule = models.Schedule.objects.get(id=sid)
+
+    try:
+        tracks = preload['tracks']
+    except KeyError:
+        tracks = models.Track.objects\
+            .filter(schedule=schedule)\
+            .order_by('order')
     return {
         'schedule': schedule,
         'tracks': list(tracks),
@@ -128,6 +138,34 @@ def _i_schedule_data(sender, **kw):
 schedule_data = cache_me(
     models=(models.Schedule, models.Track),
     key='schedule:%(sid)s')(schedule_data, _i_schedule_data)
+
+def schedules_data(sids):
+    cached = zip(sids, schedule_data.get_from_cache([ (x,) for x in sids ]))
+    missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
+
+    preload = {}
+    schedules = models.Schedule.objects\
+        .filter(id__in=missing)
+    tracks = models.Track.objects\
+        .filter(schedule__in=schedules)\
+        .order_by('order')
+
+    for s in schedules:
+        preload[s.id] = {
+            'schedule': s,
+            'tracks': [],
+        }
+    for t in tracks:
+        preload[t.schedule_id]['tracks'].append(t)
+
+    output = []
+    for ix, e in enumerate(cached):
+        sid, val = e
+        if val is cache_me.CACHE_MISS:
+            val = schedule_data(sid, preload=preload[sid])
+        output.append(val)
+
+    return output
 
 def talk_data(tid, preload=None):
     if preload is None:
