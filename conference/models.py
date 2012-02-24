@@ -194,7 +194,7 @@ class MultilingualContentManager(models.Manager):
             language = dsettings.LANGUAGE_CODE
         object_type = ContentType.objects.get_for_model(object)
         try:
-            mc = self.get(content_type=object_type, object_id=object.id, content=content, language=language)
+            mc = self.get(content_type=object_type, object_id=object.pk, content=content, language=language)
         except MultilingualContent.DoesNotExist:
             mc = MultilingualContent(content_object=object)
             mc.content = content
@@ -208,7 +208,7 @@ class MultilingualContentManager(models.Manager):
         object_type = ContentType.objects.get_for_model(object)
         records = dict(
             (x.language, x)
-            for x in self.exclude(body='').filter(content_type=object_type, object_id=object.id, content=content)
+            for x in self.exclude(body='').filter(content_type=object_type, object_id=object.pk, content=content)
         )
         try:
             return records[language]
@@ -228,9 +228,6 @@ class MultilingualContent(models.Model):
 
     objects = MultilingualContentManager()
 
-import urlparse
-from django.core.files.storage import FileSystemStorage
-
 def _fs_upload_to(subdir, attr=None, package='conference'):
     if attr is None:
         attr = lambda i: i.slug
@@ -242,7 +239,6 @@ def _fs_upload_to(subdir, attr=None, package='conference'):
         return fpath
     return wrapper
 
-
 def postSaveResizeImageHandler(sender, **kwargs):
     tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
     null = open('/dev/null')
@@ -250,6 +246,84 @@ def postSaveResizeImageHandler(sender, **kwargs):
         [tool, settings.STUFF_DIR],
         close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate()
+
+class AttendeeProfileManager(models.Manager):
+    def getOrCreateForUser(self, user):
+        """
+        Ritorna o crea il profilo associato all'utente.
+        """
+        try:
+            p = AttendeeProfile.objects.get(user=user)
+        except AttendeeProfile.DoesNotExist:
+            p = AttendeeProfile(user=user)
+        else:
+            return p
+
+        name = '%s %s' % (user.first_name, user.last_name)
+        slug = slugify(name)
+        cursor = connection.cursor()
+        # qui ho bisogno di impedire che altre connessioni possano leggere il
+        # db fino a quando non ho finito
+        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
+        # È importante assicurarsi che la transazione venga chiusa, con successo
+        # o fallimento, il prima possibile
+        try:
+            count = 0
+            check = slug
+            while True:
+                if self.filter(slug=check).count() == 0:
+                    break
+                count += 1
+                check = '%s-%d' % (slug, count)
+            p.slug = check
+            p.save()
+        except:
+            transaction.rollback()
+            raise
+        else:
+            transaction.commit()
+        return p
+
+class AttendeeProfile(models.Model):
+    """
+    È il profilo di un partecipante (inclusi gli speaker) alla conferenza, il
+    collegamento con la persona è ottenuto tramite la foreign key verso
+    auth.User.
+    """
+    user = models.OneToOneField('auth.User', primary_key=True)
+    slug = models.SlugField(unique=True)
+    image = models.ImageField(upload_to=_fs_upload_to('profile'), blank=True)
+    birthday = models.DateField(_('Birthday'), null=True, blank=True)
+
+    personal_homepage = models.URLField(verify_exists=False, blank=True)
+    twitter = models.CharField(max_length=80, blank=True)
+    phone = models.CharField(
+        _('Phone'), 
+        max_length=30, blank=True,
+        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+    )
+
+    company = models.CharField(max_length=50, blank=True)
+    company_homepage = models.URLField(verify_exists=False, blank=True)
+    job_title = models.CharField(max_length=50, blank=True)
+
+    location = models.CharField(max_length=100, blank=True)
+    bios = generic.GenericRelation(MultilingualContent)
+
+    interests = TaggableManager(through=ConferenceTaggedItem)
+
+    objects = AttendeeProfileManager()
+
+    def __unicode__(self):
+        return self.slug
+
+    def setBio(self, body, language=None):
+        MultilingualContent.objects.setContent(self, 'bios', language, body)
+
+    def getBio(self, language=None):
+        return MultilingualContent.objects.getContent(self, 'bios', language)
+
+post_save.connect(postSaveResizeImageHandler, sender=AttendeeProfile)
 
 class SpeakerManager(models.Manager):
     def createFromName(self, name, user=None):
@@ -283,77 +357,8 @@ class SpeakerManager(models.Manager):
         else:
             transaction.commit()
         return speaker
-
-SPEAKER_INDUSTRY = (
-    ('alimentare',      'Alimentare'),
-    ('ambiente',        'Ambiente e Sicurezza'),
-    ('automazione',     'Automazione'),
-    ('automotive',      'Automotive'),
-    ('bancario',        'Bancario e Assicurativo'),
-    ('comunicazione',   'Comunicazione'),
-    ('commercio',       'Commercio'),
-    ('consulting',      'Consulting'),
-    ('editoria',        'Editoria'),
-    ('elettronica',     'Elettronica'),
-    ('energia',         'Energia'),
-    ('farmaceutica',    'Farmaceutica'),
-    ('industria',       'Industria (chimica, meccanica, edile)'),
-    ('informatica',     'Informatica e Software'),
-    ('media',           'Intrattenimento e Media'),
-    ('istruzione',      'Istruzione'),
-    ('luxury',          'Luxury (Moda, Gioielli)'),
-    ('tessile',         'Tessile (Abbigliamento, Pelletteria, Accessori)'),
-    ('pubblica-amm',    'Pubblica Amministrazione'),
-    ('telecom',         'Telecomunicazioni'),
-    ('trasporti',       'Trasporti'),
-    ('turismo',         'Turismo'),
-    ('altro',           'Altro'),
-)
 class Speaker(models.Model, UrlMixin):
-    user = models.OneToOneField('auth.User', null=True)
-    name = models.CharField('nome e cognome speaker', max_length=100)
-    slug = models.SlugField()
-    homepage = models.URLField(verify_exists=False, blank=True)
-    activity = models.CharField(max_length=50, blank=True)
-    activity_homepage = models.URLField(verify_exists=False, blank=True)
-    company = models.CharField(max_length=50, blank=True)
-    company_homepage = models.URLField(verify_exists=False, blank=True)
-    industry = models.CharField(max_length=50, choices=SPEAKER_INDUSTRY, blank=True)
-    location = models.CharField(max_length=100, blank=True)
-    twitter = models.CharField(max_length=80, blank=True)
-    image = models.ImageField(upload_to=_fs_upload_to('speaker'), blank=True)
-    bios = generic.GenericRelation(MultilingualContent)
-    ad_hoc_description = generic.GenericRelation(MultilingualContent, related_name='ad_hoc_description_set', verbose_name='descrizione ad hoc')
-    previous_experience = models.TextField(blank=True)
-    last_year_talks = models.PositiveIntegerField(default=0)
-    max_audience = models.PositiveIntegerField(default=0)
-    video_presentation = models.TextField(blank=True)
-
-    objects = SpeakerManager()
-
-    class Meta:
-        ordering = ['name']
-
-    def __unicode__(self):
-        return self.name
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('conference-speaker', (), { 'slug': self.slug })
-
-    get_url_path = get_absolute_url
-
-    def setBio(self, body, language=None):
-        MultilingualContent.objects.setContent(self, 'bios', language, body)
-
-    def getBio(self, language=None):
-        return MultilingualContent.objects.getContent(self, 'bios', language)
-
-    def setAdHocDescription(self, body, language=None):
-        MultilingualContent.objects.setContent(self, 'ad_hoc_description', language, body)
-
-    def getAdHocDescription(self, language=None):
-        return MultilingualContent.objects.getContent(self, 'ad_hoc_description', language)
+    user = models.OneToOneField('auth.User', primary_key=True)
 
     def talks(self, conference=None, include_secondary=True, status=None):
         """
@@ -372,8 +377,6 @@ class Speaker(models.Model, UrlMixin):
         if conference is not None:
             qs = qs.filter(talk__conference=conference)
         return Talk.objects.filter(id__in=qs.values('talk'))
-
-post_save.connect(postSaveResizeImageHandler, sender=Speaker)
 
 TALK_DURATION = (
     (5,   _('5 minutes')),
@@ -428,7 +431,7 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en', level='beginner', training_available=False):
+    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en', level='beginner', training_available=False, type='s'):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
@@ -438,6 +441,7 @@ class TalkManager(models.Manager):
         talk.language = language
         talk.level = level
         talk.training_available = training_available
+        talk.type = type
         cursor = connection.cursor()
         cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
         try:

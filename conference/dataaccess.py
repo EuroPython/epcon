@@ -291,9 +291,9 @@ def speaker_data(sid, preload=None):
 
 def _i_speaker_data(sender, **kw):
     if sender is models.Speaker:
-        sids = [ kw['instance'].id ]
+        sids = [ kw['instance'].pk ]
     elif sender is models.Talk:
-        sids = kw['instance'].speakers.all().values_list('id', flat=True)
+        sids = kw['instance'].speakers.all().values_list('user_id', flat=True)
     else:
         sids = [ kw['instance'].speaker_id ]
 
