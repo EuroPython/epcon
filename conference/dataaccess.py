@@ -346,15 +346,14 @@ def event_data(eid, preload=None):
             .select_related('sponsor')\
             .get(id=eid)
 
+    try:
+        tracks = preload['tracks']
+    except KeyError:
+        print 'miss', preload
+        tracks = event.tracks.all().values_list('track', flat=True)
+
     sch = schedule_data(event.schedule_id)
-    dbtracks = [ x.track for x in sch['tracks'] ]
-    tracks = []
-    tags = set()
-    for t in set(parse_tag_input(event.track)):
-        if t in dbtracks:
-            tracks.append(t)
-        else:
-            tags.add(t)
+    tags = set(parse_tag_input(event.track))
     if event.talk_id:
         output = talk_data(event.talk_id)
         name = output['talk'].title
@@ -406,7 +405,8 @@ event_data = cache_me(
 def events(conf):
     eids = models.Event.objects\
         .filter(schedule__conference=conf)\
-        .values_list('id', flat=True)
+        .values_list('id', flat=True)\
+        .order_by('start_time')
 
     cached = zip(eids, event_data.get_from_cache([ (x,) for x in eids ]))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
@@ -415,12 +415,28 @@ def events(conf):
     events = models.Event.objects\
         .filter(id__in=missing)\
         .select_related('sponsor')
-    talks = models.Talk.objects\
-        .filter(id__in=events.values('talk'))\
-        .values_list('id', flat=True)
-    talks_data(talks)
+    tracks = models.EventTrack.objects\
+        .filter(event__in=events)\
+        .values('event', 'track__track')
     for e in events:
-        preload[e.id] = {'event': e}
+        preload[e.id] = {'event': e, 'tracks': []}
+
+    for row in tracks:
+        preload[row['event']]['tracks'].append(row['track__track'])
+
+    # precarico le cache per essere sicuro che event_data non debba toccare il
+    # database per ogni evento
+    talks_data(
+        models.Talk.objects\
+            .filter(id__in=events.values('talk'))\
+            .values_list('id', flat=True)
+    )
+
+    schedules_data(
+        models.Schedule.objects\
+            .filter(id__in=events.values('schedule_id').distinct())\
+            .values_list('id', flat=True)
+    )
 
     output = []
     for ix, e in enumerate(cached):
