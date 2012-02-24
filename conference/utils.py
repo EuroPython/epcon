@@ -3,8 +3,8 @@ from django.conf import settings as dsettings
 from django.core.cache import cache
 from django.core.mail import send_mail as real_send_mail
 
-from conference import models
 from conference import settings
+from conference.models import VotoTalk
 
 import json
 import logging
@@ -16,6 +16,24 @@ import urllib2
 from collections import defaultdict
 
 log = logging.getLogger('conference')
+
+def dotted_import(path):
+    from django.utils.importlib import import_module
+    from django.core.exceptions import ImproperlyConfigured
+    i = path.rfind('.')
+    module, attr = path[:i], path[i+1:]
+
+    try:
+        mod = import_module(module)
+    except ImportError, e:
+        raise ImproperlyConfigured('Error importing %s: "%s"' % (path, e))
+
+    try:
+        o = getattr(mod, attr)
+    except AttributeError:
+        raise ImproperlyConfigured('Module "%s" does not define "%s"' % (module, attr))
+
+    return o
 
 def send_email(force=False, *args, **kwargs):
     if force is False and not settings.SEND_EMAIL_TO:
@@ -38,7 +56,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
     for t in talks:
         vinput.append('# %s - %s' % (t.id, t.title.encode('utf-8')))
 
-    votes = models.VotoTalk.objects.filter(talk__in=talks).order_by('user', '-vote')
+    votes = VotoTalk.objects.filter(talk__in=talks).order_by('user', '-vote')
     users = defaultdict(lambda: defaultdict(list)) #dict((t.id, 5) for t in talks))
     for vote in votes:
         users[vote.user_id][vote.vote].append(vote.talk_id)

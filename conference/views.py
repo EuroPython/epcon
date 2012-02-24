@@ -10,6 +10,7 @@ from xml.etree import cElementTree as ET
 
 from conference import models
 from conference import settings
+from conference import utils
 from conference.forms import EventForm, SpeakerForm, SubmissionForm, TalkForm
 from conference.utils import send_email
 
@@ -601,46 +602,55 @@ def sponsor(request, sponsor):
 
 @login_required
 @transaction.commit_on_success
-def paper_submission(request, submission_form=SubmissionForm, submission_additional_form=TalkForm):
+def paper_submission(request):
     try:
         speaker = request.user.speaker
     except models.Speaker.DoesNotExist:
         speaker = None
 
     conf = models.Conference.objects.current()
+
+    # per questa conferenza non è previsto il cfp
     if not conf.cfp_start or not conf.cfp_end:
         raise http.Http404()
 
+    # il cfp è concluso
     if not conf.cfp():
         if settings.CFP_CLOSED:
             return redirect(settings.CFP_CLOSED)
         else:
             raise http.Http404()
 
-    proposed = speaker.talk_set.proposed(conference=settings.CONFERENCE) if speaker else []
+    if speaker:
+        proposed = list(speaker.talk_set.proposed(conference=settings.CONFERENCE))
+    else:
+        proposed = []
+    if not proposed:
+        fc = utils.dotted_import(settings.FORMS['PaperSubmission'])
+        form = fc(user=request.user, data=request.POST, files=request.FILES)
+    else:
+        fc = utils.dotted_import(settings.FORMS['AdditionalPaperSubmission'])
+        form = fc(data=request.POST, files=request.FILES)
+
     if request.method == 'POST':
-        if len(proposed) == 0:
-            form = submission_form(user=request.user, data=request.POST, files=request.FILES)
+        if not proposed:
+            form = fc(user=request.user, data=request.POST, files=request.FILES)
         else:
-            form = submission_additional_form(data=request.POST, files=request.FILES)
+            form = fc(data=request.POST, files=request.FILES)
+
         if form.is_valid():
-            data = form.cleaned_data
-            if len(proposed) == 0:
+            if not proposed:
                 talk = form.save()
                 speaker = request.user.speaker
             else:
                 talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
-            send_email(
-                subject='[new paper] "%s %s" - %s' % (request.user.first_name, request.user.last_name, data['title']),
-                message='Title: %s\nDuration: %s\nLanguage: %s\n\nAbstract: %s' % (data['title'], data['duration'], data['language'], data['abstract']),
-            )
-            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
+            return HttpResponseRedirectSeeOther('/')#reverse('conference-speaker', kwargs={'slug': request.user.attendeeprofile.slug}))
     else:
-        if len(proposed) == 0:
-            form = submission_form(user=request.user)
+        if not proposed:
+            form = fc(user=request.user)
         else:
-            form = submission_additional_form()
+            form = fc()
     return render_to_response('conference/paper_submission.html', {
         'speaker': speaker,
         'form': form,

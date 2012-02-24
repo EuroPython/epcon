@@ -67,40 +67,37 @@ class AdminMarkEdit(admin_widgets.AdminTextareaWidget, MarkEditWidget):
     pass
 
 class SubmissionForm(forms.Form):
+    """
+    Form per la submission del primo paper; include campi che andranno a
+    popolare sia il profilo dello speaker che i dati del talk. Vengono
+    richiesti i soli dati essenziali.
+    """
     first_name = forms.CharField(
         label=_('First name'),
         max_length=30,)
     last_name = forms.CharField(
         label=_('Last name'),
         max_length=30,)
-    activity = forms.CharField(
+    birthday = forms.DateField(
+        label=_('Date of birth'),
+        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        input_formats=('%Y-%m-%d',),
+        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
+    )
+    job_title = forms.CharField(
         label=_('Job title'),
         help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
         max_length=50,
         required=False,)
-    activity_homepage = forms.URLField(label=_('Personal homepage'), required=False)
+    phone = forms.CharField(
+        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
+        max_length=30)
     company = forms.CharField(label=_('Your company'), max_length=50, required=False)
     company_homepage = forms.URLField(label=_('Company homepage'), required=False)
-    industry = forms.TypedChoiceField(choices=models.SPEAKER_INDUSTRY, required=False)
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
         widget=forms.Textarea(),)
-    previous_experience = forms.CharField(
-        label=_('Previous experience'),
-        help_text=_('List yout previous experiences'),
-        widget=forms.Textarea(),
-        required=False,)
-    last_year_talks = forms.IntegerField(
-        label=_('Last year talks'),
-        help_text=_('How many talks you have held during the last year?'),
-        min_value=0,
-        required=False,)
-    max_audience = forms.IntegerField(
-        label=_('Maximum audience'),
-        help_text=_('Specify the size of your biggest audience'),
-        min_value=0,
-        required=False,)
 
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
     type = forms.TypedChoiceField(
@@ -120,97 +117,70 @@ class SubmissionForm(forms.Form):
         choices=models.TALK_LANGUAGES,
         initial='en',)
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
-    slides = forms.FileField(required=False,)
     abstract = forms.CharField(
         max_length=5000,
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
-    promo_video = forms.URLField(
-        label=_('Promo video'),
-        help_text=_('Promo video description'),
-        required=False,
-    )
     tags = TagField(widget=TagWidget)
 
     def __init__(self, user, *args, **kwargs):
         try:
-            speaker = user.speaker
-        except models.Speaker.DoesNotExist:
-            speaker = None
+            profile = user.attendeeprofile
+        except models.AttendeeProfile.DoesNotExist:
+            profile = None
         data = {
             'first_name': user.first_name,
             'last_name': user.last_name,
         }
-        if speaker:
+        if profile:
             data.update({
-                'activity': speaker.activity,
-                'activity_homepage': speaker.activity_homepage,
-                'company': speaker.company,
-                'company_homepage': speaker.company_homepage,
-                'industry': speaker.industry,
-                'bio': getattr(speaker.getBio(), 'body', ''),
-                'previous_experience': speaker.previous_experience,
-                'last_year_talks': speaker.last_year_talks,
-                'max_audience': speaker.max_audience,
+                'phone': profile.phone,
+                'birthday': profile.birthday,
+                'job_title': profile.job_title,
+                'company': profile.company,
+                'company_homepage': profile.company_homepage,
+                'bio': getattr(profile.getBio(), 'body', ''),
             })
         data.update(kwargs.get('initial', {}))
         kwargs['initial'] = data
         super(SubmissionForm, self).__init__(*args, **kwargs)
         self.user = user
 
-    def clean_max_audience(self):
-        try:
-            data = int(self.cleaned_data['max_audience'])
-        except:
-            data = 0
-        return data
-
-    def clean_last_year_talks(self):
-        try:
-            data = int(self.cleaned_data['last_year_talks'])
-        except:
-            data = 0
-        return data
-
     @transaction.commit_on_success
     def save(self):
         data = self.cleaned_data
+
         user = self.user
         user.first_name = data['first_name'].strip()
         user.last_name = data['last_name'].strip()
         user.save()
 
-        name = '%s %s' % (data['first_name'], data['last_name'])
+        profile = models.AttendeeProfile.objects.getOrCreateForUser(user)
+        profile.phone = data['phone']
+        profile.birthday = data['birthday']
+        profile.job_title = data['job_title']
+        profile.company = data['company']
+        profile.company_homepage = data['company_homepage']
+        profile.save()
+        profile.setBio(data['bio'])
+
         try:
             speaker = user.speaker
         except models.Speaker.DoesNotExist:
-            speaker = models.Speaker.objects.createFromName(name, user)
-        else:
-            speaker.name = name
+            speaker = models.Speaker(user=user)
+            speaker.save()
 
-        speaker.activity = data['activity']
-        speaker.activity_homepage = data['activity_homepage']
-        speaker.company = data['company']
-        speaker.company_homepage = data['company_homepage']
-        speaker.industry = data['industry']
-        speaker.previous_experience = data['previous_experience']
-        speaker.last_year_talks = data['last_year_talks']
-        speaker.max_audience = data['max_audience']
-        speaker.save()
-        speaker.setBio(data['bio'])
         talk = models.Talk.objects.createFromTitle(
             title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', duration=data['duration'], language=data['language'],
-            level=data['level'],
+            level=data['level'], type=data['type'],
         )
-        talk.type = data['type']
-        talk.promo_video_url = data['promo_video']
-        if data['slides']:
-            talk.slides = data['slides']
-        talk.save()
         talk.setAbstract(data['abstract'])
         talk.tags.set(*data['tags'])
+
+        from conference.listeners import new_paper_submission
+        new_paper_submission.send(sender=speaker, talk=talk)
 
         return talk
 
@@ -243,13 +213,11 @@ class TalkForm(forms.Form):
         choices=models.TALK_TYPE,
         initial='s',
         required=True,)
-    language = forms.TypedChoiceField(
-        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
-        choices=models.TALK_LANGUAGES,
-        initial='en',)
+    language = forms.TypedChoiceField(choices=models.TALK_LANGUAGES, initial='en')
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
     slides = forms.FileField(required=False)
     abstract = forms.CharField(
+        max_length=5000,
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
@@ -278,32 +246,31 @@ class TalkForm(forms.Form):
         self.instance = instance
 
     @transaction.commit_on_success
-    def save(self, instance=None, speaker=None):
-        if instance is None:
-            instance = self.instance
+    def save(self, speaker=None):
         data = self.cleaned_data
-        if instance is None:
+        o = self.instance
+        if o is None:
             assert speaker is not None
-            instance = models.Talk.objects.createFromTitle(
+            o = models.Talk.objects.createFromTitle(
                 title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', duration=data['duration'], language=data['language'],
                 level=data['level'],
             )
         else:
-            instance.title = data['title']
-            instance.duration = data['duration']
-            instance.language = data['language']
-            instance.level = data['level']
+            o.title = data['title']
+            o.duration = data['duration']
+            o.language = data['language']
+            o.level = data['level']
 
-        instance.type = data['type']
-        instance.promo_video_url = data['promo_video']
+        o.type = data['type']
+        o.promo_video_url = data['promo_video']
         if data['slides']:
-            instance.slides = data['slides']
-        instance.save()
-        instance.setAbstract(data['abstract'])
-        instance.tags.set(*data['tags'])
+            o.slides = data['slides']
+        o.save()
+        o.setAbstract(data['abstract'])
+        o.tags.set(*data['tags'])
 
-        return instance
+        return o
 
 from tagging.models import TaggedItem
 from tagging.utils import parse_tag_input

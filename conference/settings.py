@@ -19,6 +19,14 @@ MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYPE_NAME_CONV
     }
 )
 
+FORMS = {
+    'PaperSubmission': 'conference.forms.SubmissionForm',
+    'AdditionalPaperSubmission': 'conference.forms.TalkForm',
+}
+FORMS.update(getattr(settings, 'CONFERENCE_FORMS', {}))
+
+# url a cui rimandare un utente che prova ad accedere alla paper submission
+# quando il cfp è chiuso. Se None viene ritornato un 404
 CFP_CLOSED = getattr(settings, 'CONFERENCE_CFP_CLOSED', None)
 
 VOTING_CLOSED = getattr(settings, 'CONFERENCE_VOTING_CLOSED', None)
