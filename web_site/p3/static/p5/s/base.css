@@ -35,9 +35,7 @@ body {
 
 
 h1, h2, h3, h4, h5, h6 {
-
-	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;	
-	
+	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;		
 	text-transform: uppercase;
 }
 
@@ -139,42 +137,68 @@ a.tag:hover {
 }
 
 
-
+.pseudo-checkbox,
+.pseudo-radio,
 .button a {
-
     color: #fff;
-
 	background: #4895a3 url(../i/button-b.png) center top repeat-x;
-	padding: 5px 10px;	
-	
-    border: 1px solid #3d7e8a;
-		
+	padding: 5px 10px;		
+    border: 1px solid #3d7e8a;		
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	
-	
-	text-shadow: #316770 1px 1px 1px;
-	
-    display: inline-block;
-    
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
+	border-radius: 4px;		
+	text-shadow: #316770 1px 1px 1px;	
+    display: inline-block;    
+    -webkit-box-shadow: 0 0 2px rgba(150,141,131,.8);
+    -moz-box-shadow: 0 0 2px rgba(150,141,131,.8);
 }
 
 .button.mini a {
     padding: 2px 5px;
-
 	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
 	border-color: #aba18f;
-
     color: #301d1d; 
-    
-	text-shadow: rgba(100%, 100%, 100%, .65) 1px 1px 1px;       
+	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;       
+    -webkit-box-shadow: 0 0 2px rgba(150,141,131,.8);
+    -moz-box-shadow: 0 0 2px rgba(150,141,131,.8);
+}
 
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
 
+.pseudo-checkbox,
+.pseudo-radio {
+	background: #c4b9a5 url(../i/button-n.png) center top repeat-x;
+	border-color: #aba18f;
+    color: #301d1d; 
+    text-shadow: 1px 1px 1px rgba(100%, 100%, 100%, .55);
+
+    font-weight: bold;   
+    margin-right: 5px;     
+    cursor: pointer;
+}
+
+.pseudo-checkbox span,
+.pseudo-radio span {
+    padding-left: 18px;
+    background: transparent url(../i/pseudo-radio.png) left center no-repeat;
+}
+
+/*
+.pseudo-checkbox span {
+    background-image: url(../i/presudo-checkbox.png);
+}
+*/
+
+.pseudo-checkbox.checked,
+.pseudo-radio.checked {
+    color: #fff;
+	background: #4895a3 url(../i/button-b.png) center top repeat-x;
+    border: 1px solid #3d7e8a;	
+	text-shadow: #316770 1px 1px 1px;
+}
+
+/* .pseudo-checkbox.checked span, */
+.pseudo-radio.checked span {
+	background-image: url(../i/pseudo-radio-checked.png);
 }
 
 
@@ -350,8 +374,8 @@ header #li-chat #habla_unavailable_div a {
 	
     border: 1px solid #3d7e8a;
     
-    -webkit-box-shadow: 1px 1px 2px #7d6f60;
-    -moz-box-shadow: 1px 1px 2px #7d6f60;
+    -webkit-box-shadow: 0 0 2px rgba(150,141,131,.8);
+    -moz-box-shadow: 0 0 2px rgba(150,141,131,.8);
 
     		
 	-moz-border-radius: 4px;
@@ -569,14 +593,20 @@ footer nav li img {
 }
 
 .page h1  {
-
 	font: normal 36px/40px "League Gothic", "Arial Narrow", sans-serif;
 	margin: 0 0 30px 0;
+}
+
+.page h1 span {
+    color: #635443;
 }
 
 /* =================== */
 /* ! speaker           */
 /* =================== */
+
+
+/* @@TODO: Move speaker styles into user profile  */
 
 
 
@@ -655,6 +685,62 @@ footer nav li img {
     margin: 0 0 10px 0;
 }
 
+
+.profile-user-data {
+    background: #fff;
+    margin: 0 0 20px 0;
+    padding: 10px;
+    color: #635443;	   
+    border: 1px solid #ABA18F; 
+}
+
+.profile-user-data li {
+    margin: 0 0 5px 0;
+}
+
+.profile-user-data h4 {
+    margin: 0 0 10px 0; 
+    font-size: 21px;
+    text-align: center;
+}
+
+
+.profile-user-identity {
+    background: #E1DBC5;
+    margin: 0 0 20px 0;    
+}
+
+.profile-user-identity h1 {
+	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;   
+	margin: 0 0 10px 0;
+}
+
+.profile-user-identity dt {
+	font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;	
+	text-transform: uppercase;
+    color: #4895A3;	   	
+	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;      
+}
+
+.profile-user-identity dd {
+    font-size: 16px;
+    margin: 0 0 20px 0;
+}
+
+
+.profile-user-picture img {
+    border: 5px solid #aba18f;
+}
+
+.profile-user-data.coupons .coupon.invalid b {
+    text-decoration: line-through;
+}
+
+.profile-user-bio {
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ABA18F;     
+}
 
 /* ======== */
 /* ! talk   */
@@ -1148,10 +1234,16 @@ section.teaser p {
     position: relative;
     min-height: 200px;
 
+/*
     -webkit-box-shadow: 1px 2px 3px #7d6f60;
     -moz-box-shadow: 1px 2px 3px #7d6f60;
+*/
 
-    -webkit-transform:rotate(-.8deg);
+    -webkit-box-shadow: 0 1px 2px rgba(150,141,131,.9);
+    -moz-box-shadow: 0 1px 2px rgba(150,141,131,.9);
+    box-shadow: 0 1px 2px rgba(150,141,131,.9);
+
+/*     -webkit-transform:rotate(-.8deg); */
     
 }
 
@@ -1333,11 +1425,11 @@ section.teaser p {
 }
 
 .feedback {
-    background: rgba(255, 185, 69, 0.85);
+    background: rgba(225, 219, 197, 0.85);
     text-align: center;
-    line-height: 1.7em;
+    line-height: 30px;
     font-weight: bold;
-    color: black;
+/*     color: black; */
 }
 
 section.notice {

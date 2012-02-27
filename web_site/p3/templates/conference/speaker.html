@@ -32,7 +32,7 @@
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
                 {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
-                <p>{{ b.body|safe_markdown }}</p>
+                <p>{{ b.body|markdown2:"smarty-pants,code-color" }}</p>
             </div>
             {% if auser.twitter or auser.www or speaker.company_homepage %}
             <section class="speaker contacts">
