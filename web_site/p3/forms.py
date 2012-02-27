@@ -4,7 +4,7 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 
 import conference.forms as cforms 
-from conference.models import Conference, Ticket
+from conference.models import Conference, Ticket, TALK_LANGUAGES
 
 from p3 import models
 
@@ -63,6 +63,11 @@ class P3SubmissionForm(cforms.SubmissionForm):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
+    language = forms.TypedChoiceField(
+        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        choices=TALK_LANGUAGES,
+        initial='en', required=False)
+
     def __init__(self, user, *args, **kwargs):
         data = {
             'mobile': user.assopy_user.phone,
@@ -77,6 +82,9 @@ class P3SubmissionForm(cforms.SubmissionForm):
         data = super(P3SubmissionForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
+
+        if not data.get('language') or data['type'] != 's':
+            data['language'] = 'en'
 
         return data
 
@@ -133,10 +141,18 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
+    language = forms.TypedChoiceField(
+        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        choices=TALK_LANGUAGES,
+        initial='en', required=False)
+
     def clean(self):
         data = super(P3SubmissionAdditionalForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
+
+        if not data.get('language') or data['type'] != 's':
+            data['language'] = 'en'
         return data
 
 class P3TalkForm(cforms.TalkForm):
