@@ -465,6 +465,7 @@ TALK_TYPE = (
     ('s', 'Standard'),
     ('i', 'Interactive'),
     ('t', 'Training'),
+    ('p', 'Poster session'),
 )
 class Talk(models.Model, UrlMixin):
     title = models.CharField('titolo del talk', max_length=100)

@@ -66,6 +66,26 @@ class MarkEditWidget(forms.Textarea):
 class AdminMarkEdit(admin_widgets.AdminTextareaWidget, MarkEditWidget):
     pass
 
+class PseudoRadioWidget(forms.TextInput):
+    def render(self, name, value, attrs=None):
+        pass
+
+class PseudoRadioRenderer(forms.widgets.RadioFieldRenderer):
+    def render(self):
+        h = '<div class="%(class)s" data-value="%(value)s"><span>%(label)s</span></div>'
+        choiches = []
+        for w in self:
+            p = {
+                'class': 'pseudo-radio',
+                'value': w.choice_value,
+                'label': w.choice_label,
+            }
+            if w.is_checked():
+                p['class'] += ' checked'
+            choiches.append(h % p)
+        output = '<div class="pseudo-radio-field"><input type="hidden" name="%s" value="%s" />%s</div>'
+        return mark_safe(output % (self.name, self.value, ''.join(choiches)))
+
 class SubmissionForm(forms.Form):
     first_name = forms.CharField(
         label=_('First name'),

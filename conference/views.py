@@ -809,6 +809,19 @@ $(function() {
             'layout': 'heading bold italic bulletlist | link quote code image '
         }
     }).blur();
+    $('.pseudo-radio').click(function(e) {
+        var pseudo = $(this);
+        var p = pseudo.parent();
+        var input = $('input[type=hidden]', p);
+        input.val(pseudo.attr('data-value'));
+        input.change();
+        $('.pseudo-radio', p).removeClass('checked');
+        pseudo.addClass('checked');
+    });
+    $('.pseudo-radio-field input').each(function() {
+        var initial = $(this).val();
+        $('.pseudo-radio[data-value=' + initial + ']', $(this).parent()).click();
+    });
 });
     """ % {
         'tags': simplejson.dumps([ x.encode('utf-8') for x in tags ])
