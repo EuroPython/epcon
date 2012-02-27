@@ -1,0 +1,211 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+
+
+{% block ASSOPY_MAIN_CONTENT %}
+<!--
+    <div class="span-5">
+        <div class="form-box">
+            <form action="{% url assopy-profile %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <fieldset>
+                    {% for f in form %}{{ f|field }}{% endfor %}
+                </fieldset>
+                <fieldset class="border">
+                    <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+-->
+
+    <div class="span-7 append-1">
+
+        <section class="profile-user-identity clearfix">        
+            <div class="span-2">
+                {% with user.photo_url as u %}
+                    {% if u %}
+                    <div class="profile-user-picture">
+<!--                         <img class="block" src="{{ u }}" alt="{{ user.name }}" width="98" /> -->
+                            <!-- @@TODO: Load up change profile picture lightbox on click -->                        
+                        <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ user.name }}" width="98" height="98" /></a>
+                        <div class="button mini"><a href="#">Change</a></div>
+                    </div>
+                    {%else%}
+                        <div class="profile-user-picture">                        
+                            <!-- @@TODO: Load up change profile picture lightbox on click --> 
+                            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-default.jpg" alt="*" width="98" height="98" /></a>                            
+                        </div>
+                    {% endif %}                    
+                {% endwith %}
+            </div>
+    
+            <div class="span-5 last">  
+                    
+                <h1>{{ user.name }} <span>&mdash; {% trans "It’s you!" %}</span></h1>                
+                <dl>
+                    <dt>Phone
+                    </dt>        
+                    <dd>+39-222-1234567</dd>
+
+                    <dt>Website
+                    </dt>  
+                    <!-- @@TODO: strip http:// -->
+                    <dd><a href="http://giovanni.bajo.it/">giovanni.bajo.it</a></dd>
+
+                    <dt>Twitter
+                    </dt>        
+                    <dd>@<a href="http://twitter.com/#!/giovannibajo">giovannibajo</a></dd>
+                </dl>                    
+                <div class="button mini">
+                    <a href="#">Edit profile</a>
+                </div>
+            </div>
+        
+        </section>
+        
+        
+        <section class="profile-user-bio">
+            <h2>Quick Bio</h2>
+            <div class="cms">
+                <p>Cum sociis natoque <b>penatibus</b> et magnis dis <code>parturient montes</code>, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+                </p>
+                
+                <blockquote>
+                  <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+                </blockquote>
+                
+                <p>Lorem ipsum dolor <em>sit amet</em>, consectetur adipiscing elit. Sed posuere consectetur est at lobortis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+                
+                <ul>
+                <li>One</li>
+                <li>Two </li>
+                <li>Three</li>
+                </ul>
+                
+                <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere consectetur est at lobortis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+            </div>
+        </section>
+          
+    </div>
+
+    <div class="span-4 last">
+        {% block PROFILE_SIDEBAR %}
+                         
+        <aside>
+            <div class="">
+                {% block WEB_ACCOUNTS %}
+                <h4>{% trans "Web accounts for login" %}</h4>
+                <ul id="web-accounts">
+                    {% for i in user.identities.all %}
+                    <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Delete account" %}" /></li>
+                    {% endfor %}
+                </ul>
+                <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
+                    <input type="hidden" name="identifier" value="" />
+                </form>
+                <script type="text/javascript">
+                    $('#web-accounts img.delete').click(function(e) {
+                        if(!confirm('Are you sure?')) {
+                            return;
+                        }
+                        var parent = $(e.target).parents('li');
+                        var id = parent.attr('data-identifier');
+                        var form = $('form#remove-identity');
+                        $('input[name=identifier]', form).val(id);
+                        form.ajaxSubmit({
+                            success: function() {
+                                feedback('{% trans "Web access removed" %}');
+                                parent.remove();
+                            },
+                            error: function(xhr, status, error) {
+                                alert('{% trans "Cannot remove the requested item, please contact info@pycon.it for assistance" %}');
+                            }
+                        });
+                    });
+                </script>
+                <p>
+                    {% url assopy-profile as u %}
+                    {% render_janrain_box u "overlay" %}
+                </p>
+                {% endblock %}
+
+<!--
+                {% block SPEAKER_PROFILE %}
+                {% if request.user.speaker %}
+                <h4>{% trans "Speaker profile" %}</h4>
+                <p>
+                    <a href="{% url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
+                </p>
+                {% endif %}
+                {% endblock %}
+-->
+
+                {% render_profile_last_block %}
+        
+                {% block USER_TICKETS %}
+                {% with request.user.assopy_user.tickets as tickets %}
+                    {% if tickets|length %}
+                    <section class="profile-user-data tickets">
+<!--                         <h4>{% trans "Your Tickets" %}</h4> -->
+                        <div class="button mini">
+                            <a href="{% url assopy-tickets %}">{% trans "Your tickets" %}</a>
+                        </div>
+                    </section>                    
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+
+
+
+                {% block USER_COUPONS %}
+                {% with request.user.assopy_user|user_coupons as coupons %}
+                    {% if coupons.valid|length or coupons.invalid|length%}
+                    <section class="profile-user-data coupons">
+                        <h4>{% trans "Your Coupons" %}</h4>                        
+                        <ul>
+                        {% for c in coupons.valid %}                        
+                            <li class="coupon valid">
+                                <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
+                            </li>
+                        {% endfor %}                                                
+                        {% for c in coupons.invalid %}
+                            <li class="coupon invalid">
+                                <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
+                            </li>
+                        {% endfor %}                        
+                        </ul>
+                    </section>
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+
+                {% block USER_INVOICES %}
+                {% with request.user.assopy_user.invoices as invoices %}
+                    {% if invoices|length %}
+                     <section class="profile-user-data tickets">
+                         
+                        <h4>{% trans "Your Invoices" %}</h4>
+                        <ul>
+                        {% for i in invoices %}
+                            {% with i.order.code as ocode %}
+                            {% with i.order.created|date:"d M Y" as odate %}
+                            <li>
+                                <a href="{% url assopy-invoice-pdf assopy_id=i.assopy_id %}">{% blocktrans %}Order: {{ ocode }} of {{ odate }}{% endblocktrans %}</a>
+                            </li>
+                            {% endwith %}
+                            {% endwith %}
+                        {% endfor %}
+                        </ul>
+
+                     </section>
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+
+                
+            </div>
+        </aside>
+        {% endblock %}
+    </div>
+{% endblock %}
+
