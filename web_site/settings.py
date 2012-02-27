@@ -276,9 +276,9 @@ PINGBACK_TARGET_DOMAIN = 'ep2012.europython.eu'
 COMMENTS_APP = 'hcomments'
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 
-#TEMPLATESADMIN_EDITHOOKS = (
-#    'templatesadmin.edithooks.hgcommit.HgCommitHook',
-#)
+TEMPLATESADMIN_EDITHOOKS = (
+    'templatesadmin.edithooks.gitcommit.GitCommitHook',
+)
 
 HAYSTACK_SITECONF = 'web_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
