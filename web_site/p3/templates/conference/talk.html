@@ -134,8 +134,10 @@
                 <dt>{% trans "Lingua" %}</dt>
                 <dd>{{ talk.language|upper }}</dd>
 
+                {% if talk.type != "p" %}
                 <dt>{% trans "Durata" %}</dt>
                 <dd>{{ talk.duration }} {% trans "minuti" %}</dd>
+                {% endif %}
 
                 {% if track.translate %}
                 <dt>{% trans "Traduzione simultanea" %}</dt>
