@@ -97,13 +97,9 @@ div.last { margin-right: 0; }
 
 /* Border on right hand side of a column. */
 div.border {
-/*
-  padding-right:14px;
-  margin-right:15px;
-*/
-/*   border-right: 1px solid #eee; */
-    background: transparent  url(../i/border.png) right center repeat-y;
-  
+    padding-right:14px;
+    margin-right:15px;
+    background: transparent url(../i/border.png) right center repeat-y;  
 }
 
 /* Border with more whitespace, spans one column. */
