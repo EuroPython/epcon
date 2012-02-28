@@ -1,91 +1,26 @@
 {% extends "assopy/base.html" %}
-{% load assopy_tags i18n %}
-
+{% load assopy_tags i18n p3 %}
 
 {% block ASSOPY_MAIN_CONTENT %}
-<!--
-    <div class="span-5">
-        <div class="form-box">
-            <form action="{% url assopy-profile %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-                <fieldset>
-                    {% for f in form %}{{ f|field }}{% endfor %}
-                </fieldset>
-                <fieldset class="border">
-                    <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
-                </fieldset>
-            </form>
-        </div>
-    </div>
--->
-
+    {% p3_profile_data request.user.id as profile %}
     <div class="span-7 append-1">
-
         <section class="profile-user-identity clearfix">        
             <div class="span-2">
-                {% with user.photo_url as u %}
-                    {% if u %}
-                    <div class="profile-user-picture">
-<!--                         <img class="block" src="{{ u }}" alt="{{ user.name }}" width="98" /> -->
-                            <!-- @@TODO: Load up change profile picture lightbox on click -->                        
-                        <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ user.name }}" width="98" height="98" /></a>
-                        <div class="button mini"><a href="#">Change</a></div>
-                    </div>
-                    {%else%}
-                        <div class="profile-user-picture">                        
-                            <!-- @@TODO: Load up change profile picture lightbox on click --> 
-                            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-default.jpg" alt="*" width="98" height="98" /></a>                            
-                        </div>
-                    {% endif %}                    
-                {% endwith %}
+                <div class="profile-user-picture">
+                    {% if profile.image %}
+                        <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
+                    {% else %}
+                        <img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" />
+                    {% endif %}
+                </div>
             </div>
     
             <div class="span-5 last">  
-                    
-                <h1>{{ user.name }} <span>&mdash; {% trans "It’s you!" %}</span></h1>                
-                <dl>
-                    <dt>Phone
-                    </dt>        
-                    <dd>+39-222-1234567</dd>
-
-                    <dt>Website
-                    </dt>  
-                    <!-- @@TODO: strip http:// -->
-                    <dd><a href="http://giovanni.bajo.it/">giovanni.bajo.it</a></dd>
-
-                    <dt>Twitter
-                    </dt>        
-                    <dd>@<a href="http://twitter.com/#!/giovannibajo">giovannibajo</a></dd>
-                </dl>                    
-                <div class="button mini">
-                    <a href="#">Edit profile</a>
-                </div>
-            </div>
-        
-        </section>
-        
-        
-        <section class="profile-user-bio">
-            <h2>Quick Bio</h2>
-            <div class="cms">
-                <p>Cum sociis natoque <b>penatibus</b> et magnis dis <code>parturient montes</code>, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-                </p>
-                
-                <blockquote>
-                  <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
-                </blockquote>
-                
-                <p>Lorem ipsum dolor <em>sit amet</em>, consectetur adipiscing elit. Sed posuere consectetur est at lobortis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
-                
-                <ul>
-                <li>One</li>
-                <li>Two </li>
-                <li>Three</li>
-                </ul>
-                
-                <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere consectetur est at lobortis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+                <h1>{% trans "Personal data" %}</h1>
+                {% include "assopy/profile_personal_data.html" %}
             </div>
         </section>
-          
+
     </div>
 
     <div class="span-4 last">
@@ -134,7 +69,7 @@
                 {% if request.user.speaker %}
                 <h4>{% trans "Speaker profile" %}</h4>
                 <p>
-                    <a href="{% url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
+                    <a href="{  url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
                 </p>
                 {% endif %}
                 {% endblock %}

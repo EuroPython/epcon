@@ -15,7 +15,7 @@ import models
 from assopy.forms import BillingData
 from assopy.models import Coupon, Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
-from conference.models import Fare, Event, Ticket, Schedule, Speaker
+from conference.models import Fare, Event, Ticket, Schedule, Speaker, AttendeeProfile
 from conference.views import profile_access
 from email_template import utils
 
@@ -657,3 +657,22 @@ def p3_profile(request, slug, profile=None, full_access=False):
         'full_access': full_access,
     }
     return render(request, tpl, ctx)
+
+@login_required
+def p3_account_data(request):
+    ctx = {}
+    if request.method == 'POST':
+        profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
+        form = p3forms.P3ProfilePersonalDataForm(instance=profile, data=request.POST)
+        ctx['pform'] = form
+        print 'x', form.is_valid(), form.errors
+        if form.is_valid():
+            print form.instance.pk
+            xxx = form.save()
+            print xxx.pk
+            data = form.cleaned_data
+            request.user.first_name = data['first_name']
+            request.user.last_name = data['last_name']
+            request.user.save()
+    return render(request, "assopy/profile_personal_data.html", ctx)
+

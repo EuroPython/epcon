@@ -24,5 +24,6 @@ urlpatterns = patterns('',
 
     url(r'^sim_report/$', 'p3.views.sim_report', name='p3-sim-report'),
 
-    url(r'^p/(?P<slug>[\w-]+)/', 'p3.views.p3_profile', name='p3-profile'),
+    url(r'^p/profile/(?P<slug>[\w-]+)/', 'p3.views.p3_profile', name='p3-profile'),
+    url(r'^p/account/', 'p3.views.p3_account_data', name='p3-account-data'),
 )

@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
@@ -399,3 +400,45 @@ class P3ProfilePictureForm(P3ProfileForm):
         p3p.image_url = data.get('image_url', '')
         p3p.save()
         return profile
+
+class P3ProfilePersonalDataForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    phone = forms.CharField(
+        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
+        max_length=30,
+        required=False,
+    )
+    birthday = forms.DateField(
+        label=_('Date of birth'),
+        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        input_formats=('%Y-%m-%d',),
+        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
+        required=False,
+    )
+
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('phone', 'birthday')
+
+    def clean_phone(self):
+        value = self.cleaned_data.get('phone', '')
+        try:
+            self.instance.user.speaker
+        except (AttributeError, User.DoesNotExist, cmodels.Speaker.DoesNotExist):
+            pass
+        else:
+            if not value:
+                raise forms.ValidationError('This field is required for a speaker')
+        return value
+
+    def clean_birthday(self):
+        value = self.cleaned_data.get('birthday', '')
+        try:
+            self.instance.user.speaker
+        except (AttributeError, User.DoesNotExist, cmodels.Speaker.DoesNotExist):
+            pass
+        else:
+            if not value:
+                raise forms.ValidationError('This field is required for a speaker')
+        return value
