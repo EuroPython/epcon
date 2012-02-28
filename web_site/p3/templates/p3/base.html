@@ -42,7 +42,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/rateit/src/jquery.rateit.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
     {% if current_page|check_map %}
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="{% url p3-map-js %}"></script>
     {% endif %}
     {% block EXTRA_HEAD %}{% endblock %}
@@ -287,3 +287,4 @@
     </script>
 </body>
 </html>
+
