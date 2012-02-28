@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 import models
 
-from django.conf import settings
-from email_template import utils
 from assopy.models import order_created, purchase_completed, ticket_for_user
+from conference.models import AttendeeProfile
+from django.conf import settings
+from django.db.models.signals import post_save
+from email_template import utils
 
 def on_order_created(sender, **kwargs):
     if sender.total() == 0:
@@ -36,3 +38,10 @@ def on_ticket_for_user(sender, **kwargs):
     map(kwargs['tickets'].append, tickets)
 
 ticket_for_user.connect(on_ticket_for_user)
+
+
+def on_profile_created(sender, **kw):
+    if kw['created']:
+        models.P3Profile(profile=kw['instance']).save()
+
+post_save.connect(on_profile_created, sender=AttendeeProfile)
