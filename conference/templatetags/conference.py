@@ -1422,3 +1422,17 @@ def admin_urlname_fromct(ct, action, id=None):
     else:
         args = (str(id),)
     return reverse(r, args=args)
+
+@fancy_tag(register)
+def profile_data(uid):
+    return dataaccess.profile_data(uid)
+
+@register.filter
+def strip_protocol(value):
+    try:
+        ix = value.index('://')
+    except ValueError:
+        pass
+    else:
+        value = value[ix+3:]
+    return value

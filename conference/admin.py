@@ -177,9 +177,9 @@ class SpeakerAdminForm(forms.ModelForm):
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
 
 class SpeakerAdmin(MultiLingualAdminContent):
-    prepopulated_fields = {"slug": ("name",)}
-    list_display = ('avatar', 'name', '_email', 'slug')
-    list_display_links = ('name', )
+    #prepopulated_fields = {"slug": ("name",)}
+    #list_display = ('avatar', 'name', '_email', 'slug')
+    #list_display_links = ('name', )
     form = SpeakerAdminForm
 
     def _email(self, obj):
