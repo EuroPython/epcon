@@ -284,6 +284,11 @@ class AttendeeProfileManager(models.Manager):
             transaction.commit()
         return p
 
+ATTENDEEPROFILE_VISIBILITY = (
+    ('x', 'Private'),
+    ('m', 'Members only'),
+    ('p', 'Public'),
+)
 class AttendeeProfile(models.Model):
     """
     È il profilo di un partecipante (inclusi gli speaker) alla conferenza, il
@@ -294,15 +299,13 @@ class AttendeeProfile(models.Model):
     slug = models.SlugField(unique=True)
     image = models.ImageField(upload_to=_fs_upload_to('profile'), blank=True)
     birthday = models.DateField(_('Birthday'), null=True, blank=True)
-
-    personal_homepage = models.URLField(verify_exists=False, blank=True)
-    twitter = models.CharField(max_length=80, blank=True)
     phone = models.CharField(
         _('Phone'), 
         max_length=30, blank=True,
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
 
+    personal_homepage = models.URLField(verify_exists=False, blank=True)
     company = models.CharField(max_length=50, blank=True)
     company_homepage = models.URLField(verify_exists=False, blank=True)
     job_title = models.CharField(max_length=50, blank=True)
@@ -310,7 +313,7 @@ class AttendeeProfile(models.Model):
     location = models.CharField(max_length=100, blank=True)
     bios = generic.GenericRelation(MultilingualContent)
 
-    interests = TaggableManager(through=ConferenceTaggedItem)
+    visibility = models.CharField(max_length=1, choices=ATTENDEEPROFILE_VISIBILITY, default='x')
 
     objects = AttendeeProfileManager()
 
