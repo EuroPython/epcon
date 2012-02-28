@@ -5,20 +5,18 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render_to_response, render
 from django.template import RequestContext, Template
-from django.template.loader import render_to_string
 
 import forms as p3forms
 import models
 from assopy.forms import BillingData
 from assopy.models import Coupon, Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
-from conference.models import Fare, Event, Talk, Ticket, Schedule, Speaker, TalkSpeaker
+from conference.models import Fare, Event, Ticket, Schedule, Speaker
+from conference.views import profile_access
 from email_template import utils
 
 import datetime
@@ -629,3 +627,30 @@ def sim_report(request):
     return {
         'tickets': tickets,
     }
+
+@profile_access
+def p3_profile(request, slug, profile=None, full_access=False):
+    tpl = 'conference/profile_publicdata_form.html'
+    if request.method == 'POST':
+        section = request.POST.get('section')
+        if section == 'public-data':
+            fc = p3forms.P3ProfilePublicDataForm
+            tpl = 'conference/profile_publicdata_form.html'
+        elif section == 'bio':
+            fc = p3forms.P3ProfileBioForm
+            tpl = 'conference/profile_bio_form.html'
+        elif section == 'visibility':
+            fc = p3forms.P3ProfileVisibilityForm
+            tpl = 'conference/profile_visibility_form.html'
+        else:
+            fc = p3forms.P3ProfileForm
+        form = fc(instance=profile, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+    else:
+        form = p3forms.P3ProfileForm(instance=profile)
+    ctx = {
+        'form': form,
+        'full_access': full_access,
+    }
+    return render(request, tpl, ctx)

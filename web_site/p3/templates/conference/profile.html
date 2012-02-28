@@ -1,0 +1,45 @@
+{% extends "p3/base.html" %}
+{% load conference i18n p3 assopy_tags %}
+{% block EXTRA_HEAD %}
+{% if form %}{{ form.media }}{% endif %}
+{% endblock %}
+
+{% block MAIN_CONTENT %}
+    {% p3_profile_data request.user.id as profile %}
+    <div class="span-11 append-1">
+
+        <section class="profile-user-visibility clearfix">
+            {% include "conference/profile_visibility_form.html" %}
+        </section>
+
+        <section class="profile-user-identity clearfix">
+            <div class="span-2">
+                {% if profile.image %}
+                <div class="profile-user-picture">
+<!--                         <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" /> -->
+                    <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" /></a>
+                    <div class="button mini"><a href="#">Change</a></div>
+                </div>
+                {%else%}
+                    <div class="profile-user-picture">                        
+                        <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-default.jpg" alt="{{ profile.name }}" width="98" height="98" /></a>                            
+                    </div>
+                {% endif %}                    
+            </div>
+    
+            <div class="span-9 last">  
+                <h1>{{ profile.name }} <span>&mdash; {% trans "It’s you!" %}</span></h1>                
+                {% include "conference/profile_publicdata_form.html" %}
+            </div>
+        
+        </section>
+        
+        <section class="profile-user-bio">
+            <h2>Quick Bio</h2>
+            <div class="cms">
+                {% include "conference/profile_bio_form.html" %}
+            </div>
+        </section>
+          
+    </div>
+{% endblock %}

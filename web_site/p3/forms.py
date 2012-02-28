@@ -4,23 +4,13 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 
 import conference.forms as cforms 
-from conference.models import Conference, Ticket, TALK_LANGUAGES
+import conference.models as cmodels
 
 from p3 import models
 
 import datetime
 
 class P3SubmissionForm(cforms.SubmissionForm):
-    #mobile = forms.CharField(
-    #    help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
-    #    max_length=30,
-    #    required=True,)
-    #birthday = forms.DateField(
-    #    label=_('Date of birth'),
-    #    help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
-    #    input_formats=('%Y-%m-%d',),
-    #    widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
-    #)
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
@@ -63,16 +53,6 @@ class P3SubmissionForm(cforms.SubmissionForm):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
-#    def __init__(self, user, *args, **kwargs):
-#        data = {
-#            'mobile': user.assopy_user.phone,
-#            'birthday': user.assopy_user.birthday,
-#            'activity_homepage': user.assopy_user.www,
-#        }
-#        data.update(kwargs.get('initial', {}))
-#        kwargs['initial'] = data
-#        super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
-
     def clean(self):
         data = super(P3SubmissionForm, self).clean()
         if data['type'] == 't':
@@ -84,7 +64,6 @@ class P3SubmissionForm(cforms.SubmissionForm):
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 
-        #auser = self.user.assopy_user
         speaker = self.user.speaker
         try:
             p3s = speaker.p3_speaker
@@ -95,11 +74,6 @@ class P3SubmissionForm(cforms.SubmissionForm):
 
         p3s.first_time = data['first_time']
         p3s.save()
-
-#        auser.phone = data['mobile']
-#        auser.birthday = data['birthday']
-#        auser.www = data['activity_homepage']
-#        auser.save()
 
         return talk
 
@@ -114,7 +88,7 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
     )
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
-        choices=TALK_LANGUAGES,
+        choices=cmodels.TALK_LANGUAGES,
         initial='en',)
     slides_agreement = forms.BooleanField(
         label=_('I agree to release all the talk material after the event.'),
@@ -207,7 +181,7 @@ class FormTicket(forms.ModelForm):
                 label=_('Days'), choices=tuple(), widget=forms.RadioSelect, required=False)
 
         days = []
-        conf = Conference.objects.current()
+        conf = cmodels.Conference.objects.current()
         d = conf.conference_start
         while d <= conf.conference_end:
             days.append((d.strftime('%Y-%m-%d'), d.strftime('%a, %d %b')))
@@ -222,7 +196,7 @@ class FormTicket(forms.ModelForm):
             data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
         except Exception, e:
             raise forms.ValidationError('formato data non valido')
-        conf = Conference.objects.current()
+        conf = cmodels.Conference.objects.current()
         days = []
         for x in data:
             if conf.conference_start <= x.date() <= conf.conference_end:
@@ -243,7 +217,7 @@ class FormTicket(forms.ModelForm):
 class FormTicketPartner(forms.ModelForm):
     name = forms.CharField(max_length=60, required=False, help_text='Real name of the person that will attend this specific event.')
     class Meta:
-        model = Ticket
+        model = cmodels.Ticket
         fields = ('name',)
 
 class FormTicketSIM(forms.ModelForm):
@@ -257,3 +231,68 @@ class FormSprint(forms.ModelForm):
     class Meta:
         model = models.Sprint
         exclude = ('user', 'conference',)
+
+class P3ProfileForm(cforms.ProfileForm):
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=cforms.MarkEditWidget,
+        required=False,)
+    interests = cforms.TagField(widget=cforms.TagWidget, required=False)
+    twitter = forms.CharField(max_length=80, required=False)
+    visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
+
+    def __init__(self, *args, **kw):
+        i = kw.get('instance')
+        if i:
+            try:
+                p3p = i.p3_profile
+            except models.P3Profile.DoesNotExist:
+                pass
+            else:
+                initial = kw.get('initial', {})
+                initial.update({
+                    'interests': p3p.interests.all(),
+                    'twitter': p3p.twitter,
+                })
+                kw['initial'] = initial
+        super(P3ProfileForm, self).__init__(*args, **kw)
+
+    def clean(self):
+        data = self.cleaned_data
+        data['visibility'] = data.get('visibility', 'x')
+        return data
+    
+    def save(self, commit=True):
+        assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
+        profile = super(P3ProfileForm, self).save(commit=commit)
+        try:
+            p3p = profile.p3_profile
+        except models.P3Profile.DoesNotExist:
+            p3p = models.P3Profile(profile=profile)
+        data = self.cleaned_data
+        p3p.twitter = data.get('twitter', '')
+        p3p.save()
+        p3p.interests.set(*data.get('interests', ''))
+        return profile
+
+class P3ProfilePublicDataForm(P3ProfileForm):
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
+
+class P3ProfileBioForm(P3ProfileForm):
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=cforms.MarkEditWidget,
+        required=False,)
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ()
+
+class P3ProfileVisibilityForm(P3ProfileForm):
+    visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect)
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('visibility',)

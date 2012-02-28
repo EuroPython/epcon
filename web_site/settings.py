@@ -217,6 +217,7 @@ CONFERENCE_VOTING_DISALLOWED = 'https://ep2012.europython.eu/voting-disallowed'
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
     'AdditionalPaperSubmission': 'p3.forms.P3SubmissionAdditionalForm',
+    'Profile': 'p3.forms.P3ProfileForm',
 }
 
 def CONFERENCE_VOTING_ALLOWED(user):
