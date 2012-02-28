@@ -349,7 +349,6 @@ def event_data(eid, preload=None):
     try:
         tracks = preload['tracks']
     except KeyError:
-        print 'miss', preload
         tracks = event.tracks.all().values_list('track', flat=True)
 
     sch = schedule_data(event.schedule_id)
@@ -446,3 +445,43 @@ def events(conf):
         output.append(val)
 
     return output
+
+def _i_profile_data(sender, **kw):
+    if sender is models.AttendeeProfile:
+        uids = [ kw['instance'].user_id ]
+    elif sender is models.Speaker:
+        uids = [ kw['instance'].user_id ]
+    elif sender is models.TalkSpeaker:
+        uids = [ kw['instance'].speaker_id ]
+
+    return [ 'profile:%s' % x for x in uids ]
+
+def profile_data(uid):
+    profile = models.AttendeeProfile.objects\
+        .select_related('user')\
+        .get(user=uid)
+
+    talks = models.TalkSpeaker.objects\
+        .filter(speaker__user=profile.user)\
+        .values_list('talk', flat=True)
+
+    return {
+        'id': profile.user_id,
+        'slug': profile.slug,
+        'name': '%s %s' % (profile.user.first_name, profile.user.last_name),
+        'email': profile.user.email,
+        'image': profile.image.url if profile.image else '',
+        'phone': profile.phone,
+        'personal_homepage': profile.personal_homepage,
+        'company': profile.company,
+        'company_homepage': profile.company_homepage,
+        'job_title': profile.job_title,
+        'location': profile.location,
+        'bio': getattr(profile.getBio(), 'body', ''),
+        'visibility': profile.visibility,
+        'talks': talks,
+    }
+
+profile_data = cache_me(
+    models=(models.AttendeeProfile, models.Speaker, models.TalkSpeaker),
+    key='profile:%(uid)s')(profile_data, _i_profile_data)
