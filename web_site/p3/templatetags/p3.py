@@ -20,6 +20,8 @@ from django.utils.safestring import mark_safe
 
 from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
+
+from p3 import dataaccess
 from p3 import models
 
 from fancy_tag import fancy_tag
@@ -386,3 +388,8 @@ def box_next_events(context):
         'events': events,
     })
     return ctx
+
+@fancy_tag(register)
+def p3_profile_data(uid):
+    return dataaccess.profile_data(uid)
+
