@@ -314,3 +314,27 @@ class EventForm(forms.ModelForm):
                 raise forms.ValidationError('conflicts on "%s"' % data['start_time'])
 
         return data
+
+class ProfileForm(forms.ModelForm):
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=forms.Textarea(),
+        required=False,)
+
+    class Meta:
+        model = models.AttendeeProfile
+        exclude = ('user', 'slug',)
+
+    def __init__(self, *args, **kwargs):
+        i = kwargs.get('instance')
+        if i:
+           initial = kwargs.get('initial', {})
+           initial['bio'] = getattr(i.getBio(), 'body', '')
+           kwargs['initial'] = initial
+        super(ProfileForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        profile = super(ProfileForm, self).save(commit)
+        profile.setBio(self.cleaned_data.get('bio', ''))
+        return profile

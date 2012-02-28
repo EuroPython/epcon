@@ -22,6 +22,7 @@ MIMETYPE_NAME_CONVERSION_DICT = getattr(settings, 'CONFERENCE_MIMETYPE_NAME_CONV
 FORMS = {
     'PaperSubmission': 'conference.forms.SubmissionForm',
     'AdditionalPaperSubmission': 'conference.forms.TalkForm',
+    'Profile': 'conference.forms.ProfileForm',
 }
 FORMS.update(getattr(settings, 'CONFERENCE_FORMS', {}))
 

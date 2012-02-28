@@ -783,8 +783,10 @@ def init_js(request):
         .values_list('name', flat=True)
     code = """
 conference = { tags: %(tags)s };
-$(function() {
-    var tfields = $('.tag-field');
+
+function setup_conference_fields(ctx) {
+    ctx = ctx || document;
+    var tfields = $('.tag-field', ctx);
     if(tfields.length) {
         tfields.tagit({
             tagSource: function(search, showChoices) {
@@ -813,14 +815,72 @@ $(function() {
             });
         }
     }
-    $('.markedit-widget').markedit({
-        'preview_markup': '<div class="markedit-preview cms ui-widget-content"></div>',
-        'toolbar': {
-            'layout': 'heading bold italic bulletlist | link quote code image '
-        }
-    }).blur();
+    var mfields = $('.markedit-widget', ctx);
+    if(mfields.length) {
+        mfields.markedit({
+            'preview_markup': '<div class="markedit-preview cms ui-widget-content"></div>',
+            'toolbar': {
+                'layout': 'heading bold italic bulletlist | link quote code image '
+            }
+        }).blur();
+    }
+}
+$(function() {
+    setup_conference_fields();
 });
     """ % {
         'tags': simplejson.dumps([ x.encode('utf-8') for x in tags ])
     }
     return http.HttpResponse(content=code, content_type='text/javascript')
+
+def profile_access(f):
+    """
+    decoratore che protegge la view relativa ad un profilo.
+    """
+    def wrapper(request, slug, **kwargs):
+        try:
+            profile = models.AttendeeProfile.objects\
+                .select_related('user')\
+                .get(slug=slug)
+        except models.AttendeeProfile.DoesNotExist:
+            raise http.Http404()
+
+        if request.user.is_staff or request.user == profile.user:
+            full_access = True
+        else:
+            full_access = False
+            # se il profilo appartiene ad uno speaker con dei talk "accepted" è
+            # visibile qualunque cosa dica il profilo stesso
+            accepted = models.TalkSpeaker.objects\
+                .filter(speaker__user=profile.user)\
+                .filter(talk__status='accepted')\
+                .count()
+            if not accepted:
+                if profile.visibility == 'x':
+                    return http.HttpResponseForbidden()
+                elif profile.visibility == 'm' and request.user.is_anonymous:
+                    return http.HttpResponseForbidden()
+        return f(request, slug, profile=profile, full_access=full_access, **kwargs)
+    return wrapper
+
+@render_to('conference/profile.html')
+@profile_access
+def user_profile(request, slug, profile=None, full_access=False):
+    fc = utils.dotted_import(settings.FORMS['Profile'])
+    if request.method == 'POST':
+        if not full_access:
+            return http.HttpResponseForbidden()
+        form = fc(instance=profile, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirectSeeOther(reverse('conference-profile', kwargs={'slug': profile.slug}))
+    else:
+        if full_access:
+            form = fc(instance=profile)
+        else:
+            form = None
+    return {
+        'form': form,
+        'full_access': full_access,
+        'profile': profile,
+    }
