@@ -468,10 +468,13 @@ def profile_data(uid):
     return {
         'id': profile.user_id,
         'slug': profile.slug,
+        'first_name': profile.user.first_name,
+        'last_name': profile.user.last_name,
         'name': '%s %s' % (profile.user.first_name, profile.user.last_name),
         'email': profile.user.email,
         'image': profile.image.url if profile.image else '',
         'phone': profile.phone,
+        'birthday': profile.birthday,
         'personal_homepage': profile.personal_homepage,
         'company': profile.company,
         'company_homepage': profile.company_homepage,
