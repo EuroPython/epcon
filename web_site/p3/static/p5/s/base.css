@@ -43,10 +43,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /*
 A HaRd challenge - styling an HR element
-
-"...in IE thereâ€™s two problems. For some annoying reason I canâ€™t understand, 
-it adds 7 pixels (even number, right?) to the top and bottom margin."
-
 http://www.robertnyman.com/2007/03/09/a-hard-challenge-styling-an-hr-element/
 */
 hr {
@@ -66,9 +62,9 @@ hr {
 
 
 
-/* ========= */
-/* ! links   */
-/* ========= */
+/* ======== */
+/* ! misc   */
+/* ======== */
 
 a {
 
@@ -84,15 +80,21 @@ a:visited {
 }
 
 a:hover {
-/* 	color: #4895a3; */
-/* 	border-bottom-color: #9babab; */
-
     -webkit-transition: color ease-out .2s;
 }
 
 .meta {
     font-size: 12px;
     color: #7d6f60;
+}
+
+.new {
+    background: #4895A3;
+    padding: 1px 3px;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px;    
+    border-radius: 2px;
 }
 
 .meta a {
@@ -1045,31 +1047,64 @@ section.teaser {
 }
 
 .where p,
-.europython-is p {
-    
+.europython-is p {    
     font-size: 16px;
-    line-height: 30px;
-            
-    color: #635443;    
+    line-height: 30px;            
+/*     color: #635443;     */
 }
 
+/*
 
 .europython-is a {
     font-weight: bold;
 }
+*/
 
-
-section.where h2,
-section.teaser h2 {
-
-	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;	
-    margin: 0 0 20px 0;
-    
-    letter-spacing: 1px;
-    
-/*     color: #66b0bd; */
+.quick-guide-backgound {
+    background: transparent url(../i/background-quick-guide.jpg) top left repeat-x;
+    padding: 30px 0 0 0;
+    min-height: 260px;
 }
 
+
+section.quick-guide h2,
+section.where h2,
+section.teaser h2 {
+	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;	
+    margin: 0 0 20px 0;    
+    letter-spacing: 1px;
+}
+
+
+section.quick-guide h3 {
+  min-height: 100px; 
+  background: transparent url(../i/arrow-right.png) 5px 30px no-repeat;
+  
+  font-size: 21px;
+  color: #4895A3;
+}
+
+
+section.quick-guide {
+    margin: 0 0 10px 0;
+}
+
+section.quick-guide dt {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+section.quick-guide dd {
+    margin: 0 0 10px 0;
+    font-size: 12px;    
+    line-height: 18px;
+    color: #635443;
+}
+
+
+
+
+section.quick-guide h2 span,
 section.where h2 span,
 section.teaser h2 span {
 
@@ -1095,10 +1130,8 @@ section.teaser {
 }
 
 section.teaser {
-    background: transparent url(../i/speakers.jpg)  center top repeat-x;
-    
-    min-height: 300px;
-    
+    background: transparent url(../i/speakers.jpg)  center top repeat-x;    
+    min-height: 300px;    
 }
 
 section.where p,
@@ -1122,22 +1155,7 @@ section.teaser p {
     text-transform: none;
 }
 
-
-.side-h2 h2 {
-/*     text-align: right;     */
-
-    margin: 0;
-
-    min-height: 100px; 
-    background: transparent url(../i/arrow-right.png) 40px bottom  no-repeat
-}
-
-.side-h2 h2 span {
-    color: #4895a3;
-    font-size: 21px;
-}
-
-.home hr {
+hr.stars {
 
     visibility: visible;
     background: transparent url(../i/hr.png) center center repeat-x;

@@ -26,7 +26,6 @@
 
 h2 {
     margin: 0 0 10px 0;    
-/*     color: #4895a3; */
     color: #635443;
     text-align: center;
 }
@@ -38,13 +37,12 @@ h2 {
 	border: 1px solid #aba18f;    
 }
 
-.login-method {
-    font-size: 1.1em;
+.login-method p {    
+    font-size: 16px;
+    line-height: 30px;   
+    margin-bottom: 10px;             
 }
 
-.login-method p {
-    margin-bottom: 10px;
-}
 </style>
 {% endblock %}
     
@@ -55,7 +53,7 @@ h2 {
     <div class="login-method">
         <h2>By using one of your existing web accounts</h2>
 
-        <hr />
+<!--         <hr /> -->
 
         <div class="span-5">
             <p>{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
@@ -73,10 +71,10 @@ h2 {
     <div class="login-method">
         <h2>By using email/password</h2>
 
-        <hr />
+<!--         <hr /> -->
 
         <div>
-            <p>{% trans "If you really really don't want to use an existing web account but you prefer a standard registration/login form," %}</p>
+            <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
             <div id="classic-login">
                 <div class="span-7 append-1">
                     <div class="form-box">

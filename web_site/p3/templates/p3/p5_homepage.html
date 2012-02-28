@@ -1,11 +1,13 @@
 {% extends "p3/base.html" %}
 {% load p3 microblog_tags conference %}
+{% block BODY_CLASS %} home{% endblock %}
 
 {% block TEASER %}
     <div class="container">
         <div class="intro clear">
             <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
-        </div>
+        </div>        
+    <!-- /container -->
     </div>
 {% comment %}
     <section class="teaser">
@@ -29,56 +31,138 @@
             {% else %}
                 {% box_next_events %}
             {% endif %}
+        <!-- /container -->
         </div>
     </section>
 {% endcomment %}
-{% endblock%}
 
-{% block BODY_CLASS %} home{% endblock %}
+ {% current_conference as conf %}
 
-{% block MAIN_CONTENT %}
-    {% current_conference as conf %}
-    <section>
-        <div class="span-6">
-            {% if conf.cfp %}
-            <div class="home-notice">
-                <a href="/call-for-proposals/"><img class="block" src="{{ STATIC_URL }}p5/i/notice-call-for-paper.png" alt="Call for paper is open. Submit your paper" width="315" height="130" /></a>                    
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="span-6 last">
-            {% get_deadlines limit=1 as l %}
-            {% if l %}
-            <div class="cal">
-                <h2>Next stop is&hellip;</h2>
-                <div class="deadline clearfix">
-                    <h3><span>{{ l.0.date|date:"d" }}</span> {{ l.0.date|date:"b" }}</h3>
-                    <p>{{ l.0.body|safe }}</p>
+    <div class="container clearfix"> 
+        <section>
+            <div class="span-6">
+                {% if conf.cfp %}
+                <div class="home-notice">
+                    <a href="/call-for-proposals/"><img class="block" src="{{ STATIC_URL }}p5/i/notice-call-for-paper.png" alt="Call for paper is open. Submit your paper" width="315" height="130" /></a>                    
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
+    
+            <div class="span-6 last">
+                {% get_deadlines limit=1 as l %}
+                {% if l %}
+                <div class="cal">
+                    <h2>Next stop is&hellip;</h2>
+                    <div class="deadline clearfix">
+                        <h3><span>{{ l.0.date|date:"d" }}</span> {{ l.0.date|date:"b" }}</h3>
+                        <p>{{ l.0.body|safe }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <hr class="stars" />
+    
+    <!-- /container -->
+    </div>    
+
+
+    <section class="quick-guide">
+
+        <h2><span>Europython</span> at a glance</h2>
+
+        <div class="quick-guide-backgound">
+            <div class="container clearfix">
+            
+                <div class="span-1">                            
+                    <h3>LEARN</h3>
+                </div>
+                
+                <div class="span-3 border">
+                    
+                    <dl>
+                        <dt><a href="http://">Talk</a></dt>
+                        <dd>Aenean lacinia bibendum nulla sed consectetur.</dd>
+    
+                        <dt><a href="http://">Training</a></dt>
+                        <dd>Vestibulum id ligula porta felis euismod semper.</dd>
+                        
+                        <dt><a href="http://">Poster</a></dt>
+                        <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dd>                
+                    </dl>
+                
+                </div>
+    
+                <div class="span-1">                            
+                    <h3>HACK</h3>
+                </div>
+                            
+                <div class="span-3 border">
+                    <dl>
+                    <dt><a href="http://">Sprint</a></dt>
+                    <dd>Aenean lacinia bibendum nulla sed consectetur.</dd>
+    
+    
+                    <dt><a href="http://">Competitions</a></dt>
+                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dd>
+    
+                    <dt><a href="http://">Open space</a></dt>
+                    <dd>Vestibulum id ligula porta felis euismod semper.</dd>
+    
+                    </dl>
+                </div>
+                
+    
+                <div class="span-1">                            
+                    <h3>DISCOVER</h3>
+                </div>
+                            
+                <div class="span-3 last">
+                    
+                    <dl>
+                    <dt><a href="http://">Eventi serali</a></dt>
+                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dd>
+                    
+                    
+                    <dt><a href="http://">Match &amp; Meet</a> <span class="new">New</span></dt>
+                    <dd>Aenean lacinia bibendum nulla sed consectetur.</dd>
+    
+                    <dt><a href="http://">Recruiting</a></dt>
+                     <dd>Aenean lacinia bibendum nulla sed consectetur.</dd>
+    
+                    </dl>
+                
+                </div>
+            <!-- /container -->            
+            </div>
+
+        <!--/quick-guide-backgound -->
         </div>
+
     </section>
 
-    <hr />
+{% endblock%}
 
+{% block MAIN_CONTENT %}
     {% if not conf.conference %}
     <section class="where clearfix">
-        <h2>Let’s meet in <span>Florence</span></h2>
+        <!-- <h2>Let’s meet in <span>Florence</span></h2> -->
         <div class="span-6">
             <p>EuroPython 2012 will be held in the world-famous beautiful city of Florence. Take 
             the chance to visit the city and the marvellous Tuscany, bringing your partner and family with you.
-            We're preparing a great <b>partner program</b> with guided tours and visits to museums at cheap rates! </p>
+            We’re preparing a great <b>partner program</b> with guided tours and visits to museums at cheap rates! </p>
         </div>
 
         <div class="span-6 last">
-            <iframe width="390" height="220" src="https://www.youtube.com/embed/BDiEbi0yCY8" frameborder="0" allowfullscreen></iframe>
+<!--             <div class=""> -->
+                <iframe width="390" height="220" src="https://www.youtube.com/embed/BDiEbi0yCY8" frameborder="0" allowfullscreen></iframe>
+<!--             </div> -->
         </div>
     </section>
     {% endif %}
 
-    <hr />
+    <hr class="stars" />
 
     <section class="clearfix">
         {% post_list count=3 as posts %}
