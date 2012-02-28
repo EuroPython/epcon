@@ -26,11 +26,11 @@ class P3SubmissionForm(cforms.SubmissionForm):
     )
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
-        help_text='Choose between a standard talk or a 4-hours in-depth training',
-        choices=(('s', 'Standard talk'), ('t', 'Training')),
+        help_text='Choose between a standard talk, a 4-hours in-depth training or a poster session',
+        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'),),
         initial='s',
         required=True,
-        widget=forms.RadioSelect,
+        widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
     personal_agreement = forms.BooleanField(
         label=_('I agree to let you publish my data (excluding birth date and phone number).'),
@@ -53,10 +53,31 @@ class P3SubmissionForm(cforms.SubmissionForm):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
+    language = forms.TypedChoiceField(
+        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        choices=cmodels.TALK_LANGUAGES,
+        initial='en', required=False)
+
+    def __init__(self, user, *args, **kwargs):
+        data = {
+            'mobile': user.assopy_user.phone,
+            'birthday': user.assopy_user.birthday,
+            'activity_homepage': user.assopy_user.www,
+        }
+        data.update(kwargs.get('initial', {}))
+        kwargs['initial'] = data
+        super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
+
     def clean(self):
         data = super(P3SubmissionForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
+
+        if not data.get('duration'):
+            data['duration'] = 45
+
+        if not data.get('language') or data['type'] != 's':
+            data['language'] = 'en'
 
         return data
 
@@ -86,10 +107,6 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
         initial=60,
         required=False,
     )
-    language = forms.TypedChoiceField(
-        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
-        choices=cmodels.TALK_LANGUAGES,
-        initial='en',)
     slides_agreement = forms.BooleanField(
         label=_('I agree to release all the talk material after the event.'),
         help_text=_('If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site.'),
@@ -99,11 +116,11 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
     )
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
-        help_text='Choose between a standard talk or a 4-hours in-depth training',
-        choices=(('s', 'Standard talk'), ('t', 'Training')),
+        help_text='Choose between a standard talk, a 4-hours in-depth training or a poster session',
+        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'),),
         initial='s',
         required=True,
-        widget=forms.RadioSelect,
+        widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
     abstract = forms.CharField(
         max_length=5000,
@@ -111,10 +128,21 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
+    language = forms.TypedChoiceField(
+        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        choices=cmodels.TALK_LANGUAGES,
+        initial='en', required=False)
+
     def clean(self):
         data = super(P3SubmissionAdditionalForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
+
+        if not data.get('duration'):
+            data['duration'] = 45
+
+        if not data.get('language') or data['type'] != 's':
+            data['language'] = 'en'
         return data
 
 class P3TalkForm(cforms.TalkForm):
@@ -128,8 +156,8 @@ class P3TalkForm(cforms.TalkForm):
     )
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
-        help_text='Choose between a standard talk or a 4-hours in-depth training',
-        choices=(('s', 'Standard talk'), ('t', 'Training')),
+        help_text='Choose between a standard talk, a 4-hours in-depth training or a poster session',
+        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'),),
         initial='s',
         required=True,
         widget=forms.RadioSelect,
@@ -144,6 +172,12 @@ class P3TalkForm(cforms.TalkForm):
         data = super(P3TalkForm, self).clean()
         if data['type'] == 't':
             data['duration'] = 240
+
+        if not data.get('duration'):
+            data['duration'] = 45
+
+        if not data.get('language') or data['type'] != 's':
+            data['language'] = 'en'
         return data
 
 class P3SpeakerForm(cforms.SpeakerForm):

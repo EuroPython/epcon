@@ -358,13 +358,14 @@ function setup_talkform(ctx) {
         /* se viene scelto "training" voglio impostare la duration a 4 ore e
          * renderla readonly */
         function syncPage(last_run) {
-            var talk_type = $('input[name=type]:checked', f).val();
+            var talk_type = $('input[name=type]', f).val();
             var field_duration = $('select[name=duration]', f);
             var field_language = $('select[name=language]', f);
             switch(talk_type) {
                 case 's':
                     $('option[value=240]', field_duration).remove();
                     field_duration.attr('disabled', null);
+                    field_duration.parent().show();
 
                     field_language.attr('disabled', null);
                     break;
@@ -376,6 +377,17 @@ function setup_talkform(ctx) {
                     }
                     h.attr('selected', 'selected');
                     field_duration.attr('disabled', 'disabled');
+                    field_duration.parent().show();
+
+                    var h = $('option[value=en]', field_language);
+                    h.attr('selected', 'selected');
+                    field_language.attr('disabled', 'disabled');
+                    break;
+                case 'p':
+                    var h = $('option[value=45]', field_duration);
+                    h.attr('selected', 'selected');
+                    field_duration.attr('disabled', 'disabled');
+                    field_duration.parent().hide();
 
                     var h = $('option[value=en]', field_language);
                     h.attr('selected', 'selected');
