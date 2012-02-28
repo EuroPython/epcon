@@ -138,5 +138,7 @@ class P3Profile(models.Model):
     profile = models.OneToOneField('conference.AttendeeProfile', related_name='p3_profile', primary_key=True)
     interests = TaggableManager(through=ConferenceTaggedItem)
     twitter = models.CharField(max_length=80, blank=True)
+    image_gravatar = models.BooleanField(default=False)
+    image_url = models.URLField(max_length=500, verify_exists=False, blank=False)
 
 import p3.listeners
