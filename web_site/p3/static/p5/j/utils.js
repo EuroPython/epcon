@@ -11,9 +11,22 @@
 function setup_fragment(ctx) {
     ctx = ctx || document;
     setup_talkform(ctx);
+    setup_profile_picture_form(ctx);
     setup_tooltip(ctx);
     setup_toggles(ctx);
-    setup_trigger_overlay(ctx);
+    // jQueryTools è bacato in tanti modi diversi; ad esempio l'overlay non si
+    // aggancia ad elementi scollegati dal dom
+    if(ctx === document) {
+        setup_trigger_overlay(ctx);
+    }
+    else {
+        setTimeout(function() { setup_trigger_overlay(ctx) }, 200);
+    }
+    setup_live_edit(ctx);
+    setup_async_form(ctx);
+    if(setup_conference_fields && !(ctx === document))
+        setup_conference_fields(ctx);
+    return ctx;
 }
 
 /*
@@ -176,6 +189,79 @@ function setup_toggles(ctx) {
         });
     });
 }
+function setup_live_edit(ctx) {
+    $('form.live-edit', ctx).each(function() {
+        var fields = $('.field', this);
+        var readonly = fields.prev();
+        var switches = $('.live-edit-switch', this);
+        var autosubmit = $('.autosubmit', this);
+        switches.click(function(e) {
+            e.preventDefault();
+            var visible = $(':visible', fields).length > 0;
+            if(visible) {
+                readonly.show();
+                fields.hide();
+                autosubmit.hide();
+            }
+            else {
+                readonly.hide();
+                fields.show();
+                autosubmit.show();
+            }
+            switches.show();
+            $(this).hide();
+        })
+    });
+}
+
+function setup_async_form(ctx) {
+    function _autosubmit() {
+        $(this).parents('form').submit();
+    }
+    $('form .autosubmit select', ctx).change(_autosubmit);
+    $('form .autosubmit input', ctx).change(_autosubmit);
+    $('form a.autosubmit', ctx).click(function(e) {
+        e.preventDefault();
+        _autosubmit.call(this);
+    });
+    $('form.async', ctx).ajaxForm({
+        success: function(response, status, xhr, form) {
+            var rel = form.attr('rel');
+            if(rel) {
+                if(rel == 'self') {
+                    var target = form;
+                }
+                else {
+                    var target = $(rel);
+                }
+                target.replaceWith(setup_fragment($(response)));
+            }
+            else if(form.hasClass('autorefresh')) {
+                autorefresh(form);
+            }
+        },
+        error: function() {
+            //
+        }
+    });
+};
+
+function autorefresh(o) {
+    var url = o.attr('data-refresh');
+    if(!url) {
+        var p = o.parents('[data-refresh]').eq(0);
+        if(p.length) {
+            url = p.attr('data-refresh');
+            o = p;
+        }
+    }
+    if(!url)
+        return;
+    $.get(url, function(data) {
+        o.replaceWith(setup_fragment($(data)));
+    });
+}
+
 $(document).ready(function() {
     setup_fragment();
 });
@@ -327,4 +413,16 @@ function setup_talkform(ctx) {
         field_type.change(syncPage);
         syncPage();
     });
+}
+
+function setup_profile_picture_form(ctx) {
+    var form = $('#profile-picture-form', ctx);
+    var radios = $('input[type=radio]', form);
+    radios.change(function() {
+        $('input', radios.parent().next()).attr('readonly', 'readonly');
+        $('input', $(this).parent().next())
+            .attr('readonly', null)
+            .focus();
+    });
+    $(':checked', form).change();
 }

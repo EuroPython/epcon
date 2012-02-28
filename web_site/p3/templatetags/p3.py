@@ -20,6 +20,9 @@ from django.utils.safestring import mark_safe
 
 from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
+
+from p3 import dataaccess
+from p3 import forms as p3forms
 from p3 import models
 
 from fancy_tag import fancy_tag
@@ -386,3 +389,39 @@ def box_next_events(context):
         'events': events,
     })
     return ctx
+
+@fancy_tag(register)
+def p3_profile_data(uid):
+    return dataaccess.profile_data(uid)
+
+@fancy_tag(register, takes_context=True)
+def get_form(context, name, bound="auto", bound_field=None):
+    if '.' in name:
+        from conference.utils import dotted_import
+        fc = dotted_import(name)
+    else:
+        fc = getattr(p3forms, name)
+    request = context['request']
+    if bound:
+        if bound == 'auto':
+            bound = request.method
+        if bound == 'GET':
+            data = request.GET
+        elif bound == 'POST':
+            data = request.POST
+        else:
+            from django.db.models import Model
+            if isinstance(bound, Model):
+                data = {}
+                for name in fc.base_fields:
+                    data[name] = getattr(bound, name)
+            else:
+                data = bound
+        if bound_field and bound_field not in data:
+            data = None
+    else:
+        data = None
+    form = fc(data=data)
+    if data:
+        form.is_valid()
+    return form

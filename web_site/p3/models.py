@@ -6,7 +6,8 @@ from django.conf import settings as dsettings
 from django.db import models
 from django.db.models.query import QuerySet
 
-from conference.models import Ticket
+from conference.models import Ticket, ConferenceTaggedItem
+from taggit.managers import TaggableManager
 
 class SpeakerConference(models.Model):
     speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
@@ -132,5 +133,12 @@ class Sprint(models.Model):
 class SprintPresence(models.Model):
     sprint = models.ForeignKey(Sprint)
     user = models.ForeignKey('assopy.User')
+
+class P3Profile(models.Model):
+    profile = models.OneToOneField('conference.AttendeeProfile', related_name='p3_profile', primary_key=True)
+    interests = TaggableManager(through=ConferenceTaggedItem)
+    twitter = models.CharField(max_length=80, blank=True)
+    image_gravatar = models.BooleanField(default=False)
+    image_url = models.URLField(max_length=500, verify_exists=False, blank=False)
 
 import p3.listeners

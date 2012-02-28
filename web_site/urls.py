@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf.urls.defaults import *
+from django.conf import settings
 
 from django.contrib import admin
 admin.autodiscover()
@@ -18,9 +19,6 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^blog/', include('microblog.urls')),
     (r'^comments/', include('django.contrib.comments.urls')),
-    url(r'^conference/paper-submission/$', 'conference.views.paper_submission',
-        {'submission_form': pforms.P3SubmissionForm, 'submission_additional_form': pforms.P3SubmissionAdditionalForm, },
-        name='conference-paper-submission'),
     url(r'^conference/talks/(?P<slug>[\w-]+)$', 'conference.views.talk',
         {'talk_form': pforms.P3TalkForm},
         name='conference-talk'),
@@ -33,6 +31,13 @@ urlpatterns = patterns('',
     (r'^p3/', include('p3.urls')),
 #    (r'^search/', include('haystack.urls')),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+   )
 
 from pages import views as pviews
 # Questa view reimplementa il vecchio supporto di pages per le richieste ajax.
@@ -47,3 +52,4 @@ class DetailsWithAjaxSupport(pviews.Details):
         return tpl
 pviews.details = DetailsWithAjaxSupport()
 urlpatterns += patterns('', (r'', include('pages.urls')))
+

@@ -1,0 +1,34 @@
+{% load p3 assopy_tags %}
+{% p3_profile_data request.user.id as profile %}
+{% if not pform %}
+    {% get_form "P3ProfilePersonalDataForm" bound=profile as pform %}
+{% endif %}
+<div>
+    <form action="{% url p3-account-data %}" class="async live-edit" method="POST" rel="self">
+        <dl>
+            <dt>Name</dt>  
+            <dd>
+                <span>{{ profile.name }}</span>
+                {{ pform.first_name|field }}
+                {{ pform.last_name|field }}
+            </dd>
+
+            <dt>Phone</dt>
+            <dd>
+                <span>{{ profile.phone }}</span>
+                {{ pform.phone|field:"tpl:no_label" }}
+            </dd>
+            {% if profile.talks %}
+            <dt>Birthday</dt>
+            <dd>
+                <span>{{ profile.birthday }}</span>
+                {{ pform.birthday|field:"tpl:no_label" }}
+            </dd>
+            {% endif %}
+        </dl>                    
+        <div class="button mini">
+            <a href="#" class="live-edit-switch">Change</a>
+            <a href="#" class="autosubmit">Save</a>
+        </div>
+    </form>
+</div>

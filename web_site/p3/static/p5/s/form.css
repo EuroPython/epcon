@@ -221,3 +221,7 @@ form hr {
 .tickets input.selected {
     background-color: #E1DBC5;
 }
+
+form.live-edit .field, form.live-edit .autosubmit {
+    display: none;
+}

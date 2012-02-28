@@ -160,3 +160,18 @@ def conference_ticket_badge(tickets):
             'staff': t.ticket_type == 'staff',
         })
     return groups.values()
+
+def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
+    import urllib, hashlib
+
+    if protocol == 'https':
+        host = 'https://secure.gravatar.com'
+    else:
+        host = 'http://www.gravatar.com'
+    gravatar_url = host + "/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    gravatar_url += urllib.urlencode({
+        'default': default,
+        'size': size,
+        'rating': rating,
+    })
+    return gravatar_url

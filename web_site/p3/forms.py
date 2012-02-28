@@ -1,26 +1,17 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
 import conference.forms as cforms 
-from conference.models import Conference, Ticket, TALK_LANGUAGES
+import conference.models as cmodels
 
 from p3 import models
 
 import datetime
 
 class P3SubmissionForm(cforms.SubmissionForm):
-    mobile = forms.CharField(
-        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
-        max_length=30,
-        required=True,)
-    birthday = forms.DateField(
-        label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
-        input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
-    )
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
@@ -65,7 +56,7 @@ class P3SubmissionForm(cforms.SubmissionForm):
 
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
-        choices=TALK_LANGUAGES,
+        choices=cmodels.TALK_LANGUAGES,
         initial='en', required=False)
 
     def __init__(self, user, *args, **kwargs):
@@ -95,7 +86,6 @@ class P3SubmissionForm(cforms.SubmissionForm):
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 
-        auser = self.user.assopy_user
         speaker = self.user.speaker
         try:
             p3s = speaker.p3_speaker
@@ -106,11 +96,6 @@ class P3SubmissionForm(cforms.SubmissionForm):
 
         p3s.first_time = data['first_time']
         p3s.save()
-
-        auser.phone = data['mobile']
-        auser.birthday = data['birthday']
-        auser.www = data['activity_homepage']
-        auser.save()
 
         return talk
 
@@ -146,7 +131,7 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
 
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
-        choices=TALK_LANGUAGES,
+        choices=cmodels.TALK_LANGUAGES,
         initial='en', required=False)
 
     def clean(self):
@@ -231,7 +216,7 @@ class FormTicket(forms.ModelForm):
                 label=_('Days'), choices=tuple(), widget=forms.RadioSelect, required=False)
 
         days = []
-        conf = Conference.objects.current()
+        conf = cmodels.Conference.objects.current()
         d = conf.conference_start
         while d <= conf.conference_end:
             days.append((d.strftime('%Y-%m-%d'), d.strftime('%a, %d %b')))
@@ -246,7 +231,7 @@ class FormTicket(forms.ModelForm):
             data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
         except Exception, e:
             raise forms.ValidationError('formato data non valido')
-        conf = Conference.objects.current()
+        conf = cmodels.Conference.objects.current()
         days = []
         for x in data:
             if conf.conference_start <= x.date() <= conf.conference_end:
@@ -267,7 +252,7 @@ class FormTicket(forms.ModelForm):
 class FormTicketPartner(forms.ModelForm):
     name = forms.CharField(max_length=60, required=False, help_text='Real name of the person that will attend this specific event.')
     class Meta:
-        model = Ticket
+        model = cmodels.Ticket
         fields = ('name',)
 
 class FormTicketSIM(forms.ModelForm):
@@ -281,3 +266,179 @@ class FormSprint(forms.ModelForm):
     class Meta:
         model = models.Sprint
         exclude = ('user', 'conference',)
+
+class P3ProfileForm(cforms.ProfileForm):
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=cforms.MarkEditWidget,
+        required=False,)
+    interests = cforms.TagField(widget=cforms.TagWidget, required=False)
+    twitter = forms.CharField(max_length=80, required=False)
+    visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
+
+    image_gravatar= forms.BooleanField(required=False, widget=forms.HiddenInput)
+    image_url = forms.URLField(required=False)
+    image = forms.FileField(required=False, widget=forms.FileInput)
+
+    def __init__(self, *args, **kw):
+        i = kw.get('instance')
+        if i:
+            try:
+                p3p = i.p3_profile
+            except models.P3Profile.DoesNotExist:
+                pass
+            else:
+                initial = kw.get('initial', {})
+                initial.update({
+                    'interests': p3p.interests.all(),
+                    'twitter': p3p.twitter,
+                    'image_gravatar': p3p.image_gravatar,
+                    'image_url': p3p.image_url,
+                })
+                kw['initial'] = initial
+        super(P3ProfileForm, self).__init__(*args, **kw)
+
+    def clean(self):
+        data = self.cleaned_data
+        data['visibility'] = data.get('visibility', 'x')
+        return data
+    
+    def save(self, commit=True):
+        assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
+        profile = super(P3ProfileForm, self).save(commit=commit)
+        try:
+            p3p = profile.p3_profile
+        except models.P3Profile.DoesNotExist:
+            p3p = models.P3Profile(profile=profile)
+            p3p.save()
+        return profile
+
+
+class P3ProfilePublicDataForm(P3ProfileForm):
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
+
+    def clean_bio(self):
+        return getattr(self.instance.getBio(), 'body', '')
+
+    def save(self, commit=True):
+        profile = super(P3ProfilePublicDataForm, self).save(commit)
+        p3p = profile.p3_profile
+        data = self.cleaned_data
+        p3p.twitter = data.get('twitter', '')
+        p3p.interests.set(*data.get('interests', ''))
+        return profile
+
+class P3ProfileBioForm(P3ProfileForm):
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        widget=cforms.MarkEditWidget,
+        required=False,)
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ()
+    def save(self, commit=True):
+        profile = super(P3ProfileBioForm, self).save(commit)
+        data = self.cleaned_data
+        profile.setBio(data.get('bio', ''))
+        return profile
+
+class P3ProfileVisibilityForm(P3ProfileForm):
+    visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect)
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('visibility',)
+
+    def clean_bio(self):
+        return getattr(self.instance.getBio(), 'body', '')
+
+class P3ProfilePictureForm(P3ProfileForm):
+    opt = forms.ChoiceField(choices=(
+            ('x', 'no picture'),
+            ('g', 'use gravatar'),
+            ('u', 'use url'),
+            ('f', 'upload file'),
+        ), required=False)
+    image_gravatar= forms.BooleanField(required=False, widget=forms.HiddenInput)
+    image_url = forms.URLField(required=False)
+    image = forms.FileField(required=False, widget=forms.FileInput)
+
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('image',)
+
+    def clean_bio(self):
+        return getattr(self.instance.getBio(), 'body', '')
+
+    def clean(self):
+        data = self.cleaned_data
+        opt = data.get('opt', 'x')
+        if opt == 'x':
+            data['image'] = False
+            data['image_gravatar'] = False
+            data['image_url'] = ''
+        elif opt == 'g':
+            data['image'] = False
+            data['image_gravatar'] = True
+            data['image_url'] = ''
+        elif opt == 'u':
+            data['image'] = False
+            data['image_gravatar'] = False
+        elif opt == 'f':
+            data['image_gravatar'] = False
+            data['image_url'] = ''
+        return data
+
+    def save(self, commit=True):
+        profile = super(P3ProfilePictureForm, self).save(commit)
+        p3p = profile.p3_profile
+        data = self.cleaned_data
+        p3p.image_gravatar = data.get('image_gravatar', False)
+        p3p.image_url = data.get('image_url', '')
+        p3p.save()
+        return profile
+
+class P3ProfilePersonalDataForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    phone = forms.CharField(
+        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
+        max_length=30,
+        required=False,
+    )
+    birthday = forms.DateField(
+        label=_('Date of birth'),
+        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        input_formats=('%Y-%m-%d',),
+        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
+        required=False,
+    )
+
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('phone', 'birthday')
+
+    def clean_phone(self):
+        value = self.cleaned_data.get('phone', '')
+        try:
+            self.instance.user.speaker
+        except (AttributeError, User.DoesNotExist, cmodels.Speaker.DoesNotExist):
+            pass
+        else:
+            if not value:
+                raise forms.ValidationError('This field is required for a speaker')
+        return value
+
+    def clean_birthday(self):
+        value = self.cleaned_data.get('birthday', '')
+        try:
+            self.instance.user.speaker
+        except (AttributeError, User.DoesNotExist, cmodels.Speaker.DoesNotExist):
+            pass
+        else:
+            if not value:
+                raise forms.ValidationError('This field is required for a speaker')
+        return value

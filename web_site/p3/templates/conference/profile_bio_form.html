@@ -1,0 +1,21 @@
+{% load conference i18n p3 assopy_tags %}
+{% p3_profile_data request.user.id as profile %}
+<div>
+    <form action="{% url p3-profile slug=profile.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="self">{% csrf_token %}
+        <input type="hidden" name="section" value="bio" />
+        <div>
+            {% if profile.bio %}
+            {{ profile.bio|markdown2 }}
+            {% else %}
+            <p>Why not writing something about you?</p>
+            {% endif %}
+        </div>
+        {{ form.bio|field:"tpl:no_label" }}
+        {% if full_access %}
+        <div class="button mini">
+            <a href="#" class="live-edit-switch">Edit bio</a>
+            <a href="#" class="autosubmit">Save</a>
+        </div>
+        {% endif %}
+    </form>
+</div>

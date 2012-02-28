@@ -1,0 +1,80 @@
+{% load conference i18n p3 assopy_tags %}
+{% p3_profile_data request.user.id as profile %}
+<div>
+    <form action="{% url p3-profile slug=profile.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
+        <input type="hidden" name="section" value="public-data" />
+        <dl>
+            <dt>Website</dt>  
+            <dd>
+                {% if profile.personal_homepage %}
+                <a href="{{ profile.personal_homepage }}">{{ profile.personal_homepage|strip_protocol }}</a>
+                {% else %}
+                <span>-- NOT SET --</span>
+                {% endif %}
+                {{ form.personal_homepage|field:"tpl:no_label" }}
+            </dd>
+            <dt>Twitter</dt>        
+            <dd>
+                {% if profile.twitter %}
+                <span>@<a href="http://twitter.com/#!/{{ profile.twitter }}">{{ profile.twitter }}</a></span>
+                {% else %}
+                <span>-- NOT SET --</span>
+                {% endif %}
+                {{ form.twitter|field:"tpl:no_label" }}
+            </dd>
+            <dt>Interests</dt>        
+            <dd>
+                {% if profile.interests %}
+                {% for p in profile.interests %}
+                    {{ p }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+                {% else %}
+                <span>-- NONE --</span>
+                {% endif %}
+                {{ form.interests|field:"tpl:no_label" }}
+            </dd>
+            <dt>Location</dt>        
+            <dd>
+                {% if profile.location %}
+                <span>{{ profile.location }}</span>
+                {% else %}
+                <span>-- NOT SET --</span>
+                {% endif %}
+                {{ form.location|field:"tpl:no_label" }}
+            </dd>
+            <dt>Company</dt>        
+            <dd>
+                {% if profile.company %}
+                <span>{{ profile.company }}</span>
+                {% else %}
+                <span>-- NOT SET --</span>
+                {% endif %}
+                {{ form.company|field:"tpl:no_label" }}
+            </dd>
+            <dt>Company Website</dt>
+            <dd>
+                {% if profile.company_homepage %}
+                <span>{{ profile.company_homepage }}</span>
+                {% else %}
+                <span>-- NOT SET --</span>
+                {% endif %}
+                {{ form.company_homepage|field:"tpl:no_label" }}
+            </dd>
+            <dt>Job title</dt>
+            <dd>
+                {% if profile.job_title %}
+                <span>{{ profile.job_title }}</span>
+                {% else %}
+                <span>-- NOT SET --</span>
+                {% endif %}
+                {{ form.job_title|field:"tpl:no_label" }}
+            </dd>
+        </dl>
+        {% if full_access %}
+        <div class="button mini">
+            <a href="#" class="live-edit-switch">Edit profile</a>
+            <a href="#" class="autosubmit">Save</a>
+        </div>
+        {% endif %}
+    </form>
+</div>

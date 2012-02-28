@@ -1,0 +1,46 @@
+{% load conference i18n p3 assopy_tags %}
+{% p3_profile_data request.user.id as profile %}
+<div>
+    <form action="{% url p3-profile slug=profile.slug %}" class="async" method="post" enctype="multipart/form-data" enctype="multipart/form-data" rel="self">{% csrf_token %}
+        <input type="hidden" name="section" value="picture" />
+
+        <div class="profile-user-picture">
+            {% if profile.image %}
+            <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
+            {% else %}
+            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" /></a>                            
+            {% endif %}
+            {% if full_access %}
+            <div class="button mini"><a href="#" class="trigger-overlay" rel="#profile-picture-form">Change</a></div>
+            {% endif %}
+        </div>
+        {% if full_access %}
+        <div class="overlay" id="profile-picture-form">
+            <div>
+                <ul>
+                    <li>
+                        <label><input type="radio" name="opt" value="x"{% if not profile.image %} checked="checked"{% endif %}>No picture please</label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="opt" value="g"{% if profile.image_gravatar %} checked="checked"{% endif %}>Use my gravatar</label>
+                        {{ form.image_gravatar|field:"tpl:no_label" }}
+                    </li>
+                    <li>
+                        <label><input type="radio" name="opt" value="u"{% if profile.image_url %} checked="checked"{% endif %}>Use this url:</label>
+                        {{ form.image_url|field:"tpl:no_label" }}
+                    </li>
+                    <li>
+                        <label><input type="radio" name="opt" value="f"{% if profile.image and not profile.image_url and not profile.image_gravatar %} checked="checked"{% endif %}>Use my picture:</label>
+                        {{ form.image|field:"tpl:no_label" }}
+                    </li>
+                </ul>
+            </div>
+            <div class="button mini">
+                <a href="#" class="autosubmit">Save</a>
+            </div>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+
