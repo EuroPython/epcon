@@ -276,6 +276,10 @@ class P3ProfileForm(cforms.ProfileForm):
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
 
+    image_gravatar= forms.BooleanField(required=False, widget=forms.HiddenInput)
+    image_url = forms.URLField(required=False)
+    image = forms.FileField(required=False, widget=forms.FileInput)
+
     def __init__(self, *args, **kw):
         i = kw.get('instance')
         if i:
@@ -288,6 +292,8 @@ class P3ProfileForm(cforms.ProfileForm):
                 initial.update({
                     'interests': p3p.interests.all(),
                     'twitter': p3p.twitter,
+                    'image_gravatar': p3p.image_gravatar,
+                    'image_url': p3p.image_url,
                 })
                 kw['initial'] = initial
         super(P3ProfileForm, self).__init__(*args, **kw)
@@ -304,16 +310,25 @@ class P3ProfileForm(cforms.ProfileForm):
             p3p = profile.p3_profile
         except models.P3Profile.DoesNotExist:
             p3p = models.P3Profile(profile=profile)
-        data = self.cleaned_data
-        p3p.twitter = data.get('twitter', '')
-        p3p.save()
-        p3p.interests.set(*data.get('interests', ''))
+            p3p.save()
         return profile
+
 
 class P3ProfilePublicDataForm(P3ProfileForm):
     class Meta:
         model = cmodels.AttendeeProfile
         fields = ('personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
+
+    def clean_bio(self):
+        return getattr(self.instance.getBio(), 'body', '')
+
+    def save(self, commit=True):
+        profile = super(P3ProfilePublicDataForm, self).save(commit)
+        p3p = profile.p3_profile
+        data = self.cleaned_data
+        p3p.twitter = data.get('twitter', '')
+        p3p.interests.set(*data.get('interests', ''))
+        return profile
 
 class P3ProfileBioForm(P3ProfileForm):
     bio = forms.CharField(
@@ -324,9 +339,63 @@ class P3ProfileBioForm(P3ProfileForm):
     class Meta:
         model = cmodels.AttendeeProfile
         fields = ()
+    def save(self, commit=True):
+        profile = super(P3ProfileBioForm, self).save(commit)
+        data = self.cleaned_data
+        profile.setBio(data.get('bio', ''))
+        return profile
 
 class P3ProfileVisibilityForm(P3ProfileForm):
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect)
     class Meta:
         model = cmodels.AttendeeProfile
         fields = ('visibility',)
+
+    def clean_bio(self):
+        return getattr(self.instance.getBio(), 'body', '')
+
+class P3ProfilePictureForm(P3ProfileForm):
+    opt = forms.ChoiceField(choices=(
+            ('x', 'no picture'),
+            ('g', 'use gravatar'),
+            ('u', 'use url'),
+            ('f', 'upload file'),
+        ), required=False)
+    image_gravatar= forms.BooleanField(required=False, widget=forms.HiddenInput)
+    image_url = forms.URLField(required=False)
+    image = forms.FileField(required=False, widget=forms.FileInput)
+
+    class Meta:
+        model = cmodels.AttendeeProfile
+        fields = ('image',)
+
+    def clean_bio(self):
+        return getattr(self.instance.getBio(), 'body', '')
+
+    def clean(self):
+        data = self.cleaned_data
+        opt = data.get('opt', 'x')
+        if opt == 'x':
+            data['image'] = False
+            data['image_gravatar'] = False
+            data['image_url'] = ''
+        elif opt == 'g':
+            data['image'] = False
+            data['image_gravatar'] = True
+            data['image_url'] = ''
+        elif opt == 'u':
+            data['image'] = False
+            data['image_gravatar'] = False
+        elif opt == 'f':
+            data['image_gravatar'] = False
+            data['image_url'] = ''
+        return data
+
+    def save(self, commit=True):
+        profile = super(P3ProfilePictureForm, self).save(commit)
+        p3p = profile.p3_profile
+        data = self.cleaned_data
+        p3p.image_gravatar = data.get('image_gravatar', False)
+        p3p.image_url = data.get('image_url', '')
+        p3p.save()
+        return profile

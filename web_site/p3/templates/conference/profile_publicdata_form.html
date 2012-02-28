@@ -1,7 +1,7 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data request.user.id as profile %}
 <div>
-    <form action="{% url p3-profile slug=profile.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="self">{% csrf_token %}
+    <form action="{% url p3-profile slug=profile.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
         <input type="hidden" name="section" value="public-data" />
         <dl>
             <dt>Website</dt>  

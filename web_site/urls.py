@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf.urls.defaults import *
+from django.conf import settings
 
 from django.contrib import admin
 admin.autodiscover()
@@ -31,6 +32,13 @@ urlpatterns = patterns('',
 #    (r'^search/', include('haystack.urls')),
 )
 
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+   )
+
 from pages import views as pviews
 # Questa view reimplementa il vecchio supporto di pages per le richieste ajax.
 # Se una richiesta è ajax viene utilizzato un template ad hoc
@@ -44,3 +52,4 @@ class DetailsWithAjaxSupport(pviews.Details):
         return tpl
 pviews.details = DetailsWithAjaxSupport()
 urlpatterns += patterns('', (r'', include('pages.urls')))
+

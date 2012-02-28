@@ -11,9 +11,17 @@
 function setup_fragment(ctx) {
     ctx = ctx || document;
     setup_talkform(ctx);
+    setup_profile_picture_form(ctx);
     setup_tooltip(ctx);
     setup_toggles(ctx);
-    setup_trigger_overlay(ctx);
+    // jQueryTools è bacato in tanti modi diversi; ad esempio l'overlay non si
+    // aggancia ad elementi scollegati dal dom
+    if(ctx === document) {
+        setup_trigger_overlay(ctx);
+    }
+    else {
+        setTimeout(function() { setup_trigger_overlay(ctx) }, 200);
+    }
     setup_live_edit(ctx);
     setup_async_form(ctx);
     if(setup_conference_fields && !(ctx === document))
@@ -405,4 +413,16 @@ function setup_talkform(ctx) {
         field_type.change(syncPage);
         syncPage();
     });
+}
+
+function setup_profile_picture_form(ctx) {
+    var form = $('#profile-picture-form', ctx);
+    var radios = $('input[type=radio]', form);
+    radios.change(function() {
+        $('input', radios.parent().next()).attr('readonly', 'readonly');
+        $('input', $(this).parent().next())
+            .attr('readonly', null)
+            .focus();
+    });
+    $(':checked', form).change();
 }

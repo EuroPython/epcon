@@ -642,6 +642,9 @@ def p3_profile(request, slug, profile=None, full_access=False):
         elif section == 'visibility':
             fc = p3forms.P3ProfileVisibilityForm
             tpl = 'conference/profile_visibility_form.html'
+        elif section == 'picture':
+            fc = p3forms.P3ProfilePictureForm
+            tpl = 'conference/profile_picture_form.html'
         else:
             fc = p3forms.P3ProfileForm
         form = fc(instance=profile, data=request.POST, files=request.FILES)
