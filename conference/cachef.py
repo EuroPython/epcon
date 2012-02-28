@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.core.cache import cache
 from django.db.models.signals import post_delete, post_save
+from django.dispatch import Signal
 import functools
 import hashlib
 
@@ -101,6 +102,8 @@ except ImportError:
 
 WEEK = 7 * 24 * 60 * 60
 
+cache_invalidated = Signal(providing_args=['keys'])
+
 class CacheFunction(object):
     CACHE_MISS = object()
 
@@ -130,25 +133,6 @@ class CacheFunction(object):
         if timeout is None:
             timeout = self.timeout
 
-        if invalidate:
-            def iwrapper(sender, **kwargs):
-                if callable(invalidate):
-                    keys = invalidate(sender, **kwargs)
-                else:
-                    keys = invalidate
-                if keys:
-                    if isinstance(keys, basestring):
-                        keys = (keys,)
-                    keys = [ self.prefix + k for k in keys ]
-                    cache.delete_many(map(self.fhash, keys))
-
-            for s in signals:
-                s.connect(iwrapper, weak=False)
-
-            for m in models:
-                post_save.connect(iwrapper, sender=m, weak=False)
-                post_delete.connect(iwrapper, sender=m, weak=False)
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             k = self.fhash(self.fkey(key, func, args, kwargs))
@@ -157,6 +141,29 @@ class CacheFunction(object):
                 data = func(*args, **kwargs)
                 cache.set(k, data, timeout)
             return data
+
+        if invalidate:
+            def iwrapper(sender, **kwargs):
+                try:
+                    keys = kwargs['cache_keys']
+                except KeyError:
+                    if callable(invalidate):
+                        keys = invalidate(sender, **kwargs)
+                    else:
+                        keys = invalidate
+                if keys:
+                    if isinstance(keys, basestring):
+                        keys = (keys,)
+                    prefixed = [ self.prefix + k for k in keys ]
+                    cache.delete_many(map(self.fhash, prefixed))
+                    wrapper.invalidated.send(wrapper, cache_keys=keys)
+
+            for s in signals:
+                s.connect(iwrapper, weak=False)
+
+            for m in models:
+                post_save.connect(iwrapper, sender=m, weak=False)
+                post_delete.connect(iwrapper, sender=m, weak=False)
 
         def get_from_cache(fargs):
             cache_keys = {}
@@ -185,6 +192,7 @@ class CacheFunction(object):
                     pass
             return output
         wrapper.get_from_cache = get_from_cache
+        wrapper.invalidated = Signal(providing_args=['cache_keys'])
         return wrapper
 
     def hash_key(self, key):
