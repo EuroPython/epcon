@@ -14,17 +14,7 @@
 
         <section class="profile-user-identity clearfix">
             <div class="span-2">
-                {% if profile.image %}
-                <div class="profile-user-picture">
-<!--                         <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" /> -->
-                    <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" /></a>
-                    <div class="button mini"><a href="#">Change</a></div>
-                </div>
-                {%else%}
-                    <div class="profile-user-picture">                        
-                        <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-default.jpg" alt="{{ profile.name }}" width="98" height="98" /></a>                            
-                    </div>
-                {% endif %}                    
+                {% include "conference/profile_picture_form.html" %}
             </div>
     
             <div class="span-9 last">  
