@@ -52,7 +52,7 @@
                 {% get_deadlines limit=1 as l %}
                 {% if l %}
                 <div class="cal">
-                    <h2 style="text-align: center">Next stop is&hellip;</h2>
+                    <h2>Next stop is&hellip;</h2>
                     <div class="deadline clearfix">
                         <h3><span>{{ l.0.date|date:"d" }}</span> {{ l.0.date|date:"b" }}</h3>
                         <p>{{ l.0.body|safe }}</p>
