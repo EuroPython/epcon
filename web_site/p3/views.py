@@ -665,11 +665,8 @@ def p3_account_data(request):
         profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
         form = p3forms.P3ProfilePersonalDataForm(instance=profile, data=request.POST)
         ctx['pform'] = form
-        print 'x', form.is_valid(), form.errors
         if form.is_valid():
-            print form.instance.pk
-            xxx = form.save()
-            print xxx.pk
+            form.save()
             data = form.cleaned_data
             request.user.first_name = data['first_name']
             request.user.last_name = data['last_name']
