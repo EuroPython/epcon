@@ -1410,6 +1410,10 @@ def tagged_items(context, tag):
 def talk_data(tid):
     return dataaccess.talk_data(tid)
 
+@fancy_tag(register)
+def talks_data(tids):
+    return dataaccess.talks_data(tids)
+
 @register.filter
 def content_type(id):
     return ContentType.objects.get(id=id)
