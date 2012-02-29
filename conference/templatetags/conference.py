@@ -1432,14 +1432,20 @@ def profile_data(uid):
     return dataaccess.profile_data(uid)
 
 @register.filter
-def strip_protocol(value):
+def beautify_url(url):
+    """
+    Elimina il protocollo dalla url e nel caso sia solo un hostname anche lo /
+    finale
+    """
     try:
-        ix = value.index('://')
+        ix = url.index('://')
     except ValueError:
         pass
     else:
-        value = value[ix+3:]
-    return value
+        url = url[ix+3:]
+    if url.endswith('/') and url.index('/') == len(url)-1:
+        url = url[:-1]
+    return url
 
 @register.filter
 def ordered_talks(talks, criteria="conference"):
