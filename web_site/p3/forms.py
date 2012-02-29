@@ -303,6 +303,12 @@ class P3ProfileForm(cforms.ProfileForm):
         data = self.cleaned_data
         data['visibility'] = data.get('visibility', 'x')
         return data
+
+    def clean_twitter(self):
+        data = self.cleaned_data.get('twitter', '')
+        if data.startswith('@'):
+            data = data[1:]
+        return data
     
     def save(self, commit=True):
         assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
