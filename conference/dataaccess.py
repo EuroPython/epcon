@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
@@ -196,10 +197,10 @@ def talk_data(tid, preload=None):
     except KeyError:
         speakers_data = models.TalkSpeaker.objects\
             .filter(talk=tid)\
-            .values('speaker', 'helper', 'speaker__user',)
+            .values('speaker', 'helper')
     speakers = []
     for r in speakers_data:
-        profile = profile_data(r['speaker__user'])
+        profile = profile_data(r['speaker'])
         speakers.append({
             'id': r['speaker'],
             'name': profile['name'],
@@ -283,9 +284,7 @@ def speaker_data(sid, preload=None):
     try:
         speaker = preload['speaker']
     except KeyError:
-        speaker = models.Speaker.objects\
-            .select_related('user')\
-            .get(id=sid)
+        speaker = models.Speaker.objects.get(user=sid)
 
     try:
         talks_data = preload['talks_data']
@@ -302,23 +301,28 @@ def speaker_data(sid, preload=None):
             'slug': t['talk__slug'],
         })
 
-    return {
-        'speaker': speaker,
+    output = _dump_fields(speaker)
+    output.update({
         'talks': talks,
-    }
+    })
+    return output
 
 def _i_speaker_data(sender, **kw):
     if sender is models.Speaker:
         sids = [ kw['instance'].pk ]
     elif sender is models.Talk:
         sids = kw['instance'].speakers.all().values_list('user_id', flat=True)
-    else:
+    elif sender is models.AttendeeProfile:
+        sids = [ kw['instance'].user_id ]
+    elif sender is models.TalkSpeaker:
         sids = [ kw['instance'].speaker_id ]
+    elif sender is User:
+        sids = [ kw['instance'].id ]
 
     return [ 'speaker_data:%s' % x for x in sids ]
         
 speaker_data = cache_me(
-    models=(models.Speaker, models.Talk, models.TalkSpeaker),
+    models=(models.Speaker, models.Talk, models.TalkSpeaker, models.AttendeeProfile, User),
     key='speaker_data:%(sid)s')(speaker_data, _i_speaker_data)
 
 def speakers_data(sids):
@@ -327,14 +331,13 @@ def speakers_data(sids):
 
     preload = {}
     speakers = models.Speaker.objects\
-        .filter(id__in=missing)\
-        .select_related('user')
+        .filter(user__in=missing)
     talks = models.TalkSpeaker.objects\
-        .filter(speaker__in=speakers.values('id'))\
+        .filter(speaker__in=speakers.values('user'))\
         .values('speaker', 'talk__id', 'talk__title', 'talk__slug')
 
     for s in speakers:
-        preload[s.id] = {
+        preload[s.user_id] = {
             'speaker': s,
             'talks_data': [],
         }
