@@ -5,31 +5,47 @@
 {% endblock %}
 
 {% block MAIN_CONTENT %}
-    {% p3_profile_data request.user.id as profile %}
+    {% p3_profile_data profile.user_id as profile_data %}
     <div class="span-11 append-1">
 
+        {% if full_access %}
         <section class="profile-user-visibility clearfix">
             {% include "conference/profile_visibility_form.html" %}
         </section>
-
+        {% endif %}
         <section class="profile-user-identity clearfix">
             <div class="span-2">
                 {% include "conference/profile_picture_form.html" %}
             </div>
-    
+
             <div class="span-9 last">  
-                <h1>{{ profile.name }} <span>&mdash; {% trans "It’s you!" %}</span></h1>                
+                <h1>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h1>
                 {% include "conference/profile_publicdata_form.html" %}
             </div>
-        
+
         </section>
-        
+
         <section class="profile-user-bio">
             <h2>Quick Bio</h2>
             <div class="cms">
                 {% include "conference/profile_bio_form.html" %}
             </div>
         </section>
-          
+
+        {% with profile_data.talks|visible_talks:full_access as talks %}
+        {% if talks %}
+        <section>
+            <h2>Talks</h2>
+            <dl>
+            {% for conf, talks_list in talks|ordered_talks %}
+                <dt>{{ conf }}</dt>
+                {% for t in talks_list %}
+                <dd>{{ t.title }}</dd>
+                {% endfor %}
+            {% endfor %}
+            </dl>
+        </section>
+        {% endif %}
+        {% endwith %}
     </div>
 {% endblock %}
