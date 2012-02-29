@@ -1440,3 +1440,29 @@ def strip_protocol(value):
     else:
         value = value[ix+3:]
     return value
+
+@register.filter
+def ordered_talks(talks, criteria="conference"):
+    """
+    raggruppa i talk per conferenza
+    """
+    if not talks:
+        return []
+    if isinstance(talks[0], int):
+        talks = dataaccess.talks_data(talks)
+    grouped = defaultdict(list)
+    for t in talks:
+        grouped[t['conference']].append(t)
+    return sorted(grouped.items())
+
+@register.filter
+def visible_talks(talks, all=True):
+    """
+    Filtra l'elenco di talk, se all è falso vengono mostrati solo i talk
+    accepted
+    """
+    if not talks or all:
+        return talks
+    if isinstance(talks[0], int):
+        talks = dataaccess.talks_data(talks)
+    return filter(lambda x: x['status'] == 'accepted', talks)
