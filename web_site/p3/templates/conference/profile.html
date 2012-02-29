@@ -40,7 +40,7 @@
             {% for conf, talks_list in talks|ordered_talks %}
                 <dt>{{ conf }}</dt>
                 {% for t in talks_list %}
-                <dd>{{ t.title }}</dd>
+                <dd><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></dd>
                 {% endfor %}
             {% endfor %}
             </dl>
