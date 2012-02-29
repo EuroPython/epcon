@@ -263,8 +263,8 @@ def janrain_token(request):
             if not 'verifiedEmail' in profile:
                 # argh, il provider scelto non mi fornisce un email sicura; per
                 # evitare il furto di account non posso rendere l'account
-                # attivo.  Devo chiedere all'utente un email validae inviare a
-                # quella email una mail con un link di conferma.
+                # attivo.  Devo chiedere all'utente un email valida e inviare a
+                # quella email un link di conferma.
                 log.info('janrain profile without a verified email')
                 request.session['incomplete-profile'] = profile
                 return HttpResponseRedirectSeeOther(reverse('assopy-janrain-incomplete-profile'))
