@@ -141,4 +141,8 @@ class P3Profile(models.Model):
     image_gravatar = models.BooleanField(default=False)
     image_url = models.URLField(max_length=500, verify_exists=False, blank=False)
 
+    spam_recruiting = models.BooleanField(default=False)
+    spam_user_message = models.BooleanField(default=False)
+    spam_sms = models.BooleanField(default=False)
+
 import p3.listeners
