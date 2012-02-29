@@ -214,9 +214,14 @@ def talk_data(tid, preload=None):
     except KeyError:
         tags = set( t.name for t in Tag.objects.get_for_object(talk) )
 
+    try:
+        abstract = preload['abstract']
+    except KeyError:
+        abstract = talk.getAbstract()
+
     output = _dump_fields(talk)
     output.update({
-        'abstract': getattr(talk.getAbstract(), 'body', ''),
+        'abstract': getattr(abstract, 'body', ''),
         'speakers': speakers,
         'tags': tags,
     })
@@ -245,28 +250,41 @@ def talks_data(tids):
         .filter(id__in=missing)
     speakers_data = models.TalkSpeaker.objects\
         .filter(talk__in=talks.values('id'))\
-        .values('talk', 'speaker', 'helper', 'speaker__user',)
+        .values('talk', 'speaker', 'helper',)
     tags = TaggedItem.objects\
         .filter(
             content_type=ContentType.objects.get_for_model(models.Talk),
             object_id__in=talks.values('id')
         )\
         .values('object_id', 'tag__name')
+    abstracts = models.MultilingualContent.objects\
+        .filter(
+            content_type=ContentType.objects.get_for_model(models.Talk),
+            object_id__in=talks.values('id')
+        )
 
     for t in talks:
         preload[t.id] = {
             'talk': t,
             'speakers_data': [],
             'tags': set(),
+            'abstract': None,
         }
+    pids = set()
     for r in speakers_data:
+        pids.add(r['speaker'])
         preload[r['talk']]['speakers_data'].append({
             'speaker': r['speaker'],
             'helper': r['helper'],
-            'speaker__user': r['speaker__user'],
         })
     for r in tags:
         preload[r['object_id']]['tags'].add(r['tag__name'])
+    for r in abstracts:
+        preload[r.object_id]['abstract'] = r
+
+    # talk_data utilizza profile_data per recuperare alcuni dati sullo speaker,
+    # precarico l'elenco per minimizzare il numero di query necessario
+    profiles_data(pids)
 
     output = []
     for ix, e in enumerate(cached):
@@ -375,12 +393,12 @@ def event_data(eid, preload=None):
     sch = schedule_data(event.schedule_id)
     tags = set(parse_tag_input(event.track))
     if event.talk_id:
-        output = talk_data(event.talk_id)
-        name = output['talk'].title
+        talk = talk_data(event.talk_id)
+        name = talk['title']
     else:
-        output = {}
+        talk = None
         name = event.custom
-    output.update({
+    return {
         'id': event.id,
         'name': name,
         'time': datetime.combine(sch['schedule'].date, event.start_time),
@@ -389,8 +407,8 @@ def event_data(eid, preload=None):
         'sponsor': event.sponsor,
         'tracks': tracks,
         'tags': tags,
-    })
-    return output
+        'talk': talk,
+    }
 
 def tags():
     """
@@ -474,17 +492,33 @@ def _i_profile_data(sender, **kw):
         uids = [ kw['instance'].user_id ]
     elif sender is models.TalkSpeaker:
         uids = [ kw['instance'].speaker_id ]
+    elif sender is User:
+        uids = [ kw['instance'].id ]
 
     return [ 'profile:%s' % x for x in uids ]
 
-def profile_data(uid):
-    profile = models.AttendeeProfile.objects\
-        .select_related('user')\
-        .get(user=uid)
+def profile_data(uid, preload=None):
+    if preload is None:
+        preload = {}
 
-    talks = models.TalkSpeaker.objects\
-        .filter(speaker__user=profile.user)\
-        .values_list('talk', flat=True)
+    try:
+        profile = preload['profile']
+    except KeyError:
+        profile = models.AttendeeProfile.objects\
+            .select_related('user')\
+            .get(user=uid)
+
+    try:
+        talks = preload['talks']
+    except KeyError:
+        talks = models.TalkSpeaker.objects\
+            .filter(speaker__user=profile.user)\
+            .values_list('talk', flat=True)
+
+    try:
+        bio = preload['bio']
+    except KeyError:
+        bio = profile.getBio()
 
     return {
         'id': profile.user_id,
@@ -501,11 +535,45 @@ def profile_data(uid):
         'company_homepage': profile.company_homepage,
         'job_title': profile.job_title,
         'location': profile.location,
-        'bio': getattr(profile.getBio(), 'body', ''),
+        'bio': getattr(bio, 'body', ''),
         'visibility': profile.visibility,
         'talks': talks,
     }
 
 profile_data = cache_me(
-    models=(models.AttendeeProfile, models.Speaker, models.TalkSpeaker),
+    models=(models.AttendeeProfile, models.Speaker, models.TalkSpeaker, User),
     key='profile:%(uid)s')(profile_data, _i_profile_data)
+
+def profiles_data(pids):
+    cached = zip(pids, profile_data.get_from_cache([ (x,) for x in pids ]))
+    missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
+
+    preload = {}
+    profiles = models.AttendeeProfile.objects\
+        .filter(user__in=missing)\
+        .select_related('user')
+    talks = models.TalkSpeaker.objects\
+        .filter(speaker__in=missing)\
+        .values('speaker', 'talk')
+    bios = models.MultilingualContent.objects\
+        .filter(
+            content_type=ContentType.objects.get_for_model(models.AttendeeProfile),
+            object_id__in=missing,
+        )
+    for p in profiles:
+        preload[p.user_id] = {'profile': p, 'talks': [], 'bio': None}
+
+    for row in talks:
+        preload[row['speaker']]['talks'].append(row['talk'])
+
+    for b in bios:
+        preload[b.object_id]['bio'] = b.body
+
+    output = []
+    for ix, e in enumerate(cached):
+        pid, val = e
+        if val is cache_me.CACHE_MISS:
+            val = profile_data(pid, preload=preload[pid])
+        output.append(val)
+
+    return output
