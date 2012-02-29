@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import models
 
-from assopy.models import order_created, purchase_completed, ticket_for_user
+from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.models import AttendeeProfile
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -45,3 +45,25 @@ def on_profile_created(sender, **kw):
         models.P3Profile(profile=kw['instance']).save()
 
 post_save.connect(on_profile_created, sender=AttendeeProfile)
+
+def on_user_created(sender, **kw):
+    if kw['password_set']:
+        # L'utente è stato creato utilizzando la form email+password, non avrò
+        # altri dati
+        AttendeeProfile.objects.getOrCreateForUser(sender.user)
+    else:
+        # L'utente ha utilizzato janrain, non creo il profilo ora ma aspetto la
+        # prima identità
+        pass
+
+user_created.connect(on_user_created)
+
+def on_user_identity_created(sender, **kw):
+    identity = kw['identity']
+    profile = AttendeeProfile.objects.getOrCreateForUser(sender.user)
+    if identity.user.identities.count() > 1:
+        # non è la prima identità non copio niente per non sovrascrivere
+        # i dati cambiati dall'utente
+        return
+
+user_identity_created.connect(on_user_identity_created)
