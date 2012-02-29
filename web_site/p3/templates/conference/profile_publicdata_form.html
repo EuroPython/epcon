@@ -8,7 +8,7 @@
             <dt>Website</dt>  
             <dd>
                 {% if profile_data.personal_homepage %}
-                <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|strip_protocol }}</a>
+                <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
                 {% else %}
                 <span>-- NOT SET --</span>
                 {% endif %}
