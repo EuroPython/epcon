@@ -1453,7 +1453,7 @@ def ordered_talks(talks, criteria="conference"):
     grouped = defaultdict(list)
     for t in talks:
         grouped[t['conference']].append(t)
-    return sorted(grouped.items())
+    return sorted(grouped.items(), reverse=True)
 
 @register.filter
 def visible_talks(talks, all=True):
