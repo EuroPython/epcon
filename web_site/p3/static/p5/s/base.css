@@ -97,6 +97,12 @@ a:hover {
     border-radius: 2px;
 }
 
+/* rasky */
+h2 .new {
+    font-size: 20px;
+    margin-left: 0.5em;
+}
+
 .meta a {
     color: #7d6f60;    
     border-bottom-color: #7d6f60;
