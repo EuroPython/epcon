@@ -450,4 +450,4 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
         return value
 
 class P3ProfileEmailContactForm(forms.Form):
-    email = forms.EmailField()
+    email = forms.EmailField(label="Enter new email")

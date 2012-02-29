@@ -7,6 +7,13 @@
         {% include "assopy/profile_personal_data.html" %}
         {% include "assopy/profile_email_contact.html" %}
 
+        <div class="button">
+            <a href="{% url conference-profile slug=profile.slug %}">Go to public profile</a>
+        </div>
+        <div class="button">
+            <a href="">My personal schedule</a>
+        </div>
+        
     </div>
 
     <div class="span-4 last">

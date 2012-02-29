@@ -4,17 +4,19 @@
 <section class="profile-user-email clearfix" id="account-email-contact">
     <h1>Primary email contact</h1>
     <form action="{% url p3-account-email %}" class="async live-edit" method="POST" rel="#account-email-contact">
+        <p>This is the email where we will send any communication.</p>
         <div>
-            <span>{{ profile.email }}</span>
-            {% pending_email_change request.user as pending %}
-            {% if pending %}
-            <p>You have requested to change your email contact to "{{ pending }}"; please follow the instructions in the email we have sent you.</p>
-            {% endif %}
+            Your email: <span>{{ profile.email }}</span>
         </div>
-        {{ pform.email|field:"tpl:no_label" }}
+        {{ pform.email|field }}
         <div class="button mini">
             <a href="#" class="live-edit-switch">Change</a>
             <a href="#" class="autosubmit">Save</a>
         </div>
+        {% pending_email_change request.user as pending %}
+        {% if pending %}
+        <p>You have requested to change your email contact to "{{ pending }}"; please follow the instructions in the email we have sent you.</p>
+        <p>Note: this change will not affect in any way the web accounts you use to login</p>
+        {% endif %}
     </form>
 </section>
