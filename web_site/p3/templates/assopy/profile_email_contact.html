@@ -1,0 +1,20 @@
+{% load p3 assopy_tags i18n %}
+{% p3_profile_data request.user.id as profile %}
+{% get_form "P3ProfileEmailContactForm" bound=profile as pform %}
+<section class="profile-user-email clearfix" id="account-email-contact">
+    <h1>Primary email contact</h1>
+    <form action="{% url p3-account-email %}" class="async live-edit" method="POST" rel="#account-email-contact">
+        <div>
+            <span>{{ profile.email }}</span>
+            {% pending_email_change request.user as pending %}
+            {% if pending %}
+            <p>You have requested to change your email contact to "{{ pending }}"; please follow the instructions in the email we have sent you.</p>
+            {% endif %}
+        </div>
+        {{ pform.email|field:"tpl:no_label" }}
+        <div class="button mini">
+            <a href="#" class="live-edit-switch">Change</a>
+            <a href="#" class="autosubmit">Save</a>
+        </div>
+    </form>
+</section>

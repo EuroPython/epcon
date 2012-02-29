@@ -673,3 +673,27 @@ def p3_account_data(request):
             request.user.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
+def OTCHandler_E(request, token):
+    user = token.user
+    user.email = token.payload
+    user.save()
+    log.info('"%s" has verified the new email "%s"', user.username, user.email)
+    return redirect('assopy-profile')
+
+@login_required
+def p3_account_email(request):
+    ctx = {}
+    if request.method == 'POST':
+        form = p3forms.P3ProfileEmailContactForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            if email != request.user.email:
+                utils.email(
+                    'verify-account',
+                    ctx={
+                        'user': request.user,
+                        'token': amodels.Token.objects.create(ctype='e', user=request.user, payload=email),
+                    },
+                    to=[email]
+                ).send()
+    return render(request, "assopy/profile_email_contact.html", ctx)

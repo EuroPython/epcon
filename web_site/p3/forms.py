@@ -448,3 +448,6 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
             if not value:
                 raise forms.ValidationError('This field is required for a speaker')
         return value
+
+class P3ProfileEmailContactForm(forms.Form):
+    email = forms.EmailField()

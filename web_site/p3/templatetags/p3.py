@@ -21,6 +21,7 @@ from django.utils.safestring import mark_safe
 from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
 
+from assopy import models as amodels
 from p3 import dataaccess
 from p3 import forms as p3forms
 from p3 import models
@@ -425,3 +426,11 @@ def get_form(context, name, bound="auto", bound_field=None):
     if data:
         form.is_valid()
     return form
+
+@fancy_tag(register)
+def pending_email_change(user):
+    try:
+        t = amodels.Token.objects.get(ctype='e', user=user)
+    except amodels.Token.DoesNotExist:
+        return None
+    return t.payload

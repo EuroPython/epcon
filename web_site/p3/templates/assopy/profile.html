@@ -4,22 +4,8 @@
 {% block ASSOPY_MAIN_CONTENT %}
     {% p3_profile_data request.user.id as profile %}
     <div class="span-7 append-1">
-        <section class="profile-user-identity clearfix">        
-            <div class="span-2">
-                <div class="profile-user-picture">
-                    {% if profile.image %}
-                        <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
-                    {% else %}
-                        <img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" />
-                    {% endif %}
-                </div>
-            </div>
-    
-            <div class="span-5 last">  
-                <h1>{% trans "Personal data" %}</h1>
-                {% include "assopy/profile_personal_data.html" %}
-            </div>
-        </section>
+        {% include "assopy/profile_personal_data.html" %}
+        {% include "assopy/profile_email_contact.html" %}
 
     </div>
 
