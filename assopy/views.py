@@ -179,29 +179,38 @@ def new_account_feedback(request):
         'u': user,
     }
 
+def OTCHandler_V(request, token):
+    auth.logout(request)
+    user = token.user
+    user.is_active = True
+    user.save()
+    user = auth.authenticate(uid=user.id)
+    auth.login(request, user)
+    return redirect('assopy-profile')
+
+def OTCHandler_J(request, token):
+    payload = json.loads(token.payload)
+    email = payload['email']
+    profile = payload['profile']
+    log.info('"%s" verified; link to "%s"', email, profile['identifier'])
+    identity = _linkProfileToEmail(email, profile)
+    duser = auth.authenticate(identifier=identity.identifier)
+    auth.login(request, duser)
+    return redirect('assopy-profile')
+
 @transaction.commit_on_success
 def otc_code(request, token):
     t = models.Token.objects.retrieve(token)
     if t is None:
         raise http.Http404()
 
-    if t.ctype == 'v':
-        auth.logout(request)
-        user = t.user
-        user.is_active = True
-        user.save()
-        user = auth.authenticate(uid=user.id)
-        auth.login(request, user)
-        return redirect('assopy-profile')
-    elif t.ctype == 'j':
-        payload = json.loads(t.payload)
-        email = payload['email']
-        profile = payload['profile']
-        log.info('"%s" verified; link to "%s"', email, profile['identifier'])
-        identity = _linkProfileToEmail(email, profile)
-        duser = auth.authenticate(identifier=identity.identifier)
-        auth.login(request, duser)
-        return redirect('assopy-profile')
+    from assopy.utils import dotted_import
+    try:
+        path = settings.OTC_CODE_HANDLERS[t.ctype]
+    except KeyError:
+        return http.HttpResponseBadRequest()
+
+    return dotted_import(path)(request, t)
 
 def _linkProfileToEmail(email, profile):
     try:
