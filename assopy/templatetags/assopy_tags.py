@@ -40,10 +40,19 @@ _field_template_input_list = template.Template("""
     </div>
 """)
 
+_field_template_no_label = template.Template("""
+    <div class="{{ classes }}">
+        {{ field }}
+        {% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}
+        {{ field.errors }}
+    </div>
+""")
+
 fields_template = {
     None: _field_template_standard,
     forms.widgets.CheckboxInput: _field_template_label_inline,
     forms.widgets.RadioSelect: _field_template_input_list,
+    'no_label': _field_template_no_label,
 }
 
 @register.filter()
@@ -51,11 +60,20 @@ def field(field, cls=None):
     if not hasattr(field, 'field'):
         return 'Invalid field "%r"' % field
 
+    tpl_key = None
+    extra = []
+    if cls:
+        extra = cls.split(None)
+        for v in cls.split(None):
+            if v.startswith('tpl:'):
+                tpl_key = v[4:]
+            else:
+                extra.append(v)
+
     classes = [ 'field' ]
     if field.field.required:
         classes.append('required')
-    if cls:
-        classes.extend(cls.split(None))
+    classes.extend(extra)
     classes.append(field.field.__class__.__name__.lower())
     if field.errors:
         classes.append('error')
@@ -64,8 +82,10 @@ def field(field, cls=None):
     if isinstance(widget, (forms.HiddenInput,)):
         return str(field)
     else:
+        if not tpl_key:
+            tpl_key = type(widget)
         try:
-            tpl = fields_template[type(widget)]
+            tpl = fields_template[tpl_key]
         except KeyError:
             tpl = fields_template[None]
 
