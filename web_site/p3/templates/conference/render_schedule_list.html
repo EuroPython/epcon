@@ -17,7 +17,7 @@
                     class="toggle"
                     rel="#talk_{{ r }}">{% if "teaser" in e.tags %}[Teaser Talk] {% endif %}{{ e.name|safe }}</a>
                 by
-                {% for s in e.speakers %}
+                {% for s in e.talk.speakers %}
                 <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                 <div id="talk_{{ r }}" class="talk preview span-12" data-url="{% url conference-talk-preview slug=e.talk.slug %}"></div>
                 {% endfor %}
