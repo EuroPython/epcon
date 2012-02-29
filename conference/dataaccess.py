@@ -13,6 +13,22 @@ from tagging.utils import parse_tag_input
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 
+def _dump_fields(o):
+    from django.db.models.fields.files import FieldFile
+    output = {}
+    for f in o._meta.fields:
+        # uso f.column invece che f.name perchè non voglio seguire le foreign
+        # key
+        v = getattr(o, f.column)
+        if isinstance(v, FieldFile):
+            try:
+                v = v.url
+            except ValueError:
+                # file not uploaded
+                v = None
+        output[f.name] = v
+    return output
+
 def navigation(lang, page_type):
     pages = []
     qs = Page.objects\
@@ -180,13 +196,14 @@ def talk_data(tid, preload=None):
     except KeyError:
         speakers_data = models.TalkSpeaker.objects\
             .filter(talk=tid)\
-            .values('speaker', 'helper', 'speaker__name', 'speaker__slug',)
+            .values('speaker', 'helper', 'speaker__user',)
     speakers = []
     for r in speakers_data:
+        profile = profile_data(r['speaker__user'])
         speakers.append({
             'id': r['speaker'],
-            'name': r['speaker__name'],
-            'slug': r['speaker__slug'],
+            'name': profile['name'],
+            'slug': profile['slug'],
             'helper': r['helper'],
         })
     speakers.sort()
@@ -196,11 +213,13 @@ def talk_data(tid, preload=None):
     except KeyError:
         tags = set( t.name for t in Tag.objects.get_for_object(talk) )
 
-    return {
-        'talk': talk,
+    output = _dump_fields(talk)
+    output.update({
+        'abstract': getattr(talk.getAbstract(), 'body', ''),
         'speakers': speakers,
         'tags': tags,
-    }
+    })
+    return output
 
 def _i_talk_data(sender, **kw):
     if sender is models.Talk:
@@ -225,7 +244,7 @@ def talks_data(tids):
         .filter(id__in=missing)
     speakers_data = models.TalkSpeaker.objects\
         .filter(talk__in=talks.values('id'))\
-        .values('talk', 'speaker', 'helper', 'speaker__name', 'speaker__slug',)
+        .values('talk', 'speaker', 'helper', 'speaker__user',)
     tags = TaggedItem.objects\
         .filter(
             content_type=ContentType.objects.get_for_model(models.Talk),
@@ -243,8 +262,7 @@ def talks_data(tids):
         preload[r['talk']]['speakers_data'].append({
             'speaker': r['speaker'],
             'helper': r['helper'],
-            'speaker__name': r['speaker__name'],
-            'speaker__slug': r['speaker__slug'],
+            'speaker__user': r['speaker__user'],
         })
     for r in tags:
         preload[r['object_id']]['tags'].add(r['tag__name'])
