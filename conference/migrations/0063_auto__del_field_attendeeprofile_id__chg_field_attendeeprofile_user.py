@@ -8,6 +8,12 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        ct = orm['contenttypes.ContentType'].objects.get(app_label='conference', model='attendeeprofile')
+        for mc in orm.MultilingualContent.objects.filter(content_type=ct):
+            uid = db.execute('select user_id from conference_attendeeprofile where id=%s', [mc.object_id])[0][0]
+            mc.object_id = uid
+            mc.save()
+
         # Deleting field 'AttendeeProfile.id'
         db.delete_column('conference_attendeeprofile', 'id')
 

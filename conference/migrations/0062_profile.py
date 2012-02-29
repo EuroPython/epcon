@@ -31,7 +31,7 @@ class Migration(DataMigration):
                 mc.content_type = ct
                 mc.object_id = p.id
                 mc.language = b.language
-                mc.content_type = b.content_type
+                mc.content = b.content
                 mc.body = b.body
                 mc.save()
 

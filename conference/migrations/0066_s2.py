@@ -9,7 +9,7 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         for t in orm.TalkSpeaker.objects.all():
-            t.s2 = t.speaker_id
+            t.s2 = t.speaker.user_id
             t.save()
 
 
