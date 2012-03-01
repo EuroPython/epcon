@@ -4,6 +4,7 @@ import os.path
 
 from django.conf import settings as dsettings
 from django.db import models
+from django.db import transaction
 from django.db.models.query import QuerySet
 
 from conference.models import Ticket, ConferenceTaggedItem
@@ -114,6 +115,71 @@ class TicketSIM(models.Model):
         default='std',
         help_text='Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).',
     )
+
+HOTELROOM_ROOM_TYPE = (
+    ('t1', 'Single room'),
+    ('t2', 'Double room'),
+    ('t3', 'Triple room'),
+    ('t4', 'Family room (4)'),
+)
+class HotelRoom(models.Model):
+    conference = models.ForeignKey('conference.Conference')
+    room_type = models.CharField(max_length=1, choices=HOTELROOM_ROOM_TYPE)
+    quantity = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = (('conference', 'room_type'),)
+
+class TicketRoomManager(models.Manager):
+    def bedsStatus(self, period):
+        """
+        Calcola la situazione dei posti letto nel periodo specificato; il
+        valore di ritorno è un dict che associa al tipo stanza la quantità di
+        camere disponibili e libere:
+        {
+            't2': {
+                'available': X,
+                'free': Y,
+            }
+        }
+        """
+        pass
+
+    @transaction.commit_on_success
+    def bookBeds(self, user, beds):
+        """
+        Prenota i posti letto richiesti e associa all'utente i biglietti
+        corrispondenti; `beds` è un elenco di tuple:
+            beds = (
+                (HotelRoom, period, ticket_type),
+            )
+
+        ticket_type specifica se la prenotazione vale per un singolo posto
+        letto o per tutta la camera; nell'ultimo caso verranno generati tanti
+        biglietti quanti sono i posti in camera.
+        """
+        pass
+
+TICKETROOM_TICKET_TYPE = (
+    ('s', 'room shared'),
+    ('r', 'room not shared'),
+)
+class TicketRoom(models.Model):
+    ticket = models.OneToOneField(Ticket, related_name='p3_conference_room')
+    document = models.FileField(
+        verbose_name='ID Document',
+        upload_to=_ticket_sim_upload_to,
+        storage=dsettings.SECURE_STORAGE,
+        blank=True,
+        help_text='Italian regulations require a document ID to book an hotel room. Any document is fine (EU driving license, personal ID card, etc).',
+    )
+    room_type = models.ForeignKey(HotelRoom)
+    ticket_type = models.CharField(max_length=1, choices=TICKETROOM_TICKET_TYPE)
+    checkin = models.DateField(db_index=True)
+    checkout = models.DateField(db_index=True)
+    unused = models.BooleanField(default=False)
+
+    objects = TicketRoomManager()
 
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')
