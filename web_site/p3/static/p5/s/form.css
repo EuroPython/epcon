@@ -10,11 +10,20 @@
 .form-box fieldset {
 }
 
-/*
-form p.tip {
-	font-size: 13px;
+form .hint {
+    font-size: 12px;
+    color: #7d6f60;
 }
-*/
+
+
+form p {
+    margin: 0 0 10px 0;
+}
+
+form .hint ul {
+    list-style: outside disc;
+    margin: 0 0 10px 20px;
+}
 
 form .field {
 	margin: 0 0 10px 0;
@@ -23,8 +32,6 @@ form .field {
 form .field.required {
 /*     font-weight: bold; */
 }
-
-
 
 fieldset {    
     margin: 0 0 10px 0;

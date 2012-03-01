@@ -1,46 +1,63 @@
 {% load p3 assopy_tags i18n %}
 {% p3_profile_data request.user.id as profile %}
 {% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
-<section class="profile-spam-control clearfix cms" id="account-spam-control">
-    <h1>Spam control</h1>
+<section class="profile-spam-control" id="account-spam-control">
+    <h2>Spam control</h2>    
     <form action="{% url p3-account-spam-control %}" class="async" method="POST" rel="#account-spam-control">
-        <dl>
-            <dt>Recruiting</dt>
-            <dd>
+            <fieldset>
+                <legend>Recruiting</legend>
+                        
                 {{ pform.spam_recruiting|field:"autosubmit" }}
-                <p>
-                    Please note that:
+
+                <div class="hint">
+
                     <ul>
                         <li>Your email address will never be shared with any of our sponsor.</li>
                         <li>Job offers may be tailord with your "interest", so be sure to update your profile.</li>
                     </ul>
-                </p>
-            </dd>
-            <dt>User message</dt>
-            <dd>
-                {{ pform.spam_user_message|field:"autosubmit" }}
-                <p>
-                    Please note that:
-                    <ul>
-                        <li>Your email address will never be shared with other people.</li>
-                        <li>To write a message will be used a form in your profile page.</li>
-                        <li>User messages will be active only for the time span of the conference, except for the speakers.</li>
-                    </ul>
-                </p>
-            </dd>
-            <dt>SMS message</dt>
-            <dd>
-                {{ pform.spam_sms|field:"autosubmit" }}
-                <p>
-                    Please note that:
-                    <ul>
-                        <li>You have to insert your phone number in the personal data section to active this service. <strong>Setting the phone number automatically gives to the europython team the right to text you about important conference announcements (like last minute issues with the location, trains, public transports, etc.)</strong></li>
-                        <li>Your phone number will never be shared with other people.</li>
-                        <li>To send a sms will be used a form in your profile page.</li>
-                        <li>SMS messages will be active only for the time span of the conference.</li>
-                    </ul>
-                </p>
-            </dd>
-        </dl>
+                
+                </div>
+                    
+
+            </fieldset>
+            <fieldset>
+                <legend>User message</legend>
+                                
+                    {{ pform.spam_user_message|field:"autosubmit" }}
+            
+                    <div class="hint">
+
+                        <ul>
+                            <li>Your email address will never be shared with other people.</li>
+                            <li>To write a message will be used a form in your profile page.</li>
+                            <li>User messages will be active only for the time span of the conference, except for the speakers.</li>
+                        </ul>
+
+                    
+                    </div>
+
+    
+            </fieldset>
+
+            <fieldset>            
+                <legend>SMS message</legend>                            
+                <!-- @@TODO Check se è phone number è vuoto? -->                
+                <p>You have to insert your phone number in the “Personal data” section to activate this service.</p>
+
+                    {{ pform.spam_sms|field:"autosubmit" }}
+
+                    <div class="hint">
+
+                        <ul>
+                            <li>Setting the phone number automatically gives to the EuroPython team the right to text you about important conference announcements (like last minute issues with the location, trains, public transports, etc.</li>
+                            <li>Your phone number will never be shared with other people.</li>
+                            <li>To send a SMS will be used a form in your profile page.</li>
+                            <li>SMS messages will be active only for the time span of the conference.</li>
+                        </ul>
+                    
+                    </div>
+
+
+            </fieldset>
     </form>
 </section>
