@@ -697,3 +697,13 @@ def p3_account_email(request):
                     to=[email]
                 ).send()
     return render(request, "assopy/profile_email_contact.html", ctx)
+
+@login_required
+def p3_account_spam_control(request):
+    ctx = {}
+    if request.method == 'POST':
+        profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
+        form = p3forms.P3ProfileSpamControlForm(instance=profile.p3_profile, data=request.POST)
+        if form.is_valid():
+            form.save()
+    return render(request, "assopy/profile_spam_control.html", ctx)

@@ -26,9 +26,17 @@ def profile_data(uid):
             'image': image,
             'image_gravatar': p3p.image_gravatar,
             'image_url': p3p.image_url,
+            'spam_recruiting': p3p.spam_recruiting,
+            'spam_user_message': p3p.spam_user_message,
+            'spam_sms': p3p.spam_sms,
         })
     return profile
 
+def _i_profile_data(sender, **kw):
+    # l'invalidazione tramite segnale viene gestita da cachef
+    return 'profile:%s' % (kw['instance'].profile_id,)
+
 profile_data = cache_me(
     signals=(cdata.profile_data.invalidated,),
-    key='profile:%(uid)s')(profile_data, lambda sender, **kw: None)
+    models=(models.P3Profile,),
+    key='profile:%(uid)s')(profile_data, _i_profile_data)

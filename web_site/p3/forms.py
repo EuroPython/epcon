@@ -451,3 +451,11 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
 
 class P3ProfileEmailContactForm(forms.Form):
     email = forms.EmailField(label="Enter new email")
+
+class P3ProfileSpamControlForm(forms.ModelForm):
+    spam_recruiting = forms.BooleanField(label='The europython team <strong>can</strong> send you an email with job offers from our sponsors.', required=False)
+    spam_user_message = forms.BooleanField(label='I <strong>agree</strong> that other participants can send me an email message.', required=False)
+    spam_sms = forms.BooleanField(label='I <strong>agree</strong> that other participants can send me an sms.', required=False)
+    class Meta:
+        model = models.P3Profile
+        fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
