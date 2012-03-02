@@ -577,3 +577,17 @@ def profiles_data(pids):
         output.append(val)
 
     return output
+
+def fares(conference):
+    output = []
+    for f in models.Fare.objects.filter(conference=conference):
+        r = _dump_fields(f)
+        r.update({
+            'valid': f.valid()
+        })
+        output.append(r)
+    return output
+
+fares = cache_me(
+    models=(models.Fare,),
+    key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
