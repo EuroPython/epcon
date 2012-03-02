@@ -120,6 +120,7 @@
 
 
 .cms table th,
+.cms table thead tr,
 .cms table td {	
 
     border-bottom: 1px solid #c4b9a5;	
@@ -127,7 +128,8 @@
 }
 
 
-.cms table th {
+.cms table th,
+.cms table thead tr {
 
 	font-weight: bold;
     color: #4895A3;
