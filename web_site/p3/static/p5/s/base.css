@@ -707,6 +707,22 @@ footer nav li img {
 }
 
 
+.profile-user-data.web-accounts li {
+    border-bottom: 1px dotted #ABA18F;
+    padding-bottom: 5px;
+}
+
+
+.profile-user-data.web-accounts li img {
+    float: right;
+}
+
+.profile-user-data.web-accounts ul {
+    border-top: 1px dotted #ABA18F;
+    padding-top: 5px;
+
+    margin: 0 0 10px 0;
+}
 .profile-user-identity {
     background: #E1DBC5;
     margin: 0 0 20px 0;    
@@ -743,6 +759,12 @@ footer nav li img {
     padding: 10px;
     border: 1px solid #ABA18F;     
 }
+
+.profile-user-email .the-email span {
+    font-size: 16px;
+}
+
+
 
 /* ======== */
 /* ! talk   */
@@ -1070,6 +1092,7 @@ section.teaser {
 section.quick-guide h2,
 section.where h2,
 section.teaser h2 {
+    text-align: center;  
 	font: normal 36px/36px "League Gothic", "Arial Narrow", sans-serif;	
     margin: 0 0 20px 0;    
     letter-spacing: 1px;
@@ -1113,8 +1136,8 @@ section.teaser h2 span {
 
 section h2 {
 
-    text-align: center;        
-    text-shadow: 1px 1px 1px rgba(100%, 100%, 100%, .85);
+      
+/*     text-shadow: 1px 1px 1px rgba(100%, 100%, 100%, .85); */
 
 }
 

@@ -1,16 +1,17 @@
 {% load conference i18n p3 assopy_tags %}
-{% p3_profile_data request.user.id as profile %}
+{% p3_profile_data profile.user_id as profile_data %}
 <div>
-    <form action="{% url p3-profile slug=profile.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="self">{% csrf_token %}
+    {% if profile_data.bio or full_access %}
+    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="self">{% csrf_token %}
         <input type="hidden" name="section" value="bio" />
         <div>
-            {% if profile.bio %}
-            {{ profile.bio|markdown2 }}
+            {% if profile_data.bio %}
+            {{ profile_data.bio|markdown2 }}
             {% else %}
             <p>Why not writing something about you?</p>
             {% endif %}
         </div>
-        {{ form.bio|field:"tpl:no_label" }}
+        {% if full_access %}{{ form.bio|field:"tpl:no_label" }}{% endif %}
         {% if full_access %}
         <div class="button mini">
             <a href="#" class="live-edit-switch">Edit bio</a>
@@ -18,4 +19,5 @@
         </div>
         {% endif %}
     </form>
+    {% endif %}
 </div>

@@ -25,5 +25,7 @@ urlpatterns = patterns('',
     url(r'^sim_report/$', 'p3.views.sim_report', name='p3-sim-report'),
 
     url(r'^p/profile/(?P<slug>[\w-]+)/', 'p3.views.p3_profile', name='p3-profile'),
-    url(r'^p/account/', 'p3.views.p3_account_data', name='p3-account-data'),
+    url(r'^p/account/data', 'p3.views.p3_account_data', name='p3-account-data'),
+    url(r'^p/account/email', 'p3.views.p3_account_email', name='p3-account-email'),
+    url(r'^p/account/spam_control', 'p3.views.p3_account_spam_control', name='p3-account-spam-control'),
 )

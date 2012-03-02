@@ -303,6 +303,12 @@ class P3ProfileForm(cforms.ProfileForm):
         data = self.cleaned_data
         data['visibility'] = data.get('visibility', 'x')
         return data
+
+    def clean_twitter(self):
+        data = self.cleaned_data.get('twitter', '')
+        if data.startswith('@'):
+            data = data[1:]
+        return data
     
     def save(self, commit=True):
         assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
@@ -442,3 +448,14 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
             if not value:
                 raise forms.ValidationError('This field is required for a speaker')
         return value
+
+class P3ProfileEmailContactForm(forms.Form):
+    email = forms.EmailField(label="Enter new email")
+
+class P3ProfileSpamControlForm(forms.ModelForm):
+    spam_recruiting = forms.BooleanField(label='EuroPython team <strong>can</strong> send me an email with job offers from our sponsors.', required=False)
+    spam_user_message = forms.BooleanField(label='I <strong>agree</strong> that other participants can send me an email message.', required=False)
+    spam_sms = forms.BooleanField(label='I <strong>agree</strong> that other participants can send me an SMS.', required=False)
+    class Meta:
+        model = models.P3Profile
+        fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')

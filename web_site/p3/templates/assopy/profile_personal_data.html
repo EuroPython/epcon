@@ -1,34 +1,46 @@
-{% load p3 assopy_tags %}
+{% load p3 assopy_tags i18n %}
 {% p3_profile_data request.user.id as profile %}
 {% if not pform %}
     {% get_form "P3ProfilePersonalDataForm" bound=profile as pform %}
 {% endif %}
-<div>
-    <form action="{% url p3-account-data %}" class="async live-edit" method="POST" rel="self">
-        <dl>
-            <dt>Name</dt>  
-            <dd>
-                <span>{{ profile.name }}</span>
-                {{ pform.first_name|field }}
-                {{ pform.last_name|field }}
-            </dd>
-
-            <dt>Phone</dt>
-            <dd>
-                <span>{{ profile.phone }}</span>
-                {{ pform.phone|field:"tpl:no_label" }}
-            </dd>
-            {% if profile.talks %}
-            <dt>Birthday</dt>
-            <dd>
-                <span>{{ profile.birthday }}</span>
-                {{ pform.birthday|field:"tpl:no_label" }}
-            </dd>
+<section class="profile-user-identity clearfix" id="account-personal-data">        
+    <div class="span-2">
+        <div class="profile-user-picture">
+            {% if profile.image %}
+                <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
+            {% else %}
+                <img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" />
             {% endif %}
-        </dl>                    
-        <div class="button mini">
-            <a href="#" class="live-edit-switch">Change</a>
-            <a href="#" class="autosubmit">Save</a>
         </div>
-    </form>
-</div>
+    </div>
+    <div class="span-5 last">  
+        <h1>{% trans "Personal data" %}</h1>
+        <form action="{% url p3-account-data %}" class="async live-edit" method="POST" rel="#account-personal-data">
+            <dl>
+                <dt>Name</dt>  
+                <dd>
+                    <span>{{ profile.name }}</span>
+                    {{ pform.first_name|field }}
+                    {{ pform.last_name|field }}
+                </dd>
+
+                <dt>Phone</dt>
+                <dd>
+                    <span>{{ profile.phone }}</span>
+                    {{ pform.phone|field:"tpl:no_label" }}
+                </dd>
+                {% if profile.talks %}
+                <dt>Birthday</dt>
+                <dd>
+                    <span>{{ profile.birthday }}</span>
+                    {{ pform.birthday|field:"tpl:no_label" }}
+                </dd>
+                {% endif %}
+            </dl>                    
+            <div class="button mini">
+                <a href="#" class="live-edit-switch">Change</a>
+                <a href="#" class="autosubmit">Save</a>
+            </div>
+        </form>
+    </div>
+</section>

@@ -4,64 +4,66 @@
 {% block ASSOPY_MAIN_CONTENT %}
     {% p3_profile_data request.user.id as profile %}
     <div class="span-7 append-1">
-        <section class="profile-user-identity clearfix">        
-            <div class="span-2">
-                <div class="profile-user-picture">
-                    {% if profile.image %}
-                        <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
-                    {% else %}
-                        <img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile.name }}" width="98" height="98" />
-                    {% endif %}
-                </div>
-            </div>
-    
-            <div class="span-5 last">  
-                <h1>{% trans "Personal data" %}</h1>
-                {% include "assopy/profile_personal_data.html" %}
-            </div>
-        </section>
-
+        {% include "assopy/profile_personal_data.html" %}
+        {% include "assopy/profile_email_contact.html" %}
+        {% include "assopy/profile_spam_control.html" %}
     </div>
 
     <div class="span-4 last">
         {% block PROFILE_SIDEBAR %}
                          
         <aside>
+    
+            <div class="button">
+                <a href="{% url conference-profile slug=profile.slug %}">Go to public profile</a>
+            </div>
+            <div class="button">
+                <a href="#">My personal schedule</a>
+            </div>
+            
+            {% render_profile_last_block %}
+        
             <div class="">
+
                 {% block WEB_ACCOUNTS %}
-                <h4>{% trans "Web accounts for login" %}</h4>
-                <ul id="web-accounts">
-                    {% for i in user.identities.all %}
-                    <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Delete account" %}" /></li>
-                    {% endfor %}
-                </ul>
-                <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
-                    <input type="hidden" name="identifier" value="" />
-                </form>
-                <script type="text/javascript">
-                    $('#web-accounts img.delete').click(function(e) {
-                        if(!confirm('Are you sure?')) {
-                            return;
-                        }
-                        var parent = $(e.target).parents('li');
-                        var id = parent.attr('data-identifier');
-                        var form = $('form#remove-identity');
-                        $('input[name=identifier]', form).val(id);
-                        form.ajaxSubmit({
-                            success: function() {
-                                feedback('{% trans "Web access removed" %}');
-                                parent.remove();
-                            },
-                            error: function(xhr, status, error) {
-                                alert('{% trans "Cannot remove the requested item, please contact info@pycon.it for assistance" %}');
+                <section class="profile-user-data web-accounts">    
+                    <h4>{% trans "Web accounts for log in" %}</h4>
+                    
+                    <ul id="web-accounts">
+                        {% for i in user.identities.all %}
+                        <li class="clearfix" data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Remove account" %}" /></li>
+                        {% endfor %}
+                    </ul>
+                    <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
+                        <input type="hidden" name="identifier" value="" />
+                    </form>
+                    <script type="text/javascript">
+                        $('#web-accounts img.delete').click(function(e) {
+                            if(!confirm('Are you sure?')) {
+                                return;
                             }
+                            var parent = $(e.target).parents('li');
+                            var id = parent.attr('data-identifier');
+                            var form = $('form#remove-identity');
+                            $('input[name=identifier]', form).val(id);
+                            form.ajaxSubmit({
+                                success: function() {
+                                    feedback('{% trans "Web access removed" %}');
+                                    parent.remove();
+                                },
+                                error: function(xhr, status, error) {
+                                    alert('{% trans "Cannot remove the requested account, please contact info@pycon.it for assistance" %}');
+                                }
+                            });
                         });
-                    });
-                </script>
-                <p>
-                    {% url assopy-profile as u %}
-                    {% render_janrain_box u "overlay" %}
-                </p>
+                    </script>
+                    <div class="button mini">
+                        {% url assopy-profile as u %}
+                        {% render_janrain_box u "overlay" %}
+                    </div>
+                
+                </section>
+                
                 {% endblock %}
 
 <!--
@@ -75,7 +77,7 @@
                 {% endblock %}
 -->
 
-                {% render_profile_last_block %}
+  
         
                 {% block USER_TICKETS %}
                 {% with request.user.assopy_user.tickets as tickets %}

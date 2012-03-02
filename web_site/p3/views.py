@@ -12,8 +12,8 @@ from django.template import RequestContext, Template
 
 import forms as p3forms
 import models
+import assopy.models as amodels
 from assopy.forms import BillingData
-from assopy.models import Coupon, Order, ORDER_PAYMENT, User, UserIdentity
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
 from conference.models import Fare, Event, Ticket, Schedule, Speaker, AttendeeProfile
 from conference.views import profile_access
@@ -65,13 +65,13 @@ def _assign_ticket(ticket, email):
             # (nota che il backend di autenticazione già verifica che la stessa
             # email non venga usata due volte per creare utenti django) perché
             # in ogni caso si tratta di email verificate da servizi esterni.
-            recipient = UserIdentity.objects.filter(email=email)[0].user.user
+            recipient = amodels.UserIdentity.objects.filter(email=email)[0].user.user
         except IndexError:
             recipient = None
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
         just_created = True
-        u = User.objects.create_user(email=email, token=True, send_mail=False)
+        u = amodels.User.objects.create_user(email=email, token=True, send_mail=False)
         recipient = u.user
         name = email
     else:
@@ -79,10 +79,10 @@ def _assign_ticket(ticket, email):
         just_created = False
         try:
             auser = recipient.assopy_user
-        except User.DoesNotExist:
+        except amodels.User.DoesNotExist:
             # uff, ho un utente su django che non è un assopy user, sicuramente
             # strascichi prima dell'introduzione dell'app assopy
-            auser = User(user=recipient)
+            auser = amodels.User(user=recipient)
             auser.save()
         if not auser.token:
             recipient.assopy_user.token = str(uuid.uuid4())
@@ -191,7 +191,7 @@ def user(request, token):
     view che logga automaticamente un utente (se il token è valido) e lo
     ridirige alla pagine dei tickets 
     """
-    u = get_object_or_404(User, token=token)
+    u = get_object_or_404(amodels.User, token=token)
     log.info('autologin (via token url) for "%s"', u.user)
     if not u.user.is_active:
         u.user.is_active = True
@@ -221,8 +221,8 @@ class P3FormTickets(FormTickets):
         if data[0] == '_':
             raise forms.ValidationError('invalid coupon')
         try:
-            coupon = Coupon.objects.get(code__iexact=data)
-        except Coupon.DoesNotExist:
+            coupon = amodels.Coupon.objects.get(code__iexact=data)
+        except amodels.Coupon.DoesNotExist:
             raise forms.ValidationError('invalid coupon')
         if not coupon.valid(self.user):
             raise forms.ValidationError('invalid coupon')
@@ -305,7 +305,7 @@ def billing(request):
             label='Your Name' if recipient != 'c' else 'Company Name',
             max_length=200,
         )
-        payment = forms.ChoiceField(choices=ORDER_PAYMENT, initial='paypal')
+        payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='paypal')
         code_conduct = forms.BooleanField(label='I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
 
         def __init__(self, *args, **kwargs):
@@ -323,7 +323,7 @@ def billing(request):
             exclude = ('city', 'zip_code', 'state', 'vat_number', 'tin_number')
 
     coupon = request.session['user-cart']['coupon']
-    totals = Order.calculator(items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
+    totals = amodels.Order.calculator(items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
 
     if request.method == 'POST':
         # non voglio che attraverso questa view sia possibile cambiare il tipo
@@ -353,7 +353,7 @@ def billing(request):
 
         if order_data:
             coupon = request.session['user-cart']['coupon']
-            o = Order.objects.create(
+            o = amodels.Order.objects.create(
                 user=auser, payment=order_data['payment'],
                 billing_notes=order_data.get('billing_notes', ''),
                 items=request.session['user-cart']['tickets'],
@@ -491,7 +491,7 @@ def calculator(request):
             coupons = []
             if data['coupon']:
                 coupons.append(data['coupon'])
-            totals = Order.calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
+            totals = amodels.Order.calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
             output['tickets'] = sum(x[0] for x in totals['tickets'].values())
             if data['coupon']:
                 output['coupon'] = totals['coupons'][data['coupon'].code][0]
@@ -665,14 +665,45 @@ def p3_account_data(request):
         profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
         form = p3forms.P3ProfilePersonalDataForm(instance=profile, data=request.POST)
         ctx['pform'] = form
-        print 'x', form.is_valid(), form.errors
         if form.is_valid():
-            print form.instance.pk
-            xxx = form.save()
-            print xxx.pk
+            form.save()
             data = form.cleaned_data
             request.user.first_name = data['first_name']
             request.user.last_name = data['last_name']
             request.user.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
+def OTCHandler_E(request, token):
+    user = token.user
+    user.email = token.payload
+    user.save()
+    log.info('"%s" has verified the new email "%s"', user.username, user.email)
+    return redirect('assopy-profile')
+
+@login_required
+def p3_account_email(request):
+    ctx = {}
+    if request.method == 'POST':
+        form = p3forms.P3ProfileEmailContactForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            if email != request.user.email:
+                utils.email(
+                    'verify-account',
+                    ctx={
+                        'user': request.user,
+                        'token': amodels.Token.objects.create(ctype='e', user=request.user, payload=email),
+                    },
+                    to=[email]
+                ).send()
+    return render(request, "assopy/profile_email_contact.html", ctx)
+
+@login_required
+def p3_account_spam_control(request):
+    ctx = {}
+    if request.method == 'POST':
+        profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
+        form = p3forms.P3ProfileSpamControlForm(instance=profile.p3_profile, data=request.POST)
+        if form.is_valid():
+            form.save()
+    return render(request, "assopy/profile_spam_control.html", ctx)

@@ -29,7 +29,8 @@
 {% endblock %}
 
 {% block MAIN_CONTENT %}
-    <h1>{{ talk.title }}
+    {% talk_data talk.id as talk_data %}
+    <h1>{{ talk_data.title }}
     {% if full_access %}
     <span class="action edit"><a href="#">(Edit talk)</a></span>
     <script type="text/javascript">//<![CDATA[
@@ -46,8 +47,8 @@
         <div class="page-summary">
             <p>
                 {% trans "by" %}
-                {% for spk in talk.get_all_speakers %}
-                <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+                {% for spk in talk_data.speakers %}
+                <a href="{% url conference-profile slug=spk.slug %}">{{ spk.name }}</a>
                 {% if not forloop.last %}-{% endif %}
                 {% endfor %}
             </p>
@@ -55,8 +56,7 @@
         {% with talk.event_set.all as events %}
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
-                {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
-                <p>{{ ab.body|markdown2:"smarty-pants,code-color" }}</p>
+                <p>{{ talk_data.abstract|markdown2:"smarty-pants,code-color" }}</p>
             </div>
             {% if talk.status == "accepted" %}
                 {% for e in events %}
