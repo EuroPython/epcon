@@ -615,7 +615,6 @@ class Fare(models.Model):
         return '%s - %s' % (self.code, self.conference)
 
     class Meta:
-        ordering = ('conference', 'code')
         unique_together = (('conference', 'code'),)
 
     def valid(self):
