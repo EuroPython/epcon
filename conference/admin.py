@@ -425,6 +425,15 @@ admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
 class FareAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'recipient_type', 'start_validity', 'end_validity')
+    list_filter = ('conference', )
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.GET.has_key('conference') and not request.GET.has_key('conference__exact'):
+            q = request.GET.copy()
+            q['conference'] = settings.CONFERENCE
+            request.GET = q
+            request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(FareAdmin,self).changelist_view(request, extra_context=extra_context)
     
 admin.site.register(models.Fare, FareAdmin)
 
@@ -477,10 +486,9 @@ class TicketAdmin(admin.ModelAdmin):
         return settings.ADMIN_STATS(conference, stat=stat)
 
     def stats_list(self, request):
-        from conference.models import Conference, Ticket
         class FormConference(forms.Form):
             conference = forms.ChoiceField(
-                choices=Conference.objects.all().values_list('code', 'name'),
+                choices=models.Conference.objects.all().values_list('code', 'name'),
                 required=False
             )
         form = FormConference(data=request.GET)
