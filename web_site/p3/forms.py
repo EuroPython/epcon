@@ -1,9 +1,12 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
+import assopy.models as amodels
+import assopy.forms as aforms
 import conference.forms as cforms 
 import conference.models as cmodels
 
@@ -459,3 +462,165 @@ class P3ProfileSpamControlForm(forms.ModelForm):
     class Meta:
         model = models.P3Profile
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
+
+class HotelReservationsFieldWidget(forms.Widget):
+    def value_from_datadict(self, data, files, name):
+        if name in data:
+            # data è l'initial_data, contiene i dati già in forma normalizzata
+            return data[name]
+        # data è un QueryDict, o cmq proviene da una request
+        fares = data.getlist(name + '_fare')
+        qtys = data.getlist(name + '_qty')
+        periods = data.getlist(name + '_period')
+
+        # qualcuno si è messo a giocare con i dati in ingresso, interrompo
+        # tutto inutile passare per la validazione
+        if len(fares) != len(qtys) or len(periods) != len(fares) * 2:
+            raise ValueError('')
+
+        from itertools import izip_longest
+        def grouper(n, iterable, fillvalue=None):
+            "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+            args = [iter(iterable)] * n
+            return izip_longest(fillvalue=fillvalue, *args)
+
+        start = settings.P3_HOTEL_RESERVATION['period'][0]
+        values = []
+        for row in zip(fares, qtys, grouper(2, periods)):
+            values.append({
+                'fare': row[0],
+                'qty': row[1],
+                'period': map(lambda x: start+datetime.timedelta(days=int(x)), row[2]),
+            })
+
+        return values
+
+    def render(self, name, value, attrs=None):
+        try:
+            start = settings.P3_HOTEL_RESERVATION['period'][0]
+        except:
+            raise TypeError('P3_HOTEL_RESERVATION not set')
+
+        from django.template.loader import render_to_string
+        from conference import dataaccess as cdataaccess
+
+        tpl = 'p3/fragments/form_field_hotel_reservation_widget.html'
+        fares = {
+            'HR': [],
+            'HB': [],
+        }
+        for f in cdataaccess.fares(settings.CONFERENCE_CONFERENCE):
+            if not f['valid']:
+                continue
+            if f['code'][:2] == 'HR':
+                fares['HR'].append(f)
+            elif f['code'][:2] == 'HB':
+                fares['HB'].append(f)
+
+        if not value:
+            value = [
+                {'fare': fares['HB'][0]['code'], 'qty': 0, 'period': settings.P3_HOTEL_RESERVATION['default']},
+                {'fare': fares['HR'][0]['code'], 'qty': 0, 'period': settings.P3_HOTEL_RESERVATION['default']},
+            ]
+
+        rows = []
+        for entry in value:
+            k = entry['fare'][:2]
+            if k not in ('HR', 'HB'):
+                raise TypeError('unsupported fare')
+            ctx = {
+                'label': '',
+                'type': '',
+                'qty': entry['qty'],
+                'period': map(lambda x: (x-start).days, entry['period']),
+                'fare': entry['fare'],
+                'fares': [],
+            }
+            if k == 'HB':
+                ctx['label'] = _('Room sharing')
+                ctx['type'] = 'bed'
+                ctx['fares'] = fares['HB']
+            else:
+                ctx['label'] = _('Full room')
+                ctx['type'] = 'room'
+                ctx['fares'] = fares['HR']
+
+            rows.append(ctx)
+        ctx = {
+            'start': start,
+            'days': (settings.P3_HOTEL_RESERVATION['period'][1]-start).days,
+            'rows': rows,
+            'name': name,
+        }
+        return render_to_string(tpl, ctx)
+
+class HotelReservationsField(forms.Field):
+    widget = HotelReservationsFieldWidget
+
+    def clean(self, value):
+        for entry in value:
+            try:
+                entry['qty'] = int(entry['qty'])
+            except (ValueError, TypeError):
+                raise forms.ValidationError('invalid quantity')
+        return value
+
+class P3FormTickets(aforms.FormTickets):
+    coupon = forms.CharField(
+        label='Insert your discount code and save money!',
+        max_length=10,
+        required=False,
+        widget=forms.TextInput(attrs={'size': 10}),
+    )
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(P3FormTickets, self).__init__(*args, **kwargs)
+        # cancello il campo pagamento perché voglio posticipare questa scelta
+        del self.fields['payment']
+
+        # i field relativi alle prenotazioni alberghiere si comportano in
+        # maniera speciale; innanzitutto possono essere "multipli" nel senso
+        # che per la stesso tipo di fare (ad esempio HB3 - posto letto in
+        # tripla) posso avere entry in periodi diversi (ogni entry può già
+        # specificare il numero di posti letto disponibili).
+        # Inoltre per ogni prenotazione deve essere specificato anche il "periodo".
+
+        # Decido di gestire questi casi con del codice custom nella clean
+        for k in self.fields.keys():
+            if k.startswith('H'):
+                del self.fields[k]
+        
+        self.fields['hotel_reservations'] = HotelReservationsField(required=False)
+
+    def clean_coupon(self):
+        data = self.cleaned_data.get('coupon', '').strip()
+        if not data:
+            return None
+        if data[0] == '_':
+            raise forms.ValidationError('invalid coupon')
+        try:
+            coupon = amodels.Coupon.objects.get(code__iexact=data)
+        except amodels.Coupon.DoesNotExist:
+            raise forms.ValidationError('invalid coupon')
+        if not coupon.valid(self.user):
+            raise forms.ValidationError('invalid coupon')
+        return coupon
+
+    def clean(self):
+        data = super(P3FormTickets, self).clean()
+
+        order_type = data['order_type']
+        company = order_type == 'deductible'
+        for ix, row in list(enumerate(data['tickets']))[::-1]:
+            fare = row[0]
+            if fare.ticket_type != 'company':
+                continue
+            if (company ^ (fare.code[-1] == 'C')):
+                del data['tickets'][ix]
+                del data[fare.code]
+
+        if 'hotel_reservations' in data:
+            from conference.models import Fare
+            for r in data['hotel_reservations']:
+                data['tickets'].append((Fare.objects.get(code=r['fare']), r))
+        return data

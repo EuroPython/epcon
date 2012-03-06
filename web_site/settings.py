@@ -100,6 +100,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'conference.context_processors.current_url',
     'conference.context_processors.stuff',
     'django.contrib.messages.context_processors.messages',
+    'p3.context_processors.countdown',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -284,7 +285,13 @@ ASSOPY_OTC_CODE_HANDLERS = {
 DEFAULT_URL_PREFIX = 'https://ep2012.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'ep2012.europython.eu'
 COMMENTS_APP = 'hcomments'
+
+from datetime import date
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
+P3_HOTEL_RESERVATION = {
+    'period': (date(2012, 6, 29), date(2012, 7, 9)),
+    'default': (date(2012, 7, 2), date(2012, 7, 6)),
+}
 
 TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.gitcommit.GitCommitHook',

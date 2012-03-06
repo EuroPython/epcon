@@ -12,6 +12,7 @@ function setup_fragment(ctx) {
     ctx = ctx || document;
     setup_talkform(ctx);
     setup_profile_picture_form(ctx);
+    setup_cart_form(ctx);
     setup_tooltip(ctx);
     setup_toggles(ctx);
     // jQueryTools è bacato in tanti modi diversi; ad esempio l'overlay non si
@@ -425,4 +426,248 @@ function setup_profile_picture_form(ctx) {
             .focus();
     });
     $(':checked', form).change();
+}
+
+function setup_cart_form(ctx) {
+    var months = new Array(12);
+    months[0] = "January";
+    months[1] = "February";
+    months[2] = "March";
+    months[3] = "April";
+    months[4] = "May";
+    months[5] = "June";
+    months[6] = "July";
+    months[7] = "August";
+    months[8] = "September";
+    months[9] = "October";
+    months[10] = "November";
+    months[11] = "December";
+
+    var form = $('#form-cart');
+    if(!form.length)
+        return;
+
+    function setup_period_range(e) {
+        var days = Number(e.attr('data-steps'));
+
+        var period_start = new Date(e.parent().parent().prev().attr('data-period-start'));
+        var label = e.prevAll('p');
+
+        function format_date(d) {
+            return d.getDate() + ' ' + months[d.getMonth()];
+        }
+        function set_label(values) {
+            if(!values) {
+                values = e.slider('values');
+            }
+            var txt = "from ";
+            var d = new Date(period_start);
+            d.setDate(d.getDate() + values[0]);
+            txt += format_date(d) + " to ";
+            d.setDate(d.getDate() + (values[1]-values[0]));
+            txt += format_date(d);
+            label.text(txt);
+        }
+        /*
+         * questi sono gli input da mantenere sincronizzati con i valore dello
+         * slider
+         */
+        var inputs = $('input[type=hidden]', e.parent());
+        /*
+         * questa funzione viene chiamata anche su elementi clonati dove è già
+         * presente il markup dello slider; la chiamata .html('') anche se poco
+         * elegante mi permette di fare tabula rasa e ripartire da zero.
+         */
+        e.html('').slider({
+            range: true,
+            min: 0,
+            max: days,
+            values: [ Number(inputs.eq(0).val()), Number(inputs.eq(1).val())],
+            slide: function(evt, ui) {
+                set_label(ui.values);
+                inputs.eq(0).val(ui.values[0]);
+                inputs.eq(1).val(ui.values[1]);
+            }
+        });
+        set_label();
+    };
+
+    function setup_reservation_rows(rows) {
+        $(rows).each(function() {
+            var reservation = $(this);
+            var details = reservation.next();
+            $('.room-type', reservation).click(function(e) {
+                e.preventDefault();
+                var a = $(this);
+                var code = a.attr('data-fare');
+                a.parent()
+                    .children('.room-type')
+                    .removeClass('selected');
+                a.addClass('selected');
+
+                $('td[data-fare]', details)
+                    .attr('data-fare', code)
+                    .children('input[type=hidden]')
+                    .val(code);
+            });
+            var init = $('td[data-fare] input[type=hidden]', details).val();
+            $('.room-type-' + init, reservation).click();
+
+            setup_period_range($('.period', details));
+        });
+    }
+
+    setup_reservation_rows($('.hotel-reservation-type', form));
+
+    $('.cart-hotel-another-reservation', form).click(function(e) {
+        e.preventDefault();
+        var type = $(this).attr('data-type');
+        var rows = $('tr[data-reservation-type=' + type + ']', form);
+
+        var orig = rows.eq(rows.length-1);
+        var main = orig.clone();
+        var details = orig.next().clone();
+
+        orig.parents('tbody')
+            .append(main)
+            .append(details);
+
+        setup_reservation_rows(main);
+        setup_cart_input($('input', main));
+        setup_cart_input($('input', details));
+    });
+
+    function calcTotal() {
+
+        form.ajaxSubmit({
+            url: '/p3/cart/calculator/',
+            dataType: 'json',
+            success: function(data, text, jqHXR) {
+                /*
+                 * data contiene il totale generale, lo sconto ottenuto tramit
+                 * coupon e il dettaglio dei costi dei singoli biglietti
+                 */
+                var feedback = $('.coupon .cms span');
+                feedback.text(data.coupon != 0 ? 'coupon accepted' : '');
+                $('.coupon .total b', form).html('€ ' + data.coupon);
+                $('.grand.total b', form).html('€ ' + data.total);
+
+                /*
+                 * ...il problema con i costi dei singli biglietti è quello di
+                 * mostrare per ogni prenotazione alberghiera il prezzo
+                 * corrispondente.
+                 * Il prezzo degli altri biglietti non varia con i parametri
+                 * inseriti dall'utente, ad esempio non abbiamo lo sconto
+                 * quantità, quindi posso mostrare il prezzo del singolo
+                 * biglietto in anticipo inserendolo nell'html. Con le
+                 * prenotazioni alberghiere invece il prezzo varia sia con il
+                 * tipo di camera (ma qui sono fare diverse è la nostra UI che
+                 * le vuol far vedere su una singola riga) sia con il periodo
+                 * di pernottamento, inoltre possiamo avere più biglietti dello
+                 * stesso tipo ma con periodi diversi (ad esempio potrei voler
+                 * prenotare 1 biglietto HB3 per le date X e Y e 1 biglietto
+                 * sempre HB3 ma per le date X' e Y')
+                 */
+                var totals = {
+                    'H': {
+                        sel: '.hotel-reservations',
+                        total: 0
+                    },
+                    'T': {
+                        sel: '.conference-tickets',
+                        total: 0
+                    }
+                };
+                $(data.tickets).each(function() {
+                    var code = this[0];
+                    var params = this[1];
+                    var total = this[2];
+                    var group = code.substr(0, 1);
+                    /*
+                     * per tutti i biglietti, ad eccezioni delle prenotazioni
+                     * alberghiere, posso limitarmi ad aggiungere il valore nel
+                     * totale di sezione (identificato con la prima lettera del
+                     * codice tariffa)...
+                     */
+                    totals[group].total += Number(total);
+                    switch(group) {
+                        case 'H':
+                            /*
+                             * ...ma per le tariffe alberghiere devo anche
+                             * mostrare il valore del biglietto nella riga
+                             * corrispondente. E non basta usare il codice
+                             * tariffa, devo fare anche il match con il periodo
+                             */
+                            $('.hotel-reservations td[data-fare=' + code + ']', form).each(function() {
+                                var qty = $(this);
+                                if($('input[type=text]', qty).val() == params.qty) {
+                                    // ho trovato un input con la stessa quantità e
+                                    // lo stesso codice tariffa, ora devo
+                                    // controllare il periodo
+                                    var period = $('.period', qty.prev()).slider('values');
+                                    if(params.period[0] == period[0] && params.period[1] == period[1]) {
+                                        // trovato!
+                                        var price = qty.next();
+                                        price.html('€ ' + total);
+                                    }
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                for(var key in totals) {
+                    var o = totals[key];
+                    $(o.sel + ' .total', form).html('€ ' + o.total.toFixed(2));
+                }
+            }
+        });
+    }
+    function setup_cart_input(inputs) {
+        inputs
+            .change(calcTotal)
+            .not('[name=coupon]')
+            .keypress(function(e) {
+                if((e.which < 48 || e.which > 57) && e.which != 13 && e.which != 0 && e.which != 8) {
+                    e.preventDefault()
+                }
+            });
+    }
+    setup_cart_input($('input', form));
+
+    function _enableFares(personal) {
+        $('.conference-tickets td.fare', form).each(function() {
+            var td = $(this);
+            var fare_code = td.attr('data-fare');
+            var e = ((fare_code.substr(3, 1) == 'C' && !personal) || (fare_code.substr(3, 1) != 'C' && personal));
+            var inputs = $('input', td);
+            if(e) {
+                td.removeClass('disabled');
+                inputs.attr('disabled', false);
+            }
+            else {
+                td.addClass('disabled');
+                inputs.attr('disabled', true);
+            }
+        });
+    }
+    $('#id_order_type').change(function() {
+        _enableFares($(this).val() != 'deductible');
+        calcTotal();
+    });
+
+    if(document.location.search.substr(0, 3) == '?f=') {
+        var highligh_fare = document.location.search.substr(3);
+        var i = $('td[data-fare=' + highligh_fare + '] input');
+        if(!i.val())
+            i.val(1);
+        i.addClass('selected')
+            .focus()
+            .parents('tr')
+            .addClass('selected');
+        i.eq(0)[0].scrollIntoView();
+    }
+
+    $('#id_order_type').change();
 }

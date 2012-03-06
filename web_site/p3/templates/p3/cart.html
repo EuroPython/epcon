@@ -27,11 +27,11 @@
                 <p>{% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}</p>
             </fieldset>
             {% if COUNTDOWN.conference > 0 %}
-            <fieldset class="tickets">
+            <fieldset class="tickets conference-tickets">
                 <legend>{% trans "Conference tickets" %}</legend>
                 <p class="vat-info">{% trans "All prices are 20% VAT included." %}</p>
                 <div class="cms">    
-                    <table id="conference-tickets">
+                    <table>
                         <col />
 
                         <col style="background: #E1DBC5" />
@@ -61,50 +61,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr> 
-                                {% render_cart_row "TDF" form fares %}
-                            </tr> 
-                            <tr> 
-                                {% render_cart_row "TDS" form fares %}
-                            </tr> 
-                            <tr> 
-                                {% render_cart_row "TDD" form fares %}
-                            </tr> 
-    {% comment %}
-                            <tr> 
-                                <td>Ticket Regular - Standard</td> 
-                                {% render_cart_row "TRS" form fares %}
-                            </tr> 
-                            <tr> 
-                                <td>Ticket Regular - Full Access</td> 
-                                {% render_cart_row "TRF" form fares %}
-                            </tr> 
-                            <tr> 
-                                <td>Ticket Regular - Daily Pass</td> 
-                                {% render_cart_row "TRD" form fares %}
-                            </tr> 
-
-                            <tr> 
-                                <td>Ticket OnDesk - Standard</td> 
-                                {% render_cart_row "TDS" form fares %}
-                            </tr> 
-                            <tr> 
-                                <td>Ticket OnDesk - Full Access</td> 
-                                {% render_cart_row "TDF" form fares %}
-                            </tr> 
-                            <tr> 
-                                <td>Ticket OnDesk - Daily Pass</td> 
-                                {% render_cart_row "TDD" form fares %}
-                            </tr> 
-
-                            <tr> 
-                                <td>Ticket OnDesk - Single Training</td> 
-                                {% render_cart_row "TDT" form fares %}
-                            </tr> 
-    {% endcomment %}
+                            {% render_cart_rows "conference" form %}
                         </tbody>
                     </table>
-                <!-- /cms -->
                 </div>
                 
                 <div class="total"> 
@@ -112,6 +71,30 @@
                 </div> 
             </fieldset>
             {% endif %}
+            <fieldset class="tickets hotel-reservations">
+                <legend>{% trans "Hotel Rooms" %}</legend>
+                <p>{% trans "Hotel Rooms Intro" %}</p>
+                <div class="cms">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{% trans "Reservation type" %}</th>
+                                <th>{% trans "Reservetion detail" %}</th>
+                                <th>{% trans "Q.ty" %}</th>
+                                <th>{% trans "Price" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% render_cart_rows "hotel" form %}
+                        </tbody>
+                    </table>
+                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">Add another bed</a></div>
+                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">Add another room</a></div>
+                </div>
+                <div class="total"> 
+                    {% trans "Hotel reservations total (VAT inc.)" %}: <b>€ 0</b> 
+                </div> 
+            </fieldset>
             {% comment %}
             <fieldset class="tickets">
                 
@@ -163,9 +146,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for f in fares_ordered %}
-                            {% render_og_cart_row f %}
-                            {% endfor %}
+                            {% render_cart_rows "other" form %}
                         </tbody>
                     </table>
                 </div>
@@ -173,7 +154,6 @@
                     {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
-            {% endcomment %}
 
             <fieldset class="tickets">
                 <legend>{% trans "Partner Program" %}</legend>
@@ -190,9 +170,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for f in fares_ordered %}
-                            {% render_pp_cart_row f %}
-                            {% endfor %}
+                            {% render_cart_rows "partner" form %}
                         </tbody>
                     </table>
                 </div>
@@ -200,6 +178,7 @@
                     {% trans "Partner Program total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
+            {% endcomment %}
 
             <fieldset class="tickets coupon">
                 <legend>{% trans "Coupon code" %}</legend>
@@ -226,86 +205,6 @@
             {% if not account_type %}
                 $('#form-cart input').attr('disabled', true);
                 $('#form-cart select').attr('disabled', true);
-            {% else %}
-            (function() {
-                function calcTotal() {
-                    var totals = [0, 0, 0];
-                    var form = $('#form-cart');
-                    $('fieldset.tickets', form).each(function(ix, e) {
-                        if(ix >= totals.length)
-                            return;
-                        $('input', this).each(function() {
-                            if(!$(this).attr('disabled')) {
-                                var x = Number(this.value);
-                                if(!isNaN(x)) {
-                                    var fare = Number($('#fare-' + this.name).attr('data-amount'));
-                                    if(!isNaN(fare))
-                                        totals[ix] += x * fare;
-                                }
-                            }
-                        });
-                    });
-                    $('.total', form).each(function(ix, e) {
-                        if(ix<totals.length) {
-                            var e = $(this);
-                            var t = totals[ix];
-                            $('b', e).html('€ ' + t);
-                        }
-                    });
-                    form.ajaxSubmit({
-                        url: '{% url p3-calculator %}',
-                        dataType: 'json',
-                        success: function(data, text, jqHXR) {
-                            var feedback = $('.coupon .cms span');
-                            feedback.text(data.coupon != 0 ? 'coupon accepted' : '');
-                            $('.coupon .total b', form).html('€ ' + data.coupon);
-                            $('.grand.total b', form).html('€ ' + data.total);
-                        }
-                    });
-                }
-                $('#form-cart input')
-                    .change(calcTotal)
-                    .not('[name=coupon]')
-                    .keypress(function(e) {
-                        if((e.which < 48 || e.which > 57) && e.which != 13 && e.which != 0 && e.which != 8) {
-                            e.preventDefault()
-                        }
-                    });
-                function _enableFares(personal) {
-                    $('#conference-tickets td.fare').each(function() {
-                        var td = $(this);
-                        var fare_code = td.attr('data-fare');
-                        var e = ((fare_code.substr(3, 1) == 'C' && !personal) || (fare_code.substr(3, 1) != 'C' && personal));
-                        var inputs = $('input', td);
-                        if(e) {
-                            td.removeClass('disabled');
-                            inputs.attr('disabled', false);
-                        }
-                        else {
-                            td.addClass('disabled');
-                            inputs.attr('disabled', true);
-                        }
-                    });
-                }
-                $('#id_order_type').change(function() {
-                    _enableFares($(this).val() != 'deductible');
-                    calcTotal();
-                });
-
-                if(document.location.search.substr(0, 3) == '?f=') {
-                    var highligh_fare = document.location.search.substr(3);
-                    var i = $('td[data-fare=' + highligh_fare + '] input');
-                    if(!i.val())
-                        i.val(1);
-                    i.addClass('selected')
-                        .focus()
-                        .parents('tr')
-                        .addClass('selected');
-                    i.eq(0)[0].scrollIntoView();
-                }
-
-                $('#id_order_type').change();
-            })();
             {% endif %}
         </script>
     </div>

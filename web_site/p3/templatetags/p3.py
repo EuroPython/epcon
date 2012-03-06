@@ -16,8 +16,11 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 
+from conference import dataaccess as cdataaccess
 from conference import models as ConferenceModels
 from conference.settings import STUFF_DIR, STUFF_URL
 
@@ -184,42 +187,65 @@ def render_ticket(context, ticket):
     })
     return context
 
-@register.inclusion_tag('p3/render_cart_row.html', takes_context=True)
-def render_cart_row(context, subcode, form, fares):
-    def g(code):
-        try:
-            return form[code]
-        except KeyError:
-            return None
-    try:
-        at = context['request'].user.assopy_user.account_type
-    except AttributeError:
-        at = None
-    company = at == 'c'
+@fancy_tag(register, takes_context=True)
+def render_cart_rows(context, fare_type, form):
+    assert fare_type in ('conference', 'goodies', 'partner', 'hotel')
+    ctx = Context(context)
+    request = ctx['request']
+    company = request.user.assopy_user.account_type == 'c'
+    ctx.update({
+        'form': form,
+        'company': company,
+    })
 
-    # Selezione le tariffe che devo mostrare: per ogni subcode passato ci sono
-    # al più tre tariffe, ad esempio con TES (ticket early standard):
-    # TESS -> student 
-    # TESP -> private 
-    # TESC -> company 
-    subfares = [ fares.get(subcode + x) for x in ('S', 'P', 'C') ]
+    fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
+    if fare_type == 'conference':
+        tpl = 'p3/fragments/render_cart_conference_ticket_row.html'
+        # il rendering dei biglietti "conference" è un po' particolare, ogni
+        # riga del carrello corrisponde a più `fare` (student, private,
+        # company)
 
-    # row a tre elementi: studente, privato, azienda
-    #   ognuno di questi è una tupla con 3 elementi:
-    #       1. Fare
-    #       2. FormField
-    #       3. Boolean che indica se la tariffa è utilizzabile dall'utente
-    row = []
-    for f in subfares:
-        if f is None:
-            row.append((None, None, None))
-        else:
-            # la tariffa è valida se passa il controllo temporale e se il tipo
-            # dell'account è compatibile
-            row.append((f, g(f.code), f.valid() and at and not (company ^ (f.code[-1] == 'C')),))
-    return {
-        'row': row,
-    }
+        # Le tariffe devono essere ordinate secondo l'ordine temporale + il
+        # tipo di biglietto + il destinatario:
+        #   early
+        #       full            [Student, Private, Company]
+        #       lite (standard) [Student, Private, Company]
+        #       daily           [Student, Private, Company]
+        #   regular (late)
+        #       ...
+        #   on desk
+        #       ...
+        #
+        # L'ordine temporale viene implicitamente garantito dall'aver esclude
+        # le fare non più valide (non permettiamo overlap nel range di
+        # validità)
+        fares = dict((f['code'][2:], f) for f in fares_list if f['code'][0] == 'T')
+        rows = []
+        for t in ('F', 'S', 'D'):
+            # Per semplificare il template impacchetto le fare a gruppi di tre:
+            # studente, privato, azienda.
+            # Ogni riha è una tupla con 3 elementi:
+            #       1. Fare
+            #       2. FormField
+            #       3. Boolean che indica se la tariffa è utilizzabile dall'utente
+            row = []
+            for k in ('S', 'P', 'C'):
+                try:
+                    f = fares[t+k]
+                except KeyError:
+                    row.append((None, None, None))
+                else:
+                    # la tariffa è valida se passa il controllo temporale e se il tipo
+                    # dell'account è compatibile
+                    valid = not (company ^ (f['code'][-1] == 'C'))
+                    row.append((f, form.__getitem__(f['code']), valid))
+            rows.append(row)
+        ctx['rows'] = rows
+    elif fare_type == 'hotel':
+        tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
+        ctx['field'] = form['hotel_reservations']
+
+    return render_to_string(tpl, ctx)
 
 @register.inclusion_tag('p3/render_pp_cart_row.html', takes_context=True)
 def render_pp_cart_row(context, fare):

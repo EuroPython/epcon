@@ -79,3 +79,11 @@
     margin-left: 10px;
     color: green;
 }
+
+.room-type.selected {
+    color: red;
+}
+
+.room-type.disabled {
+    background: gray;
+}

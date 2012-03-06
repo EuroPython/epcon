@@ -15,6 +15,7 @@ import models
 import assopy.models as amodels
 from assopy.forms import BillingData
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
+from conference import forms as cforms
 from conference.models import Fare, Event, Ticket, Schedule, Speaker, AttendeeProfile
 from conference.views import profile_access
 from email_template import utils
@@ -201,46 +202,6 @@ def user(request, token):
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
-from assopy.forms import FormTickets
-class P3FormTickets(FormTickets):
-    coupon = forms.CharField(
-        label='Insert your discount code and save money!',
-        max_length=10,
-        required=False,
-        widget=forms.TextInput(attrs={'size': 10}),
-    )
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(P3FormTickets, self).__init__(*args, **kwargs)
-        del self.fields['payment']
-
-    def clean_coupon(self):
-        data = self.cleaned_data.get('coupon', '').strip()
-        if not data:
-            return None
-        if data[0] == '_':
-            raise forms.ValidationError('invalid coupon')
-        try:
-            coupon = amodels.Coupon.objects.get(code__iexact=data)
-        except amodels.Coupon.DoesNotExist:
-            raise forms.ValidationError('invalid coupon')
-        if not coupon.valid(self.user):
-            raise forms.ValidationError('invalid coupon')
-        return coupon
-
-    def clean(self):
-        data = super(P3FormTickets, self).clean()
-        order_type = data['order_type']
-        company = order_type == 'deductible'
-        for ix, row in list(enumerate(data['tickets']))[::-1]:
-            fare, quantity = row
-            if fare.ticket_type != 'company':
-                continue
-            if (company ^ (fare.code[-1] == 'C')):
-                del data['tickets'][ix]
-                del data[fare.code]
-        return data
-
 @render_to('p3/cart.html')
 def cart(request):
     try:
@@ -255,12 +216,12 @@ def cart(request):
     # fatta una POST valida
     request.session.pop('user-cart', None)
     if request.method == 'POST':
-        form = P3FormTickets(data=request.POST, user=u)
+        form = p3forms.P3FormTickets(data=request.POST, user=u)
         if form.is_valid():
             request.session['user-cart'] = form.cleaned_data
             return redirect('p3-billing')
     else:
-        form = P3FormTickets(initial={
+        form = p3forms.P3FormTickets(initial={
             'order_type': 'deductible' if at == 'c' else 'non-deductible',
         })
     fares = {}
@@ -474,38 +435,59 @@ def schedule_search(request, conference):
 @render_to_json
 def calculator(request):
     output = {
-        'tickets': 0,
+        'tickets': [],
         'coupon': 0,
+        'total': 0,
     }
     if request.method == 'POST':
-        form = P3FormTickets(data=request.POST, user=request.user.assopy_user)
+        form = p3forms.P3FormTickets(data=request.POST, user=request.user.assopy_user)
         if not form.is_valid():
             # se la form non valida a causa del coupon lo elimino dai dati per
             # dare cmq un feedback all'utente
             if 'coupon' in form.errors:
                 qdata = request.POST.copy()
                 del qdata['coupon']
-                form = P3FormTickets(data=qdata, user=request.user.assopy_user)
+                form = p3forms.P3FormTickets(data=qdata, user=request.user.assopy_user)
+
         if form.is_valid():
             data = form.cleaned_data
             coupons = []
             if data['coupon']:
                 coupons.append(data['coupon'])
             totals = amodels.Order.calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
-            output['tickets'] = sum(x[0] for x in totals['tickets'].values())
+            def _fmt(x):
+                if x == 0:
+                    # x è un Decimal e ottengo una rappresentazione diversa tra 0 e -0
+                    return '0'
+                else:
+                    return '%.2f' % x
+
+            grand_total = 0
+            # per permettere al client di associare ad ogni biglietto il giusto
+            # costo, riscrivo le informazioni nello stesso "formato" in cui mi
+            # sono state inviate.
+            tickets = []
+            for row in totals['tickets']:
+                fcode = row[0].code
+                total = row[2]
+                params = row[1]
+                if 'period' in params:
+                    start = settings.P3_HOTEL_RESERVATION['period'][0]
+                    params['period'] = map(lambda x: (x-start).days, params['period'])
+                tickets.append((fcode, params, _fmt(total)))
+                grand_total += total
+            output['tickets'] = tickets
+
             if data['coupon']:
-                output['coupon'] = totals['coupons'][data['coupon'].code][0]
+                total = totals['coupons'][data['coupon'].code][0]
+                output['coupon'] = _fmt(total)
+                grand_total += total
+
+            output['total'] = _fmt(grand_total)
         else:
             # report form.errors ?
             pass
 
-    output['total'] = sum(output.values())
-    for k, v in output.items():
-        if v == 0:
-            # v è un Decimal e ottengo una rappresentazione diversa tra 0 e -0
-            output[k] = '0'
-        else:
-            output[k] = '%.2f' % v
     return output
 
 def secure_media(request, path):
