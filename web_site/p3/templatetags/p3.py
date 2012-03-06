@@ -221,7 +221,7 @@ def render_cart_rows(context, fare_type, form):
         # validità)
         fares = dict((f['code'][2:], f) for f in fares_list if f['code'][0] == 'T')
         rows = []
-        for t in ('F', 'S', 'D'):
+        for t in ('S', 'L', 'D'):
             # Per semplificare il template impacchetto le fare a gruppi di tre:
             # studente, privato, azienda.
             # Ogni riha è una tupla con 3 elementi:
