@@ -8,7 +8,7 @@
             {% if profile_data.bio %}
             {{ profile_data.bio|markdown2 }}
             {% else %}
-            <p>Why not writing something about you?</p>
+                <p>Why don’t you write something about you?</p>
             {% endif %}
         </div>
         {% if full_access %}{{ form.bio|field:"tpl:no_label" }}{% endif %}

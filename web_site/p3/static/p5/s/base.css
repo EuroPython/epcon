@@ -616,81 +616,16 @@ footer nav li img {
 
 /* @@TODO: Move speaker styles into user profile  */
 
-
-
-.speaker-picture {
-/*    float: left; */
-/*     width: 100px; */
-
-    border: 5px solid #aba18f;
-    
-    margin: 100px 0 0 0;
-}
-
-.talk,
-.speaker  {
-    margin: 30px 0 0 0;
-}
-
-
-.talk h2,
-.speaker h2  {
-    text-align: left;
-    
-    margin: 0 0 20px 0;
-}
-
-
-.speaker.talks li {
-    margin: 0  0 10px 0;
-}
-
-
-.speaker.talks ul {
-    margin: 0  0 20px 0;
-}
-
-.speaker.talks li {
-    margin: 0  0 10px 0;
-}
-
-
-.speaker.talks h3 {
-    margin: 0 0 10px 0;
-
+.speaker-talks dt {
+    margin: 10px 0 0 0;
     color: #4895a3;
-/*     font: normal 18px/20px "League Gothic", "Arial Narrow", sans-serif;     */
-    
-    font: bold 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
-
-    
-    
+    font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;        
+    text-transform: uppercase;
 }
 
 
-.speaker.contacts dt {
-    float: left;
-    width: 140px;
-    
-    color: #4895a3;    
-    
-/*     font: normal 18px/20px "League Gothic", "Arial Narrow", sans-serif;     */
-    
-/*     text-transform: uppercase; */
-
-    font-weight: bold;
-
-    padding: 0 0 10px 0;
-    margin: 0 0 10px 0;
-    
-}
-
-.speaker.contacts dd {
-
-/*     background: transparent url(../i/bg-sep.png) bottom left repeat-x; */
-
-    padding: 0 0 10px 0;
-    margin: 0 0 10px 0;
+.speaker-talks dd {
+    margin: 0  0 10px 0;
 }
 
 

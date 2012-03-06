@@ -10,7 +10,7 @@
                 {% if profile_data.personal_homepage %}
                 <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.personal_homepage|field:"tpl:no_label" }}{% endif %}
             </dd>
@@ -21,7 +21,7 @@
                 {% if profile_data.twitter %}
                 <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.twitter|field:"tpl:no_label" }}{% endif %}
             </dd>
@@ -34,7 +34,7 @@
                     {{ p }}{% if not forloop.last %},{% endif %}
                 {% endfor %}
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.interests|field:"tpl:no_label" }}{% endif %}
             </dd>
@@ -45,7 +45,7 @@
                 {% if profile_data.location %}
                 <span>{{ profile_data.location }}</span>
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
             </dd>
@@ -56,7 +56,7 @@
                 {% if profile_data.company %}
                 <span>{{ profile_data.company }}</span>
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.company|field:"tpl:no_label" }}{% endif %}
             </dd>
@@ -67,7 +67,7 @@
                 {% if profile_data.company_homepage %}
                 <span>{{ profile_data.company_homepage }}</span>
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.company_homepage|field:"tpl:no_label" }}{% endif %}
             </dd>
@@ -78,7 +78,7 @@
                 {% if profile_data.job_title %}
                 <span>{{ profile_data.job_title }}</span>
                 {% else %}
-                <span>-- NOT SET --</span>
+                <span>&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.job_title|field:"tpl:no_label" }}{% endif %}
             </dd>

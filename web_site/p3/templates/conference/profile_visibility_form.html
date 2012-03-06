@@ -1,24 +1,21 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-<div>
+<div class="profile-visibility form-box">
     <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
         <input type="hidden" name="section" value="visibility" />
-        <div>
-            {% if profile_data.visibility == "x" %}
-            <p>Your profile is not visibile by anyone.</p>
-            {% endif %}
-            {% if profile_data.visibility == "m" %}
-            <p>Only conference participants can view your profile.</p>
-            {% endif %}
-            {% if profile_data.visibility == "p" %}
-            <p>Your profile is publicly visible.</p>
-            {% endif %}
-        </div>
+
+        {% if profile_data.visibility == "x" %}
+            <span>Your profile is not visibile by anyone.&nbsp;</span>
+        {% endif %}
+        {% if profile_data.visibility == "m" %}
+            <span>Only <b>conference participants</b> can view your profile.&nbsp;</span>
+        {% endif %}
+        {% if profile_data.visibility == "p" %}
+            <span>Your profile is <b>publicly visible</b>.&nbsp;</span>
+        {% endif %}
         {{ form.visibility|field:"autosubmit" }}
         {% if full_access %}
-        <div class="button mini">
-            <a href="#" class="live-edit-switch">Change</a>
-        </div>
+           <a href="#" class="live-edit-switch">Change</a>
         {% endif %}
     </form>
 </div>
