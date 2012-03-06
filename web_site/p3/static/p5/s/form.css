@@ -5,6 +5,10 @@
 	border: 1px solid #aba18f;
 }
 
+.form-box h2 {
+    margin: 0 0 10px 0;
+}
+
 
 
 .form-box fieldset {
@@ -53,8 +57,8 @@ form .note {
 legend {
 			
     color: #4895A3;
-	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;		
-	text-transform: uppercase;	
+	font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;		
+/* 	text-transform: uppercase;	 */
 
     margin: 0 0 10px 0;
 	

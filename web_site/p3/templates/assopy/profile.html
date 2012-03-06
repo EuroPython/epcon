@@ -5,7 +5,9 @@
     {% p3_profile_data request.user.id as profile %}
     <div class="span-7 append-1">
         {% include "assopy/profile_personal_data.html" %}
-        {% include "assopy/profile_email_contact.html" %}
+        <hr />
+        {% include "assopy/profile_email_contact.html" %}        
+        <hr />
         {% include "assopy/profile_spam_control.html" %}
     </div>
 
@@ -17,130 +19,130 @@
             <div class="button">
                 <a href="{% url conference-profile slug=profile.slug %}">Go to public profile</a>
             </div>
-            <div class="button">
-                <a href="#">My personal schedule</a>
-            </div>
+                
+            <hr />
             
-            {% render_profile_last_block %}
-        
-            <div class="">
+            <div class="profile-user-utility-links">
+            
+                <ul>
 
-                {% block WEB_ACCOUNTS %}
-                <section class="profile-user-data web-accounts">    
-                    <h4>{% trans "Web accounts for log in" %}</h4>
-                    
-                    <ul id="web-accounts">
-                        {% for i in user.identities.all %}
-                        <li class="clearfix" data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Remove account" %}" /></li>
-                        {% endfor %}
-                    </ul>
-                    <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
-                        <input type="hidden" name="identifier" value="" />
-                    </form>
-                    <script type="text/javascript">
-                        $('#web-accounts img.delete').click(function(e) {
-                            if(!confirm('Are you sure?')) {
-                                return;
+                    {% with request.user.assopy_user.tickets as tickets %}
+                        {% if tickets|length %}
+                            <li class="tickets">
+                                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %}</a> ({{tickets|length}})
+                            </li>
+                        {% endif %}
+                    {% endwith %}
+                                    
+                    <li class="schedule">
+                        <a href="{% url p3-my-schedule %}">Your personal schedule</a>
+                    </li>            
+                                        
+                </ul>
+
+            </div>
+
+            <hr />
+
+            {% block WEB_ACCOUNTS %}
+            <section class="profile-user-data web-accounts">    
+                <h4>{% trans "Web accounts for log in" %}</h4>
+                
+                <ul id="web-accounts">
+                    {% for i in user.identities.all %}
+                    <li class="clearfix" data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Remove account" %}" /></li>
+                    {% endfor %}
+                </ul>
+                <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
+                    <input type="hidden" name="identifier" value="" />
+                </form>
+                <script type="text/javascript">
+                    $('#web-accounts img.delete').click(function(e) {
+                        if(!confirm('Are you sure?')) {
+                            return;
+                        }
+                        var parent = $(e.target).parents('li');
+                        var id = parent.attr('data-identifier');
+                        var form = $('form#remove-identity');
+                        $('input[name=identifier]', form).val(id);
+                        form.ajaxSubmit({
+                            success: function() {
+                                feedback('{% trans "Web access removed" %}');
+                                parent.remove();
+                            },
+                            error: function(xhr, status, error) {
+                                alert('{% trans "Cannot remove the requested account, please contact info@pycon.it for assistance" %}');
                             }
-                            var parent = $(e.target).parents('li');
-                            var id = parent.attr('data-identifier');
-                            var form = $('form#remove-identity');
-                            $('input[name=identifier]', form).val(id);
-                            form.ajaxSubmit({
-                                success: function() {
-                                    feedback('{% trans "Web access removed" %}');
-                                    parent.remove();
-                                },
-                                error: function(xhr, status, error) {
-                                    alert('{% trans "Cannot remove the requested account, please contact info@pycon.it for assistance" %}');
-                                }
-                            });
                         });
-                    </script>
-                    <div class="button mini">
-                        {% url assopy-profile as u %}
-                        {% render_janrain_box u "overlay" %}
-                    </div>
-                
-                </section>
-                
-                {% endblock %}
+                    });
+                </script>
+                <div class="button mini">
+                    {% url assopy-profile as u %}
+                    {% render_janrain_box u "overlay" %}
+                </div>
+            
+            </section>
+            
+            {% endblock %}
 
 <!--
-                {% block SPEAKER_PROFILE %}
-                {% if request.user.speaker %}
-                <h4>{% trans "Speaker profile" %}</h4>
-                <p>
-                    <a href="{  url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
-                </p>
-                {% endif %}
-                {% endblock %}
+            {% block SPEAKER_PROFILE %}
+            {% if request.user.speaker %}
+            <h4>{% trans "Speaker profile" %}</h4>
+            <p>
+                <a href="{  url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
+            </p>
+            {% endif %}
+            {% endblock %}
 -->
 
-  
-        
-                {% block USER_TICKETS %}
-                {% with request.user.assopy_user.tickets as tickets %}
-                    {% if tickets|length %}
-                    <section class="profile-user-data tickets">
-<!--                         <h4>{% trans "Your Tickets" %}</h4> -->
-                        <div class="button mini">
-                            <a href="{% url assopy-tickets %}">{% trans "Your tickets" %}</a>
-                        </div>
-                    </section>                    
-                    {% endif %}
-                {% endwith %}
-                {% endblock %}
 
+            {% block USER_COUPONS %}
+            {% with request.user.assopy_user|user_coupons as coupons %}
+                {% if coupons.valid|length or coupons.invalid|length%}
+                <section class="profile-user-data coupons">
+                    <h4>{% trans "Your Coupons" %}</h4>                        
+                    <ul>
+                    {% for c in coupons.valid %}                        
+                        <li class="coupon valid">
+                            <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
+                        </li>
+                    {% endfor %}                                                
+                    {% for c in coupons.invalid %}
+                        <li class="coupon invalid">
+                            <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
+                        </li>
+                    {% endfor %}                        
+                    </ul>
+                </section>
+                {% endif %}
+            {% endwith %}
+            {% endblock %}
 
+            {% block USER_INVOICES %}
+            {% with request.user.assopy_user.invoices as invoices %}
+                {% if invoices|length %}
+                 <section class="profile-user-data tickets">
+                     
+                    <h4>{% trans "Your Invoices" %}</h4>
+                    <ul>
+                    {% for i in invoices %}
+                        {% with i.order.code as ocode %}
+                        {% with i.order.created|date:"d M Y" as odate %}
+                        <li>
+                            <a href="{% url assopy-invoice-pdf assopy_id=i.assopy_id %}">{% blocktrans %}Order: {{ ocode }} of {{ odate }}{% endblocktrans %}</a>
+                        </li>
+                        {% endwith %}
+                        {% endwith %}
+                    {% endfor %}
+                    </ul>
 
-                {% block USER_COUPONS %}
-                {% with request.user.assopy_user|user_coupons as coupons %}
-                    {% if coupons.valid|length or coupons.invalid|length%}
-                    <section class="profile-user-data coupons">
-                        <h4>{% trans "Your Coupons" %}</h4>                        
-                        <ul>
-                        {% for c in coupons.valid %}                        
-                            <li class="coupon valid">
-                                <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
-                            </li>
-                        {% endfor %}                                                
-                        {% for c in coupons.invalid %}
-                            <li class="coupon invalid">
-                                <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
-                            </li>
-                        {% endfor %}                        
-                        </ul>
-                    </section>
-                    {% endif %}
-                {% endwith %}
-                {% endblock %}
+                 </section>
+                {% endif %}
+            {% endwith %}
+            {% endblock %}
 
-                {% block USER_INVOICES %}
-                {% with request.user.assopy_user.invoices as invoices %}
-                    {% if invoices|length %}
-                     <section class="profile-user-data tickets">
-                         
-                        <h4>{% trans "Your Invoices" %}</h4>
-                        <ul>
-                        {% for i in invoices %}
-                            {% with i.order.code as ocode %}
-                            {% with i.order.created|date:"d M Y" as odate %}
-                            <li>
-                                <a href="{% url assopy-invoice-pdf assopy_id=i.assopy_id %}">{% blocktrans %}Order: {{ ocode }} of {{ odate }}{% endblocktrans %}</a>
-                            </li>
-                            {% endwith %}
-                            {% endwith %}
-                        {% endfor %}
-                        </ul>
-
-                     </section>
-                    {% endif %}
-                {% endwith %}
-                {% endblock %}
-
-                
-            </div>
+    
         </aside>
         {% endblock %}
     </div>

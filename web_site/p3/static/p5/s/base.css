@@ -713,6 +713,25 @@ footer nav li img {
 }
 
 
+.profile-user-utility-links ul {
+    border-top: 1px dotted #ABA18F;
+    padding-top: 5px;
+}
+
+.profile-user-utility-links li {
+    border-bottom: 1px dotted #ABA18F;    
+    padding: 0 0 5px 20px;
+}
+
+.profile-user-utility-links li.tickets {
+    background: transparent url(../i/icon-tickets.png)  left center no-repeat;
+}
+
+.profile-user-utility-links li.schedule {
+    background: transparent url(../i/icon-personal-schedule.png) left center no-repeat;
+}
+
+
 .profile-user-data.web-accounts li {
     border-bottom: 1px dotted #ABA18F;
     padding-bottom: 5px;
@@ -731,7 +750,7 @@ footer nav li img {
 }
 .profile-user-identity {
     background: #E1DBC5;
-    margin: 0 0 20px 0;    
+/*     margin: 0 0 20px 0;     */
 }
 
 .profile-user-identity h1 {
