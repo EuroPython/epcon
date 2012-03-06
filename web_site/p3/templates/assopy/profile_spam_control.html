@@ -8,7 +8,7 @@
         <h2>Privacy settings</h2>    
         <form action="{% url p3-account-spam-control %}" class="async" method="POST" rel="#account-spam-control">
                 <fieldset>
-                    <legend>Recruiting</legend>
+                    <legend>Recruiting <span class="notice-saved">Saved</span></legend>
                             
                     {{ pform.spam_recruiting|field:"autosubmit" }}
     
@@ -24,7 +24,7 @@
     
                 </fieldset>
                 <fieldset>
-                    <legend>User message</legend>
+                    <legend>User message <span class="notice-saved">Saved</span></legend>
                                     
                         {{ pform.spam_user_message|field:"autosubmit" }}
                 
@@ -43,7 +43,7 @@
                 </fieldset>
     
                 <fieldset>            
-                    <legend>SMS message</legend>                            
+                    <legend>SMS message <span class="notice-saved">Saved</span></legend>                            
                     <!-- @@TODO Check se è phone number è vuoto? -->                
                     <p>You have to insert your phone number in the “Personal data” section to activate this service.</p>
     
