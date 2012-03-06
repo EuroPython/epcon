@@ -2,6 +2,7 @@
 import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
+from conference.listeners import fare_price
 from conference.models import AttendeeProfile
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -67,3 +68,13 @@ def on_user_identity_created(sender, **kw):
         return
 
 user_identity_created.connect(on_user_identity_created)
+
+def calculate_hotel_reservation_price(sender, **kw):
+    if sender.code[0] != 'H':
+        return
+    # il costo di una prenotazione alberghiera varia in funzione del periodo
+    calc = kw['calc']
+    period = calc['params']['period']
+    qty = calc['params']['qty']
+    calc['total'] = 5 * qty
+fare_price.connect(calculate_hotel_reservation_price)
