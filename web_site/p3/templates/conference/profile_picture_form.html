@@ -6,12 +6,12 @@
 
         <div class="profile-user-picture">
             {% if profile_data.image %}
-            <img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="98" />
+                <img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="98" />
             {% else %}
-            <a href="#"><img class="block" src="{{ STATIC_URL }}p5/i/headshot-ph.jpg" alt="{{ profile_data.name }}" width="98" height="98" /></a>                            
+                <img class="block" src="{{ STATIC_URL }}p5/i/headshot-default.jpg" alt="{{ profile_data.name }}" width="98" height="98" />
             {% endif %}
             {% if full_access %}
-            <div class="button mini"><a href="#" class="trigger-overlay" rel="#profile-picture-form">Change</a></div>
+                <div class="button mini"><a href="#" class="trigger-overlay" rel="#profile-picture-form">Change</a></div>
             {% endif %}
         </div>
         {% if full_access %}
@@ -36,7 +36,7 @@
                 </ul>
             </div>
             <div class="button mini">
-                <a href="#" class="autosubmit">Save</a>
+                <a href="#" class="autosubmit">Save changes</a>
             </div>
         </div>
         {% endif %}

@@ -667,6 +667,7 @@ footer nav li img {
 }
 
 
+
 .profile-user-data.web-accounts li {
     border-bottom: 1px dotted #ABA18F;
     padding-bottom: 5px;
@@ -683,13 +684,23 @@ footer nav li img {
 
     margin: 0 0 10px 0;
 }
+
 .profile-user-identity {
     background: #E1DBC5;
+    padding: 10px;
 /*     margin: 0 0 20px 0;     */
 }
 
+.profile-user-identity-data {
+    margin-left: 130px;
+}
+
+.profile-user-identity-data .not-set {
+    color: #635443;
+}
+
 .profile-user-identity h1 {
-	text-shadow: rgba(100%, 100%, 100%, .55) 1px 1px 1px;   
+	text-shadow: rgba(100%, 100%, 100%, .55) 0 1px 1px;   
 	margin: 0 0 10px 0;
 }
 
@@ -702,12 +713,20 @@ footer nav li img {
 
 .profile-user-identity dd {
     font-size: 16px;
-    margin: 0 0 20px 0;
+    margin: 0 0 10px 0;
+}
+
+
+.profile-user-picture {
+    float: left;
+    width: 100px;
 }
 
 
 .profile-user-picture img {
     border: 5px solid #aba18f;
+    margin: 0 0 10px 0;
+    
 }
 
 .profile-user-data.coupons .coupon.invalid b {

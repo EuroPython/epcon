@@ -17,15 +17,19 @@
         <hr />
         
         <section class="profile-user-identity clearfix">
-            <div class="span-2">
+
                 {% include "conference/profile_picture_form.html" %}
-            </div>
 
-            <div class="span-9 last">  
-                <h1>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h1>
-                {% include "conference/profile_publicdata_form.html" %}
-            </div>
+                <div class="profile-user-identity-data">
+                    <h1>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h1>
+                    {% include "conference/profile_publicdata_form.html" %}
+                </div>
+        </section>
 
+        <hr />
+        
+        <section class="profile-user-company">
+            {% include "conference/profile_publicdata_company_form.html" %}
         </section>
 
         <hr />
