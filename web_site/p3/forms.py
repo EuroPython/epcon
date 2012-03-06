@@ -517,6 +517,9 @@ class HotelReservationsFieldWidget(forms.Widget):
             elif f['code'][:2] == 'HB':
                 fares['HB'].append(f)
 
+        if not fares['HR'] or not fares['HB']:
+            return ''
+
         if not value:
             value = [
                 {'fare': fares['HB'][0]['code'], 'qty': 0, 'period': settings.P3_HOTEL_RESERVATION['default']},
@@ -546,6 +549,31 @@ class HotelReservationsFieldWidget(forms.Widget):
                 ctx['fares'] = fares['HR']
 
             rows.append(ctx)
+
+        # XXX schifezza!
+        # per come ho implementato il rendering del widget ho bisogno di sapere
+        # qui e adesso se ci sono errori per mostrarli nel posto giusto.
+        # Purtroppo gli errori sono una proprietà del BoundField non del field
+        # ne tantomeno del widget. Questo codice è un accrocchio funziona
+        # perché nel templatetag aggancio al widget gli errori della form. Il
+        # modo pulito sarebbe implementare il rendering dei subwidget come
+        # avviene per il RadioInput, passare dal filtro |field e inserire li
+        # gli errori.
+        errors = [None] * len(rows)
+        if hasattr(self, '_errors'):
+            for e in self._errors:
+                try:
+                    ix, msg = e.split(':', 1)
+                except ValueError:
+                    continue
+                try:
+                    errors[int(ix)] = msg
+                except:
+                    continue
+        for e in zip(rows, errors):
+            if e[1]:
+                e[0]['error'] = e[1]
+
         ctx = {
             'start': start,
             'days': (settings.P3_HOTEL_RESERVATION['period'][1]-start).days,
@@ -557,12 +585,17 @@ class HotelReservationsFieldWidget(forms.Widget):
 class HotelReservationsField(forms.Field):
     widget = HotelReservationsFieldWidget
 
+    def __init__(self, *args, **kwargs):
+        super(HotelReservationsField, self).__init__(*args, **kwargs)
+
     def clean(self, value):
-        for entry in value:
+        for ix, entry in reversed(list(enumerate(value))):
             try:
                 entry['qty'] = int(entry['qty'])
             except (ValueError, TypeError):
                 raise forms.ValidationError('invalid quantity')
+            if not entry['qty']:
+                del value[ix]
         return value
 
 class P3FormTickets(aforms.FormTickets):
@@ -606,6 +639,12 @@ class P3FormTickets(aforms.FormTickets):
             raise forms.ValidationError('invalid coupon')
         return coupon
 
+    def clean_hotel_reservations(self):
+        data = self.cleaned_data.get('hotel_reservations', [])
+        if not data:
+            return []
+        return data
+
     def clean(self):
         data = super(P3FormTickets, self).clean()
 
@@ -623,4 +662,8 @@ class P3FormTickets(aforms.FormTickets):
             from conference.models import Fare
             for r in data['hotel_reservations']:
                 data['tickets'].append((Fare.objects.get(code=r['fare']), r))
+
+        if not data['tickets']:
+            raise forms.ValidationError('No tickets')
+
         return data

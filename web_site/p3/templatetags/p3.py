@@ -244,6 +244,7 @@ def render_cart_rows(context, fare_type, form):
     elif fare_type == 'hotel':
         tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
         ctx['field'] = form['hotel_reservations']
+        ctx['field'].field.widget._errors = ctx['field'].errors
 
     return render_to_string(tpl, ctx)
 

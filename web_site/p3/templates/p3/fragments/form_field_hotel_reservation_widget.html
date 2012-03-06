@@ -1,9 +1,9 @@
 {% for row in rows %}
-    <tr class="hotel-reservation-type" data-period-start="{{ start|date:"Y/m/d" }}" data-reservation-type="{{ row.type }}">
-        <td rowspan="2">{{ row.label }}</td>
+    <tr class="hotel-reservation-type{% if row.error %} error{% endif %}" data-period-start="{{ start|date:"Y/m/d" }}" data-reservation-type="{{ row.type }}">
+        <td rowspan="2"><label>{{ row.label }}</label></td>
         <td colspan="3">{% for f in row.fares %}<a href="#" class="room-type room-type-{{ f.code }}{% if f.code == row.fare %} selected{% endif %}" title="{{ f.description }}" data-fare="{{ f.code }}">{{ f.code }}</a> {% endfor %}</td>
     </tr>
-    <tr>
+    <tr class="{% if row.error %}error{% endif %}">
         <td>
             <p></p>
             <input type="hidden" name="{{ name }}_period" value="{{ row.period.0 }}" />
@@ -13,6 +13,11 @@
         <td data-fare="{{ row.fare }}">
             <input type="hidden" name="{{ name }}_fare" value="{{ row.fare }}" />
             <input type="text" name="{{ name }}_qty" size="2" value="{{ row.qty }}" />
+            {% if row.error %}
+            <div class="errors">
+            {{ row.error }}
+            </div>
+            {% endif %}
         </td>
         <td></td>
     </tr>
