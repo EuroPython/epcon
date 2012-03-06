@@ -204,6 +204,17 @@ form hr {
     margin: 0;
 }
 
+.async .notice-saved {
+    background: transparent url(../i/icon-check.png) left center no-repeat;
+    padding-left: 20px;
+    margin-left: 10px;
+    
+    color: #3ba37d;        
+    font: bold 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+    
+}
+
+
 #form-cart fieldset.order-type label {
     display: none;
 }
