@@ -89,6 +89,8 @@ def _assign_ticket(ticket, email):
             recipient.assopy_user.token = str(uuid.uuid4())
             recipient.assopy_user.save()
         name = recipient.assopy_user.name()
+    ticket.name = name
+    ticket.save()
     utils.email(
         'ticket-assigned',
         ctx={
@@ -120,7 +122,7 @@ def ticket(request, tid):
 
         if t.fare.ticket_type == 'conference':
             data = request.POST.copy()
-            if t.user == request.user:
+            if t.user == request.user and not data.get('assigned_to'):
                 # vogliamo massimizzare il numero dei biglietti assegnati, e
                 # per farlo scoraggiamo le persone nel compilar ei biglietti di
                 # altri. Se il biglietto non è assegnato lo forzo ad avere lo
