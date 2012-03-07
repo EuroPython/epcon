@@ -657,7 +657,7 @@ class Order(models.Model):
         }
         tickets_total = 0
         for fare, params in items:
-            total = fare.calculated_price(**params)
+            total = Decimal(fare.calculated_price(**params))
             totals['tickets'].append((fare, params, total))
             tickets_total += total
 
