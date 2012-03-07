@@ -12,7 +12,7 @@
     </div>
     
     <div class="span-9 last">
-        <form id="form-cart" action="{% url p3-billing %}" method="post">{% csrf_token %}
+        <form action="{% url p3-billing %}" method="post">{% csrf_token %}
             {{ form|form_errors }}
             <fieldset>
                 <legend>{% trans "Your order" %}</legend>
@@ -29,10 +29,10 @@
                             </tr> 
                         </thead>
                         <tbody>
-                            {% for price, quantity, fare in totals.tickets.values %}
+                            {% for fare, params, price in totals.tickets %}
                             <tr>
                                 <td>{{ fare.name }}</td>
-                                <td>{{ quantity }}</td>
+                                <td>{{ params.qty }}</td>
                                 <td>€ {{ price|floatformat:"2" }}</td>
                             </tr>
                             {% endfor %}
