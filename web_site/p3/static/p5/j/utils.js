@@ -26,6 +26,7 @@ function setup_fragment(ctx) {
     }
     setup_live_edit(ctx);
     setup_async_form(ctx);
+    setup_disabled_form(ctx);
     if(setup_conference_fields && !(ctx === document))
         setup_conference_fields(ctx);
     return ctx;
@@ -248,6 +249,12 @@ function setup_async_form(ctx) {
             //
         }
     });
+};
+
+function setup_disabled_form(ctx) {
+    $('form.disabled input', ctx).attr('disabled', 'disabled');
+    $('form.disabled button', ctx).click(function() { return false; });
+    $('form.disabled .button a', ctx).off('click').click(function() { return false; });
 };
 
 function autorefresh(o) {
