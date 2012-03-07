@@ -1391,6 +1391,12 @@ hr.stars {
     padding: 0 15px;
 }
 
+.ticket-attendee-image {
+    position: absolute;
+    top: 90px;
+    right: 10px;
+    opacity: 0.25;
+}
 
 .ticket-name {
     font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;		

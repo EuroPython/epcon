@@ -34,6 +34,12 @@
             <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="16" height="16" />
             {% endfor %}
         </div>
+        {% if ticket.p3_conference %}
+        <div class="ticket-attendee-image">
+            {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
+            <img src="{{ pdata.image }}" alt="" />
+        </div>
+        {% endif %}
         
         {% if not ticket.frozen %}
             {% if blocked %}
@@ -47,9 +53,10 @@
             {% else %}
             <div class="ticket-commands">
                 <p>
-                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
+                    This ticket is<br/>
+                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "for me" %}</a>
                     {% if user == ticket.user %}
-                    | <a href="#" class="button mini assign-button">{% trans "Assign to user" %}</a>
+                    | <a href="#" class="button mini assign-button">{% trans "for another user" %}</a>
                     {% endif %}
                 </p>
             </div>
