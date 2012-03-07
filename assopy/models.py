@@ -441,7 +441,7 @@ class OrderManager(models.Manager):
                     log.warn('Invalid coupon: %s', c.code)
                     raise ValueError(c)
 
-        log.info('new order for "%s" via "%s": %d items', user.name(), payment, sum(x[1] for x in items))
+        log.info('new order for "%s" via "%s": %d items', user.name(), payment, sum(x[1]['qty'] for x in items))
         o = Order()
         o.code = None
         o.method = payment
@@ -459,14 +459,16 @@ class OrderManager(models.Manager):
         o.state = user.state
 
         o.save()
-        for f, q in items:
-            for _ in range(q):
+        for f, params in items:
+            cp = dict(params)
+            del cp['qty']
+            for _ in range(params['qty']):
                 a = Ticket(user=user.user, fare=f)
                 a.save()
                 item = OrderItem(order=o, ticket=a)
                 item.code = f.code
                 item.description = f.name
-                item.price = f.price
+                item.price = f.calculated_price(qty=1, **cp)
                 item.save()
         tickets_total = o.total()
         if coupons:
@@ -645,21 +647,19 @@ class Order(models.Model):
         """
         # sono le stesse regole utilizzate dalla OrderManager.create
         totals = {
-            'tickets': {},
+            'tickets': [],
             'coupons': {},
             'total': 0,
         }
         tickets_total = 0
-        for f, q in items:
-            totals['tickets'][f.code] = (f.price * q, q, f)
-            tickets_total += f.price * q
+        for fare, params in items:
+            total = fare.calculated_price(**params)
+            totals['tickets'].append((fare, params, total))
+            tickets_total += total
 
         total = tickets_total
         if coupons:
-            rows = []
-            for f, q in items:
-                for _ in range(q):
-                    rows.append(f)
+            rows = [ fare for fare, params in items for _ in range(params['qty']) ]
             for t in ('perc', 'val'):
                 for c in coupons:
                     if c.type() == t:
