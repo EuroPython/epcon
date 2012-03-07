@@ -1,10 +1,10 @@
 {% load p3 assopy_tags i18n %}
 {% p3_profile_data request.user.id as profile %}
 {% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
-<div id="account-spam-control-async-target" class="form-box">
+<div id="account-spam-control-async-target" class="never form-box">
     <form action="{% url p3-account-spam-control %}" class="async" method="POST" rel="#account-spam-control-async-target">
         <h2>Privacy settings<span class="notice-ok async-feedback"> Saved</span></h2>
-        <p>We respect your privacy. We never share your data with anyone. Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
+        <p>We respect your privacy. We <b>never share your personal data</b> with anyone. Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
         <p>This page contains additional privacy settings for advanced opt-in features.</p>
 
         <fieldset>
@@ -14,21 +14,25 @@
 
             <div class="hint">
                 <ul>
-                    <li>Your email address will never be shared with any of our sponsor.</li>
-                    <li>Job offers may be tailored with your “interest”, so be sure to update your profile.</li>
+                    <li>Your email address will <b>never</b> be shared with any of our recruiting sponsor. We send the emails.</li>
+                    <li>You will receive max 10 job offers; all emails will be sent between June 15th and July 15th.</li>
                 </ul>
             </div>
         </fieldset>
         <fieldset>
-            <legend>User message</legend>
+            <legend>User messages</legend>
                             
+               <p>After you buy a ticket and activate your <a href="{% conference-profile slug=profile.slug %}">public profile</a>,
+                  other participants will be able to <a href="/find-whos-coming">find out</a> that you are coming to the conference.
+                  Do you want them to be able to contact you through our website?</p>
+
                 {{ pform.spam_user_message|field:"autosubmit" }}
         
                 <div class="hint">
                     <ul>
-                        <li>Your email address will never be shared with other people.</li>
-                        <li>To write a message will be used a form in your profile page.</li>
-                        <li>User messages will be active only for the time span of the conference, except for the speakers.</li>
+                        <li>Your email address will <b>never</b> be shared with other participants.</li>
+                        <li>We will send you one mail notifying you of the received message.</li>
+                        <li>User messages will be active until the conference ends.</li>
                     </ul>
                 </div>
         </fieldset>
@@ -51,4 +55,5 @@
         </fieldset>
     </form>
 </div>
+
 
