@@ -12,12 +12,23 @@
                 <span>Only <b>conference participants</b> can view your profile.&nbsp;</span>
             {% endif %}
             {% if profile_data.visibility == "p" %}
+                {% if profile_data.talks_accepted %}
+                <span>Your profile is <b>publicly visible</b> because you are an EuroPython speaker.&nbsp;</span>
+                {% else %}
                 <span>Your profile is <b>publicly visible</b>.&nbsp;</span>
+                {% endif %}     
             {% endif %}
             {{ form.visibility|field:"autosubmit" }}
-            {% if full_access %}
+            {% if full_access and not profile_data.talks_accepted %}
             <a href="#" class="live-edit-switch">Change</a>
             {% endif %}
+
+            {% if profile_data.visibility == "x" or profile_data.visibility == "m" %}
+            {% if profile_data.talks_pending %}
+            <br/><b>NOTE:</b>If any of your proposals will be accepted, this profile will be forced to be publicly visibile.
+            {% endif %}
+            {% endif %}          
         </form>
     </div>
 </section>
+
