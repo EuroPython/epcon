@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from __future__ import with_statement
+import functools
 import os.path
 import tempfile
 import urllib
@@ -8,11 +9,11 @@ from cStringIO import StringIO
 from decimal import Decimal
 from xml.etree import cElementTree as ET
 
+from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
-from conference.forms import EventForm, SpeakerForm, SubmissionForm, TalkForm
-from conference.utils import send_email
+from conference.forms import EventForm, SpeakerForm, TalkForm
 
 from django import forms
 from django import http
@@ -24,13 +25,29 @@ from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import redirect, render_to_response, get_object_or_404
+from django.shortcuts import redirect, render_to_response, get_object_or_404, render
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
 import simplejson
 from decorator import decorator
+
+class MyEncode(simplejson.JSONEncoder):
+    def default(self, obj):
+        import datetime, decimal
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%d/%m/%Y %H:%M:%S')
+        elif isinstance(obj, datetime.date):
+            return obj.strftime('%d/%m/%Y')
+        elif isinstance(obj, datetime.time):
+            return obj.strftime('%H:%M')
+        elif isinstance(obj, decimal.Decimal):
+            return str(obj)
+
+        return simplejson.JSONEncoder.default(self, obj)
+
+json_dumps = functools.partial(simplejson.dumps, cls=MyEncode)
 
 # see: http://www.djangosnippets.org/snippets/821/
 def render_to(template):
@@ -781,70 +798,15 @@ def init_js(request):
         .all()\
         .distinct()\
         .values_list('name', flat=True)
-    code = """
-conference = { tags: %(tags)s };
-
-function setup_conference_fields(ctx) {
-    ctx = ctx || document;
-    var tfields = $('.tag-field', ctx);
-    if(tfields.length) {
-        tfields.tagit({
-            tagSource: function(search, showChoices) {
-                if(!conference)
-                    return;
-                var needle = search.term.toLowerCase();
-                var tags = [];
-                for(var ix=0; ix<conference.tags.length; ix++) {
-                    var t = conference.tags[ix];
-                    if(t.toLowerCase().indexOf(needle) != -1)
-                        tags.push(t);
-                }
-                showChoices(tags);
-            }
-        });
-        if(conference) {
-            var wrapper = $('<ul class="all-tags"></ul>');
-            wrapper.insertAfter(tfields.parent().children('ul.tagit').eq(0));
-            for(var ix=0; ix<conference.tags.length; ix++) {
-                var t = conference.tags[ix];
-                wrapper.append('<a class="tag" href="#">' + t + '</a>');
-            }
-            $('a.tag', wrapper).click(function(e) {
-                e.preventDefault();
-                tfields.tagit('createTag', $(this).text());
-            });
-        }
+    data = {
+        'tags': [ x.encode('utf-8') for x in tags ],
     }
-    var mfields = $('.markedit-widget', ctx);
-    if(mfields.length) {
-        mfields.markedit({
-            'preview_markup': '<div class="markedit-preview cms ui-widget-content"></div>',
-            'toolbar': {
-                'layout': 'heading bold italic bulletlist | link quote code image '
-            }
-        }).blur();
-    }
-    $('.pseudo-radio').click(function(e) {
-        var pseudo = $(this);
-        var p = pseudo.parent();
-        var input = $('input[type=hidden]', p);
-        input.val(pseudo.attr('data-value'));
-        input.change();
-        $('.pseudo-radio', p).removeClass('checked');
-        pseudo.addClass('checked');
-    });
-    $('.pseudo-radio-field input').each(function() {
-        var initial = $(this).val();
-        $('.pseudo-radio[data-value=' + initial + ']', $(this).parent()).click();
-    });
-}
-$(function() {
-    setup_conference_fields();
-});
-    """ % {
-        'tags': simplejson.dumps([ x.encode('utf-8') for x in tags ])
-    }
-    return http.HttpResponse(content=code, content_type='text/javascript')
+    return render(
+        request,
+        'conference/init.js',
+        { 'conference_data': json_dumps(data), },
+        content_type='text/javascript',
+    )
 
 def profile_access(f):
     """
