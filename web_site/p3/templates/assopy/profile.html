@@ -23,8 +23,8 @@
         </section>
         <div id="account-login-options">
             <section class="profile-user-data web-accounts clearfix">
+                <h4>{% trans "Web accounts for log in" %}</h4>
                 <div class="span-6">
-                    <h4>{% trans "Web accounts for log in" %}</h4>
 
                     <ul id="web-accounts">
                         {% for i in user.identities.all %}
@@ -59,7 +59,7 @@
                         {% render_janrain_box u "overlay" %}
                     </div>
                 </div>
-                <div class="span-3 last">You can connect more web accounts to your EuroPython profile, so that you can use any of them for logging in
+                <div class="span-5 last">You can connect more web accounts to your EuroPython profile, so that you can use any of them for logging in
                          (without having to remember which one you used to create the account).</div>
             </section>
         </div>
@@ -153,6 +153,7 @@
     </div>
 </div>
 {% endblock %}
+
 
 
 
