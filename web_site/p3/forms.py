@@ -421,7 +421,7 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     phone = forms.CharField(
-        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
+        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This number will <strong>never</strong> be published.'),
         max_length=30,
         required=False,
     )
