@@ -208,9 +208,7 @@ class FormTickets(forms.Form):
                 self._errors[k] = self.error_class(['Invalid fare'])
                 del data[k]
                 continue
-            o.append((f, q))
-        if total == 0:
-            raise forms.ValidationError('no tickets')
+            o.append((f, {'qty': q}))
 
         data['tickets'] = o
         return data
