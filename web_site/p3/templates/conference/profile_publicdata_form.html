@@ -1,94 +1,59 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-<div>
-    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
-        <input type="hidden" name="section" value="public-data" />
-        <dl>
-            {% if profile_data.personal_homepage or full_access %}
-            <dt>Website</dt>  
-            <dd>
-                {% if profile_data.personal_homepage %}
+<form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
+    <input type="hidden" name="section" value="public-data" />
+    <dl>
+        {% if profile_data.personal_homepage or full_access %}
+        <dt>Website</dt>  
+        <dd>
+            {% if profile_data.personal_homepage %}
                 <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.personal_homepage|field:"tpl:no_label" }}{% endif %}
-            </dd>
+            {% else %}
+                <span class="not-set">&mdash; Not set &mdash;</span>
             {% endif %}
-            {% if profile_data.twitter or full_access %}
-            <dt>Twitter</dt>        
-            <dd>
-                {% if profile_data.twitter %}
-                <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.twitter|field:"tpl:no_label" }}{% endif %}
-            </dd>
-            {% endif %}
-            {% if profile_data.interests or full_access %}
-            <dt>Interests</dt>        
-            <dd>
-                {% if profile_data.interests %}
-                {% for p in profile_data.interests %}
-                    {{ p }}{% if not forloop.last %},{% endif %}
-                {% endfor %}
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.interests|field:"tpl:no_label" }}{% endif %}
-            </dd>
-            {% endif %}
-            {% if profile_data.location or full_access %}
-            <dt>Location</dt>        
-            <dd>
-                {% if profile_data.location %}
-                <span>{{ profile_data.location }}</span>
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
-            </dd>
-            {% endif %}
-            {% if profile_data.company or full_access %}
-            <dt>Company</dt>        
-            <dd>
-                {% if profile_data.company %}
-                <span>{{ profile_data.company }}</span>
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.company|field:"tpl:no_label" }}{% endif %}
-            </dd>
-            {% endif %}
-            {% if profile_data.company_homepage or full_access %}
-            <dt>Company Website</dt>
-            <dd>
-                {% if profile_data.company_homepage %}
-                <span>{{ profile_data.company_homepage }}</span>
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.company_homepage|field:"tpl:no_label" }}{% endif %}
-            </dd>
-            {% endif %}
-            {% if profile_data.job_title or full_access %}
-            <dt>Job title</dt>
-            <dd>
-                {% if profile_data.job_title %}
-                <span>{{ profile_data.job_title }}</span>
-                {% else %}
-                <span>-- NOT SET --</span>
-                {% endif %}
-                {% if full_access %}{{ form.job_title|field:"tpl:no_label" }}{% endif %}
-            </dd>
-            {% endif %}
-        </dl>
-        {% if full_access %}
-        <div class="button mini">
-            <a href="#" class="live-edit-switch">Edit profile</a>
-            <a href="#" class="autosubmit">Save</a>
-        </div>
+            {% if full_access %}{{ form.personal_homepage|field:"tpl:no_label" }}{% endif %}
+        </dd>
         {% endif %}
-    </form>
-</div>
+        {% if profile_data.twitter or full_access %}
+        <dt>Twitter</dt>        
+        <dd>
+            {% if profile_data.twitter %}
+                <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
+            {% else %}
+                <span class="not-set">&mdash; Not set &mdash;</span>
+            {% endif %}
+            {% if full_access %}{{ form.twitter|field:"tpl:no_label" }}{% endif %}
+        </dd>
+        {% endif %}
+        {% if profile_data.interests or full_access %}
+        <dt>Interests</dt>        
+        <dd>
+            {% if profile_data.interests %}
+            {% for p in profile_data.interests %}
+                {{ p }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+            {% else %}
+                <span class="not-set">&mdash; Not set &mdash;</span>
+            {% endif %}
+            {% if full_access %}{{ form.interests|field:"tpl:no_label" }}{% endif %}
+        </dd>
+        {% endif %}
+        {% if profile_data.location or full_access %}
+        <dt>Location</dt>        
+        <dd>
+            {% if profile_data.location %}
+                <span>{{ profile_data.location }}</span>
+            {% else %}
+                <span class="not-set">&mdash; Not set &mdash;</span>
+            {% endif %}
+            {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
+        </dd>
+        {% endif %}
+    </dl>
+    {% if full_access %}
+    <div class="button mini">
+        <a href="#" class="live-edit-switch">Edit profile</a>
+        <a href="#" class="autosubmit">Save changes</a>
+    </div>
+    {% endif %}
+</form>
