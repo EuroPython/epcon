@@ -15,6 +15,7 @@ function setup_fragment(ctx) {
     setup_cart_form(ctx);
     setup_tooltip(ctx);
     setup_toggles(ctx);
+    setup_auto_tabs(ctx);
     // jQueryTools è bacato in tanti modi diversi; ad esempio l'overlay non si
     // aggancia ad elementi scollegati dal dom
     if(ctx === document) {
@@ -266,6 +267,9 @@ function autorefresh(o) {
 $(document).ready(function() {
     setup_fragment();
 });
+function setup_auto_tabs(ctx) {
+	 $('.auto-tabs', ctx).tabs();
+}
 
 /*
  * Adding this to a javascript file that is included on your site will ensure
