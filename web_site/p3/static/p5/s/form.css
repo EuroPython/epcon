@@ -14,6 +14,10 @@
 .form-box fieldset {
 }
 
+.form-box dt {
+    font-weight: bold;
+}
+
 form .hint {
     font-size: 12px;
     color: #7d6f60;
@@ -204,7 +208,11 @@ form hr {
     margin: 0;
 }
 
-.async .notice-saved {
+.async-feedback {
+    display: none;
+}
+
+.notice-ok {
     background: transparent url(../i/icon-check.png) left center no-repeat;
     padding-left: 20px;
     margin-left: 10px;

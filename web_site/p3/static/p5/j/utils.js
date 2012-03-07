@@ -236,7 +236,9 @@ function setup_async_form(ctx) {
                 else {
                     var target = $(rel);
                 }
-                target.replaceWith(setup_fragment($(response)));
+                var frag = setup_fragment($(response));
+                target.replaceWith(frag);
+                $('.async-feedback', frag).show().fadeOut(5000);
             }
             else if(form.hasClass('autorefresh')) {
                 autorefresh(form);
