@@ -185,3 +185,10 @@ class DonationAdmin(admin.ModelAdmin):
     _name.admin_order_field = 'user__user__first_name'
 
 admin.site.register(models.Donation, DonationAdmin)
+
+class HotelRoomAdmin(admin.ModelAdmin):
+    list_display = ('conference', 'room_type', 'quantity', 'amount',)
+    list_editable = ('quantity', 'amount',)
+    list_filter = ('conference',)
+
+admin.site.register(models.HotelRoom, HotelRoomAdmin)

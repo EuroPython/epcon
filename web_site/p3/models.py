@@ -120,15 +120,54 @@ HOTELROOM_ROOM_TYPE = (
     ('t1', 'Single room'),
     ('t2', 'Double room'),
     ('t3', 'Triple room'),
-    ('t4', 'Family room (4)'),
+    ('t4', 'Quadruple room'),
 )
 class HotelRoom(models.Model):
     conference = models.ForeignKey('conference.Conference')
-    room_type = models.CharField(max_length=1, choices=HOTELROOM_ROOM_TYPE)
+    room_type = models.CharField(max_length=2, choices=HOTELROOM_ROOM_TYPE)
     quantity = models.PositiveIntegerField()
+    amount = models.CharField(max_length=50, help_text='''
+        Costo della camera per notte.
+        <ul>
+            <li>10x1,8x2,7x3 significa: 10 € per una notte, 8 a notte per due notti, 7 a notte per 3 notti.</li>
+            <li>10 significa: 10 € a notte</li>
+            <li>7,12x1,8x2 significa: 12 € per una notte, 8 a notte per due notti, 7 a notte per tutti gli altri periodi</li>
+        </ul>
+    ''')
 
     class Meta:
         unique_together = (('conference', 'room_type'),)
+
+    def clean(self):
+        try:
+            self._calc_rules()
+        except (TypeError, ValueError):
+            from django.core.exceptions import ValidationError
+            raise ValidationError('Invalid "amount" value')
+
+    def _calc_rules(self):
+        rules = {}
+        if self.amount:
+            for rule in self.amount.split(','):
+                if 'x' in rule:
+                    amount, days = rule.split('x')
+                    amount = float(amount)
+                    days = int(days)
+                else:
+                    amount = float(rule)
+                    days = None
+                rules[days] = amount
+        return rules
+
+    def price(self, days):
+        if days <= 0 or not self.amount:
+            return 0
+        rules = self._calc_rules()
+        try:
+            price = rules[days]
+        except KeyError:
+            price = rules.get(None, 0)
+        return days * price
 
 class TicketRoomManager(models.Manager):
     def bedsStatus(self, period):

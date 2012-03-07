@@ -94,6 +94,7 @@ def calculate_hotel_reservation_price(sender, **kw):
     # il costo di una prenotazione alberghiera varia in funzione del periodo
     calc = kw['calc']
     period = calc['params']['period']
-    qty = calc['params']['qty']
-    calc['total'] = 5 * qty
+    room = models.HotelRoom.objects.get(conference=sender.conference, room_type='t' + sender.code[2])
+    price = room.price(days=(period[1] - period[0]).days)
+    calc['total'] = price * calc['params']['qty']
 fare_price.connect(calculate_hotel_reservation_price)
