@@ -256,4 +256,15 @@ class P3Profile(models.Model):
     spam_user_message = models.BooleanField(default=False)
     spam_sms = models.BooleanField(default=False)
 
+    def image_url(self):
+        from p3 import utils
+        if self.profile.visibility != 'x':
+            if self.image_gravatar:
+                return utils.gravatar(self.profile.user.email)
+            elif self.image_url:
+                return self.image_url
+            elif self.profile.image:
+                return self.profile.image.url
+        return None
+
 import p3.listeners

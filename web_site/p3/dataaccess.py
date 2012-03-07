@@ -14,18 +14,12 @@ def profile_data(uid):
     except models.P3Profile.DoesNotExist:
         pass
     else:
-        if p3p.image_gravatar:
-            image = utils.gravatar(profile['email'])
-        elif p3p.image_url:
-            image = p3p.image_url
-        else:
-            image = profile['image']
         profile.update({
             'interests': [ t.name for t in p3p.interests.all() ],
             'twitter': p3p.twitter,
-            'image': image,
+            'image': p3p.image_url(),
             'image_gravatar': p3p.image_gravatar,
-            'image_url': p3p.image_url,
+            'image_url': p3p.image_url(),
             'spam_recruiting': p3p.spam_recruiting,
             'spam_user_message': p3p.spam_user_message,
             'spam_sms': p3p.spam_sms,
