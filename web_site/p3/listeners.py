@@ -1,12 +1,15 @@
 # -*- coding: UTF-8 -*-
+import logging
 import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.listeners import fare_price
-from conference.models import AttendeeProfile
+from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
 from django.db.models.signals import post_save
 from email_template import utils
+
+log = logging.getLogger('p3')
 
 def on_order_created(sender, **kwargs):
     if sender.total() == 0:
@@ -17,6 +20,22 @@ def on_order_created(sender, **kwargs):
             ctx={'order': sender,},
             to=[sender.user.user.email]
         ).send()
+
+    ritems = kwargs['raw_items']
+    for fare, params in ritems:
+        # se l'ordine contiene delle prenotazione alberghiere devo creare i
+        # relativi ticket adesso, perchè le informazioni sul periodo le ho solo
+        # tramite ritems
+        if fare.code[0] == 'H':
+            log.info('The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".', sender.code, params['qty'], fare.code, params['period'][0], params['period'][1])
+            for _ in range(params['qty']):
+                t = Ticket.objects.filter(fare=fare, user=sender.user, p3_conference_room=None)[0]
+                room = models.TicketRoom(ticket=t)
+                room.ticket_type = fare.code[1]
+                room.room_type = models.HotelRoom.objects.get(conference=fare.conference, room_type='t%s' % fare.code[2])
+                room.checkin = params['period'][0]
+                room.checkout = params['period'][1]
+                room.save()
 
 order_created.connect(on_order_created)
 

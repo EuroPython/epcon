@@ -161,8 +161,8 @@ class TicketRoomManager(models.Manager):
         pass
 
 TICKETROOM_TICKET_TYPE = (
-    ('s', 'room shared'),
-    ('r', 'room not shared'),
+    ('B', 'room shared'),
+    ('R', 'room not shared'),
 )
 class TicketRoom(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_room')
