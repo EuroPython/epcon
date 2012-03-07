@@ -513,7 +513,7 @@ def profile_data(uid, preload=None):
     except KeyError:
         talks = models.TalkSpeaker.objects\
             .filter(speaker__user=profile.user)\
-            .values_list('talk', flat=True)
+            .values('talk', 'talk__status', 'talk__conference')
 
     try:
         bio = preload['bio']
@@ -537,7 +537,9 @@ def profile_data(uid, preload=None):
         'location': profile.location,
         'bio': getattr(bio, 'body', ''),
         'visibility': profile.visibility,
-        'talks': talks,
+        'talks': [ t['talk'] for t in talks ],
+        'talks_accepted': [ t['talk'] for t in talks if t['talk__status']=='accepted'],
+        'talks_pending': [ t['talk'] for t in talks if t['talk__status']=='proposed' and t['talk__conference']== settings.CONFERENCE_CONFERENCE],
     }
 
 profile_data = cache_me(
@@ -554,7 +556,7 @@ def profiles_data(pids):
         .select_related('user')
     talks = models.TalkSpeaker.objects\
         .filter(speaker__in=missing)\
-        .values('speaker', 'talk')
+        .values('speaker', 'talk', 'talk__status', 'talk__conference')
     bios = models.MultilingualContent.objects\
         .filter(
             content_type=ContentType.objects.get_for_model(models.AttendeeProfile),
@@ -564,7 +566,7 @@ def profiles_data(pids):
         preload[p.user_id] = {'profile': p, 'talks': [], 'bio': None}
 
     for row in talks:
-        preload[row['speaker']]['talks'].append(row['talk'])
+        preload[row['speaker']]['talks'].append(row)
 
     for b in bios:
         preload[b.object_id]['bio'] = b.body
