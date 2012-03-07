@@ -496,12 +496,16 @@ class OrderManager(models.Manager):
         if o.total() == 0:
             o._complete = True
             o.save()
-        order_created.send(sender=o)
+        order_created.send(sender=o, raw_items=items)
         return o
 
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
-# in locale e sul backend.
-order_created = dispatch.Signal(providing_args=[])
+# in locale e sul backend. `raw_items` è la lista degli item utilizzata per
+# generare l'ordine; sebbene al momento dell'invio del segnale l'ordine sia già
+# stato creato e associato a tutti gli OrderItem, in raw_items potrebbero
+# essere presenti informazioni aggiuntive che altrimenti non sarebbe possibile
+# recuperare.
+order_created = dispatch.Signal(providing_args=['raw_items'])
 
 # segnale emesso da un ordine quando un questo viene "completato".  Al momento
 # l'unico meccanismo per accorgersi se un ordine è completo è pollare il
