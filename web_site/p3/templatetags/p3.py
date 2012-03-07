@@ -202,7 +202,7 @@ def render_ticket(context, ticket):
 
 @fancy_tag(register, takes_context=True)
 def render_cart_rows(context, fare_type, form):
-    assert fare_type in ('conference', 'goodies', 'partner', 'hotel')
+    assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing')
     ctx = Context(context)
     request = ctx['request']
     try:
@@ -259,9 +259,15 @@ def render_cart_rows(context, fare_type, form):
                     row.append((f, form.__getitem__(f['code']), valid))
             rows.append(row)
         ctx['rows'] = rows
-    elif fare_type == 'hotel':
+    elif fare_type == 'hotel-room-sharing':
         tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
         ctx['field'] = form['hotel_reservations']
+        ctx['field'].field.widget.types = ['HB']
+        ctx['field'].field.widget._errors = ctx['field'].errors
+    elif fare_type == 'hotel-room':
+        tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
+        ctx['field'] = form['hotel_reservations']
+        ctx['field'].field.widget.types = ['HR']
         ctx['field'].field.widget._errors = ctx['field'].errors
 
     return render_to_string(tpl, ctx)

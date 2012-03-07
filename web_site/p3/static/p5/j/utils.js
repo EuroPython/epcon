@@ -267,7 +267,7 @@ function autorefresh(o) {
 }
 
 function setup_auto_tabs(ctx) {
-	 $('.auto-tabs', ctx).tabs();
+     $('.auto-tabs', ctx).tabs();
 }
 
 /*
@@ -556,7 +556,7 @@ function setup_cart_form(ctx) {
                 $('.grand.total b', form).html('€ ' + data.total);
 
                 /*
-                 * ...il problema con i costi dei singli biglietti è quello di
+                 * ...il problema con i costi dei singoli biglietti è quello di
                  * mostrare per ogni prenotazione alberghiera il prezzo
                  * corrispondente.
                  * Il prezzo degli altri biglietti non varia con i parametri
@@ -571,16 +571,13 @@ function setup_cart_form(ctx) {
                  * prenotare 1 biglietto HB3 per le date X e Y e 1 biglietto
                  * sempre HB3 ma per le date X' e Y')
                  */
-                var totals = {
-                    'H': {
-                        sel: '.hotel-reservations',
-                        total: 0
-                    },
-                    'T': {
-                        sel: '.conference-tickets',
-                        total: 0
-                    }
-                };
+                $('fieldset .total').data('total', 0);
+                function update_total(parent, value) {
+                    var e = $('.total', parent);
+                    var total = e.data('total') + Number(value);
+                    e.data('total', total);
+                    e.html('€ ' + total.toFixed(2));
+                }
                 $(data.tickets).each(function() {
                     var code = this[0];
                     var params = this[1];
@@ -592,7 +589,6 @@ function setup_cart_form(ctx) {
                      * totale di sezione (identificato con la prima lettera del
                      * codice tariffa)...
                      */
-                    totals[group].total += Number(total);
                     switch(group) {
                         case 'H':
                             /*
@@ -612,18 +608,16 @@ function setup_cart_form(ctx) {
                                         // trovato!
                                         var price = qty.next();
                                         price.html('€ ' + total);
+                                        update_total(price.parents('.hotel-reservations'), total);
                                     }
                                 }
                             });
                             break;
                         default:
+                            update_total($('.conference-tickets', form), total);
                             break;
                     }
                 });
-                for(var key in totals) {
-                    var o = totals[key];
-                    $(o.sel + ' .total', form).html('€ ' + o.total.toFixed(2));
-                }
             }
         });
     }

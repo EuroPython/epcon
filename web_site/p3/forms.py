@@ -533,11 +533,14 @@ class HotelReservationsFieldWidget(forms.Widget):
                 {'fare': fares['HR'][0]['code'], 'qty': 0, 'period': settings.P3_HOTEL_RESERVATION['default']},
             ]
 
+        types = getattr(self, 'types', ['HR', 'HB'])
         rows = []
         for entry in value:
             k = entry['fare'][:2]
             if k not in ('HR', 'HB'):
                 raise TypeError('unsupported fare')
+            if k not in types:
+                continue
             ctx = {
                 'label': '',
                 'type': '',

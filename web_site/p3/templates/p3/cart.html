@@ -72,6 +72,29 @@
             </fieldset>
             {% endif %}
             <fieldset class="tickets hotel-reservations">
+                <legend>{% trans "Room sharing" %}</legend>
+                <p>{% trans "Room sharing Intro" %}</p>
+                <div class="cms">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{% trans "Reservation type" %}</th>
+                                <th>{% trans "Reservetion detail" %}</th>
+                                <th>{% trans "Q.ty" %}</th>
+                                <th>{% trans "Price" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% render_cart_rows "hotel-room-sharing" form %}
+                        </tbody>
+                    </table>
+                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">Add another</a></div>
+                </div>
+                <div class="total">
+                    {% trans "Hotel reservations total (VAT inc.)" %}: <b>€ 0</b>
+                </div>
+            </fieldset>
+            <fieldset class="tickets hotel-reservations">
                 <legend>{% trans "Hotel Rooms" %}</legend>
                 <p>{% trans "Hotel Rooms Intro" %}</p>
                 <div class="cms">
@@ -85,11 +108,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% render_cart_rows "hotel" form %}
+                            {% render_cart_rows "hotel-room" form %}
                         </tbody>
                     </table>
-                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">Add another bed</a></div>
-                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">Add another room</a></div>
+                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">Add another</a></div>
                 </div>
                 <div class="total"> 
                     {% trans "Hotel reservations total (VAT inc.)" %}: <b>€ 0</b> 
