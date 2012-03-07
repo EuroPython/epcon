@@ -649,6 +649,7 @@ def p3_profile(request, slug, profile=None, full_access=False):
     ctx = {
         'form': form,
         'full_access': full_access,
+        'profile': profile,
     }
     return render(request, tpl, ctx)
 
