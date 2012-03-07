@@ -26,7 +26,7 @@
                   other participants will be able to <a href="/find-whos-coming">find out</a> that you are coming to the conference.
                   Do you want them to be able to contact you through our website?</p>
 
-                {{ pform.spam_user_message|field:"autosubmit" }}
+                {https://ep2012.europython.eu/admin/templatesadmin/{ pform.spam_user_message|field:"autosubmit" }}
         
                 <div class="hint">
                     <ul>
@@ -40,18 +40,23 @@
         <fieldset>
             <legend>SMS message</legend>
             <!-- @@TODO Check se è phone number è vuoto? -->
-            <p>You have to insert your phone number in the “Personal data” section to activate this service.</p>
+
+               <p>Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes,
+                  last-minute schedule changes, impromptu happenings, etc.). Do you want to receive these information through SMS?</p>
+
 
             {{ pform.spam_sms|field:"autosubmit" }}
 
             <div class="hint">
                 <ul>
-                    <li>Setting the phone number automatically gives to the EuroPython team the right to text you about important conference announcements (like last minute issues with the location, trains, public transports, etc.</li>
-                    <li>Your phone number will never be shared with other people.</li>
-                    <li>To send a SMS will be used a form in your profile page.</li>
-                    <li>SMS messages will be active only for the time span of the conference.</li>
+                    <li>Your phone number will <b>never</b> be shared with other people.</li>
+                    <li>This SMS message service will be active only for the time span of the conference.</li>
+                    <li>Make sure you don't pay any roaming fee for incoming SMS while in Italy (or that you don't care about it...).</li>
                 </ul>
             </div>
+
+            <p>NOTE: you must insert your phone number in the “Personal data” section to activate this service.</p>
+
         </fieldset>
     </form>
 </div>
