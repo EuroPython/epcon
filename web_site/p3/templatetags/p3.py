@@ -171,6 +171,18 @@ def render_ticket(context, ticket):
         form = forms.FormTicketSIM(
             instance=inst,
             initial={
+                'ticket_name': ticket.name,
+            },
+            prefix='t%d' % (ticket.id,),
+        )
+        blocked = False
+    elif ticket.fare.code.startswith('H'):
+        # le instanze di TicketRoom devono esistere, ci pensa un listener a
+        # crearle
+        inst = ticket.p3_conference_room
+        form = forms.FormTicketRoom(
+            instance=inst,
+            initial={
                 'ticket_name': ticket.name, 
             },
             prefix='t%d' % (ticket.id,),
@@ -179,20 +191,26 @@ def render_ticket(context, ticket):
     else:
         form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
         blocked = False
-    context.update({
+    ctx = Context(context)
+    ctx.update({
         'ticket': ticket,
         'form': form,
         'user': user,
         'blocked': blocked,
     })
-    return context
+    return ctx
 
 @fancy_tag(register, takes_context=True)
 def render_cart_rows(context, fare_type, form):
     assert fare_type in ('conference', 'goodies', 'partner', 'hotel')
     ctx = Context(context)
     request = ctx['request']
-    company = request.user.assopy_user.account_type == 'c'
+    try:
+        company = request.user.assopy_user.account_type == 'c'
+    except AttributeError:
+        # utente anonimo o senza il profilo assopy (impossibile!)
+        company = False
+
     ctx.update({
         'form': form,
         'company': company,

@@ -265,6 +265,13 @@ class FormTicketSIM(forms.ModelForm):
         exclude = ('ticket',)
         fields = ('ticket_name', 'sim_type', 'plan_type', 'document',)
 
+class FormTicketRoom(forms.ModelForm):
+    ticket_name = forms.CharField(max_length=60, help_text='The person who will stay at the hotel')
+    class Meta:
+        model = models.TicketRoom
+        exclude = ('ticket',)
+        fields = ('ticket_name', 'document', 'unused')
+
 class FormSprint(forms.ModelForm):
     class Meta:
         model = models.Sprint

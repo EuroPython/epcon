@@ -176,6 +176,18 @@ def ticket(request, tid):
                 x = form.save(commit=False)
                 x.ticket = t
                 x.save()
+        elif t.fare.code.startswith('H'):
+            room_ticket = t.p3_conference_room
+            form = p3forms.FormTicketRoom(instance=room_ticket, data=request.POST, files=request.FILES, prefix='t%d' % (t.id,))
+            if not form.is_valid():
+                return http.HttpResponseBadRequest(str(form.errors))
+            else:
+                data = form.cleaned_data
+                t.name = data['ticket_name']
+                t.save()
+                x = form.save(commit=False)
+                x.ticket = t
+                x.save()
         else:
             form = p3forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():

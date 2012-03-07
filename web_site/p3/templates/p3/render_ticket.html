@@ -56,17 +56,25 @@
             {% endif %}
         {% endif %}
     {% else %}
+        <h2>{{ ticket.fare.name }}</h2>
         {% if ticket.fare.code == 'SIM01' %}
-            <h2>{{ ticket.fare.name }}</h2>
             <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
             <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
             {% if not form.document|field_value %}
             <div class="ticket-warning">INCOMPLETE TICKET!<br />Please edit and add a document</div>
             {% endif %}
         {% else %}
-            <h2>{{ ticket.fare.name }}</h2>
-            <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
-            <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
+            {% if ticket.fare.code|slice:":1" == 'H' %}
+                {% if not ticket.p3_conference_room.unused %}
+                <div class="ticket-name">{{ form.ticket_name|field_value|default:"My name" }}</div>
+                <div class="ticket-footer">from {{ ticket.p3_conference_room.checkin|date:"d M" }} until {{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
+                {% else %}
+                <div class="ticket-name">Unused ticket!</div>
+                {% endif %}
+            {% else %}
+                <div class="ticket-name">{{ form.name|field_value|default:"My name" }}</div>
+                <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
+            {% endif %}
         {% endif %}
         {% if not ticket.frozen %}
         <div class="ticket-commands">            
@@ -96,22 +104,28 @@
                 <p>Uploaded <a href="{{ doc.url }}">ID Document</a></p>
             {% endif %}
             {% endwith %}
-        {% else %}
-            {% if ticket.fare.ticket_type == 'partner' %}
-            <p>
-                {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
-                {% trans "Deposit:" %} € 30, <b>{% trans "Balance:" %} € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
-                {% endwith %}
-            </p>
-            {% endif %}
-            {% comment %}
-            {% if ticket.fare.payment_type == 'v' %}
-            <p>
-                <a href="{% url assopy-orderitem-voucher order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">Download your voucher</a>
-            </p>
-            {% endif %}
-            {% endcomment %}
         {% endif %}
+        {% if ticket.fare.code|slice:":1" == 'H' %}
+            {% with form.document|field_value as doc %}
+            {% if doc %}
+                <p>Uploaded <a href="{{ doc.url }}">ID Document</a></p>
+            {% endif %}
+            {% endwith %}
+        {% endif %}
+        {% if ticket.fare.ticket_type == 'partner' %}
+        <p>
+            {% with ticket.fare|fare_blob:"prezzo" as prezzo %}
+            {% trans "Deposit:" %} € 30, <b>{% trans "Balance:" %} € {{ prezzo|eval_:"float(x)-30"|floatformat:"2" }}</b>
+            {% endwith %}
+        </p>
+        {% endif %}
+        {% comment %}
+        {% if ticket.fare.payment_type == 'v' %}
+        <p>
+            <a href="{% url assopy-orderitem-voucher order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">Download your voucher</a>
+        </p>
+        {% endif %}
+        {% endcomment %}
     {% endif %}
     </div>
 

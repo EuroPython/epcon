@@ -1299,6 +1299,18 @@ hr.stars {
     background: #793f4b;
 }
 
+.ticket[data-fare=HB1] .preview h2,
+.ticket[data-fare=HB2] .preview h2,
+.ticket[data-fare=HB3] .preview h2,
+.ticket[data-fare=HB4] .preview h2,
+.ticket[data-fare=HR1] .preview h2,
+.ticket[data-fare=HR2] .preview h2,
+.ticket[data-fare=HR3] .preview h2,
+.ticket[data-fare=HR4] .preview h2
+{
+    background: #BB78FF;
+}
+
 .ticket-additional-info {
 }
 
