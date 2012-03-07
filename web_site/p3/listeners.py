@@ -67,7 +67,7 @@ def on_profile_created(sender, **kw):
 post_save.connect(on_profile_created, sender=AttendeeProfile)
 
 def on_user_created(sender, **kw):
-    if kw['password_set']:
+    if kw['profile_complete']:
         # L'utente è stato creato utilizzando la form email+password, non avrò
         # altri dati
         AttendeeProfile.objects.getOrCreateForUser(sender.user)
