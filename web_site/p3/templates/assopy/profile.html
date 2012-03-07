@@ -65,7 +65,7 @@
             {% with request.user.assopy_user|user_coupons as coupons %}
                 {% if coupons.valid|length or coupons.invalid|length%}
                 <section class="profile-user-data coupons">
-                    <h4>{% trans "Your Coupons" %}</h4>                        
+                    <h4>{% trans "Your discount coupons" %}</h4>                        
                     <ul>
                     {% for c in coupons.valid %}                        
                         <li class="coupon valid">
@@ -151,4 +151,5 @@
     </div>
 </div>
 {% endblock %}
+
 
