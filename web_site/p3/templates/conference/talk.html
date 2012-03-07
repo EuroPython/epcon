@@ -28,6 +28,16 @@
     </script>
 {% endblock %}
 
+{% block LOGO %}
+{% if talk.conference != CONFERENCE %}
+<div class="logo">
+    <a title="EuroPython home" href="/"><img src="{{ STATIC_URL }}p5/i/europython-logo-archive.png" alt="EuroPython Archive" title="" width="330" height="110" /></a>
+</div>
+{% else %} 
+{{ block.super }}
+{% endif %}
+{% endblock %}
+            
 {% block MAIN_CONTENT %}
     {% talk_data talk.id as talk_data %}
     <h1>{{ talk_data.title }}
