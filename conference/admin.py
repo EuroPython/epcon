@@ -228,10 +228,10 @@ class TalkAdmin(MultiLingualAdminContent):
         # modo ho subito tutti i dati pronti (utile ad esempio per mostrare i
         # nomi degli speaker)
         talks = dataaccess.talks_data(queryset.values_list('id', flat=True))
-        self.cached_talks = dict([(x['talk'].id, x) for x in talks])
+        self.cached_talks = dict([(x['id'], x) for x in talks])
         sids = [ s['id'] for t in talks for s in t['speakers'] ]
-        speakers = dataaccess.speakers_data(sids)
-        self.cached_speakers = dict([(x['speaker'].id, x) for x in speakers])
+        profiles = dataaccess.profiles_data(sids)
+        self.cached_profiles = dict([(x['id'], x) for x in profiles])
         return super(TalkAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def changelist_view(self, request, extra_context=None):
@@ -249,7 +249,7 @@ class TalkAdmin(MultiLingualAdminContent):
             args = {
                 'url': urlresolvers.reverse('admin:conference_speaker_change', args=(x['id'],)),
                 'name': x['name'],
-                'mail': self.cached_speakers[x['id']]['speaker'].user.email,
+                'mail': self.cached_profiles[x['id']]['email'],
             }
             output.append('<a href="%(url)s">%(name)s</a> (<a href="mailto:%(mail)s">mail</a>)' % args)
         return '<br />'.join(output)
