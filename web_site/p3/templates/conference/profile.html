@@ -6,7 +6,7 @@
 
 {% block MAIN_CONTENT %}
     {% p3_profile_data profile.user_id as profile_data %}
-<!--     <div class="span-12"> -->
+    <div class="span-8">
 
         {% if full_access %}
         <section class="profile-user-visibility clearfix">
@@ -28,11 +28,11 @@
 
         <hr />
         
-        <section class="profile-user-company">
-            {% include "conference/profile_publicdata_company_form.html" %}
-        </section>
+<!--         <section class="profile-user-company"> -->
 
-        <hr />
+<!--         </section> -->
+
+<!--         <hr /> -->
 
         <section class="profile-user-bio">
             <h2>Quick Bio</h2>
@@ -41,12 +41,16 @@
             </div>
         </section>
 
-        <hr />
+
+    </div>
+
+    <div class="span-4 last">
+
 
         {% with profile_data.talks|visible_talks:full_access as talks %}
         {% if talks %}
         <section class="speaker-talks">
-            <h2>Talks</h2>
+            <h2>{{ profile_data.name }}’s Talks</h2>
             <dl>
             {% for conf, talks_list in talks|ordered_talks %}
                 <dt>{{ conf }}</dt>
@@ -58,5 +62,5 @@
         </section>
         {% endif %}
         {% endwith %}
-<!--     </div> -->
+    </div>
 {% endblock %}

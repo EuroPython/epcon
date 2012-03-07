@@ -19,18 +19,18 @@
             <div>
                 <ul>
                     <li>
-                        <label><input type="radio" name="opt" value="x"{% if not profile_data.image %} checked="checked"{% endif %}>No picture please</label>
+                        <label><input type="radio" name="opt" value="x"{% if not profile_data.image %} checked="checked"{% endif %}>Do not show any picture</label>
                     </li>
                     <li>
-                        <label><input type="radio" name="opt" value="g"{% if profile_data.image_gravatar %} checked="checked"{% endif %}>Use my gravatar</label>
+                        <label><input type="radio" name="opt" value="g"{% if profile_data.image_gravatar %} checked="checked"{% endif %}>Use my Gravatar</label>
                         {{ form.image_gravatar|field:"tpl:no_label" }}
                     </li>
                     <li>
-                        <label><input type="radio" name="opt" value="u"{% if profile_data.image_url %} checked="checked"{% endif %}>Use this url:</label>
+                        <label><input type="radio" name="opt" value="u"{% if profile_data.image_url %} checked="checked"{% endif %}>Use this web address:</label>
                         {{ form.image_url|field:"tpl:no_label" }}
                     </li>
                     <li>
-                        <label><input type="radio" name="opt" value="f"{% if profile_data.image and not profile_data.image_url and not profile_data.image_gravatar %} checked="checked"{% endif %}>Use my picture:</label>
+                        <label><input type="radio" name="opt" value="f"{% if profile_data.image and not profile_data.image_url and not profile_data.image_gravatar %} checked="checked"{% endif %}>Use this picture:</label>
                         {{ form.image|field:"tpl:no_label" }}
                     </li>
                 </ul>
