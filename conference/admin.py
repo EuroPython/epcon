@@ -426,7 +426,7 @@ admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 class FareAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'recipient_type', 'start_validity', 'end_validity')
     list_filter = ('conference', )
-    ordering = ('conference', 'code')
+    ordering = ('conference', 'start_validity', 'code')
 
     def changelist_view(self, request, extra_context=None):
         if not request.GET.has_key('conference') and not request.GET.has_key('conference__exact'):
