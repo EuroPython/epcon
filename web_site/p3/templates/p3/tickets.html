@@ -60,7 +60,7 @@
                 var f = ticket_field(form, 'ticket_name');
                 if(f.length == 0)
                     f = ticket_field(form, 'name');
-                if($.trim(f.val()) == '') {
+                if(f.length && $.trim(f.val()) == '') {
                     alert('{% trans "Please enter the name" %}');
                     f.focus();
                     return false;

@@ -119,9 +119,16 @@ def ticket(request, tid):
             return http.HttpResponseForbidden()
 
         if t.fare.ticket_type == 'conference':
+            data = request.POST.copy()
+            if t.user == request.user:
+                # vogliamo massimizzare il numero dei biglietti assegnati, e
+                # per farlo scoraggiamo le persone nel compilar ei biglietti di
+                # altri. Se il biglietto non è assegnato lo forzo ad avere lo
+                # stesso nome del profilo.
+                data['t%d-ticket_name' % t.id] = '%s %s' % (t.user.first_name, t.user.last_name)
             form = p3forms.FormTicket(
                 instance=p3c,
-                data=request.POST,
+                data=data,
                 prefix='t%d' % (t.id,),
                 single_day=t.fare.code[2] == 'D',
             )
