@@ -2,21 +2,26 @@
 {% p3_profile_data profile.user_id as profile_data %}
 
 {% if profile_data.bio or full_access %}
-<form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="self">{% csrf_token %}
-    <input type="hidden" name="section" value="bio" />
-    <div>
-        {% if profile_data.bio %}
-        {{ profile_data.bio|markdown2 }}
-        {% else %}
-            <p>Why don’t you write something about you?</p>
-        {% endif %}
+<section id="profile-user-bio" class="profile-user-bio">
+    <h2>Quick Bio</h2>
+    <div class="cms">
+        <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">{% csrf_token %}
+            <input type="hidden" name="section" value="bio" />
+            <div>
+                {% if profile_data.bio %}
+                {{ profile_data.bio|markdown2 }}
+                {% else %}
+                    <p>Why don’t you write something about you?</p>
+                {% endif %}
+            </div>
+            {% if full_access %}{{ form.bio|field:"tpl:no_label" }}{% endif %}
+            {% if full_access %}
+            <div class="button mini">
+                <a href="#" class="live-edit-switch">Edit bio</a>
+                <a href="#" class="autosubmit">Save changes</a>
+            </div>
+            {% endif %}
+        </form>
     </div>
-    {% if full_access %}{{ form.bio|field:"tpl:no_label" }}{% endif %}
-    {% if full_access %}
-    <div class="button mini">
-        <a href="#" class="live-edit-switch">Edit bio</a>
-        <a href="#" class="autosubmit">Save changes</a>
-    </div>
-    {% endif %}
-</form>
+</section>
 {% endif %}

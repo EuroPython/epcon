@@ -1,21 +1,23 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-<div class="profile-visibility form-box">
-    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
-        <input type="hidden" name="section" value="visibility" />
+<section id="profile-user-visibility" class="profile-user-visibility clearfix">
+    <div class="profile-visibility form-box">
+        <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-user-visibility">{% csrf_token %}
+            <input type="hidden" name="section" value="visibility" />
 
-        {% if profile_data.visibility == "x" %}
-            <span>Your profile is not visibile by anyone.&nbsp;</span>
-        {% endif %}
-        {% if profile_data.visibility == "m" %}
-            <span>Only <b>conference participants</b> can view your profile.&nbsp;</span>
-        {% endif %}
-        {% if profile_data.visibility == "p" %}
-            <span>Your profile is <b>publicly visible</b>.&nbsp;</span>
-        {% endif %}
-        {{ form.visibility|field:"autosubmit" }}
-        {% if full_access %}
-           <a href="#" class="live-edit-switch">Change</a>
-        {% endif %}
-    </form>
-</div>
+            {% if profile_data.visibility == "x" %}
+                <span>Your profile is not visibile by anyone.&nbsp;</span>
+            {% endif %}
+            {% if profile_data.visibility == "m" %}
+                <span>Only <b>conference participants</b> can view your profile.&nbsp;</span>
+            {% endif %}
+            {% if profile_data.visibility == "p" %}
+                <span>Your profile is <b>publicly visible</b>.&nbsp;</span>
+            {% endif %}
+            {{ form.visibility|field:"autosubmit" }}
+            {% if full_access %}
+            <a href="#" class="live-edit-switch">Change</a>
+            {% endif %}
+        </form>
+    </div>
+</section>

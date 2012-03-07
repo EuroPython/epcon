@@ -9,9 +9,7 @@
     <div class="span-8">
 
         {% if full_access %}
-        <section class="profile-user-visibility clearfix">
-            {% include "conference/profile_visibility_form.html" %}
-        </section>
+        {% include "conference/profile_visibility_form.html" %}
         {% endif %}
         
         <hr />
@@ -34,19 +32,11 @@
 
 <!--         <hr /> -->
 
-        <section class="profile-user-bio">
-            <h2>Quick Bio</h2>
-            <div class="cms">
-                {% include "conference/profile_bio_form.html" %}
-            </div>
-        </section>
-
+        {% include "conference/profile_bio_form.html" %}
 
     </div>
 
     <div class="span-4 last">
-
-
         {% with profile_data.talks|visible_talks:full_access as talks %}
         {% if talks %}
         <section class="speaker-talks">
