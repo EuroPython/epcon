@@ -9,6 +9,10 @@
     <link rel="shortcut icon" href="{{ STATIC_URL }}p5/i/favicon.ico" />
     <link rel="icon" href="{{ STATIC_URL }}p5/i/favicon.png" type="image/png" />
 
+    {% if current_page and request.user.is_staff %}
+    <link rel="alternate" type="application/x-wiki" title="Edit this page!" href="{% url admin:pages_page_change current_page.pk %}"/>
+    {% endif %}
+
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/reset.css" type="text/css" media="all" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/grid.css" type="text/css" media="all" />
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/form.css" type="text/css" media="all" />
