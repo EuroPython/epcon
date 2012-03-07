@@ -490,6 +490,7 @@ function setup_cart_form(ctx) {
                 set_label(ui.values);
                 inputs.eq(0).val(ui.values[0]);
                 inputs.eq(1).val(ui.values[1]);
+                $('input[type=text]', e.parent().next()).change();
             }
         });
         set_label();
@@ -512,6 +513,7 @@ function setup_cart_form(ctx) {
                     .attr('data-fare', code)
                     .children('input[type=hidden]')
                     .val(code);
+                $('td[data-fare] input[type=text]', details).change();
             });
             var init = $('td[data-fare] input[type=hidden]', details).val();
             $('.room-type-' + init, reservation).click();
