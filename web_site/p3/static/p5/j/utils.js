@@ -264,9 +264,6 @@ function autorefresh(o) {
     });
 }
 
-$(document).ready(function() {
-    setup_fragment();
-});
 function setup_auto_tabs(ctx) {
 	 $('.auto-tabs', ctx).tabs();
 }
