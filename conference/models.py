@@ -621,6 +621,17 @@ class Fare(models.Model):
         today = datetime.date.today()
         return self.start_validity <= today <= self.end_validity
 
+    def calculated_price(self, qty=1, **kw):
+        from conference.listeners import fare_price
+        params = dict(kw)
+        params['qty'] = qty
+        calc = {
+            'total': self.price * qty,
+            'params': params,
+        }
+        fare_price.send(sender=self, calc=calc)
+        return calc['total']
+
 class TicketManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)

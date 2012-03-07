@@ -33,3 +33,10 @@ Tags: %(tags)s
     )
 
 new_paper_submission.connect(_new_paper_email)
+
+# emesso quando una tariffa deve calcolare il proprio prezzo; il sender è
+# un'istanza di Fare mentre calc è un dict contenente due chiavi:
+#   total -> inizializzato con fare.price * qty può essere modificato da un
+#   listener
+#   params -> parametri inseriti dall'utente (come la quantità)
+fare_price = Signal(providing_args=['calc'])
