@@ -7,7 +7,7 @@ from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
 
-from conference.models import Ticket, ConferenceTaggedItem
+from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
 from taggit.managers import TaggableManager
 
 class SpeakerConference(models.Model):
@@ -73,6 +73,12 @@ class TicketConference(models.Model):
     assigned_to = models.EmailField(blank=True)
 
     objects = TicketConferenceManager()
+
+    def profile(self):
+        if self.assigned_to:
+            return AttendeeProfile.objects.get(user__email=self.assigned_to)
+        else:
+            return AttendeeProfile.objects.get(user=self.ticket.user)
 
 def _ticket_sim_upload_to(instance, filename):
     subdir = 'p3/personal_documents'
