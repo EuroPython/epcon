@@ -3,9 +3,8 @@
 {% if not pform %}
     {% get_form "P3ProfilePersonalDataForm" bound=profile as pform %}
 {% endif %}
-<section id="account-personal-data">        
-    <div class="form-box clearfix">
-    
+<div id="account-personal-data-async-target" class="form-box clearfix">
+
     <div class="profile-user-picture">
         {% if profile.image %}
             <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
@@ -16,7 +15,7 @@
 
     <div class="profile-user-identity-data">  
         <h2>{% trans "Personal data" %}</h2>
-        <form action="{% url p3-account-data %}" class="async live-edit" method="POST" rel="#account-personal-data">
+        <form action="{% url p3-account-data %}" class="async live-edit" method="POST" rel="#account-personal-data-async-target">
             
             <dl>
                 <dt>Name</dt>  
@@ -45,7 +44,5 @@
             </div>
         </form>
     </div>
-    
-    </div>
 
-</section>
+</div>
