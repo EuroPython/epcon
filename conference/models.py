@@ -285,8 +285,8 @@ class AttendeeProfileManager(models.Manager):
         return p
 
 ATTENDEEPROFILE_VISIBILITY = (
-    ('x', 'Private'),
-    ('m', 'Members only'),
+    ('x', 'Private (disabled)'),
+    ('m', 'Participants only'),
     ('p', 'Public'),
 )
 class AttendeeProfile(models.Model):
