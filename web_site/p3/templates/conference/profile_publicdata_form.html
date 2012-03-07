@@ -49,6 +49,9 @@
             {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
         </dd>
         {% endif %}
+        
+        {% include "conference/profile_publicdata_company_form.html" %}
+                    
     </dl>
     {% if full_access %}
     <div class="button mini">
