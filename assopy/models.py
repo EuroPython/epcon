@@ -117,10 +117,12 @@ class Token(models.Model, django_urls.UrlMixin):
         return reverse('assopy-otc-token', kwargs={'token': self.token})       
 
 # Segnale emesso quando un nuovo utente viene creato. Il sender è il nuovo
-# utente mentre password_set può essere usato come discriminante per capire se
-# è stato creato tramite la form classica email+password (password_set=True) o
-# in seguito ad un'identità fornita da janrain (password_set=False).
-user_created = dispatch.Signal(providing_args=['password_set'])
+# utente mentre profile_complete indica se tutti i dati su l'utente sono già
+# stat forniti oppure ci si deve aspettare la creazione di una UserIdentity.
+# `profile_complete` può essere usato come discriminante per capire se è stato
+# creato tramite la form classica email+password (profile_complete=True) o in
+# seguito ad un'identità fornita da janrain (profile_complete=False).
+user_created = dispatch.Signal(providing_args=['profile_complete'])
 
 # Segnale emesso quando una nuova identità viene aggiunta ad un utente (il
 # sender).
@@ -141,7 +143,7 @@ class UserManager(models.Manager):
         if assopy_id is not None:
             user.assopy_id = assopy_id
         user.save()
-        user_created.send(sender=user, password_set=password is not None)
+        user_created.send(sender=user, profile_complete=(password is not None) or (token is not None))
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
             duser.username, first_name, last_name, email,
