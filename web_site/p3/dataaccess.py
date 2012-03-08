@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from conference import cachef
 from conference import dataaccess as cdata
+from conference import models as cmodels
 from p3 import models
 
 cache_me = cachef.CacheFunction(prefix='p3:')
@@ -33,3 +34,28 @@ profile_data = cache_me(
     signals=(cdata.profile_data.invalidated,),
     models=(models.P3Profile,),
     key='profile:%(uid)s')(profile_data, _i_profile_data)
+
+def user_tickets(user, conference, only_complete=False):
+    q1 = user.ticket_set.all()\
+        .conference(conference)
+
+    q2 = cmodels.Ticket.objects\
+        .filter(p3_conference__assigned_to=user.email)\
+        .filter(fare__conference=conference)
+
+    qs = q1 | q2
+    if not only_complete:
+        return qs
+    else:
+        # non mostro i biglietti associati ad ordini paypal che non risultano
+        # ancora "completi"; poiché la notifica IPN è quasi contestuale al ritorno
+        # dell'utente sul nostro sito, filtrando via gli ordini non confermati
+        # elimino di fatto vecchi record rimasti nel db dopo che l'utente non ha
+        # confermato il pagamento sul sito paypal o dopo che è tornato indietro
+        # utilizzando il pulsante back
+        tickets = list(qs)
+        for ix, t in list(enumerate(tickets))[::-1]:
+            order = t.orderitem.order
+            if order.method not in ('bank', 'admin') and not order.complete():
+                del tickets[ix]
+        return tickets

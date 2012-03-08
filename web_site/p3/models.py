@@ -53,6 +53,7 @@ class TicketConferenceManager(models.Manager):
             restituisce il qs con i biglietti disponibili per l'utente;
             disponibili significa comprati dall'utente o assegnati a lui.
             """
+            # TODO: drop in favore di dataaccess.user_tickets
             q1 = user.ticket_set.all()
             if conference:
                 q1 = q1.conference(conference)
@@ -62,7 +63,7 @@ class TicketConferenceManager(models.Manager):
                 q2 = q2.filter(fare__conference=conference)
 
             return q1 | q2
-    
+
 class TicketConference(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference')
     shirt_size = models.CharField(max_length=4, choices=TICKET_CONFERENCE_SHIRT_SIZES, default='l')

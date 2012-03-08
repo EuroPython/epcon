@@ -36,6 +36,7 @@ def map_js(request):
 @login_required
 @render_to('p3/tickets.html')
 def tickets(request):
+    # XXX usare dataaccess.user_tickets
     tickets = models.TicketConference.objects.available(request.user, settings.CONFERENCE_CONFERENCE)
     # non mostro i biglietti associati ad ordini paypal che non risultano
     # ancora "completi"; poiché la notifica IPN è quasi contestuale al ritorno
@@ -244,7 +245,7 @@ def cart(request):
     else:
         form = p3forms.P3FormTickets(initial={
             'order_type': 'deductible' if at == 'c' else 'non-deductible',
-        })
+        }, user=u)
     fares = {}
     for f in form.available_fares():
         if not f.code.startswith('_'):

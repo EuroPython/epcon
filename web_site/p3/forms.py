@@ -658,6 +658,20 @@ class P3FormTickets(aforms.FormTickets):
             price = f.calculated_price(**row)
             if not price:
                 raise forms.ValidationError('invalid period')
+
+        # voglio permettere l'acquisito solo ai partecipanti
+        conference_tickets = 0
+        for k, v in self.cleaned_data.items():
+            if k[0] == 'T' and v:
+                conference_tickets += v
+        if not conference_tickets:
+            from p3.dataaccess import user_tickets
+            tickets = user_tickets(self.user.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
+            for t in tickets:
+                if t.fare.code.startswith('T'):
+                    conference_tickets += 1
+        if not conference_tickets:
+            raise forms.ValidationError('you need a conference ticket')
         return data
 
     def clean(self):
