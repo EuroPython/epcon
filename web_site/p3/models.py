@@ -265,6 +265,6 @@ class P3Profile(models.Model):
                 return self.image_url
             elif self.profile.image:
                 return self.profile.image.url
-        return None
+        return dsettings.STATIC_URL + 'p5/i/headshot-default.jpg'
 
 import p3.listeners
