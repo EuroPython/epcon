@@ -320,6 +320,14 @@ class AttendeeProfile(models.Model):
     def __unicode__(self):
         return self.slug
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.visibility != 'p':
+            if TalkSpeaker.objects\
+                .filter(speaker__user=self.user_id, talk__status='accepted')\
+                .count()>0:
+                raise ValidationError('This profile must be public')
+
     def setBio(self, body, language=None):
         MultilingualContent.objects.setContent(self, 'bios', language, body)
 
