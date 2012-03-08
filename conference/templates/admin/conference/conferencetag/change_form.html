@@ -15,14 +15,21 @@
             {% with cid|content_type as ct %}
             <tr>
                 <td>{{ ct.model }}</td>
-                <td><a href="{% admin_urlname_fromct ct "change" o %}">
+                <td>
+                {% admin_urlname_fromct ct "change" o as aurl %}
+                {% if aurl %}
+                <a href="{{ aurl }}">
                     {% if ct.model == "talk" %}
                         {% talk_data o as t %}
-                        {{ t.talk.title }}
+                        {{ t.title }}
                     {% else %}
                         {{ o }}
                     {% endif %}
-                </a></td>
+                </a>
+                {% else %}
+                {{ o }}
+                {% endif %}
+                </td>
             </tr>
             {% endwith %}
             {% endfor %}
