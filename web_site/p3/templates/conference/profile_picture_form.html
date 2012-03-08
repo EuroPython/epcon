@@ -1,7 +1,7 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-<div>
-    <form action="{% url p3-profile slug=profile_data.slug %}" class="async" method="post" enctype="multipart/form-data" enctype="multipart/form-data" rel="self">{% csrf_token %}
+<div id="profile-picture-async-target">
+    <form action="{% url p3-profile slug=profile_data.slug %}" class="async" method="post" enctype="multipart/form-data" enctype="multipart/form-data" rel="#profile-picture-async-target">{% csrf_token %}
         <input type="hidden" name="section" value="picture" />
 
         <div class="profile-user-picture">

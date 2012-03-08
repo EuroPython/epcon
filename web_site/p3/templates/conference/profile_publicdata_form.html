@@ -1,62 +1,64 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-<form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="self">{% csrf_token %}
-    <input type="hidden" name="section" value="public-data" />
-    <dl>
-        {% if profile_data.personal_homepage or full_access %}
-        <dt>Website</dt>  
-        <dd>
-            {% if profile_data.personal_homepage %}
-                <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
-            {% else %}
-                <span class="not-set">&mdash; Not set &mdash;</span>
+<div id="profile-public-data-async-target">
+    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-public-data-async-target">{% csrf_token %}
+        <input type="hidden" name="section" value="public-data" />
+        <dl>
+            {% if profile_data.personal_homepage or full_access %}
+            <dt>Website</dt>
+            <dd>
+                {% if profile_data.personal_homepage %}
+                    <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
+                {% else %}
+                    <span class="not-set">&mdash; Not set &mdash;</span>
+                {% endif %}
+                {% if full_access %}{{ form.personal_homepage|field:"tpl:no_label" }}{% endif %}
+            </dd>
             {% endif %}
-            {% if full_access %}{{ form.personal_homepage|field:"tpl:no_label" }}{% endif %}
-        </dd>
-        {% endif %}
-        {% if profile_data.twitter or full_access %}
-        <dt>Twitter</dt>        
-        <dd>
-            {% if profile_data.twitter %}
-                <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
-            {% else %}
-                <span class="not-set">&mdash; Not set &mdash;</span>
+            {% if profile_data.twitter or full_access %}
+            <dt>Twitter</dt>
+            <dd>
+                {% if profile_data.twitter %}
+                    <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
+                {% else %}
+                    <span class="not-set">&mdash; Not set &mdash;</span>
+                {% endif %}
+                {% if full_access %}{{ form.twitter|field:"tpl:no_label" }}{% endif %}
+            </dd>
             {% endif %}
-            {% if full_access %}{{ form.twitter|field:"tpl:no_label" }}{% endif %}
-        </dd>
-        {% endif %}
-        {% if profile_data.interests or full_access %}
-        <dt>Interests</dt>        
-        <dd>
-            {% if profile_data.interests %}
-            {% for p in profile_data.interests %}
-                {{ p }}{% if not forloop.last %},{% endif %}
-            {% endfor %}
-            {% else %}
-                <span class="not-set">&mdash; Not set &mdash;</span>
+            {% if profile_data.interests or full_access %}
+            <dt>Interests</dt>
+            <dd>
+                {% if profile_data.interests %}
+                {% for p in profile_data.interests %}
+                    {{ p }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+                {% else %}
+                    <span class="not-set">&mdash; Not set &mdash;</span>
+                {% endif %}
+                {% if full_access %}{{ form.interests|field:"tpl:no_label" }}{% endif %}
+            </dd>
             {% endif %}
-            {% if full_access %}{{ form.interests|field:"tpl:no_label" }}{% endif %}
-        </dd>
-        {% endif %}
-        {% if profile_data.location or full_access %}
-        <dt>Location</dt>        
-        <dd>
-            {% if profile_data.location %}
-                <span>{{ profile_data.location }}</span>
-            {% else %}
-                <span class="not-set">&mdash; Not set &mdash;</span>
+            {% if profile_data.location or full_access %}
+            <dt>Location</dt>
+            <dd>
+                {% if profile_data.location %}
+                    <span>{{ profile_data.location }}</span>
+                {% else %}
+                    <span class="not-set">&mdash; Not set &mdash;</span>
+                {% endif %}
+                {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
+            </dd>
             {% endif %}
-            {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
-        </dd>
+
+            {% include "conference/profile_publicdata_company_form.html" %}
+
+        </dl>
+        {% if full_access %}
+        <div class="button mini">
+            <a href="#" class="live-edit-switch">Edit profile</a>
+            <a href="#" class="autosubmit">Save changes</a>
+        </div>
         {% endif %}
-        
-        {% include "conference/profile_publicdata_company_form.html" %}
-                    
-    </dl>
-    {% if full_access %}
-    <div class="button mini">
-        <a href="#" class="live-edit-switch">Edit profile</a>
-        <a href="#" class="autosubmit">Save changes</a>
-    </div>
-    {% endif %}
-</form>
+    </form>
+</div>
