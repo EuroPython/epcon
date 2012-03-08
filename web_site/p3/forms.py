@@ -344,6 +344,7 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         p3p = profile.p3_profile
         data = self.cleaned_data
         p3p.twitter = data.get('twitter', '')
+        p3p.save()
         p3p.interests.set(*data.get('interests', ''))
         return profile
 
