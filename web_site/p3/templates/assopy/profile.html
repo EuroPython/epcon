@@ -142,7 +142,7 @@
     <div class="span-4 last">
         <section>
                     {% with request.user.assopy_user.tickets as tickets %}
-                        {% if tickets|length or 1 %}
+                        {% if tickets|length %}
                             <div class="button">
                                 <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr; </a>
                             </div>
@@ -179,6 +179,7 @@
 
 </div>
 {% endblock %}
+
 
 
 
