@@ -37,7 +37,7 @@
         {% if ticket.p3_conference %}
         <div class="ticket-attendee-image">
             {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
-            <img src="{{ pdata.image }}" alt="" />
+            <img src="{{ pdata.image }}" alt="" width="98" />
         </div>
         {% endif %}
         
