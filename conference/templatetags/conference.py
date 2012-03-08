@@ -1425,7 +1425,10 @@ def admin_urlname_fromct(ct, action, id=None):
         args = ()
     else:
         args = (str(id),)
-    return reverse(r, args=args)
+    try:
+        return reverse(r, args=args)
+    except:
+        return None
 
 @fancy_tag(register)
 def profile_data(uid):
