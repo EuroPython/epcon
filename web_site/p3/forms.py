@@ -653,6 +653,11 @@ class P3FormTickets(aforms.FormTickets):
         data = self.cleaned_data.get('hotel_reservations', [])
         if not data:
             return []
+        for row in data:
+            f = cmodels.Fare.objects.get(code=row['fare'])
+            price = f.calculated_price(**row)
+            if not price:
+                raise forms.ValidationError('invalid period')
         return data
 
     def clean(self):

@@ -488,15 +488,58 @@ function setup_cart_form(ctx) {
          * presente il markup dello slider; la chiamata .html('') anche se poco
          * elegante mi permette di fare tabula rasa e ripartire da zero.
          */
+        function cap_values(slider, handle, values) {
+            var hix = handle.data('index.uiSliderHandle');
+            var max = slider.slider('option', 'max');
+            var min = slider.slider('option', 'min');
+            if(hix == 1) {
+                values = [ values[1] - 3, values[1] ];
+            }
+            else {
+                values = [ values[0], values[0] + 3 ];
+            }
+            if(values[0] <= min) {
+                values[0] = min;
+                values[1] = min + 3;
+            }
+            else if(values[1] >= max) {
+                values[0] = max - 3;
+                values[1] = max;
+            }
+            return values;
+        }
         e.html('').slider({
             range: true,
             min: 0,
             max: days,
             values: [ Number(inputs.eq(0).val()), Number(inputs.eq(1).val())],
             slide: function(evt, ui) {
-                set_label(ui.values);
-                inputs.eq(0).val(ui.values[0]);
-                inputs.eq(1).val(ui.values[1]);
+                var values = ui.values;
+                var diff = values[1] - values[0];
+                if(diff < 3) {
+                    var w = $(this);
+                    w.slider('values', cap_values(w, $(ui.handle), values));
+                }
+                else {
+                    set_label(values);
+                    inputs.eq(0).val(values[0]);
+                    inputs.eq(1).val(values[1]);
+                    $('input[type=text]', e.parent().next()).change();
+                }
+            },
+            change: function(evt, ui) {
+                if(!evt.originalEvent)
+                    return;
+                var w = $(this);
+                var values = ui.values;
+                var diff = values[1] - values[0];
+                if(diff < 3) {
+                    values = cap_values(w, $(ui.handle), values);
+                    w.slider('values', values);
+                }
+                set_label(values);
+                inputs.eq(0).val(values[0]);
+                inputs.eq(1).val(values[1]);
                 $('input[type=text]', e.parent().next()).change();
             }
         });
