@@ -127,14 +127,35 @@
 
     <div class="span-4">
         <section>
-            <div style="margin-top: 15px; margin-bottom: 15px">Activate and complete your public profile to partecipate in 
-                  "<a href="/find-out-whos-coming">Find out who's coming</a>" and let
-                  people know that you will be coming to EuroPython.
-            </div>
             <div class="button">
                 <a href="{% url conference-profile slug=profile.slug %}"> Your public profile &rarr; </a>
             </div>
-            <hr/>
+            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Partecipate in 
+                  "<a href="/find-out-whos-coming">Find out who's coming</a>": let
+                  people know that you will be coming to EuroPython.
+            </div>
+        </section>
+    </div>
+
+
+    <div class="span-4 last">
+        <section>
+                    {% with request.user.assopy_user.tickets as tickets %}
+                        {% if tickets|length or 1 %}
+                            <div class="button">
+                                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr; </a>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Fill in and review all your tickets.
+            </div>
+
+        </section>
+    </div>
+    
+    <hr/>
+
 
  {% comment %}
             <div class="profile-user-utility-links">
@@ -153,29 +174,12 @@
                 </ul>
             </div>
  {% endcomment %}
-        </section>
-    </div>
 
-
-    <div class="span-4 last">
-        <section>
-            <div style="margin-top: 15px; margin-bottom: 15px">Fill in and review all your tickets.
-            </div>
-                    {% with request.user.assopy_user.tickets as tickets %}
-                        {% if tickets|length or 1 %}
-                            <div class="button">
-                                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr; </a>
-                            </div>
-                        {% endif %}
-                    {% endwith %}
-
-        </section>
-    </div>
-    
-    <hr/>
 
 </div>
 {% endblock %}
+
+
 
 
 
