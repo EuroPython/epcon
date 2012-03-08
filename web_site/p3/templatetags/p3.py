@@ -202,7 +202,7 @@ def render_ticket(context, ticket):
 
 @fancy_tag(register, takes_context=True)
 def render_cart_rows(context, fare_type, form):
-    assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing')
+    assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
     ctx = Context(context)
     request = ctx['request']
     try:
@@ -269,6 +269,9 @@ def render_cart_rows(context, fare_type, form):
         ctx['field'] = form['hotel_reservations']
         ctx['field'].field.widget.types = ['HR']
         ctx['field'].field.widget._errors = ctx['field'].errors
+    elif fare_type == 'other':
+        tpl = 'p3/fragments/render_cart_og_ticket_row.html'
+        ctx['fares'] = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
 
     return render_to_string(tpl, ctx)
 
@@ -278,11 +281,6 @@ def render_pp_cart_row(context, fare):
         'f': fare,
     }
 
-@register.inclusion_tag('p3/render_og_cart_row.html', takes_context=True)
-def render_og_cart_row(context, fare):
-    return {
-        'f': fare,
-    }
 
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):

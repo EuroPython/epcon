@@ -623,8 +623,11 @@ function setup_cart_form(ctx) {
                                 }
                             });
                             break;
-                        default:
+                        case 'T':
                             update_total($('.conference-tickets', form), total);
+                            break;
+                        default:
+                            update_total($('.other-goodies', form), total);
                             break;
                     }
                 });
