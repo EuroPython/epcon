@@ -2,7 +2,6 @@
 from conference import cachef
 from conference import dataaccess as cdata
 from p3 import models
-from p3 import utils
 
 cache_me = cachef.CacheFunction(prefix='p3:')
 
