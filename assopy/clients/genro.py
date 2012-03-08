@@ -189,7 +189,7 @@ def update_fare(fare):
         if fare.recipient_type == 's':
             name += ' (for students only)'
         elif fare.recipient_type == 'p':
-            name += ' (for private person)'
+            name += ' (for individuals)'
         
     b = Bag()
     b['price'] = fare.price
