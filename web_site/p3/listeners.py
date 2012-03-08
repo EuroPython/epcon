@@ -96,5 +96,7 @@ def calculate_hotel_reservation_price(sender, **kw):
     period = calc['params']['period']
     room = models.HotelRoom.objects.get(conference=sender.conference, room_type='t' + sender.code[2])
     price = room.price(days=(period[1] - period[0]).days)
+    if sender.code[1] == 'R':
+        price *= int(sender.code[2])
     calc['total'] = price * calc['params']['qty']
 fare_price.connect(calculate_hotel_reservation_price)
