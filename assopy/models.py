@@ -470,7 +470,7 @@ class OrderManager(models.Manager):
                 item = OrderItem(order=o, ticket=a)
                 item.code = f.code
                 item.description = f.name
-                item.price = f.calculated_price(qty=1, **cp)
+                item.price = Decimal('%.3f' % f.calculated_price(qty=1, **cp))
                 item.save()
         tickets_total = o.total()
         if coupons:
