@@ -460,7 +460,7 @@ function setup_cart_form(ctx) {
     function setup_period_range(e) {
         var days = Number(e.attr('data-steps'));
 
-        var period_start = new Date(e.parent().parent().prev().attr('data-period-start'));
+        var period_start = new Date(e.parent().parent().attr('data-period-start'));
         var label = e.prevAll('p');
 
         function format_date(d) {
@@ -549,26 +549,12 @@ function setup_cart_form(ctx) {
     function setup_reservation_rows(rows) {
         $(rows).each(function() {
             var reservation = $(this);
-            var details = reservation.next();
-            $('.room-type', reservation).click(function(e) {
-                e.preventDefault();
-                var a = $(this);
-                var code = a.attr('data-fare');
-                a.parent()
-                    .children('.room-type')
-                    .removeClass('selected');
-                a.addClass('selected');
+            $('.room-type', reservation).change(function(e) {
+                $('td[data-fare]', reservation).attr('data-fare', $('option:selected', this).val());
+                $('input[type=text]', reservation).change();
+            }).change();
 
-                $('td[data-fare]', details)
-                    .attr('data-fare', code)
-                    .children('input[type=hidden]')
-                    .val(code);
-                $('td[data-fare] input[type=text]', details).change();
-            });
-            var init = $('td[data-fare] input[type=hidden]', details).val();
-            $('.room-type-' + init, reservation).click();
-
-            setup_period_range($('.period', details));
+            setup_period_range($('.period', reservation));
         });
     }
 
@@ -581,15 +567,12 @@ function setup_cart_form(ctx) {
 
         var orig = rows.eq(rows.length-1);
         var main = orig.clone();
-        var details = orig.next().clone();
 
         orig.parents('tbody')
             .append(main)
-            .append(details);
 
         setup_reservation_rows(main);
         setup_cart_input($('input', main));
-        setup_cart_input($('input', details));
     });
 
     function calcTotal() {
