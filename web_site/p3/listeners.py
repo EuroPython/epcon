@@ -29,7 +29,7 @@ def on_order_created(sender, **kwargs):
         if fare.code[0] == 'H':
             log.info('The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".', sender.code, params['qty'], fare.code, params['period'][0], params['period'][1])
             for _ in range(params['qty']):
-                t = Ticket.objects.filter(fare=fare, user=sender.user, p3_conference_room=None)[0]
+                t = Ticket.objects.filter(fare=fare, user=sender.user.user, p3_conference_room=None)[0]
                 room = models.TicketRoom(ticket=t)
                 room.ticket_type = fare.code[1]
                 room.room_type = models.HotelRoom.objects.get(conference=fare.conference, room_type='t%s' % fare.code[2])
