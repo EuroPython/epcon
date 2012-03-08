@@ -158,16 +158,18 @@ def create_order(order, return_url=None):
         if r.ticket:
             tickets[r.ticket.fare.code] += 1
     ix = 0
-    for t in tickets:
-        b['order_rows.r%s.fare_code' % ix] = t
-        b['order_rows.r%s.quantity' % ix] = tickets[t]
-        ix += 1
+    #for t in tickets:
+    #   b['order_rows.r%s.fare_code' % ix] = t
+    #   b['order_rows.r%s.quantity' % ix] = tickets[t]
+    #   ix += 1
 
     for r in rows:
-        if not r.ticket:
-            b['order_rows.r%s.description' % ix] = r.description
-            b['order_rows.r%s.price' % ix] = r.price
-            ix += 1
+        if r.ticket:
+           b['order_rows.r%s.fare_code' % ix] = r.ticket.fare.code
+           b['order_rows.r%s.quantity' % ix] = 1
+        b['order_rows.r%s.description' % ix] = r.description
+        b['order_rows.r%s.price' % ix] = r.price
+        ix += 1
     result = _post('/orders/', b)
     order.assopy_id = result['order_id']
     order.code = result['order_code']
