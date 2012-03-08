@@ -9,7 +9,7 @@
     <div class="span-9 last">
         {% if proposed_talks %}
         <section class="notice">
-            <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.<br />To edit your submission{{ proposed_talks.count|pluralize }}, please visit your <a href="{% url conference-speaker slug=speaker.slug %}">speaker profile</a>.</p>
+            <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.<br />To edit your submission{{ proposed_talks.count|pluralize }}, please visit your <a href="{% url conference-profile slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
         </section>
         {% endif %}
 
