@@ -140,19 +140,19 @@
 
 
     <div class="span-4 last">
-        <section>
-                    {% with request.user.assopy_user.tickets as tickets %}
-                        {% if tickets|length %}
-                            <div class="button">
-                                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr; </a>
-                            </div>
-                        {% endif %}
-                    {% endwith %}
+        {% with request.user.assopy_user.tickets as tickets %}
+         {% if tickets|length %}
+             <section>
+                <div class="button">
+                   <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr; </a>
+                </div>
 
-            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Fill in and review all your tickets.
-            </div>
-
-        </section>
+                <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">
+                   Fill in and review all your tickets.
+                </div>
+              </section>
+         {% endif %}
+        {% endwith %}
     </div>
     
     <hr/>
@@ -179,6 +179,7 @@
 
 </div>
 {% endblock %}
+
 
 
 
