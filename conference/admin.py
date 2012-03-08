@@ -513,6 +513,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
     actions = ('do_merge_tags',)
     list_display = ('slug', 'name', '_usage',)
     list_editable = ('name',)
+    list_per_page = 500
     prepopulated_fields = {"slug": ("name",)}
     ordering = ('name',)
 
@@ -523,11 +524,15 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        self.cached = dataaccess.tags()
-        return super(ConferenceTagAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
+    def queryset(self, request):
+        from django.db.models import Count
+        qs = super(ConferenceTagAdmin, self).queryset(request)
+        qs = qs.annotate(usage=Count('conference_conferencetaggeditem_items'))
+        return qs
+
     def _usage(self, o):
-        return len(self.cached.get(o, {}))
+        return o.usage
+    _usage.admin_order_field = 'usage'
 
     def do_merge_tags(self, request, queryset):
         ids = queryset.values_list('id', flat=True)
