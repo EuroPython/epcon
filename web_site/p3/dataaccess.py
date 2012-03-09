@@ -43,7 +43,8 @@ def user_tickets(user, conference, only_complete=False):
         .filter(p3_conference__assigned_to=user.email)\
         .filter(fare__conference=conference)
 
-    qs = q1 | q2
+    qs = (q1 | q2)\
+        .select_related('orderitem__order', 'fare')
     if not only_complete:
         return qs
     else:
