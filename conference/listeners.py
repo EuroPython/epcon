@@ -47,6 +47,15 @@ new_paper_submission.connect(_new_paper_email)
 #   params -> parametri inseriti dall'utente (come la quantità)
 fare_price = Signal(providing_args=['calc'])
 
+# emesso quando una tariffa deve creare uno o più biglietti per un determinato
+# utente. Il `sender` è l'istanza di `Fare` mentre `params` è un dict con due
+# chiavi:
+#   user -> l'utente per il quale deve essere creato il biglietto
+#   tickets -> una lista in cui inserire i biglietti creati
+#
+# Se nessun listener modifica `params['tickets']` l'implementazione di default
+# crea un solo `Ticket` per l'utente.
+fare_tickets = Signal(providing_args=['params'])
 
 def on_talk_saved(sender, **kw):
     """

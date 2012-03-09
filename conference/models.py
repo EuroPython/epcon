@@ -640,6 +640,19 @@ class Fare(models.Model):
         fare_price.send(sender=self, calc=calc)
         return calc['total']
 
+    def create_tickets(self, user):
+        from conference.listeners import fare_tickets
+        params = {
+            'user': user,
+            'tickets': []
+        }
+        fare_tickets.send(sender=self, params=params)
+        if not params['tickets']:
+            t = Ticket(user=user, fare=self)
+            t.save()
+            params['tickets'].append(t)
+        return params['tickets']
+
 class TicketManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
