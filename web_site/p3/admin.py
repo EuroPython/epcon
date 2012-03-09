@@ -192,3 +192,23 @@ class HotelRoomAdmin(admin.ModelAdmin):
     list_filter = ('conference',)
 
 admin.site.register(models.HotelRoom, HotelRoomAdmin)
+
+class TicketRoomAdmin(admin.ModelAdmin):
+    list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_date', '_order_confirmed')
+    list_select_related = True
+
+    def _user(self, o):
+        return o.ticket.user
+
+    def _room_type(self, o):
+        return o.room_type.get_room_type_display()
+
+    def _order_date(self, o):
+        return o.ticket.orderitem.order.created
+
+    def _order_confirmed(self, o):
+        return o.ticket.orderitem.order._complete
+    _order_confirmed.boolean = True
+
+
+admin.site.register(models.TicketRoom, TicketRoomAdmin)
