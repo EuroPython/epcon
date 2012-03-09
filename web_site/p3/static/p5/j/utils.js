@@ -612,7 +612,7 @@ function setup_cart_form(ctx) {
                     var e = $('.total', parent);
                     var total = e.data('total') + Number(value);
                     e.data('total', total);
-                    e.html('€ ' + total.toFixed(2));
+                    e.children('b').html('€ ' + total.toFixed(2));
                 }
                 $(data.tickets).each(function() {
                     var code = this[0];
