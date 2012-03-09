@@ -3,7 +3,7 @@ import logging
 import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
-from conference.listeners import fare_price
+from conference.listeners import fare_price, fare_tickets
 from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -28,7 +28,10 @@ def on_order_created(sender, **kwargs):
         # tramite ritems
         if fare.code[0] == 'H':
             log.info('The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".', sender.code, params['qty'], fare.code, params['period'][0], params['period'][1])
-            for _ in range(params['qty']):
+            loop = params['qty']
+            if fare.code[1] == 'R':
+                loop *= int(fare.code[2])
+            for _ in range(loop):
                 t = Ticket.objects.filter(fare=fare, user=sender.user.user, p3_conference_room=None)[0]
                 room = models.TicketRoom(ticket=t)
                 room.ticket_type = fare.code[1]
@@ -100,3 +103,14 @@ def calculate_hotel_reservation_price(sender, **kw):
         price *= int(sender.code[2])
     calc['total'] = price * calc['params']['qty']
 fare_price.connect(calculate_hotel_reservation_price)
+
+def create_hotel_tickets(sender, **kw):
+    # solo per le prenotazioni di intere camere devo creare più biglietti, per
+    # tutti gli altri casi mi va bene il comportamento standard
+    if sender.code[:2] == 'HR':
+        for _ in range(int(sender.code[2])):
+            t = Ticket(user=kw['params']['user'], fare=sender)
+            t.save()
+            kw['params']['tickets'].append(t)
+
+fare_tickets.connect(create_hotel_tickets)
