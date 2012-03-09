@@ -15,7 +15,6 @@ import models
 import assopy.models as amodels
 from assopy.forms import BillingData
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
-from conference import forms as cforms
 from conference.models import Fare, Event, Ticket, Schedule, Speaker, AttendeeProfile
 from conference.views import profile_access
 from email_template import utils
