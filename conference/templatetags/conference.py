@@ -627,6 +627,10 @@ def render_talk_report(context, speaker, conference, tags):
     return context
 
 @register.filter
+def add_number(value, arg):
+    return value + float(arg)
+
+@register.filter
 def split(value, arg):
     return value.split(arg)
 
