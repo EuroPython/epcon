@@ -465,13 +465,17 @@ class OrderManager(models.Manager):
             cp = dict(params)
             del cp['qty']
             for _ in range(params['qty']):
-                a = Ticket(user=user.user, fare=f)
-                a.save()
-                item = OrderItem(order=o, ticket=a)
-                item.code = f.code
-                item.description = f.name
-                item.price = Decimal('%.3f' % f.calculated_price(qty=1, **cp))
-                item.save()
+                tickets = f.create_tickets(user.user)
+                price = Decimal('%.3f' % f.calculated_price(qty=1, **cp))
+                row_price = price / len(tickets)
+                for ix, t in enumerate(tickets):
+                    item = OrderItem(order=o, ticket=t)
+                    item.code = f.code
+                    item.description = f.name
+                    if len(tickets) > 1:
+                        item.description += ' [%s/%s]' % (ix+1, len(tickets))
+                    item.price = row_price
+                    item.save()
         tickets_total = o.total()
         if coupons:
             # applico i coupon in due passi:
