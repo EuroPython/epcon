@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
+import datetime
 import os
 import os.path
+from collections import defaultdict
 
 from django.conf import settings as dsettings
 from django.db import models
@@ -167,6 +169,9 @@ class HotelRoom(models.Model):
         return rules
 
     def price(self, days):
+        """
+        costo del singolo posto letto per `days` giorni
+        """
         if days <= 0 or not self.amount:
             return 0
         rules = self._calc_rules()
@@ -176,8 +181,14 @@ class HotelRoom(models.Model):
             price = rules.get(None, 0)
         return days * price
 
+    def beds(self):
+        """
+        numero di posti letto in camera
+        """
+        return int(self.room_type[1])
+
 class TicketRoomManager(models.Manager):
-    def bedsStatus(self, period):
+    def beds_status(self, period):
         """
         Calcola la situazione dei posti letto nel periodo specificato; il
         valore di ritorno è un dict che associa al tipo stanza la quantità di
@@ -185,26 +196,64 @@ class TicketRoomManager(models.Manager):
         {
             't2': {
                 'available': X,
-                'free': Y,
+                'reserved': Y,
+                'free': Z, # Z = X - Y
             }
         }
         """
-        pass
-
-    @transaction.commit_on_success
-    def bookBeds(self, user, beds):
-        """
-        Prenota i posti letto richiesti e associa all'utente i biglietti
-        corrispondenti; `beds` è un elenco di tuple:
-            beds = (
-                (HotelRoom, period, ticket_type),
+        from django.db.models import Q
+        # prima di tutto individuo i biglietti validi; sono quelli il cui
+        # ordine è confermato o, nel caso di ordini con bonifico bancario, sono
+        # avvenuti di "recente"...
+        incomplete_limit = datetime.date.today() - datetime.timedelta(days=5)
+        tickets = TicketRoom.objects\
+            .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
+            .filter(
+                Q(ticket__orderitem__order___complete=True)
+                | Q(ticket__orderitem__order__method='bank', ticket__orderitem__order__created__gte=incomplete_limit)
             )
 
-        ticket_type specifica se la prenotazione vale per un singolo posto
-        letto o per tutta la camera; nell'ultimo caso verranno generati tanti
-        biglietti quanti sono i posti in camera.
+        # ...dopodichè estraggo solo su quelli che hanno almeno un giorno
+        # prenotato nel periodo che mi interessa
+        start, end = period
+        tickets = tickets\
+            .filter(
+                Q(checkin__lte=start, checkout__gte=end)
+                | Q(checkin__gt=start, checkin__lt=end)
+                | Q(checkout__gt=start, checkout__lt=end)
+            )
+
+        tickets = tickets.select_related('room_type')
+
+        status = defaultdict(lambda: { 'available': 0, 'free': 0, 'reserved': 0 })
+        for t in tickets:
+            status[t.room_type.room_type]['reserved'] += 1
+
+        for hr in HotelRoom.objects.filter(conference=dsettings.CONFERENCE_CONFERENCE):
+            s = status[hr.room_type]
+            s['available'] = hr.quantity * hr.beds()
+            s['free'] = s['available'] - s['reserved']
+        return dict(status)
+
+    def can_be_booked(self, items):
         """
-        pass
+        Dato un elenco di richieste:
+            items = [
+                (room_type, qty, period),
+                ...
+            ]
+
+        restitusice true se possono essere tutte soddisfatte in blocco.
+        """
+        grouped = defaultdict(lambda: defaultdict(lambda: 0))
+        for room, beds, period in items:
+            grouped[tuple(period)][room] += beds
+        for period, rooms in grouped.items():
+            hstatus = self.beds_status(period)
+            for room_type, beds in rooms.items():
+                if hstatus[room_type]['free'] < beds:
+                    raise ValueError((period, room_type))
+        return True
 
 TICKETROOM_TICKET_TYPE = (
     ('B', 'room shared'),
