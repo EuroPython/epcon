@@ -146,7 +146,7 @@
                     <div class="field">
                         <h2>Ticket name: {{ user.first_name }} {{ user.last_name }}</h2>
                         {% if user.attendeeprofile %}
-                        <p>want to change? edit your <a href="{% url conference-profile slug=user.attendeeprofile.slug %}">profile</a>.</p>
+                        <p>want to change name? edit your <a href="/accounts/profile/">account</a>.</p>
                         {% endif %}
                     </div>
                     {% else %}
@@ -212,4 +212,5 @@
         }
     </script>
 </div>
+
 
