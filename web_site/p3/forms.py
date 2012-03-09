@@ -654,11 +654,19 @@ class P3FormTickets(aforms.FormTickets):
         data = self.cleaned_data.get('hotel_reservations', [])
         if not data:
             return []
+
+        checks = []
         for row in data:
             f = cmodels.Fare.objects.get(code=row['fare'])
             price = f.calculated_price(**row)
             if not price:
                 raise forms.ValidationError('invalid period')
+
+            checks.append((
+                't' + f.code[2],
+                row['qty'] * (1 if f.code[1] == 'B' else int(f.code[2])),
+                row['period'],
+            ))
 
         # voglio permettere l'acquisito solo ai partecipanti
         conference_tickets = 0
@@ -673,6 +681,12 @@ class P3FormTickets(aforms.FormTickets):
                     conference_tickets += 1
         if not conference_tickets:
             raise forms.ValidationError('you need a conference ticket')
+
+        try:
+            models.TicketRoom.objects.can_be_booked(checks)
+        except ValueError:
+            raise forms.ValidationError('cannot be booked')
+
         return data
 
     def clean(self):
