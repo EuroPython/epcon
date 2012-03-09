@@ -606,7 +606,10 @@ function setup_cart_form(ctx) {
                  * prenotare 1 biglietto HB3 per le date X e Y e 1 biglietto
                  * sempre HB3 ma per le date X' e Y')
                  */
-                $('fieldset .total', form).data('total', 0);
+                $('fieldset .total', form)
+                    .data('total', 0)
+                    .children('b')
+                    .html('€ 0');
                 $('.hotel-reservations td[data-fare]', form).next().html('');
                 function update_total(parent, value) {
                     var e = $('.total', parent);
