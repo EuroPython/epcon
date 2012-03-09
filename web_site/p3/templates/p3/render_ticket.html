@@ -56,7 +56,7 @@
                     This ticket is<br/>
                     <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "for me" %}</a>
                     {% if user == ticket.user %}
-                    | <a href="#" class="button mini assign-button">{% trans "for another user" %}</a>
+                    | <a href="#" class="button mini assign-button">{% trans "for someone else" %}</a>
                     {% endif %}
                 </p>
             </div>
@@ -212,3 +212,4 @@
         }
     </script>
 </div>
+
