@@ -1533,6 +1533,19 @@ section.notice {
 }
 
 /* ====================== */
+/* ! Cart                 */
+/* ====================== */
+
+#form-cart .hotel-reservation-type .ui-slider-range {
+    background: #999999
+}
+
+#form-cart .hotel-reservation-type .ui-slider-handle {
+    background: #DDDDDD
+}
+
+
+/* ====================== */
 /* ! Hovering help text   */
 /* ====================== */
 
