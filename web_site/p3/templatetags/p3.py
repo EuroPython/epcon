@@ -483,3 +483,8 @@ def pending_email_change(user):
     except amodels.Token.DoesNotExist:
         return None
     return t.payload
+
+@fancy_tag(register)
+def admin_ticketroom_overall_status():
+    status = models.TicketRoom.objects.overall_status()
+    return sorted(status.items())

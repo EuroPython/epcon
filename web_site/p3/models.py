@@ -6,7 +6,7 @@ from collections import defaultdict
 
 from django.conf import settings as dsettings
 from django.db import models
-from django.db import transaction
+from django.db.models import Q
 from django.db.models.query import QuerySet
 
 from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
@@ -188,6 +188,27 @@ class HotelRoom(models.Model):
         return int(self.room_type[1])
 
 class TicketRoomManager(models.Manager):
+    def valid_tickets(self):
+        # prima di tutto individuo i biglietti validi; sono quelli il cui
+        # ordine è confermato o, nel caso di ordini con bonifico bancario, sono
+        # avvenuti di "recente"...
+        incomplete_limit = datetime.date.today() - datetime.timedelta(days=5)
+        return TicketRoom.objects\
+            .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
+            .filter(
+                Q(ticket__orderitem__order___complete=True)
+                | Q(ticket__orderitem__order__method='bank', ticket__orderitem__order__created__gte=incomplete_limit)
+            )
+
+    def overall_status(self):
+        periods = self.valid_tickets()\
+            .values_list('checkin', 'checkout')\
+            .distinct()
+        output = {}
+        for p in periods:
+            output[tuple(p)] = self.beds_status(p)
+        return output
+
     def beds_status(self, period):
         """
         Calcola la situazione dei posti letto nel periodo specificato; il
@@ -201,22 +222,10 @@ class TicketRoomManager(models.Manager):
             }
         }
         """
-        from django.db.models import Q
-        # prima di tutto individuo i biglietti validi; sono quelli il cui
-        # ordine è confermato o, nel caso di ordini con bonifico bancario, sono
-        # avvenuti di "recente"...
-        incomplete_limit = datetime.date.today() - datetime.timedelta(days=5)
-        tickets = TicketRoom.objects\
-            .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
-            .filter(
-                Q(ticket__orderitem__order___complete=True)
-                | Q(ticket__orderitem__order__method='bank', ticket__orderitem__order__created__gte=incomplete_limit)
-            )
-
-        # ...dopodichè estraggo solo su quelli che hanno almeno un giorno
-        # prenotato nel periodo che mi interessa
+        # estraggo solo su quelli che hanno almeno un giorno prenotato nel
+        # periodo che mi interessa
         start, end = period
-        tickets = tickets\
+        tickets = self.valid_tickets()\
             .filter(
                 Q(checkin__lte=start, checkout__gte=end)
                 | Q(checkin__gt=start, checkin__lt=end)
