@@ -22,6 +22,7 @@ def _new_paper_email(sender, **kw):
 Title: %(title)s
 Duration: %(duration)s
 Language: %(language)s
+Type: %(type)s
 
 Abstract: %(abstract)s
 
@@ -30,7 +31,8 @@ Tags: %(tags)s
     'title': tlk.title,
     'duration': tlk.duration,
     'language': tlk.language,
-    'abstract': tlk.getAbstract(),
+    'abstract': getattr(tlk.getAbstract(), 'body', ''),
+    'type': tlk.get_type_display(),
     'tags': [ x.name for x in tlk.tags.all() ],
     }
     send_email(
