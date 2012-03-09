@@ -3,21 +3,17 @@ from assopy import django_urls
 from assopy import janrain
 from assopy.clients import genro, vies
 from assopy.utils import send_email
-from conference.models import Fare, Ticket, Speaker
+from conference.models import Fare, Ticket
 from email_template import utils
 
 from django import dispatch
-from django import template
 from django.conf import settings as dsettings
 from django.contrib import auth
-from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db import connection
 from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
-from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 import re
@@ -25,7 +21,7 @@ import os
 import os.path
 import logging
 from uuid import uuid4
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 
 log = logging.getLogger('assopy.models')

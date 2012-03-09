@@ -1,32 +1,26 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django import http
-from django import template
 from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.forms.formsets import BaseFormSet, formset_factory
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
-from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.translation import ugettext as _
 
 from assopy import forms as aforms
 from assopy import janrain
 from assopy import models
 from assopy import settings
 from assopy.clients import genro
-from conference import models as cmodels
 from email_template import utils
 
 import json
 import logging
 import urllib
-from itertools import izip_longest
 
 log = logging.getLogger('assopy.views')
 
