@@ -140,31 +140,53 @@
         {% if not ticket.frozen %}
         <form action="{% url p3-ticket tid=ticket.id %}" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
         {% if ticket.fare.ticket_type == "conference" %}
-            <fieldset>
-                {% if user == ticket.user %}
-                <div class="field">
-                    <h2>Ticket name: {{ user.first_name }} {{ user.last_name }}</h2>
-                    {% if user.attendeeprofile %}
-                    <p>want to change? edit your <a href="{% url conference-profile slug=user.attendeeprofile.slug %}">profile</a>.</p>
+            <fieldset class="container clearfix">
+                <div class="span-6">
+                    {% if user == ticket.user %}
+                    <div class="field">
+                        <h2>Ticket name: {{ user.first_name }} {{ user.last_name }}</h2>
+                        {% if user.attendeeprofile %}
+                        <p>want to change? edit your <a href="{% url conference-profile slug=user.attendeeprofile.slug %}">profile</a>.</p>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    {{ form.ticket_name|field }}
                     {% endif %}
-                </div>
-                {% else %}
-                {{ form.ticket_name|field }}
-                {% endif %}
-                {{ form.tagline|field }}
-                <div class="span-3">
-                    {{ form.diet|field }}
+                    {{ form.tagline|field }}
+                    <div class="span-3">
+                        {{ form.diet|field }}
+                    </div>
+                    <div class="span-3 last">
+                        {{ form.shirt_size|field }}
+                    </div>
+                    <div class="span-3">
+                        {{ form.python_experience|field }}
+                    </div>
+                    <div class="span-3 show-tooltip last" title="{% trans "This ticket grants you full access to the conference. The above selection is just for helping out the organizers." %}">
+                        {{ form.days|field }}
+                    </div>
+                    {{ form.assigned_to|field }}
                 </div>
                 <div class="span-3 last">
-                    {{ form.shirt_size|field }}
+                    {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
+                    <img src="{{ pdata.image }}" alt="" width="98" />
+                    <p style="padding: 0 15px 0 0;">
+                    {% if pdata.visibility == "x" %}
+                        <span>
+                            Your <a href="{% url conference-profile slug=pdata.slug %}">profile</a> is not visibile by anyone.
+                            <br />
+                            <br />
+                            Why don't you let people know that you are coming? (<a href="/find-out-whos-coming">Check why</a>)
+                        </span>
+                    {% endif %}
+                    {% if pdata.visibility == "m" %}
+                        <span>Only <b>conference participants</b> can view your <a href="{% url conference-profile slug=pdata.slug %}">profile</a>.&nbsp;</span>
+                    {% endif %}
+                    {% if pdata.visibility == "p" %}
+                        <span>Your <a href="{% url conference-profile slug=pdata.slug %}">profile</a> is <b>publicly visible</b>.&nbsp;</span>
+                    {% endif %}
+                    </p>
                 </div>
-                <div class="span-3">
-                    {{ form.python_experience|field }}
-                </div>
-                <div class="span-3 show-tooltip" title="{% trans "This ticket grants you full access to the conference. The above selection is just for helping out the organizers." %}">
-                    {{ form.days|field }}
-                </div>
-                {{ form.assigned_to|field }}
             </fieldset>
             <fieldset class="border">
                 <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
