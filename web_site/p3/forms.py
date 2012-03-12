@@ -572,6 +572,7 @@ class HotelReservationsFieldWidget(forms.Widget):
         # gli errori.
         errors = [None] * len(rows)
         if hasattr(self, '_errors'):
+            print self._errors
             for e in self._errors:
                 try:
                     ix, msg = e.split(':', 1)
@@ -596,8 +597,9 @@ class HotelReservationsFieldWidget(forms.Widget):
 class HotelReservationsField(forms.Field):
     widget = HotelReservationsFieldWidget
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, types=('HR', 'HB'), *args, **kwargs):
         super(HotelReservationsField, self).__init__(*args, **kwargs)
+        self.widget.types = types
 
     def clean(self, value):
         for ix, entry in reversed(list(enumerate(value))):
@@ -634,7 +636,8 @@ class P3FormTickets(aforms.FormTickets):
             if k.startswith('H'):
                 del self.fields[k]
         
-        self.fields['hotel_reservations'] = HotelReservationsField(required=False)
+        self.fields['room_reservations'] = HotelReservationsField(types=('HR',), required=False)
+        self.fields['bed_reservations'] = HotelReservationsField(types=('HB',), required=False)
 
     def clean_coupon(self):
         data = self.cleaned_data.get('coupon', '').strip()
@@ -650,17 +653,17 @@ class P3FormTickets(aforms.FormTickets):
             raise forms.ValidationError('invalid coupon')
         return coupon
 
-    def clean_hotel_reservations(self):
-        data = self.cleaned_data.get('hotel_reservations', [])
+    def _check_hotel_reservation(self, field_name):
+        data = self.cleaned_data.get(field_name, [])
         if not data:
             return []
 
         checks = []
-        for row in data:
+        for ix, row in enumerate(data):
             f = cmodels.Fare.objects.get(code=row['fare'])
             price = f.calculated_price(**row)
             if not price:
-                raise forms.ValidationError('invalid period')
+                raise forms.ValidationError('%s:invalid period' % ix)
 
             checks.append((
                 't' + f.code[2],
@@ -680,14 +683,24 @@ class P3FormTickets(aforms.FormTickets):
                 if t.fare.code.startswith('T'):
                     conference_tickets += 1
         if not conference_tickets:
-            raise forms.ValidationError('you need a conference ticket')
+            args = []
+            for ix, _ in data:
+                args.append('%s:You need a conference ticket' % ix)
+            self._errors[field_name] = self.error_class(args)
+            del data[field_name]
 
         try:
             models.TicketRoom.objects.can_be_booked(checks)
         except ValueError:
-            raise forms.ValidationError('cannot be booked')
+            raise forms.ValidationError('0:cannot be booked')
 
         return data
+
+    def clean_bed_reservations(self):
+        return self._check_hotel_reservation('bed_reservations')
+
+    def clean_room_reservations(self):
+        return self._check_hotel_reservation('room_reservations')
 
     def clean(self):
         data = super(P3FormTickets, self).clean()
@@ -702,9 +715,9 @@ class P3FormTickets(aforms.FormTickets):
                 del data['tickets'][ix]
                 del data[fare.code]
 
-        if 'hotel_reservations' in data:
-            from conference.models import Fare
-            for r in data['hotel_reservations']:
+        from conference.models import Fare
+        for fname in ('bed_reservations', 'room_reservations'):
+            for r in data.get(fname, []):
                 data['tickets'].append((Fare.objects.get(code=r['fare']), r))
 
         if not data['tickets']:

@@ -261,13 +261,11 @@ def render_cart_rows(context, fare_type, form):
         ctx['rows'] = rows
     elif fare_type == 'hotel-room-sharing':
         tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
-        ctx['field'] = form['hotel_reservations']
-        ctx['field'].field.widget.types = ['HB']
+        ctx['field'] = form['bed_reservations']
         ctx['field'].field.widget._errors = ctx['field'].errors
     elif fare_type == 'hotel-room':
         tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
-        ctx['field'] = form['hotel_reservations']
-        ctx['field'].field.widget.types = ['HR']
+        ctx['field'] = form['room_reservations']
         ctx['field'].field.widget._errors = ctx['field'].errors
     elif fare_type == 'other':
         tpl = 'p3/fragments/render_cart_og_ticket_row.html'
