@@ -549,7 +549,7 @@ function setup_cart_form(ctx) {
     function setup_reservation_rows(rows) {
         $(rows).each(function() {
             var reservation = $(this);
-            $('.room-type', reservation).change(function(e) {
+            $('.room-type select', reservation).change(function(e) {
                 $('td[data-fare]', reservation).attr('data-fare', $('option:selected', this).val());
                 $('input[type=text]', reservation).change();
             }).change();
@@ -581,6 +581,68 @@ function setup_cart_form(ctx) {
             url: '/p3/cart/calculator/',
             dataType: 'json',
             success: function(data, text, jqHXR) {
+                $('fieldset .total', form)
+                    .data('total', 0)
+                    .children('b')
+                    .html('€ 0');
+
+                /*
+                 * data contiene il totale generale, lo sconto ottenuto tramit
+                 * coupon e il dettaglio dei costi dei singoli biglietti
+                 */
+                var feedback = $('.coupon .cms span');
+                feedback.text((data.coupon || 0 ) != 0 ? 'coupon accepted' : '');
+                $('.coupon .total b', form).html('€ ' + (data.coupon || 0));
+                $('.grand.total b', form).html('€ ' + (data.total || 0));
+                $('.hotel-reservations td[data-fare]', form).next().html('');
+                $('.hotel-reservations tr').removeClass('error');
+                $('.hotel-reservations tr .errors').html('');
+
+                if(typeof(data.total) == "undefined") {
+                    /* la validazione della form passata ha ritornato un errore,
+                     * devo mostrare i messaggi accanto ai campi corrispondenti
+                     */
+
+                    /* XXX: in teoria qualunque campo della form potrebbe avere
+                     * problemi di validazione, in pratica solo quelli relativi
+                     * alle prenotazioni alberghiere.
+                     */
+
+                    function hotel_row_error(type, ix, msg) {
+                        var row = $('tr[data-reservation-type=' + type + ']', form)
+                            .eq(ix)
+                            .addClass('error');
+                        var fare_cell = $('td[data-fare]', row);
+                        var feedback = $('.errors', fare_cell);
+                        if(feedback.length) {
+                            feedback.html(msg);
+                        }
+                        else {
+                            $('<div class="errors"></div>')
+                                .appendTo(fare_cell)
+                                .html(msg);
+                        }
+                    }
+                    for(var fname in data) {
+                        switch(fname) {
+                            case 'bed_reservations':
+                            case 'room_reservations':
+                                var type = fname.split('_')[0];
+                                for(var ix=0; ix<data[fname].length; ix++) {
+                                    var p = data[fname][ix].split(':');
+                                    hotel_row_error(type, p[0], p[1]);
+                                }
+                                break;
+                            case '__all__':
+                                break;
+                            default:
+                                // ops qualcosa di inatteso
+                                throw("invalid field");
+                                break;
+                        }
+                    }
+                    return;
+                }
                 /*
                  * ...il problema con i costi dei singoli biglietti è quello di
                  * mostrare per ogni prenotazione alberghiera il prezzo
@@ -597,21 +659,6 @@ function setup_cart_form(ctx) {
                  * prenotare 1 biglietto HB3 per le date X e Y e 1 biglietto
                  * sempre HB3 ma per le date X' e Y')
                  */
-                $('fieldset .total', form)
-                    .data('total', 0)
-                    .children('b')
-                    .html('€ 0');
-
-                /*
-                 * data contiene il totale generale, lo sconto ottenuto tramit
-                 * coupon e il dettaglio dei costi dei singoli biglietti
-                 */
-                var feedback = $('.coupon .cms span');
-                feedback.text(data.coupon != 0 ? 'coupon accepted' : '');
-                $('.coupon .total b', form).html('€ ' + data.coupon);
-                $('.grand.total b', form).html('€ ' + data.total);
-
-                $('.hotel-reservations td[data-fare]', form).next().html('');
                 function update_total(parent, value) {
                     var e = $('.total', parent);
                     var total = e.data('total') + Number(value);

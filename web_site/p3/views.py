@@ -506,8 +506,7 @@ def calculator(request):
 
             output['total'] = _fmt(grand_total)
         else:
-            # report form.errors ?
-            pass
+            return form.errors
 
     return output
 
