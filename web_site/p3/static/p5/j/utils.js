@@ -582,15 +582,6 @@ function setup_cart_form(ctx) {
             dataType: 'json',
             success: function(data, text, jqHXR) {
                 /*
-                 * data contiene il totale generale, lo sconto ottenuto tramit
-                 * coupon e il dettaglio dei costi dei singoli biglietti
-                 */
-                var feedback = $('.coupon .cms span');
-                feedback.text(data.coupon != 0 ? 'coupon accepted' : '');
-                $('.coupon .total b', form).html('€ ' + data.coupon);
-                $('.grand.total b', form).html('€ ' + data.total);
-
-                /*
                  * ...il problema con i costi dei singoli biglietti è quello di
                  * mostrare per ogni prenotazione alberghiera il prezzo
                  * corrispondente.
@@ -610,6 +601,16 @@ function setup_cart_form(ctx) {
                     .data('total', 0)
                     .children('b')
                     .html('€ 0');
+
+                /*
+                 * data contiene il totale generale, lo sconto ottenuto tramit
+                 * coupon e il dettaglio dei costi dei singoli biglietti
+                 */
+                var feedback = $('.coupon .cms span');
+                feedback.text(data.coupon != 0 ? 'coupon accepted' : '');
+                $('.coupon .total b', form).html('€ ' + data.coupon);
+                $('.grand.total b', form).html('€ ' + data.total);
+
                 $('.hotel-reservations td[data-fare]', form).next().html('');
                 function update_total(parent, value) {
                     var e = $('.total', parent);
