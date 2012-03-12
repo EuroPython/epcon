@@ -168,7 +168,7 @@
                     {{ form.assigned_to|field }}
                 </div>
                 <div class="span-3 last">
-                    {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
+                    {% p3_profile_data request.user.id as pdata %}
                     <img src="{{ pdata.image }}" alt="" width="98" />
                     <p style="padding: 0 15px 0 0;">
                     {% if pdata.visibility == "x" %}
