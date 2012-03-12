@@ -255,3 +255,15 @@ form hr {
 form.live-edit .field, form.live-edit .autosubmit {
     display: none;
 }
+
+.hotel-reservations td.room-type {
+    width: 250px;
+}
+
+.hotel-reservations td[data-fare] {
+    width: 90px;
+}
+
+.hotel-reservations td.price {
+    width: 90px;
+}
