@@ -684,7 +684,7 @@ class P3FormTickets(aforms.FormTickets):
                     conference_tickets += 1
         if not conference_tickets:
             args = []
-            for ix, _ in data:
+            for ix, _ in enumerate(data):
                 args.append('%s:You need a conference ticket' % ix)
             self._errors[field_name] = self.error_class(args)
             del data[field_name]
