@@ -604,7 +604,7 @@ class HotelReservationsField(forms.Field):
     def clean(self, value):
         for ix, entry in reversed(list(enumerate(value))):
             try:
-                entry['qty'] = int(entry['qty'])
+                entry['qty'] = int(entry['qty'].strip() or '0')
             except (ValueError, TypeError):
                 raise forms.ValidationError('invalid quantity')
             if not entry['qty']:
