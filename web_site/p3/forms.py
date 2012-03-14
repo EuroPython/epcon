@@ -692,7 +692,7 @@ class P3FormTickets(aforms.FormTickets):
         try:
             models.TicketRoom.objects.can_be_booked(checks)
         except ValueError:
-            raise forms.ValidationError('0:Out of availability for the requested period')
+            raise forms.ValidationError('0:Not available in this period (<a href="/hotel-concession/rooms-not-available" class="trigger-overlay">info</a>)')
 
         return data
 
