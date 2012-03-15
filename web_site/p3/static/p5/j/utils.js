@@ -12,6 +12,7 @@ function setup_fragment(ctx) {
     ctx = ctx || document;
     setup_talkform(ctx);
     setup_profile_picture_form(ctx);
+    setup_voting_form(ctx);
     setup_cart_form(ctx);
     setup_tooltip(ctx);
     setup_toggles(ctx);
@@ -419,6 +420,43 @@ function scroll_to(e, duration) {
     $('html, body').animate({
         scrollTop: e.offset().top
     }, duration || 1000);
+}
+
+function setup_voting_form(ctx) {
+    $('#form-options', ctx).submit(function() {
+        /*
+         * form asincrona con supporto per la history del browser,
+         * ad ogni submit devo mantenere coerenti i widget custom.
+         */
+        var input = $('input[name=tags]', this);
+        var tags = input.val().split(',');
+        var r = new RegExp('"', 'g');
+        for(var ix=0; ix<tags.length; ix++) {
+            tags[ix] = tags[ix].replace(r, '');
+        }
+        $('a.tag', input.next()).each(function() {
+            var e = $(this);
+            if(tags.indexOf(e.attr('data-tag')) != -1) {
+                e.addClass('selected');
+            }
+            else {
+                e.removeClass('selected');
+            }
+        });
+
+        $('.pseudo-radio-field input', this).each(function() {
+            var e = $(this);
+            $('.pseudo-radio', e.parent()).each(function() {
+                var p = $(this);
+                if(p.attr('data-value') == e.val()) {
+                    p.addClass('checked');
+                }
+                else {
+                    p.removeClass('checked');
+                }
+            });
+        });
+    });
 }
 
 function setup_talkform(ctx) {
