@@ -158,7 +158,7 @@ function setup_toggles(ctx) {
         var trigger = $(this);
         var rel = trigger.attr('rel');
         if(rel)
-            var target = $(rel);
+            var target = $(rel, ctx);
         else
             var target = trigger.next();
 
