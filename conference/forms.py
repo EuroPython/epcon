@@ -42,6 +42,28 @@ class TagWidget(widgets.TextInput):
             final_attrs['value'] = force_unicode(self._format_value(value))
         return mark_safe(u'<input%s />' % flatatt(final_attrs))
 
+class ReadonlyTagWidget(widgets.TextInput):
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        else:
+            if not isinstance(value, basestring):
+                names = []
+                for v in value:
+                    if isinstance(v, basestring):
+                        names.append(v)
+                    elif isinstance(v, models.ConferenceTag):
+                        names.append(v.name)
+                    else:
+                        names.append(v.tag.name)
+                value = ','.join(names)
+        final_attrs = self.build_attrs(attrs, type='text', name=name)
+        final_attrs['class'] = (final_attrs.get('class', '') + ' readonly-tag-field').strip()
+        if value != '':
+            # Only add the 'value' attribute if a value is non-empty.
+            final_attrs['value'] = force_unicode(self._format_value(value))
+        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+
 # MarkEditWidget adattameto del codice di esempio presente in 
 # http://tstone.github.com/jquery-markedit/
 
