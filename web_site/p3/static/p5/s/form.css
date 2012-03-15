@@ -267,3 +267,7 @@ form.live-edit .field, form.live-edit .autosubmit {
 .hotel-reservations td.price {
     width: 90px;
 }
+
+.readonly-tag-field {
+    display: none;
+}

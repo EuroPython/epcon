@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+{% spaceless %}
+{% load conference %}
+{% talk_data talk.id as t %}
+<talk>
+    <conference>{{ t.conference }}</conference>
+    <status>{{ t.status }}</status>
+    <level>{{ t.level }}</level>
+    <type>{{ t.type }}</type>
+    <public_url>{{ t.url }}</public_url>
+    <title>{{ t.title }}</title>
+    <language>{{ t.language }}</language>
+    <duration>{{ t.duration }}</duration>
+    {% if t.slides %}<slides url="{{ t.slides }}" />{% endif %}
+    {% for spk in t.speakers %}
+    <speaker>
+        <name>{{ spk.name }}</name>
+        <public_url>{% url conference-profile spk.slug as x %}{{ x|full_url }}</public_url>
+        <url>{% url conference-speaker-xml spk.slug as x %}{{ x|full_url }}</url>
+    </speaker>
+    {% endfor %}
+    <abstract xmlns="http://www.w3.org/1999/xhtml">{{ t.abstract|markdown2:"smarty-pants,code-color" }}</abstract>
+</talk>
+{% endspaceless %}

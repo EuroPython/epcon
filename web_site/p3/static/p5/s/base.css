@@ -140,6 +140,10 @@ a.tag:hover {
     background-color:#fff;
 }
 
+a.tag.selected {
+    background-color:#777A55;
+}
+
 .button {
     text-align: center;
 }
@@ -813,6 +817,9 @@ footer nav li img {
 
 #talk-voting li {
     margin: 0 0 30px 0;
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ABA18F;
 }
 
 #talk-voting h2 {

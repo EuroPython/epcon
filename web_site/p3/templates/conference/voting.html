@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load comments conference assopy_tags p3 %}
+{% load conference assopy_tags p3 %}
 
 {% block EXTRA_HEAD %}
     {{ block.super }}
@@ -23,154 +23,32 @@
     </section>
     {% endif %}
     <h1>Talk Voting</h1>
-    
-    <div class="page-summary">        
+
+    <div class="page-summary">
         <p>Cast your vote!</p>
     </div>
-    
-    <form action="{% url conference-voting %}" method="GET" id="form-options">
-        <div class="span-5 inline">
-            {{ form.abstracts|field }}
-            {{ form.talk_type|field }}
-            {{ form.language|field }}
+
+    <form class="async" rel="#talk-voting-wrapper" action="{% url conference-voting %}" method="GET" id="form-options">
+        <div class="span-7 inline">
+            {{ form.abstracts|field:"autosubmit" }}
+            {{ form.talk_type|field:"autosubmit" }}
+            {{ form.language|field:"autosubmit" }}
         </div>
-        <div class="span-7 last inline">
-            {{ form.order|field }}
+        <div class="span-5 last inline">
+            {{ form.order|field:"autosubmit" }}
             <div class="field">
                 <label>&nbsp;</label>
                 <input type="submit" value="refresh" />
             </div>
         </div>
+        <div class="span-12 last">
+            {{ form.tags|field:"autosubmit" }}
+        </div>
     </form>
-    <div class="span-8">
-        <ul id="talk-voting">
-            {% for t in talks %}
-            <li>
-                {% with t.get_all_speakers as tspeakers %}
-                {% with tspeakers|attrib_:"user"|contains_:request.user as special_user %}
-                <h2 id="t{{ t.id }}">
-                    {{ forloop.counter }} -
-                    {% if voting_allowed or special_user %}
-                    <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
-                    {% else %}
-                    {{ t.title }} 
-                    {% endif %}
-                    {% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}
-                </h2>
-                <div class="meta">
-                    {% if voting_allowed or special_user %}
-                    By {% for s in tspeakers %}<a href="{% url conference-speaker slug=s.slug %}"><b class="speaker-name">{{ s.name }}</b></a>{% if not forloop.last %}, {% endif %}{% endfor %}
-                    {% else %}
-                    By {% for s in tspeakers %}<b class="speaker-name">{{ s.name }}</b>{% if not forloop.last %}, {% endif %}{% endfor %}
-                    {% endif %}
-                    | <b>{% if t.training_available %}Training{% else %}Talk{% endif %}</b>
-                    for <b>{{ t.get_level_display }}</b>
-
-                </div>
-                {% endwith %}
-                {% endwith %}
-                <form action="{% url conference-voting %}" method="post">{% csrf_token %}
-                    <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ t.user_vote.vote|default:"0" }}" step="0.5" />
-                    <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
-                    <span class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></span>
-                </form>
-                {% if voting_allowed %}
-                <dl>
-                    <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
-                    <dd>
-                        <div class="cms" data-talk="{{ t.id }}" style="display: none">
-                            <div class="abstract"></div>
-                            {% get_comment_count for t as ccount %}
-                            <div><b>Questions on this talk?</b> <a href="{% url conference-talk slug=t.slug %}#comments">Leave a comment</a> to the speaker ({{ ccount }} comment{{ ccount|pluralize }} now)</a></div>
-                        </div>                    
-                    </dd>                    
-                </dl>
-                {% endif %}
-            </li>
-            {% endfor %}        
-        </ul>
-        <script type="text/javascript">
-            (function() {
-                {% if voting_allowed %}
-                $('.feedback-vote').click(function(e) {
-                    e.preventDefault();
-                    var talk = $(e.target).parents('li');
-                    var tid = $('h2', talk).attr('id');
-                    var title = $('h2 a', talk).html();
-                    var speakers = [];
-                    $('.meta .speaker-name', talk).each(function() {
-                        speakers.push($(this).html());
-                    });
-                    var speaker = speakers.join(', ');
-                    var url = document.location.href + '#' + tid;
-                    var vote = $($('.rateit', talk).attr('data-rateit-backingfld')).val();
-                    RPXNOW.loadAndRun(['Social'], function () {
-                        var activity = new RPXNOW.Social.Activity(
-                            'Share your vote',
-                            'Just voted ' + vote + '/10 "' + title + '" of "' + speaker + '" #europython',
-                            url);
-                        activity.setTitle('Europython 2011 - Community voting');
-                        activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
-                        {% url conference-voting as u %}
-                        activity.addActionLink('Vote a talk', '{{ u|full_url }}');
-                        var media = new RPXNOW.Social.ImageMediaCollection();
-                        media.addImage('http://ep2011.europython.eu/media/versions/uploads/twitter-avatar_thumbnail.png', url);
-                        activity.setMediaItem(media);
-                        RPXNOW.Social.publishActivity(activity);
-                    });
-                });
-                function rate(e, val) {
-                    var field = $(e.rateit('backingfld'));
-                    var form = field.parents('form');
-                    if(val == undefined) 
-                        field.val(e.rateit('value'))
-                    else
-                        field.val(val);
-                    form.ajaxSubmit({
-                        success: function(data, text, jqXHR) {
-                            e.siblings('.feedback-vote').show();
-                        }
-                    });
-                }
-                $('#talk-voting .rateit')
-                    .rateit()
-                    .bind('rated', function() {
-                        rate($(this));
-                    })
-                    .bind('reset', function() {
-                        rate($(this), 0);
-                    });
-                {% else %}
-                $('#talk-voting .rateit')
-                    .rateit();
-                {% endif %}
-                {% if voting_allowed %}
-                $('#talk-voting .toggle').click(function(e) {
-                    var trigger = $(e.target);
-                    var dest = $(trigger.attr('rel')).children('.abstract');
-                    if(dest.attr('load'))
-                        return;
-                    dest.attr('load', '1');
-                    dest.html('loading...');
-                    $.ajax({
-                        url: trigger.attr('data-src'),
-                        dataType: 'xml',
-                        success: function(data, text, jqXHR) {
-                            console.log('x');
-                            dest.html($('talk abstract', data).html());
-                        },
-                        error: function(jqXHR, text, error) {
-                            dest.attr('load', null);
-                        }
-                    });
-                });
-                {% endif %}
-            })();
-        </script>
-    </div>
-    
+    <hr class="stars" />
+    {% include "conference/ajax/voting.html" %}
     <div class="span-4 last">
-        <aside>    
+        <aside>
             <div class="cms">
                 <h4>How to vote:</h4>
                 <ul>
@@ -183,11 +61,10 @@
                     <li>Click on the red sign on the left of the stars to remove a vote, if you want to think about it more.</li>
                 </ul>
                 <h4>Need more info?</h4>
-                <p>Go to the <a href="/talk-voting">talk voting</a> description page for all the details. If you still have answers, <a href="/contacts">write us</a> or <a href="#" onclick="habla_window.show(); habla_window.expand()">chat with us</a>.</p>            
+                <p>Go to the <a href="/talk-voting">talk voting</a> description page for all the details. If you still have answers, <a href="/contacts">write us</a> or <a href="#" onclick="habla_window.show(); habla_window.expand()">chat with us</a>.</p>
             </div>
-        
         </aside>
-    </div>    
+    </div>
 {% endblock %}
 
 

@@ -1,0 +1,133 @@
+{% load conference assopy_tags p3 %}
+<div id="talk-voting-wrapper" class="span-8">
+    <ul id="talk-voting">
+        {% with talks|attrib_:"id" as tids %}
+        {% talks_data tids as tdata %}
+        {% for t in tdata %}
+        <li>
+            {% with t.speakers|attrib_:"id"|contains_:request.user.id as special_user %}
+            <h2 id="t{{ t.id }}">
+                {{ forloop.counter }} -
+                {% if voting_allowed or special_user %}
+                <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
+                {% else %}
+                {{ t.title }}
+                {% endif %}
+                {% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}
+            </h2>
+            <div class="meta">
+                By {% for s in t.speakers %}
+                    {% if voting_allowed or special_user %}
+                    <a href="{% url conference-profile slug=s.slug %}"><b class="speaker-name">{{ s.name }}</b></a>
+                    {% else %}
+                    <b class="speaker-name">{{ s.name }}</b>
+                    {% endif %}
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                | <b>{{ t.type|field_label:"Talk.type" }}</b>
+                for <b>{{ t.level|field_label:"Talk.level" }}</b>
+            </div>
+            {% endwith %}
+            {% with talks|attrib_:forloop.counter0 as vote %}
+            <form action="{% url conference-voting %}" method="post">{% csrf_token %}
+                <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ vote.user_vote.vote|default:"0" }}" step="0.5" />
+                <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
+                <span class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></span>
+            </form>
+            {% endwith %}
+            {% if voting_allowed %}
+            <dl>
+                <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
+                <dd>
+                    <div class="cms" data-talk="{{ t.id }}" style="display: none">
+                        <div class="abstract"></div>
+                        <div><b>Questions on this talk?</b> <a href="{% url conference-talk slug=t.slug %}#comments">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
+                    </div>
+                </dd>
+            </dl>
+            {% endif %}
+        </li>
+        {% empty %}
+        <li><h2>Sorry, no entries match your query.</h2></li>
+        {% endfor %}
+        {% endwith %}
+    </ul>
+    <script type="text/javascript">
+        (function() {
+            {% if voting_allowed %}
+            $('.feedback-vote').click(function(e) {
+                e.preventDefault();
+                var talk = $(e.target).parents('li');
+                var tid = $('h2', talk).attr('id');
+                var title = $('h2 a', talk).html();
+                var speakers = [];
+                $('.meta .speaker-name', talk).each(function() {
+                    speakers.push($(this).html());
+                });
+                var speaker = speakers.join(', ');
+                var url = document.location.href + '#' + tid;
+                var vote = $($('.rateit', talk).attr('data-rateit-backingfld')).val();
+                RPXNOW.loadAndRun(['Social'], function () {
+                    var activity = new RPXNOW.Social.Activity(
+                        'Share your vote',
+                        'Just voted ' + vote + '/10 "' + title + '" of "' + speaker + '" #europython',
+                        url);
+                    activity.setTitle('Europython 2012 - Community voting');
+                    activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
+                    {% url conference-voting as u %}
+                    activity.addActionLink('Vote a talk', '{{ u|full_url }}');
+                    var media = new RPXNOW.Social.ImageMediaCollection();
+                    media.addImage('https://ep2012.europython.eu/media/uploads/twitter-avatar.png', url);
+                    activity.setMediaItem(media);
+                    RPXNOW.Social.publishActivity(activity);
+                });
+            });
+            function rate(e, val) {
+                var field = $(e.rateit('backingfld'));
+                var form = field.parents('form');
+                if(val == undefined)
+                    field.val(e.rateit('value'))
+                else
+                    field.val(val);
+                form.ajaxSubmit({
+                    success: function(data, text, jqXHR) {
+                        e.siblings('.feedback-vote').show();
+                    }
+                });
+            }
+            $('#talk-voting .rateit')
+                .rateit()
+                .bind('rated', function() {
+                    rate($(this));
+                })
+                .bind('reset', function() {
+                    rate($(this), 0);
+                });
+            {% else %}
+            $('#talk-voting .rateit')
+                .rateit();
+            {% endif %}
+            {% if voting_allowed %}
+            $('#talk-voting .toggle').click(function(e) {
+                var trigger = $(e.target);
+                var dest = $(trigger.attr('rel')).children('.abstract');
+                if(dest.attr('load'))
+                    return;
+                dest.attr('load', '1');
+                dest.html('loading...');
+                $.ajax({
+                    url: trigger.attr('data-src'),
+                    dataType: 'xml',
+                    success: function(data, text, jqXHR) {
+                        dest.html($('talk abstract', data).html());
+                    },
+                    error: function(jqXHR, text, error) {
+                        dest.attr('load', null);
+                    }
+                });
+            });
+            {% endif %}
+        })();
+    </script>
+</div>
+
