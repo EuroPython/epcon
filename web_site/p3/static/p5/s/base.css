@@ -747,6 +747,14 @@ footer nav li img {
     font-size: 16px;
 }
 
+#profile-user-visibility .profile-closed {
+	color: red;
+}
+
+#profile-user-visibility .profile-open {
+	color: green;
+}
+
 
 
 /* ======== */
@@ -1580,8 +1588,6 @@ section.notice {
     /* otherwise not shown with an overlay window */
     z-index: 10000;
 }
-
-
 
 /* ======= */
 /* ! ???   */
