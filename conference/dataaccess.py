@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from tagging.models import Tag, TaggedItem
@@ -219,11 +220,19 @@ def talk_data(tid, preload=None):
     except KeyError:
         abstract = talk.getAbstract()
 
+    try:
+        comment_list = preload['comments']
+    except KeyError:
+        comment_list = comments.get_model().objects\
+            .filter(content_type__app_label='conference', content_type__model='talk')\
+            .filter(object_pk=tid, is_public=True)
+
     output = _dump_fields(talk)
     output.update({
         'abstract': getattr(abstract, 'body', ''),
         'speakers': speakers,
         'tags': tags,
+        'comments': list(comment_list),
     })
     return output
 
@@ -232,13 +241,19 @@ def _i_talk_data(sender, **kw):
         tids = [ kw['instance'].id ]
     elif sender is models.Speaker:
         tids = kw['instance'].talks().values('id')
+    elif sender is comments.get_model():
+        o = kw['instance']
+        if o.content_type.app_label == 'conference' and o.content_type.model == 'talk':
+            tids = [ o.object_pk ]
+        else:
+            tids = []
     else:
         tids = [ kw['instance'].talk_id ]
 
     return [ 'talk_data:%s' % x for x in tids ]
-        
+
 talk_data = cache_me(
-    models=(models.Talk, models.Speaker, models.TalkSpeaker),
+    models=(models.Talk, models.Speaker, models.TalkSpeaker, comments.get_model()),
     key='talk_data:%(tid)s')(talk_data, _i_talk_data)
 
 def talks_data(tids):
@@ -262,6 +277,9 @@ def talks_data(tids):
             content_type=ContentType.objects.get_for_model(models.Talk),
             object_id__in=talks.values('id')
         )
+    comment_list = comments.get_model().objects\
+        .filter(content_type__app_label='conference', content_type__model='talk')\
+        .filter(object_pk__in=talks.values('id'), is_public=True)
 
     for t in talks:
         preload[t.id] = {
@@ -269,6 +287,7 @@ def talks_data(tids):
             'speakers_data': [],
             'tags': set(),
             'abstract': None,
+            'comments': [],
         }
     pids = set()
     for r in speakers_data:
@@ -281,6 +300,8 @@ def talks_data(tids):
         preload[r['object_id']]['tags'].add(r['tag__name'])
     for r in abstracts:
         preload[r.object_id]['abstract'] = r
+    for r in comment_list:
+        preload[int(r.object_pk)]['comments'].append(r)
 
     # talk_data utilizza profile_data per recuperare alcuni dati sullo speaker,
     # precarico l'elenco per minimizzare il numero di query necessario
