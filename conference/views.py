@@ -674,7 +674,6 @@ def paper_submission(request):
         'proposed_talks': proposed,
     }, context_instance=RequestContext(request))
 
-@render_to('conference/voting.html')
 def voting(request):
     conf = models.Conference.objects.current()
 
@@ -721,74 +720,100 @@ def voting(request):
         else:
             return HttpResponseRedirectSeeOther(reverse('conference-voting') + '?' + request.GET.urlencode())
     else:
+        from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioRenderer
         class OptionForm(forms.Form):
             abstracts = forms.ChoiceField(
                 choices=(('not-voted', 'To be voted'), ('all', 'All'),),
                 required=False,
+                initial='not-voted',
+                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             talk_type = forms.ChoiceField(
-                choices=(('all', 'All'), ('talk', 'Talks'), ('training', 'Trainings'),),
+                choices=(('all', 'All'), ('s', 'Talks'), ('t', 'Trainings'), ('p', 'Poster'),),
                 required=False,
+                initial='all',
+                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             language = forms.ChoiceField(
                 choices=(('all', 'All'), ('en', 'English'), ('it', 'Italian'),),
                 required=False,
+                initial='all',
+                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             order = forms.ChoiceField(
                 choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
                 required=False,
+                initial='vote',
+                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+            )
+            tags = TagField(
+                required=False,
+                widget=ReadonlyTagWidget(),
             )
 
-        form = OptionForm(data=request.GET)
-
         user_votes = models.VotoTalk.objects.filter(user=request.user.id)
-        talks = talks.order_by('speakers__name')
+        talks = talks.order_by('speakers__user__first_name', 'speakers__user__last_name')
 
-        form.is_valid()
-        options = form.cleaned_data
-        if options['abstracts'] != 'all':
-            talks = talks.exclude(id__in=user_votes.values('talk_id'))
-        if options['talk_type'] == 'talk':
-            talks = talks.filter(training_available=False)
-        elif options['talk_type'] == 'training':
-            talks = talks.filter(training_available=True)
+        if request.GET:
+            form = OptionForm(data=request.GET)
+            form.is_valid()
+            options = form.cleaned_data
+            if options['abstracts'] != 'all':
+                talks = talks.exclude(id__in=user_votes.values('talk_id'))
+            if options['talk_type'] in ('s', 't', 'p'):
+                talks = talks.filter(type=options['talk_type'])
 
-        if options['language'] == 'en':
-            talks = talks.filter(language='en')
-        elif options['language'] == 'it':
-            talks = talks.filter(language='it')
+            if options['language'] in ('en', 'it'):
+                talks = talks.filter(language=options['language'])
+
+            if options['tags']:
+                talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
+                    .filter(
+                        content_type__app_label='conference', content_type__model='talk',
+                        tag__name__in=options['tags'])\
+                    .values('object_id')
+                )
+
+            talk_order = options['order']
+        else:
+            form = OptionForm()
+            talk_order = 'vote'
 
         votes = dict((x.talk_id, x) for x in user_votes)
 
         # Poichè talks è ordinato per un modello collegato tramite una
-        # ManyToMany posso avere dei talk ripetuti, purtroppo per un limite di
-        # django la .distinct() non funziona perché l'orm aggiunge alle colonne
-        # della select anche il campo per cui si ordina.
+        # ManyToMany posso avere dei talk ripetuti, e il distinct non si
+        # applica in questi casi.
         #
         # Non mi rimane che filtrare in python, a questo punto ne approfitto
         # per agganciare i voti dell'utente utilizzando un unico loop.
         dups = set()
         def filter_vote(t):
-            if t.id in dups:
+            if t['id'] in dups:
                 return False
-            dups.add(t.id)
-            t.user_vote = votes.get(t.id)
+            dups.add(t['id'])
+            t['user_vote'] = votes.get(t['id'])
             return True
-        talks = filter(filter_vote, talks)
+        talks = filter(filter_vote, talks.values('id'))
 
-        if options['order'] != 'speaker':
+        if talk_order != 'speaker':
             def key(x):
-                if x.user_vote:
-                    return x.user_vote.vote
+                if x['user_vote']:
+                    return x['user_vote'].vote
                 else:
                     return Decimal('-99.99')
             talks = reversed(sorted(reversed(talks), key=key))
 
-        return {
+        ctx = {
             'voting_allowed': voting_allowed,
-            'talks': talks,
+            'talks': list(talks),
             'form': form,
         }
+        if request.is_ajax():
+            tpl = 'conference/ajax/voting.html'
+        else:
+            tpl = 'conference/voting.html'
+        return render(request, tpl, ctx)
 
 def init_js(request):
     """
