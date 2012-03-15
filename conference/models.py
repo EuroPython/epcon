@@ -300,7 +300,7 @@ class AttendeeProfile(models.Model):
     image = models.ImageField(upload_to=_fs_upload_to('profile'), blank=True)
     birthday = models.DateField(_('Birthday'), null=True, blank=True)
     phone = models.CharField(
-        _('Phone'), 
+        _('Phone'),
         max_length=30, blank=True,
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
@@ -477,7 +477,7 @@ class TalkManager(models.Manager):
         return talk
 
 TALK_TYPE = (
-    ('s', 'Standard'),
+    ('s', 'Talk'),
     ('i', 'Interactive'),
     ('t', 'Training'),
     ('p', 'Poster session'),
