@@ -1422,6 +1422,16 @@ def talks_data(tids):
 def content_type(id):
     return ContentType.objects.get(id=id)
 
+@register.filter
+def field_label(value, fieldpath):
+    mname, fname = fieldpath.split('.')
+    model = getattr(models, mname)
+    field = model._meta.get_field_by_name(fname)[0]
+    for k, v in field.choices:
+        if k == value:
+            return v
+    return None
+
 @fancy_tag(register)
 def admin_urlname_fromct(ct, action, id=None):
     r = 'admin:%s_%s_%s' % (ct.app_label, ct.model, action)
