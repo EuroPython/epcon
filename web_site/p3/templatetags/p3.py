@@ -302,11 +302,14 @@ def eval_(x, code):
 @register.filter
 def attrib_(ob, attrib):
     try:
-        iter(ob)
+        return ob[attrib]
     except TypeError:
-        return getattr(ob, attrib, None)
-    else:
-        return [ getattr(x, attrib, None) for x in ob ]
+        try:
+            iter(ob)
+        except TypeError:
+            return getattr(ob, attrib, None)
+        else:
+            return [ attrib_(x, attrib) for x in ob ]
 
 @register.filter
 def contains_(it, key):
