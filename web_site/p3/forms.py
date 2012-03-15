@@ -192,7 +192,7 @@ class P3SpeakerForm(cforms.SpeakerForm):
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')
-    days = forms.MultipleChoiceField(choices=tuple(), widget=forms.CheckboxSelectMultiple, required=False)
+    days = forms.MultipleChoiceField(label=_('Probable days of attendance:'), choices=tuple(), widget=forms.CheckboxSelectMultiple, required=False)
 
     class Meta:
         model = models.TicketConference
@@ -692,7 +692,7 @@ class P3FormTickets(aforms.FormTickets):
         try:
             models.TicketRoom.objects.can_be_booked(checks)
         except ValueError:
-            raise forms.ValidationError('0:Out of availability for the requested period')
+            raise forms.ValidationError('0:Not available in this period (<a href="/hotel-concession/rooms-not-available" class="trigger-overlay">info</a>)')
 
         return data
 

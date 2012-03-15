@@ -73,7 +73,7 @@
             {% endif %}
             <fieldset class="tickets hotel-reservations">
                 <legend>Room sharing at Grand Hotel Mediterraneo</legend>
-                <p>Book single beds in shared rooms, save money and get to meet other Pythoners! See all details of our <a href="/hotel-convention">convention</a> with the conference hotel. Rooms are limited, book now!</p>
+                <p>Book single beds in shared rooms, save money and get to meet other Pythoners! See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
                 <div class="cms">
                     <table>
@@ -81,7 +81,7 @@
                             <tr>
                                 <th>{% trans "Reservation type" %}</th>
                                 <th>{% trans "Reservation detail" %}</th>
-                                <th>{% trans "Q.ty" %}</th>
+                                <th>{% trans "# of beds" %}</th>
                                 <th>{% trans "Price" %}</th>
                             </tr>
                         </thead>
@@ -97,7 +97,7 @@
             </fieldset>
             <fieldset class="tickets hotel-reservations">
                 <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
-                <p>Book a room in the conference hotel, including wifi and breakfast. See all details of our <a href="/hotel-convention">convention</a> with the conference hotel. Rooms are limited, book now!</p>
+                <p>Book a room in the conference hotel, including wifi and breakfast. See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
                 <div class="cms">
                     <table>
@@ -105,7 +105,7 @@
                             <tr>
                                 <th>{% trans "Reservation type" %}</th>
                                 <th>{% trans "Reservation detail" %}</th>
-                                <th>{% trans "Q.ty" %}</th>
+                                <th>{% trans "# of rooms" %}</th>
                                 <th>{% trans "Price" %}</th>
                             </tr>
                         </thead>
@@ -122,7 +122,7 @@
 
             <fieldset class="tickets other-goodies">
                 <legend>{% trans "Other Goodies" %}</legend>
-                <p>{% trans "Other Goodies intro" %}</p>
+                {% comment %} <p>{% trans "Other Goodies intro" %}</p> {% endcomment %}
                 <div class="cms">
                     <table>
                         <thead>
@@ -235,6 +235,9 @@
         </script>
     </div>
 {% endblock %}
+
+
+
 
 
 

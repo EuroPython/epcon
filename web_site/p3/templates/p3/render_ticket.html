@@ -56,7 +56,7 @@
                     This ticket is<br/>
                     <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "for me" %}</a>
                     {% if user == ticket.user %}
-                    | <a href="#" class="button mini assign-button">{% trans "for another user" %}</a>
+                    | <a href="#" class="button mini assign-button">{% trans "for someone else" %}</a>
                     {% endif %}
                 </p>
             </div>
@@ -146,7 +146,7 @@
                     <div class="field">
                         <h2>Ticket name: {{ user.first_name }} {{ user.last_name }}</h2>
                         {% if user.attendeeprofile %}
-                        <p>want to change? edit your <a href="{% url conference-profile slug=user.attendeeprofile.slug %}">profile</a>.</p>
+                        <p>want to change name? edit your <a href="/accounts/profile/">account</a>.</p>
                         {% endif %}
                     </div>
                     {% else %}
@@ -168,7 +168,7 @@
                     {{ form.assigned_to|field }}
                 </div>
                 <div class="span-3 last">
-                    {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
+                    {% p3_profile_data request.user.id as pdata %}
                     <img src="{{ pdata.image }}" alt="" width="98" />
                     <p style="padding: 0 15px 0 0;">
                     {% if pdata.visibility == "x" %}
@@ -212,3 +212,6 @@
         }
     </script>
 </div>
+
+
+
