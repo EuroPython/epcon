@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 {% spaceless %}
 {% load conference %}
+{% talk_data talk.id as t %}
 <talk>
-    <conference>{{ talk.conference }}</conference>
-    <status>{{ talk.status }}</status>
-    <level>{{ talk.level }}</level>
-    <training>{{ talk.training_available }}</training>
-    <public_url>{{ talk.get_url }}</public_url>
-    <title>{{ talk.title }}</title>
-    <language>{{ talk.language }}</language>
-    <duration>{{ talk.duration }}</duration>
-    {% if talk.slides %}<slides url="{{ talk.slides.url|full_url }}" />{% endif %}
-    {% for spk in talk.get_all_speakers %}
+    <conference>{{ t.conference }}</conference>
+    <status>{{ t.status }}</status>
+    <level>{{ t.level }}</level>
+    <type>{{ t.type }}</type>
+    <public_url>{% url conference-talk t.slug as x %}{{ x|full_url }}</public_url>
+    <title>{{ t.title }}</title>
+    <language>{{ t.language }}</language>
+    <duration>{{ t.duration }}</duration>
+    {% if t.slides %}<slides url="{{ t.slides }}" />{% endif %}
+    {% for spk in t.speakers %}
     <speaker>
         <name>{{ spk.name }}</name>
-        <public_url>{{ spk.get_url }}</public_url>
+        <public_url>{% url conference-profile spk.slug as x %}{{ x|full_url }}</public_url>
         <url>{% url conference-speaker-xml spk.slug as x %}{{ x|full_url }}</url>
     </speaker>
     {% endfor %}
-    {% for b in talk.abstracts.all %}
-    <abstract xmlns="http://www.w3.org/1999/xhtml" lang="{{ b.language }}">{{ b.body|linebreaks }}</abstract>
-    {% endfor %}
+    <abstract xmlns="http://www.w3.org/1999/xhtml">{{ t.abstract }}</abstract>
 </talk>
 {% endspaceless %}
