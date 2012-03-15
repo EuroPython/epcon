@@ -6,16 +6,16 @@
             <input type="hidden" name="section" value="visibility" />
 
             {% if profile_data.visibility == "x" %}
-                <span>Your profile is not visibile by anyone.&nbsp;</span>
+                <span class="profile-closed">Your profile is not visibile by anyone.&nbsp;</span>
             {% endif %}
             {% if profile_data.visibility == "m" %}
-                <span>Only <b>conference participants</b> can view your profile.&nbsp;</span>
+                <span class="profile-open">Only <b>conference participants</b> can view your profile.&nbsp;</span>
             {% endif %}
             {% if profile_data.visibility == "p" %}
                 {% if profile_data.talks_accepted %}
-                <span>Your profile is <b>publicly visible</b> because you are an EuroPython speaker.&nbsp;</span>
+                <span class="profile-open">Your profile is <b>publicly visible</b> because you are an EuroPython speaker.&nbsp;</span>
                 {% else %}
-                <span>Your profile is <b>publicly visible</b>.&nbsp;</span>
+                <span class="profile-open">Your profile is <b>publicly visible</b>.&nbsp;</span>
                 {% endif %}     
             {% endif %}
             {{ form.visibility|field:"autosubmit" }}
@@ -31,6 +31,7 @@
         </form>
     </div>
 </section>
+
 
 
 
