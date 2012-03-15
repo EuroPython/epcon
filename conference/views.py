@@ -20,6 +20,7 @@ from django import http
 from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from django.core.files.base import File
 from django.core.urlresolvers import reverse
@@ -819,12 +820,21 @@ def init_js(request):
     """
     Conference javascript module.
     """
-    tags = models.ConferenceTag.objects\
-        .all()\
-        .distinct()\
-        .values_list('name', flat=True)
+    cts = dict(ContentType.objects.all().values_list('id', 'model'))
+    tags = dataaccess.tags()
+    items = {}
+    for t, objects in tags.items():
+        key = t.name.encode('utf-8')
+        if key not in items:
+            items[key] = {}
+        for ctid, oid in objects:
+            k = cts[ctid]
+            if k not in items[key]:
+                items[key][k] = 0
+            items[key][k] += 1
     data = {
-        'tags': [ x.encode('utf-8') for x in tags ],
+        'tags': [ x.name.encode('utf-8') for x in tags ],
+        'taggeditems': items,
     }
     return render(
         request,
