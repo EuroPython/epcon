@@ -18,7 +18,7 @@ from cStringIO import StringIO
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
-    list_filter = ('ticket_type', 'orderitem__order___complete', 'fare__code',)
+    list_filter = cadmin.TicketAdmin.list_filter + ('orderitem__order___complete',)
     
     def _order(self, o):
         return o.orderitem.order.code
@@ -34,6 +34,16 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             return o.p3_conference.tagline
         else:
             return ''
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.GET:
+            q = request.GET.copy()
+            q['fare__conference'] = settings.CONFERENCE_CONFERENCE
+            q['fare__ticket_type__exact'] = 'conference'
+            q['orderitem__order___complete__exact'] = 1
+            request.GET = q
+            request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(TicketConferenceAdmin,self).changelist_view(request, extra_context=extra_context)
 
     def queryset(self, request):
         qs = super(TicketConferenceAdmin, self).queryset(request)
