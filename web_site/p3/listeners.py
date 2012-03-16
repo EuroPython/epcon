@@ -57,7 +57,8 @@ def on_purchase_completed(sender, **kwargs):
 purchase_completed.connect(on_purchase_completed)
 
 def on_ticket_for_user(sender, **kwargs):
-    tickets = models.TicketConference.objects.available(sender.user, settings.CONFERENCE_CONFERENCE)
+    from p3 import dataaccess
+    tickets = dataaccess.user_tickets(sender.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
     map(kwargs['tickets'].append, tickets)
 
 ticket_for_user.connect(on_ticket_for_user)
