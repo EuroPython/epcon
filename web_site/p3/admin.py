@@ -8,7 +8,6 @@ from django.contrib import admin
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
-from django.utils.translation import ugettext as _
 from conference import admin as cadmin
 from conference import models as cmodels
 from p3 import models
@@ -19,7 +18,10 @@ from cStringIO import StringIO
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
     list_filter = cadmin.TicketAdmin.list_filter + ('orderitem__order___complete',)
-    
+
+    class Media:
+        js = ('p5/j/jquery-flot/jquery.flot.js',)
+
     def _order(self, o):
         return o.orderitem.order.code
 
@@ -53,10 +55,37 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
     def get_urls(self):
         urls = super(TicketConferenceAdmin, self).get_urls()
         my_urls = patterns('',
+            url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
             url(r'^stats/details/$', self.admin_site.admin_view(self.stats_details), name='p3-ticket-stats-details'),
             url(r'^stats/details/csv$', self.admin_site.admin_view(self.stats_details_csv), name='p3-ticket-stats-details-csv'),
         )
         return my_urls + urls
+
+    def stats_data(self, request):
+        from conference.views import json_dumps
+        from django.db.models import Q
+        from collections import defaultdict
+        import calendar
+
+        tickets = models.Ticket.objects\
+            .filter(fare__conference=settings.CONFERENCE_CONFERENCE)\
+            .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
+            .select_related('fare', 'orderitem__order')
+        output = {
+            'conference': defaultdict(lambda: 0),
+            'partner': defaultdict(lambda: 0),
+            'event': defaultdict(lambda: 0),
+            'other': defaultdict(lambda: 0),
+        }
+        for t in tickets:
+            tt = t.fare.ticket_type
+            date = t.orderitem.order.created.date()
+            timestamp = calendar.timegm(date.timetuple()) * 1000
+            output[tt][timestamp] += 1
+
+        for k, v in output.items():
+            output[k] = sorted(v.items())
+        return http.HttpResponse(json_dumps(output), 'text/javascript')
 
     def stats_details(self, request):
         code = request.GET['code']

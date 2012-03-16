@@ -1,0 +1,79 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+{% block object-tools %}
+    <ul class="object-tools">
+    {% if has_add_permission %}
+        <li>
+        <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
+            {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+        </a>
+        </li>
+    {% endif %}
+        <li>
+        <a href="{% url admin:conference-ticket-stats %}" class="">stats</a>
+        </li>
+    </ul>
+{% endblock %}
+{% block result_list %}
+<div id="plot" style="height: 300px; margin-right: 160px;"></div>
+{{ block.super }}
+<script type="text/javascript">
+(function() {
+    var url = "{% url admin:p3-ticket-stats-data %}";
+    function accumulate(data) {
+        var t = 0;
+        for(var ix=0; ix<data.length; ix++) {
+            var e = data[ix];
+            t += e[1];
+            e[1] = t;
+        }
+        return data;
+    }
+    $.getJSON(url, function(data) {
+        var series = [];
+        for(var key in data) {
+            var serie = {
+                label: key,
+                data: accumulate(data[key])
+            };
+            series.push(serie);
+        }
+        var options = {
+            legend: {
+                position: 'no'
+            },
+            xaxis: {
+                mode: 'time',
+                timeformat: "%y/%m/%d",
+                minTickSize: [1, "day"]
+            },
+            series: {
+                lines: {
+                    fill: true
+                }
+            },
+            grid: {
+                hoverable: true,
+                markings: [
+                    {
+                        xaxis: {
+                            from: 1331251201000,
+                            to: 1331251201000
+                        },
+                        color: '#000000'
+                    }
+                ]
+            }
+        };
+        var obj = $.plot('#plot', series, options);
+        /*
+        $('#plot').bind('plothover', function(event, pos, item) {
+            if(item) {
+                obj.highlight(item.series, item.datapoint);
+            }
+        });
+        */
+    });
+})();
+</script>
+{% endblock %}
