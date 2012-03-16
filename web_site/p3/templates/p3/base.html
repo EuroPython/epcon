@@ -173,7 +173,7 @@
     {% conference_sponsor as sponsors %}
     {% for s in sponsors %}
         <div class="ad">
-            <a href="{{ s.sponsor.url }}"><img class="block" src="{{ s.sponsor.logo|image_resized }}" alt="{{ s.sponsor.sponsor }}" width="110" height="50" /></a>
+            <a href="{{ s.url }}"><img class="block" src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="110" height="50" /></a>
         </div>
     {% endfor %}
     <div class="ad">
