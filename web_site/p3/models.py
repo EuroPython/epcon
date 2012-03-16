@@ -192,7 +192,7 @@ class TicketRoomManager(models.Manager):
         # prima di tutto individuo i biglietti validi; sono quelli il cui
         # ordine è confermato o, nel caso di ordini con bonifico bancario, sono
         # avvenuti di "recente"...
-        incomplete_limit = datetime.date.today() - datetime.timedelta(days=5)
+        incomplete_limit = datetime.date.today() - datetime.timedelta(days=15)
         return TicketRoom.objects\
             .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
             .filter(
