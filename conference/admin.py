@@ -442,6 +442,8 @@ admin.site.register(models.Fare, FareAdmin)
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('_name', '_buyer', '_conference', '_ticket', 'ticket_type',)
     search_fields = ('name', 'user__first_name', 'user__last_name', 'user__email')
+    list_filter = ('fare__conference', 'fare__ticket_type', 'ticket_type',)
+
     if settings.TICKET_BADGE_ENABLED:
         actions = ('do_ticket_badge',)
 
@@ -459,6 +461,15 @@ class TicketAdmin(admin.ModelAdmin):
 
     def _ticket(self, o):
         return o.fare.code
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.GET:
+            q = request.GET.copy()
+            q['fare__conference'] = settings.CONFERENCE
+            q['fare__ticket_type__exact'] = 'conference'
+            request.GET = q
+            request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(TicketAdmin,self).changelist_view(request, extra_context=extra_context)
 
     def queryset(self, request):
         qs = super(TicketAdmin, self).queryset(request)
