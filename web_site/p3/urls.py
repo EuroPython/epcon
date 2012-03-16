@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^sprints/(?P<sid>\d+)/$', 'p3.views.sprint', name='p3-sprint'),
 
     url(r'^sim_report/$', 'p3.views.sim_report', name='p3-sim-report'),
+    url(r'^hotel_report/$', 'p3.views.hotel_report', name='p3-hotel-report'),
 
     url(r'^p/profile/(?P<slug>[\w-]+)/', 'p3.views.p3_profile', name='p3-profile'),
     url(r'^p/account/data', 'p3.views.p3_account_data', name='p3-account-data'),

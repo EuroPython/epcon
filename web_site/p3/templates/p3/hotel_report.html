@@ -1,0 +1,86 @@
+{% extends "p3/base.html" %}
+{% load i18n assopy_tags %}
+{% block MAIN_CONTENT %}
+<div id="hotel-report" class="cms">
+    <h1>Stanze prenotate</h1>
+    {% for type, orders in rooms %}
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Room Type</th>
+            <th>Check in</th>
+            <th>Check out</th>
+            <th>Person #1</th>
+            <th>Person #2</th>
+            <th>Person #3</th>
+            <th>Person #4</th>
+        </tr>
+        {% for _, tickets in orders %}
+        <tr class="">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ type }}</td>
+            <td>{{ tickets.0.checkin }}</td>
+            <td>{{ tickets.0.checkout }}</td>
+            <td>
+                {% with tickets.0 as t %}
+                {% if t.document %}
+                <a href="{{ t.document.url }}">{{ t.ticket.name }}</a>
+                {% else %}
+                {{ t.ticket.name }}
+                {% endif %}
+                {% endwith %}
+            </td>
+            <td>
+                {% with tickets.1 as t %}
+                {% if t.document %}
+                <a href="{{ t.document.url }}">{{ t.ticket.name }}</a>
+                {% else %}
+                {{ t.ticket.name }}
+                {% endif %}
+                {% endwith %}
+            </td>
+            <td>
+                {% with tickets.2 as t %}
+                {% if t.document %}
+                <a href="{{ t.document.url }}">{{ t.ticket.name }}</a>
+                {% else %}
+                {{ t.ticket.name }}
+                {% endif %}
+                {% endwith %}
+            </td>
+            <td>
+                {% with tickets.3 as t %}
+                {% if t.document %}
+                <a href="{{ t.document.url }}">{{ t.ticket.name }}</a>
+                {% else %}
+                {{ t.ticket.name }}
+                {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+    <h1>Posti letto in room sharing</h1>
+    {% for type, periods in beds %}
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Room Type</th>
+            <th>Check in</th>
+            <th>Check out</th>
+            <th>Quantity</th>
+        </tr>
+        {% for period, tickets in periods %}
+        <tr class="">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ type }}</td>
+            <td>{{ period.0 }}</td>
+            <td>{{ period.1 }}</td>
+            <td>{{ tickets|length }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+</div>
+{% endblock %}
