@@ -106,11 +106,12 @@ def sponsor(conf):
                 .values('object_id', 'tag__name'):
         tags[r['object_id']].add(r['tag__name'])
     for i in qs:
-        output.append({
-            'sponsor': i.sponsor,
+        data = _dump_fields(i.sponsor)
+        data.update({
             'income': i.income,
             'tags': tags[i.id],
         })
+        output.append(data)
     return output
 
 def _i_sponsor(sender, **kw):
