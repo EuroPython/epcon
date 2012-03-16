@@ -67,18 +67,18 @@
             {% with request.user.assopy_user|user_coupons as coupons %}
                 {% if coupons.valid|length or coupons.invalid|length%}
                 <section class="profile-user-data coupons">
-                    <h4>{% trans "Your discount coupons" %}</h4>                        
+                    <h4>{% trans "Your discount coupons" %}</h4>
                     <ul>
-                    {% for c in coupons.valid %}                        
+                    {% for c in coupons.valid %}
                         <li class="coupon valid">
                             <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
                         </li>
-                    {% endfor %}                                                
+                    {% endfor %}
                     {% for c in coupons.invalid %}
                         <li class="coupon invalid">
                             <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
                         </li>
-                    {% endfor %}                        
+                    {% endfor %}
                     </ul>
                 </section>
                 {% endif %}
@@ -123,15 +123,15 @@
 <hr />
 <div class="clearfix">
 
-    <h2>Other personal pages</h2>     
-    <hr/>       
+    <h2>Other personal pages</h2>
+    <hr/>
 
     <div class="span-4">
         <section>
             <div class="button">
                 <a href="{% url conference-profile slug=profile.slug %}"> Your public profile &rarr; </a>
             </div>
-            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Partecipate in 
+            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Partecipate in
                   "<a href="/find-out-whos-coming">Find out who's coming</a>": let
                   people know that you will be coming to EuroPython.
             </div>
@@ -154,9 +154,8 @@
          {% endif %}
         {% endwith %}
     </div>
-    
-    <hr/>
 
+    <hr/>
 
  {% comment %}
             <div class="profile-user-utility-links">
