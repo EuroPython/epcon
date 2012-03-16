@@ -642,7 +642,7 @@ def splitonspace(value):
 def image_resized(value, size='resized'):
     if isinstance(value, basestring):
         url = value
-        if url.startswith('http'):
+        if not url.startswith(dsettings.DEFAULT_URL_PREFIX + dsettings.MEDIA_URL):
             return url
     else:
         url = value.url
