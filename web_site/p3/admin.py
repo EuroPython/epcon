@@ -65,26 +65,55 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         from conference.views import json_dumps
         from django.db.models import Q
         from collections import defaultdict
-        import calendar
+        from microblog.models import PostContent
+        import datetime
 
-        tickets = models.Ticket.objects\
-            .filter(fare__conference=settings.CONFERENCE_CONFERENCE)\
-            .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
-            .select_related('fare', 'orderitem__order')
-        output = {
-            'conference': defaultdict(lambda: 0),
-            'partner': defaultdict(lambda: 0),
-            'event': defaultdict(lambda: 0),
-            'other': defaultdict(lambda: 0),
-        }
-        for t in tickets:
-            tt = t.fare.ticket_type
-            date = t.orderitem.order.created.date()
-            timestamp = calendar.timegm(date.timetuple()) * 1000
-            output[tt][timestamp] += 1
+        conferences = cmodels.Conference.objects\
+            .order_by('conference_start')
 
-        for k, v in output.items():
-            output[k] = sorted(v.items())
+        output = {}
+        for c in conferences:
+            tickets = cmodels.Ticket.objects\
+                .filter(fare__conference=c)\
+                .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
+                .select_related('fare', 'orderitem__order')
+            data = {
+                'conference': defaultdict(lambda: 0),
+                'partner': defaultdict(lambda: 0),
+                'event': defaultdict(lambda: 0),
+                'other': defaultdict(lambda: 0),
+            }
+            for t in tickets:
+                tt = t.fare.ticket_type
+                date = t.orderitem.order.created.date()
+                offset = date - c.conference_start
+                data[tt][offset.days] += 1
+
+            for k, v in data.items():
+                data[k] = sorted(v.items())
+
+
+            dlimit = datetime.date(c.conference_start.year, 1, 1)
+            deadlines = cmodels.DeadlineContent.objects\
+                .filter(language='en')\
+                .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
+                .select_related('deadline')\
+                .order_by('deadline__date')
+            markers = [ ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body)) for d in deadlines ]
+
+            posts = PostContent.objects\
+                .filter(language='en')\
+                .filter(post__date__lte=c.conference_start, post__date__gte=dlimit)\
+                .filter(post__status='P')\
+                .select_related('post')\
+                .order_by('post__date')
+            markers += [ ((d.post.date.date() - c.conference_start).days, 'BLOG: ' + d.headline) for d in posts ]
+
+            output[c.code] = {
+                'data': data,
+                'markers': markers,
+            }
+
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
     def stats_details(self, request):
