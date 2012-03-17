@@ -19,16 +19,24 @@ function setup_conference_fields(ctx) {
             }
         });
         if(conference) {
-            var wrapper = $('<ul class="all-tags"></ul>');
-            wrapper.insertAfter(tfields.parent().children('ul.tagit').eq(0));
+            var wrapper = $('<div class="all-tags"></div>');
             for(var ix=0; ix<conference.tags.length; ix++) {
                 var t = conference.tags[ix];
-                wrapper.append('<a class="tag" href="#">' + t + '</a>');
+                var a = $('<a class="tag" href="#">' + t + '</a>');
+                a.click(function(e) {
+                    e.preventDefault();
+                    $(this)
+                        .parent()
+                        .parent()
+                        .children('.tag-field')
+                        .tagit('createTag', this.innerHTML);
+                });
+                wrapper.append(a);
             }
-            $('a.tag', wrapper).click(function(e) {
-                e.preventDefault();
-                tfields.tagit('createTag', $(this).text());
-            });
+            tfields.
+                parent()
+                .children('ul.tagit')
+                .after(wrapper);
         }
     }
     var tfields = $('.readonly-tag-field');
