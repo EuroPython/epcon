@@ -457,6 +457,12 @@ def _i_event_data(sender, **kw):
         ids = [ kw['instance'].id ]
     elif sender is models.Talk:
         ids = models.Event.objects.filter(talk=kw['instance']).values_list('id', flat=True)
+    elif sender is models.Schedule:
+        ids = kw['instance'].event_set.all().values_list('id', flat=True)
+    elif sender is models.Track:
+        ids = models.EventTrack.objects\
+            .filter(track=kw['instance'])\
+            .values_list('event', flat=True)
     return [ 'event:%s' % x for x in ids ]
 
 event_data = cache_me(
