@@ -178,6 +178,7 @@ class SpeakerAdminForm(forms.ModelForm):
 
 class SpeakerAdmin(MultiLingualAdminContent):
     list_display = ('_user', '_email')
+    search_fields = ('user__first_name', 'user__last_name', 'user__email')
     list_select_related = True
     form = SpeakerAdminForm
 
