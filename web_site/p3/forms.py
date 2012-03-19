@@ -174,14 +174,16 @@ class P3TalkForm(cforms.TalkForm):
 
     def clean(self):
         data = super(P3TalkForm, self).clean()
-        if data['type'] == 't':
-            data['duration'] = 240
+        # se instance è None la form viene usata per presentare un nuovo paper
+        if not self.instance:
+            if data['type'] == 't':
+                data['duration'] = 240
 
-        if not data.get('duration'):
-            data['duration'] = 45
+            if not data.get('duration'):
+                data['duration'] = 45
 
-        if not data.get('language') or data['type'] != 's':
-            data['language'] = 'en'
+            if not data.get('language') or data['type'] != 's':
+                data['language'] = 'en'
         return data
 
 class P3SpeakerForm(cforms.SpeakerForm):
