@@ -196,15 +196,28 @@ class SpeakerAdmin(MultiLingualAdminContent):
         return my_urls + urls
 
     def stats_list(self, request):
-        sids = models.TalkSpeaker.objects\
+        qs = models.TalkSpeaker.objects\
             .filter(talk__conference=settings.CONFERENCE)\
             .order_by('speaker__user__first_name', 'speaker__user__last_name')\
             .distinct()\
             .values_list('speaker', flat=True)
-        ctx = {
-            'speakers': dataaccess.speakers_data(sids),
-        }
-        return render_to_response('admin/conference/speaker/stats_list.html', ctx, context_instance=template.RequestContext(request))
+        # precarico i profili per aiutare il template
+        dataaccess.profiles_data(qs)
+        speakers = dataaccess.speakers_data(qs)
+        groups = {}
+        for t, _ in models.TALK_TYPE:
+            sids = set(qs.filter(talk__type=t))
+            data = [ x for x in speakers if x['user'] in sids ]
+            if data:
+                groups[t] = data
+        return render_to_response(
+            'admin/conference/speaker/stats_list.html',
+            {
+                'speakers': speakers,
+                'groups': groups,
+            },
+            context_instance=template.RequestContext(request)
+        )
 
     def _user(self, o):
         if o.user.attendeeprofile:
