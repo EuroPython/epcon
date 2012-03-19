@@ -6,9 +6,7 @@ urlpatterns = patterns('conference.views',
 
     url(r'^speakers/(?P<slug>[\w-]+).xml', 'speaker_xml', name = 'conference-speaker-xml'),
     url(r'^speakers/(?P<slug>[\w-]+)', 'speaker', name = 'conference-speaker'),
-    url(r'^speaker/admin/image_upload', 'speaker_admin_image_upload', name = 'conference-speaker-img-upload'),
 
-    url(r'^talks/admin/upload', 'talk_admin_upload', name = 'conference-talks-upload'),
     url(r'^talks/report', 'talk_report', name = 'conference-talk-report'),
     url(r'^talks/(?P<slug>[\w-]+)/video$', 'talk_video', name = 'conference-talk-video'),
     url(r'^talks/(?P<slug>[\w-]+)/video.mp4$', 'talk_video', name = 'conference-talk-video-mp4'),
