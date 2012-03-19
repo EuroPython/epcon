@@ -222,7 +222,9 @@ CONFERENCE_FORMS = {
 }
 
 def CONFERENCE_VOTING_ALLOWED(user):
-    if user.is_authenticated():
+    if user.is_superuser:
+        return True
+    elif user.is_authenticated():
         from p3 import models
         from django.db.models import Q
         # può votare chi ha almeno un biglietto confermato e che non ha
