@@ -333,12 +333,13 @@ def speaker_data(sid, preload=None):
     except KeyError:
         talks_data = models.TalkSpeaker.objects\
             .filter(speaker=speaker)\
-            .values('talk__id', 'talk__title', 'talk__slug')
+            .values('talk__id', 'talk__title', 'talk__slug', 'talk__conference',)
 
     talks = []
     for t in talks_data:
         talks.append({
             'id': t['talk__id'],
+            'conference': t['talk__conference'],
             'title': t['talk__title'],
             'slug': t['talk__slug'],
         })
@@ -376,7 +377,7 @@ def speakers_data(sids):
         .filter(user__in=missing)
     talks = models.TalkSpeaker.objects\
         .filter(speaker__in=speakers.values('user'))\
-        .values('speaker', 'talk__id', 'talk__title', 'talk__slug')
+        .values('speaker', 'talk__id', 'talk__title', 'talk__slug', 'talk__conference')
 
     for s in speakers:
         preload[s.user_id] = {
@@ -388,6 +389,7 @@ def speakers_data(sids):
             'talk__id': t['talk__id'],
             'talk__title': t['talk__title'],
             'talk__slug': t['talk__slug'],
+            'talk__conference': t['talk__conference'],
         })
 
     output = []

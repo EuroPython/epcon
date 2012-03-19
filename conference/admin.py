@@ -177,21 +177,47 @@ class SpeakerAdminForm(forms.ModelForm):
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
 
 class SpeakerAdmin(MultiLingualAdminContent):
-    #prepopulated_fields = {"slug": ("name",)}
-    #list_display = ('avatar', 'name', '_email', 'slug')
-    #list_display_links = ('name', )
+    list_display = ('_user', '_email')
+    list_select_related = True
     form = SpeakerAdminForm
 
-    def _email(self, obj):
-        return obj.user.email
+    def queryset(self, request):
+        # list_select_related non insegue anche le reverse onetoone, devo
+        # chiederle esplicitamente
+        qs = super(SpeakerAdmin, self).queryset(request)
+        qs = qs.select_related('user__attendeeprofile',)
+        return qs
 
-    def avatar(self, obj):
-        if obj.image:
-            h = '<img src="%s" alt="%s" height="32" />'
-            return h % (obj.image.url, obj.slug)
+    def get_urls(self):
+        urls = super(SpeakerAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^stats/list/$', self.admin_site.admin_view(self.stats_list), name='conference-speaker-stat-list'),
+        )
+        return my_urls + urls
+
+    def stats_list(self, request):
+        sids = models.TalkSpeaker.objects\
+            .filter(talk__conference=settings.CONFERENCE)\
+            .order_by('speaker__user__first_name', 'speaker__user__last_name')\
+            .distinct()\
+            .values_list('speaker', flat=True)
+        ctx = {
+            'speakers': dataaccess.speakers_data(sids),
+        }
+        return render_to_response('admin/conference/speaker/stats_list.html', ctx, context_instance=template.RequestContext(request))
+
+    def _user(self, o):
+        if o.user.attendeeprofile:
+            p = urlresolvers.reverse('conference-profile', kwargs={'slug': o.user.attendeeprofile.slug})
         else:
-            return ''
-    avatar.allow_tags = True
+            p = 'javascript:alert("profile not set")'
+        return '<a href="%s">%s %s</a>' % (p, o.user.first_name, o.user.last_name)
+    _user.allow_tags = True
+    _user.admin_order_field = 'user__first_name'
+
+    def _email(self, o):
+        return o.user.email
+    _user.admin_order_field = 'user__email'
 
 admin.site.register(models.Speaker, SpeakerAdmin)
 
