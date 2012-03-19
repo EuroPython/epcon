@@ -9,7 +9,7 @@ from django.conf import settings as dsettings
 from django.conf.urls.defaults import url, patterns
 from django.core import urlresolvers
 from django.db import transaction
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import redirect, render_to_response, get_object_or_404
 
 from conference import dataaccess
 from conference import models
@@ -350,9 +350,47 @@ class ScheduleAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ScheduleAdmin, self).get_urls()
         my_urls = patterns('',
+            url(r'^full_view/$', self.admin_site.admin_view(self.full_view), name='conference-schedule-full_view'),
+            url(r'^full_view/(?P<sid>\d+)/(?P<tid>\d+)/$', self.admin_site.admin_view(self.full_view_track), name='conference-schedule-full_view-track'),
             url(r'^stats/$', self.admin_site.admin_view(self.expected_attendance), name='conference-schedule-expected_attendance'),
         )
         return my_urls + urls
+
+    def full_view(self, request):
+        conf = models.Conference.objects.current()
+        schedules = dataaccess.schedules_data(models.Schedule.objects\
+            .filter(conference=conf)\
+            .values_list('id', flat=True)
+        )
+        talks = dataaccess.talks_data(models.Talk.objects\
+            .filter(conference=conf.code)\
+            .order_by('title')\
+            .values_list('id', flat=True)
+        )
+        tracks = []
+        for sch in schedules:
+            tracks.append([ sch['id'], [ t.id for t in sch['tracks'] ] ])
+
+        ctx = {
+            'conference': conf,
+            'tracks': tracks,
+            'talks': talks,
+        }
+        return render_to_response('admin/conference/schedule/full_view.html', ctx, context_instance=template.RequestContext(request))
+
+    def full_view_track(self, request, sid, tid):
+        track = get_object_or_404(models.Track, schedule=sid, id=tid)
+        eids = models.EventTrack.objects\
+            .filter(track=tid, track__schedule=sid)\
+            .values_list('event', flat=True)
+        from datetime import time
+        ts = [time(8,00), time(18,30)]
+        tt = utils.TimeTable(ts, rows=[track])
+        ctx = {
+            'events': map(dataaccess.event_data, eids),
+            'timetable': tt,
+        }
+        return render_to_response('admin/conference/schedule/full_view_schedule.html', ctx, context_instance=template.RequestContext(request))
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)

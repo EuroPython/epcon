@@ -142,10 +142,11 @@ def schedule_data(sid, preload=None):
         tracks = models.Track.objects\
             .filter(schedule=schedule)\
             .order_by('order')
-    return {
-        'schedule': schedule,
+    output = _dump_fields(schedule)
+    output.update({
         'tracks': list(tracks),
-    }
+    })
+    return output
 
 def _i_schedule_data(sender, **kw):
     if sender is models.Schedule:
@@ -423,7 +424,7 @@ def event_data(eid, preload=None):
     return {
         'id': event.id,
         'name': name,
-        'time': datetime.combine(sch['schedule'].date, event.start_time),
+        'time': datetime.combine(sch['date'], event.start_time),
         'custom': event.custom,
         'duration': event.duration,
         'sponsor': event.sponsor,
@@ -456,6 +457,12 @@ def _i_event_data(sender, **kw):
         ids = [ kw['instance'].id ]
     elif sender is models.Talk:
         ids = models.Event.objects.filter(talk=kw['instance']).values_list('id', flat=True)
+    elif sender is models.Schedule:
+        ids = kw['instance'].event_set.all().values_list('id', flat=True)
+    elif sender is models.Track:
+        ids = models.EventTrack.objects\
+            .filter(track=kw['instance'])\
+            .values_list('event', flat=True)
     return [ 'event:%s' % x for x in ids ]
 
 event_data = cache_me(

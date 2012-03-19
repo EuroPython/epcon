@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% block extrahead %}
+{{ block.super }}
+<style type="text/css">
+#talks {
+    width: 160px;
+    float: left;
+}
+#dashboard {
+    margin-left: 160px;
+}
+.schedule {
+    margin-bottom: 20px;
+}
+.schedule:after {
+    clear: both;
+    content: " ";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+.track {
+    background: peachpuff;
+    float: left;
+    margin-right: 20px;
+}
+</style>
+{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../">Home</a> &rsaquo;
+     <a href="../../">Conference</a>&rsaquo;
+     <a href="../">Schedules</a>&rsaquo;
+     full view
+</div>
+{% endblock %}
+{% block content %}
+<h1>{{ conference.name }}</h1>
+<div id="talks">
+    <ol>
+        <li>talk 1</li>
+        <li>talk 2</li>
+        <li>talk 3</li>
+    </ol>
+</div>
+<div id="dashboard"></div>
+<script type="text/javascript">
+(function() {
+    // qui un encoding json non guasterebbe
+    var tracks = {{ tracks }};
+    var dashboard = $('#dashboard');
+    function reload(e) {
+        if(e.hasClass('track')) {
+            var sid = e.parent().attr('data-id');
+            var tid = e.attr('data-id');
+            e.load('/admin/conference/schedule/full_view/' + sid + '/' + tid + '/');
+        }
+        else {
+            throw "unknown element";
+        }
+    }
+    $(tracks).each(function(ix, row) {
+        var sid = row[0];
+        var sch = $('<div id="schedule-' + sid + '" data-id="' + sid + '" class="schedule"></div>')
+            .appendTo(dashboard);
+        $(row[1]).each(function(ix, track_id) {
+            var track = $('<div id="track-' + track_id + '" data-id="' + track_id + '" class="track">loading...</div>')
+                .appendTo(sch);
+            reload(track);
+        });
+    });
+})();
+</script>
+{% endblock %}

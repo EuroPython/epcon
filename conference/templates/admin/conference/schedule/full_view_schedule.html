@@ -1,0 +1,9 @@
+{% load conference %}
+<table>
+    {% for time, rows in timetable.byTimes %}
+    <tr>
+        <th>{{ time|time:"H:i" }}</th>
+        <td>{{ rows.0.data }}</td>
+    </tr>
+    {% endfor %}
+</table>
