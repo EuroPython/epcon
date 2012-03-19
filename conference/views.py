@@ -680,7 +680,7 @@ def paper_submission(request):
 def voting(request):
     conf = models.Conference.objects.current()
 
-    if not conf.voting():
+    if not conf.voting() and not request.user.is_superuser:
         if settings.VOTING_CLOSED:
             return redirect(settings.VOTING_CLOSED)
         else:
