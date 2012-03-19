@@ -230,6 +230,8 @@ def talk(request, slug, talk, full_access, talk_form=TalkForm):
             data['level'] = talk.level
             data['duration'] = talk.duration
             data['language'] = talk.language
+            data['type'] = talk.type
+            data['tags'] = ','.join([ x.name for x in talk.tags.all() ])
         form = talk_form(data=data, files=request.FILES, instance=talk)
         if form.is_valid():
             talk = form.save()
