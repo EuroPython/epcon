@@ -89,7 +89,8 @@ def deadlines(lang, year=None):
 
 deadlines = cache_me(
     models=(models.Deadline, models.DeadlineContent),
-    key='deadlines:%(lang)s:%(year)s')(deadlines, _i_deadlines)
+    key='deadlines:%(lang)s:%(year)s',
+    timeout=5*60)(deadlines, _i_deadlines)
 
 def sponsor(conf):
     qs = models.SponsorIncome.objects\
