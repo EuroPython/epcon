@@ -40,11 +40,20 @@ class OrderAdminForm(forms.ModelForm):
         self.fields['user'].queryset = models.User.objects.all().select_related('user')
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', '_user', '_email', 'card_name', '_created', 'method', '_items', '_complete', '_invoice', '_total_nodiscount', '_discount', '_total_payed',)
+    list_display = (
+        'code', '_user', '_email',
+        'card_name', '_created', 'method',
+        '_items', '_complete', '_invoice',
+        '_total_nodiscount', '_discount', '_total_payed',
+    )
     list_select_related = True
     list_filter = ('method', '_complete',)
     list_per_page = 20
-    search_fields = ('code', 'card_name', 'user__user__first_name', 'user__user__last_name', 'user__user__email', 'billing_notes')
+    search_fields = (
+        'code', 'card_name',
+        'user__user__first_name', 'user__user__last_name', 'user__user__email',
+        'billing_notes',
+    )
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
 
@@ -53,6 +62,14 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = (
         OrderItemInlineAdmin,
     )
+
+    def get_actions(self, request):
+        # elimino l'action delete per costringere l'utente ad usare il pulsante
+        # nella pagina di dettaglio. La differenza tra il pulsante e questa
+        # azione che l'ultima non chiama la `.delete()` del modello.
+        actions = super(OrderAdmin, self).get_actions(request)
+        actions.pop('delete_selected', None)
+        return actions
 
     def _user(self, o):
         url = urlresolvers.reverse('admin:assopy_user_change', args=(o.user.id,))
