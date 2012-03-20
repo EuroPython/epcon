@@ -439,6 +439,7 @@ header #li-chat #habla_unavailable_div a {
 
 .badge.chat.unavailable {
     opacity: .7;
+    filter: alpha(opacity=70);
 }
 
 
@@ -1257,7 +1258,8 @@ hr.stars {
 }
 
 .cal .deadline.expired {
-    opacity: .6;
+    opacity: .4;
+    filter: alpha(opacity=40);
 }
 
 .cal .deadline.expired p {
@@ -1380,8 +1382,8 @@ hr.stars {
 }
 
 .preview:hover .ticket-commands {
-    opacity: 1;
-    filter: alpha(opacity=100);
+    opacity: .8;
+    filter: alpha(opacity=80);
 }
 
 .ticket-commands {
@@ -1396,7 +1398,7 @@ hr.stars {
     min-width: 100%;
 
     background: #fff;
-    background: rgba(100%, 100%, 100%, .8);    
+    background: rgba(100%, 100%, 100%);    
 
     -webkit-transition: opacity .2s ease-out;
     opacity: 0;
@@ -1411,8 +1413,8 @@ hr.stars {
 }
 
 .ticket-assigned-to.ticket-commands {
-    opacity: 1;
-    filter: alpha(opacity=100);
+    opacity: .8;
+    filter: alpha(opacity=80);
 }
 
 .ticket-name,
@@ -1427,6 +1429,7 @@ hr.stars {
     top: 90px;
     right: 10px;
     opacity: 0.25;
+    filter: alpha(opacity=25);
 }
 
 .ticket-name {
