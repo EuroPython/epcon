@@ -171,6 +171,12 @@ class P3TalkForm(cforms.TalkForm):
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
+    teaser_video = forms.URLField(
+        label=_('Teaser video'),
+        help_text=_('Insert the url for your teaser video'),
+        required=False,
+        widget=forms.TextInput(attrs={'size': 40}),
+    )
 
     def clean(self):
         data = super(P3TalkForm, self).clean()
