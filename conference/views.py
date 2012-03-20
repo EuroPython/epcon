@@ -581,7 +581,6 @@ def voting(request):
                 return http.HttpResponseBadRequest('id malformed')
             if not v:
                 models.VotoTalk.objects.filter(user=request.user, talk=talk).delete()
-                talks.user_vote = None
             else:
                 try:
                     vote = Decimal(v)
@@ -593,7 +592,6 @@ def voting(request):
                     o = models.VotoTalk(user=request.user, talk=talk)
                 o.vote = vote
                 o.save()
-                talks.user_vote = o
         if request.is_ajax():
             return http.HttpResponse('')
         else:
@@ -629,6 +627,12 @@ def voting(request):
                 required=False,
                 widget=ReadonlyTagWidget(),
             )
+
+        # voglio poter associare ad ogni talk un numero "univoco" da mostrare
+        # accanto al titolo per poterlo individuare facilmente.
+        ordinal = dict()
+        for ix, t in enumerate(talks.order_by('created').values_list('id', flat=True)):
+            ordinal[t] = ix
 
         user_votes = models.VotoTalk.objects.filter(user=request.user.id)
         talks = talks.order_by('speakers__user__first_name', 'speakers__user__last_name')
@@ -672,6 +676,7 @@ def voting(request):
                 return False
             dups.add(t['id'])
             t['user_vote'] = votes.get(t['id'])
+            t['ordinal'] = ordinal[t['id']]
             return True
         talks = filter(filter_vote, talks.values('id'))
 
