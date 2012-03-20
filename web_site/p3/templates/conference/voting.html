@@ -32,14 +32,10 @@
         <div class="span-7 inline">
             {{ form.abstracts|field:"autosubmit" }}
             {{ form.talk_type|field:"autosubmit" }}
-            {{ form.language|field:"autosubmit" }}
         </div>
         <div class="span-5 last inline">
+            {{ form.language|field:"autosubmit" }}
             {{ form.order|field:"autosubmit" }}
-            <div class="field">
-                <label>&nbsp;</label>
-                <input type="submit" value="refresh" />
-            </div>
         </div>
         <div class="span-12 last">
             {{ form.tags|field:"autosubmit" }}
