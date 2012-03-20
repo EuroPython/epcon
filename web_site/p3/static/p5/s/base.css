@@ -823,7 +823,7 @@ footer nav li img {
 
 }
 
-#talk-voting li {
+#talk-voting > li {
     margin: 0 0 30px 0;
     background: #fff;
     padding: 10px;
