@@ -94,6 +94,9 @@
                     }
                 }
             }
+            if(item) {
+                markers.push('VAL: ' + item.datapoint[1]);
+            }
             $('#markers-text').html(markers.join(', '));
         });
     });
