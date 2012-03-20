@@ -2,12 +2,8 @@
 from __future__ import with_statement
 import functools
 import os.path
-import tempfile
 import urllib
-import zipfile
-from cStringIO import StringIO
 from decimal import Decimal
-from xml.etree import cElementTree as ET
 
 from conference import dataaccess
 from conference import models
@@ -18,18 +14,15 @@ from conference.forms import EventForm, SpeakerForm, TalkForm
 from django import forms
 from django import http
 from django.conf import settings as dsettings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
-from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404, render
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.template.defaultfilters import slugify
 
 import simplejson
 from decorator import decorator
