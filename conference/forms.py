@@ -263,9 +263,9 @@ class TalkForm(forms.Form):
         label=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=forms.Textarea(),)
-    promo_video = forms.URLField(
-        label=_('Promo video'),
-        help_text=_('Promo video description'),
+    teaser_video = forms.URLField(
+        label=_('Teaser video'),
+        help_text=_('Insert the url for your teaser video'),
         required=False,
     )
     tags = TagField(widget=TagWidget)
@@ -279,7 +279,7 @@ class TalkForm(forms.Form):
                 'language': instance.language,
                 'level': instance.level,
                 'abstract': getattr(instance.getAbstract(), 'body', ''),
-                'promo_video': instance.promo_video_url,
+                'teaser_video': instance.teaser_video,
                 'tags': instance.tags.all(),
             }
             data.update(kwargs.get('initial', {}))
@@ -305,7 +305,7 @@ class TalkForm(forms.Form):
             o.level = data['level']
 
         o.type = data['type']
-        o.promo_video_url = data['promo_video']
+        o.teaser_video = data['teaser_video']
         if data['slides']:
             o.slides = data['slides']
         o.save()
