@@ -119,7 +119,7 @@ h2 .new {
 }
 
 
-a.tag {
+a.tag,span.tag {
     background: #e3dfac;
     padding: 1px 2px;
         
