@@ -445,6 +445,10 @@ def box_next_events(context):
 def p3_profile_data(uid):
     return dataaccess.profile_data(uid)
 
+@fancy_tag(register)
+def p3_profiles_data(uids):
+    return dataaccess.profiles_data(uids)
+
 @fancy_tag(register, takes_context=True)
 def get_form(context, name, bound="auto", bound_field=None):
     if '.' in name:

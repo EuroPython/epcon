@@ -3,17 +3,23 @@ from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels
 from p3 import models
+from django.contrib.auth.models import User
 
 cache_me = cachef.CacheFunction(prefix='p3:')
 
-def profile_data(uid):
+def profile_data(uid, preload=None):
+    if preload is None:
+        preload = {}
     profile = cdata.profile_data(uid)
     try:
-        p3p = models.P3Profile.objects\
-            .get(profile=uid)
-    except models.P3Profile.DoesNotExist:
-        pass
-    else:
+        p3p = preload['profile']
+    except KeyError:
+        try:
+            p3p = models.P3Profile.objects\
+                .get(profile=uid)
+        except models.P3Profile.DoesNotExist:
+            p3p = None
+    if p3p:
         profile.update({
             'interests': [ t.name for t in p3p.interests.all() ],
             'twitter': p3p.twitter,
@@ -34,6 +40,26 @@ profile_data = cache_me(
     signals=(cdata.profile_data.invalidated,),
     models=(models.P3Profile,),
     key='profile:%(uid)s')(profile_data, _i_profile_data)
+
+def profiles_data(uids):
+    cached = zip(uids, profile_data.get_from_cache([ (x,) for x in uids ]))
+    missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
+
+    preload = {}
+    profiles = models.P3Profile.objects\
+        .filter(profile__in=missing)
+    for p in profiles:
+        preload[p.profile_id] = {'profile': p}
+
+    cdata.profiles_data(missing)
+    output = []
+    for ix, e in enumerate(cached):
+        pid, val = e
+        if val is cache_me.CACHE_MISS:
+            val = profile_data(pid, preload=preload[pid])
+        output.append(val)
+
+    return output
 
 def user_tickets(user, conference, only_complete=False):
     q1 = user.ticket_set.all()\
