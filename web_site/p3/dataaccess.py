@@ -90,3 +90,29 @@ def user_tickets(user, conference, only_complete=False):
             if order.method not in ('bank', 'admin') and not order.complete():
                 del tickets[ix]
         return tickets
+
+def conference_users(conference):
+    """
+    Restituisce l'elenco degli user_id che partecipano alla conferenza.
+    """
+    ticket_qs = cmodels.Ticket.objects\
+        .filter(fare__conference=conference)\
+        .filter(fare__code__startswith='T')\
+    # I biglietti non assegnati
+    q1 = User.objects\
+        .filter(id__in=\
+            ticket_qs\
+                .filter(p3_conference__assigned_to__in=(None, ''))\
+                .values_list('user', flat=True)
+        )\
+        .values_list('id', flat=True)
+
+    # e i biglietti assegnati
+    q2 = User.objects\
+        .filter(email__in=\
+            ticket_qs\
+                .exclude(p3_conference__assigned_to__in=(None,''))\
+                .values('p3_conference__assigned_to')
+        )\
+        .values_list('id', flat=True)
+    return q1 | q2
