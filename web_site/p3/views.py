@@ -11,11 +11,11 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response, re
 from django.template import RequestContext, Template
 
 import forms as p3forms
-import models
+from p3 import models
 import assopy.models as amodels
 from assopy.forms import BillingData
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
-from conference.models import Fare, Event, Ticket, Schedule, Speaker, AttendeeProfile
+from conference import models as cmodels
 from conference.views import profile_access
 from email_template import utils
 
@@ -105,7 +105,7 @@ def _assign_ticket(ticket, email):
 @login_required
 @transaction.commit_on_success
 def ticket(request, tid):
-    t = get_object_or_404(Ticket, pk=tid)
+    t = get_object_or_404(cmodels.Ticket, pk=tid)
     try:
         p3c = t.p3_conference
     except models.TicketConference.DoesNotExist:
@@ -366,7 +366,7 @@ def billing(request):
 @render_to('p3/schedule.html')
 def schedule(request, conference):
     from conference.forms import EventForm
-    schedules = Schedule.objects.filter(conference=conference)
+    schedules = cmodels.Schedule.objects.filter(conference=conference)
     try:
         form = EventForm(schedule=schedules[0])
     except IndexError:
@@ -379,7 +379,7 @@ def schedule(request, conference):
 
 @render_to('p3/schedule_list.html')
 def schedule_list(request, conference):
-    qs = Event.objects\
+    qs = cmodels.Event.objects\
         .filter(schedule__conference=conference)\
         .select_related('schedule', 'talk')
 
@@ -397,7 +397,7 @@ def schedule_list(request, conference):
 
 @render_to('p3/schedule_speakers.html')
 def schedule_speakers(request, conference):
-    events = Event.objects\
+    events = cmodels.Event.objects\
         .filter(schedule__conference=settings.CONFERENCE_CONFERENCE)\
         .exclude(talk=None)\
         .select_related('schedule', 'track', 'talk')
@@ -405,7 +405,7 @@ def schedule_speakers(request, conference):
     for x in events:
         tmap[x.talk_id].append(x)
 
-    speakers = Speaker.objects\
+    speakers = cmodels.Speaker.objects\
                 .filter(talkspeaker__talk__in=tmap.keys())\
                 .select_related('user')\
                 .extra(select={'talk_id': 'conference_talkspeaker.talk_id'})
@@ -430,7 +430,7 @@ def schedule_speakers(request, conference):
 @login_required
 @render_to('p3/my_schedule.html')
 def my_schedule(request):
-    qs = Event.objects\
+    qs = cmodels.Event.objects\
         .filter(eventinterest__user=request.user, eventinterest__interest__gt=0)\
         .filter(schedule__conference=settings.CONFERENCE_CONFERENCE)\
         .select_related('schedule', 'talk')
@@ -449,7 +449,7 @@ def my_schedule(request):
 @render_to_json
 def schedule_search(request, conference):
     from haystack.query import SearchQuerySet
-    sqs = SearchQuerySet().models(Event).auto_query(request.GET.get('q')).filter(conference=conference)
+    sqs = SearchQuerySet().models(cmodels.Event).auto_query(request.GET.get('q')).filter(conference=conference)
     return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]
 
 @login_required
@@ -617,9 +617,9 @@ def sprint(request, sid):
 def sim_report(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
         return http.HttpResponseForbidden()
-    tickets = Ticket.objects.filter(
+    tickets = cmodels.Ticket.objects.filter(
         orderitem__order___complete=True,
-        fare__in=Fare.objects.filter(code__startswith='SIM'),
+        fare__in=cmodels.Fare.objects.filter(code__startswith='SIM'),
     ).order_by('orderitem__order').select_related('p3_conference_sim')
     if request.method == 'POST':
         t = tickets.get(id=request.POST['ticket'])
@@ -723,7 +723,7 @@ def p3_profile(request, slug, profile=None, full_access=False):
 def p3_account_data(request):
     ctx = {}
     if request.method == 'POST':
-        profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
+        profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(request.user)
         form = p3forms.P3ProfilePersonalDataForm(instance=profile, data=request.POST)
         ctx['pform'] = form
         if form.is_valid():
@@ -763,7 +763,7 @@ def p3_account_email(request):
 def p3_account_spam_control(request):
     ctx = {}
     if request.method == 'POST':
-        profile = AttendeeProfile.objects.getOrCreateForUser(request.user)
+        profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(request.user)
         form = p3forms.P3ProfileSpamControlForm(instance=profile.p3_profile, data=request.POST)
         if form.is_valid():
             form.save()
