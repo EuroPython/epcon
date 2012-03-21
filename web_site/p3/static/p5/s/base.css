@@ -1653,3 +1653,7 @@ section.countdown {
     width: 80px;
     margin: 0 0 20px 0;
 }
+
+#whos-coming > section {
+    margin-bottom: 10px;
+}

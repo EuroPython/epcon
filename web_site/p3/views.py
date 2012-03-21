@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response, re
 from django.template import RequestContext, Template
 
 import forms as p3forms
+from p3 import dataaccess
 from p3 import models
 import assopy.models as amodels
 from assopy.forms import BillingData
@@ -768,3 +769,12 @@ def p3_account_spam_control(request):
         if form.is_valid():
             form.save()
     return render(request, "assopy/profile_spam_control.html", ctx)
+
+def whos_coming(request):
+    ctx = {
+        'pids': cmodels.AttendeeProfile.objects\
+            .filter(visibility='p')\
+            .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
+            .values_list('user', flat=True),
+    }
+    return render(request, "p3/whos_coming.html", ctx)
