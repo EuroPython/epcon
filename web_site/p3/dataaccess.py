@@ -62,6 +62,10 @@ def profiles_data(uids):
     return output
 
 def user_tickets(user, conference, only_complete=False):
+    """
+    Restituisce i biglietti associati all'utente (perché li ha comprati o
+    perché gli sono stati assegnati).
+    """
     q1 = user.ticket_set.all()\
         .conference(conference)
 
