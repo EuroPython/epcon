@@ -155,8 +155,19 @@
                 <dd>{% trans "disponibile" %}</dd>
                 {% endif %}
             </dl>
+            {% if talk_data.tags %}
+            <hr />
+            <h4>Tagged as</h4>
+            <div class="all-tags">
+                {% for t in talk_data.tags %}
+                <span class="tag">{{ t }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% if voting %}
+            <hr />
             <div id="talk-voting">
+                <h4>Community voting is open</h4>
                 <form action="{% url conference-voting %}" method="post">{% csrf_token %}
                     Vote this talk:
                     {% talk_vote talk as vote %}
