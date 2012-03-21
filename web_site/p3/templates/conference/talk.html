@@ -61,6 +61,15 @@
                 <a href="{% url conference-profile slug=spk.slug %}">{{ spk.name }}</a>
                 {% if not forloop.last %}-{% endif %}
                 {% endfor %}
+                for
+                <strong>
+                {% if talk_data.conference == "ep2011" %}
+                EuroPython 2011
+                {% endif %}
+                {% if talk_data.conference == "ep2012" %}
+                EuroPython 2012
+                {% endif %}
+                </strong>
             </p>
         </div>
         {% with talk.event_set.all as events %}
