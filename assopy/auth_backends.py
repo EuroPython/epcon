@@ -77,6 +77,7 @@ class IdBackend(_AssopyBackend):
                 # collegamento con il backend.
                 auser = models.User(user=user)
                 auser.save()
+                models.user_created.send(sender=auser, profile_complete=True)
             self.linkUser(auser)
             return user
         except User.DoesNotExist:
@@ -94,6 +95,7 @@ class EmailBackend(_AssopyBackend):
                     # collegamento con il backend.
                     auser = models.User(user=user)
                     auser.save()
+                    models.user_created.send(sender=auser, profile_complete=True)
                 self.linkUser(auser)
                 return user
         except User.MultipleObjectsReturned:
