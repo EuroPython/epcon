@@ -203,6 +203,7 @@ GNR_CONFERENCE = {
     'size': (780, 480),
 }
 
+CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
 CONFERENCE_GOOGLE_MAPS = {
     # chiave info@pycon.it per http://localhost
     # 'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSCRpOQNQwH5i15toJmp6eLWzSKPg',

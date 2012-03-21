@@ -13,18 +13,17 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('conference missing')
 
-        # filtro dei poveri per selezionare i talk da una certa data in poi;
-        # servirebbe un vero campo `data` nel Talk
         try:
-            start_id = args[1]
+            afilter = args[1]
         except IndexError:
-            start_id = None
+            afilter = ''
 
         qs = models.TalkSpeaker.objects\
             .filter(talk__conference=conference)\
             .select_related('talk', 'speaker__user')
-        if start_id:
-            qs = qs.filter(talk__id__gte=start_id)
+        if '@' in afilter:
+            qs = qs.filter(speaker__user__email=afilter)
+        # more filters here...
 
         data = []
         for row in qs:
@@ -41,6 +40,7 @@ class Command(BaseCommand):
                 tpl = 'verify-training-data'
             else:
                 raise ValueError('unknown talk type')
+            print email, '->', row.talk.title
             data.append((email, ctx, tpl))
 
         for email, ctx, tpl in data:
