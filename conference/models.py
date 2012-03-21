@@ -494,7 +494,7 @@ class Talk(models.Model, UrlMixin):
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
     video_url = models.TextField(blank=True)
     video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
-    teaser_video = models.URLField(verify_exists=False, blank=False)
+    teaser_video = models.URLField(verify_exists=False, blank=True)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
