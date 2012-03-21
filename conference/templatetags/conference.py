@@ -1455,6 +1455,10 @@ def admin_urlname_fromct(ct, action, id=None):
 def profile_data(uid):
     return dataaccess.profile_data(uid)
 
+@fancy_tag(register)
+def profiles_data(uids):
+    return dataaccess.profiles_data(uids)
+
 @register.filter
 def beautify_url(url):
     """
