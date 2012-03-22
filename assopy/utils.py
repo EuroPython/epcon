@@ -35,12 +35,15 @@ def geocode(address, region=''):
     import json
     import urllib
 
+    def _e(s):
+        return s.encode('utf-8') if isinstance(s, unicode) else s
+
     params = {
-        'address': address,
+        'address': _e(address.strip()),
         'sensor': 'false',
     }
     if region:
-        params['region'] = region.strip()
+        params['region'] = _e(region.strip())
     url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode(params)
     data = json.loads(urllib.urlopen(url).read())
     return data
