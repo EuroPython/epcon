@@ -3,6 +3,7 @@
 {% block MAIN_CONTENT %}
 <div id="whos-coming">
     <h1>Who's coming?</h1>
+    {{ form }}
     {% p3_profiles_data pids as pdata %}
     {% for profile_data in pdata %}
     <section class="profile-user-identity clearfix">

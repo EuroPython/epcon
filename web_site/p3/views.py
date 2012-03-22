@@ -771,10 +771,23 @@ def p3_account_spam_control(request):
     return render(request, "assopy/profile_spam_control.html", ctx)
 
 def whos_coming(request):
+    countries = list(amodels.Country.objects\
+        .filter(iso__in=models.P3Profile.objects\
+            .exclude(country='')\
+            .values('country')
+        )\
+        .values_list('iso', 'name')\
+        .distinct()
+    )
+    class FormWhosFilter(forms.Form):
+        country = forms.ChoiceField(choices=countries)
+
+    form = FormWhosFilter()
     ctx = {
         'pids': cmodels.AttendeeProfile.objects\
             .filter(visibility='p')\
             .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
             .values_list('user', flat=True),
+        'form': form,
     }
     return render(request, "p3/whos_coming.html", ctx)

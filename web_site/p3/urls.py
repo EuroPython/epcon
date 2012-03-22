@@ -30,5 +30,5 @@ urlpatterns = patterns('',
     url(r'^p/account/email', 'p3.views.p3_account_email', name='p3-account-email'),
     url(r'^p/account/spam_control', 'p3.views.p3_account_spam_control', name='p3-account-spam-control'),
 
-    url(r'^whos-coming/$', 'p3.views.whos_coming', name='p3-whos-coming'),
+    url(r'^whos-coming$', 'p3.views.whos_coming', name='p3-whos-coming'),
 )
