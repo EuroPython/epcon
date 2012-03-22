@@ -15,6 +15,7 @@
                 {{ t.title }}
                 {% endif %}
                 {% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}
+                {% if t.teaser_video %}<img src="{{ STATIC_URL }}p5/i/tv.png" height="24" alt="" title="teaser video available" />{% endif %}
             </h2>
             <div class="meta">
                 By {% for s in t.speakers %}
