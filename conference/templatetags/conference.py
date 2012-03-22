@@ -929,6 +929,9 @@ def embed_video(context, value, args=""):
         url = vtype[1] + '?url=' + video_url + '&format=json'
         if w and h:
             url += '&width=%s&height=%s&maxwidth=%s&maxheight=%s' % (w, h, w, h)
+        # rasky: youtube supports this but there's no standard way for querying the SSL
+        # embed. We can assume that others will ignore the extra query argument.
+        url += '&scheme=https'
         try:
             response, content = http.request(url)
             data = simplejson.loads(content)
