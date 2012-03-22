@@ -119,7 +119,17 @@
                     url: trigger.attr('data-src'),
                     dataType: 'xml',
                     success: function(data, text, jqXHR) {
-                        dest.html($('talk abstract', data).html());
+                        foo = data
+                        var text = $('talk abstract', data).html();
+                        var video = $('teaser_video html', data).text();
+                        var html = '';
+                        if(text && video) {
+                            html = '<div>' + text + '<hr/><h2>Teaser Video</h2>' + video + '</div>';
+                        }
+                        else {
+                            html = text;
+                        }
+                        dest.html(html);
                     },
                     error: function(jqXHR, text, error) {
                         dest.attr('load', null);
