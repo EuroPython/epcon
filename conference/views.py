@@ -3,6 +3,7 @@ from __future__ import with_statement
 import functools
 import os.path
 import urllib
+from collections import defaultdict
 from decimal import Decimal
 
 from conference import dataaccess
@@ -721,8 +722,13 @@ def init_js(request):
             if k not in items[key]:
                 items[key][k] = 0
             items[key][k] += 1
+
+    tdata = defaultdict(list)
+    for x in tags:
+        tdata[x.category.encode('utf-8')].append(x.name.encode('utf-8'))
+
     data = {
-        'tags': [ x.name.encode('utf-8') for x in tags ],
+        'tags': dict(tdata),
         'taggeditems': items,
     }
     return render(
