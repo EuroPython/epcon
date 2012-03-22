@@ -310,7 +310,7 @@ class P3Profile(models.Model):
     twitter = models.CharField(max_length=80, blank=True)
     image_gravatar = models.BooleanField(default=False)
     image_url = models.URLField(max_length=500, verify_exists=False, blank=False)
-    country = models.CharField(max_length=2, blank=True, db_index=True)
+    country = models.CharField(max_length=2, blank=True, default='', db_index=True)
 
     spam_recruiting = models.BooleanField(default=False)
     spam_user_message = models.BooleanField(default=False)
