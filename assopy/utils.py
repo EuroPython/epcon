@@ -30,3 +30,27 @@ def dotted_import(path):
         raise ImproperlyConfigured('Module "%s" does not define "%s"' % (module, attr))
 
     return o
+
+def geocode(address, region=''):
+    import json
+    import urllib
+
+    params = {
+        'address': address,
+        'sensor': 'false',
+    }
+    if region:
+        params['region'] = region.strip()
+    url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode(params)
+    data = json.loads(urllib.urlopen(url).read())
+    return data
+
+def geocode_country(address, region=''):
+    gdata = geocode(address, region)
+    if not gdata:
+        return None
+    for r in gdata['results']:
+        for address in r.get('address_components', []):
+            if 'country' in address.get('types', []):
+                return address['short_name']
+    return None

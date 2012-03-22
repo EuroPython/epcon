@@ -379,16 +379,8 @@ def geocode(request):
     region = request.GET.get('region')
     if not address:
         return ''
-
-    params = {
-        'address': address,
-        'sensor': 'false',
-    }
-    if region:
-        params['region'] = region.strip()
-    url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode(params)
-    data = json.loads(urllib.urlopen(url).read())
-    return data
+    from assopy.utils import geocode as g
+    return g(address, region=region)
 
 # sembra che a volte la redirezione di paypal si concluda con una POST da parte
 # del browser (qualcuno ha detto HttpResponseRedirectSeeOther?), dato che non
