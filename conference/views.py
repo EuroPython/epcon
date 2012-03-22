@@ -644,7 +644,7 @@ def voting(request):
         else:
             form = OptionForm()
             options = {
-                'abstracts': 'all',
+                'abstracts': 'not-voted',
                 'talk_type': '',
                 'language': '',
                 'tags': '',
