@@ -268,16 +268,16 @@ class AttendeeProfileManager(models.Manager):
 
         name = '%s %s' % (user.first_name, user.last_name)
         slug = slugify(name)
-        try:
-            count = 0
-            check = slug
-            while True:
-                if self.filter(slug=check).count() == 0:
-                    break
-                count += 1
-                check = '%s-%d' % (slug, count)
-            p.slug = check
-            p.save()
+
+        count = 0
+        check = slug
+        while True:
+            if self.filter(slug=check).count() == 0:
+                break
+            count += 1
+            check = '%s-%d' % (slug, count)
+        p.slug = check
+        p.save()
         return p
 
 ATTENDEEPROFILE_VISIBILITY = (
