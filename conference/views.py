@@ -641,26 +641,32 @@ def voting(request):
             form = OptionForm(data=request.GET)
             form.is_valid()
             options = form.cleaned_data
-            if options['abstracts'] != 'all':
-                talks = talks.exclude(id__in=user_votes.values('talk_id'))
-            if options['talk_type'] in ('s', 't', 'p'):
-                talks = talks.filter(type=options['talk_type'])
-
-            if options['language'] in ('en', 'it'):
-                talks = talks.filter(language=options['language'])
-
-            if options['tags']:
-                talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
-                    .filter(
-                        content_type__app_label='conference', content_type__model='talk',
-                        tag__name__in=options['tags'])\
-                    .values('object_id')
-                )
-
-            talk_order = options['order']
         else:
             form = OptionForm()
-            talk_order = 'vote'
+            options = {
+                'abstracts': 'all',
+                'talk_type': '',
+                'language': '',
+                'tags': '',
+                'order': 'vote',
+            }
+        if options['abstracts'] != 'all':
+            talks = talks.exclude(id__in=user_votes.values('talk_id'))
+        if options['talk_type'] in ('s', 't', 'p'):
+            talks = talks.filter(type=options['talk_type'])
+
+        if options['language'] in ('en', 'it'):
+            talks = talks.filter(language=options['language'])
+
+        if options['tags']:
+            talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
+                .filter(
+                    content_type__app_label='conference', content_type__model='talk',
+                    tag__name__in=options['tags'])\
+                .values('object_id')
+            )
+
+        talk_order = options['order']
 
         votes = dict((x.talk_id, x) for x in user_votes)
 
