@@ -248,6 +248,12 @@ def postSaveResizeImageHandler(sender, **kwargs):
     p.communicate()
 
 class AttendeeProfileManager(models.Manager):
+    # TODO: non posso usare il commit_manully o il commit_on_success perché non
+    # funzionano nestati.  dovrei usare i savepoint ma quello che voglio io è
+    # usare una "BEGIN EXCLUSIVE TRANSACTION" per impedire ad altri di leggere
+    # la tabella. Purtroppo sqlite3 non supporta le transazioni nidificate
+    # quindi non potrebbe essere un sistema "generico" in quanto non so dove
+    # `.getOrCreateForUser` verrebbe chiamata
     def getOrCreateForUser(self, user):
         """
         Ritorna o crea il profilo associato all'utente.
@@ -261,12 +267,6 @@ class AttendeeProfileManager(models.Manager):
 
         name = '%s %s' % (user.first_name, user.last_name)
         slug = slugify(name)
-        cursor = connection.cursor()
-        # qui ho bisogno di impedire che altre connessioni possano leggere il
-        # db fino a quando non ho finito
-        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
-        # È importante assicurarsi che la transazione venga chiusa, con successo
-        # o fallimento, il prima possibile
         try:
             count = 0
             check = slug
@@ -277,11 +277,6 @@ class AttendeeProfileManager(models.Manager):
                 check = '%s-%d' % (slug, count)
             p.slug = check
             p.save()
-        except:
-            transaction.rollback()
-            raise
-        else:
-            transaction.commit()
         return p
 
 ATTENDEEPROFILE_VISIBILITY = (
