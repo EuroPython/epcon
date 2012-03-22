@@ -600,8 +600,9 @@ admin.site.register(models.Ticket, TicketAdmin)
 
 class ConferenceTagAdmin(admin.ModelAdmin):
     actions = ('do_merge_tags',)
-    list_display = ('slug', 'name', '_usage',)
-    list_editable = ('name',)
+    list_display = ('slug', 'name', 'category', '_usage',)
+    list_editable = ('name', 'category')
+    list_filter = ('category',)
     list_per_page = 500
     prepopulated_fields = {"slug": ("name",)}
     ordering = ('name',)
