@@ -49,6 +49,7 @@ class ConferenceTagManager(models.Manager):
 
 class ConferenceTag(TagBase):
     objects = ConferenceTagManager()
+    category = models.CharField(max_length=50, default='', blank=True)
 
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
     tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
