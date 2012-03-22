@@ -348,10 +348,25 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         return getattr(self.instance.getBio(), 'body', '')
 
     def save(self, commit=True):
+        try:
+            oldl = cmodels.AttendeeProfile.objects\
+                .values('location')\
+                .get(user=self.instance.user_id)['location']
+        except (AttributeError, cmodels.AttendeeProfile.DoesNotExist), e:
+            oldl = None
         profile = super(P3ProfilePublicDataForm, self).save(commit)
         p3p = profile.p3_profile
         data = self.cleaned_data
         p3p.twitter = data.get('twitter', '')
+
+        loc = data.get('location')
+        if loc:
+            if loc != oldl:
+                from assopy.utils import geocode_country
+                p3p.country = geocode_country(loc)
+        else:
+            p3p.country = ''
+
         p3p.save()
         p3p.interests.set(*data.get('interests', ''))
         return profile
