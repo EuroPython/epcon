@@ -56,7 +56,7 @@ def _request_cache(request, key):
     except AttributeError:
         request._conf_cache = {key: {}}
     return request._conf_cache[key]
-    
+
 @fancy_tag(register, takes_context=True)
 def get_deadlines(context, year=None, limit=None, not_expired=True):
     if year is None:
@@ -859,7 +859,7 @@ def embed_video(context, value, args=""):
     args = dict( map(lambda _: _.strip(), x.split('=')) for x in args.split(',') if '=' in x )
     providers = {
         'viddler': ('oEmbed', 'http://lab.viddler.com/services/oembed/'),
-        'youtube': ('oEmbed', 'http://www.youtube.com/oembed'),
+        'youtube': ('oEmbed', 'https://www.youtube.com/oembed'),
         'download': ('download', None),
     }
     source = None
