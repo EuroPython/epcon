@@ -20,5 +20,15 @@
     </speaker>
     {% endfor %}
     <abstract xmlns="http://www.w3.org/1999/xhtml">{{ t.abstract|markdown2:"smarty-pants,code-color" }}</abstract>
+    {% if t.teaser_video %}
+    <teaser_video>
+        <url>{{ t.teaser_video }}</url>
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <![CDATA[
+        {% embed_video t.teaser_video %}
+        ]]>
+        </html>
+    </teaser_video>
+    {% endif %}
 </talk>
 {% endspaceless %}
