@@ -603,7 +603,7 @@ def profiles_data(pids):
         preload[row['speaker']]['talks'].append(row)
 
     for b in bios:
-        preload[b.object_id]['bio'] = b.body
+        preload[b.object_id]['bio'] = b
 
     output = []
     for ix, e in enumerate(cached):
