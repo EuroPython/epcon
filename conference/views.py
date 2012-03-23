@@ -118,7 +118,7 @@ def speaker_access(f):
         else:
             full_access = False
             conf = models.Conference.objects.current()
-            if conf.voting():
+            if settings.VOTING_OPENED(conf, request.user):
                 if settings.VOTING_ALLOWED(request.user):
                     talks = spk.talks()
                 else:
@@ -196,9 +196,12 @@ def talk_access(f):
             else:
                 full_access = True
 
+        # Se il talk non è confermato possono accedere:
+        #   * i super user o gli speaker (full_access = True)
+        #   * se la votazione comunitarià è in corso chi ha il diritto di votare
         if tlk.status == 'proposed' and not full_access:
             conf = models.Conference.objects.current()
-            if not conf.voting():
+            if not settings.VOTING_OPENED(conf, request.user):
                 return http.HttpResponseForbidden()
             if not settings.VOTING_ALLOWED(request.user):
                 if settings.VOTING_DISALLOWED:
@@ -556,7 +559,7 @@ def paper_submission(request):
 def voting(request):
     conf = models.Conference.objects.current()
 
-    if not conf.voting() and not request.user.is_superuser:
+    if not settings.VOTING_OPENED(conf, request.user):
         if settings.VOTING_CLOSED:
             return redirect(settings.VOTING_CLOSED)
         else:

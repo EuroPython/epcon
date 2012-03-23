@@ -32,6 +32,8 @@ CFP_CLOSED = getattr(settings, 'CONFERENCE_CFP_CLOSED', None)
 
 VOTING_CLOSED = getattr(settings, 'CONFERENCE_VOTING_CLOSED', None)
 
+VOTING_OPENED = getattr(settings, 'CONFERENCE_VOTING_OPENED', lambda conf, user: conf.voting())
+
 # callable per verificare se l'utente passato può partecipare alla votazione
 VOTING_ALLOWED = getattr(settings, 'CONFERENCE_VOTING_ALLOWED', lambda user: True)
 
