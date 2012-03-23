@@ -222,20 +222,48 @@ CONFERENCE_FORMS = {
     'Profile': 'p3.forms.P3ProfileForm',
 }
 
+def CONFERENCE_VOTING_OPENED(conf, user):
+    # possono accedere alla pagina:
+    #   chiunque durante il community voting
+    #   i superuser
+    #   gli speaker (della conferenza in corso)
+    #   chi ha il gruppo special "pre_voting"
+    if conf.voting() or user.is_superuser:
+        return True
+    from conference.models import TalkSpeaker, Speaker
+    try:
+        count = TalkSpeaker.objects.filter(talk__conference=CONFERENCE_CONFERENCE, speaker=user.speaker).count()
+    except Speaker.DoesNotExist:
+        pass
+    else:
+        if count > 0:
+            return True
+    return user.groups.filter(name='pre_voting').exists()
+
 def CONFERENCE_VOTING_ALLOWED(user):
+    if not user.is_authenticated():
+        return False
     if user.is_superuser:
         return True
-    elif user.is_authenticated():
-        from p3 import models
-        from django.db.models import Q
-        # può votare chi ha almeno un biglietto confermato e che non ha
-        # assegnato a qualcun'altro
-        tickets = models.TicketConference.objects\
-            .available(user, CONFERENCE_CONFERENCE)\
-            .filter(Q(orderitem__order___complete=True)|Q(orderitem__order__method='admin'))\
-            .filter(Q(p3_conference=None)|Q(p3_conference__assigned_to='')|Q(p3_conference__assigned_to=user.email))
-        return tickets.count() > 0
-    return False
+
+    from conference.models import TalkSpeaker, Speaker
+    try:
+        count = TalkSpeaker.objects.filter(talk__conference=CONFERENCE_CONFERENCE, speaker=user.speaker).count()
+    except Speaker.DoesNotExist:
+        pass
+    else:
+        if count > 0:
+            return True
+
+    from p3 import models
+    from django.db.models import Q
+    # può votare chi ha almeno un biglietto confermato e che non ha
+    # assegnato a qualcun'altro
+    tickets = models.TicketConference.objects\
+        .available(user, CONFERENCE_CONFERENCE)\
+        .filter(Q(orderitem__order___complete=True)|Q(orderitem__order__method='admin'))\
+        .filter(Q(p3_conference=None)|Q(p3_conference__assigned_to='')|Q(p3_conference__assigned_to=user.email))
+    return tickets.count() > 0
 
 def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     from p3.utils import conference_stats
