@@ -4,15 +4,17 @@
 <div class="cal all-deadlines">
     {% for d in deadlines %}
     <div class="deadline clearfix{% if d.expired %} expired{% endif %}">
-        <h3><span>{{ d.date|date:"d" }}</span><br />{{ d.date|date:"b" }}</h3>
-        <div>
+        <h3><span>{{ d.date|date:"d" }}</span> {{ d.date|date:"b" }}</h3>
+        <p>
             {% if d.headline and d.body %}
+<!--
                 <h4>{{ d.headline|safe }}</h4>
                 <div>{{ d.body|safe }}</div>
+-->
             {% else %}
-                <h4>{{ d.body|safe }}</h4>
+                {{ d.body|safe }}
             {% endif %}
-        </div>
+        </p>
     </div>
     {% endfor %}
 </div>
