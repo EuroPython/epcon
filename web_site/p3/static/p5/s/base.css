@@ -1203,6 +1203,23 @@ hr.stars {
 
 }
 
+.cal h2 {
+
+}
+
+.cal h2 span {
+    width: 50%;    
+    display: inline-block;
+    margin: 0 0 5px 0;
+}
+
+.cal h2 span.more {
+    text-align: right;
+	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+    text-transform: none;
+}
+
+
 .cal.all-deadlines {
     margin: 0 0 40px 0;
 }
@@ -1218,7 +1235,7 @@ hr.stars {
     float: left;
     color: #7D6F60;
     text-align: center;
-    font-size: 24px !important;
+    font-size: 24px !important; /* Override CMS styes */
     line-height: 30px !important;
     padding: 5px 0;    
     text-transform: uppercase !important;
@@ -1230,6 +1247,9 @@ hr.stars {
 
 .cal .deadline p {
     margin-left: 70px;
+    line-height: 30px;
+    padding: 5px 0; 
+    margin: 0 0 0 0;    
 }
 
 .cal .deadline p:first-line {
