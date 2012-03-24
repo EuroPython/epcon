@@ -233,7 +233,7 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     from conference.models import TalkSpeaker, Speaker
     try:
         count = TalkSpeaker.objects.filter(talk__conference=CONFERENCE_CONFERENCE, speaker=user.speaker).count()
-    except Speaker.DoesNotExist:
+    except (AttributeError, Speaker.DoesNotExist):
         pass
     else:
         if count > 0:
