@@ -60,7 +60,7 @@
                 e.preventDefault();
                 var talk = $(e.target).parents('li');
                 var tid = $('h2', talk).attr('id');
-                var title = $('h2 a', talk).html();
+                var title = $('h2 a', talk).eq(1).html();
                 var speakers = [];
                 $('.meta .speaker-name', talk).each(function() {
                     speakers.push($(this).html());
@@ -71,7 +71,7 @@
                 RPXNOW.loadAndRun(['Social'], function () {
                     var activity = new RPXNOW.Social.Activity(
                         'Share your vote',
-                        'Just voted ' + vote + '/10 "' + title + '" of "' + speaker + '" #europython',
+                        'Just voted ' + vote + '/10 "' + title + '" by "' + speaker + '" #europython',
                         url);
                     activity.setTitle('Europython 2012 - Community voting');
                     activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
