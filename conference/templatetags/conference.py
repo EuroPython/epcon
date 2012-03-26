@@ -1489,17 +1489,23 @@ def ordered_talks(talks, criteria="conference"):
         grouped[t['conference']].append(t)
     return sorted(grouped.items(), reverse=True)
 
-@register.filter
-def visible_talks(talks, all=True):
+@fancy_tag(register)
+def visible_talks(talks, filter_="all"):
     """
-    Filtra l'elenco di talk, se all è falso vengono mostrati solo i talk
-    accepted
+    Filtra l'elenco di talk in base a filter_:
+        * "all" ritorna tutti i talk
+        * "accepted" ritorna solo i talk accettati
+        * "conference" ritorna tutti i talk presentati alla conferenza corrente
+          (oltre a quelli accettati presentati nelle conferenze precedenti)
     """
-    if not talks or all:
+    if not talks or filter_=="all":
         return talks
     if isinstance(talks[0], int):
         talks = dataaccess.talks_data(talks)
-    return filter(lambda x: x['status'] == 'accepted', talks)
+    if filter_ == "accepted":
+        return filter(lambda x: x['status'] == 'accepted', talks)
+    else:
+        return  filter(lambda x: x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE, talks)
 
 @fancy_tag(register, takes_context=True)
 def olark_chat(context):
