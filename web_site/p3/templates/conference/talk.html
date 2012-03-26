@@ -177,7 +177,7 @@
                 {% endfor %}
             </div>
             {% endif %}
-            {% if voting %}
+            {% if voting and user.is_authenticated and talk.conference == CONFERENCE %}
             <hr />
             <div id="talk-voting">
                 <h4>Community voting is open</h4>
