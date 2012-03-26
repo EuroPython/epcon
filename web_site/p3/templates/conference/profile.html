@@ -54,5 +54,37 @@
             </dl>
         </section>
         {% endif %}
+        {% if profile_data.twitter %}
+        <script src="https://widgets.twimg.com/j/2/widget.js"></script>
+        <script>
+        if(typeof(TWTR) != 'undefined') {
+            new TWTR.Widget({
+                version: 2,
+                type: 'profile',
+                rpp: 4,
+                interval: 30000,
+                width: 250,
+                height: 300,
+                theme: {
+                    shell: {
+                        background: '#E1DBC5',
+                        color: '#301D1D'
+                    },
+                    tweets: {
+                        background: '#ffffff',
+                        color: '#301D1D',
+                        links: '#0F2424'
+                    }
+                },
+                features: {
+                    scrollbar: false,
+                    loop: false,
+                    live: true,
+                    behavior: 'default'
+                }
+            }).render().setUser('{{ profile.twitter }}').start();
+        }
+        </script>
+        {% endif %}
     </div>
 {% endblock %}
