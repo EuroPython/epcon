@@ -236,7 +236,11 @@ function _async_form_push_state(form) {
     $('input,select,textarea', form).each(function() {
         fields.push($(this).val());
     })
-    history.pushState(state, '', '?' + qstring);
+    // aggiungo _pushed alla url in history.state perché alcuni browser, come
+    // chrom*, si confondono se la url nella history è esattamente uguale a
+    // quella richiesta via ajax, e in questo caso quando faccio un back
+    // mostrano solo il frammento caricato tramite ajax.
+    history.pushState(state, '', '?' + qstring + '&_pushed=1');
 }
 
 function _async_form_pop_event(e) {
