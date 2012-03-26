@@ -4,6 +4,7 @@ from conference import dataaccess as cdata
 from conference import models as cmodels
 from p3 import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 
 cache_me = cachef.CacheFunction(prefix='p3:')
 
@@ -16,12 +17,17 @@ def profile_data(uid, preload=None):
     except KeyError:
         try:
             p3p = models.P3Profile.objects\
+                .select_related('profile__user')\
                 .get(profile=uid)
         except models.P3Profile.DoesNotExist:
             p3p = None
     if p3p:
+        try:
+            interests = preload['interests']
+        except KeyError:
+            interests = [ t.name for t in p3p.interests.all() ]
         profile.update({
-            'interests': [ t.name for t in p3p.interests.all() ],
+            'interests': interests,
             'twitter': p3p.twitter,
             'image': p3p.profile_image_url(),
             'image_gravatar': p3p.image_gravatar,
@@ -47,11 +53,25 @@ def profiles_data(uids):
 
     preload = {}
     profiles = models.P3Profile.objects\
-        .filter(profile__in=missing)
+        .filter(profile__in=missing)\
+        .select_related('profile__user')
+    tags = cmodels.ConferenceTaggedItem.objects\
+        .filter(
+            content_type=ContentType.objects.get_for_model(models.P3Profile),
+            object_id__in=missing
+        )\
+        .values('object_id', 'tag__name')
+
     for p in profiles:
-        preload[p.profile_id] = {'profile': p}
+        preload[p.profile_id] = {
+            'profile': p,
+            'interests': set(),
+        }
+    for row in tags:
+        preload[row['object_id']]['interests'].add(row['tag__name'])
 
     cdata.profiles_data(missing)
+
     output = []
     for ix, e in enumerate(cached):
         pid, val = e
