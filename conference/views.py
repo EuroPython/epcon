@@ -594,8 +594,12 @@ def voting(request):
                     o = models.VotoTalk.objects.get(user=request.user, talk=talk)
                 except models.VotoTalk.DoesNotExist:
                     o = models.VotoTalk(user=request.user, talk=talk)
-                o.vote = vote
-                o.save()
+                if not vote:
+                    if o.id:
+                        o.delete()
+                else:
+                    o.vote = vote
+                    o.save()
         if request.is_ajax():
             return http.HttpResponse('')
         else:
