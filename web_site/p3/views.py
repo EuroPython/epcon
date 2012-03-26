@@ -36,20 +36,7 @@ def map_js(request):
 @login_required
 @render_to('p3/tickets.html')
 def tickets(request):
-    # XXX usare dataaccess.user_tickets
-    tickets = models.TicketConference.objects.available(request.user, settings.CONFERENCE_CONFERENCE)
-    # non mostro i biglietti associati ad ordini paypal che non risultano
-    # ancora "completi"; poiché la notifica IPN è quasi contestuale al ritorno
-    # dell'utente sul nostro sito, filtrando via gli ordini non confermati
-    # elimino di fatto vecchi record rimasti nel db dapo che l'utente non ha
-    # confermato il pagamento sul sito paypal o dopo che è tornato indietro
-    # utilizzando il pulsante back
-    from assopy.templatetags.assopy_tags import _get_cached_order_status
-    tickets = list(tickets)
-    for ix, t in list(enumerate(tickets))[::-1]:
-        order = t.orderitem.order
-        if order.method not in ('bank', 'admin') and not _get_cached_order_status(request, order.id):
-            del tickets[ix]
+    tickets = dataaccess.user_tickets(request.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
     return {
         'tickets': tickets,
     }
