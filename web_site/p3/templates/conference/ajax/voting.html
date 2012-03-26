@@ -80,7 +80,6 @@
                     title = title.substring(0, 57) + '...';
                 }
                 var tweet = 'Just voted ' + vote + '/10 "' + title + '" by ' + speaker + ' #europython';
-                console.log(tweet);
                 RPXNOW.loadAndRun(['Social'], function () {
                     var activity = new RPXNOW.Social.Activity('Share your vote', tweet, url);
                     activity.setTitle('Europython 2012 - Community voting');
