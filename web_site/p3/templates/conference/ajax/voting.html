@@ -7,7 +7,7 @@
         <li>
             {% with t.speakers|attrib_:"id"|contains_:request.user.id as special_user %}
             <h2 id="t{{ t.id }}">
-                <a href="#o{{ row.ordinal }}" id="o{{ row.ordinal }}">{{ row.ordinal }}</a> -
+                <a href="#ord{{ row.ordinal }}" id="ord{{ row.ordinal }}">{{ row.ordinal }}</a> -
                 {% if voting_allowed or special_user %}
                 <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
                 {% else %}
