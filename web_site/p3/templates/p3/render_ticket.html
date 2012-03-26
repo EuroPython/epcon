@@ -35,10 +35,12 @@
             <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="16" height="16" />
             {% endfor %}
         </div>
+        {% if ticket.p3_conference.profile %}
         <div class="ticket-attendee-image">
             {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
             <img src="{{ pdata.image }}" alt="" width="98" />
         </div>
+        {% endif %}
         {% endif %}
         
         {% if not ticket.frozen %}
