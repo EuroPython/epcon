@@ -764,10 +764,14 @@ def profile_access(f):
                 .filter(talk__status='accepted')\
                 .count()
             if not accepted:
-                if profile.visibility == 'x':
-                    return http.HttpResponseForbidden()
-                elif profile.visibility == 'm' and request.user.is_anonymous:
-                    return http.HttpResponseForbidden()
+                # Se la votazione comunitaria à aperta e il profilo appartiene
+                # ad uno speaker con dei talk in gara la pagina è visibile
+                conf = models.Conference.objects.current()
+                if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
+                    if profile.visibility == 'x':
+                        return http.HttpResponseForbidden()
+                    elif profile.visibility == 'm' and request.user.is_anonymous:
+                        return http.HttpResponseForbidden()
         return f(request, slug, profile=profile, full_access=full_access, **kwargs)
     return wrapper
 
