@@ -1,14 +1,13 @@
 {% load conference assopy_tags p3 %}
+{% warmup_conference_cache as alldata %}
 <div id="talk-voting-wrapper" class="span-8">
     <ul id="talk-voting">
-        {% with talks|attrib_:"id" as tids %}
-        {% talks_data tids as tdata %}
-        {% for t in tdata %}
+        {% for row in talks %}
+        {% with alldata.talks|attrib_:row.id as t %}
         <li>
-            {% with talks|attrib_:forloop.counter0 as additional_data %}
             {% with t.speakers|attrib_:"id"|contains_:request.user.id as special_user %}
             <h2 id="t{{ t.id }}">
-                <a href="#o{{additional_data.ordinal}}" id="o{{ additional_data.ordinal }}">{{ additional_data.ordinal }}</a> -
+                <a href="#o{{ row.ordinal }}" id="o{{ row.ordinal }}">{{ row.ordinal }}</a> -
                 {% if voting_allowed or special_user %}
                 <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
                 {% else %}
@@ -20,8 +19,9 @@
             <div class="meta">
                 By {% for s in t.speakers %}
                     {% if voting_allowed or special_user %}
-                    {% p3_profile_data s.id as pdata %}
+                    {% with alldata.speakers|attrib_:s.id as pdata %}
                     <a href="{% url conference-profile slug=s.slug %}"><b class="speaker-name" data-twitter="{{ pdata.twitter }}">{{ s.name }}</b></a>
+                    {% endwith %}
                     {% else %}
                     <b class="speaker-name">{{ s.name }}</b>
                     {% endif %}
@@ -32,11 +32,10 @@
             </div>
             {% endwith %}
             <form action="{% url conference-voting %}" method="post">{% csrf_token %}
-                <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ additional_data.user_vote.vote|default:"0" }}" step="0.5" />
+                <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ row.user_vote.vote|default:"0" }}" step="0.5" />
                 <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
                 <span class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></span>
             </form>
-            {% endwith %}
             {% if voting_allowed %}
             <dl>
                 <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
@@ -49,10 +48,10 @@
             </dl>
             {% endif %}
         </li>
+        {% endwith %}
         {% empty %}
         <li><h2>Sorry, no entries match your query.</h2></li>
         {% endfor %}
-        {% endwith %}
     </ul>
     <script type="text/javascript">
         (function() {

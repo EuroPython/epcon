@@ -493,3 +493,25 @@ def pending_email_change(user):
 def admin_ticketroom_overall_status():
     status = models.TicketRoom.objects.overall_status()
     return sorted(status.items())
+
+@fancy_tag(register)
+def warmup_conference_cache(conference=None):
+    """
+    """
+    if conference is None:
+        conference = settings.CONFERENCE_CONFERENCE
+    qs = ConferenceModels.TalkSpeaker.objects\
+        .filter(talk__conference=conference)\
+        .values_list('talk', 'speaker')
+
+    talks = set()
+    speakers = set()
+    for row in qs:
+        talks.add(row[0])
+        speakers.add(row[1])
+
+    return {
+        'speakers': dict([ (x['id'], x) for x in dataaccess.profiles_data(speakers) ]),
+        'talks': dict([ (x['id'], x) for x in cdataaccess.talks_data(talks) ]),
+    }
+
