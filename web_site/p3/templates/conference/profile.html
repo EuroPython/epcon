@@ -25,19 +25,22 @@
         </section>
 
         <hr />
-        
-<!--         <section class="profile-user-company"> -->
-
-<!--         </section> -->
-
-<!--         <hr /> -->
 
         {% include "conference/profile_bio_form.html" %}
 
     </div>
 
     <div class="span-4 last">
-        {% with profile_data.talks|visible_talks:full_access as talks %}
+        {% current_conference as conf %}
+        {% if conf.voting %}
+            {% visible_talks profile_data.talks filter_="conference" as talks %}
+        {% else %}
+            {% if full_access %}
+                {% visible_talks profile_data.talks as talks %}
+            {% else %}
+                {% visible_talks profile_data.talks filter_="accepted" as talks %}
+            {% endif %}
+        {% endif %}
         {% if talks %}
         <section class="speaker-talks">
             <h2>{{ profile_data.name }}’s Talks</h2>
@@ -51,6 +54,5 @@
             </dl>
         </section>
         {% endif %}
-        {% endwith %}
     </div>
 {% endblock %}
