@@ -249,7 +249,27 @@ def postSaveResizeImageHandler(sender, **kwargs):
     p.communicate()
 
 class AttendeeProfileManager(models.Manager):
-    # TODO: non posso usare il commit_manully o il commit_on_success perché non
+    def findSlugForUser(self, user):
+        name = '%s %s' % (user.first_name, user.last_name)
+        slug = slugify(name)
+
+        rows = self.filter(models.Q(slug=slug) | models.Q(slug__startswith=slug + '-'))\
+            .values_list('slug', flat=True)
+        last = None
+        for r in rows:
+            try:
+                counter = int(r.rsplit('-', 1)[1])
+            except (ValueError, IndexError):
+                last = 0
+                continue
+            if counter > last:
+                last = counter
+
+        if last is not None:
+            slug = '%s-%d' % (slug, last+1)
+        return slug
+
+    # TODO: non posso usare il commit_manually o il commit_on_success perché non
     # funzionano nestati.  dovrei usare i savepoint ma quello che voglio io è
     # usare una "BEGIN EXCLUSIVE TRANSACTION" per impedire ad altri di leggere
     # la tabella. Purtroppo sqlite3 non supporta le transazioni nidificate
@@ -266,17 +286,7 @@ class AttendeeProfileManager(models.Manager):
         else:
             return p
 
-        name = '%s %s' % (user.first_name, user.last_name)
-        slug = slugify(name)
-
-        count = 0
-        check = slug
-        while True:
-            if self.filter(slug=check).count() == 0:
-                break
-            count += 1
-            check = '%s-%d' % (slug, count)
-        p.slug = check
+        p.slug = self.findSlugForUser(user)
         p.save()
         return p
 
