@@ -720,6 +720,11 @@ def p3_account_data(request):
             request.user.first_name = data['first_name']
             request.user.last_name = data['last_name']
             request.user.save()
+            if profile.slug[0] == '-':
+                slug = cmodels.AttendeeProfile.objects.findSlugForUser(request.user)
+                if slug and slug[0] != '-':
+                    profile.slug = slug
+                    profile.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
 def OTCHandler_E(request, token):
