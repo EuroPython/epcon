@@ -359,7 +359,7 @@ def _i_speaker_data(sender, **kw):
     elif sender is models.AttendeeProfile:
         sids = [ kw['instance'].user_id ]
     elif sender is models.TalkSpeaker:
-        sids = [ kw['instance'].speaker_id ]
+        sids = models.TalkSpeaker.objects.filter(talk=kw['instance'].talk_id).values_list('speaker', flat=True)
     elif sender is User:
         sids = [ kw['instance'].id ]
 
@@ -525,7 +525,7 @@ def _i_profile_data(sender, **kw):
     elif sender is models.Speaker:
         uids = [ kw['instance'].user_id ]
     elif sender is models.TalkSpeaker:
-        uids = [ kw['instance'].speaker_id ]
+        uids = models.TalkSpeaker.objects.filter(talk=kw['instance'].talk_id).values_list('speaker', flat=True)
     elif sender is User:
         uids = [ kw['instance'].id ]
 
