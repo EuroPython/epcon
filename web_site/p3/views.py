@@ -108,6 +108,10 @@ def ticket(request, tid):
         if t.frozen:
             return http.HttpResponseForbidden()
 
+        if 'refund' in request.POST:
+            print 'x'
+            1/0
+
         if t.fare.ticket_type == 'conference':
             data = request.POST.copy()
             if t.user == request.user and not data.get('assigned_to'):

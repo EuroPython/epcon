@@ -1419,6 +1419,13 @@ hr.stars {
     color: #635443;
 }
 
+.ticket-commands .refund {
+    margin: 0;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+
 .ticket-assigned-to.ticket-commands {
     opacity: .8;
     filter: alpha(opacity=80);

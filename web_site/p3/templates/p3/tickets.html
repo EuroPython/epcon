@@ -109,6 +109,25 @@
             });
         }
     });
+    $('div.ticket .refund-button').live('click', function(e) {
+        e.preventDefault();
+        var txt = '{% trans "Please enter the optional reason of your refund request:" %}';
+        var reason = $.trim(prompt(txt));
+        if(reason) {
+            var ticket = $(e.target).parents('.ticket');
+            var form = $('form', ticket);
+            var h = $('<input type="hidden" name="refund" />');
+            h.val(reason);
+            form.append(h);
+            form.ajaxSubmit({
+                target: form.parents('div.ticket'),
+                replaceTarget: true,
+                success: function() {
+                    feedback('{% trans "Refund requested" %} ');
+                }
+            });
+        }
+    });
     //]]>
     </script>
 {% endblock %}
