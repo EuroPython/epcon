@@ -297,7 +297,7 @@ class P3ProfileForm(cforms.ProfileForm):
         help_text=_('Describe yourself in one line'),
         required=False,
     )
-    interests = cforms.TagField(widget=cforms.TagWidget, required=False)
+    interests = cforms.TagField(label="Technical interests", widget=cforms.TagWidget, required=False)
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
 
