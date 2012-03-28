@@ -669,12 +669,25 @@ def voting(request):
             talks = talks.filter(language=options['language'])
 
         if options['tags']:
-            talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
-                .filter(
-                    content_type__app_label='conference', content_type__model='talk',
-                    tag__name__in=options['tags'])\
-                .values('object_id')
-            )
+            # se in options['tags'] ci finisce un tag non associato ad alcun
+            # talk ho come risultato una query che da zero risultati; per
+            # evitare questo limito i tag usabili come filtro a quelli
+            # associati ai talk.
+            allowed = set()
+            ctt = ContentType.objects.get_for_model(models.Talk)
+            for t, usage in dataaccess.tags().items():
+                for cid, oid in usage:
+                    if cid == ctt.id:
+                        allowed.add(t.name)
+                        break
+            tags = set(options['tags']) & allowed
+            if tags:
+                talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
+                    .filter(
+                        content_type__app_label='conference', content_type__model='talk',
+                        tag__name__in=tags)\
+                    .values('object_id')
+                )
 
         talk_order = options['order']
 
