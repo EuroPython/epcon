@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response, redirect
 from conference import admin as cadmin
 from conference import models as cmodels
 from p3 import models
+from p3 import dataaccess
 
 import csv
 from cStringIO import StringIO
@@ -226,6 +227,31 @@ sent to:
 
 admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
+
+class SpeakerAdmin(cadmin.SpeakerAdmin):
+    def queryset(self, request):
+        # XXX: in attesa di passare a django 1.4 implemento in questo modo
+        # barbaro un filtro per limitare gli speaker a quelli della conferenza
+        # in corso
+        qs = super(SpeakerAdmin, self).queryset(request)
+        qs = qs.filter(user__in=(
+            cmodels.TalkSpeaker.objects\
+                .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
+                .values('speaker')
+        ))
+        return qs
+    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
+        sids = queryset.values_list('user', flat=True)
+        profiles = dataaccess.profiles_data(sids)
+        self._profiles = dict(zip(sids, profiles))
+        return super(SpeakerAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
+
+    def _avatar(self, o):
+        return '<img src="%s" height="32" />' % (self._profiles[o.user_id]['image'],)
+    _avatar.allow_tags = True
+
+admin.site.unregister(cmodels.Speaker)
+admin.site.register(cmodels.Speaker, SpeakerAdmin)
 
 from conference import forms as cforms
 
