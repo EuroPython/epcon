@@ -177,7 +177,7 @@ class SpeakerAdminForm(forms.ModelForm):
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
 
 class SpeakerAdmin(MultiLingualAdminContent):
-    list_display = ('_user', '_email')
+    list_display = ('_avatar', '_user', '_email')
     search_fields = ('user__first_name', 'user__last_name', 'user__email')
     list_select_related = True
     form = SpeakerAdminForm
@@ -232,6 +232,16 @@ class SpeakerAdmin(MultiLingualAdminContent):
     def _email(self, o):
         return o.user.email
     _user.admin_order_field = 'user__email'
+
+    def _avatar(self, o):
+        try:
+            img = o.user.attendeeprofile.image
+        except models.AttendeeProfile.DoesNotExist:
+            img = None
+        if not img:
+            return '<div style="height: 32px; width: 32px"> </div>' 
+        return '<img src="%s" height="32" />' % (img.url,)
+    _avatar.allow_tags = True
 
 admin.site.register(models.Speaker, SpeakerAdmin)
 
