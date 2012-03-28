@@ -39,6 +39,8 @@ class MyEncode(simplejson.JSONEncoder):
             return obj.strftime('%H:%M')
         elif isinstance(obj, decimal.Decimal):
             return str(obj)
+        elif isinstance(obj, set):
+            obj = list(obj)
 
         return simplejson.JSONEncoder.default(self, obj)
 
