@@ -47,6 +47,11 @@
                 </dd>
             </dl>
             {% endif %}
+            {% if t.tags %}
+            <div class="all-tags">
+                {% for tag in t.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+            </div>
+            {% endif %}
         </li>
         {% endwith %}
         {% empty %}
