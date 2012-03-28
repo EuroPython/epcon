@@ -45,34 +45,32 @@
             {{ form.tags|field:"autosubmit" }}
             {% if user.is_authenticated %}
                 {% p3_profile_data user.id as pdata %}
-                {% if pdata.interests %}
-                <div id="use-my-tag" class="button">
-                    <a href="#">Filter using my profile tags</a>
-                </div>
-                <script type="text/javascript">
-                (function() {
-                    $('#use-my-tag a').click(function(e) {
-                        var form=$('#form-options');
-                        var input = $('input[name=tags]', form);
-                        var tags = [];
-                        $({{ pdata.interests|json_ }}).each(function(ix, val) {
-                            tags.push('"' + val + '"');
+                <div class="span-3">
+                    {% if pdata.interests %}
+                    <div id="use-my-tag" class="button">
+                        <a href="#">Match my tags</a>
+                    </div>
+                    <script type="text/javascript">
+                    (function() {
+                        $('#use-my-tag a').click(function(e) {
+                            var form=$('#form-options');
+                            var input = $('input[name=tags]', form);
+                            var tags = [];
+                            $({{ pdata.interests|json_ }}).each(function(ix, val) {
+                                tags.push('"' + val + '"');
+                            });
+                            form.unbind('submit');
+                            input.val(tags.join(','));
+                            form.submit();
+                            return false;
                         });
-                        form.unbind('submit');
-                        input.val(tags.join(','));
-                        form.submit();
-                        return false;
-                    });
-                })();
-                </script>
-                {% else %}
-                <div class="form-box" style="text-align: center;margin-top: 40px;">
-                    <h2>
-                        To filter this list according your interests, add some tags in your
-                        <a href="{% url conference-profile slug=pdata.slug %}">profile page.</a>
-                    </h2>
+                    })();
+                    </script>
+                    {% endif %}
                 </div>
-                {% endif %}
+                <div class="span-9 cms last">
+                    <h3>Set your favorite tags in your <a href="{% url conference-profile slug=pdata.slug %}">profile</a> and filter by your interests with one click.</h3>
+                </div>
             {% endif %}
         </div>
     </form>
