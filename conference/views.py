@@ -40,7 +40,7 @@ class MyEncode(simplejson.JSONEncoder):
         elif isinstance(obj, decimal.Decimal):
             return str(obj)
         elif isinstance(obj, set):
-            obj = list(obj)
+            return simplejson.dumps(list(obj))
 
         return simplejson.JSONEncoder.default(self, obj)
 
