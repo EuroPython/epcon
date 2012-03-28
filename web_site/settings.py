@@ -329,7 +329,7 @@ COMMENTS_APP = 'hcomments'
 from datetime import date
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 P3_HOTEL_RESERVATION = {
-    'period': (date(2012, 6, 29), date(2012, 7, 9)),
+    'period': (date(2012, 6, 29), date(2012, 7, 10)),
     'default': (date(2012, 7, 2), date(2012, 7, 6)),
 }
 
