@@ -4,6 +4,7 @@
     {% if ticket.frozen %}
         <div class="ticket-status inactive">
             &darr; {% blocktrans %}Ticket frozen; editing disabled{% endblocktrans %}
+            {% with ticket|frozen_reason as r %}{% if r %} - <strong>{{ r }}</strong>{% endif %}{% endwith %}
         </div>
     {% else %}
         {% if ocomplete or ticket.orderitem.order.method == "admin" %}
@@ -93,6 +94,9 @@
             <p>
                 <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
             </p>
+            {% if user == ticket.user %}
+            <p class="refund"><a href="#" class="refund-button" >Refund this ticket</a></p>
+            {% endif %}
         </div>
         {% endif %}
     {% endif %}

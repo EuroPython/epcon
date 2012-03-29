@@ -515,3 +515,11 @@ def warmup_conference_cache(conference=None):
         'talks': dict([ (x['id'], x) for x in cdataaccess.talks_data(talks) ]),
     }
 
+@register.filter
+def frozen_reason(ticket):
+    if not ticket.frozen:
+        return ''
+    if amodels.Refund.objects.filter(orderitem=ticket.orderitem).exists():
+        return 'refund pending'
+    else:
+        return ''

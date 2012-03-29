@@ -308,6 +308,14 @@ ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
+ASSOPY_REFUND_EMAIL_ADDRESS = {
+    'approve': ['info@pycon.it'],
+    'execute': {
+        None: ['dvd@gnx.it'],
+        'bank': ['matteo@pycon.it'],
+    },
+    'credit-note': ['dvd@gnx.it'],
+}
 
 ASSOPY_OTC_CODE_HANDLERS = {
     'e': 'p3.views.OTCHandler_E',

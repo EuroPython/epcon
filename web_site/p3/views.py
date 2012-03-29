@@ -109,10 +109,12 @@ def ticket(request, tid):
             return http.HttpResponseForbidden()
 
         if 'refund' in request.POST:
-            print 'x'
-            1/0
-
-        if t.fare.ticket_type == 'conference':
+            r = amodels.Refund()
+            r.orderitem = t.orderitem
+            r.reason = request.POST['refund'][:200]
+            r.save()
+            t = cmodels.Ticket.objects.get(id=t.id)
+        elif t.fare.ticket_type == 'conference':
             data = request.POST.copy()
             if t.user == request.user and not data.get('assigned_to'):
                 # vogliamo massimizzare il numero dei biglietti assegnati, e
@@ -194,7 +196,7 @@ def ticket(request, tid):
             if not form.is_valid():
                 return http.HttpResponseBadRequest(str(form.errors))
             form.save()
-            
+
     # restituisco il rendering del nuovo biglietto, così il chiamante può
     # mostrarlo facilmente
     tpl = Template('{% load p3 %}{% render_ticket t %}')
@@ -203,7 +205,7 @@ def ticket(request, tid):
 def user(request, token):
     """
     view che logga automaticamente un utente (se il token è valido) e lo
-    ridirige alla pagine dei tickets 
+    ridirige alla pagine dei tickets
     """
     u = get_object_or_404(amodels.User, token=token)
     log.info('autologin (via token url) for "%s"', u.user)
