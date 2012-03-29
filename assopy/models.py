@@ -839,6 +839,7 @@ def on_refund_changed(sender, **kw):
         'name': sender.orderitem.order.user.name(),
         'reject_reason': sender.reject_reason,
         'ticket': kw['ticket'],
+        'invoice_url': '', #credit note url
     }
     try:
         utils.email(tpl, ctx, to=[sender.orderitem.order.user.user.email]).send()
