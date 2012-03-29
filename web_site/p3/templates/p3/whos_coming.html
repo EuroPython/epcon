@@ -1,33 +1,15 @@
 {% extends "p3/base.html" %}
-{% load conference p3 %}
+{% load assopy_tags conference p3 %}
 {% block MAIN_CONTENT %}
 <div id="whos-coming">
     <h1>Who's coming?</h1>
-    {{ form }}
-    {% p3_profiles_data pids as pdata %}
-    {% for profile_data in pdata %}
-    <section class="profile-user-identity clearfix">
-        <div class="profile-user-picture">
-            <img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="98" />
-        </div>
-        <div class="profile-user-identity-data">
-            <h1>{{ profile_data.name }}</h1>
-            <dl>
-                {% if profile_data.personal_homepage %}
-                <dt>Website</dt>
-                <dd>
-                    <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
-                </dd>
-                {% endif %}
-                {% if profile_data.twitter %}
-                <dt>Twitter</dt>
-                <dd>
-                    <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
-                </dd>
-                {% endif %}
-            </dl>
-        </div>
-    </section>
-    {% endfor %}
+    <form class="async" rel="#people-wrapper" action="{% url p3-whos-coming %}" method="GET">
+        <fieldset>
+            {{ form.country|field:"autosubmit" }}
+            {{ form.tags|field:"autosubmit" }}
+        </fieldset>
+    </form>
+    <hr class="stars" />
+    {% include "p3/ajax/whos_coming.html" %}
 </div>
 {% endblock %}

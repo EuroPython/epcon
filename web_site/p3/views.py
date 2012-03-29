@@ -16,6 +16,7 @@ from p3 import models
 import assopy.models as amodels
 from assopy.forms import BillingData
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
+from conference import forms as cforms
 from conference import models as cmodels
 from conference.views import profile_access
 from email_template import utils
@@ -769,7 +770,7 @@ def p3_account_spam_control(request):
     return render(request, "assopy/profile_spam_control.html", ctx)
 
 def whos_coming(request):
-    countries = list(amodels.Country.objects\
+    countries = [('', 'All')] + list(amodels.Country.objects\
         .filter(iso__in=models.P3Profile.objects\
             .exclude(country='')\
             .values('country')
@@ -778,14 +779,34 @@ def whos_coming(request):
         .distinct()
     )
     class FormWhosFilter(forms.Form):
-        country = forms.ChoiceField(choices=countries)
+        country = forms.ChoiceField(choices=countries, required=False)
+        tags = cforms.TagField(
+            required=False,
+            widget=cforms.ReadonlyTagWidget(),
+        )
 
-    form = FormWhosFilter()
+    people = cmodels.AttendeeProfile.objects\
+        .filter(visibility='p')\
+        .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
+        .values_list('user', flat=True)
+    form = FormWhosFilter(request.GET)
+    if form.is_valid():
+        data = form.cleaned_data
+        if data.get('country'):
+            people = people.filter(p3_profile__country=data['country'])
+        if data.get('tags'):
+            qs = cmodels.ConferenceTaggedItem.objects\
+                .filter(
+                    content_type__app_label='p3', content_type__model='p3profile',
+                    tag__name__in=data['tags'])\
+                .values('object_id')
+            people = people.filter(user__in=qs)
     ctx = {
-        'pids': cmodels.AttendeeProfile.objects\
-            .filter(visibility='p')\
-            .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
-            .values_list('user', flat=True),
+        'pids': people,
         'form': form,
     }
-    return render(request, "p3/whos_coming.html", ctx)
+    if request.is_ajax():
+        tpl = 'p3/ajax/whos_coming.html'
+    else:
+        tpl = 'p3/whos_coming.html'
+    return render(request, tpl, ctx)
