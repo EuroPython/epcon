@@ -22,6 +22,12 @@ TICKET_PAGE = getattr(settings, 'ASSOPY_TICKET_PAGE', None)
 
 SEND_EMAIL_TO = getattr(settings, 'ASSOPY_SEND_EMAIL_TO', None)
 
+REFUND_EMAIL_ADDRESS = getattr(settings, 'ASSOPY_REFUND_EMAIL_ADDRESS', {
+    'approve': SEND_EMAIL_TO,
+    'execute': {None: SEND_EMAIL_TO},
+    'credit-note': SEND_EMAIL_TO,
+})
+
 VIES_WSDL_URL = getattr(settings, 'ASSOPY_VIES_WSDL_URL', 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl')
 
 OTC_CODE_HANDLERS = {

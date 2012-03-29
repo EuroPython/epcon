@@ -411,3 +411,30 @@ class UserAdmin(admin.ModelAdmin):
         }
         return render_to_response('admin/assopy/user/new_order.html', ctx, context_instance=template.RequestContext(request))
 admin.site.register(models.User, UserAdmin)
+
+class RefundAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Refund
+        exclude = ('orderitem', 'done',)
+
+class RefundAdmin(admin.ModelAdmin):
+    list_display = ('_user', 'reason', '_description', '_price', 'created', 'status', 'done')
+    form = RefundAdminForm
+
+    def queryset(self, request):
+        qs = super(RefundAdmin, self).queryset(request)
+        qs = qs.select_related('orderitem__order__user__user')
+        return qs
+
+    def _user(self, o):
+        return o.orderitem.order.user.name()
+    _user.admin_order_field = 'orderitem__order__user__user__first_name'
+
+    def _description(self, o):
+        return o.orderitem.description
+    _description.admin_order_field = 'orderitem__description'
+
+    def _price(self, o):
+        return o.orderitem.price
+
+admin.site.register(models.Refund, RefundAdmin)

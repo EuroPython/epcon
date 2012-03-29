@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from assopy import django_urls
 from assopy import janrain
+from assopy import settings
 from assopy.clients import genro, vies
 from assopy.utils import send_email
 from conference.models import Fare, Ticket
@@ -21,7 +22,7 @@ import os
 import os.path
 import logging
 from uuid import uuid4
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 log = logging.getLogger('assopy.models')
@@ -758,3 +759,161 @@ class Invoice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     objects = InvoiceManager()
+
+REFUND_STATUS = (
+    ('pending', 'Pending'),
+    ('approved', 'Approved'),
+    ('rejected', 'Rejected'),
+    ('refunded', 'Refunded'),
+)
+class Refund(models.Model):
+    orderitem = models.ForeignKey(OrderItem)
+    created = models.DateTimeField(auto_now_add=True)
+    done = models.DateTimeField(null=True)
+    status = models.CharField(max_length=8, choices=REFUND_STATUS, default='pending')
+    reason = models.CharField(max_length=200, blank=True)
+    assopy_id = models.CharField(max_length=22, unique=True, blank=True, null=True)
+    internal_note = models.TextField(
+        blank=True,
+        help_text='For internal use (not shown to the user)',
+    )
+    reject_reason = models.TextField(
+        blank=True,
+        help_text='Included in the email sent to the user',
+    )
+
+    def clean(self):
+        if self.status == 'rejected' and self.orderitem.ticket is None:
+            from django.core.exceptions import ValidationError
+            raise ValidationError('This refund cannot be rejected, the associated orderitem has no ticket')
+        if not self.assopy_id:
+            self.assopy_id = None
+
+    def save(self, *args, **kwargs):
+        old = {
+            'status': None,
+            'assopy_id': None,
+        }
+        if self.id:
+            try:
+                old = Refund.objects.values('status', 'assopy_id').get(id=self.id)
+            except Refund.DoesNotExist:
+                pass
+        if self.status in ('rejected', 'refunded') and self.status != old:
+            self.done = datetime.now()
+        try:
+            return super(Refund, self).save(*args, **kwargs)
+        finally:
+            t = self.orderitem.ticket
+            if t:
+                if self.status == 'refunded':
+                    self.orderitem.ticket = None
+                    self.orderitem.save()
+                    t.delete()
+                elif self.status == 'rejected':
+                    t.frozen = False
+                    t.save()
+                else:
+                    t.frozen = True
+                    t.save()
+            refund_event.send(
+                sender=self,
+                old=old['status'],
+                new=self.status,
+                ticket=t,
+                assopy_id=self.assopy_id if self.assopy_id != old['assopy_id'] else '',
+            )
+
+refund_event = dispatch.Signal(providing_args=['old', 'new', 'ticket', 'assopy_id'])
+
+def on_refund_changed(sender, **kw):
+    if kw['old'] == kw['new'] or not kw['ticket']:
+        return
+    if kw['new'] == 'refunded' and kw['assopy_id']:
+        tpl = 'refund-credit-note'
+    else:
+        tpl = 'refund-' + kw['new']
+    from django.http import Http404
+    ctx = {
+        'orderitem': sender.orderitem,
+        'name': sender.orderitem.order.user.name(),
+        'reject_reason': sender.reject_reason,
+        'ticket': kw['ticket'],
+    }
+    try:
+        utils.email(tpl, ctx, to=[sender.orderitem.order.user.user.email]).send()
+    except Http404:
+        pass
+    if kw['new'] == 'pending':
+        message = '''
+User: %s (%s)
+Reason: %s
+Order: %s
+Order Item: %s
+Price: %s
+
+Manage link: %s
+        ''' % (
+            ctx['name'],
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(sender.orderitem.order.user_id,)),
+            sender.reason,
+            sender.orderitem.order.code,
+            sender.orderitem.description,
+            sender.orderitem.price, 
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
+        )
+        send_email(
+            subject='Refund request from %s' % ctx['name'],
+            message=message,
+            recipient_list=settings.REFUND_EMAIL_ADDRESS['approve'],
+        )
+    elif kw['new'] == 'approved':
+        message = '''
+User: %s (%s)
+Order: %s
+Order Item: %s
+Price: %s
+Payment method: %s
+
+Manage link: %s
+        ''' % (
+            ctx['name'],
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(sender.orderitem.order.user_id,)),
+            sender.orderitem.order.code,
+            sender.orderitem.description,
+            sender.orderitem.price, 
+            sender.orderitem.order.method, 
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
+        )
+        emails = settings.REFUND_EMAIL_ADDRESS['execute']
+        send_email(
+            subject='Refund for %s approved' % ctx['name'],
+            message=message,
+            recipient_list=emails.get(sender.orderitem.order.method, emails[None]),
+        )
+    elif kw['new'] == 'refunded':
+        message = '''
+User: %s (%s)
+Order: %s assopy id: %s
+Order Item: %s
+Price: %s
+Payment method: %s
+
+Manage link: %s
+        ''' % (
+            ctx['name'],
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(sender.orderitem.order.user_id,)),
+            sender.orderitem.order.code,
+            sender.orderitem.order.assopy_id,
+            sender.orderitem.description,
+            sender.orderitem.price, 
+            sender.orderitem.order.method, 
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
+        )
+        send_email(
+            subject='Refund for %s done, credit note needed' % ctx['name'],
+            message=message,
+            recipient_list=settings.REFUND_EMAIL_ADDRESS['credit-note'],
+        )
+
+refund_event.connect(on_refund_changed)
