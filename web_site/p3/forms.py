@@ -710,7 +710,7 @@ class P3FormTickets(aforms.FormTickets):
             for ix, _ in enumerate(data):
                 args.append('%s:You need a conference ticket' % ix)
             self._errors[field_name] = self.error_class(args)
-            del data[field_name]
+            del self.cleaned_data[field_name]
 
         try:
             models.TicketRoom.objects.can_be_booked(checks)
