@@ -52,13 +52,35 @@
             {% endif %}
             {% if profile_data.location or full_access %}
             <dt>Location</dt>
-            <dd>
+            <dd{% if profile_data.country %} style="position: relative;"{% endif %}>
                 {% if profile_data.location %}
                     <span>{{ profile_data.location }}</span>
                 {% else %}
                     <span class="not-set">&mdash; Not set &mdash;</span>
                 {% endif %}
                 {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
+                {% if profile_data.country and full_access %}
+                <div id="chart_div" style="width: 128px; height: 71px; position: absolute; left: -135px; top: 0px"></div>
+                <script type="text/javascript">
+                (function() {
+                    google.load('visualization', '1.0', {
+                        'packages':['corechart', 'geochart'],
+                        'callback': function() {
+                            var data = new google.visualization.DataTable();
+                            data.addColumn('string', 'Country');
+                            data.addRows([
+                                ['{{ profile_data.country }}'],
+                            ]);
+                            var options = {
+                                region: '{{ profile_data.country }}'
+                            };
+                            var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
+                            chart.draw(data, options);
+                        }
+                    });
+                })();
+                </script>
+                {% endif %}
             </dd>
             {% endif %}
 
