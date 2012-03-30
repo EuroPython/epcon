@@ -49,6 +49,7 @@ class ConferenceTagManager(models.Manager):
 
 class ConferenceTag(TagBase):
     objects = ConferenceTagManager()
+    category = models.CharField(max_length=50, default='', blank=True)
 
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
     tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
@@ -248,6 +249,32 @@ def postSaveResizeImageHandler(sender, **kwargs):
     p.communicate()
 
 class AttendeeProfileManager(models.Manager):
+    def findSlugForUser(self, user):
+        name = '%s %s' % (user.first_name, user.last_name)
+        slug = slugify(name)
+
+        rows = self.filter(models.Q(slug=slug) | models.Q(slug__startswith=slug + '-'))\
+            .values_list('slug', flat=True)
+        last = None
+        for r in rows:
+            try:
+                counter = int(r.rsplit('-', 1)[1])
+            except (ValueError, IndexError):
+                last = 0
+                continue
+            if counter > last:
+                last = counter
+
+        if last is not None:
+            slug = '%s-%d' % (slug, last+1)
+        return slug
+
+    # TODO: non posso usare il commit_manually o il commit_on_success perché non
+    # funzionano nestati.  dovrei usare i savepoint ma quello che voglio io è
+    # usare una "BEGIN EXCLUSIVE TRANSACTION" per impedire ad altri di leggere
+    # la tabella. Purtroppo sqlite3 non supporta le transazioni nidificate
+    # quindi non potrebbe essere un sistema "generico" in quanto non so dove
+    # `.getOrCreateForUser` verrebbe chiamata
     def getOrCreateForUser(self, user):
         """
         Ritorna o crea il profilo associato all'utente.
@@ -259,29 +286,8 @@ class AttendeeProfileManager(models.Manager):
         else:
             return p
 
-        name = '%s %s' % (user.first_name, user.last_name)
-        slug = slugify(name)
-        cursor = connection.cursor()
-        # qui ho bisogno di impedire che altre connessioni possano leggere il
-        # db fino a quando non ho finito
-        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
-        # È importante assicurarsi che la transazione venga chiusa, con successo
-        # o fallimento, il prima possibile
-        try:
-            count = 0
-            check = slug
-            while True:
-                if self.filter(slug=check).count() == 0:
-                    break
-                count += 1
-                check = '%s-%d' % (slug, count)
-            p.slug = check
-            p.save()
-        except:
-            transaction.rollback()
-            raise
-        else:
-            transaction.commit()
+        p.slug = self.findSlugForUser(user)
+        p.save()
         return p
 
 ATTENDEEPROFILE_VISIBILITY = (
@@ -494,7 +500,7 @@ class Talk(models.Model, UrlMixin):
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
     video_url = models.TextField(blank=True)
     video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
-    teaser_video = models.URLField(verify_exists=False, blank=False)
+    teaser_video = models.URLField(verify_exists=False, blank=True)
     status = models.CharField(max_length=8, choices=TALK_STATUS)
     level = models.CharField(max_length=12, choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)

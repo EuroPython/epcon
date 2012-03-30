@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from tagging.models import Tag, TaggedItem
+from tagging.models import TaggedItem
 from tagging.utils import parse_tag_input
 
 cache_me = cachef.CacheFunction(prefix='conf:')
@@ -216,7 +216,7 @@ def talk_data(tid, preload=None):
     try:
         tags = preload['tags']
     except KeyError:
-        tags = set( t.name for t in Tag.objects.get_for_object(talk) )
+        tags = set(talk.tags.all().values_list('name', flat=True))
 
     try:
         abstract = preload['abstract']
@@ -269,7 +269,7 @@ def talks_data(tids):
     speakers_data = models.TalkSpeaker.objects\
         .filter(talk__in=talks.values('id'))\
         .values('talk', 'speaker', 'helper',)
-    tags = TaggedItem.objects\
+    tags = models.ConferenceTaggedItem.objects\
         .filter(
             content_type=ContentType.objects.get_for_model(models.Talk),
             object_id__in=talks.values('id')
@@ -359,7 +359,7 @@ def _i_speaker_data(sender, **kw):
     elif sender is models.AttendeeProfile:
         sids = [ kw['instance'].user_id ]
     elif sender is models.TalkSpeaker:
-        sids = [ kw['instance'].speaker_id ]
+        sids = models.TalkSpeaker.objects.filter(talk=kw['instance'].talk_id).values_list('speaker', flat=True)
     elif sender is User:
         sids = [ kw['instance'].id ]
 
@@ -525,7 +525,7 @@ def _i_profile_data(sender, **kw):
     elif sender is models.Speaker:
         uids = [ kw['instance'].user_id ]
     elif sender is models.TalkSpeaker:
-        uids = [ kw['instance'].speaker_id ]
+        uids = models.TalkSpeaker.objects.filter(talk=kw['instance'].talk_id).values_list('speaker', flat=True)
     elif sender is User:
         uids = [ kw['instance'].id ]
 
@@ -603,7 +603,7 @@ def profiles_data(pids):
         preload[row['speaker']]['talks'].append(row)
 
     for b in bios:
-        preload[b.object_id]['bio'] = b.body
+        preload[b.object_id]['bio'] = b
 
     output = []
     for ix, e in enumerate(cached):

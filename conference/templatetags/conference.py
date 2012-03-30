@@ -56,7 +56,7 @@ def _request_cache(request, key):
     except AttributeError:
         request._conf_cache = {key: {}}
     return request._conf_cache[key]
-    
+
 @fancy_tag(register, takes_context=True)
 def get_deadlines(context, year=None, limit=None, not_expired=True):
     if year is None:
@@ -859,7 +859,7 @@ def embed_video(context, value, args=""):
     args = dict( map(lambda _: _.strip(), x.split('=')) for x in args.split(',') if '=' in x )
     providers = {
         'viddler': ('oEmbed', 'http://lab.viddler.com/services/oembed/'),
-        'youtube': ('oEmbed', 'http://www.youtube.com/oembed'),
+        'youtube': ('oEmbed', 'https://www.youtube.com/oembed'),
         'download': ('download', None),
     }
     source = None
@@ -929,6 +929,9 @@ def embed_video(context, value, args=""):
         url = vtype[1] + '?url=' + video_url + '&format=json'
         if w and h:
             url += '&width=%s&height=%s&maxwidth=%s&maxheight=%s' % (w, h, w, h)
+        # rasky: youtube supports this but there's no standard way for querying the SSL
+        # embed. We can assume that others will ignore the extra query argument.
+        url += '&scheme=https'
         try:
             response, content = http.request(url)
             data = simplejson.loads(content)
@@ -1054,24 +1057,28 @@ def fare_blob(fare, field):
 
 @fancy_tag(register)
 def voting_data(conference):
-    conf = models.Conference.objects.get(code=conference)
-    votes = models.VotoTalk.objects.filter(talk__conference=conference)
-    users = len(set(x.user_id for x in votes))
-    if not settings.TALKS_RANKING_FILE:
-        talks = utils.ranking_of_talks(models.Talk.objects.filter(id__in=votes.values('talk')))
-    else:
-        talks_id = []
+    qs = models.VotoTalk.objects\
+        .filter(talk__conference=conference)\
+        .values('user')
+    votes = qs.count()
+    users = qs.distinct().count()
+    groups = defaultdict(lambda: defaultdict(list))
+    if settings.TALKS_RANKING_FILE:
         for line in file(settings.TALKS_RANKING_FILE):
             pieces = line.split('-')
-            if len(pieces) > 2:
-                talks_id.append(int(pieces[1].strip()))
-        talks = list(models.Talk.objects.filter(id__in=talks_id))
-        talks.sort(key=lambda x: talks_id.index(x.id))
+            if len(pieces) == 5:
+                type = pieces[2].strip()
+                language = pieces[3].strip()
+                tid = int(pieces[1].strip())
+                groups[type][language].append(tid)
+
+    for k, v in groups.items():
+        groups[k] = dict(v)
 
     return {
-        'votes': votes.count(),
+        'votes': votes,
         'users': users,
-        'talks': talks,
+        'groups': dict(groups),
     }
 
 @fancy_tag(register)
@@ -1452,6 +1459,10 @@ def admin_urlname_fromct(ct, action, id=None):
 def profile_data(uid):
     return dataaccess.profile_data(uid)
 
+@fancy_tag(register)
+def profiles_data(uids):
+    return dataaccess.profiles_data(uids)
+
 @register.filter
 def beautify_url(url):
     """
@@ -1482,14 +1493,48 @@ def ordered_talks(talks, criteria="conference"):
         grouped[t['conference']].append(t)
     return sorted(grouped.items(), reverse=True)
 
-@register.filter
-def visible_talks(talks, all=True):
+@fancy_tag(register)
+def visible_talks(talks, filter_="all"):
     """
-    Filtra l'elenco di talk, se all è falso vengono mostrati solo i talk
-    accepted
+    Filtra l'elenco di talk in base a filter_:
+        * "all" ritorna tutti i talk
+        * "accepted" ritorna solo i talk accettati
+        * "conference" ritorna tutti i talk presentati alla conferenza corrente
+          (oltre a quelli accettati presentati nelle conferenze precedenti)
     """
-    if not talks or all:
+    if not talks or filter_=="all":
         return talks
     if isinstance(talks[0], int):
         talks = dataaccess.talks_data(talks)
-    return filter(lambda x: x['status'] == 'accepted', talks)
+    if filter_ == "accepted":
+        return filter(lambda x: x['status'] == 'accepted', talks)
+    else:
+        return  filter(lambda x: x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE, talks)
+
+@fancy_tag(register, takes_context=True)
+def olark_chat(context):
+    # se non esiste il settaggio scoppio felice
+    key = dsettings.CONFERENCE_OLARK_KEY
+    # blob from: https://www.olark.com/install
+    blob = """
+<!-- begin olark code --><script type='text/javascript'>/*{literal}<![CDATA[*/
+window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){f[z]=function(){(a.s=a.s||[]).push(arguments)};var a=f[z]._={},q=c.methods.length;while(q--){(function(n){f[z][n]=function(){f[z]("call",n,arguments)}})(c.methods[q])}a.l=c.loader;a.i=nt;a.p={0:+new Date};a.P=function(u){a.p[u]=new Date-a.p[0]};function s(){a.P(r);f[z](r)}f.addEventListener?f.addEventListener(r,s,false):f.attachEvent("on"+r,s);var ld=function(){function p(hd){hd="head";return["<",hd,"></",hd,"><",i,' onl' + 'oad="var d=',g,";d.getElementsByTagName('head')[0].",j,"(d.",h,"('script')).",k,"='",l,"//",a.l,"'",'"',"></",i,">"].join("")}var i="body",m=d[i];if(!m){return setTimeout(ld,100)}a.P(1);var j="appendChild",h="createElement",k="src",n=d[h]("div"),v=n[j](d[h](z)),b=d[h]("iframe"),g="document",e="domain",o;n.style.display="none";m.insertBefore(n,m.firstChild).id=z;b.frameBorder="0";b.id=z+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){b.src="javascript:false"}b.allowTransparency="true";v[j](b);try{b.contentWindow[g].open()}catch(w){c[e]=d[e];o="javascript:var d="+g+".open();d.domain='"+d.domain+"';";b[k]=o+"void(0);"}try{var t=b.contentWindow[g];t.write(p());t.close()}catch(x){b[k]=o+'d.write("'+p().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}a.P(2)};ld()};nt()})({loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
+/* custom configuration goes here (www.olark.com/documentation) */
+olark.identify('%s');/*]]>{/literal}*/</script>
+<!-- end olark code -->
+    """ % key
+    user = context['request'].user
+    if user.is_authenticated():
+        from django.template.defaultfilters import escapejs
+        name = '%s %s' % (user.first_name, user.last_name)
+        blob += '''
+<script type="text/javascript">
+    olark('api.chat.updateVisitorNickname', {snippet: '%s'})</script>
+''' % (escapejs(name),)
+
+    return blob
+
+@register.filter
+def json_(val):
+    from conference.views import json_dumps
+    return mark_safe(json_dumps(val))

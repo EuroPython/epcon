@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 from conference import models
 from conference import utils
 
+from collections import defaultdict
 from optparse import make_option
 
 class Command(BaseCommand):
@@ -20,12 +21,16 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('conference not specified')
 
-        talks = models.Talk.objects.filter(conference=conference)
-        votes = models.VotoTalk.objects.filter(talk__in=talks)
-        users = set(x.user_id for x in votes)
+        talks = models.Talk.objects\
+            .filter(conference=conference, status='proposed')
         if options['show_input']:
             print utils._input_for_ranking_of_talks(talks)
         else:
-            print '%d talks / %d users / %d votes' % (talks.count(), len(users), len(votes))
+            qs = models.VotoTalk.objects\
+                .filter(talk__in=talks)\
+                .values('user')
+            votes = qs.count()
+            users = qs.distinct().count()
+            print '%d talks / %d users / %d votes' % (talks.count(), users, votes)
             for ix, t in enumerate(utils.ranking_of_talks(talks)):
-                print ix+1, '-', t.id, '-', t.title.encode('utf-8'), '(%s)' % (', '.join(s.name.encode('utf-8') for s in t.get_all_speakers()),)
+                print ix+1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8')

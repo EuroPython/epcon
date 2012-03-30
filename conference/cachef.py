@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.core.cache import cache
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import Signal
 import functools
 import hashlib
@@ -163,7 +163,7 @@ class CacheFunction(object):
 
             for m in models:
                 post_save.connect(iwrapper, sender=m, weak=False)
-                post_delete.connect(iwrapper, sender=m, weak=False)
+                pre_delete.connect(iwrapper, sender=m, weak=False)
 
         def get_from_cache(fargs):
             cache_keys = {}

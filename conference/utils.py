@@ -45,9 +45,17 @@ def send_email(force=False, *args, **kwargs):
     real_send_mail(*args, **kwargs)
 
 def _input_for_ranking_of_talks(talks, missing_vote=5):
-    import conference
-    vengine = os.path.join(os.path.dirname(conference.__file__), 'utils', 'voteengine-0.99', 'voteengine.py')
-    cands = ' '.join(map(str, (t.id for t in talks)))
+    """
+    Dato un elenco di talk restituisce l'input da passare a vengine; se un
+    utente non ha espresso una preferenza per un talk gli viene assegnato il
+    valore `missing_vote`.
+    """
+    # se talks è un QuerySet evito di interrogare il db più volte
+    talks = list(talks)
+    tids = set(t.id for t in talks)
+    # come candidati uso gli id dei talk...
+    cands = ' '.join(map(str, tids))
+    # e nel caso di pareggi faccio vincere il talk presentato prima
     tie = ' '.join(str(t.id) for t in sorted(talks, key=lambda x: x.created))
     vinput = [
         '-m schulze',
@@ -56,20 +64,27 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
     for t in talks:
         vinput.append('# %s - %s' % (t.id, t.title.encode('utf-8')))
 
-    votes = VotoTalk.objects.filter(talk__in=talks).order_by('user', '-vote')
-    users = defaultdict(lambda: defaultdict(list)) #dict((t.id, 5) for t in talks))
+    votes = VotoTalk.objects\
+        .filter(talk__in=tids)\
+        .order_by('user', '-vote')
+    users = defaultdict(lambda: defaultdict(list))
     for vote in votes:
         users[vote.user_id][vote.vote].append(vote.talk_id)
 
-    talks_ids = set(t.id for t in talks)
     for votes in users.values():
-        missing_talks = talks_ids - set(sum(votes.values(), []))
-        votes[missing_vote].extend(missing_talks)
+        # tutti i talk non votati dall'utente ottengono il voto standard
+        # `missing_vote`
+        missing = tids - set(sum(votes.values(), []))
+        votes[missing_vote].extend(missing)
 
-        ballot = sorted(votes.items(), reverse=True)
+        # per esprimere le preferenze nel formati di vengin:
+        #   cand1=cand2 -> i due candidati hanno avuto la stessa preferenza
+        #   cand1>cand2 -> cand1 ha avuto più preferenze di cand2
+        #   cand1=cand2>cand3 -> cand1 uguale a cand2 entrambi maggiori di cand3
         input_line = []
-        for vote, talks in ballot:
-            input_line.append('='.join(map(str, talks)))
+        ballot = sorted(votes.items(), reverse=True)
+        for vote, tid in ballot:
+            input_line.append('='.join(map(str, tid)))
         vinput.append('>'.join(input_line))
 
     return '\n'.join(vinput)
@@ -77,10 +92,15 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 def ranking_of_talks(talks, missing_vote=5):
     import conference
     vengine = os.path.join(os.path.dirname(conference.__file__), 'utils', 'voteengine-0.99', 'voteengine.py')
-    talks_map = dict((t.id, t) for t in talks)
-    in_ = _input_for_ranking_of_talks(talks, missing_vote=missing_vote)
 
-    pipe = subprocess.Popen([ vengine ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+    talks_map = dict((t.id, t) for t in talks)
+    in_ = _input_for_ranking_of_talks(talks_map.values(), missing_vote=missing_vote)
+
+    pipe = subprocess.Popen(
+        [vengine],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        close_fds=True
+    )
     out, err = pipe.communicate(in_)
 
     return [ talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2]) ]

@@ -3,6 +3,7 @@ from __future__ import with_statement
 import functools
 import os.path
 import urllib
+from collections import defaultdict
 from decimal import Decimal
 
 from conference import dataaccess
@@ -38,6 +39,8 @@ class MyEncode(simplejson.JSONEncoder):
             return obj.strftime('%H:%M')
         elif isinstance(obj, decimal.Decimal):
             return str(obj)
+        elif isinstance(obj, set):
+            return simplejson.dumps(list(obj))
 
         return simplejson.JSONEncoder.default(self, obj)
 
@@ -118,7 +121,7 @@ def speaker_access(f):
         else:
             full_access = False
             conf = models.Conference.objects.current()
-            if conf.voting():
+            if settings.VOTING_OPENED(conf, request.user):
                 if settings.VOTING_ALLOWED(request.user):
                     talks = spk.talks()
                 else:
@@ -196,9 +199,12 @@ def talk_access(f):
             else:
                 full_access = True
 
+        # Se il talk non è confermato possono accedere:
+        #   * i super user o gli speaker (full_access = True)
+        #   * se la votazione comunitarià è in corso chi ha il diritto di votare
         if tlk.status == 'proposed' and not full_access:
             conf = models.Conference.objects.current()
-            if not conf.voting():
+            if not settings.VOTING_OPENED(conf, request.user):
                 return http.HttpResponseForbidden()
             if not settings.VOTING_ALLOWED(request.user):
                 if settings.VOTING_DISALLOWED:
@@ -556,7 +562,7 @@ def paper_submission(request):
 def voting(request):
     conf = models.Conference.objects.current()
 
-    if not conf.voting() and not request.user.is_superuser:
+    if not settings.VOTING_OPENED(conf, request.user):
         if settings.VOTING_CLOSED:
             return redirect(settings.VOTING_CLOSED)
         else:
@@ -590,8 +596,12 @@ def voting(request):
                     o = models.VotoTalk.objects.get(user=request.user, talk=talk)
                 except models.VotoTalk.DoesNotExist:
                     o = models.VotoTalk(user=request.user, talk=talk)
-                o.vote = vote
-                o.save()
+                if not vote:
+                    if o.id:
+                        o.delete()
+                else:
+                    o.vote = vote
+                    o.save()
         if request.is_ajax():
             return http.HttpResponse('')
         else:
@@ -641,26 +651,45 @@ def voting(request):
             form = OptionForm(data=request.GET)
             form.is_valid()
             options = form.cleaned_data
-            if options['abstracts'] != 'all':
-                talks = talks.exclude(id__in=user_votes.values('talk_id'))
-            if options['talk_type'] in ('s', 't', 'p'):
-                talks = talks.filter(type=options['talk_type'])
+        else:
+            form = OptionForm()
+            options = {
+                'abstracts': 'not-voted',
+                'talk_type': '',
+                'language': '',
+                'tags': '',
+                'order': 'vote',
+            }
+        if options['abstracts'] != 'all':
+            talks = talks.exclude(id__in=user_votes.values('talk_id'))
+        if options['talk_type'] in ('s', 't', 'p'):
+            talks = talks.filter(type=options['talk_type'])
 
-            if options['language'] in ('en', 'it'):
-                talks = talks.filter(language=options['language'])
+        if options['language'] in ('en', 'it'):
+            talks = talks.filter(language=options['language'])
 
-            if options['tags']:
+        if options['tags']:
+            # se in options['tags'] ci finisce un tag non associato ad alcun
+            # talk ho come risultato una query che da zero risultati; per
+            # evitare questo limito i tag usabili come filtro a quelli
+            # associati ai talk.
+            allowed = set()
+            ctt = ContentType.objects.get_for_model(models.Talk)
+            for t, usage in dataaccess.tags().items():
+                for cid, oid in usage:
+                    if cid == ctt.id:
+                        allowed.add(t.name)
+                        break
+            tags = set(options['tags']) & allowed
+            if tags:
                 talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
                     .filter(
                         content_type__app_label='conference', content_type__model='talk',
-                        tag__name__in=options['tags'])\
+                        tag__name__in=tags)\
                     .values('object_id')
                 )
 
-            talk_order = options['order']
-        else:
-            form = OptionForm()
-            talk_order = 'vote'
+        talk_order = options['order']
 
         votes = dict((x.talk_id, x) for x in user_votes)
 
@@ -715,8 +744,13 @@ def init_js(request):
             if k not in items[key]:
                 items[key][k] = 0
             items[key][k] += 1
+
+    tdata = defaultdict(list)
+    for x in tags:
+        tdata[x.category.encode('utf-8')].append(x.name.encode('utf-8'))
+
     data = {
-        'tags': [ x.name.encode('utf-8') for x in tags ],
+        'tags': dict(tdata),
         'taggeditems': items,
     }
     return render(
@@ -749,10 +783,14 @@ def profile_access(f):
                 .filter(talk__status='accepted')\
                 .count()
             if not accepted:
-                if profile.visibility == 'x':
-                    return http.HttpResponseForbidden()
-                elif profile.visibility == 'm' and request.user.is_anonymous:
-                    return http.HttpResponseForbidden()
+                # Se la votazione comunitaria à aperta e il profilo appartiene
+                # ad uno speaker con dei talk in gara la pagina è visibile
+                conf = models.Conference.objects.current()
+                if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
+                    if profile.visibility == 'x':
+                        return http.HttpResponseForbidden()
+                    elif profile.visibility == 'm' and request.user.is_anonymous:
+                        return http.HttpResponseForbidden()
         return f(request, slug, profile=profile, full_access=full_access, **kwargs)
     return wrapper
 
