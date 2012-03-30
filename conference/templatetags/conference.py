@@ -1065,7 +1065,7 @@ def voting_data(conference):
     groups = defaultdict(lambda: defaultdict(list))
     if settings.TALKS_RANKING_FILE:
         for line in file(settings.TALKS_RANKING_FILE):
-            pieces = line.split('-')
+            pieces = line.split('-', 4)
             if len(pieces) == 5:
                 type = pieces[2].strip()
                 language = pieces[3].strip()
