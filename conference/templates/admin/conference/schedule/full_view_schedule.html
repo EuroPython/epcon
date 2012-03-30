@@ -1,9 +1,14 @@
 {% load conference %}
-<table>
-    {% for time, rows in timetable.byTimes %}
-    <tr>
-        <th>{{ time|time:"H:i" }}</th>
-        <td>{{ rows.0.data }}</td>
-    </tr>
-    {% endfor %}
-</table>
+
+    <div class="drop-zone">
+        <em class="time"></em>
+    </div>
+{% for e in events %}
+    <div id="e{{ e.id }}" class="event" data-id="{{ e.id }}" data-start-time="{{ e.time|date:"Y/m/d H:i" }}" data-duration="{% if e.duration %}{{ e.duration }}{% else %}{{ e.talk.duration }}{% endif %}">
+        <div class="inner">
+            <em class="time">{{ e.time|date:"H:i" }}</em>
+            {{ e.name|safe }}
+        </div>
+    </div>
+{% endfor %}
+
