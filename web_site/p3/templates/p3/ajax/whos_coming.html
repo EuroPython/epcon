@@ -8,6 +8,7 @@
         </div>
         <div class="profile-user-identity-data">
             <h1>{{ profile_data.name }}</h1>
+            <em>{{ profile_data.tagline }}</em>
             <dl>
                 {% if profile_data.personal_homepage %}
                 <dt>Website</dt>
@@ -20,6 +21,14 @@
                 <dd>
                     <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
                 </dd>
+                {% endif %}
+                {% if profile_data.interests %}
+                <div class="all-tags">
+                    {% for t in profile_data.interests %}<span class="tag">{{ t }}</span>{% endfor %}
+                </div>
+                {% endif %}
+                {% if profile_data.bio %}
+                <p>{{ profile_data.bio|truncatewords_html:15 }}</p>
                 {% endif %}
             </dl>
         </div>
