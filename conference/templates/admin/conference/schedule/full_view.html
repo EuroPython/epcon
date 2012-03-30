@@ -1,6 +1,7 @@
 {% extends "admin/base_site.html" %}
 {% block extrahead %}
 {{ block.super }}
+{% load i18n %}
 <style type="text/css">
 #talks {
     width: 160px;
@@ -9,9 +10,12 @@
 #dashboard {
     margin-left: 160px;
 }
+
+
 .schedule {
     margin-bottom: 20px;
 }
+
 .schedule:after {
     clear: both;
     content: " ";
@@ -19,12 +23,100 @@
     height: 0;
     visibility: hidden;
 }
+
 .track {
     background: peachpuff;
-    float: left;
     margin-right: 20px;
+    display: inline-block;
 }
+
+.event-list {
+    position: relative;
+    overflow: hidden;
+}
+
+.drop-zone {
+    border:1px solid blue;
+    position: absolute;
+    display:none;
+    width: 116px;
+    z-index:110;
+    text-align: center;
+}
+
+.drop-zone em.time {
+    font-size: 120%;
+}
+
+.event {
+     margin: 0; 
+     position:absolute;
+     border: 0;
+     border-collapse: collapse; 
+     background-color: #FFF9AD;
+     cursor:move;
+     font-size: 80%;
+     width: 120px;
+     overflow: hidden;
+}
+
+
+.track { 
+    width: 120px;
+    font-size: 60%;
+    background-color: #eee; 
+    border: 0; 
+    border-collapse: collapse; 
+    margin: 0;
+    float:left;
+    margin:10px;
+    z-index: 50;
+}
+
+.track h2 {
+     height: 30px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.expose {
+    z-index:100;
+    font-size: 60%;
+}
+
+.expose .event{
+    overflow: visible;
+}
+
+
+#tooltip {
+    font-size:120%;
+    position: absolute;
+    display: None;
+    background-color: #fff;
+    border: 1px solid #417690;
+    padding: 0px;
+    z-index:300;
+}
+
+#tooltip h2 {
+    padding: 5px;
+}
+
+#tooltip .dettagli {
+    padding: 5px;
+}
+
+
+
+#tooltip .submit-row{
+    margin-bottom: 0px;
+}
+
+
 </style>
+<script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-transit/jquery-transit-0.1.3.js"></script>
+<link href="/static/admin/css/forms.css" type="text/css" rel="stylesheet">
 {% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -43,31 +135,409 @@
         <li>talk 3</li>
     </ol>
 </div>
-<div id="dashboard"></div>
+<div id="tooltip" class="module">
+    <h2 class="title">test</h2>
+    <div class="dettagli">
+        test
+    </div>
+    <div class="submit-row">
+        <input class="default" type="submit" name="_save" value="{% trans 'save' %}">
+        <input type="submit" name="_addanother" value="{% trans 'delete' %}">
+    </div>
+</div>
+<div id="dashboard">
+    {% for s,ts in tracks %}
+    <div id="schedule-{{ s }}" data-id="{{ s }}" class="schedule">
+        {% for t in ts %}
+            <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" data-start-time="8:30" data-end-time="20:30" data-slot-length="15" class="track module">
+             <h2 class="title">{{t.title|safe}}</h2>
+                <div class="event-list">
+                loading...
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    
+</div>
 <script type="text/javascript">
 (function() {
-    // qui un encoding json non guasterebbe
-    var tracks = {{ tracks }};
-    var dashboard = $('#dashboard');
-    function reload(e) {
-        if(e.hasClass('track')) {
-            var sid = e.parent().attr('data-id');
-            var tid = e.attr('data-id');
-            e.load('/admin/conference/schedule/full_view/' + sid + '/' + tid + '/');
+
+    var tracks =$(".track");
+    var dashboard = $('#dashboard');//.css({ scale:0.5,y:-8300,x:-600});;
+    var slot_length_px=10;
+    var ctrlPressed = false;
+    // in teoria non ci dovrebbe essere bisogno di tenere in un globale l'elemento draggato,
+    // ma chrome ha qualche bug nell'implmentazione dell'oggetto DataTranser e la funzione
+    // .getData funziona solo in alcuni eventi; 
+    var dragged_element = null;
+
+    $(window).keydown(function(evt) {
+      if (evt.which == 17) { // ctrl
+        ctrlPressed = true;
+      }
+    }).keyup(function(evt) {
+      if (evt.which == 17) { // ctrl
+        ctrlPressed = false;
+      }
+    });
+
+
+    $(document).bind('click',function(){
+        dashboard.find('.track').not('.expose').css({ opacity: 1});
+        dashboard.find('.track.expose').each(function(){
+             unexpose($(this));
+        });
+    });
+
+    function calculateTmatrix(track){
+        return $.map(track.css(($.browser.webkit) ? '-webkit-transform' :'-moz-transform' ).replace('matrix(','').split(','),function(v,i){return parseFloat(v)})
+    }
+
+    function Ruler(track, slot_length_px) {
+        if(!slot_length_px)
+            slot_length_px = 5;
+        var dates = [
+            new Date(track.attr('data-date') + ' ' +track.attr('data-start-time')),
+            new Date(track.attr('data-date') + ' ' +track.attr('data-end-time'))
+        ]
+        var slot_length_min = track.attr('data-slot-length');
+        var slots = (dates[1] - dates[0]) / 1000 / 60 / slot_length_min;
+        
+        this.eventSlots = function(event) {
+            return event.attr('data-duration') / track.attr('data-slot-length');
+        };
+        
+        this.tMatrix = function() {
+          var scale = track.css('scale');
+          // scale può essere un valore o un array
+          // dipende se le proporsioni sono uguali
+          var translate = track.css('translate').split(',')
+          
+          return {
+               scale:{
+                   x: ($.isArray(scale)) ? scale[0]:scale,
+                   y: ($.isArray(scale)) ? scale[1]:scale
+               },
+               translate:{
+                   x: parseFloat(translate[0]),
+                   y: parseFloat(translate[1])
+               }
+           }
+        };
+        this.elementPagePosition = function(e) {
+            var y = 0, x = 0;
+            var p = e;
+            while(p) {
+                y += p.offsetTop;
+                x += p.offsetLeft;
+                p = p.offsetParent; 
+            }
+            return {
+                x: x,
+                y: y,
+                width: e.offsetWidth,
+                height: e.offsetHeight,
+                center: {
+                    x: x + e.offsetWidth / 2,
+                    y: y + e.offsetHeight / 2
+                }
+            }
+        };
+        /*
+         * converte la posizione passata (x, y) da coordinate pagina a
+         * coordinate relative alla event-list.
+         */
+        this.pagePos2TrackPos = function(pos) {
+            // le cordinate relative sono calcolate per la tarck
+            // riporto la cordinata y  all' envent list 
+            // sottraendo l'altezza del titolo
+            var matrix = this.tMatrix();
+            var dim = this.elementPagePosition(track.get(0));
+            var title_height = $('.title',track).height()
+            
+            var x= dim.width / 2 - (dim.center.x - pos.x) / matrix.scale.x - matrix.translate.x;
+            var y= dim.height / 2 - (dim.center.y - pos.y) / matrix.scale.y - matrix.translate.y - title_height;
+            if (x<0 || y<0 || x>dim.width || y>(dim.height - title_height)){
+                return false;
+            } else {
+                return {
+                        x:x,
+                        y:y
+                    }
+            }
+        };
+        /*
+         * data una posizione (x, y) relativa alla track ritorna lo slot
+         * temporale corrispondente
+         */
+        this.pos2slots = function(pos, duration) {
+            // pos è relativo alla track;
+            // duration è in slot
+            if (!duration){
+                duration = 0;
+            }
+            var min_pos = $('.event-list',track).height() - duration * slot_length_px;
+            var pos_slots = Math.floor(Math.min(Math.max(0,pos.y),min_pos) / slot_length_px)
+            return (slots < (pos_slots + duration)) ? false : pos_slots;
+        };
+        /*
+         * posiziona un element sullo slot specificato per la durata (in slot)
+         * indicata.
+         */
+        this.configureElement = function(element, slot, duration) {
+
+            element.css({
+                position: 'absolute',
+                top: slot * slot_length_px,
+                height: duration * slot_length_px,
+                display:'block',
+                left:0
+            });
+            var time = this.slot2Datetime(slot);
+            // setto il tempo e visto che ci sono metto anche 
+            // la data in un attributo data del elemento
+            // tornera utile in futuro
+            $('em.time',element)
+                .data('start-time', time)
+                .text(time.getHours()+':'+ (time.getMinutes() == 0 ? '00' : time.getMinutes()))
+        }
+        
+        this.slot2Datetime = function(slot){
+            var d = new Date(dates[0]);
+            d.setMinutes(d.getMinutes() + (slot * slot_length_min));
+            return d;
+        };
+        
+        this.configureEvent = function(event) {
+            var slotsFromStart = (new Date(event.attr('data-start-time')) - dates[0]) / 1000 / 60  / slot_length_min;
+            this.configureElement(event, slotsFromStart, this.eventSlots(event)); 
+        };
+        this.configure = function() {
+            var scope = this;
+            $('.event-list', track)
+                .height(slots * slot_length_px)
+                .children('.event')
+                .each(function(){ scope.configureEvent($(this)); });
+        };
+    };
+   
+
+    function reload(track) {
+        if(track.hasClass('track')) {
+            var sid = track.parent().attr('data-id');
+            var tid = track.attr('data-id');
+            var ruler = new Ruler(track);
+            return $('.event-list',track)
+                .load('/admin/conference/schedule/full_view/' + sid + '/' + tid + '/', function() {
+                    ruler.configure();
+                });
         }
         else {
             throw "unknown element";
         }
     }
+
+    function expose(track){
+        if (!track.hasClass('expose')){
+            track
+                .addClass('expose')
+                .transition({ scale: [2,2], y: 60,x: 0, opacity: 1 });
+            distribuite();
+            $('.event-list', track)
+                .bind('dragover', function(ev) {
+                    ev.preventDefault()
+                    var dt = ev.originalEvent.dataTransfer;
+                    var track_drop = $(ev.target).parents('.track');
+                    var ruler = new Ruler(track_drop);
+                    var duration = ruler.eventSlots($(dragged_element));
+                    // ho sottarto 30 almeno il drag avviene al interno del elemento
+                    // appena sotto la scritta del ora
+                    // TODO:
+                    // andrebbe trovato l'offset del drag sul elemento nel evento
+                    // dragstart 
+                    var pos = {
+                        'x': ev.originalEvent.pageX,
+                        'y': ev.originalEvent.pageY -40 
+                    };
+                    
+                    pos = ruler.pagePos2TrackPos(pos);
+                    var slots = ruler.pos2slots(pos, duration);
+                    
+                    if (pos && slots){
+                        
+                        var time = ruler.slot2Datetime(pos);
+                        ruler.configureElement($('.drop-zone', track_drop), slots, duration);
+                    } else {
+                        // sto ancora draggando all' interno della event-list ma le dimensioni dell'evento
+                        // sono al difuori della event-list
+                        $('.drop-zone', track_drop).hide();
+                    }
+                    return false;
+                })
+                .bind('drop', function(ev) {
+                    ev.stopPropagation();
+                    var track_drop = $(ev.target).parents('.track');
+                    var ruler = new Ruler(track_drop);
+                    var element = $(dragged_element);
+                    var duration = ruler.eventSlots(element);
+                    var track_surce = element.parents('.track');
+                    $('.drop-zone',track_drop).hide();
+                    var pos = {
+                        'x': ev.originalEvent.pageX,
+                        'y': ev.originalEvent.pageY -40
+                    };
+                    pos = ruler.pagePos2TrackPos(pos);
+                    var slots = ruler.pos2slots(pos,duration);
+                    var time = ruler.slot2Datetime(slots);
+                    if (pos && slots && (track_drop[0] != track_surce[0] || time != element.data('start-time'))){
+                        /* 
+                         *  Verifico se è cambiato la track 
+                         *   o l'orario prima di salvare se 
+                         *   no annullo il drag
+                         */
+                        // post
+                        console.log('post->',track_drop,track_surce,time); // voglio sapere track, time e id eveneto
+                        // post sucess
+                        if (track_drop[0] != track_surce[0]){
+                            $('.event-list',track_drop).append(element.detach());
+                        }
+                        ruler.configureElement(element,slots,ruler.eventSlots(element));
+                    }
+                    return false;
+                })
+                .bind('dragenter',function(ev){
+                    ev.stopPropagation();
+                    $('.drop-zone',this).show();
+                    return false;
+                })
+                .bind('dragleave',function(ev){
+                    /*
+                     *  'dragleave' viene triggerato anche quando passa 
+                     *   sopra un altro evento dello stesso tack, per capire 
+                     *   se il drag e ancora nel track corrente controllo la posizione
+                     *   del mause dalle cordinate del evento
+                     */
+                    ev.stopPropagation();
+                    var track_drop = $(ev.target).parents('.track');
+                    var ruler = new Ruler(track_drop);
+                    var pos = {
+                        'x': ev.originalEvent.pageX,
+                        'y': ev.originalEvent.pageY
+                    };
+                    if (!ruler.pagePos2TrackPos(pos)){
+                        // l'evento si e verificato al difuori del event-list
+                        $('.drop-zone',this).hide();
+                    }
+                    return false;
+                })
+                .children('.event')
+                    .attr('draggable', true)
+                    .bind('dragstart', function(ev) {
+                        var dt = ev.originalEvent.dataTransfer;
+                        dragged_element = this;
+                        if ($.browser.mozilla){
+                            // nascondo l'oggetto durante il drag con mozzilla
+                            // in crome va giusto
+                            $(this).hide();
+                        }
+                        dt.setData('text/plain',this.id);
+                    })
+                    .bind('dragend', function(ev){
+                        if ($.browser.mozilla){
+                            $(this).show();
+                        }
+                        $(ev.target).parents('.track').find('.drop-zone').hide();
+                    })
+                .parents('.event-list')
+                .children('.event.custom')
+                    .click(function(ev){
+                        /*
+                         *  prima bozza della maschera 
+                         *  per eventi custom
+                         */
+                        // $(this).attr('id') ecc
+                         $('body').one('click', function(){
+                             $('#tooltip').hide();
+                         })
+                        
+                         $('#tooltip')
+                            .show()
+                            //.html('<i>Loading<i/>')
+                            .css({
+                                top:ev.originalEvent.pageY,
+                                left:ev.originalEvent.pageX
+                            })
+                         return false;
+                    })
+                    
+            $('.track')
+                .not('.expose')
+                .css({ opacity: .5});
+            return false;
+        }
+    }
+
+    function unexpose(track){
+        if(!track) {
+            $('.expose', dashboard).each(function() {
+                unexpose($(this));
+            });
+            return;
+        }
+
+        track
+            .removeClass('expose')
+            .transition({ scale:1 , y:0, x : 0 })
+            .css({opacity: 1})
+        $('.event-list',track)
+            .unbind('drop dragenter dragover dragleave')
+        $('.event',track)
+            .attr('draggable', false)
+            .unbind('dragstart')
+
+        if (dashboard.find('.track.expose').length=0){
+            track.css({opacity: 1});
+        }
+
+        distribuite();
+    }
+
+    function distribuite(){
+        var tracks = $('.track.expose');
+        if (tracks.length > 1){
+            var tw = $(tracks[0]).width();
+            var dw = $(document).width()/2;
+            var sp = dw - ((0.5 * tracks.length - 0.5) * 2 * tw) - (tracks.length * 10)
+            tracks.each(function(){
+                var track = $(this);
+                track.transition({ x: (sp - track.offset().left - tw )/2}); 
+                sp += tw * 2 + 10;
+            })
+        } else {
+            $(tracks[0]).transition({x:0});
+        }
+    }
+
+     
     $(tracks).each(function(ix, row) {
-        var sid = row[0];
-        var sch = $('<div id="schedule-' + sid + '" data-id="' + sid + '" class="schedule"></div>')
-            .appendTo(dashboard);
-        $(row[1]).each(function(ix, track_id) {
-            var track = $('<div id="track-' + track_id + '" data-id="' + track_id + '" class="track">loading...</div>')
-                .appendTo(sch);
-            reload(track);
-        });
+        var track = $(this);
+        reload(track)
+            .click(function(ev) {
+                if (!ctrlPressed && !track.hasClass('expose')){
+                    unexpose();
+                    expose(track);
+                    return false
+                }
+                if (ctrlPressed && track.hasClass('expose')) {
+                    unexpose(track);
+                    return false
+                }
+                if (ctrlPressed && !track.hasClass('expose')) {
+                    expose(track);
+                    return false
+                }
+            });
     });
 })();
 </script>
