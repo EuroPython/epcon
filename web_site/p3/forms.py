@@ -291,6 +291,11 @@ class P3ProfileForm(cforms.ProfileForm):
         help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
         widget=cforms.MarkEditWidget,
         required=False,)
+    tagline = forms.CharField(
+        label=_('Tagline'),
+        help_text=_('Describe yourself in one line'),
+        required=False,
+    )
     interests = cforms.TagField(widget=cforms.TagWidget, required=False)
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
@@ -309,6 +314,7 @@ class P3ProfileForm(cforms.ProfileForm):
             else:
                 initial = kw.get('initial', {})
                 initial.update({
+                    'tagline': p3p.tagline,
                     'interests': p3p.interests.all(),
                     'twitter': p3p.twitter,
                     'image_gravatar': p3p.image_gravatar,
@@ -342,7 +348,7 @@ class P3ProfileForm(cforms.ProfileForm):
 class P3ProfilePublicDataForm(P3ProfileForm):
     class Meta:
         model = cmodels.AttendeeProfile
-        fields = ('personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
+        fields = ('tagline', 'personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
 
     def clean_bio(self):
         return getattr(self.instance.getBio(), 'body', '')
@@ -357,6 +363,7 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         profile = super(P3ProfilePublicDataForm, self).save(commit)
         p3p = profile.p3_profile
         data = self.cleaned_data
+        p3p.tagline = data.get('tagline', '')
         p3p.twitter = data.get('twitter', '')
 
         loc = data.get('location')

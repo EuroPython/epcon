@@ -4,6 +4,17 @@
     <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-public-data-async-target">{% csrf_token %}
         <input type="hidden" name="section" value="public-data" />
         <dl>
+            {% if profile_data.tagline or full_access %}
+            <dt>Tagline</dt>
+            <dd>
+                {% if profile_data.tagline %}
+                    <span>{{ profile_data.tagline }}</span>
+                {% else %}
+                    <span class="not-set">&mdash; Not set &mdash;</span>
+                {% endif %}
+                {% if full_access %}{{ form.tagline|field:"tpl:no_label" }}{% endif %}
+            </dd>
+            {% endif %}
             {% if profile_data.personal_homepage or full_access %}
             <dt>Website</dt>
             <dd>

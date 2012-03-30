@@ -27,6 +27,7 @@ def profile_data(uid, preload=None):
         except KeyError:
             interests = [ t.name for t in p3p.interests.all() ]
         profile.update({
+            'tagline': p3p.tagline,
             'interests': interests,
             'twitter': p3p.twitter,
             'image': p3p.profile_image_url(),
