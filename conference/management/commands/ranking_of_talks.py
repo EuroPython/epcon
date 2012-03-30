@@ -31,24 +31,6 @@ class Command(BaseCommand):
                 .values('user')
             votes = qs.count()
             users = qs.distinct().count()
-            speakers = defaultdict(list)
-            sqs = models.TalkSpeaker.objects\
-                .filter(talk__in=talks)\
-                .values('talk', 'speaker__user__first_name', 'speaker__user__last_name')
-            for row in sqs:
-                name = '%s %s' % (row['speaker__user__first_name'], row['speaker__user__last_name'])
-                speakers[row['talk']].append(name.encode('utf-8'))
-
             print '%d talks / %d users / %d votes' % (talks.count(), users, votes)
-            results = defaultdict(lambda: defaultdict(list))
-            for t in utils.ranking_of_talks(talks):
-                results[t.type][t.language].append(t)
-
-            for type, label in models.TALK_TYPE:
-                for language, subset in results[type].items():
-                    if subset:
-                        print label, '(%s)' % language
-                        print '-' * 79
-                        for ix, t in enumerate(subset):
-                            print ix+1, '-', t.id, '-', t.title.encode('utf-8'), '(%s)' % ', '.join(speakers[t.id])
-                        print ''
+            for ix, t in enumerate(utils.ranking_of_talks(talks)):
+                print ix+1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8')

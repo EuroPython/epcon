@@ -1057,24 +1057,28 @@ def fare_blob(fare, field):
 
 @fancy_tag(register)
 def voting_data(conference):
-    conf = models.Conference.objects.get(code=conference)
-    votes = models.VotoTalk.objects.filter(talk__conference=conference)
-    users = len(set(x.user_id for x in votes))
-    if not settings.TALKS_RANKING_FILE:
-        talks = utils.ranking_of_talks(models.Talk.objects.filter(id__in=votes.values('talk')))
-    else:
-        talks_id = []
+    qs = models.VotoTalk.objects\
+        .filter(talk__conference=conference)\
+        .values('user')
+    votes = qs.count()
+    users = qs.distinct().count()
+    groups = defaultdict(lambda: defaultdict(list))
+    if settings.TALKS_RANKING_FILE:
         for line in file(settings.TALKS_RANKING_FILE):
             pieces = line.split('-')
-            if len(pieces) > 2:
-                talks_id.append(int(pieces[1].strip()))
-        talks = list(models.Talk.objects.filter(id__in=talks_id))
-        talks.sort(key=lambda x: talks_id.index(x.id))
+            if len(pieces) == 5:
+                type = pieces[2].strip()
+                language = pieces[3].strip()
+                tid = int(pieces[1].strip())
+                groups[type][language].append(tid)
+
+    for k, v in groups.items():
+        groups[k] = dict(v)
 
     return {
-        'votes': votes.count(),
+        'votes': votes,
         'users': users,
-        'talks': talks,
+        'groups': dict(groups),
     }
 
 @fancy_tag(register)
