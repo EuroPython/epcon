@@ -409,7 +409,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         )
         tracks = []
         for sch in schedules:
-            tracks.append([ sch['id'], [ t.id for t in sch['tracks'] ] ])
+            tracks.append([ sch['id'], [ t for t in sch['tracks'] ] ])
 
         ctx = {
             'conference': conf,
