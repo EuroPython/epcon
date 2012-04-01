@@ -46,11 +46,13 @@
                     <a href="/call-for-proposals/"><img class="block" src="{{ STATIC_URL }}p5/i/notice-call-for-paper.png" alt="Call for paper is open. Submit your paper" width="315" height="130" /></a>                    
                 </div>
                 {% endif %}
+                {% if conf.voting %}
                 <div class="home-notice">
                     <div class="badge" style="margin-left: 50px; margin-right: 50px">
                          <h5><a href="/talk-voting/">Talk voting is open &rarr; </a></h5>
                     </div>
                 </div>
+                {% endif %}
             </div>
     
             <div class="span-6 last">
@@ -187,6 +189,7 @@
         </div>
     </section>
 {% endblock %}
+
 
 
 
