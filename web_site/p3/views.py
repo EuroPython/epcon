@@ -770,8 +770,16 @@ def p3_account_spam_control(request):
     return render(request, "assopy/profile_spam_control.html", ctx)
 
 def whos_coming(request):
+    # i profili possono essere o pubblici o accessibili solo ai partecipanti,
+    # nel secondo caso li possono vedere solo chi ha un biglietto.
+    access = ('p',)
+    if request.user.is_authenticated():
+        tickets = dataaccess.user_tickets(request.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
+        if len(tickets):
+            access = ('m', 'p')
     countries = [('', 'All')] + list(amodels.Country.objects\
         .filter(iso__in=models.P3Profile.objects\
+            .filter(profile__visibility__in=access)\
             .exclude(country='')\
             .values('country')
         )\
@@ -786,9 +794,10 @@ def whos_coming(request):
         )
 
     people = cmodels.AttendeeProfile.objects\
-        .filter(visibility='p')\
+        .filter(visibility__in=access)\
         .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
-        .values_list('user', flat=True)
+        .values_list('user', flat=True)\
+        .order_by('user__first_name', 'user__last_name')
     form = FormWhosFilter(request.GET)
     if form.is_valid():
         data = form.cleaned_data
