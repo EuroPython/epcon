@@ -168,6 +168,29 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 instance.body = data.get(key, '')
                 instance.save()
 
+class TalkSpeakerInlineAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.TalkSpeaker
+
+    def __init__(self, *args, **kwargs):
+        super(TalkSpeakerInlineAdminForm, self).__init__(*args, **kwargs)
+        data = models.Speaker.objects\
+            .values('user', 'user__first_name', 'user__last_name')\
+            .order_by('user__first_name', 'user__last_name')
+        self.fields['speaker'] = forms.TypedChoiceField(choices=[('', '---------')] + [
+            (x['user'], '%s %s' % (x['user__first_name'], x['user__last_name']))
+            for x in data
+        ], coerce=int)
+
+    def clean_speaker(self):
+        data = self.cleaned_data
+        return models.Speaker.objects.get(user=data['speaker'])
+
+class TalkSpeakerInlineAdmin(admin.TabularInline):
+    model = models.TalkSpeaker
+    form = TalkSpeakerInlineAdminForm
+    extra = 1
+
 class SpeakerAdminForm(forms.ModelForm):
     class Meta:
         model = models.Speaker
@@ -181,6 +204,7 @@ class SpeakerAdmin(MultiLingualAdminContent):
     search_fields = ('user__first_name', 'user__last_name', 'user__email')
     list_select_related = True
     form = SpeakerAdminForm
+    inlines = (TalkSpeakerInlineAdmin,)
 
     def queryset(self, request):
         # list_select_related non insegue anche le reverse onetoone, devo
@@ -270,6 +294,7 @@ class TalkAdmin(MultiLingualAdminContent):
     ordering = ('-conference', 'title')
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ('title',)
+    inlines = (TalkSpeakerInlineAdmin,)
 
     form = TalkAdminForm
 

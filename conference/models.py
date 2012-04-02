@@ -377,6 +377,9 @@ class SpeakerManager(models.Manager):
 class Speaker(models.Model, UrlMixin):
     user = models.OneToOneField('auth.User', primary_key=True)
 
+    def __unicode__(self):
+        return '%s %s' % (self.user.first_name, self.user.last_name)
+
     def talks(self, conference=None, include_secondary=True, status=None):
         """
         Restituisce i talk dello speaker filtrandoli per conferenza (se non
