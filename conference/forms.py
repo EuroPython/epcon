@@ -268,7 +268,7 @@ class TalkForm(forms.Form):
         help_text=_('Insert the url for your teaser video'),
         required=False,
     )
-    tags = TagField(widget=TagWidget)
+    tags = TagField(widget=TagWidget, required=False)
 
     def __init__(self, instance=None, *args, **kwargs):
         if instance:
