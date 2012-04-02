@@ -154,7 +154,7 @@ class P3TalkForm(cforms.TalkForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested net duration</b> of the talk, excluding Q&A'),
-        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '4 hours')),
+        choices=((45, '30 minutes'), (60, '45 minutes'), (90, '70 minutes'), (240, '4 hours'), (480, 'Full day (8h)')),
         coerce=int,
         initial=60,
         required=False,
@@ -183,7 +183,7 @@ class P3TalkForm(cforms.TalkForm):
         data = super(P3TalkForm, self).clean()
         # se instance è None la form viene usata per presentare un nuovo paper
         if not self.instance:
-            if data['type'] == 't':
+            if data['type'] == 't' and data.get('duration', 0) < 240:
                 data['duration'] = 240
 
             if not data.get('duration'):
