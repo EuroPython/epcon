@@ -34,6 +34,11 @@ body {
 }
 
 
+/* Damn, Lucida (Grande) has no italics */
+em, i {
+    font-family: Georgia, serif;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	font: normal 24px/30px "League Gothic", "Arial Narrow", sans-serif;		
 	text-transform: uppercase;
@@ -119,7 +124,8 @@ h2 .new {
 }
 
 
-a.tag,span.tag {
+a.tag,
+span.tag {
     background: #e3dfac;
     padding: 1px 2px;
         
@@ -141,7 +147,9 @@ a.tag:hover {
 }
 
 a.tag.selected {
-    background-color:#777A55;
+    background-color:#4895A3;
+    color: #fff;
+    border-color: #2f7c8a;
 }
 
 .button {
@@ -760,7 +768,51 @@ footer nav li img {
 }
 
 
+/* ========== */
+/* ! People   */
+/* ========== */
 
+
+
+.person-card .person-card-picture {
+    float: left;
+    width: 80px;
+}
+
+.person-card .person-card-picture img {
+    border: 2px solid #aba18f;
+}
+
+.person-card .person-card-profile {
+    margin-left: 90px;
+}
+
+.person-card dd {
+    margin: 0 0 10px 0;
+}
+
+
+.person-card {
+    padding: 10px;
+}
+
+/*
+
+#people-wrapper .tagline {
+}
+*/
+
+#people-wrapper .row {
+    background: #fff;
+    
+    margin: 0 0 42px 0;
+}
+
+#people-wrapper .row.even {
+    background: transparent;
+}
+
+    
 /* ======== */
 /* ! talk   */
 /* ======== */
@@ -1694,6 +1746,8 @@ section.countdown {
     margin: 0 0 20px 0;
 }
 
+/*
 #whos-coming > section {
     margin-bottom: 10px;
 }
+*/
