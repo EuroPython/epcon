@@ -29,13 +29,14 @@
 
                         {% if profile_data.interests %}
                         <dd class="tags">
-                            {% for t in profile_data.interests %}<span class="tag">{{ t }}</span>{% endfor %} and <a href="#">X more</a>
+                            {% for t in profile_data.interests|eval_:"list(x)[:5]" %}<span class="tag">{{ t }}</span>{% endfor %}
+                            {% if profile_data.interests|length > 5 %} and <a href="{% url conference-profile slug=profile_data.slug %}">{{ profile_data.interests|length|eval_:"x-5" }} more</a>{% endif %}
                         </dd>
                         {% endif %}
                     </dl>
 
                     {% if profile_data.bio %}
-                    <p class="bio">{{ profile_data.bio|truncatewords_html:15 }}</p>
+                    <p class="bio">{{ profile_data.bio|truncatewords_html:50 }}</p>
                     {% endif %}
 
                 </div>
