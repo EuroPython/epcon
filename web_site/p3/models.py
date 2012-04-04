@@ -306,6 +306,7 @@ class SprintPresence(models.Model):
 
 class P3Profile(models.Model):
     profile = models.OneToOneField('conference.AttendeeProfile', related_name='p3_profile', primary_key=True)
+    tagline = models.CharField(max_length=60, blank=True, help_text='describe yourself in one line!')
     interests = TaggableManager(through=ConferenceTaggedItem)
     twitter = models.CharField(max_length=80, blank=True)
     image_gravatar = models.BooleanField(default=False)
