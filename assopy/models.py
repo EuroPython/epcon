@@ -377,17 +377,31 @@ class Coupon(models.Model):
         item.price = discount
         return item
 
-    def applyToRows(self, user, rows):
+    def applyToRows(self, user, items):
         if not self.valid(user):
             raise ValueError('coupon not valid')
 
-        fares = dict((f.code, f) for f in self.fares.all())
+        rows = []
+        for fare, params in items:
+            c = dict(params)
+            c['qty'] = 1
+            for _ in range(params['qty']):
+                rows.append((fare, c))
+
         apply_to = rows
+        fares = set(self.fares.all().values_list('code', flat=True))
         if fares:
-            apply_to = filter(lambda x: x.code in fares, apply_to)
+            apply_to = filter(lambda x: x[0].code in fares, apply_to)
+
         if self.items_per_usage:
-            apply_to = sorted(apply_to, key=lambda x: x.price, reverse=True)[:self.items_per_usage]
-        return self._applyToTotal(sum(x.price for x in apply_to), sum(x.price for x in rows))
+            # il coupon è valido solo per un numero massimo di item, lo applico
+            # partendo dal più costoso
+            apply_to = sorted(apply_to, key=lambda x: x[0].calculated_price(**x[1]), reverse=True)
+            apply_to = apply_to[:self.items_per_usage]
+
+        total = sum(fare.calculated_price(**params) for fare, params in apply_to)
+        guard = sum(fare.calculated_price(**params) for fare, params in rows)
+        return self._applyToTotal(total, guard)
 
     def _applyToTotal(self, total, guard):
         if self.type() == 'val':
@@ -666,11 +680,10 @@ class Order(models.Model):
 
         total = tickets_total
         if coupons:
-            rows = [ fare for fare, params in items for _ in range(params['qty']) ]
             for t in ('perc', 'val'):
                 for c in coupons:
                     if c.type() == t:
-                        result = c.applyToRows(user, rows)
+                        result = c.applyToRows(user, items)
                         if result is not None:
                             totals['coupons'][c.code] = (result, c)
                             total += result
