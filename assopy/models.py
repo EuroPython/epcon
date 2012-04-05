@@ -399,8 +399,8 @@ class Coupon(models.Model):
             apply_to = sorted(apply_to, key=lambda x: x[0].calculated_price(**x[1]), reverse=True)
             apply_to = apply_to[:self.items_per_usage]
 
-        total = sum(fare.calculated_price(**params) for fare, params in apply_to)
-        guard = sum(fare.calculated_price(**params) for fare, params in rows)
+        total = Decimal('%.3f' % sum(fare.calculated_price(**params) for fare, params in apply_to))
+        guard = Decimal('%.3f' % sum(fare.calculated_price(**params) for fare, params in rows))
         return self._applyToTotal(total, guard)
 
     def _applyToTotal(self, total, guard):
