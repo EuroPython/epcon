@@ -52,6 +52,9 @@ a {
     text-decoration: none;
 }
 
+.cms {
+    padding: 0 10px;
+}
 .cms h1, .page h1 {
     margin: 0 0 10px 0;
 }
