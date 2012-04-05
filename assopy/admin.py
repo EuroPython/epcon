@@ -2,10 +2,10 @@
 from django import forms
 from django import http
 from django import template
+from django.conf import settings as dsettings
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
-from django.core.cache import cache
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from assopy import models
@@ -135,7 +135,7 @@ class OrderAdmin(admin.ModelAdmin):
         orders = models.Order.objects.filter(id__in=ids)
         if not orders.count():
             return redirect('admin:assopy_order_changelist')
-            
+
         class FormPaymentDate(forms.Form):
             date = forms.DateField(input_formats=('%Y/%m/%d',), help_text='Enter the date (YYYY/MM/DD) of receipt of payment. Leave blank to issue an invoice without a payment', required=False)
 
@@ -258,24 +258,31 @@ class CouponAdminForm(forms.ModelForm):
         return self.cleaned_data['code'].upper()
 
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_email', '_valid')
+    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_valid')
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email',)
+    list_filter = ('conference',)
     form = CouponAdminForm
+
+    def queryset(self, request):
+        qs = super(CouponAdmin, self).queryset(request)
+        qs = qs.select_related('user__user')
+        return qs
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.GET.has_key('conference__code__exact'):
+            q = request.GET.copy()
+            q['conference__code__exact'] = dsettings.CONFERENCE_CONFERENCE
+            request.GET = q
+            request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(CouponAdmin,self).changelist_view(request, extra_context=extra_context)
 
     def _user(self, o):
         if not o.user:
             return ''
         url = urlresolvers.reverse('admin:assopy_user_change', args=(o.user.id,))
-        return '<a href="%s">%s</a>' % (url, o.user.name())
+        return '<a href="%s">%s</a> (<a href="mailto:%s">email</a>)' % (url, o.user.name(), o.user.user.email)
     _user.short_description = 'user'
     _user.allow_tags = True
-
-    def _email(self, o):
-        if not o.user:
-            return ''
-        return '<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email)
-    _email.short_description = 'email'
-    _email.allow_tags = True
 
     def _valid(self, o):
         return o.valid(o.user)
