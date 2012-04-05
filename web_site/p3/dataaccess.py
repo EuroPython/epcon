@@ -39,6 +39,15 @@ def profile_data(uid, preload=None):
             'spam_user_message': p3p.spam_user_message,
             'spam_sms': p3p.spam_sms,
         })
+    if profile['talks']:
+        try:
+            spk = models.SpeakerConference.objects.get(speaker=uid)
+        except models.SpeakerConference.DoesNotExist:
+            pass
+        else:
+            profile.update({
+                'first_time_speaker': spk.first_time,
+            })
     return profile
 
 def _i_profile_data(sender, **kw):
