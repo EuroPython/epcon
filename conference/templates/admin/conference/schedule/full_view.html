@@ -49,10 +49,10 @@
 }
 
 .event {
-     margin: 0; 
+     margin: 0;
      position:absolute;
      border: 0;
-     border-collapse: collapse; 
+     border-collapse: collapse;
      background-color: #FFF9AD;
      cursor:move;
      font-size: 80%;
@@ -61,12 +61,12 @@
 }
 
 
-.track { 
+.track {
     width: 120px;
     font-size: 60%;
-    background-color: #eee; 
-    border: 0; 
-    border-collapse: collapse; 
+    background-color: #eee;
+    border: 0;
+    border-collapse: collapse;
     margin: 0;
     float:left;
     margin:10px;
@@ -158,7 +158,6 @@
         {% endfor %}
     </div>
     {% endfor %}
-    
 </div>
 <script type="text/javascript">
 (function() {
@@ -169,7 +168,7 @@
     var ctrlPressed = false;
     // in teoria non ci dovrebbe essere bisogno di tenere in un globale l'elemento draggato,
     // ma chrome ha qualche bug nell'implmentazione dell'oggetto DataTranser e la funzione
-    // .getData funziona solo in alcuni eventi; 
+    // .getData funziona solo in alcuni eventi;
     var dragged_element = null;
 
     $(window).keydown(function(evt) {
@@ -203,17 +202,17 @@
         ]
         var slot_length_min = track.attr('data-slot-length');
         var slots = (dates[1] - dates[0]) / 1000 / 60 / slot_length_min;
-        
+
         this.eventSlots = function(event) {
             return event.attr('data-duration') / track.attr('data-slot-length');
         };
-        
+
         this.tMatrix = function() {
           var scale = track.css('scale');
           // scale può essere un valore o un array
           // dipende se le proporsioni sono uguali
           var translate = track.css('translate').split(',')
-          
+
           return {
                scale:{
                    x: ($.isArray(scale)) ? scale[0]:scale,
@@ -231,7 +230,7 @@
             while(p) {
                 y += p.offsetTop;
                 x += p.offsetLeft;
-                p = p.offsetParent; 
+                p = p.offsetParent;
             }
             return {
                 x: x,
@@ -250,12 +249,12 @@
          */
         this.pagePos2TrackPos = function(pos) {
             // le cordinate relative sono calcolate per la tarck
-            // riporto la cordinata y  all' envent list 
+            // riporto la cordinata y  all' envent list
             // sottraendo l'altezza del titolo
             var matrix = this.tMatrix();
             var dim = this.elementPagePosition(track.get(0));
             var title_height = $('.title',track).height()
-            
+
             var x= dim.width / 2 - (dim.center.x - pos.x) / matrix.scale.x - matrix.translate.x;
             var y= dim.height / 2 - (dim.center.y - pos.y) / matrix.scale.y - matrix.translate.y - title_height;
             if (x<0 || y<0 || x>dim.width || y>(dim.height - title_height)){
@@ -295,23 +294,23 @@
                 left:0
             });
             var time = this.slot2Datetime(slot);
-            // setto il tempo e visto che ci sono metto anche 
+            // setto il tempo e visto che ci sono metto anche
             // la data in un attributo data del elemento
             // tornera utile in futuro
             $('em.time',element)
                 .data('start-time', time)
                 .text(time.getHours()+':'+ (time.getMinutes() == 0 ? '00' : time.getMinutes()))
         }
-        
+
         this.slot2Datetime = function(slot){
             var d = new Date(dates[0]);
             d.setMinutes(d.getMinutes() + (slot * slot_length_min));
             return d;
         };
-        
+
         this.configureEvent = function(event) {
             var slotsFromStart = (new Date(event.attr('data-start-time')) - dates[0]) / 1000 / 60  / slot_length_min;
-            this.configureElement(event, slotsFromStart, this.eventSlots(event)); 
+            this.configureElement(event, slotsFromStart, this.eventSlots(event));
         };
         this.configure = function() {
             var scope = this;
@@ -321,7 +320,7 @@
                 .each(function(){ scope.configureEvent($(this)); });
         };
     };
-   
+
 
     function reload(track) {
         if(track.hasClass('track')) {
@@ -355,17 +354,17 @@
                     // appena sotto la scritta del ora
                     // TODO:
                     // andrebbe trovato l'offset del drag sul elemento nel evento
-                    // dragstart 
+                    // dragstart
                     var pos = {
                         'x': ev.originalEvent.pageX,
-                        'y': ev.originalEvent.pageY -40 
+                        'y': ev.originalEvent.pageY -40
                     };
-                    
+
                     pos = ruler.pagePos2TrackPos(pos);
                     var slots = ruler.pos2slots(pos, duration);
-                    
+
                     if (pos && slots){
-                        
+
                         var time = ruler.slot2Datetime(pos);
                         ruler.configureElement($('.drop-zone', track_drop), slots, duration);
                     } else {
@@ -391,9 +390,9 @@
                     var slots = ruler.pos2slots(pos,duration);
                     var time = ruler.slot2Datetime(slots);
                     if (pos && slots && (track_drop[0] != track_surce[0] || time != element.data('start-time'))){
-                        /* 
-                         *  Verifico se è cambiato la track 
-                         *   o l'orario prima di salvare se 
+                        /*
+                         *  Verifico se è cambiato la track
+                         *   o l'orario prima di salvare se
                          *   no annullo il drag
                          */
                         // post
@@ -413,8 +412,8 @@
                 })
                 .bind('dragleave',function(ev){
                     /*
-                     *  'dragleave' viene triggerato anche quando passa 
-                     *   sopra un altro evento dello stesso tack, per capire 
+                     *  'dragleave' viene triggerato anche quando passa
+                     *   sopra un altro evento dello stesso tack, per capire
                      *   se il drag e ancora nel track corrente controllo la posizione
                      *   del mause dalle cordinate del evento
                      */
@@ -453,14 +452,14 @@
                 .children('.event.custom')
                     .click(function(ev){
                         /*
-                         *  prima bozza della maschera 
+                         *  prima bozza della maschera
                          *  per eventi custom
                          */
                         // $(this).attr('id') ecc
                          $('body').one('click', function(){
                              $('#tooltip').hide();
                          })
-                        
+
                          $('#tooltip')
                             .show()
                             //.html('<i>Loading<i/>')
@@ -470,7 +469,7 @@
                             })
                          return false;
                     })
-                    
+
             $('.track')
                 .not('.expose')
                 .css({ opacity: .5});
@@ -511,7 +510,7 @@
             var sp = dw - ((0.5 * tracks.length - 0.5) * 2 * tw) - (tracks.length * 10)
             tracks.each(function(){
                 var track = $(this);
-                track.transition({ x: (sp - track.offset().left - tw )/2}); 
+                track.transition({ x: (sp - track.offset().left - tw )/2});
                 sp += tw * 2 + 10;
             })
         } else {
@@ -519,7 +518,7 @@
         }
     }
 
-     
+
     $(tracks).each(function(ix, row) {
         var track = $(this);
         reload(track)
