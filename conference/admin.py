@@ -15,6 +15,7 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
+from conference import views
 
 import csv
 import logging
@@ -424,10 +425,20 @@ class ScheduleAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(ScheduleAdmin, self).get_urls()
+        v = self.admin_site.admin_view
         my_urls = patterns('',
-            url(r'^full_view/$', self.admin_site.admin_view(self.full_view), name='conference-schedule-full_view'),
-            url(r'^full_view/(?P<sid>\d+)/(?P<tid>\d+)/$', self.admin_site.admin_view(self.full_view_track), name='conference-schedule-full_view-track'),
-            url(r'^stats/$', self.admin_site.admin_view(self.expected_attendance), name='conference-schedule-expected_attendance'),
+            url(r'^full_view/$',
+                v(self.full_view),
+                name='conference-schedule-full_view'),
+            url(r'^full_view/(?P<sid>\d+)/(?P<tid>\d+)/$',
+                v(self.full_view_track),
+                name='conference-schedule-full_view-track'),
+            url(r'^stats/$',
+                v(self.expected_attendance),
+                name='conference-schedule-expected_attendance'),
+            url(r'^(?P<sid>\d+)/events/$',
+                v(self.events),
+                name='conference-schedule-events'),
         )
         return my_urls + urls
 
@@ -446,10 +457,12 @@ class ScheduleAdmin(admin.ModelAdmin):
         for sch in schedules:
             tracks.append([ sch['id'], [ t for t in sch['tracks'] ] ])
 
+        from conference.forms import EventForm
         ctx = {
             'conference': conf,
             'tracks': tracks,
             'talks': talks,
+            'form': EventForm(),
         }
         return render_to_response('admin/conference/schedule/full_view.html', ctx, context_instance=template.RequestContext(request))
 
@@ -466,6 +479,27 @@ class ScheduleAdmin(admin.ModelAdmin):
             'timetable': tt,
         }
         return render_to_response('admin/conference/schedule/full_view_schedule.html', ctx, context_instance=template.RequestContext(request))
+
+    @views.json
+    @transaction.commit_on_success
+    def events(self, request, sid):
+        if request.method != 'POST':
+            return http.HttpResponseNotAllowed(('POST',))
+        from conference.forms import EventForm
+        data = request.POST.copy()
+        data['schedule'] = sid
+        tracks = models.Track.objects\
+            .filter(schedule=sid, id__in=map(int, data.getlist('tracks')))
+        form = EventForm(data=data)
+        output = {}
+        if form.is_valid() and tracks:
+            event = form.save()
+            for t in tracks:
+                models.EventTrack(event=event, track=t).save()
+            output = {
+                'event': event.id,
+            }
+        return output
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
