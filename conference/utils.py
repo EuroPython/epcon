@@ -151,6 +151,110 @@ def latest_tweets(screen_name, count):
     return data
 
 from datetime import datetime, date, timedelta, time
+from conference.models import Event, Track
+
+class TimeTable2(object):
+    def __init__(self, sid, events):
+        """
+        events -> dict(track -> list(events))
+        """
+        self.sid = sid
+        self.events = events
+        # elenco track nell'ordine giusto
+        self._tracks = list(Track.objects\
+            .filter(schedule=sid)\
+            .order_by('order')\
+            .values_list('track', flat=True))
+
+    @classmethod
+    def fromEvents(cls, sid, eids):
+        from conference import dataaccess
+        qs = Event.objects\
+            .filter(schedule=sid, id__in=eids)\
+            .values_list('id', flat=True)
+        events = map(dataaccess.event_data, qs)
+        events.sort(key=lambda x: x['time'])
+        tracks = defaultdict(list)
+        for e in events:
+            for t in e['tracks']:
+                tracks[t].append(e)
+
+        return cls(sid, dict(tracks))
+
+    @classmethod
+    def fromTracks(cls, tids):
+        qs = EventTrack.objects\
+            .filter(track__in=tids)\
+            .values('event')\
+            .distinct()
+        sids = Track.objects\
+            .filter(id__in=tids)\
+            .values('schedule')\
+            .distinct()
+        assert len(sids) == 1
+        return cls.fromEvents(sids[0]['schedule'], qs)
+
+    @classmethod
+    def fromSchedule(cls, sid):
+        qs = EventTrack.objects\
+            .filter(event__schedule=sid)\
+            .values('event')\
+            .distinct()
+        return cls.fromEvents(sid, qs)
+
+    def iterOnTracks(self):
+        for t in self._tracks:
+            try:
+                yield t, self.events[t]
+            except KeyError:
+                continue
+
+    def iterOnTimes(self):
+        pass
+
+    def slice(self, start=None, end=None):
+        pass
+
+    def adjustTimes(self, start=None, end=None):
+        tpl = {
+            'id': None,
+            'name': '',
+            'custom': '',
+            'tracks': self.events.keys(),
+            'tags': set(),
+            'talk': None,
+            'time': None,
+            'duration': None,
+        }
+        if start is not None:
+            e0 = None
+            for e in self.events.values():
+                t = datetime.combine(e[0]['time'].date(), start)
+                if e0 is None or e[0]['time'] < t:
+                    e0 = e[0]['time']
+
+            if e0 and start < e0.time():
+                for track, events in self.events.items():
+                    e = dict(tpl)
+                    e['time'] = datetime.combine(events[0]['time'].date(), start)
+                    e['duration'] = (events[0]['time'] - e['time']).seconds / 60
+                    self.events[track].insert(0, e)
+
+        if end is not None:
+            e0 = None
+            for e in self.events.values():
+                t = datetime.combine(e[-1]['time'].date(), end)
+                if e0 is None or t > e0:
+                    e0 = e[-1]['time']
+
+            if e0 and end > e0.time():
+                for track, events in self.events.items():
+                    e = dict(tpl)
+                    e['time'] = datetime.combine(events[-1]['time'].date(), end)
+                    e['duration'] = (e['time'] - events[-1]['time']).seconds / 60
+                    self.events[track].append(e)
+
+        return self
 
 class TimeTable(object):
     class Event(object):

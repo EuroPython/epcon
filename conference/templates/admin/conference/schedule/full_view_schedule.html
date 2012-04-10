@@ -3,6 +3,7 @@
     <div class="drop-zone">
         <em class="time"></em>
     </div>
+{% for track, events in timetable.iterOnTracks %}
 {% for e in events %}
     <div id="e{{ e.id }}" class="event" data-id="{{ e.id }}" data-start-time="{{ e.time|date:"Y/m/d H:i" }}" data-duration="{% if e.duration %}{{ e.duration }}{% else %}{{ e.talk.duration }}{% endif %}">
         <div class="inner">
@@ -11,4 +12,4 @@
         </div>
     </div>
 {% endfor %}
-
+{% endfor %}

@@ -439,6 +439,9 @@ class ScheduleAdmin(admin.ModelAdmin):
             url(r'^(?P<sid>\d+)/events/$',
                 v(self.events),
                 name='conference-schedule-events'),
+            url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
+                v(self.tracks),
+                name='conference-schedule-tracks'),
         )
         return my_urls + urls
 
@@ -462,42 +465,73 @@ class ScheduleAdmin(admin.ModelAdmin):
             'conference': conf,
             'tracks': tracks,
             'talks': talks,
-            'form': EventForm(),
+            'event_form': EventForm(),
         }
         return render_to_response('admin/conference/schedule/full_view.html', ctx, context_instance=template.RequestContext(request))
 
     def full_view_track(self, request, sid, tid):
-        track = get_object_or_404(models.Track, schedule=sid, id=tid)
-        eids = models.EventTrack.objects\
-            .filter(track=tid, track__schedule=sid)\
-            .values_list('event', flat=True)
+        get_object_or_404(models.Track, schedule=sid, id=tid)
         from datetime import time
-        ts = [time(8,00), time(18,30)]
-        tt = utils.TimeTable(ts, rows=[track])
+        tt = utils.TimeTable2\
+            .fromTracks([tid])\
+            .adjustTimes(time(8, 00), time(18, 30))
         ctx = {
-            'events': map(dataaccess.event_data, eids),
             'timetable': tt,
         }
-        return render_to_response('admin/conference/schedule/full_view_schedule.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response(
+            'admin/conference/schedule/full_view_schedule.html',
+            ctx,
+            context_instance=template.RequestContext(request))
 
     @views.json
     @transaction.commit_on_success
     def events(self, request, sid):
+        sch = get_object_or_404(models.Schedule, id=sid)
         if request.method != 'POST':
             return http.HttpResponseNotAllowed(('POST',))
         from conference.forms import EventForm
-        data = request.POST.copy()
-        data['schedule'] = sid
-        form = EventForm(data=data)
+        form = EventForm(data=request.POST)
         output = {}
         if form.is_valid():
-            event = form.save()
+            event = form.save(commit=False)
+            event.schedule = sch
+            event.save()
             for t in form.cleaned_data['event_tracks']:
                 models.EventTrack(event=event, track=t).save()
             output = {
                 'event': event.id,
             }
         return output
+
+    @transaction.commit_on_success
+    def tracks(self, request, sid, tid):
+        track = get_object_or_404(models.Track, schedule=sid, id=tid)
+        from conference.forms import TrackForm
+        from django.template import Template
+        if request.method == 'POST':
+            tracks = models.Track.objects\
+                .filter(schedule__conference=track.schedule.conference, track=track.track)
+            for t in tracks:
+                form = TrackForm(instance=t, data=request.POST)
+                form.save()
+            output = {
+                'tracks': [ t.id for t in tracks ],
+            }
+            return http.HttpResponse(content=views.json_dumps(output), content_type="text/javascript")
+        else:
+            form = TrackForm(instance=track)
+            tpl = Template('''
+            <form class="async" method="POST" action="{% url admin:conference-schedule-tracks sid tid %}">{% csrf_token %}
+                <table>{{ form }}</table>
+                <input type="submit" />
+            </form>
+            ''')
+            ctx = {
+                'form': form,
+                'sid': sid,
+                'tid': tid,
+            }
+            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
