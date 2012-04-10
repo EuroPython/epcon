@@ -366,7 +366,7 @@
             }
             $('[name=start_time]', form).val(data.start_time.getHours() + ':' + data.start_time.getMinutes() + ':00');
             $('[name=duration]', form).val(data.duration);
-            $('[name=tracks]', form).val(data.tracks);
+            $('[name=event_tracks]', form).val(data.tracks);
             var url = '/admin/conference/schedule/' + schedule + '/events/';
             form.ajaxSubmit({
                 url: url,

@@ -488,13 +488,11 @@ class ScheduleAdmin(admin.ModelAdmin):
         from conference.forms import EventForm
         data = request.POST.copy()
         data['schedule'] = sid
-        tracks = models.Track.objects\
-            .filter(schedule=sid, id__in=map(int, data.getlist('tracks')))
         form = EventForm(data=data)
         output = {}
-        if form.is_valid() and tracks:
+        if form.is_valid():
             event = form.save()
-            for t in tracks:
+            for t in form.cleaned_data['event_tracks']:
                 models.EventTrack(event=event, track=t).save()
             output = {
                 'event': event.id,

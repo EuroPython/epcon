@@ -318,6 +318,8 @@ from tagging.models import TaggedItem
 from tagging.utils import parse_tag_input
 
 class EventForm(forms.ModelForm):
+    event_tracks = forms.ModelMultipleChoiceField(queryset=models.Track.objects.all())
+
     class Meta:
         model = models.Event
         exclude = ('schedule', 'tracks')
@@ -327,6 +329,8 @@ class EventForm(forms.ModelForm):
         if self.instance.id:
             self.fields['talk'].queryset = models.Talk.objects\
                 .filter(conference=self.instance.schedule.conference)
+            self.fields['event_tracks'].queryset = models.Track.objects\
+                .filter(schedule__conference=self.instance.schedule.conference)
 
     def clean(self):
         data = super(EventForm, self).clean()
