@@ -964,9 +964,6 @@ class Track(models.Model):
 
     objects = TrackManager()
 
-    class Meta:
-        ordering = ['order']
-
     def __unicode__(self):
         return self.track
 
