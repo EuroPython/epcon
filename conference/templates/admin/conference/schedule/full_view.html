@@ -73,10 +73,20 @@
     z-index: 50;
 }
 
-.track h2 {
-     height: 30px;
+.track .header {
+    height: 30px;
     overflow: hidden;
     text-align: center;
+    background: url("/static/admin/img/admin/default-bg.gif") repeat-x scroll left top #7CA0C7;
+    color: white;
+}
+
+.track .header h2 {
+    margin: 0;
+}
+
+.dialog {
+    display: none;
 }
 
 .expose {
@@ -88,6 +98,9 @@
     overflow: visible;
 }
 
+.exposed {
+    display: none;
+}
 
 #tooltip {
     font-size:120%;
@@ -130,7 +143,7 @@
 {% block content %}
 <div>
     <form id="event-form" method="POST" action="">{% csrf_token %}
-        {{ form }}
+        {{ event_form }}
     </form>
 </div>
 <h1>{{ conference.name }}</h1>
@@ -151,16 +164,20 @@
         <input type="submit" name="_addanother" value="{% trans 'delete' %}">
     </div>
 </div>
+<div id="track-dialog" class="dialog">
+    <h2 class="title">Track detail</h2>
+    <div class="body"></div>
+</div>
 <div id="dashboard">
     {% for s, ts in tracks|slice:":1" %}
     <div id="schedule-{{ s }}" data-id="{{ s }}" class="schedule">
         {% for t in ts %}
-            <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" data-start-time="8:30" data-end-time="20:30" data-slot-length="15" class="track module">
-             <h2 class="title">{{t.title|safe}}</h2>
-                <div class="event-list">
-                loading...
-                </div>
+        <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" class="track">
+            <div class="header">
+                <h2><a href="#">{{t.title|safe}}</a></h2>
             </div>
+            <div class="event-list">loading...  </div>
+        </div>
         {% endfor %}
     </div>
     {% endfor %}
@@ -203,14 +220,14 @@
         if(!slot_length_px)
             slot_length_px = 5;
         var dates = [
-            new Date(track.attr('data-date') + ' ' +track.attr('data-start-time')),
-            new Date(track.attr('data-date') + ' ' +track.attr('data-end-time'))
+            new Date(track.attr('data-date') + ' ' + (track.attr('data-start-time') || '8:00')),
+            new Date(track.attr('data-date') + ' ' + (track.attr('data-end-time') || '21:00'))
         ]
-        var slot_length_min = track.attr('data-slot-length');
+        var slot_length_min = track.attr('data-slot-length') || 15;
         var slots = (dates[1] - dates[0]) / 1000 / 60 / slot_length_min;
 
         this.eventSlots = function(event) {
-            return event.attr('data-duration') / track.attr('data-slot-length');
+            return event.attr('data-duration') / slot_length_min;
         };
 
         this.tMatrix = function() {
@@ -377,6 +394,25 @@
         }
     }
 
+    function track_dialog(sid, tid) {
+        var dlg = $('#track-dialog');
+        dlg.dialog({
+            modal: true,
+            width: 550,
+            title: 'Track details'
+        });
+        var base = '/admin/conference/schedule/' + sid + '/tracks/' + tid;
+        $('.body', dlg).html('loading...').load(base);
+    }
+
+    $('.track .header a').live('click', function() {
+        var e = $(this);
+        var tid = e.parents('.track').attr('data-id');
+        var sid = e.parents('.schedule').attr('data-id');
+        track_dialog(sid, tid);
+        return false;
+    });
+
     function expose(track){
         if (!track.hasClass('expose')){
             track
@@ -522,9 +558,7 @@
                          return false;
                     })
 
-            $('.track')
-                .not('.expose')
-                .css({ opacity: .5});
+            syncUI();
             return false;
         }
     }
@@ -547,11 +581,30 @@
             .attr('draggable', false)
             .unbind('dragstart')
 
-        if (dashboard.find('.track.expose').length=0){
-            track.css({opacity: 1});
-        }
+        syncUI();
 
         distribuite();
+    }
+
+    function syncUI() {
+        var exposed = 0;
+        var tracks = $('.track');
+        tracks.each(function() {
+            var t = $(this);
+            if(t.hasClass('expose')) {
+                $('.exposed', t).show();
+                $('.minimized', t).hide();
+                exposed += 1;
+            }
+            else {
+                $('.exposed', t).hide();
+                $('.minimized', t).show();
+                t.css({opacity: .5});
+            }
+        });
+        if(!exposed) {
+            tracks.css({opacity: 1});
+        }
     }
 
     function distribuite(){
@@ -595,6 +648,16 @@
             dragged_element = this;
             dt.setData('text/plain', this.id);
         })
+
+    function setupAsyncForm() {
+        $('form.async').ajaxForm({
+            success: function(response, status, xhr, form) {
+                var dlg = form.parents('.dialog');
+                dlg.dialog('close');
+            }
+        })
+    }
+    setupAsyncForm();
 })();
 </script>
 {% endblock %}

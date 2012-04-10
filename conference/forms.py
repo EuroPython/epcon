@@ -317,6 +317,11 @@ class TalkForm(forms.Form):
 from tagging.models import TaggedItem
 from tagging.utils import parse_tag_input
 
+class TrackForm(forms.ModelForm):
+    class Meta:
+        model = models.Track
+        exclude = ('schedule', 'track',)
+
 class EventForm(forms.ModelForm):
     event_tracks = forms.ModelMultipleChoiceField(queryset=models.Track.objects.all())
 
