@@ -1,16 +1,33 @@
 {% extends "admin/base_site.html" %}
+{% load conference %}
 {% block extrahead %}
 {{ block.super }}
 {% load i18n %}
 <style type="text/css">
 #talks {
-    width: 160px;
-    float: left;
-}
-#dashboard {
-    margin-left: 160px;
+    width: 220px;
+    position: fixed;
+    height: 800px;
+    overflow: auto;
 }
 
+#dashboard {
+    margin-left: 220px;
+}
+
+#track-filter label {
+    float: left;
+    margin-right: 10px;
+}
+
+#track-filter {
+    padding: 5px;
+}
+#track-filter:after {
+    content: '';
+    clear: both;
+    display: block;
+}
 
 .schedule {
     margin-bottom: 20px;
@@ -83,10 +100,13 @@
 
 .track .header h2 {
     margin: 0;
+    font-size: 12px;
+    color: white;
 }
 
 .dialog {
     display: none;
+    border: 1px solid #417690;
 }
 
 .expose {
@@ -101,35 +121,10 @@
 .exposed {
     display: none;
 }
-
-#tooltip {
-    font-size:120%;
-    position: absolute;
-    display: None;
-    background-color: #fff;
-    border: 1px solid #417690;
-    padding: 0px;
-    z-index:300;
-}
-
-#tooltip h2 {
-    padding: 5px;
-}
-
-#tooltip .dettagli {
-    padding: 5px;
-}
-
-
-
-#tooltip .submit-row{
-    margin-bottom: 0px;
-}
-
-
 </style>
 <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-transit/jquery-transit-0.1.3.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery.form.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}conference/init.js"></script>
 <link href="/static/admin/css/forms.css" type="text/css" rel="stylesheet">
 {% endblock %}
 {% block breadcrumbs %}
@@ -141,40 +136,61 @@
 </div>
 {% endblock %}
 {% block content %}
-<div>
-    <form id="event-form" method="POST" action="">{% csrf_token %}
-        {{ event_form }}
-    </form>
+<div id="custom-event-dialog" class="dialog">
+    <div class="body">
+        <form method="POST" action="">{% csrf_token %}
+            <table>
+                <tr>
+                    <th><label>Time:</label></th>
+                    <td><input type="text" name="start_time" value="" /></td>
+                </tr>
+                <tr>
+                    <th><label>Duration:</label></th>
+                    <td><input type="text" name="duration" value="60" /></td>
+                </tr>
+                <tr>
+                    <th><label>Text:</label></th>
+                    <td><textarea name="custom"></textarea></td>
+                </tr>
+            </table>
+            <div class="submit-row">
+                <input type="submit" name="submit" value="save" />
+            </div>
+        </form>
+    </div>
+</div>
+<div id="event-dialog" class="dialog">
+    <div class="body">
+        <form method="POST" action="">{% csrf_token %}
+            <table>
+            {{ event_form }}
+            </table>
+        </form>
+    </div>
+</div>
+<div id="track-dialog" class="dialog">
+    <h2 class="title">Track details</h2>
+    <div class="body"></div>
+</div>
+<div id="event-details-dialog" class="dialog">
+    <h2 class="title">Event details</h2>
+    <div class="body"></div>
 </div>
 <h1>{{ conference.name }}</h1>
 <div id="talks">
     <ol>
-        <li class="talk" draggable="true" data-id="437" data-duration="60">talk 1</li>
-        <li class="talk" draggable="true" data-id="495" data-duration="60">talk 2</li>
-        <li class="talk" draggable="true" data-id="211" data-duration="90">talk 3</li>
+        {% for t in talks %}
+        <li class="talk" draggable="true" data-id="{{ t.id }}" data-duration="{{ t.duration }}" data-type="{{ t.type|field_label:"Talk.type" }}">{{ t.title }}</li>
+        {% endfor %}
     </ol>
-</div>
-<div id="tooltip" class="module">
-    <h2 class="title">test</h2>
-    <div class="dettagli">
-        test
-    </div>
-    <div class="submit-row">
-        <input class="default" type="submit" name="_save" value="{% trans 'save' %}">
-        <input type="submit" name="_addanother" value="{% trans 'delete' %}">
-    </div>
-</div>
-<div id="track-dialog" class="dialog">
-    <h2 class="title">Track detail</h2>
-    <div class="body"></div>
 </div>
 <div id="dashboard">
     {% for s, ts in tracks|slice:":1" %}
     <div id="schedule-{{ s }}" data-id="{{ s }}" class="schedule">
         {% for t in ts %}
-        <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" class="track">
+        <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-track="{{ t.track }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" class="track">
             <div class="header">
-                <h2><a href="#">{{t.title|safe}}</a></h2>
+                <h2><a href="#">{{t.title|safe}}</a> <a href="#" class="new-event exposed">(+)</a></h2>
             </div>
             <div class="event-list">loading...  </div>
         </div>
@@ -361,16 +377,19 @@
     }
 
     function event_form(eid, data) {
-        var form = $('#event-form');
-        if(typeof(data.tracks)=="string" || typeof(data.tracks)=="number") {
-            var tid = data.tracks;
-        }
-        else {
-            var tid = data.tracks[0];
-        }
-        var schedule = $('#track-' + tid)
-            .parent().attr('data-id');
         if(eid==0) {
+            var form = $('#event-dialog form');
+            if(typeof(data.tracks)=="string" || typeof(data.tracks)=="number") {
+                var tid = data.tracks;
+                var tids = [data.tracks];
+            }
+            else {
+                var tid = data.tracks[0];
+                var tids = data.tracks;
+            }
+            var schedule = $('#track-' + tid)
+                .parent().attr('data-id');
+
             if(data.talk) {
                 $('[name=talk]', form).val(data.talk);
                 $('[name=custom]', form).val('');
@@ -382,13 +401,39 @@
                 $('[name=custom]', form).val(data.custom);
             }
             $('[name=start_time]', form).val(data.start_time.getHours() + ':' + data.start_time.getMinutes() + ':00');
-            $('[name=duration]', form).val(data.duration);
             $('[name=event_tracks]', form).val(data.tracks);
+            $('[name=duration]', form).val(data.duration);
             var url = '/admin/conference/schedule/' + schedule + '/events/';
             form.ajaxSubmit({
                 url: url,
                 success: function() {
-                    console.log('eureka', arguments);
+                    for(var ix=0; ix<tids.length; ix++) {
+                        reload($('#track-' + tids[ix]));
+                    }
+                }
+            });
+        }
+        else {
+            var evt = $('#e' + eid);
+            var schedule = evt.parents('.schedule').attr('data-id');
+            var url = '/admin/conference/schedule/' + schedule + '/events/' + eid;
+            var posted = {
+                'start_time': data.start_time.getHours() + ':' + data.start_time.getMinutes() + ':00',
+                'move': 1
+            }
+            if(data.track)
+                posted['track'] = data.track;
+            $.ajax({
+                url: url,
+                data: posted,
+                type: 'POST',
+                success: function() {
+                    var tracks = evt.attr('data-tracks').split(',');
+                    $(tracks).each(function() {
+                        reload($('.track[data-track=' + this + ']'));
+                    });
+                    if(data.track)
+                        reload($('#track-' + data.track));
                 }
             });
         }
@@ -402,14 +447,89 @@
             title: 'Track details'
         });
         var base = '/admin/conference/schedule/' + sid + '/tracks/' + tid;
-        $('.body', dlg).html('loading...').load(base);
+        $('.body', dlg)
+            .html('loading...')
+            .load(base, function() {
+                $('.body form', dlg).ajaxForm({
+                    dataType: 'json',
+                    success: document.location.reload
+                });
+            });
+    }
+
+    function event_details_dialog(sid, eid) {
+        var dlg = $('#event-details-dialog');
+        dlg.dialog({
+            modal: true,
+            width: 550,
+            title: 'Event details'
+        });
+        var base = '/admin/conference/schedule/' + sid + '/events/' + eid;
+        var all_tracks = false;
+        $('.body', dlg)
+            .html('loading...')
+            .load(base, function() {
+                $('.body form', dlg).ajaxForm({
+                    dataType: 'json',
+                    beforeSubmit: function(arr, form, options) {
+                        for(var ix=0; ix<arr.length; ix++) {
+                            if(arr[ix].name == 'copy')
+                                all_tracks = true;
+                        }
+                        return true;
+                    },
+                    success: function() {
+                        var evt = $('#e' + eid);
+                        if(all_tracks) {
+                            evt
+                                .parents('.schedule')
+                                .children('.track')
+                                .each(function() {
+                                    reload($(this));
+                                })
+                        }
+                        else {
+                            $(evt.attr('data-tracks').split(',')).each(function(ix, val) {
+                                reload($('.track[data-track=' + val + ']'));
+                            });
+                        }
+                        dlg.dialog('close');
+                    }
+                });
+            });
     }
 
     $('.track .header a').live('click', function() {
         var e = $(this);
-        var tid = e.parents('.track').attr('data-id');
-        var sid = e.parents('.schedule').attr('data-id');
-        track_dialog(sid, tid);
+        var track = e.parents('.track');
+        var tid = track.attr('data-id');
+        var sid = track.parents('.schedule').attr('data-id');
+        if(e.hasClass('new-event')) {
+            var dlg = $('#custom-event-dialog').dialog({
+                modal: true,
+                width: 550,
+                title: 'Custom events'
+            });
+            $('input[type=submit]', dlg).one('click', function() {
+                var time = $('[name=start_time]', dlg).val().split(':');
+                var t = new Date();
+                t.setHours(time[0]);
+                t.setMinutes(time[1] || 0);
+                t.setSeconds(time[2] || 0);
+                var data = {
+                    'custom': $('[name=custom]', dlg).val(),
+                    'start_time': t,
+                    'duration': $('[name=duration]', dlg).val(),
+                    'tracks': track.attr('data-id')
+                }
+                dlg.dialog('close');
+                event_form(0, data);
+                return false;
+            });
+        }
+        else {
+            track_dialog(sid, tid);
+        }
         return false;
     });
 
@@ -465,7 +585,6 @@
                         if(slots) {
                             var time = ruler.slot2Datetime(slots);
                             if(element.hasClass('talk')) {
-                                console.log('talk!', track_drop, time);
                                 event_form(0, {
                                     talk: element.attr('data-id'),
                                     start_time: time,
@@ -474,17 +593,20 @@
                             }
                             else {
                                 var track_source = element.parents('.track');
+                                /*
+                                 * Verifico se è cambiato la track o l'orario
+                                 * prima di salvare
+                                 */
                                 if((track_drop[0] != track_source[0] || time != element.data('start-time'))){
+                                    event_form(element.attr('data-id'), {
+                                        start_time: time,
+                                        track: track_drop[0] != track_source[0] ? track_drop.attr('data-id') : null
+                                    });
                                     /*
-                                    *  Verifico se è cambiato la track
-                                    *   o l'orario prima di salvare se
-                                    *   no annullo il drag
-                                    */
-                                    // post
-                                    console.log('track', track_drop, track_source,time); // voglio sapere track, time e id eveneto
-                                    // post sucess
-                                    if (track_drop[0] != track_source[0]){
-                                        $('.event-list',track_drop).append(element.detach());
+                                     * la track_drop è in reload, questo codice serve solo a non mostrare il lag
+                                     */
+                                    if(track_drop[0] != track_source[0]){
+                                        $('.event-list', track_drop).append(element.detach());
                                     }
                                     ruler.configureElement(element,slots,ruler.eventSlots(element));
                                 }
@@ -536,26 +658,11 @@
                         }
                         $(ev.target).parents('.track').find('.drop-zone').hide();
                     })
-                .parents('.event-list')
-                .children('.event.custom')
-                    .click(function(ev){
-                        /*
-                         *  prima bozza della maschera
-                         *  per eventi custom
-                         */
-                        // $(this).attr('id') ecc
-                         $('body').one('click', function(){
-                             $('#tooltip').hide();
-                         })
-
-                         $('#tooltip')
-                            .show()
-                            //.html('<i>Loading<i/>')
-                            .css({
-                                top:ev.originalEvent.pageY,
-                                left:ev.originalEvent.pageX
-                            })
-                         return false;
+                    .bind('click', function(ev) {
+                        var eid = $(this).attr('data-id');
+                        var sid = $(this).parents('.schedule').attr('data-id');
+                        event_details_dialog(sid, eid);
+                        return false;
                     })
 
             syncUI();
@@ -642,15 +749,92 @@
                 }
             });
     });
+
+    var ttypes = ['All'];
+
     $('#talks li')
         .bind('dragstart', function(ev) {
             var dt = ev.originalEvent.dataTransfer;
             dragged_element = this;
             dt.setData('text/plain', this.id);
         })
+        .each(function() {
+            var t = $(this).attr('data-type');
+            if(ttypes.indexOf(t) == -1)
+                ttypes.push(t);
+        });
 
-    function setupAsyncForm() {
-        $('form.async').ajaxForm({
+    var tfilter = $('<div><select></select></div>');
+    var tselect = $('select', tfilter)
+        .change(function(ev) {
+            var t = tselect.val();
+            $('#talks li')
+                .each(function() {
+                    var e = $(this);
+                    if(t == 'All' || e.attr('data-type') == t)
+                        e.show();
+                    else
+                        e.hide();
+                });
+        });
+    $.each(ttypes, function(ix, val) {
+        tselect.append(
+            $('<option></option>')
+                .attr('value', val)
+                .text(val)
+        );
+    });
+    $('#talks ol')
+        .before(tfilter);
+
+    var ttypes = [];
+    $('.track .header h2  a:first-child').each(function() {
+        var t = $(this).text();
+        if(ttypes.indexOf(t) == -1)
+            ttypes.push(t);
+    });
+    var tfilter = $('<div id="track-filter"></div>');
+    $.each(ttypes, function(ix, val) {
+        tfilter.append(
+            $('<label><input type="checkbox" value="' + val + '"/>' + val + '</label>')
+        );
+    });
+
+    var initSt = JSON.parse(localStorage.getItem('admin:full_view:track_filter') || '{}');
+    $('input', tfilter)
+        .change(function(ev) {
+            var check = $(this);
+            var label = check.val();
+            var visible = check.is(':checked');
+
+            var st = JSON.parse(localStorage.getItem('admin:full_view:track_filter') || '{}');
+            st[label] = visible;
+            localStorage.setItem('admin:full_view:track_filter', JSON.stringify(st));
+
+            $('.track .header h2 a:first-child').each(function() {
+                var t = $(this);
+                if(t.text() == label) {
+                    var track = t.parents('.track');
+                    if(visible)
+                        track.show();
+                    else
+                        track.hide();
+                }
+            });
+        })
+        .each(function() {
+            var check = $(this);
+            var label = check.val();
+            if(JSON.stringify(initSt) == '{}')
+                check.attr('checked', true);
+            else
+                check.attr('checked', initSt[label] ? true : false);
+            check.change();
+        });
+    $('#dashboard').prepend(tfilter);
+
+    function setupAsyncForm(ctx) {
+        $('form.async', ctx || document).ajaxForm({
             success: function(response, status, xhr, form) {
                 var dlg = form.parents('.dialog');
                 dlg.dialog('close');
@@ -658,6 +842,7 @@
         })
     }
     setupAsyncForm();
+
 })();
 </script>
 {% endblock %}

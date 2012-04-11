@@ -416,6 +416,8 @@ class EventInlineAdmin(admin.TabularInline):
     model = models.Event
     extra = 3
 
+from django.template import Template
+
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('conference', 'slug', 'date')
     inlines = [
@@ -439,21 +441,26 @@ class ScheduleAdmin(admin.ModelAdmin):
             url(r'^(?P<sid>\d+)/events/$',
                 v(self.events),
                 name='conference-schedule-events'),
+            url(r'^(?P<sid>\d+)/events/(?P<eid>\d+)$',
+                v(self.event),
+                name='conference-schedule-event'),
             url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
                 v(self.tracks),
                 name='conference-schedule-tracks'),
         )
         return my_urls + urls
 
+    def full_view_talks(self, conf):
+        return dataaccess.talks_data(models.Talk.objects\
+            .filter(conference=conf.code)\
+            .order_by('title')\
+            .values_list('id', flat=True)
+        )
+
     def full_view(self, request):
         conf = models.Conference.objects.current()
         schedules = dataaccess.schedules_data(models.Schedule.objects\
             .filter(conference=conf)\
-            .values_list('id', flat=True)
-        )
-        talks = dataaccess.talks_data(models.Talk.objects\
-            .filter(conference=conf.code)\
-            .order_by('title')\
             .values_list('id', flat=True)
         )
         tracks = []
@@ -464,7 +471,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         ctx = {
             'conference': conf,
             'tracks': tracks,
-            'talks': talks,
+            'talks': self.full_view_talks(conf),
             'event_form': EventForm(),
         }
         return render_to_response('admin/conference/schedule/full_view.html', ctx, context_instance=template.RequestContext(request))
@@ -504,10 +511,91 @@ class ScheduleAdmin(admin.ModelAdmin):
         return output
 
     @transaction.commit_on_success
+    def event(self, request, sid, eid):
+        ev = get_object_or_404(models.Event, schedule=sid, id=eid)
+
+        class SimplifiedTalkForm(forms.Form):
+            sponsor = forms.ModelChoiceField(
+                queryset=models.Sponsor.objects\
+                    .filter(sponsorincome__conference=settings.CONFERENCE)\
+                    .order_by('sponsor'),
+                required=False
+            )
+
+        class SimplifiedCustomForm(forms.Form):
+            custom = forms.CharField(widget=forms.Textarea)
+            duration = forms.IntegerField(min_value=0)
+            sponsor = forms.ModelChoiceField(
+                queryset=models.Sponsor.objects\
+                    .filter(sponsorincome__conference=settings.CONFERENCE)\
+                    .order_by('sponsor'),
+                required=False
+            )
+
+        class MoveEventForm(forms.Form):
+            start_time = forms.TimeField()
+            track = forms.ModelChoiceField(queryset=models.Track.objects.all(), required=False)
+        if request.method == 'POST':
+            if 'delete' in request.POST:
+                ev.delete()
+            elif 'save' in request.POST or 'copy' in request.POST:
+                if ev.talk_id:
+                    form = SimplifiedTalkForm(data=request.POST)
+                else:
+                    form = SimplifiedCustomForm(data=request.POST)
+                if form.is_valid():
+                    data = form.cleaned_data
+                    if ev.talk_id:
+                        ev.sponsor = data['sponsor']
+                    else:
+                        ev.sponsor = data['sponsor']
+                        ev.custom = data['custom']
+                        ev.duration = data['duration']
+                    ev.save()
+                    if 'copy' in request.POST:
+                        models.EventTrack.objects.filter(event=ev).delete()
+                        for t in ev.schedule.track_set.filter(outdoor=False):
+                            models.EventTrack(event=ev, track=t).save()
+            elif 'move' in request.POST:
+                form = MoveEventForm(data=request.POST)
+                if form.is_valid():
+                    data = form.cleaned_data
+                    ev.start_time = data['start_time']
+                    ev.save()
+                    if data.get('track'):
+                        models.EventTrack.objects.filter(event=ev).delete()
+                        models.EventTrack(event=ev, track=data['track']).save()
+            return http.HttpResponse(content=views.json_dumps({}), content_type="text/javascript")
+        else:
+            if ev.talk_id != None:
+                form = SimplifiedTalkForm(data={'sponsor': ev.sponsor})
+            else:
+                form = SimplifiedCustomForm(data={
+                    'sponsor': ev.sponsor,
+                    'custom': ev.custom,
+                    'duration': ev.duration,
+                })
+            tpl = Template('''
+            <form class="async" method="POST" action="{% url admin:conference-schedule-event sid eid %}">{% csrf_token %}
+                <table>{{ form }}</table>
+                <div class="submit-row">
+                    <input type="submit" name="save" value="save"/>
+                    <input type="submit" name="delete" value="delete"/>
+                    <input type="submit" name="copy" value="copy in all tracks"/>
+                </div>
+            </form>
+            ''')
+            ctx = {
+                'form': form,
+                'sid': sid,
+                'eid': eid,
+            }
+            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
+
+    @transaction.commit_on_success
     def tracks(self, request, sid, tid):
         track = get_object_or_404(models.Track, schedule=sid, id=tid)
         from conference.forms import TrackForm
-        from django.template import Template
         if request.method == 'POST':
             tracks = models.Track.objects\
                 .filter(schedule__conference=track.schedule.conference, track=track.track)
@@ -523,7 +611,9 @@ class ScheduleAdmin(admin.ModelAdmin):
             tpl = Template('''
             <form class="async" method="POST" action="{% url admin:conference-schedule-tracks sid tid %}">{% csrf_token %}
                 <table>{{ form }}</table>
-                <input type="submit" />
+                <div class="submit-row">
+                    <input type="submit" />
+                </div>
             </form>
             ''')
             ctx = {

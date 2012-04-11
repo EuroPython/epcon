@@ -431,7 +431,7 @@ def event_data(eid, preload=None):
         'name': name,
         'time': datetime.combine(sch['date'], event.start_time),
         'custom': event.custom,
-        'duration': event.duration,
+        'duration': event.duration or talk['duration'],
         'sponsor': event.sponsor,
         'tracks': tracks,
         'tags': tags,
