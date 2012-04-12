@@ -85,7 +85,7 @@
                 {% for e in events %}
                     {% if e.schedule.conference == CONFERENCE %}
                     <section class="talk when">
-                        {% if e|event_has_track:"teaser" %}
+                        {% if "teaser" in e.tags %}
                         Teaser talk
                         {% endif %}
 
