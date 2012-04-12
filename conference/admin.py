@@ -585,13 +585,13 @@ class ScheduleAdmin(admin.ModelAdmin):
         else:
             if ev.talk_id != None:
                 form = SimplifiedTalkForm(data={
-                    'sponsor': ev.sponsor.id,
+                    'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
             else:
                 form = SimplifiedCustomForm(data={
-                    'sponsor': ev.sponsor.id,
+                    'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
                     'custom': ev.custom,
                     'duration': ev.duration,
