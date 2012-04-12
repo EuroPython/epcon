@@ -381,6 +381,14 @@
             return $('.event-list',track)
                 .load('/admin/conference/schedule/full_view/' + sid + '/' + tid + '/', function() {
                     ruler.configure();
+                    $('<a href="#">&#x1F511;</a>')
+                        .click(function() {
+                            var eid = $(this).parents('.event').attr('data-id');
+                            var sid = $(this).parents('.schedule').attr('data-id');
+                            event_details_dialog(sid, eid);
+                            return false;
+                        })
+                        .appendTo($('.event .title', track));
                 });
         }
         else {
@@ -648,13 +656,7 @@
                             $(this).show();
                         }
                         $(ev.target).parents('.track').find('.drop-zone').hide();
-                    })
-                    .bind('click', function(ev) {
-                        var eid = $(this).attr('data-id');
-                        var sid = $(this).parents('.schedule').attr('data-id');
-                        event_details_dialog(sid, eid);
-                        return false;
-                    })
+                    });
 
             syncUI();
             return false;

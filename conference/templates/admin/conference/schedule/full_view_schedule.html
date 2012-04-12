@@ -7,7 +7,9 @@
     <div id="e{{ e.id }}" class="event" data-id="{{ e.id }}" data-start-time="{{ e.time|date:"Y/m/d H:i" }}" data-duration="{{ e.duration }}" data-tracks="{{ e.tracks|join:"," }}">
         <div class="inner">
             <em class="time">{{ e.time|date:"H:i" }}</em>
-            <span>{{ e.name|safe }}</span>
+            {% if e.id %}
+            <span class="title">{{ e.name|safe }}</span>
+            {% endif %}
             {% if e.tracks|length > 1 %}
                 <div class="multi-track"></div>
             {% endif %}
