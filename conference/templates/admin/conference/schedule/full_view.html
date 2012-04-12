@@ -507,20 +507,37 @@ select[name=tracks] {
             title: 'Event details'
         });
         var base = '/admin/conference/schedule/' + sid + '/events/' + eid;
+        var all_tracks = false;
         $('.body', dlg)
             .html('loading...')
             .load(base, function() {
                 $('.body form', dlg).ajaxForm({
                     dataType: 'json',
-                    success: function(response, status, xhr, form) {
-                        var evt = $('#e' + eid);
-                        var tids = $('[name=tracks]', form).val();
-                        $(evt.attr('data-tracks').split(',')).each(function(ix, val) {
-                            var tid = $('.track[data-track=' + val + ']').attr('data-id');
-                            if(tids.indexOf(tid) == -1) {
-                                tids.push(tid);
+                    beforeSubmit: function(arr, form, options) { 
+                        all_tracks = false;
+                        for(var ix=0; ix<arr.length; ix++) {
+                            if(arr[ix].name == 'copy') {
+                                all_tracks = true;
                             }
-                        });
+                        }
+                        return true;
+                    },
+                    success: function(response, status, xhr, form) {
+                        if(all_tracks) {
+                            var tids = []
+                            $('.track').each(function() {
+                                tids.push($(this).attr('data-id'));
+                            });
+                        }
+                        else {
+                            var tids = $('[name=tracks]', form).val();
+                            $($('#e' + eid).attr('data-tracks').split(',')).each(function(ix, val) {
+                                var tid = $('.track[data-track=' + val + ']').attr('data-id');
+                                if(tids.indexOf(tid) == -1) {
+                                    tids.push(tid);
+                                }
+                            });
+                        }
                         $.each(tids, function(ix, val) {
                             reload($('#track-' + val));
                         });

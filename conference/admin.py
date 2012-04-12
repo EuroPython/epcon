@@ -555,7 +555,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             if 'delete' in request.POST:
                 ev.delete()
-            elif 'save' in request.POST:
+            elif 'save' in request.POST or 'copy' in request.POST:
                 if ev.talk_id:
                     form = SimplifiedTalkForm(data=request.POST)
                 else:
@@ -572,6 +572,28 @@ class ScheduleAdmin(admin.ModelAdmin):
                     models.EventTrack.objects.filter(event=ev).delete()
                     for t in data['tracks']:
                         models.EventTrack(event=ev, track=t).save()
+                    if 'copy' in request.POST:
+                        schedules = models.Schedule.objects\
+                            .filter(conference=ev.schedule.conference)\
+                            .exclude(id=ev.schedule_id)
+                        tracks = models.Track.objects\
+                            .filter(schedule__in=schedules)\
+                            .values('id', 'track', 'schedule')
+                        tmap = defaultdict(dict)
+                        for t in tracks:
+                            tmap[t['schedule']][t['track']] = t['id']
+                        etracks = set(models.EventTrack.objects\
+                            .filter(event=ev)\
+                            .values_list('track__track', flat=True))
+                        for sid, tracks in tmap.items():
+                            if models.Event.objects.filter(schedule=sid, start_time=ev.start_time).exists():
+                                continue
+                            ev.id = None
+                            ev.schedule_id = sid
+                            ev.save()
+                            for x in etracks:
+                                if x in tracks:
+                                    models.EventTrack(event=ev, track_id=tracks[x]).save()
             elif 'move' in request.POST:
                 form = MoveEventForm(data=request.POST)
                 if form.is_valid():
@@ -603,6 +625,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                 <div class="submit-row">
                     <input type="submit" name="save" value="save"/>
                     <input type="submit" name="delete" value="delete"/>
+                    <input type="submit" name="copy" value="save and copy in all schedules"/>
                 </div>
             </form>
             ''')
