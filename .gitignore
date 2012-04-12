@@ -3,4 +3,5 @@
 settings_locale.py
 Session.vim
 env/*
+pycon-env/*
 stuff/*
