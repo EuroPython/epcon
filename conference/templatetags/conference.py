@@ -1063,14 +1063,10 @@ def voting_data(conference):
     votes = qs.count()
     users = qs.distinct().count()
     groups = defaultdict(lambda: defaultdict(list))
-    if settings.TALKS_RANKING_FILE:
-        for line in file(settings.TALKS_RANKING_FILE):
-            pieces = line.split('-', 4)
-            if len(pieces) == 5:
-                type = pieces[2].strip()
-                language = pieces[3].strip()
-                tid = int(pieces[1].strip())
-                groups[type][language].append(tid)
+    results = utils.voting_results()
+    if results is not None:
+        for tid, type, language in results:
+            groups[type][language].append(tid)
 
     for k, v in groups.items():
         groups[k] = dict(v)

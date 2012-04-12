@@ -106,6 +106,31 @@ def ranking_of_talks(talks, missing_vote=5):
 
     return [ talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2]) ]
 
+def voting_results():
+    """
+    Restituisce i risultati della votazione memorizzati nel file
+    settings.TALKS_RANKING_FILE. La lista ritornata è un elenco di tuple
+    (talk__id, talk__type, talk__language). Se TALKS_RANKING_FILE non è settato
+    o non esiste il valore di ritorno è None.
+    """
+    if settings.TALKS_RANKING_FILE:
+        try:
+            f = file(settings.TALKS_RANKING_FILE)
+        except IOError:
+            pass
+        else:
+            results = []
+            for line in f:
+                pieces = line.split('-', 4)
+                if len(pieces) != 5:
+                    continue
+                type = pieces[2].strip()
+                language = pieces[3].strip()
+                tid = int(pieces[1].strip())
+                results.append((tid, type, language))
+            return results
+    return None
+
 def latest_tweets(screen_name, count):
     import twitter
     key = 'conf:latest:tweets:%s:%s' % (screen_name, count)

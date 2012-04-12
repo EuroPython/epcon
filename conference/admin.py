@@ -451,11 +451,22 @@ class ScheduleAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def full_view_talks(self, conf):
-        return dataaccess.talks_data(models.Talk.objects\
+        tids = []
+        if conf.code == settings.CONFERENCE:
+            results = utils.voting_results()
+            if results is not None:
+                tids = map(lambda x: x[0], results)
+        complete = models.Talk.objects\
             .filter(conference=conf.code)\
             .order_by('title')\
             .values_list('id', flat=True)
-        )
+
+        haystack = set(tids)
+        missing = []
+        for c in complete:
+            if c not in haystack:
+                missing.append(c)
+        return dataaccess.talks_data(missing + tids)
 
     def full_view(self, request):
         conf = models.Conference.objects.current()
