@@ -75,7 +75,8 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
         # tutti i talk non votati dall'utente ottengono il voto standard
         # `missing_vote`
         missing = tids - set(sum(votes.values(), []))
-        votes[missing_vote].extend(missing)
+        if missing:
+            votes[missing_vote].extend(missing)
 
         # per esprimere le preferenze nel formati di vengin:
         #   cand1=cand2 -> i due candidati hanno avuto la stessa preferenza
