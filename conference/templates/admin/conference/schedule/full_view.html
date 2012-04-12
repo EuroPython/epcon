@@ -139,6 +139,10 @@
 select[name=tracks] {
     height: 150px;
 }
+
+.talk.scheduled {
+    color: gray;
+}
 </style>
 <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-transit/jquery-transit-0.1.3.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery.form.js"></script>
@@ -198,7 +202,7 @@ select[name=tracks] {
 <div id="talks">
     <ol>
         {% for t in talks %}
-        <li class="talk" draggable="true" data-id="{{ t.id }}" data-duration="{{ t.duration }}" data-type="{{ t.type|field_label:"Talk.type" }}">{{ t.title }}</li>
+        <li id="talk-{{ t.id }}" class="talk" draggable="true" data-id="{{ t.id }}" data-duration="{{ t.duration }}" data-type="{{ t.type|field_label:"Talk.type" }}">{{ t.title }}</li>
         {% endfor %}
     </ol>
 </div>
@@ -416,6 +420,15 @@ select[name=tracks] {
                     if(track.hasClass('expose')) {
                         bindEventList(track);
                     }
+
+                    // brutto ma sufficientemente veloce, ca 30ms con lo schedule ep2011
+                    $('#talks .talk').removeClass('scheduled');
+                    $('.event').each(function() {
+                        var t = $(this).attr('data-talk-id');
+                        if(t) {
+                            $('#talk-' + t).addClass('scheduled');
+                        }
+                    });
                 });
         }
         else {

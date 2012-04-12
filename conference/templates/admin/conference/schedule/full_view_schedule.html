@@ -12,6 +12,9 @@
         {% else %}
         class="event fake"
         {% endif %}
+        {% if e.talk.id %}
+        data-talk-id="{{ e.talk.id }}"
+        {% endif %}
         data-start-time="{{ e.time|date:"Y/m/d H:i" }}"
         data-duration="{{ e.duration }}"
         >
