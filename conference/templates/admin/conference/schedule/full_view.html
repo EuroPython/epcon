@@ -13,6 +13,8 @@
 
 #dashboard {
     margin-left: 220px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
 }
 
 #track-filter label {
@@ -227,7 +229,7 @@
         localStorage.setItem(key, JSON.stringify(data));
     }
 
-    $(document).bind('click',function(){
+    $(document).bind('dblclick',function(){
         dashboard.find('.track').not('.expose').css({ opacity: 1});
         dashboard.find('.track.expose').each(function(){
              unexpose($(this));
