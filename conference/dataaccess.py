@@ -422,15 +422,17 @@ def event_data(eid, preload=None):
     if event.talk_id:
         talk = talk_data(event.talk_id)
         name = talk['title']
+        duration = talk['duration']
     else:
         talk = None
         name = event.custom
+        duration = event.duration
     return {
         'id': event.id,
         'name': name,
         'time': datetime.combine(sch['date'], event.start_time),
         'custom': event.custom,
-        'duration': event.duration or talk['duration'],
+        'duration': duration,
         'sponsor': event.sponsor,
         'tracks': tracks,
         'tags': tags,
