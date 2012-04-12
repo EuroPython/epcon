@@ -41,12 +41,6 @@
     visibility: hidden;
 }
 
-.track {
-    background: peachpuff;
-    margin-right: 20px;
-    display: inline-block;
-}
-
 .event-list {
     position: relative;
     overflow: hidden;
@@ -88,6 +82,8 @@
     float:left;
     margin:10px;
     z-index: 50;
+    /* relative, importante per il corretto calcolo della posizione del mouse */
+    position: relative;
 }
 
 .track .header {
@@ -258,77 +254,81 @@
         };
 
         this.tMatrix = function() {
-          var scale = track.css('scale');
-          // scale può essere un valore o un array
-          // dipende se le proporsioni sono uguali
-          var translate = track.css('translate').split(',')
+            // scale può essere un intero o un array
+            var scale = track.css('scale');
+            if(typeof(scale) == "number") {
+                scale = [ scale, scale ];
+            }
+            // translate invece può essere un intero o una stringa "0px,0px"
+            var translate = track.css('translate');
+            if(typeof(translate) == "number") {
+                translate = [ translate, translate ];
+            }
+            else {
+                translate = translate.split(',').map(parseFloat);
+            }
 
           return {
                scale:{
-                   x: ($.isArray(scale)) ? scale[0]:scale,
-                   y: ($.isArray(scale)) ? scale[1]:scale
+                   x: scale[0],
+                   y: scale[1]
                },
                translate:{
-                   x: parseFloat(translate[0]),
-                   y: parseFloat(translate[1])
+                   x: translate[0],
+                   y: translate[1],
                }
            }
-        };
-        this.elementPagePosition = function(e) {
-            var y = 0, x = 0;
-            var p = e;
-            while(p) {
-                y += p.offsetTop;
-                x += p.offsetLeft;
-                p = p.offsetParent;
-            }
-            return {
-                x: x,
-                y: y,
-                width: e.offsetWidth,
-                height: e.offsetHeight,
-                center: {
-                    x: x + e.offsetWidth / 2,
-                    y: y + e.offsetHeight / 2
-                }
-            }
         };
         /*
          * converte la posizione passata (x, y) da coordinate pagina a
          * coordinate relative alla event-list.
+         * Se normalize è true (default) le coordinate vengono normalizzate
+         rispettoa alla * trasformazione corrente
          */
-        this.pagePos2TrackPos = function(pos) {
-            // le cordinate relative sono calcolate per la tarck
-            // riporto la cordinata y  all' envent list
-            // sottraendo l'altezza del titolo
-            var matrix = this.tMatrix();
-            var dim = this.elementPagePosition(track.get(0));
-            var title_height = $('.title',track).height()
+        this.pagePos2TrackPos = function(pos, normalize) {
+            // tpos è relativa alla pagina come pos
+            var tpos = track.offset();
+            var x = pos.x - tpos.left;
+            var y = pos.y - tpos.top;
 
-            var x= dim.width / 2 - (dim.center.x - pos.x) / matrix.scale.x - matrix.translate.x;
-            var y= dim.height / 2 - (dim.center.y - pos.y) / matrix.scale.y - matrix.translate.y - title_height;
-            if (x<0 || y<0 || x>dim.width || y>(dim.height - title_height)){
-                return false;
-            } else {
-                return {
-                        x:x,
-                        y:y
-                    }
+            // epos è relativa alla track;
+            var epos = track.children('.event-list').position();
+            var output = {
+                x: (x - epos.left),
+                y: (y - epos.top)
+            };
+
+            if(typeof(normalize) == 'undefined' || normalize) {
+                var X = this.tMatrix();
+                output.x /= X.scale.x;
+                output.y /= X.scale.y;
             }
+            return output;
         };
         /*
-         * data una posizione (x, y) relativa alla track ritorna lo slot
-         * temporale corrispondente
+         * data una posizione (x, y) relativa alla event-list (normalizzata!) ritorna lo slot
+         * temporale corrispondente (-1 se la posizione è al di fuori della event-list).
+         *
+         * pos può essere un mouse event, nel qual caso viene utilizzata la pagePos2TrackPos
          */
-        this.pos2slots = function(pos, duration) {
-            // pos è relativo alla track;
-            // duration è in slot
-            if (!duration){
-                duration = 0;
+        this.pos2slots = function(pos) {
+            if('pageX' in pos && 'pageY' in pos) {
+                pos = this.pagePos2TrackPos({
+                    'x': pos.pageX,
+                    'y': pos.pageY
+                });
             }
-            var min_pos = $('.event-list',track).height() - duration * slot_length_px;
-            var pos_slots = Math.floor(Math.min(Math.max(0,pos.y),min_pos) / slot_length_px)
-            return (slots < (pos_slots + duration)) ? false : pos_slots;
+            else if('originalEvent' in pos) {
+                pos = this.pagePos2TrackPos({
+                    'x': pos.originalEvent.pageX,
+                    'y': pos.originalEvent.pageY
+                });
+            }
+            var events = $('.event-list', track);
+            if(pos.y < 0 || pos.x < 0 || pos.y > events.height() || pos.x > events.width()) {
+                return -1;
+            }
+            return Math.floor(pos.y / slot_length_px);
         };
         /*
          * posiziona un element sullo slot specificato per la durata (in slot)
@@ -370,7 +370,6 @@
                 .each(function(){ scope.configureEvent($(this)); });
         };
     };
-
 
     function reload(track) {
         if(track.hasClass('track')) {
@@ -553,25 +552,12 @@
             distribuite();
             $('.event-list', track)
                 .bind('dragover', function(ev) {
-                    ev.preventDefault()
-                    var dt = ev.originalEvent.dataTransfer;
                     var track_drop = $(ev.target).parents('.track');
                     var ruler = new Ruler(track_drop);
+                    var slots = ruler.pos2slots(ev);
                     var duration = ruler.eventSlots($(dragged_element));
-                    /*
-                     * ho sottratto 40 almeno il drag avviene all'interno dell'elemento
-                     * appena sotto la scritta dell'ora.
-                     * TODO:
-                     * andrebbe trovato l'offset del drag sull'elemento nell'evento
-                     * dragstart.
-                     */
-                    var pos = ruler.pagePos2TrackPos({
-                        'x': ev.originalEvent.pageX,
-                        'y': ev.originalEvent.pageY -40
-                    });
-                    var slots = pos ? ruler.pos2slots(pos, duration) : 0;
 
-                    if(pos && slots){
+                    if(slots != -1) {
                         ruler.configureElement($('.drop-zone', track_drop), slots, duration);
                     } else {
                         // sto ancora draggando all' interno della event-list ma le dimensioni dell'evento
@@ -581,65 +567,56 @@
                     return false;
                 })
                 .bind('drop', function(ev) {
-                    ev.stopPropagation();
                     var track_drop = $(ev.target).parents('.track');
                     var ruler = new Ruler(track_drop);
                     var element = $(dragged_element);
                     var duration = ruler.eventSlots(element);
 
                     $('.drop-zone',track_drop).hide();
-                    var pos = ruler.pagePos2TrackPos({
-                        'x': ev.originalEvent.pageX,
-                        'y': ev.originalEvent.pageY -40
-                    });
-                    if(pos) {
-                        var slots = ruler.pos2slots(pos, duration);
-                        if(slots) {
-                            var time = ruler.slot2Datetime(slots);
-                            if(element.hasClass('talk')) {
-                                event_form(0, {
-                                    talk: element.attr('data-id'),
+                    var slots = ruler.pos2slots(ev);
+                    if(slots != -1) {
+                        var time = ruler.slot2Datetime(slots);
+                        if(element.hasClass('talk')) {
+                            event_form(0, {
+                                talk: element.attr('data-id'),
+                                start_time: time,
+                                tracks: track_drop.attr('data-id')
+                            });
+                        }
+                        else {
+                            var track_source = element.parents('.track');
+                            /*
+                                * Verifico se è cambiato la track o l'orario
+                                * prima di salvare
+                                */
+                            if((track_drop[0] != track_source[0] || time != element.data('start-time'))){
+                                event_form(element.attr('data-id'), {
                                     start_time: time,
-                                    tracks: track_drop.attr('data-id')
+                                    track: track_drop[0] != track_source[0] ? track_drop.attr('data-id') : null
                                 });
-                            }
-                            else {
-                                var track_source = element.parents('.track');
                                 /*
-                                 * Verifico se è cambiato la track o l'orario
-                                 * prima di salvare
-                                 */
-                                if((track_drop[0] != track_source[0] || time != element.data('start-time'))){
-                                    event_form(element.attr('data-id'), {
-                                        start_time: time,
-                                        track: track_drop[0] != track_source[0] ? track_drop.attr('data-id') : null
-                                    });
-                                    /*
-                                     * la track_drop è in reload, questo codice serve solo a non mostrare il lag
-                                     */
-                                    if(track_drop[0] != track_source[0]){
-                                        $('.event-list', track_drop).append(element.detach());
-                                    }
-                                    ruler.configureElement(element,slots,ruler.eventSlots(element));
+                                    * la track_drop è in reload, questo codice serve solo a non mostrare il lag
+                                    */
+                                if(track_drop[0] != track_source[0]){
+                                    $('.event-list', track_drop).append(element.detach());
                                 }
+                                ruler.configureElement(element,slots,ruler.eventSlots(element));
                             }
                         }
                     }
                     return false;
                 })
                 .bind('dragenter',function(ev){
-                    ev.stopPropagation();
                     $('.drop-zone',this).show();
                     return false;
                 })
                 .bind('dragleave',function(ev){
                     /*
                      *  'dragleave' viene triggerato anche quando passa
-                     *   sopra un altro evento dello stesso tack, per capire
+                     *   sopra un altro evento dello stesso track, per capire
                      *   se il drag e ancora nel track corrente controllo la posizione
-                     *   del mause dalle cordinate del evento
+                     *   del mouse dalle cordinate dell'evento
                      */
-                    ev.stopPropagation();
                     var track_drop = $(ev.target).parents('.track');
                     var ruler = new Ruler(track_drop);
                     var pos = {
