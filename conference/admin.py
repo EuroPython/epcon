@@ -515,6 +515,10 @@ class ScheduleAdmin(admin.ModelAdmin):
         ev = get_object_or_404(models.Event, schedule=sid, id=eid)
 
         class SimplifiedTalkForm(forms.Form):
+            tags = forms.CharField(
+                max_length=200, required=False,
+                help_text='comma separated list of tags. Something like: special, break, keynote'
+            )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
                     .filter(sponsorincome__conference=settings.CONFERENCE)\
@@ -529,6 +533,10 @@ class ScheduleAdmin(admin.ModelAdmin):
         class SimplifiedCustomForm(forms.Form):
             custom = forms.CharField(widget=forms.Textarea)
             duration = forms.IntegerField(min_value=0)
+            tags = forms.CharField(
+                max_length=200, required=False,
+                help_text='comma separated list of tags. Something like: special, break, keynote'
+            )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
                     .filter(sponsorincome__conference=settings.CONFERENCE)\
@@ -554,9 +562,9 @@ class ScheduleAdmin(admin.ModelAdmin):
                     form = SimplifiedCustomForm(data=request.POST)
                 if form.is_valid():
                     data = form.cleaned_data
-                    if ev.talk_id:
-                        ev.sponsor = data['sponsor']
-                    else:
+                    ev.sponsor = data['sponsor']
+                    ev.tags = data['tags']
+                    if not ev.talk_id:
                         ev.sponsor = data['sponsor']
                         ev.custom = data['custom']
                         ev.duration = data['duration']
@@ -577,12 +585,14 @@ class ScheduleAdmin(admin.ModelAdmin):
         else:
             if ev.talk_id != None:
                 form = SimplifiedTalkForm(data={
-                    'sponsor': ev.sponsor,
+                    'sponsor': ev.sponsor.id,
+                    'tags': ev.tags,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
             else:
                 form = SimplifiedCustomForm(data={
-                    'sponsor': ev.sponsor,
+                    'sponsor': ev.sponsor.id,
+                    'tags': ev.tags,
                     'custom': ev.custom,
                     'duration': ev.duration,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
