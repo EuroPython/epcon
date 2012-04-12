@@ -400,6 +400,7 @@ select[name=tracks] {
             var sid = track.parent().attr('data-id');
             var tid = track.attr('data-id');
             var ruler = new Ruler(track);
+            unbindEventList(track);
             return $('.event-list',track)
                 .load('/admin/conference/schedule/full_view/' + sid + '/' + tid + '/', function() {
                     ruler.configure();
@@ -411,6 +412,10 @@ select[name=tracks] {
                             return false;
                         })
                         .appendTo($('.event .title', track));
+
+                    if(track.hasClass('expose')) {
+                        bindEventList(track);
+                    }
                 });
         }
         else {
@@ -581,6 +586,121 @@ select[name=tracks] {
         return false;
     });
 
+    function bindEventList(track) {
+        $('.event-list', track)
+            .bind('dragover', function(ev) {
+                ev.preventDefault();
+                var track_drop = $(ev.target).parents('.track');
+                var ruler = new Ruler(track_drop);
+                var slots = ruler.pos2slots(ev);
+                var duration = ruler.eventSlots($(dragged_element));
+
+                if(slots != -1) {
+                    ruler.configureElement($('.drop-zone', track_drop), slots, duration);
+                } else {
+                    // sto ancora draggando all' interno della event-list ma le dimensioni dell'evento
+                    // sono al difuori della event-list
+                    $('.drop-zone', track_drop).hide();
+                }
+                return false;
+            })
+            .bind('drop', function(ev) {
+                ev.preventDefault();
+
+                var track_drop = $(ev.target).parents('.track');
+                var ruler = new Ruler(track_drop);
+                var element = $(dragged_element);
+                var duration = ruler.eventSlots(element);
+
+                $('.drop-zone',track_drop).hide();
+                var slots = ruler.pos2slots(ev);
+                if(slots != -1) {
+                    var time = ruler.slot2Datetime(slots);
+                    if(element.hasClass('talk')) {
+                        event_form(0, {
+                            talk: element.attr('data-id'),
+                            start_time: time,
+                            tracks: track_drop.attr('data-id')
+                        });
+                    }
+                    else {
+                        var track_source = element.parents('.track');
+                        /*
+                            * Verifico se è cambiato la track o l'orario
+                            * prima di salvare
+                            */
+                        if((track_drop[0] != track_source[0] || time != element.data('start-time'))){
+                            event_form(element.attr('data-id'), {
+                                start_time: time,
+                                track: track_drop[0] != track_source[0] ? track_drop.attr('data-id') : null
+                            });
+                            /*
+                                * la track_drop è in reload, questo codice serve solo a non mostrare il lag
+                                */
+                            if(track_drop[0] != track_source[0]){
+                                $('.event-list', track_drop).append(element.detach());
+                            }
+                            ruler.configureElement(element,slots,ruler.eventSlots(element));
+                        }
+                    }
+                }
+                return false;
+            })
+            .bind('dragenter',function(ev){
+                ev.preventDefault();
+                $('.drop-zone',this).show();
+                return false;
+            })
+            .bind('dragleave',function(ev){
+                /*
+                    *  'dragleave' viene triggerato anche quando passa
+                    *   sopra un altro evento dello stesso track, per capire
+                    *   se il drag e ancora nel track corrente controllo la posizione
+                    *   del mouse dalle cordinate dell'evento
+                    */
+                var track_drop = $(ev.target).parents('.track');
+                var ruler = new Ruler(track_drop);
+                var slots = ruler.pos2slots(ev);
+                if(slots == -1) {
+                    $('.drop-zone',this).hide();
+                }
+                return false;
+                var pos = {
+                    'x': ev.originalEvent.pageX,
+                    'y': ev.originalEvent.pageY
+                };
+                if(!ruler.pagePos2TrackPos(pos)){
+                    // l'evento si e verificato al difuori del event-list
+                    $('.drop-zone',this).hide();
+                }
+                return false;
+            })
+            .children('.event')
+                .attr('draggable', true)
+                .bind('dragstart', function(ev) {
+                    var dt = ev.originalEvent.dataTransfer;
+                    dragged_element = this;
+                    if($.browser.mozilla){
+                        // nascondo l'oggetto durante il drag con mozilla
+                        // in crome va giusto
+                        $(this).hide();
+                    }
+                    dt.setData('text/plain',this.id);
+                })
+                .bind('dragend', function(ev){
+                    if($.browser.mozilla){
+                        $(this).show();
+                    }
+                    $(ev.target).parents('.track').find('.drop-zone').hide();
+                })
+    }
+    function unbindEventList(track) {
+        $('.event-list',track)
+            .unbind('drop dragenter dragover dragleave')
+            .children('.event')
+                .attr('draggable', false)
+                .unbind('dragstart')
+    }
     function expose(track){
         if (!track.hasClass('expose')){
             var store = loadLocalState();
@@ -588,104 +708,7 @@ select[name=tracks] {
                 .addClass('expose')
                 .transition({ scale: store.zoom[1], y: 60, x: 0, opacity: 1 });
             distribuite();
-            $('.event-list', track)
-                .bind('dragover', function(ev) {
-                    var track_drop = $(ev.target).parents('.track');
-                    var ruler = new Ruler(track_drop);
-                    var slots = ruler.pos2slots(ev);
-                    var duration = ruler.eventSlots($(dragged_element));
-
-                    if(slots != -1) {
-                        ruler.configureElement($('.drop-zone', track_drop), slots, duration);
-                    } else {
-                        // sto ancora draggando all' interno della event-list ma le dimensioni dell'evento
-                        // sono al difuori della event-list
-                        $('.drop-zone', track_drop).hide();
-                    }
-                    return false;
-                })
-                .bind('drop', function(ev) {
-                    var track_drop = $(ev.target).parents('.track');
-                    var ruler = new Ruler(track_drop);
-                    var element = $(dragged_element);
-                    var duration = ruler.eventSlots(element);
-
-                    $('.drop-zone',track_drop).hide();
-                    var slots = ruler.pos2slots(ev);
-                    if(slots != -1) {
-                        var time = ruler.slot2Datetime(slots);
-                        if(element.hasClass('talk')) {
-                            event_form(0, {
-                                talk: element.attr('data-id'),
-                                start_time: time,
-                                tracks: track_drop.attr('data-id')
-                            });
-                        }
-                        else {
-                            var track_source = element.parents('.track');
-                            /*
-                                * Verifico se è cambiato la track o l'orario
-                                * prima di salvare
-                                */
-                            if((track_drop[0] != track_source[0] || time != element.data('start-time'))){
-                                event_form(element.attr('data-id'), {
-                                    start_time: time,
-                                    track: track_drop[0] != track_source[0] ? track_drop.attr('data-id') : null
-                                });
-                                /*
-                                    * la track_drop è in reload, questo codice serve solo a non mostrare il lag
-                                    */
-                                if(track_drop[0] != track_source[0]){
-                                    $('.event-list', track_drop).append(element.detach());
-                                }
-                                ruler.configureElement(element,slots,ruler.eventSlots(element));
-                            }
-                        }
-                    }
-                    return false;
-                })
-                .bind('dragenter',function(ev){
-                    $('.drop-zone',this).show();
-                    return false;
-                })
-                .bind('dragleave',function(ev){
-                    /*
-                     *  'dragleave' viene triggerato anche quando passa
-                     *   sopra un altro evento dello stesso track, per capire
-                     *   se il drag e ancora nel track corrente controllo la posizione
-                     *   del mouse dalle cordinate dell'evento
-                     */
-                    var track_drop = $(ev.target).parents('.track');
-                    var ruler = new Ruler(track_drop);
-                    var pos = {
-                        'x': ev.originalEvent.pageX,
-                        'y': ev.originalEvent.pageY
-                    };
-                    if(!ruler.pagePos2TrackPos(pos)){
-                        // l'evento si e verificato al difuori del event-list
-                        $('.drop-zone',this).hide();
-                    }
-                    return false;
-                })
-                .children('.event')
-                    .attr('draggable', true)
-                    .bind('dragstart', function(ev) {
-                        var dt = ev.originalEvent.dataTransfer;
-                        dragged_element = this;
-                        if ($.browser.mozilla){
-                            // nascondo l'oggetto durante il drag con mozilla
-                            // in crome va giusto
-                            $(this).hide();
-                        }
-                        dt.setData('text/plain',this.id);
-                    })
-                    .bind('dragend', function(ev){
-                        if ($.browser.mozilla){
-                            $(this).show();
-                        }
-                        $(ev.target).parents('.track').find('.drop-zone').hide();
-                    });
-
+            bindEventList(track);
             syncUI();
             return false;
         }
@@ -701,14 +724,9 @@ select[name=tracks] {
             .removeClass('expose')
             .transition({ scale:store.zoom[0] , y:0, x : 0 })
             .css({opacity: 1})
-        $('.event-list',track)
-            .unbind('drop dragenter dragover dragleave')
-        $('.event',track)
-            .attr('draggable', false)
-            .unbind('dragstart')
 
+        unbindEventList(track);
         syncUI();
-
         distribuite();
     }
 
