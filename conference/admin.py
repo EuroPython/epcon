@@ -521,6 +521,10 @@ class ScheduleAdmin(admin.ModelAdmin):
                     .order_by('sponsor'),
                 required=False
             )
+            tracks = forms.ModelMultipleChoiceField(
+                queryset=models.Track.objects\
+                    .filter(schedule=ev.schedule)
+            )
 
         class SimplifiedCustomForm(forms.Form):
             custom = forms.CharField(widget=forms.Textarea)
@@ -531,14 +535,19 @@ class ScheduleAdmin(admin.ModelAdmin):
                     .order_by('sponsor'),
                 required=False
             )
+            tracks = forms.ModelMultipleChoiceField(
+                queryset=models.Track.objects\
+                    .filter(schedule=ev.schedule)
+            )
 
         class MoveEventForm(forms.Form):
             start_time = forms.TimeField()
             track = forms.ModelChoiceField(queryset=models.Track.objects.all(), required=False)
+
         if request.method == 'POST':
             if 'delete' in request.POST:
                 ev.delete()
-            elif 'save' in request.POST or 'copy' in request.POST:
+            elif 'save' in request.POST:
                 if ev.talk_id:
                     form = SimplifiedTalkForm(data=request.POST)
                 else:
@@ -552,10 +561,9 @@ class ScheduleAdmin(admin.ModelAdmin):
                         ev.custom = data['custom']
                         ev.duration = data['duration']
                     ev.save()
-                    if 'copy' in request.POST:
-                        models.EventTrack.objects.filter(event=ev).delete()
-                        for t in ev.schedule.track_set.filter(outdoor=False):
-                            models.EventTrack(event=ev, track=t).save()
+                    models.EventTrack.objects.filter(event=ev).delete()
+                    for t in data['tracks']:
+                        models.EventTrack(event=ev, track=t).save()
             elif 'move' in request.POST:
                 form = MoveEventForm(data=request.POST)
                 if form.is_valid():
@@ -568,12 +576,16 @@ class ScheduleAdmin(admin.ModelAdmin):
             return http.HttpResponse(content=views.json_dumps({}), content_type="text/javascript")
         else:
             if ev.talk_id != None:
-                form = SimplifiedTalkForm(data={'sponsor': ev.sponsor})
+                form = SimplifiedTalkForm(data={
+                    'sponsor': ev.sponsor,
+                    'tracks': list(ev.tracks.all().values_list('id', flat=True)),
+                })
             else:
                 form = SimplifiedCustomForm(data={
                     'sponsor': ev.sponsor,
                     'custom': ev.custom,
                     'duration': ev.duration,
+                    'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
             tpl = Template('''
             <form class="async" method="POST" action="{% url admin:conference-schedule-event sid eid %}">{% csrf_token %}
@@ -581,7 +593,6 @@ class ScheduleAdmin(admin.ModelAdmin):
                 <div class="submit-row">
                     <input type="submit" name="save" value="save"/>
                     <input type="submit" name="delete" value="delete"/>
-                    <input type="submit" name="copy" value="copy in all tracks"/>
                 </div>
             </form>
             ''')

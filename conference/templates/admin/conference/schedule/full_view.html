@@ -119,6 +119,11 @@
 .exposed {
     display: none;
 }
+
+/* multiple select */
+select[name=tracks] {
+    height: 150px;
+}
 </style>
 <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-transit/jquery-transit-0.1.3.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery.form.js"></script>
@@ -485,34 +490,23 @@
             title: 'Event details'
         });
         var base = '/admin/conference/schedule/' + sid + '/events/' + eid;
-        var all_tracks = false;
         $('.body', dlg)
             .html('loading...')
             .load(base, function() {
                 $('.body form', dlg).ajaxForm({
                     dataType: 'json',
-                    beforeSubmit: function(arr, form, options) {
-                        for(var ix=0; ix<arr.length; ix++) {
-                            if(arr[ix].name == 'copy')
-                                all_tracks = true;
-                        }
-                        return true;
-                    },
-                    success: function() {
+                    success: function(response, status, xhr, form) {
                         var evt = $('#e' + eid);
-                        if(all_tracks) {
-                            evt
-                                .parents('.schedule')
-                                .children('.track')
-                                .each(function() {
-                                    reload($(this));
-                                })
-                        }
-                        else {
-                            $(evt.attr('data-tracks').split(',')).each(function(ix, val) {
-                                reload($('.track[data-track=' + val + ']'));
-                            });
-                        }
+                        var tids = $('[name=tracks]', form).val();
+                        $(evt.attr('data-tracks').split(',')).each(function(ix, val) {
+                            var tid = $('.track[data-track=' + val + ']').attr('data-id');
+                            if(tids.indexOf(tid) == -1) {
+                                tids.push(tid);
+                            }
+                        });
+                        $.each(tids, function(ix, val) {
+                            reload($('#track-' + val));
+                        });
                         dlg.dialog('close');
                     }
                 });
