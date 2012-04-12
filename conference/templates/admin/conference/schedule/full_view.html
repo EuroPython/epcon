@@ -204,7 +204,9 @@ select[name=tracks] {
 </div>
 <div id="dashboard">
     {% for s, ts in tracks %}
+    {% schedule_data s as sdata %}
     <div id="schedule-{{ s }}" data-id="{{ s }}" class="schedule">
+        <h1>{{ sdata.date|date:"j F Y" }}</h1>
         {% for t in ts %}
         <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-track="{{ t.track }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" class="track">
             <div class="header">
