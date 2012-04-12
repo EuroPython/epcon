@@ -200,26 +200,36 @@
 </div>
 <script type="text/javascript">
 (function() {
-
-    var tracks =$(".track");
-    var dashboard = $('#dashboard');//.css({ scale:0.5,y:-8300,x:-600});;
+    var dashboard = $('#dashboard');
     var slot_length_px=10;
-    var ctrlPressed = false;
     // in teoria non ci dovrebbe essere bisogno di tenere in un globale l'elemento draggato,
     // ma chrome ha qualche bug nell'implementazione dell'oggetto DataTranser e la funzione
     // .getData funziona solo in alcuni eventi;
     var dragged_element = null;
 
+    var ctrlPressed = false;
     $(window).keydown(function(evt) {
-      if (evt.which == 17) { // ctrl
+      if (evt.which == 17) { 
         ctrlPressed = true;
       }
     }).keyup(function(evt) {
-      if (evt.which == 17) { // ctrl
+      if (evt.which == 17) {
         ctrlPressed = false;
       }
     });
 
+    function loadLocalState(key) {
+        key = key || 'admin:full_view:_storage';
+        var str = localStorage.getItem(key);
+        return $.extend({
+            track_visibility: {},
+            zoom: [ [1, 1], [2, 2] ]
+        }, str ? JSON.parse(str) : {});
+    }
+    function saveLocalState(data, key) {
+        key = key || 'admin:full_view:_storage';
+        localStorage.setItem(key, JSON.stringify(data));
+    }
 
     $(document).bind('click',function(){
         dashboard.find('.track').not('.expose').css({ opacity: 1});
@@ -229,7 +239,8 @@
     });
 
     function calculateTmatrix(track){
-        return $.map(track.css(($.browser.webkit) ? '-webkit-transform' :'-moz-transform' ).replace('matrix(','').split(','),function(v,i){return parseFloat(v)})
+        var X = track.css($.browser.webkit ? '-webkit-transform' : '-moz-transform');
+        return X.replace('matrix(', '').split(',').map(parseFloat);
     }
 
     function Ruler(track, slot_length_px) {
@@ -535,9 +546,10 @@
 
     function expose(track){
         if (!track.hasClass('expose')){
+            var store = loadLocalState();
             track
                 .addClass('expose')
-                .transition({ scale: [2,2], y: 60,x: 0, opacity: 1 });
+                .transition({ scale: store.zoom[1], y: 60, x: 0, opacity: 1 });
             distribuite();
             $('.event-list', track)
                 .bind('dragover', function(ev) {
@@ -672,15 +684,13 @@
 
     function unexpose(track){
         if(!track) {
-            $('.expose', dashboard).each(function() {
-                unexpose($(this));
-            });
-            return;
+            track = $('.track');
         }
 
+        var store = loadLocalState();
         track
             .removeClass('expose')
-            .transition({ scale:1 , y:0, x : 0 })
+            .transition({ scale:store.zoom[0] , y:0, x : 0 })
             .css({opacity: 1})
         $('.event-list',track)
             .unbind('drop dragenter dragover dragleave')
@@ -730,12 +740,12 @@
         }
     }
 
-    $(tracks).each(function(ix, row) {
+    $('.track').each(function(ix, row) {
         var track = $(this);
         reload(track)
             .click(function(ev) {
                 if (!ctrlPressed && !track.hasClass('expose')){
-                    unexpose();
+                    unexpose($('.track.expose'));
                     expose(track);
                     return false
                 }
@@ -800,16 +810,17 @@
         );
     });
 
-    var initSt = JSON.parse(localStorage.getItem('admin:full_view:track_filter') || '{}');
+    var _init = loadLocalState();
+    var all_visible = $.isEmptyObject(_init.track_visibility);
     $('input', tfilter)
         .change(function(ev) {
             var check = $(this);
             var label = check.val();
             var visible = check.is(':checked');
 
-            var st = JSON.parse(localStorage.getItem('admin:full_view:track_filter') || '{}');
-            st[label] = visible;
-            localStorage.setItem('admin:full_view:track_filter', JSON.stringify(st));
+            var store = loadLocalState();
+            store.track_visibility[label] = visible;
+            saveLocalState(store);
 
             $('.track .header h2 a:first-child').each(function() {
                 var t = $(this);
@@ -825,13 +836,10 @@
         .each(function() {
             var check = $(this);
             var label = check.val();
-            if(JSON.stringify(initSt) == '{}')
-                check.attr('checked', true);
-            else
-                check.attr('checked', initSt[label] ? true : false);
+            check.attr('checked', all_visible ? true : _init.track_visibility[label]);
             check.change();
         });
-    $('#dashboard').prepend(tfilter);
+    dashboard.prepend(tfilter);
 
     function setupAsyncForm(ctx) {
         $('form.async', ctx || document).ajaxForm({
