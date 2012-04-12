@@ -547,27 +547,28 @@ class Talk(models.Model, UrlMixin):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
 class TalkSpeakerManager(models.Manager):
-    def _conference_cache_key(self, conference):
-        cid = conference.pk if isinstance(conference, Conference) else conference
-        return 'conf:ts:%s' % cid
-
-    def clear_cache(self, conference):
-        if conference:
-            cache.delete(self._conference_cache_key(conference))
-        else:
-            for c in Conference.objects.all():
-                cache.delete(self._conference_cache_key(c))
-
-    def speakers_by_talks(self, conference):
-        key = self._conference_cache_key(conference)
-        output = cache.get(key)
-        if output is None:
-            output = defaultdict(list)
-            for ts in TalkSpeaker.objects.filter(talk__conference=conference).select_related('speaker__user'):
-                output[ts.talk_id].append({ 'speaker': ts.speaker, 'helper': ts.helper })
-            output = dict(output)
-            cache.set(key, output)
-        return output
+    pass
+#    def _conference_cache_key(self, conference):
+#        cid = conference.pk if isinstance(conference, Conference) else conference
+#        return 'conf:ts:%s' % cid
+#
+#    def clear_cache(self, conference):
+#        if conference:
+#            cache.delete(self._conference_cache_key(conference))
+#        else:
+#            for c in Conference.objects.all():
+#                cache.delete(self._conference_cache_key(c))
+#
+#    def speakers_by_talks(self, conference):
+#        key = self._conference_cache_key(conference)
+#        output = cache.get(key)
+#        if output is None:
+#            output = defaultdict(list)
+#            for ts in TalkSpeaker.objects.filter(talk__conference=conference).select_related('speaker__user'):
+#                output[ts.talk_id].append({ 'speaker': ts.speaker, 'helper': ts.helper })
+#            output = dict(output)
+#            cache.set(key, output)
+#        return output
 
 class TalkSpeaker(models.Model):
     talk = models.ForeignKey(Talk)
@@ -754,12 +755,12 @@ class MediaPartnerConference(models.Model):
         ordering = ['conference']
 
 class ScheduleManager(models.Manager):
-    def _conference_cache_key(self, conference):
-        cid = conference.pk if isinstance(conference, Conference) else conference
-        return 'conf:schedules:%s' % cid
-
-    def clear_cache(self, conference):
-        cache.delete(self._conference_cache_key(conference))
+#    def _conference_cache_key(self, conference):
+#        cid = conference.pk if isinstance(conference, Conference) else conference
+#        return 'conf:schedules:%s' % cid
+#
+#    def clear_cache(self, conference):
+#        cache.delete(self._conference_cache_key(conference))
 
     def attendees(self, conference, forecast=False):
         """
@@ -775,6 +776,7 @@ class ScheduleManager(models.Manager):
         `overbook` controlla se devono essere ritornati tutti gli eventi o solo
         quelli in overbook.
         """
+        # XXX: spostare in dataaccess
         key = self._conference_cache_key(conference)
         output = cache.get(key)
         if output:
@@ -932,23 +934,24 @@ class Schedule(models.Model):
         ordering = ['date']
 
 class TrackManager(models.Manager):
-    def _schedule_cache_key(self, schedule):
-        sid = schedule.id if not isinstance(schedule, int) else schedule
-        return 'conf:track-schedule:%s' % sid
-
-    def clear_cache(self, schedule):
-        cache.delete(self._schedule_cache_key(schedule))
-
-    def by_schedule(self, schedule):
-        """
-        ritorna le track associate allo schedule; questo metodo cacha i risultati
-        """
-        key = self._schedule_cache_key(schedule)
-        output = cache.get(key)
-        if output is None:
-            output = list(Track.objects.filter(schedule=schedule))
-            cache.set(key, output)
-        return output
+    pass
+#    def _schedule_cache_key(self, schedule):
+#        sid = schedule.id if not isinstance(schedule, int) else schedule
+#        return 'conf:track-schedule:%s' % sid
+#
+#    def clear_cache(self, schedule):
+#        cache.delete(self._schedule_cache_key(schedule))
+#
+#    def by_schedule(self, schedule):
+#        """
+#        ritorna le track associate allo schedule; questo metodo cacha i risultati
+#        """
+#        key = self._schedule_cache_key(schedule)
+#        output = cache.get(key)
+#        if output is None:
+#            output = list(Track.objects.filter(schedule=schedule))
+#            cache.set(key, output)
+#        return output
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
@@ -961,9 +964,6 @@ class Track(models.Model):
 
     objects = TrackManager()
 
-    class Meta:
-        ordering = ['order']
-
     def __unicode__(self):
         return self.track
 
@@ -975,7 +975,9 @@ class Event(models.Model):
     custom = models.TextField(blank=True)
     duration = models.PositiveIntegerField(default=0, help_text='duration of the event (in minutes). Override the talk duration if present')
 
-    track = TagField(help_text='One or more track names. Also accept "break" or "special" for coffee/lunch break or special events.')
+    tags = models.CharField(
+        max_length=200, blank=True,
+        help_text='comma separated list of tags. Something like: special, break, keynote')
     tracks = models.ManyToManyField(Track, through='EventTrack')
     sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
     video = models.CharField(max_length=1000, blank=True)
@@ -1138,30 +1140,30 @@ class VotoTalk(models.Model):
 
     class Meta:
         unique_together = (('user', 'talk'),)
-
-def _clear_track_cache(sender, **kwargs):
-    if hasattr(sender, 'schedule_id'):
-        Track.objects.clear_cache(sender.schedule_id)
-post_save.connect(_clear_track_cache, sender=Track)
-
-def _clear_talkspeaker_cache(sender, **kwargs):
-    o = kwargs['instance']
-    if isinstance(o, Talk):
-        conference = o.conference
-    else:
-        conference = None
-    TalkSpeaker.objects.clear_cache(conference)
-post_save.connect(_clear_talkspeaker_cache, sender=Talk)
-post_save.connect(_clear_talkspeaker_cache, sender=Speaker)
-
-def _clear_schedule_cache(sender, **kwargs):
-    o = kwargs['instance']
-    if isinstance(o, Event):
-        conference = o.schedule.conference
-    else:
-        conference = o.event.schedule.conference
-    Schedule.objects.clear_cache(conference)
-post_save.connect(_clear_schedule_cache, sender=Event)
-post_save.connect(_clear_schedule_cache, sender=EventInterest)
+#
+#def _clear_track_cache(sender, **kwargs):
+#    if hasattr(sender, 'schedule_id'):
+#        Track.objects.clear_cache(sender.schedule_id)
+#post_save.connect(_clear_track_cache, sender=Track)
+#
+#def _clear_talkspeaker_cache(sender, **kwargs):
+#    o = kwargs['instance']
+#    if isinstance(o, Talk):
+#        conference = o.conference
+#    else:
+#        conference = None
+#    TalkSpeaker.objects.clear_cache(conference)
+#post_save.connect(_clear_talkspeaker_cache, sender=Talk)
+#post_save.connect(_clear_talkspeaker_cache, sender=Speaker)
+#
+#def _clear_schedule_cache(sender, **kwargs):
+#    o = kwargs['instance']
+#    if isinstance(o, Event):
+#        conference = o.schedule.conference
+#    else:
+#        conference = o.event.schedule.conference
+#    Schedule.objects.clear_cache(conference)
+#post_save.connect(_clear_schedule_cache, sender=Event)
+#post_save.connect(_clear_schedule_cache, sender=EventInterest)
 
 from conference import listeners

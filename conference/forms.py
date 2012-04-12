@@ -317,25 +317,31 @@ class TalkForm(forms.Form):
 from tagging.models import TaggedItem
 from tagging.utils import parse_tag_input
 
+class TrackForm(forms.ModelForm):
+    class Meta:
+        model = models.Track
+        exclude = ('schedule', 'track',)
+
 class EventForm(forms.ModelForm):
+    event_tracks = forms.ModelMultipleChoiceField(queryset=models.Track.objects.all())
+
     class Meta:
         model = models.Event
-        exclude = ('schedule',)
+        exclude = ('schedule', 'tracks')
 
     def __init__(self, *args, **kwargs):
-        i = kwargs.get('instance', None)
-        if not i:
-            self.schedule = kwargs.pop('schedule')
-        else:
-            self.schedule = i.schedule
         super(EventForm, self).__init__(*args, **kwargs)
-        self.fields['talk'].queryset = models.Talk.objects\
-            .filter(conference=self.schedule.conference)
+        if self.instance.id:
+            self.fields['talk'].queryset = models.Talk.objects\
+                .filter(conference=self.instance.schedule.conference)
+            self.fields['event_tracks'].queryset = models.Track.objects\
+                .filter(schedule__conference=self.instance.schedule.conference)
 
     def clean(self):
         data = super(EventForm, self).clean()
         if not data['talk'] and not data['custom']:
             raise forms.ValidationError('set the talk or the custom text')
+        return data
 
         schedule_tracks = set()
         indoor_tracks = set()

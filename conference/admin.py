@@ -15,6 +15,7 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
+from conference import views
 
 import csv
 import logging
@@ -415,6 +416,8 @@ class EventInlineAdmin(admin.TabularInline):
     model = models.Event
     extra = 3
 
+from django.template import Template
+
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('conference', 'slug', 'date')
     inlines = [
@@ -424,12 +427,35 @@ class ScheduleAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(ScheduleAdmin, self).get_urls()
+        v = self.admin_site.admin_view
         my_urls = patterns('',
-            url(r'^full_view/$', self.admin_site.admin_view(self.full_view), name='conference-schedule-full_view'),
-            url(r'^full_view/(?P<sid>\d+)/(?P<tid>\d+)/$', self.admin_site.admin_view(self.full_view_track), name='conference-schedule-full_view-track'),
-            url(r'^stats/$', self.admin_site.admin_view(self.expected_attendance), name='conference-schedule-expected_attendance'),
+            url(r'^full_view/$',
+                v(self.full_view),
+                name='conference-schedule-full_view'),
+            url(r'^full_view/(?P<sid>\d+)/(?P<tid>\d+)/$',
+                v(self.full_view_track),
+                name='conference-schedule-full_view-track'),
+            url(r'^stats/$',
+                v(self.expected_attendance),
+                name='conference-schedule-expected_attendance'),
+            url(r'^(?P<sid>\d+)/events/$',
+                v(self.events),
+                name='conference-schedule-events'),
+            url(r'^(?P<sid>\d+)/events/(?P<eid>\d+)$',
+                v(self.event),
+                name='conference-schedule-event'),
+            url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
+                v(self.tracks),
+                name='conference-schedule-tracks'),
         )
         return my_urls + urls
+
+    def full_view_talks(self, conf):
+        return dataaccess.talks_data(models.Talk.objects\
+            .filter(conference=conf.code)\
+            .order_by('title')\
+            .values_list('id', flat=True)
+        )
 
     def full_view(self, request):
         conf = models.Conference.objects.current()
@@ -437,35 +463,186 @@ class ScheduleAdmin(admin.ModelAdmin):
             .filter(conference=conf)\
             .values_list('id', flat=True)
         )
-        talks = dataaccess.talks_data(models.Talk.objects\
-            .filter(conference=conf.code)\
-            .order_by('title')\
-            .values_list('id', flat=True)
-        )
         tracks = []
         for sch in schedules:
             tracks.append([ sch['id'], [ t for t in sch['tracks'] ] ])
 
+        from conference.forms import EventForm
         ctx = {
             'conference': conf,
             'tracks': tracks,
-            'talks': talks,
+            'talks': self.full_view_talks(conf),
+            'event_form': EventForm(),
         }
         return render_to_response('admin/conference/schedule/full_view.html', ctx, context_instance=template.RequestContext(request))
 
     def full_view_track(self, request, sid, tid):
-        track = get_object_or_404(models.Track, schedule=sid, id=tid)
-        eids = models.EventTrack.objects\
-            .filter(track=tid, track__schedule=sid)\
-            .values_list('event', flat=True)
+        get_object_or_404(models.Track, schedule=sid, id=tid)
         from datetime import time
-        ts = [time(8,00), time(18,30)]
-        tt = utils.TimeTable(ts, rows=[track])
+        tt = utils.TimeTable2\
+            .fromTracks([tid])\
+            .adjustTimes(time(8, 00), time(18, 30))
         ctx = {
-            'events': map(dataaccess.event_data, eids),
             'timetable': tt,
         }
-        return render_to_response('admin/conference/schedule/full_view_schedule.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response(
+            'admin/conference/schedule/full_view_schedule.html',
+            ctx,
+            context_instance=template.RequestContext(request))
+
+    @views.json
+    @transaction.commit_on_success
+    def events(self, request, sid):
+        sch = get_object_or_404(models.Schedule, id=sid)
+        if request.method != 'POST':
+            return http.HttpResponseNotAllowed(('POST',))
+        from conference.forms import EventForm
+        form = EventForm(data=request.POST)
+        output = {}
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.schedule = sch
+            event.save()
+            for t in form.cleaned_data['event_tracks']:
+                models.EventTrack(event=event, track=t).save()
+            output = {
+                'event': event.id,
+            }
+        return output
+
+    @transaction.commit_on_success
+    def event(self, request, sid, eid):
+        ev = get_object_or_404(models.Event, schedule=sid, id=eid)
+
+        class SimplifiedTalkForm(forms.Form):
+            tags = forms.CharField(
+                max_length=200, required=False,
+                help_text='comma separated list of tags. Something like: special, break, keynote'
+            )
+            sponsor = forms.ModelChoiceField(
+                queryset=models.Sponsor.objects\
+                    .filter(sponsorincome__conference=settings.CONFERENCE)\
+                    .order_by('sponsor'),
+                required=False
+            )
+            tracks = forms.ModelMultipleChoiceField(
+                queryset=models.Track.objects\
+                    .filter(schedule=ev.schedule)
+            )
+
+        class SimplifiedCustomForm(forms.Form):
+            custom = forms.CharField(widget=forms.Textarea)
+            duration = forms.IntegerField(min_value=0)
+            tags = forms.CharField(
+                max_length=200, required=False,
+                help_text='comma separated list of tags. Something like: special, break, keynote'
+            )
+            sponsor = forms.ModelChoiceField(
+                queryset=models.Sponsor.objects\
+                    .filter(sponsorincome__conference=settings.CONFERENCE)\
+                    .order_by('sponsor'),
+                required=False
+            )
+            tracks = forms.ModelMultipleChoiceField(
+                queryset=models.Track.objects\
+                    .filter(schedule=ev.schedule)
+            )
+
+        class MoveEventForm(forms.Form):
+            start_time = forms.TimeField()
+            track = forms.ModelChoiceField(queryset=models.Track.objects.all(), required=False)
+
+        if request.method == 'POST':
+            if 'delete' in request.POST:
+                ev.delete()
+            elif 'save' in request.POST:
+                if ev.talk_id:
+                    form = SimplifiedTalkForm(data=request.POST)
+                else:
+                    form = SimplifiedCustomForm(data=request.POST)
+                if form.is_valid():
+                    data = form.cleaned_data
+                    ev.sponsor = data['sponsor']
+                    ev.tags = data['tags']
+                    if not ev.talk_id:
+                        ev.sponsor = data['sponsor']
+                        ev.custom = data['custom']
+                        ev.duration = data['duration']
+                    ev.save()
+                    models.EventTrack.objects.filter(event=ev).delete()
+                    for t in data['tracks']:
+                        models.EventTrack(event=ev, track=t).save()
+            elif 'move' in request.POST:
+                form = MoveEventForm(data=request.POST)
+                if form.is_valid():
+                    data = form.cleaned_data
+                    ev.start_time = data['start_time']
+                    ev.save()
+                    if data.get('track'):
+                        models.EventTrack.objects.filter(event=ev).delete()
+                        models.EventTrack(event=ev, track=data['track']).save()
+            return http.HttpResponse(content=views.json_dumps({}), content_type="text/javascript")
+        else:
+            if ev.talk_id != None:
+                form = SimplifiedTalkForm(data={
+                    'sponsor': ev.sponsor.id,
+                    'tags': ev.tags,
+                    'tracks': list(ev.tracks.all().values_list('id', flat=True)),
+                })
+            else:
+                form = SimplifiedCustomForm(data={
+                    'sponsor': ev.sponsor.id,
+                    'tags': ev.tags,
+                    'custom': ev.custom,
+                    'duration': ev.duration,
+                    'tracks': list(ev.tracks.all().values_list('id', flat=True)),
+                })
+            tpl = Template('''
+            <form class="async" method="POST" action="{% url admin:conference-schedule-event sid eid %}">{% csrf_token %}
+                <table>{{ form }}</table>
+                <div class="submit-row">
+                    <input type="submit" name="save" value="save"/>
+                    <input type="submit" name="delete" value="delete"/>
+                </div>
+            </form>
+            ''')
+            ctx = {
+                'form': form,
+                'sid': sid,
+                'eid': eid,
+            }
+            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
+
+    @transaction.commit_on_success
+    def tracks(self, request, sid, tid):
+        track = get_object_or_404(models.Track, schedule=sid, id=tid)
+        from conference.forms import TrackForm
+        if request.method == 'POST':
+            tracks = models.Track.objects\
+                .filter(schedule__conference=track.schedule.conference, track=track.track)
+            for t in tracks:
+                form = TrackForm(instance=t, data=request.POST)
+                form.save()
+            output = {
+                'tracks': [ t.id for t in tracks ],
+            }
+            return http.HttpResponse(content=views.json_dumps(output), content_type="text/javascript")
+        else:
+            form = TrackForm(instance=track)
+            tpl = Template('''
+            <form class="async" method="POST" action="{% url admin:conference-schedule-tracks sid tid %}">{% csrf_token %}
+                <table>{{ form }}</table>
+                <div class="submit-row">
+                    <input type="submit" />
+                </div>
+            </form>
+            ''')
+            ctx = {
+                'form': form,
+                'sid': sid,
+                'tid': tid,
+            }
+            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)

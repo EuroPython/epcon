@@ -333,7 +333,7 @@ def schedule(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
     if request.method == 'POST':
         if not request.user.is_staff:
-            return http.HttpResponseBadRequest()
+            return http.HttpResponseForbidden()
         form = EventForm(data=request.POST, schedule=sch)
         if form.is_valid():
             evt = form.save(commit=False)

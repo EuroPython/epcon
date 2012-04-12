@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.core.mail import send_mail as real_send_mail
 
 from conference import settings
-from conference.models import VotoTalk
+from conference.models import VotoTalk, EventTrack
 
 import json
 import logging
@@ -151,7 +151,123 @@ def latest_tweets(screen_name, count):
         cache.set(key, data, 60 * 5)
     return data
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
+from conference.models import Event, Track
+
+class TimeTable2(object):
+    def __init__(self, sid, events):
+        """
+        events -> dict(track -> list(events))
+        """
+        self.sid = sid
+        self.events = events
+        # elenco track nell'ordine giusto
+        self._tracks = list(Track.objects\
+            .filter(schedule=sid)\
+            .order_by('order')\
+            .values_list('track', flat=True))
+
+    @classmethod
+    def fromEvents(cls, sid, eids):
+        from conference import dataaccess
+        qs = Event.objects\
+            .filter(schedule=sid, id__in=eids)\
+            .values_list('id', flat=True)
+        events = map(dataaccess.event_data, qs)
+        events.sort(key=lambda x: x['time'])
+        tracks = defaultdict(list)
+        for e in events:
+            for t in e['tracks']:
+                tracks[t].append(e)
+
+        return cls(sid, dict(tracks))
+
+    @classmethod
+    def fromTracks(cls, tids):
+        """
+        Costruisce una TimeTable con gli eventi presenti nelle track
+        specificate. La Timetable risultante verrà limitata alle sole track
+        elencate indipendentemente da quali track sono associate agli eventi.
+        """
+        qs = EventTrack.objects\
+            .filter(track__in=tids)\
+            .values('event')\
+            .distinct()
+        sids = Track.objects\
+            .filter(id__in=tids)\
+            .values('schedule')\
+            .distinct()
+        assert len(sids) == 1
+        tt = cls.fromEvents(sids[0]['schedule'], qs)
+        tracks = set(Track.objects\
+            .filter(id__in=tids)\
+            .values_list('track', flat=True))
+        for t in tt.events.keys():
+            if t not in tracks:
+                del tt.events[t]
+        return tt
+
+    @classmethod
+    def fromSchedule(cls, sid):
+        qs = EventTrack.objects\
+            .filter(event__schedule=sid)\
+            .values('event')\
+            .distinct()
+        return cls.fromEvents(sid, qs)
+
+    def iterOnTracks(self):
+        for t in self._tracks:
+            try:
+                yield t, self.events[t]
+            except KeyError:
+                continue
+
+    def iterOnTimes(self):
+        pass
+
+    def slice(self, start=None, end=None):
+        pass
+
+    def adjustTimes(self, start=None, end=None):
+        tpl = {
+            'id': None,
+            'name': '',
+            'custom': '',
+            'tracks': self.events.keys(),
+            'tags': set(),
+            'talk': None,
+            'time': None,
+            'duration': None,
+        }
+        if start is not None:
+            e0 = None
+            for e in self.events.values():
+                t = datetime.combine(e[0]['time'].date(), start)
+                if e0 is None or e[0]['time'] < t:
+                    e0 = e[0]['time']
+
+            if e0 and start < e0.time():
+                for track, events in self.events.items():
+                    e = dict(tpl)
+                    e['time'] = datetime.combine(events[0]['time'].date(), start)
+                    e['duration'] = (events[0]['time'] - e['time']).seconds / 60
+                    self.events[track].insert(0, e)
+
+        if end is not None:
+            e0 = None
+            for e in self.events.values():
+                t = datetime.combine(e[-1]['time'].date(), end)
+                if e0 is None or t > e0:
+                    e0 = e[-1]['time']
+
+            if e0 and end > e0.time():
+                for track, events in self.events.items():
+                    e = dict(tpl)
+                    e['time'] = datetime.combine(events[-1]['time'].date(), end)
+                    e['duration'] = (e['time'] - events[-1]['time']).seconds / 60
+                    self.events[track].append(e)
+
+        return self
 
 class TimeTable(object):
     class Event(object):
@@ -372,6 +488,47 @@ class TimeTable(object):
             step = self.sumTime(step, self.slot)
 
         return output
+
+    @classmethod
+    def buildFromTracks(cls, tracks, timespan=(time(8, 00), time(18, 30)), adjust_ts=True):
+        events = list(EventTrack.objects\
+            .filter(track__in=tracks)\
+            .values('event', 'event__start_time', 'event__talk__duration', 'event__duration', 'track'))
+        print events
+        if adjust_ts:
+            events.sort(key=lambda x: x['event__start_time'])
+            timespan = list(timespan)
+            if events[0]['event__start_time'] < timespan[0]:
+                timespan[0] = events[0]['event__start_time']
+            if events[-1]['event__start_time'] >= timespan[1]:
+                if events[-1]['event__talk__duration']:
+                    td = timedelta(seconds=60*events[-1]['event__talk__duration'])
+                else:
+                    td = timedelta(seconds=3600)
+                timespan[1] = TimeTable.sumTime(events[-1]['start_time'], td)
+        tt = cls(timespan, tracks)
+
+        #tmap = dict([
+        etracks = defaultdict(list)
+        for e in events:
+            etracks[e['event']].append(e['track'])
+
+        for e in events:
+            if e['event__duration']:
+                duration = e['event__duration']
+            else:
+                duration = e['event__talk__duration']
+            event_tracks = set(parse_tag_input(e.track))
+            rows = [ x for x in tracks if x.track in event_tracks ]
+            if ('break' in event_tracks or 'special' in event_tracks) and not rows:
+                rows = list(t for t in tracks if not t.outdoor)
+            if not rows:
+                continue
+            if 'teaser' in event_tracks:
+                duration = 30
+            tt.setEvent(e.start_time, e, duration, rows=rows)
+
+        return tt
 
 def render_badge(tickets, cmdargs=None):
     if cmdargs is None:
