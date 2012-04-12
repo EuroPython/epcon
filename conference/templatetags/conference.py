@@ -1296,7 +1296,7 @@ def name_abbrv(name):
 @register.filter
 def main_event(events):
     for e in events:
-        if not event_has_track(e, 'teaser'):
+        if not 'teaser' in e.tags:
             return e
 
 @register.filter
