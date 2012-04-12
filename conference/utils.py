@@ -183,6 +183,11 @@ class TimeTable2(object):
 
     @classmethod
     def fromTracks(cls, tids):
+        """
+        Costruisce una TimeTable con gli eventi presenti nelle track
+        specificate. La Timetable risultante verrà limitata alle sole track
+        elencate indipendentemente da quali track sono associate agli eventi.
+        """
         qs = EventTrack.objects\
             .filter(track__in=tids)\
             .values('event')\
@@ -192,7 +197,14 @@ class TimeTable2(object):
             .values('schedule')\
             .distinct()
         assert len(sids) == 1
-        return cls.fromEvents(sids[0]['schedule'], qs)
+        tt = cls.fromEvents(sids[0]['schedule'], qs)
+        tracks = set(Track.objects\
+            .filter(id__in=tids)\
+            .values_list('track', flat=True))
+        for t in tt.events.keys():
+            if t not in tracks:
+                del tt.events[t]
+        return tt
 
     @classmethod
     def fromSchedule(cls, sid):
