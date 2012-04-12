@@ -11,7 +11,6 @@ from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from tagging.models import TaggedItem
-from tagging.utils import parse_tag_input
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 
@@ -419,7 +418,7 @@ def event_data(eid, preload=None):
         tracks = event.tracks.all().values_list('track', flat=True)
 
     sch = schedule_data(event.schedule_id)
-    tags = set(parse_tag_input(event.track))
+    tags = set(event.tags.split(','))
     if event.talk_id:
         talk = talk_data(event.talk_id)
         name = talk['title']

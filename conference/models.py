@@ -975,7 +975,9 @@ class Event(models.Model):
     custom = models.TextField(blank=True)
     duration = models.PositiveIntegerField(default=0, help_text='duration of the event (in minutes). Override the talk duration if present')
 
-    track = TagField(help_text='One or more track names. Also accept "break" or "special" for coffee/lunch break or special events.')
+    tags = models.CharField(
+        max_length=200, blank=True,
+        help_text='comma separated list of tags. Something like: special, break, keynote')
     tracks = models.ManyToManyField(Track, through='EventTrack')
     sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
     video = models.CharField(max_length=1000, blank=True)
