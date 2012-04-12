@@ -4,7 +4,17 @@
     </div>
 {% for track, events in timetable.iterOnTracks %}
 {% for e in events %}
-    <div id="e{{ e.id }}" class="event" data-id="{{ e.id }}" data-start-time="{{ e.time|date:"Y/m/d H:i" }}" data-duration="{{ e.duration }}" data-tracks="{{ e.tracks|join:"," }}">
+    <div
+        {% if e.id %}
+        id="e{{ e.id }}" class="event {{ e.tags|join:" " }}"
+        data-id="{{ e.id }}"
+        data-tracks="{{ e.tracks|join:"," }}"
+        {% else %}
+        class="event fake"
+        {% endif %}
+        data-start-time="{{ e.time|date:"Y/m/d H:i" }}"
+        data-duration="{{ e.duration }}"
+        >
         <div class="inner">
             <em class="time">{{ e.time|date:"H:i" }}</em>
             {% if e.id %}
