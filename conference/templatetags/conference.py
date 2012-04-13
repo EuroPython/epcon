@@ -1379,7 +1379,7 @@ def current_conference():
 def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
     ctx = Context(context)
 
-    events = dataaccess.events(conference)
+    events = dataaccess.events(conf=conference)
     if exclude_tags:
         exclude = set(exclude_tags.split(','))
         events = filter(lambda x: len(x['tags'] & exclude) == 0, events)
