@@ -1425,6 +1425,10 @@ def talks_data(tids):
 def schedule_data(sid):
     return dataaccess.schedule_data(sid)
 
+@fancy_tag(register)
+def schedules_data(sids):
+    return dataaccess.schedules_data(sids)
+
 @register.filter
 def content_type(id):
     return ContentType.objects.get(id=id)
