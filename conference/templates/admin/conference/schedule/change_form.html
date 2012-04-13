@@ -10,23 +10,4 @@ lo schedule ne mostra troppe e la pagina diventa inutilizzabile.
     height: 3em;
 }
 </style>
-{% comment %}
-Uno sporco workaround per eliminare dalle select degli eventi i talk non interessanti
-{% endcomment %}
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        var conference = document.getElementById('id_conference').value;
-        var r = new RegExp(' \\[' + conference + '\\]');
-        $('td.talk select option').each(function() {
-            if(this.value == '')
-                return;
-            var opt = $(this);
-            var t = opt.text();
-            var s = t.replace(r, '');
-            if(t.search(r) == -1)
-                opt.remove();
-        });
-    });
-</script>
 {% endblock %}
