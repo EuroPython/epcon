@@ -680,7 +680,7 @@ function setup_cart_form(ctx) {
                     .html('€ 0');
 
                 /*
-                 * data contiene il totale generale, lo sconto ottenuto tramit
+                 * data contiene il totale generale, lo sconto ottenuto tramite
                  * coupon e il dettaglio dei costi dei singoli biglietti
                  */
                 var feedback = $('.coupon .cms span');
@@ -762,13 +762,23 @@ function setup_cart_form(ctx) {
                     var code = this[0];
                     var params = this[1];
                     var total = this[2];
-                    var group = code.substr(0, 1);
                     /*
                      * per tutti i biglietti, ad eccezioni delle prenotazioni
                      * alberghiere, posso limitarmi ad aggiungere il valore nel
                      * totale di sezione (identificato con la prima lettera del
                      * codice tariffa)...
                      */
+                    var group = '';
+                    switch(code.substr(0, 1)) {
+                        case 'H':
+                            if(code.length == 3)
+                                group = 'H';
+                            break;
+                        case 'T':
+                            if(code.length == 4)
+                                group = 'T';
+                            break;
+                    }
                     switch(group) {
                         case 'H':
                             /*
