@@ -202,8 +202,9 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         <div id="{{ sdata.slug }}" class="schedule">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
-                <div class="time-0900"><span>09</span>:00</div>
-                <div class="time-1030"><span>10</span>:30</div>
+                {% for time_, events in tt.iterOnTimes %}
+                <div class="time-{{ time_|time:"Hi" }}"><span>{{ time_|time:"H" }}</span>:{{ time_|time:"i" }}</div>
+                {% endfor %}
             </div>
             {% for track, events in tt.iterOnTracks %}
             <div class="track">
