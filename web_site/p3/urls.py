@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^tickets/$', 'p3.views.tickets', name='p3-tickets'),
     url(r'^tickets/(?P<tid>\d+)/$', 'p3.views.ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'p3.views.user', name='p3-user'),
+
     url(r'^schedule/(?P<conference>[\w-]+)/$', 'p3.views.schedule', name='p3-schedule'),
     url(r'^schedule/(?P<conference>[\w-]+)/list/$', 'p3.views.schedule_list', name='p3-schedule-list'),
     url(r'^schedule/(?P<conference>[\w-]+)/speakers/$', 'p3.views.schedule_speakers', name='p3-schedule-speakers'),

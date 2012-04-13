@@ -360,16 +360,14 @@ def billing(request):
 
 @render_to('p3/schedule.html')
 def schedule(request, conference):
-    from conference.forms import EventForm
-    schedules = cmodels.Schedule.objects.filter(conference=conference)
-    try:
-        form = EventForm(schedule=schedules[0])
-    except IndexError:
-        raise http.Http404()
+    from conference.utils import TimeTable2
+    sids = cmodels.Schedule.objects\
+        .filter(conference=conference)\
+        .values_list('id', flat=True)
     return {
         'conference': conference,
-        'schedules': schedules,
-        'form': form,
+        'sids': sids,
+        'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
     }
 
 @render_to('p3/schedule_list.html')

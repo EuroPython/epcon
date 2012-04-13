@@ -201,14 +201,14 @@ div.schedule .hhmm {
 div.schedule .hhmm span {
     font-size: 14px;    
     color: #301d1d;
-    margin-left: -25px;
 }
 
+/*
 div.schedule .event {
     background: #FCFAD9;
-    z-index: 100;
     font-variant: small-caps;
 }
+*/
 
 div.schedule .event.empty {
     background: white;
@@ -222,6 +222,7 @@ div.schedule .event .wrapper{
     overflow: hidden;
 }
 
+/*
 div.schedule .event .talk-level {
     float: left;
     height: 20px;
@@ -229,21 +230,13 @@ div.schedule .event .talk-level {
     margin: 20px 8px 0 0;
     background: transparent;
 }
+*/
 ul.schedule .event .talk-level {
     display: inline-block;
     height: 20px;
     width: 10px;
     margin: 0 4px;
     background: transparent;
-}
-.schedule .event .talk-level.beginner {
-    background: #c9f76f;
-}
-.schedule .event .talk-level.intermediate {
-    background: #679b00;
-}
-.schedule .event .talk-level.advanced {
-    background: #a68000;
 }
 div.schedule .custom-event {
     text-transform: uppercase;
@@ -353,9 +346,11 @@ div.schedule .track {
     padding-left: 0;
 }
 
+/*
 div.schedule .track span {
     font-weight: bold;
 }
+*/
 
 .schedule-date span {
     display: none;
