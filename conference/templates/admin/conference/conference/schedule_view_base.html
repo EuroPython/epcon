@@ -1,0 +1,886 @@
+{% extends "admin/base_site.html" %}
+{% load conference %}
+{% block extrahead %}
+{{ block.super }}
+{% load i18n %}
+<style type="text/css">
+/*
+ * impostazioni di layout, se cambiate queste rules preparatevi ad aggiornare il js
+ */
+.track { position: relative; }
+.event-list { position: relative; }
+.event { position:absolute; }
+.drop-zone { position: absolute; }
+
+/* ********************************************************************** */
+
+#talks {
+    width: 220px;
+    position: fixed;
+    height: 800px;
+    overflow: auto;
+}
+
+#dashboard {
+    margin-left: 220px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+#track-filter label {
+    float: left;
+    margin-right: 10px;
+}
+
+#track-filter {
+    padding: 5px;
+}
+#track-filter:after {
+    content: '';
+    clear: both;
+    display: block;
+}
+
+.schedule {
+    margin-bottom: 20px;
+}
+
+.schedule:after {
+    clear: both;
+    content: " ";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+.event-list {
+    overflow: hidden;
+}
+
+.drop-zone {
+    border:1px solid blue;
+    display:none;
+    width: 116px;
+    z-index:110;
+    text-align: center;
+}
+
+.drop-zone em.time {
+    font-size: 120%;
+}
+
+.event {
+     margin: 0;
+     border: 0;
+     border-collapse: collapse;
+     background-color: #FFF9AD;
+     cursor:move;
+     font-size: 80%;
+     width: 120px;
+     overflow: hidden;
+}
+
+.event.fake {
+    background-color: #CDC8B1;
+}
+
+
+.track {
+    width: 120px;
+    font-size: 60%;
+    background-color: #eee;
+    border: 0;
+    border-collapse: collapse;
+    margin: 0;
+    float: left;
+    margin: 10px;
+    z-index: 50;
+}
+
+.track .header {
+    height: 30px;
+    overflow: hidden;
+    text-align: center;
+    background: url("/static/admin/img/admin/default-bg.gif") repeat-x scroll left top #7CA0C7;
+    color: white;
+}
+
+.track .header h2 {
+    margin: 0;
+    font-size: 12px;
+    color: white;
+}
+
+.dialog {
+    display: none;
+    border: 1px solid #417690;
+}
+
+.expose {
+    z-index:100;
+    font-size: 60%;
+}
+
+.expose .event{
+    overflow: visible;
+}
+
+.exposed {
+    display: none;
+}
+
+/* multiple select */
+select[name=tracks] {
+    height: 150px;
+}
+</style>
+<script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-transit/jquery-transit-0.1.3.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}conference/jquery.form.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}conference/init.js"></script>
+<link href="/static/admin/css/forms.css" type="text/css" rel="stylesheet">
+{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../">Home</a> &rsaquo;
+     <a href="../../">Conference</a>&rsaquo;
+     <a href="../">Schedules</a>&rsaquo;
+     full view
+</div>
+{% endblock %}
+{% block content %}
+<div id="custom-event-dialog" class="dialog">
+    <div class="body">
+        <form method="POST" action="">{% csrf_token %}
+            <table>
+                <tr>
+                    <th><label>Time:</label></th>
+                    <td><input type="text" name="start_time" value="" /></td>
+                </tr>
+                <tr>
+                    <th><label>Duration:</label></th>
+                    <td><input type="text" name="duration" value="60" /></td>
+                </tr>
+                <tr>
+                    <th><label>Text:</label></th>
+                    <td><textarea name="custom"></textarea></td>
+                </tr>
+            </table>
+            <div class="submit-row">
+                <input type="submit" name="submit" value="save" />
+            </div>
+        </form>
+    </div>
+</div>
+<div id="event-dialog" class="dialog">
+    <div class="body">
+        <form method="POST" action="">{% csrf_token %}
+            <table>
+            {{ event_form }}
+            </table>
+        </form>
+    </div>
+</div>
+<div id="track-dialog" class="dialog">
+    <h2 class="title">Track details</h2>
+    <div class="body"></div>
+</div>
+<div id="event-details-dialog" class="dialog">
+    <h2 class="title">Event details</h2>
+    <div class="body"></div>
+</div>
+<h1>{{ conference.name }}</h1>
+<div id="talks">
+    <ol>
+        {% for t in talks %}
+        <li id="talk-{{ t.id }}" class="talk" draggable="true" data-id="{{ t.id }}" data-duration="{{ t.duration }}" data-type="{{ t.type|field_label:"Talk.type" }}">{{ t.title }}</li>
+        {% endfor %}
+    </ol>
+</div>
+<div id="dashboard">
+    {% for s, ts in tracks %}
+    {% schedule_data s as sdata %}
+    <div id="schedule-{{ s }}" data-id="{{ s }}" class="schedule">
+        <h1>{{ sdata.date|date:"j F Y" }}</h1>
+        {% for t in ts %}
+        <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-track="{{ t.track }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" class="track">
+            <div class="header">
+                <h2><a href="#">{{t.title|safe}}</a> <a href="#" class="new-event exposed">(+)</a></h2>
+            </div>
+            <div class="event-list">loading...  </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+<script type="text/javascript">
+(function() {
+    var dashboard = $('#dashboard');
+    var slot_length_px=10;
+    // in teoria non ci dovrebbe essere bisogno di tenere in un globale l'elemento draggato,
+    // ma chrome ha qualche bug nell'implementazione dell'oggetto DataTranser e la funzione
+    // .getData funziona solo in alcuni eventi;
+    var dragged_element = null;
+
+    var ctrlPressed = false;
+    $(window).keydown(function(evt) {
+      if (evt.which == 17) { 
+        ctrlPressed = true;
+      }
+    }).keyup(function(evt) {
+      if (evt.which == 17) {
+        ctrlPressed = false;
+      }
+    });
+
+    function loadLocalState(key) {
+        key = key || 'admin:schedule_view:_storage';
+        var str = localStorage.getItem(key);
+        return $.extend({
+            track_visibility: {},
+            zoom: [ [1, 1], [2, 2] ]
+        }, str ? JSON.parse(str) : {});
+    }
+    function saveLocalState(data, key) {
+        key = key || 'admin:schedule_view:_storage';
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    $(document).bind('dblclick',function(){
+        dashboard.find('.track').not('.expose').css({ opacity: 1});
+        dashboard.find('.track.expose').each(function(){
+             unexpose($(this));
+        });
+    });
+
+    function calculateTmatrix(track){
+        var X = track.css($.browser.webkit ? '-webkit-transform' : '-moz-transform');
+        return X.replace('matrix(', '').split(',').map(parseFloat);
+    }
+
+    function Ruler(track, slot_length_px) {
+        if(!slot_length_px)
+            slot_length_px = 5;
+        var dates = [
+            new Date(track.attr('data-date') + ' ' + (track.attr('data-start-time') || '8:00')),
+            new Date(track.attr('data-date') + ' ' + (track.attr('data-end-time') || '21:00'))
+        ]
+        var slot_length_min = track.attr('data-slot-length') || 15;
+        var slots = (dates[1] - dates[0]) / 1000 / 60 / slot_length_min;
+
+        this.eventSlots = function(event) {
+            return event.attr('data-duration') / slot_length_min;
+        };
+
+        this.tMatrix = function() {
+            // scale può essere un intero o un array
+            var scale = track.css('scale');
+            if(typeof(scale) == "number") {
+                scale = [ scale, scale ];
+            }
+            // translate invece può essere un intero o una stringa "0px,0px"
+            var translate = track.css('translate');
+            if(typeof(translate) == "number") {
+                translate = [ translate, translate ];
+            }
+            else {
+                translate = translate.split(',').map(parseFloat);
+            }
+
+          return {
+               scale:{
+                   x: scale[0],
+                   y: scale[1]
+               },
+               translate:{
+                   x: translate[0],
+                   y: translate[1],
+               }
+           }
+        };
+        /*
+         * converte la posizione passata (x, y) da coordinate pagina a
+         * coordinate relative alla event-list.
+         * Se normalize è true (default) le coordinate vengono normalizzate
+         rispettoa alla * trasformazione corrente
+         */
+        this.pagePos2TrackPos = function(pos, normalize) {
+            // tpos è relativa alla pagina come pos
+            var tpos = track.offset();
+            var x = pos.x - tpos.left;
+            var y = pos.y - tpos.top;
+
+            // epos è relativa alla track;
+            var epos = track.children('.event-list').position();
+            var output = {
+                x: (x - epos.left),
+                y: (y - epos.top)
+            };
+
+            if(typeof(normalize) == 'undefined' || normalize) {
+                var X = this.tMatrix();
+                output.x /= X.scale.x;
+                output.y /= X.scale.y;
+            }
+            return output;
+        };
+        /*
+         * data una posizione (x, y) relativa alla event-list (normalizzata!) ritorna lo slot
+         * temporale corrispondente (-1 se la posizione è al di fuori della event-list).
+         *
+         * pos può essere un mouse event, nel qual caso viene utilizzata la pagePos2TrackPos
+         */
+        this.pos2slots = function(pos) {
+            if('pageX' in pos && 'pageY' in pos) {
+                pos = this.pagePos2TrackPos({
+                    'x': pos.pageX,
+                    'y': pos.pageY
+                });
+            }
+            else if('originalEvent' in pos) {
+                pos = this.pagePos2TrackPos({
+                    'x': pos.originalEvent.pageX,
+                    'y': pos.originalEvent.pageY
+                });
+            }
+            var events = $('.event-list', track);
+            if(pos.y < 0 || pos.x < 0 || pos.y > events.height() || pos.x > events.width()) {
+                return -1;
+            }
+            return Math.floor(pos.y / slot_length_px);
+        };
+        /*
+         * posiziona un element sullo slot specificato per la durata (in slot)
+         * indicata.
+         */
+        this.configureElement = function(element, slot, duration) {
+
+            element.css({
+                position: 'absolute',
+                top: slot * slot_length_px,
+                height: duration * slot_length_px,
+                display:'block',
+                left:0
+            });
+            var time = this.slot2Datetime(slot);
+            // setto il tempo e visto che ci sono metto anche
+            // la data in un attributo data del elemento
+            // tornera utile in futuro
+            $('em.time',element)
+                .data('start-time', time)
+                .text(time.getHours()+':'+ (time.getMinutes() == 0 ? '00' : time.getMinutes()))
+        }
+
+        this.slot2Datetime = function(slot){
+            var d = new Date(dates[0]);
+            d.setMinutes(d.getMinutes() + (slot * slot_length_min));
+            return d;
+        };
+
+        this.configureEvent = function(event) {
+            var slotsFromStart = (new Date(event.attr('data-start-time')) - dates[0]) / 1000 / 60  / slot_length_min;
+            this.configureElement(event, slotsFromStart, this.eventSlots(event));
+        };
+        this.configure = function() {
+            var scope = this;
+            $('.event-list', track)
+                .height(slots * slot_length_px)
+                .children('.event')
+                .each(function(){ scope.configureEvent($(this)); });
+        };
+    };
+
+    function reload(track) {
+        if(track.hasClass('track')) {
+            var sid = track.parent().attr('data-id');
+            var tid = track.attr('data-id');
+            var ruler = new Ruler(track);
+            unbindEventList(track);
+            return $('.event-list',track)
+                .load('/admin/conference/conference/{{ conference.code }}/schedule/' + sid + '/' + tid + '/', function() {
+                    ruler.configure();
+                    $('<a href="#">&#x1F511;</a>')
+                        .click(function() {
+                            var eid = $(this).parents('.event').attr('data-id');
+                            var sid = $(this).parents('.schedule').attr('data-id');
+                            event_details_dialog(sid, eid);
+                            return false;
+                        })
+                        .appendTo($('.event .title', track));
+
+                    if(track.hasClass('expose')) {
+                        bindEventList(track);
+                    }
+
+                    // brutto ma sufficientemente veloce, ca 30ms con lo schedule ep2011
+                    $('#talks .talk').removeClass('scheduled');
+                    $('.event').each(function() {
+                        var t = $(this).attr('data-talk-id');
+                        if(t) {
+                            $('#talk-' + t).addClass('scheduled');
+                        }
+                    });
+                });
+        }
+        else {
+            throw "unknown element";
+        }
+    }
+
+    function event_form(eid, data) {
+        if(eid==0) {
+            var form = $('#event-dialog form');
+            if(typeof(data.tracks)=="string" || typeof(data.tracks)=="number") {
+                var tid = data.tracks;
+                var tids = [data.tracks];
+            }
+            else {
+                var tid = data.tracks[0];
+                var tids = data.tracks;
+            }
+            var schedule = $('#track-' + tid)
+                .parent().attr('data-id');
+
+            if(data.talk) {
+                $('[name=talk]', form).val(data.talk);
+                $('[name=custom]', form).val('');
+                if(!data.duration)
+                    data.duration = 0;
+            }
+            else {
+                $('[name=talk]', form).val('');
+                $('[name=custom]', form).val(data.custom);
+            }
+            $('[name=start_time]', form).val(data.start_time.getHours() + ':' + data.start_time.getMinutes() + ':00');
+            $('[name=event_tracks]', form).val(data.tracks);
+            $('[name=duration]', form).val(data.duration);
+            var url = '/admin/conference/schedule/' + schedule + '/events/';
+            form.ajaxSubmit({
+                url: url,
+                success: function() {
+                    for(var ix=0; ix<tids.length; ix++) {
+                        reload($('#track-' + tids[ix]));
+                    }
+                }
+            });
+        }
+        else {
+            var evt = $('#e' + eid);
+            var schedule = evt.parents('.schedule').attr('data-id');
+            var url = '/admin/conference/schedule/' + schedule + '/events/' + eid;
+            var posted = {
+                'start_time': data.start_time.getHours() + ':' + data.start_time.getMinutes() + ':00',
+                'move': 1
+            }
+            if(data.track)
+                posted['track'] = data.track;
+            $.ajax({
+                url: url,
+                data: posted,
+                type: 'POST',
+                success: function() {
+                    var tracks = evt.attr('data-tracks').split(',');
+                    $(tracks).each(function() {
+                        reload($('.track[data-track=' + this + ']', evt.parents('.schedule')));
+                    });
+                    if(data.track)
+                        reload($('#track-' + data.track));
+                }
+            });
+        }
+    }
+
+    function track_dialog(sid, tid) {
+        var dlg = $('#track-dialog');
+        dlg.dialog({
+            modal: true,
+            width: 550,
+            title: 'Track details'
+        });
+        var base = '/admin/conference/schedule/' + sid + '/tracks/' + tid;
+        $('.body', dlg)
+            .html('loading...')
+            .load(base, function() {
+                $('.body form', dlg).ajaxForm({
+                    dataType: 'json',
+                    success: document.location.reload
+                });
+            });
+    }
+
+    function event_details_dialog(sid, eid) {
+        var dlg = $('#event-details-dialog');
+        dlg.dialog({
+            modal: true,
+            width: 550,
+            title: 'Event details'
+        });
+        var base = '/admin/conference/schedule/' + sid + '/events/' + eid;
+        var all_tracks = false;
+        $('.body', dlg)
+            .html('loading...')
+            .load(base, function() {
+                $('.body form', dlg).ajaxForm({
+                    dataType: 'json',
+                    beforeSubmit: function(arr, form, options) { 
+                        all_tracks = false;
+                        for(var ix=0; ix<arr.length; ix++) {
+                            if(arr[ix].name == 'copy') {
+                                all_tracks = true;
+                            }
+                        }
+                        return true;
+                    },
+                    success: function(response, status, xhr, form) {
+                        if(all_tracks) {
+                            var tids = []
+                            $('.track').each(function() {
+                                tids.push($(this).attr('data-id'));
+                            });
+                        }
+                        else {
+                            var tids = $('[name=tracks]', form).val();
+                            $($('#e' + eid).attr('data-tracks').split(',')).each(function(ix, val) {
+                                var tid = $('.track[data-track=' + val + ']').attr('data-id');
+                                if(tids.indexOf(tid) == -1) {
+                                    tids.push(tid);
+                                }
+                            });
+                        }
+                        $.each(tids, function(ix, val) {
+                            reload($('#track-' + val));
+                        });
+                        dlg.dialog('close');
+                    }
+                });
+            });
+    }
+
+    $('.track .header a').live('click', function() {
+        var e = $(this);
+        var track = e.parents('.track');
+        var tid = track.attr('data-id');
+        var sid = track.parents('.schedule').attr('data-id');
+        if(e.hasClass('new-event')) {
+            var dlg = $('#custom-event-dialog').dialog({
+                modal: true,
+                width: 550,
+                title: 'Custom events'
+            });
+            $('input[type=submit]', dlg).one('click', function() {
+                var time = $('[name=start_time]', dlg).val().split(':');
+                var t = new Date();
+                t.setHours(time[0]);
+                t.setMinutes(time[1] || 0);
+                t.setSeconds(time[2] || 0);
+                var data = {
+                    'custom': $('[name=custom]', dlg).val(),
+                    'start_time': t,
+                    'duration': $('[name=duration]', dlg).val(),
+                    'tracks': track.attr('data-id')
+                }
+                dlg.dialog('close');
+                event_form(0, data);
+                return false;
+            });
+        }
+        else {
+            track_dialog(sid, tid);
+        }
+        return false;
+    });
+
+    function bindEventList(track) {
+        $('.event-list', track)
+            .bind('dragover', function(ev) {
+                ev.preventDefault();
+                var track_drop = $(ev.target).parents('.track');
+                var ruler = new Ruler(track_drop);
+                var slots = ruler.pos2slots(ev);
+                var duration = ruler.eventSlots($(dragged_element));
+
+                if(slots != -1) {
+                    ruler.configureElement($('.drop-zone', track_drop), slots, duration);
+                } else {
+                    // sto ancora draggando all' interno della event-list ma le dimensioni dell'evento
+                    // sono al difuori della event-list
+                    $('.drop-zone', track_drop).hide();
+                }
+                return false;
+            })
+            .bind('drop', function(ev) {
+                ev.preventDefault();
+
+                var track_drop = $(ev.target).parents('.track');
+                var ruler = new Ruler(track_drop);
+                var element = $(dragged_element);
+                var duration = ruler.eventSlots(element);
+
+                $('.drop-zone',track_drop).hide();
+                var slots = ruler.pos2slots(ev);
+                if(slots != -1) {
+                    var time = ruler.slot2Datetime(slots);
+                    if(element.hasClass('talk')) {
+                        event_form(0, {
+                            talk: element.attr('data-id'),
+                            start_time: time,
+                            tracks: track_drop.attr('data-id')
+                        });
+                    }
+                    else {
+                        var track_source = element.parents('.track');
+                        /*
+                            * Verifico se è cambiato la track o l'orario
+                            * prima di salvare
+                            */
+                        if((track_drop[0] != track_source[0] || time != element.data('start-time'))){
+                            event_form(element.attr('data-id'), {
+                                start_time: time,
+                                track: track_drop[0] != track_source[0] ? track_drop.attr('data-id') : null
+                            });
+                            /*
+                                * la track_drop è in reload, questo codice serve solo a non mostrare il lag
+                                */
+                            if(track_drop[0] != track_source[0]){
+                                $('.event-list', track_drop).append(element.detach());
+                            }
+                            ruler.configureElement(element,slots,ruler.eventSlots(element));
+                        }
+                    }
+                }
+                return false;
+            })
+            .bind('dragenter',function(ev){
+                ev.preventDefault();
+                $('.drop-zone',this).show();
+                return false;
+            })
+            .bind('dragleave',function(ev){
+                /*
+                    *  'dragleave' viene triggerato anche quando passa
+                    *   sopra un altro evento dello stesso track, per capire
+                    *   se il drag e ancora nel track corrente controllo la posizione
+                    *   del mouse dalle cordinate dell'evento
+                    */
+                var track_drop = $(ev.target).parents('.track');
+                var ruler = new Ruler(track_drop);
+                var slots = ruler.pos2slots(ev);
+                if(slots == -1) {
+                    $('.drop-zone',this).hide();
+                }
+                return false;
+                var pos = {
+                    'x': ev.originalEvent.pageX,
+                    'y': ev.originalEvent.pageY
+                };
+                if(!ruler.pagePos2TrackPos(pos)){
+                    // l'evento si e verificato al difuori del event-list
+                    $('.drop-zone',this).hide();
+                }
+                return false;
+            })
+            .children('.event')
+                .attr('draggable', true)
+                .bind('dragstart', function(ev) {
+                    var dt = ev.originalEvent.dataTransfer;
+                    dragged_element = this;
+                    if($.browser.mozilla){
+                        // nascondo l'oggetto durante il drag con mozilla
+                        // in crome va giusto
+                        $(this).hide();
+                    }
+                    dt.setData('text/plain',this.id);
+                })
+                .bind('dragend', function(ev){
+                    if($.browser.mozilla){
+                        $(this).show();
+                    }
+                    $(ev.target).parents('.track').find('.drop-zone').hide();
+                })
+    }
+    function unbindEventList(track) {
+        $('.event-list',track)
+            .unbind('drop dragenter dragover dragleave')
+            .children('.event')
+                .attr('draggable', false)
+                .unbind('dragstart')
+    }
+    function expose(track){
+        if (!track.hasClass('expose')){
+            var store = loadLocalState();
+            track
+                .addClass('expose')
+                .transition({ scale: store.zoom[1], y: 60, x: 0, opacity: 1 });
+            distribuite();
+            bindEventList(track);
+            syncUI();
+            return false;
+        }
+    }
+
+    function unexpose(track){
+        if(!track) {
+            track = $('.track');
+        }
+
+        var store = loadLocalState();
+        track
+            .removeClass('expose')
+            .transition({ scale:store.zoom[0] , y:0, x : 0 })
+            .css({opacity: 1})
+
+        unbindEventList(track);
+        syncUI();
+        distribuite();
+    }
+
+    function syncUI() {
+        var exposed = 0;
+        var tracks = $('.track');
+        tracks.each(function() {
+            var t = $(this);
+            if(t.hasClass('expose')) {
+                $('.exposed', t).show();
+                $('.minimized', t).hide();
+                exposed += 1;
+            }
+            else {
+                $('.exposed', t).hide();
+                $('.minimized', t).show();
+                t.css({opacity: .5});
+            }
+        });
+        if(!exposed) {
+            tracks.css({opacity: 1});
+        }
+    }
+
+    function distribuite(){
+        var tracks = $('.track.expose');
+        if (tracks.length > 1){
+            var tw = $(tracks[0]).width();
+            var dw = $(document).width()/2;
+            var sp = dw - ((0.5 * tracks.length - 0.5) * 2 * tw) - (tracks.length * 10)
+            tracks.each(function(){
+                var track = $(this);
+                track.transition({ x: (sp - track.offset().left - tw )/2});
+                sp += tw * 2 + 10;
+            })
+        } else {
+            $(tracks[0]).transition({x:0});
+        }
+    }
+
+    $('.track').each(function(ix, row) {
+        var track = $(this);
+        reload(track)
+            .click(function(ev) {
+                if (!ctrlPressed && !track.hasClass('expose')){
+                    unexpose($('.track.expose'));
+                    expose(track);
+                    return false
+                }
+                if (ctrlPressed && track.hasClass('expose')) {
+                    unexpose(track);
+                    return false
+                }
+                if (ctrlPressed && !track.hasClass('expose')) {
+                    expose(track);
+                    return false
+                }
+            });
+    });
+
+    var ttypes = ['All'];
+
+    $('#talks li')
+        .bind('dragstart', function(ev) {
+            var dt = ev.originalEvent.dataTransfer;
+            dragged_element = this;
+            dt.setData('text/plain', this.id);
+        })
+        .each(function() {
+            var t = $(this).attr('data-type');
+            if(ttypes.indexOf(t) == -1)
+                ttypes.push(t);
+        });
+
+    var tfilter = $('<div><select></select></div>');
+    var tselect = $('select', tfilter)
+        .change(function(ev) {
+            var t = tselect.val();
+            $('#talks li')
+                .each(function() {
+                    var e = $(this);
+                    if(t == 'All' || e.attr('data-type') == t)
+                        e.show();
+                    else
+                        e.hide();
+                });
+        });
+    $.each(ttypes, function(ix, val) {
+        tselect.append(
+            $('<option></option>')
+                .attr('value', val)
+                .text(val)
+        );
+    });
+    $('#talks ol')
+        .before(tfilter);
+
+    var ttypes = [];
+    $('.track .header h2  a:first-child').each(function() {
+        var t = $(this).text();
+        if(ttypes.indexOf(t) == -1)
+            ttypes.push(t);
+    });
+    var tfilter = $('<div id="track-filter"></div>');
+    $.each(ttypes, function(ix, val) {
+        tfilter.append(
+            $('<label><input type="checkbox" value="' + val + '"/>' + val + '</label>')
+        );
+    });
+
+    var _init = loadLocalState();
+    var all_visible = $.isEmptyObject(_init.track_visibility);
+    $('input', tfilter)
+        .change(function(ev) {
+            var check = $(this);
+            var label = check.val();
+            var visible = check.is(':checked');
+
+            var store = loadLocalState();
+            store.track_visibility[label] = visible;
+            saveLocalState(store);
+
+            $('.track .header h2 a:first-child').each(function() {
+                var t = $(this);
+                if(t.text() == label) {
+                    var track = t.parents('.track');
+                    if(visible)
+                        track.show();
+                    else
+                        track.hide();
+                }
+            });
+        })
+        .each(function() {
+            var check = $(this);
+            var label = check.val();
+            check.attr('checked', all_visible ? true : _init.track_visibility[label]);
+            check.change();
+        });
+    dashboard.prepend(tfilter);
+
+    function setupAsyncForm(ctx) {
+        $('form.async', ctx || document).ajaxForm({
+            success: function(response, status, xhr, form) {
+                var dlg = form.parents('.dialog');
+                dlg.dialog('close');
+            }
+        })
+    }
+    setupAsyncForm();
+
+})();
+</script>
+{% endblock %}
