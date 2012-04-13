@@ -1,0 +1,21 @@
+{% extends "admin/conference/conference/schedule_view_base.html" %}
+{% block extrahead %}
+{{ block.super }}
+<style>
+.event.keynote {
+    background-color: #8A2BE2;
+}
+
+.event.special {
+    background-color: #CD661D;
+}
+
+.event.break {
+    background-color: #FCF6CF;
+}
+
+.talk.scheduled {
+    color: gray;
+}
+</style>
+{% endblock %}
