@@ -304,5 +304,5 @@ class TicketRoomAdmin(admin.ModelAdmin):
         return o.ticket.orderitem.order._complete
     _order_confirmed.boolean = True
 
-
 admin.site.register(models.TicketRoom, TicketRoomAdmin)
+
