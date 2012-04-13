@@ -815,3 +815,8 @@ def user_profile(request, slug, profile=None, full_access=False):
         'full_access': full_access,
         'profile': profile,
     }
+
+@login_required
+def myself_profile(request):
+    p = models.AttendeeProfile.objects.getOrCreateForUser(request.user)
+    return redirect('conference-profile', slug=p.slug)

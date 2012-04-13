@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('conference.views',
     url(r'^p/(?P<slug>[\w-]+)/?', 'user_profile', name='conference-profile'),
+    url(r'^myself$', 'myself_profile', name='conference-myself-profile'),
 
     url(r'^speakers/(?P<slug>[\w-]+).xml', 'speaker_xml', name='conference-speaker-xml'),
     url(r'^speakers/(?P<slug>[\w-]+)', 'speaker', name='conference-speaker'),
