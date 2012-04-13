@@ -241,6 +241,10 @@ class TimeTable2(object):
         return cls.fromEvents(sid, qs)
 
     def iterOnTracks(self):
+        """
+        Itera sugli eventi della timetable una track per volta, restituisce un
+        iter((track, [events])).
+        """
         for t in self._tracks:
             try:
                 yield t, self.events[t]
@@ -248,7 +252,16 @@ class TimeTable2(object):
                 continue
 
     def iterOnTimes(self):
-        pass
+        """
+        Itera sugli eventi della timetable raggruppandoli a seconda del tempo
+        di inizio, restituisce un iter((time, [events])).
+        """
+        trasposed = defaultdict(list)
+        for events in self.events.values():
+            for e in events:
+                trasposed[e['time']].append(e)
+        for time, events in sorted(trasposed.items()):
+            yield time, events
 
     def slice(self, start=None, end=None):
         pass
