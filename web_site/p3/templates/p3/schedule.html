@@ -197,8 +197,9 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </nav>
 {% endcomment %}
 <div class="page clearfix">
-    {% for sid, tt in timetables %}
+    {% for sid, timet in timetables %}
         {% schedule_data sid as sdata %}
+        {% timetable_slice timet start="09:00" as tt %}
         <div id="{{ sdata.slug }}" class="schedule">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
@@ -210,7 +211,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             <div class="track">
                 <div class="title">{{ track }} Pizza Margherita</div>
                 {% for e in events %}
-                {% if e.time|time:"H" != "08" %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
                 <div class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}">
                     {% if e.talk %}
@@ -230,7 +230,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     <h3 class="name">{{ e.name }}</h3>
                     {% endif %}
                 </div>
-                {% endif %}
                 {% endif %}
                 {% endfor %}
             </div>
