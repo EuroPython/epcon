@@ -446,6 +446,16 @@ def render_schedule(context, schedule):
     }
 
 @fancy_tag(register, takes_context=True)
+def timetable_slice(context, timetable, start=None, end=None):
+    if start:
+        start = datetime.strptime(start, '%H:%M').time()
+
+    if end:
+        end = datetime.strptime(end, '%H:%M').time()
+
+    return timetable.slice(start=start, end=end)
+
+@fancy_tag(register, takes_context=True)
 def schedule_timetable(context, schedule, start=None, end=None):
     if start:
         start = datetime.strptime(start, '%H:%M').time()

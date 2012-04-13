@@ -263,10 +263,60 @@ class TimeTable2(object):
         for time, events in sorted(trasposed.items()):
             yield time, events
 
+    def limits(self):
+        """
+        Restituisce data di inizio e fine della TimeTable
+        """
+        start = end = None
+        for e in self.events.values():
+            if start is None or e[0]['time'] < start:
+                start = e[0]['time']
+            x = e[-1]['time'] + timedelta(seconds=e[-1]['duration']*60)
+            if end is None or x > end:
+                end = x
+        return start, end
+
     def slice(self, start=None, end=None):
-        pass
+        """
+        Restituisce un nuovo TimeTable contenente solo gli eventi compresi tra
+        start e end.
+        """
+        e0, e1 = self.limits()
+        if start is None:
+            if e0:
+                start = e0.time()
+        else:
+            if e0:
+                if start < e0.time():
+                    start = e0.time()
+            else:
+                start = None
+        if end is None:
+            if e1:
+                end = e1.time()
+        else:
+            if e1:
+                if end > e1.time():
+                    end = e1.time()
+            else:
+                end = None
+        events = dict(self.events)
+        if start or end:
+            for track, evs in events.items():
+                for ix, e in reversed(list(enumerate(evs))):
+                    if start and e['time'].time() < start:
+                        del evs[ix]
+                    if end and e['time'].time() > end:
+                        del evs[ix]
+
+        return TimeTable2(self.sid, events)
 
     def adjustTimes(self, start=None, end=None):
+        """
+        Modifica la TimeTable perchè inizi e termini con i tempi specificati
+        (se specificati).  Se necessario vengono aggiunti degli eventi multi
+        traccia.
+        """
         tpl = {
             'id': None,
             'name': '',
@@ -277,33 +327,21 @@ class TimeTable2(object):
             'time': None,
             'duration': None,
         }
-        if start is not None:
-            e0 = None
-            for e in self.events.values():
-                t = datetime.combine(e[0]['time'].date(), start)
-                if e0 is None or e[0]['time'] < t:
-                    e0 = e[0]['time']
+        e0, e1 = self.limits()
+        if start and e0 and start < e0.time():
+            for track, events in self.events.items():
+                e = dict(tpl)
+                e['time'] = datetime.combine(events[0]['time'].date(), start)
+                e['duration'] = (e0 - e['time']).seconds / 60
+                self.events[track].insert(0, e)
 
-            if e0 and start < e0.time():
-                for track, events in self.events.items():
-                    e = dict(tpl)
-                    e['time'] = datetime.combine(events[0]['time'].date(), start)
-                    e['duration'] = (events[0]['time'] - e['time']).seconds / 60
-                    self.events[track].insert(0, e)
-
-        if end is not None:
-            e0 = None
-            for e in self.events.values():
-                t = datetime.combine(e[-1]['time'].date(), end)
-                if e0 is None or t > e0:
-                    e0 = e[-1]['time']
-
-            if e0 and end > e0.time():
-                for track, events in self.events.items():
-                    e = dict(tpl)
-                    e['time'] = datetime.combine(events[-1]['time'].date(), end)
-                    e['duration'] = (e['time'] - events[-1]['time']).seconds / 60
-                    self.events[track].append(e)
+        if end and e1 and end > e1.time():
+            d = (datetime.combine(date.today(), end) - e1).seconds / 60
+            for track, events in self.events.items():
+                e = dict(tpl)
+                e['time'] = e1
+                e['duration'] = d
+                self.events[track].append(e)
 
         return self
 
