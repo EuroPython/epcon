@@ -26,7 +26,76 @@ from cStringIO import StringIO
 log = logging.getLogger('conference')
 
 class ConferenceAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name')
+    list_display = ('code', 'name', '_schedule_view')
+
+    def _schedule_view(self, o):
+        url = urlresolvers.reverse('admin:conference-conference-schedule', args=(o.code,))
+        return '<a href="%s">schedule</a>' % url
+    _schedule_view.allow_tags = True
+
+    def get_urls(self):
+        urls = super(ConferenceAdmin, self).get_urls()
+        v = self.admin_site.admin_view
+        my_urls = patterns('',
+            url(r'^(?P<cid>[\w-]+)/schedule/$',
+                v(self.schedule_view),
+                name='conference-conference-schedule'),
+            url(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
+                v(self.schedule_view_track),
+                name='conference-conference-schedule-track'),
+        )
+        return my_urls + urls
+
+    def schedule_view_talks(self, conf):
+        tids = []
+        if conf.code == settings.CONFERENCE:
+            results = utils.voting_results()
+            if results is not None:
+                tids = map(lambda x: x[0], results)
+        complete = models.Talk.objects\
+            .filter(conference=conf.code)\
+            .order_by('title')\
+            .values_list('id', flat=True)
+
+        haystack = set(tids)
+        missing = []
+        for c in complete:
+            if c not in haystack:
+                missing.append(c)
+        return dataaccess.talks_data(missing + tids)
+
+    def schedule_view(self, request, cid):
+        conf = models.Conference.objects.get(code=cid)
+        schedules = dataaccess.schedules_data(models.Schedule.objects\
+            .filter(conference=conf)\
+            .values_list('id', flat=True)
+        )
+        tracks = []
+        for sch in schedules:
+            tracks.append([ sch['id'], [ t for t in sch['tracks'] ] ])
+
+        from conference.forms import EventForm
+        return render_to_response(
+            'admin/conference/conference/schedule_view.html',
+            {
+                'conference': conf,
+                'tracks': tracks,
+                'talks': self.schedule_view_talks(conf),
+                'event_form': EventForm(),
+            },
+            context_instance=template.RequestContext(request)
+        )
+
+    def schedule_view_track(self, request, cid, sid, tid):
+        get_object_or_404(models.Track, schedule__conference=cid, schedule=sid, id=tid)
+        from datetime import time
+        tt = utils.TimeTable2\
+            .fromTracks([tid])\
+            .adjustTimes(time(8, 00), time(18, 30))
+        return render_to_response(
+            'admin/conference/conference/schedule_view_schedule.html',
+            { 'timetable': tt, },
+            context_instance=template.RequestContext(request))
 
 admin.site.register(models.Conference, ConferenceAdmin)
 
@@ -429,12 +498,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         urls = super(ScheduleAdmin, self).get_urls()
         v = self.admin_site.admin_view
         my_urls = patterns('',
-            url(r'^full_view/$',
-                v(self.full_view),
-                name='conference-schedule-full_view'),
-            url(r'^full_view/(?P<sid>\d+)/(?P<tid>\d+)/$',
-                v(self.full_view_track),
-                name='conference-schedule-full_view-track'),
             url(r'^stats/$',
                 v(self.expected_attendance),
                 name='conference-schedule-expected_attendance'),
@@ -449,57 +512,6 @@ class ScheduleAdmin(admin.ModelAdmin):
                 name='conference-schedule-tracks'),
         )
         return my_urls + urls
-
-    def full_view_talks(self, conf):
-        tids = []
-        if conf.code == settings.CONFERENCE:
-            results = utils.voting_results()
-            if results is not None:
-                tids = map(lambda x: x[0], results)
-        complete = models.Talk.objects\
-            .filter(conference=conf.code)\
-            .order_by('title')\
-            .values_list('id', flat=True)
-
-        haystack = set(tids)
-        missing = []
-        for c in complete:
-            if c not in haystack:
-                missing.append(c)
-        return dataaccess.talks_data(missing + tids)
-
-    def full_view(self, request):
-        conf = models.Conference.objects.current()
-        schedules = dataaccess.schedules_data(models.Schedule.objects\
-            .filter(conference=conf)\
-            .values_list('id', flat=True)
-        )
-        tracks = []
-        for sch in schedules:
-            tracks.append([ sch['id'], [ t for t in sch['tracks'] ] ])
-
-        from conference.forms import EventForm
-        ctx = {
-            'conference': conf,
-            'tracks': tracks,
-            'talks': self.full_view_talks(conf),
-            'event_form': EventForm(),
-        }
-        return render_to_response('admin/conference/schedule/full_view.html', ctx, context_instance=template.RequestContext(request))
-
-    def full_view_track(self, request, sid, tid):
-        get_object_or_404(models.Track, schedule=sid, id=tid)
-        from datetime import time
-        tt = utils.TimeTable2\
-            .fromTracks([tid])\
-            .adjustTimes(time(8, 00), time(18, 30))
-        ctx = {
-            'timetable': tt,
-        }
-        return render_to_response(
-            'admin/conference/schedule/full_view_schedule.html',
-            ctx,
-            context_instance=template.RequestContext(request))
 
     @views.json
     @transaction.commit_on_success

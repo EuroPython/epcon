@@ -243,7 +243,7 @@ select[name=tracks] {
     });
 
     function loadLocalState(key) {
-        key = key || 'admin:full_view:_storage';
+        key = key || 'admin:schedule_view:_storage';
         var str = localStorage.getItem(key);
         return $.extend({
             track_visibility: {},
@@ -251,7 +251,7 @@ select[name=tracks] {
         }, str ? JSON.parse(str) : {});
     }
     function saveLocalState(data, key) {
-        key = key || 'admin:full_view:_storage';
+        key = key || 'admin:schedule_view:_storage';
         localStorage.setItem(key, JSON.stringify(data));
     }
 
@@ -406,7 +406,7 @@ select[name=tracks] {
             var ruler = new Ruler(track);
             unbindEventList(track);
             return $('.event-list',track)
-                .load('/admin/conference/schedule/full_view/' + sid + '/' + tid + '/', function() {
+                .load('/admin/conference/conference/{{ conference.code }}/schedule/' + sid + '/' + tid + '/', function() {
                     ruler.configure();
                     $('<a href="#">&#x1F511;</a>')
                         .click(function() {
@@ -490,7 +490,7 @@ select[name=tracks] {
                 success: function() {
                     var tracks = evt.attr('data-tracks').split(',');
                     $(tracks).each(function() {
-                        reload($('.track[data-track=' + this + ']'));
+                        reload($('.track[data-track=' + this + ']', evt.parents('.schedule')));
                     });
                     if(data.track)
                         reload($('#track-' + data.track));
