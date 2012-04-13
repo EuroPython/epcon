@@ -475,11 +475,12 @@ event_data = cache_me(
     models=(models.Event, models.Talk, models.Schedule, models.Track),
     key='event:%(eid)s')(event_data, _i_event_data)
 
-def events(conf):
-    eids = models.Event.objects\
-        .filter(schedule__conference=conf)\
-        .values_list('id', flat=True)\
-        .order_by('start_time')
+def events(eids=None, conf=None):
+    if eids is None:
+        eids = models.Event.objects\
+            .filter(schedule__conference=conf)\
+            .values_list('id', flat=True)\
+            .order_by('start_time')
 
     cached = zip(eids, event_data.get_from_cache([ (x,) for x in eids ]))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]

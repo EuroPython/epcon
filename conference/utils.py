@@ -198,7 +198,7 @@ class TimeTable2(object):
         qs = Event.objects\
             .filter(schedule=sid, id__in=eids)\
             .values_list('id', flat=True)
-        events = map(dataaccess.event_data, qs)
+        events = dataaccess.events(eids=qs)
         events.sort(key=lambda x: x['time'])
         tracks = defaultdict(list)
         for e in events:
