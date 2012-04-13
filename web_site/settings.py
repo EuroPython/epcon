@@ -418,4 +418,3 @@ if not SECRET_KEY:
         raise RuntimeError('SECRET_KEY not set')
     else:
         print 'WARN, SECRET_KEY not set'
-
