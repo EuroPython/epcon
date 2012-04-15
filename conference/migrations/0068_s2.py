@@ -8,9 +8,11 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
+        db.execute('DROP INDEX "conference_talkspeaker_talk_id__speaker_id";')
         for t in orm.TalkSpeaker.objects.all():
             t.speaker_id = t.s2
             t.save()
+        db.execute('CREATE UNIQUE INDEX "conference_talkspeaker_talk_id__speaker_id" ON "conference_talkspeaker"("talk_id", "speaker_id");')
 
 
     def backwards(self, orm):
