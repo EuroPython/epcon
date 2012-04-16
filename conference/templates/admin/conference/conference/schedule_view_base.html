@@ -75,7 +75,7 @@
      border-collapse: collapse;
      background-color: #FFF9AD;
      cursor:move;
-     font-size: 80%;
+     font-size: 120%;
      width: 120px;
      overflow: hidden;
 }
@@ -200,7 +200,7 @@ select[name=tracks] {
     {% for s, ts in tracks %}
     {% schedule_data s as sdata %}
     <div id="schedule-{{ s }}" data-id="{{ s }}" class="schedule">
-        <h1>{{ sdata.date|date:"j F Y" }}</h1>
+        <h1>{{ sdata.date|date:"l, j F Y" }}</h1>
         {% for t in ts %}
         <div id="track-{{ t.id }}" data-id="{{ t.id }}" data-track="{{ t.track }}" data-date="{{ t.schedule.date|date:"Y/m/d" }}" class="track">
             <div class="header">
@@ -237,7 +237,7 @@ select[name=tracks] {
         var str = localStorage.getItem(key);
         return $.extend({
             track_visibility: {},
-            zoom: [ [1, 1], [2, 2] ]
+            zoom: [ [1, 1], [1.8, 1.8] ]
         }, str ? JSON.parse(str) : {});
     }
     function saveLocalState(data, key) {
@@ -259,7 +259,7 @@ select[name=tracks] {
 
     function Ruler(track, slot_length_px) {
         if(!slot_length_px)
-            slot_length_px = 5;
+            slot_length_px = 10;
         var dates = [
             new Date(track.attr('data-date') + ' ' + (track.attr('data-start-time') || '8:00')),
             new Date(track.attr('data-date') + ' ' + (track.attr('data-end-time') || '21:00'))
