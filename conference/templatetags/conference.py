@@ -1537,6 +1537,23 @@ def eval_(x, code):
     except:
         return None
 
+@register.filter
+def attrib_(ob, attrib):
+    try:
+        return ob[attrib]
+    except (KeyError, IndexError):
+        return None
+    except TypeError:
+        try:
+            iter(ob)
+        except TypeError:
+            return getattr(ob, attrib, None)
+        else:
+            return [ attrib_(x, attrib) for x in ob ]
+
+@register.filter
+def contains_(it, key):
+    return key in it
 
 @fancy_tag(register, takes_context=True)
 def user_votes(context, uid=None, conference=None):
