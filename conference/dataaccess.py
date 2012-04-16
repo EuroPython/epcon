@@ -629,3 +629,19 @@ def fares(conference):
 fares = cache_me(
     models=(models.Fare,),
     key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
+
+def _i_user_votes(sender, **kw):
+    o = kw['instance']
+    return 'user_votes:%s:%s' % (o.user_id, o.talk.conference)
+
+def user_votes(uid, conference):
+    """
+    Restituisce i voti che l'utente ha assegnato ai talk della conferenza
+    """
+    votes = models.VotoTalk.objects\
+        .filter(user=uid, talk__conference=conference)
+    return dict([(v.talk_id, v.vote) for v in votes])
+
+user_votes = cache_me(
+    models=(models.VotoTalk,),
+    key='user_votes:%(uid)s:%(conference)s')(user_votes, _i_user_votes)

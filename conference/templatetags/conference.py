@@ -1033,28 +1033,6 @@ def conference_quotes(parser, token):
             return ''
     return QuotesNode(limit, var_name)
 
-@fancy_tag(register, takes_context=True)
-def talk_vote(context, talk, user=None):
-    """
-    {% talk_vote talk [ user ] as var %}
-    Restituisce il voto che l'utente, se manca viene recuperato dalla request,
-    ha dato al talk.
-    """
-    request = context.get('request')
-    if user is None:
-        if not request:
-            raise ValueError('request not found')
-        else:
-            user = request.user
-
-    try:
-        cached = request._user__talks_votes
-    except AttributeError:
-        cached = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=user))
-        request._user__talks_votes = cached
-
-    return cached.get(talk.id)
-
 @register.filter
 def full_url(url):
     if not url.startswith(dsettings.DEFAULT_URL_PREFIX):
@@ -1559,3 +1537,11 @@ def eval_(x, code):
     except:
         return None
 
+
+@fancy_tag(register, takes_context=True)
+def user_votes(context, uid=None, conference=None):
+    if uid is None:
+        uid = context['request'].user.id
+    if conference is None:
+        conference = settings.CONFERENCE
+    return dataaccess.user_votes(uid, conference)
