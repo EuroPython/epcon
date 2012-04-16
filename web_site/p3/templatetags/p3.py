@@ -293,13 +293,6 @@ def box_image_gallery(context):
     return context
 
 @register.filter
-def eval_(x, code):
-    try:
-        return eval(code, {'x': x})
-    except:
-        return None
-
-@register.filter
 def attrib_(ob, attrib):
     try:
         return ob[attrib]
