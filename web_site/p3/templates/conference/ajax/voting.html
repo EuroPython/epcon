@@ -133,7 +133,6 @@
                     url: trigger.attr('data-src'),
                     dataType: 'xml',
                     success: function(data, text, jqXHR) {
-                        foo = data
                         var text = $('talk abstract', data).html();
                         var video = $('teaser_video html', data).text();
                         var html = '';
