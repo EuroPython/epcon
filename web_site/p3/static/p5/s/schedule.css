@@ -288,27 +288,6 @@ div.schedule .cell a:hover {
     border-bottom-style: solid;
 }
 
-div.schedule .tools {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-}
-
-div.schedule .tools > div {
-    display: inline-block;
-}
-
-div.schedule .tools button {
-    background-color: transparent;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    width: 16px;
-    height: 16px;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-}
-
 div.schedule .event.highlighted {
     background: #d7f5fa;
 }
@@ -372,28 +351,6 @@ div.schedule .track span {
     margin-left: 60px;
 }
 
-div.schedule .event:hover .tools .talk-interest {
-    display: inline-block;
-}
-
-div.schedule .tools > div.talk-interest {
-    display: none;
-}
-.talk-interest button {
-    padding-left: 18px;
-}
-.talk-interest button.up {
-    background: transparent url(../i/icon-thumb-up.png) no-repeat left center;
-}
-.talk-interest button.up.active {
-    background: transparent url(../i/icon-thumb-up-lit.png) no-repeat left center;
-}
-.talk-interest button.down {
-    background: transparent url(../i/icon-thumb-down.png) no-repeat left center;
-}
-.talk-interest button.down.active {
-    background: transparent url(../i/icon-thumb-down-lit.png) no-repeat left center;
-}
 
 .schedule-help {
     position: absolute;

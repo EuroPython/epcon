@@ -154,6 +154,49 @@
     height: 180px;
     overflow-y: auto;
 }
+
+.tools {
+    position: absolute;
+    right: 0;
+    bottom: 3px;
+}
+
+.exposed .tools {
+    bottom: 0;
+    background: white;
+    padding: 0 4px;
+}
+
+.tools > div {
+    display: inline-block;
+}
+
+.tools button {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: 16px;
+    height: 16px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+.talk-interest button {
+    padding-left: 18px;
+}
+.talk-interest button.up {
+    background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-up.png) no-repeat left center;
+}
+.talk-interest button.up.active {
+    background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-up-lit.png) no-repeat left center;
+}
+.talk-interest button.down {
+    background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-down.png) no-repeat left center;
+}
+.talk-interest button.down.active {
+    background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-down-lit.png) no-repeat left center;
+}
 </style>
 {% endblock %}
 
@@ -200,10 +243,11 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </nav>
 {% endcomment %}
 <div class="page clearfix">
+    {% user_votes as votes %}
     {% for sid, timet in timetables %}
         {% schedule_data sid as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
-        <div id="{{ sdata.slug }}" class="schedule">
+        <div id="{{ sdata.slug }}" class="schedule" data-conference="{{ sdata.conference }}">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
                 {% for time_, events in tt.iterOnTimes %}
@@ -215,7 +259,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 <div class="title">{{ track }} Pizza Margherita</div>
                 {% for e in events %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
-                <div class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}">
+                <div class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}" data-id="{{ e.id }}">
                     {% if e.talk %}
                     <div class="speakers">
                         <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
@@ -233,13 +277,30 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     {% else %}
                     <h3 class="name">{{ e.name }}</h3>
                     {% endif %}
+                    <div class="tools">
+                        {% if request.user.is_authenticated %}
+                        {% if e.talk %}
+                        <div class="talk-vote">{% if votes|attrib_:e.talk.id %}{{ votes|attrib_:e.talk.id }}/10{% endif %}</div>
+                        {% endif %}
+                        <div class="talk-interest">
+                            <button class="down {% if interest < 0 %}active{% endif %}"></button>
+                            <button class="up {% if interest > 0 %}active{% endif %}"></button>
+                        </div>
+                        {% endif %}
+                        {% comment %}
+                        {% if ref in overbooked %}
+                        <div class="room-full">
+                            <img src="{{ STATIC_URL }}p5/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
+                        </div>
+                        {% endif %}
+                        {% endcomment %}
+                    </div>
                 </div>
                 {% endif %}
                 {% endfor %}
             </div>
             {% endfor %}
         </div>
-    {{ sch }}
     {% comment %}
     <div id="{{ schedule.slug }}" class="schedule-wrapper"
         data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
@@ -250,7 +311,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     {% endcomment %}
     {% endfor %}
 </div>
-<script type="text/javascript" src="{% url p3-schedule-js conference=conference %}"></script>
 <script>
 function expose(e) {
     e.addClass('exposed');
@@ -312,7 +372,20 @@ $('.event')
             }
             e.data('loaded', 1);
         }
-    });
+    })
+    .find('.talk-interest button')
+        .bind('click', function(ev) {
+            var base = "{% url conference-schedule-event-interest conference="_C_" slug="_S_" eid="0" %}"
+            var e = $(this);
+            var sch = e.parents('.schedule');
+            var url = base
+                .replace('0', e.parents('.event').attr('data-id'))
+                .replace('_S_', sch.attr('id'))
+                .replace('_C_', sch.attr('data-conference'));
+            var up = e.hasClass('up');
+            console.log(up, url);
+            return false;
+        })
 </script>
 {% endblock %}
 
