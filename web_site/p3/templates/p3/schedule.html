@@ -149,8 +149,10 @@
 
 .event .abstract {
     font-variant: normal;
-    margin-top: 10px;
+    margin: 10px 0;
     line-height: 1.5em;
+    height: 180px;
+    overflow-y: auto;
 }
 </style>
 {% endblock %}
@@ -224,9 +226,10 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     </div>
                     <h3 class="name"><a href="{% url conference-talk slug=e.talk.slug %}">{{ e.name }}</a></h3>
                     <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
-                    <div class="maximized abstract">
-                        <p>{{ e.talk.abstract|markdown2:"smarty-pants,code-color"|truncatewords_html:50 }}</p>
+                    <div class="maximized all-tags">
+                        {% for tag in e.talk.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
                     </div>
+                    <div class="maximized abstract cms"> </div>
                     {% else %}
                     <h3 class="name">{{ e.name }}</h3>
                     {% endif %}
@@ -265,6 +268,7 @@ function expose(e) {
     e.height(dim.height * 4);
     e.css('left', Math.max(dim.left - dim.width/2, 0));
     e.css('top', Math.max(dim.top - dim.height/2, 0));
+    e.trigger('exposed');
 }
 function unexpose(e) {
     e.removeClass('exposed');
@@ -291,6 +295,24 @@ $('.event')
             expose(e);
         }
     })
+    .bind('exposed', function(ev) {
+        var e = $(this);
+        if(!e.data('loaded')) {
+            var talk = $('h3.name a', e).attr('href');
+            if(talk) {
+                var ab = $('.abstract', e)
+                    .text('loading...');
+                $.ajax({
+                    url: talk + '.xml',
+                    dataType: 'xml',
+                    success: function(data, text, xhr) {
+                        ab.html($('talk abstract', data).html());
+                    }
+                });
+            }
+            e.data('loaded', 1);
+        }
+    });
 </script>
 {% endblock %}
 
