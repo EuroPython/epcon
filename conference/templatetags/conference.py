@@ -1551,3 +1551,11 @@ olark.identify('%s');/*]]>{/literal}*/</script>
 def json_(val):
     from conference.views import json_dumps
     return mark_safe(json_dumps(val))
+
+@register.filter
+def eval_(x, code):
+    try:
+        return eval(code, {'x': x})
+    except:
+        return None
+
