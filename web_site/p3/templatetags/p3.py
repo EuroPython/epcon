@@ -292,22 +292,6 @@ def box_image_gallery(context):
     })
     return context
 
-@register.filter
-def attrib_(ob, attrib):
-    try:
-        return ob[attrib]
-    except TypeError:
-        try:
-            iter(ob)
-        except TypeError:
-            return getattr(ob, attrib, None)
-        else:
-            return [ attrib_(x, attrib) for x in ob ]
-
-@register.filter
-def contains_(it, key):
-    return key in it
-
 @register.inclusion_tag('p3/render_partner_program.html', takes_context=True)
 def render_partner_program(context):
     from conference.templatetags.conference import fare_blob
