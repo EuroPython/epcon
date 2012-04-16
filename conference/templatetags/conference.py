@@ -431,18 +431,17 @@ def render_schedule(context, schedule):
     {% render_schedule schedule %}
     """
     if isinstance(schedule, int):
-        schedule = models.Schedule.objects.get(pk = schedule)
+        sid = schedule
     elif isinstance(schedule, basestring):
         try:
             c, s = schedule.split('/')
         except ValueError:
             raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
-        schedule = models.Schedule.objects.get(conference = c, slug = s)
+        sid = models.Schedule.objects.values('id').get(conference=c, slug=s)['id']
 
     return {
-        'schedule': schedule,
-        'timetable': schedule_context(schedule),
-        'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
+        'sid': sid,
+        'timetable': utils.TimeTable2.fromSchedule(sid),
     }
 
 @fancy_tag(register, takes_context=True)
@@ -454,6 +453,10 @@ def timetable_slice(context, timetable, start=None, end=None):
         end = datetime.strptime(end, '%H:%M').time()
 
     return timetable.slice(start=start, end=end)
+
+@register.filter
+def timetable_iter_fixed_steps(tt, step):
+    return tt.iterOnTimes(step=int(step))
 
 @fancy_tag(register, takes_context=True)
 def schedule_timetable(context, schedule, start=None, end=None):
@@ -1030,28 +1033,6 @@ def conference_quotes(parser, token):
             return ''
     return QuotesNode(limit, var_name)
 
-@fancy_tag(register, takes_context=True)
-def talk_vote(context, talk, user=None):
-    """
-    {% talk_vote talk [ user ] as var %}
-    Restituisce il voto che l'utente, se manca viene recuperato dalla request,
-    ha dato al talk.
-    """
-    request = context.get('request')
-    if user is None:
-        if not request:
-            raise ValueError('request not found')
-        else:
-            user = request.user
-
-    try:
-        cached = request._user__talks_votes
-    except AttributeError:
-        cached = dict((x.talk_id, x) for x in models.VotoTalk.objects.filter(user=user))
-        request._user__talks_votes = cached
-
-    return cached.get(talk.id)
-
 @register.filter
 def full_url(url):
     if not url.startswith(dsettings.DEFAULT_URL_PREFIX):
@@ -1548,3 +1529,36 @@ olark.identify('%s');/*]]>{/literal}*/</script>
 def json_(val):
     from conference.views import json_dumps
     return mark_safe(json_dumps(val))
+
+@register.filter
+def eval_(x, code):
+    try:
+        return eval(code, {'x': x})
+    except:
+        return None
+
+@register.filter
+def attrib_(ob, attrib):
+    try:
+        return ob[attrib]
+    except (KeyError, IndexError):
+        return None
+    except TypeError:
+        try:
+            iter(ob)
+        except TypeError:
+            return getattr(ob, attrib, None)
+        else:
+            return [ attrib_(x, attrib) for x in ob ]
+
+@register.filter
+def contains_(it, key):
+    return key in it
+
+@fancy_tag(register, takes_context=True)
+def user_votes(context, uid=None, conference=None):
+    if uid is None:
+        uid = context['request'].user.id
+    if conference is None:
+        conference = settings.CONFERENCE
+    return dataaccess.user_votes(uid, conference)
