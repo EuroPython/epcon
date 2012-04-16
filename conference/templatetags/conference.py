@@ -431,18 +431,17 @@ def render_schedule(context, schedule):
     {% render_schedule schedule %}
     """
     if isinstance(schedule, int):
-        schedule = models.Schedule.objects.get(pk = schedule)
+        sid = schedule
     elif isinstance(schedule, basestring):
         try:
             c, s = schedule.split('/')
         except ValueError:
             raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
-        schedule = models.Schedule.objects.get(conference = c, slug = s)
+        sid = models.Schedule.objects.values('id').get(conference=c, slug=s)['id']
 
     return {
-        'schedule': schedule,
-        'timetable': schedule_context(schedule),
-        'SPONSOR_LOGO_URL': context['SPONSOR_LOGO_URL'],
+        'sid': sid,
+        'timetable': utils.TimeTable2.fromSchedule(sid),
     }
 
 @fancy_tag(register, takes_context=True)
