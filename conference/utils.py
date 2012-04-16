@@ -251,7 +251,7 @@ class TimeTable2(object):
             except KeyError:
                 continue
 
-    def iterOnTimes(self):
+    def iterOnTimes(self, step=None):
         """
         Itera sugli eventi della timetable raggruppandoli a seconda del tempo
         di inizio, restituisce un iter((time, [events])).
@@ -260,8 +260,16 @@ class TimeTable2(object):
         for events in self.events.values():
             for e in events:
                 trasposed[e['time']].append(e)
+
+        step = step * 60 if step is not None else 0
+        previous = None
         for time, events in sorted(trasposed.items()):
+            if step and previous:
+                while (time-previous).seconds > step:
+                    previous = previous + timedelta(seconds=step)
+                    yield previous, []
             yield time, events
+            previous = time
 
     def limits(self):
         """

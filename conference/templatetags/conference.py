@@ -454,6 +454,10 @@ def timetable_slice(context, timetable, start=None, end=None):
 
     return timetable.slice(start=start, end=end)
 
+@register.filter
+def timetable_iter_fixed_steps(tt, step):
+    return tt.iterOnTimes(step=int(step))
+
 @fancy_tag(register, takes_context=True)
 def schedule_timetable(context, schedule, start=None, end=None):
     if start:
