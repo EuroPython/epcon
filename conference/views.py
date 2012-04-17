@@ -385,6 +385,7 @@ def schedule_event_booking(request, conference, slug, eid):
     return {
         'booked': len(booked),
         'available': seats,
+        'user': request.user.id in booked,
     }
 
 def schedule_xml(request, conference, slug):
