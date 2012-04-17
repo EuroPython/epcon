@@ -630,10 +630,6 @@ fares = cache_me(
     models=(models.Fare,),
     key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
 
-def _i_user_votes(sender, **kw):
-    o = kw['instance']
-    return 'user_votes:%s:%s' % (o.user_id, o.talk.conference)
-
 def user_votes(uid, conference):
     """
     Restituisce i voti che l'utente ha assegnato ai talk della conferenza
@@ -642,6 +638,27 @@ def user_votes(uid, conference):
         .filter(user=uid, talk__conference=conference)
     return dict([(v.talk_id, v.vote) for v in votes])
 
+def _i_user_votes(sender, **kw):
+    o = kw['instance']
+    return 'user_votes:%s:%s' % (o.user_id, o.talk.conference)
+
 user_votes = cache_me(
     models=(models.VotoTalk,),
     key='user_votes:%(uid)s:%(conference)s')(user_votes, _i_user_votes)
+
+def user_events_interest(uid, conference):
+    """
+    Restituisce gli eventi per cui l'utente ha espresso un "interesse".
+    """
+    interests = models.EventInterest.objects\
+        .filter(user=uid, event__schedule__conference=conference)
+    return dict([(x.event_id, x.interest) for x in interests ])
+
+def _i_user_events_interest(sender, **kw):
+    o = kw['instance']
+    return 'user_events_interest:%s:%s' % (o.user_id, o.event.schedule.conference)
+
+user_events_interest = cache_me(
+    models=(models.EventInterest,),
+    key='user_events_interest:%(uid)s:%(conference)s')(user_events_interest, _i_user_events_interest)
+
