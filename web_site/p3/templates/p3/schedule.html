@@ -245,6 +245,56 @@
 .talk-interest button.down.active {
     background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-down-lit.png) no-repeat left center;
 }
+
+#schedule-navigator {
+    position: fixed;
+    top: 33%;
+    left: 0;
+    height: 40px;
+    width: 330px;
+    background: white;
+    padding: 0;
+    border: 1px solid #7D6F60;
+    z-index: 2000;
+    transform: translate(-145px, 0) rotate(-90deg);
+    -moz-transform: translate(-145px, 0) rotate(-90deg);
+    -webkit-transform: translate(-145px, 0) rotate(-90deg);
+    -o-transform: translate(-145px, 0) rotate(-90deg);
+    -ms-transform: translate(-145px, 0) rotate(-90deg);
+}
+
+#schedule-navigator > div {
+    float: left;
+    margin-right: 20px;
+    padding: 4px;
+    line-height: 32px;
+}
+
+#schedule-navigator > div:first-child {
+    background: #301D1D;
+    color: #FCFAD9;
+    font-weight: bold;
+    padding: 4px 8px;
+}
+
+#schedule-navigator > div div {
+    display: none;
+    position: absolute;
+    border: 2px solid #7D6F60;
+    transform: rotate(90deg) translate(10px, -10px);
+    -moz-transform: rotate(90deg) translate(10px, -10px);
+    -webkit-transform: rotate(90deg) translate(10px, -10px);
+    -o-transform: rotate(90deg) translate(10px, -10px);
+    -ms-transform: rotate(90deg) translate(10px, -10px);
+    transform-origin: left top;
+    -moz-transform-origin: left top;
+    -webkit-transform-origin: left top;
+    -o-transform-origin: left top;
+    -ms-transform-origin: left top;
+    background: white;
+    padding: 5px;
+    width: 150px;
+}
 </style>
 {% endblock %}
 
@@ -254,6 +304,131 @@
 <section class="notice">
 Beta version, small changes could be introduced to meet speakers' necessities.
 </section>
+{% schedules_data sids as schedules %}
+<nav id="schedule-navigator">
+    <div>NAV</div>
+    <div>
+        <a href="#">Jump to</a>
+        <div>
+            <ul>
+            {% for row in timetables %}
+                {% with schedules|attrib_:forloop.counter0 as sdata %}
+                <li><a href="#{{ sdata.slug }}">{{ sdata.date|date:"l, j F" }}</a></li>
+                {% endwith %}
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div>My schedule</div>
+    <div>
+        <a href="#">Filters</a>
+        <div>
+            <h3>Tracks</h3>
+            <ul>
+                <li><a href="#" class="track-toggle" data-tracks="track-ita">Italian track</a></li>
+                <li><a href="#" class="track-toggle" data-tracks="training1,training2">Trainings</a></li>
+                <li><a href="#" class="track-toggle" data-tracks="partner0,partner1">Partner program</a></li>
+                <li><a href="#" class="track-toggle" data-tracks="sprint1,sprint2,sprint3">Sprint</a></li>
+            </ul>
+            <h3>Talks</h3>
+            <ul>
+                <li><a href="#">Italian track</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script>
+(function() {
+    var nav = $('#schedule-navigator');
+    var options = nav.children('div');
+    options
+        .children('a')
+            .bind('click', function(ev) {
+                var e = $(this);
+                options
+                    .children('div').hide();
+                e.parent()
+                    .children('div').show();
+                return false;
+            })
+        .end()
+        .children('div')
+            .bind('click', function(ev) {
+                $(this).hide();
+            })
+
+    options
+        .find('.track-toggle')
+            .bind('click', function(ev) {
+                var e = $(this);
+                var tracks = $([]);
+                $(e.attr('data-tracks').split(',')).each(function(ix, val) {
+                    tracks = tracks.add($('.track[data-track=' + val + ']'));
+                })
+                var visible = tracks.is(':hidden');
+                /*
+                 * nascondere/mostrare le track è semplice, il problema è
+                 * accorciare gli eventi a sale unificate
+                 */
+                if(visible) {
+                    tracks.show();
+                }
+                else {
+                    tracks.hide();
+                }
+                var direction = tracks.eq(0).parents('.schedule').hasClass('vertical') ? 'v' : 'h';
+                var offset = direction == 'v' ? tracks.width() : tracks.height();
+                if(!visible)
+                    offset *= -1;
+                /*
+                 * devo accumulare le modifiche invece che applicarle
+                 * subito perché c'è una transizione css e i metodi
+                 * .width/.height non mi riportano la dimensione
+                 * corretta fino a quando non è terminata l'animazione
+                 */
+                var sizes = {};
+                tracks.each(function() {
+                    var t = $(this)
+                    /*
+                     * gli eventi da manipolare sono tutti quelli presenti
+                     * nelle track precedenti che coinvolgano anche la track corrente
+                     */
+                    var previous = t.prevAll('.track');
+                    previous
+                        .each(function(tix, val) {
+                            /*
+                             * mi interessano solo gli elementi di questa track
+                             * che vanno a toccare una delle track manipolate
+                             */
+                            $(this)
+                                .children('.event')
+                                .not('.tracks-1')
+                                .filter(function(ix) {
+                                    var match = this.className.match(/tracks-(\d)/);
+                                    if(!match)
+                                        return false;
+                                    if(this.id == 'e543')
+                                        console.log(match, previous.length - tix -1, previous.length);
+                                    return parseInt(match[1]) + (previous.length - tix -1) > previous.length;
+                                })
+                                .each(function() {
+                                    var evt = $(this);
+                                    if(!(this.id in sizes))
+                                        sizes[this.id] = direction == 'v' ? evt.outerWidth() : evt.outerHeight();
+                                    sizes[this.id] += offset;
+                                });
+                        });
+                });
+                for(var key in sizes) {
+                    if(direction == 'v')
+                        $(document.getElementById(key)).width(sizes[key]);
+                    else
+                        $(document.getElementById(key)).height(sizes[key]);
+                }
+                return false;
+            })
+})();
+</script>
 {% comment %}
 <nav id="schedule-navigator">
     <div class="opener closed"> </div>
@@ -290,13 +465,13 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     </div>
 </nav>
 {% endcomment %}
-<div class="page clearfix">
+<div class="page clearfix" data-conference="{{ CONFERENCE }}">
     {% user_votes as votes %}
     {% user_events_interest as einterests %}
     {% for sid, timet in timetables %}
-        {% schedule_data sid as sdata %}
+        {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
-        <div id="{{ sdata.slug }}" class="schedule vertical" data-conference="{{ sdata.conference }}">
+        <div id="{{ sdata.slug }}" class="schedule vertical">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
                 {% for time_, events in tt.iterOnTimes %}
@@ -304,12 +479,12 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 {% endfor %}
             </div>
             {% for track, events in tt.iterOnTracks %}
-            <div class="track">
+            <div class="track" data-track="{{ track }}">
                 <div class="title">{{ track }} Pizza Margherita</div>
                 {% for e in events %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
                 {% with einterests|attrib_:e.id as interest %}
-                <div class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if interest %}{% if interest > 0 %}highlighted{% else %}shadowed{% endif %}{% endif %}" data-id="{{ e.id }}">
+                <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if interest %}{% if interest > 0 %}highlighted{% else %}shadowed{% endif %}{% endif %}" data-id="{{ e.id }}">
                     {% if e.talk %}
                     <div class="speakers">
                         <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
@@ -352,6 +527,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             </div>
             {% endfor %}
         </div>
+        {% endwith %}
     {% comment %}
     <div id="{{ schedule.slug }}" class="schedule-wrapper"
         data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
@@ -433,7 +609,7 @@ $('.event')
             var url = base
                 .replace('0', evt.attr('data-id'))
                 .replace('_S_', sch.attr('id'))
-                .replace('_C_', sch.attr('data-conference'));
+                .replace('_C_', sch.parent().attr('data-conference'));
             var up = e.hasClass('up');
             if(!e.hasClass('active')) {
                 var val = up ? 1 : -1;

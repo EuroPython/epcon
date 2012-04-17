@@ -128,7 +128,7 @@ table.schedule caption {
     margin: 10px 0 0 0;
     color: #301d1d;
 }
-
+/*
 #schedule-navigator {
     position: fixed;
     left: 10px;
@@ -172,7 +172,7 @@ table.schedule caption {
 #schedule-navigator .show-flags label.inactive {
     background: transparent url(../i/checkbox_no.png) no-repeat left center;
 }
-
+*/
 /*
  *
  */
