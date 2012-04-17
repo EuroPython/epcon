@@ -81,7 +81,7 @@
 .event.special { z-index: 100; }
 
 .event.special {
-    background: white url({{ STATIC_URL }}p5/i/empty-track.png) bottom left;		    
+    background: white url({{ STATIC_URL }}p5/i/empty-track.png) bottom left;
     font-size: 15px;
     text-align: center;
 }
@@ -167,7 +167,7 @@
     padding: 0 4px;
 }
 
-.tools > div {
+.tools > div, .event.exposed .tools > div.maximized {
     display: inline-block;
 }
 
@@ -244,6 +244,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 {% endcomment %}
 <div class="page clearfix">
     {% user_votes as votes %}
+    {% user_events_interest as einterests %}
     {% for sid, timet in timetables %}
         {% schedule_data sid as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
@@ -259,7 +260,8 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 <div class="title">{{ track }} Pizza Margherita</div>
                 {% for e in events %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
-                <div class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}" data-id="{{ e.id }}">
+                {% with einterests|attrib_:e.id as interest %}
+                <div class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if interest %}{% if interest > 0 %}highlighted{% else %}shadowed{% endif %}{% endif %}" data-id="{{ e.id }}">
                     {% if e.talk %}
                     <div class="speakers">
                         <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
@@ -280,11 +282,11 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     <div class="tools">
                         {% if request.user.is_authenticated %}
                         {% if e.talk %}
-                        <div class="talk-vote">{% if votes|attrib_:e.talk.id %}{{ votes|attrib_:e.talk.id }}/10{% endif %}</div>
+                        <div class="maximized talk-vote">{% if votes|attrib_:e.talk.id %}{{ votes|attrib_:e.talk.id }}/10{% endif %}</div>
                         {% endif %}
                         <div class="talk-interest">
-                            <button class="down {% if interest < 0 %}active{% endif %}"></button>
-                            <button class="up {% if interest > 0 %}active{% endif %}"></button>
+                            <button class="down {% if interest and interest < 0 %}active{% endif %}"></button>
+                            <button class="up {% if interest and interest > 0 %}active{% endif %}"></button>
                         </div>
                         {% endif %}
                         {% comment %}
@@ -296,6 +298,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         {% endcomment %}
                     </div>
                 </div>
+                {% endwith %}
                 {% endif %}
                 {% endfor %}
             </div>
@@ -378,17 +381,43 @@ $('.event')
             var base = "{% url conference-schedule-event-interest conference="_C_" slug="_S_" eid="0" %}"
             var e = $(this);
             var sch = e.parents('.schedule');
+            var evt = e.parents('.event');
             var url = base
-                .replace('0', e.parents('.event').attr('data-id'))
+                .replace('0', evt.attr('data-id'))
                 .replace('_S_', sch.attr('id'))
                 .replace('_C_', sch.attr('data-conference'));
             var up = e.hasClass('up');
-            console.log(up, url);
+            if(!e.hasClass('active')) {
+                var val = up ? 1 : -1;
+            }
+            else {
+                var val = 0;
+            }
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    interest: val
+                },
+                success: function() {
+                    evt.removeClass('highlighted shadowed');
+                    var wrap = e.parents('.talk-interest');
+                    $('button', wrap).removeClass('active');
+                    if(val > 0) {
+                        $('button.up', wrap).addClass('active');
+                        evt.addClass('highlighted');
+                    }
+                    else if(val < 0) {
+                        $('button.down', wrap).addClass('active');
+                        evt.addClass('shadowed');
+                    }
+                }
+            });
             return false;
         })
 </script>
 {% endblock %}
 
 {% block SPONSORS %}
-<!-- Omit sponsors col -->
+{% comment %}Omit sponsors col{% endcomment %}
 {% endblock %}
