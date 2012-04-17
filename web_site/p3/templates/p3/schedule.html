@@ -3,33 +3,115 @@
 
 {% block EXTRA_HEAD %}
 <style>
-.schedule {
-    width: 3000px;
-}
-.hhmm {
-    position: relative;
-    height: 20px;
-}
-.hhmm > div {
+/* layout */
+.event { position: absolute; }
+.hhmm { position: relative; }
+.hhmm > div { position: absolute; }
+
+.horizontal .hhmm { height: 20px; }
+.horizontal.schedule { width: 3000px; }
+.horizontal .track { position: relative; height: 75px; }
+.horizontal .event.duration-15 { width: 50px; }
+.horizontal .event.duration-30 { width: 100px; }
+.horizontal .event.duration-45 { width: 150px; }
+.horizontal .event.duration-60 { width: 200px; }
+.horizontal .event.duration-75 { width: 250px; }
+.horizontal .event.duration-90 { width: 300px; }
+.horizontal .event.duration-240 { width: 800px; }
+.horizontal .event.duration-480 { width: 1600px; }
+.horizontal .time-0900 { left: 0; }
+.horizontal .time-0930 { left: 100px; }
+.horizontal .time-0945 { left: 150px; }
+.horizontal .time-1030 { left: 300px; }
+.horizontal .time-1115 { left: 450px; }
+.horizontal .time-1215 { left: 650px; }
+.horizontal .time-1300 { left: 800px; }
+.horizontal .time-1315 { left: 850px; }
+.horizontal .time-1430 { left: 1100px; }
+.horizontal .time-1530 { left: 1300px; }
+.horizontal .time-1630 { left: 1500px; }
+.horizontal .time-1715 { left: 1650px; }
+.horizontal .time-1815 { left: 1850px; }
+.horizontal .time-1830 { left: 1900px; }
+.horizontal .time-1930 { left: 2100px; }
+.horizontal .event.tracks-1 { height: 75px; }
+.horizontal .event.tracks-2 { height: 150px; }
+.horizontal .event.tracks-3 { height: 225px; }
+.horizontal .event.tracks-4 { height: 300px; }
+.horizontal .event.tracks-5 { height: 375px; }
+.horizontal .event.tracks-6 { height: 450px; }
+.horizontal .event.tracks-7 { height: 525px; }
+.horizontal .event.tracks-8 { height: 600px; }
+.horizontal .track .title {
     position: absolute;
+    left: -40px;
 }
-.track {
-    position: relative;
-    height: 75px;
+
+.vertical .hhmm {
+    float: left;
+    width: 40px;
+    height: 720px;
 }
-.track:after {
+.vertical.schedule { width: 3000px; }
+.vertical.schedule:after {
     content: ' ';
     display: block;
     clear: both;
 }
-.track .title {
-    position: absolute;
-    left: -40px;
+.vertical .track {
+    position: relative;
+    float: left;
+    width: 190px;
+    height: 720px;
 }
+.vertical .event {
+    width: 100%;
+}
+.vertical .event.duration-15 { height: 15px; }
+.vertical .event.duration-30 { height: 30px; }
+.vertical .event.duration-45 { height: 45px; }
+.vertical .event.duration-60 { height: 60px; }
+.vertical .event.duration-75 { height: 75px; }
+.vertical .event.duration-90 { height: 90px; }
+.vertical .event.duration-240 { height: 240px; }
+.vertical .event.duration-480 { height: 480px; }
+.vertical .time-0900 { top: 15px; }
+.vertical .time-0930 { top: 45px; }
+.vertical .time-0945 { top: 60px; }
+.vertical .time-1030 { top: 105px; }
+.vertical .time-1115 { top: 150px; }
+.vertical .time-1215 { top: 210px; }
+.vertical .time-1300 { top: 255px; }
+.vertical .time-1315 { top: 270px; }
+.vertical .time-1430 { top: 345px; }
+.vertical .time-1530 { top: 405px; }
+.vertical .time-1630 { top: 465px; }
+.vertical .time-1715 { top: 510px; }
+.vertical .time-1815 { top: 570px; }
+.vertical .time-1830 { top: 585px; }
+.vertical .time-1930 { top: 645px; }
+.vertical .event.tracks-1 { width: 190px; }
+.vertical .event.tracks-2 { width: 380px; }
+.vertical .event.tracks-3 { width: 570px; }
+.vertical .event.tracks-4 { width: 760px; }
+.vertical .event.tracks-5 { width: 950px; }
+.vertical .event.tracks-6 { width: 1140px; }
+.vertical .event.tracks-7 { width: 1330px; }
+.vertical .event.tracks-8 { width: 1520px; }
+.vertical .track .title {
+    position: absolute;
+    top: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.event { z-index: 101; }
+.event.special { z-index: 100; }
+
+/* *********************** */
+
 .event {
     overflow: hidden;
-
-    position: absolute;
 
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -45,40 +127,6 @@
     -webkit-transition: all 0.8s ease 0s;
     -o-transition: all 0.8s ease 0s;
 }
-.event.duration-15 { width: 50px; }
-.event.duration-30 { width: 100px; }
-.event.duration-45 { width: 150px; }
-.event.duration-60 { width: 200px; }
-.event.duration-75 { width: 250px; }
-.event.duration-90 { width: 300px; }
-.event.duration-240 { width: 800px; }
-.event.duration-480 { width: 1600px; }
-.time-0900 { left: 0; }
-.time-0930 { left: 100px; }
-.time-0945 { left: 150px; }
-.time-1030 { left: 300px; }
-.time-1115 { left: 450px; }
-.time-1215 { left: 650px; }
-.time-1300 { left: 800px; }
-.time-1315 { left: 850px; }
-.time-1430 { left: 1100px; }
-.time-1530 { left: 1300px; }
-.time-1630 { left: 1500px; }
-.time-1715 { left: 1650px; }
-.time-1815 { left: 1850px; }
-.time-1830 { left: 1900px; }
-.time-1930 { left: 2100px; }
-.event.tracks-1 { height: 75px; }
-.event.tracks-2 { height: 150px; }
-.event.tracks-3 { height: 225px; }
-.event.tracks-4 { height: 300px; }
-.event.tracks-5 { height: 375px; }
-.event.tracks-6 { height: 450px; }
-.event.tracks-7 { height: 525px; }
-.event.tracks-8 { height: 600px; }
-
-.event { z-index: 101; }
-.event.special { z-index: 100; }
 
 .event.special {
     background: white url({{ STATIC_URL }}p5/i/empty-track.png) bottom left;
@@ -248,7 +296,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     {% for sid, timet in timetables %}
         {% schedule_data sid as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
-        <div id="{{ sdata.slug }}" class="schedule" data-conference="{{ sdata.conference }}">
+        <div id="{{ sdata.slug }}" class="schedule vertical" data-conference="{{ sdata.conference }}">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
                 {% for time_, events in tt.iterOnTimes %}
