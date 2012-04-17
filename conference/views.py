@@ -358,6 +358,35 @@ def schedule_event_interest(request, conference, slug, eid):
             val = 0
     return { 'interest': val }
 
+@login_required
+@json
+def schedule_event_booking(request, conference, slug, eid):
+    evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
+    seats = sum(evt.tracks.values_list('seats', flat=True))
+    booked = set(models.EventBooking.objects.filter(event=eid).values_list('user', flat=True))
+    if request.method == 'POST':
+        val = int(request.POST['booking'])
+        if val not in (0, 1):
+            return http.HttpResponseBadRequest()
+        if val == 1 and request.user.id not in booked:
+            if len(booked) >= seats:
+                return http.HttpResponseForbidden('no space left')
+            models.EventBooking(event=evt, user=request.user).save()
+            booked.add(request.user.id)
+        elif val == 0:
+            try:
+                booked.remove(request.user.id)
+            except KeyError:
+                pass
+            else:
+                models.EventBooking.objects\
+                    .filter(event=eid, user=request.user)\
+                    .delete()
+    return {
+        'booked': len(booked),
+        'available': seats,
+    }
+
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
     return render_to_response(
