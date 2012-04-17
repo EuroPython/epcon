@@ -181,10 +181,10 @@
             <hr />
             <div id="talk-voting">
                 <h4>Community voting is open</h4>
+                {% user_votes talk_id=talk.id as vote %}
                 <form action="{% url conference-voting %}" method="post">{% csrf_token %}
                     Vote this talk:
-                    {% talk_vote talk as vote %}
-                    <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{{ vote.vote|default:"0" }}" step="0.5" />
+                    <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{% firstof vote "0" %}" step="0.5" />
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ talk.id }}"></div>
                     <div>
                         {% url conference-voting as u %}
