@@ -1047,6 +1047,13 @@ class EventInterest(models.Model):
     class Meta:
         unique_together = (('user', 'event'),)
 
+class EventBooking(models.Model):
+    event = models.ForeignKey(Event)
+    user = models.ForeignKey('auth.User')
+
+    class Meta:
+        unique_together = (('user', 'event'),)
+
 class Hotel(models.Model):
     """
     Gli hotel permettono di tenere traccia dei posti convenzionati e non dove
