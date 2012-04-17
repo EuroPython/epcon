@@ -472,8 +472,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </nav>
 {% endcomment %}
 <div class="page clearfix" data-conference="{{ CONFERENCE }}">
-    {% user_votes as votes %}
-    {% user_events_interest as einterests %}
     {% for sid, timet in timetables %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
@@ -489,8 +487,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 <div class="title">{{ track }} Pizza Margherita</div>
                 {% for e in events %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
-                {% with einterests|attrib_:e.id as interest %}
-                <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if interest %}{% if interest > 0 %}highlighted{% else %}shadowed{% endif %}{% endif %}" data-id="{{ e.id }}">
+                <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}" data-id="{{ e.id }}"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}>
                     {% if e.talk %}
                     <div class="speakers">
                         <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
@@ -509,15 +506,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     <h3 class="name">{{ e.name }}</h3>
                     {% endif %}
                     <div class="tools">
-                        {% if request.user.is_authenticated %}
-                        {% if e.talk %}
-                        <div class="maximized talk-vote">{% if votes|attrib_:e.talk.id %}{{ votes|attrib_:e.talk.id }}/10{% endif %}</div>
-                        {% endif %}
-                        <div class="talk-interest">
-                            <button class="down {% if interest and interest < 0 %}active{% endif %}"></button>
-                            <button class="up {% if interest and interest > 0 %}active{% endif %}"></button>
-                        </div>
-                        {% endif %}
                         {% comment %}
                         {% if ref in overbooked %}
                         <div class="room-full">
@@ -527,124 +515,156 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         {% endcomment %}
                     </div>
                 </div>
-                {% endwith %}
                 {% endif %}
                 {% endfor %}
             </div>
             {% endfor %}
         </div>
         {% endwith %}
-    {% comment %}
-    <div id="{{ schedule.slug }}" class="schedule-wrapper"
-        data-schedule-url="{% url conference-schedule conference=schedule.conference slug=schedule.slug %}"
-        data-schedule-conference="{{ schedule.conference }}"
-        data-schedule-slug="{{ schedule.slug }}">
-        {% include "conference/schedule_body.html" %}
-    </div>
-    {% endcomment %}
     {% endfor %}
 </div>
 <script>
-function expose(e) {
-    e.addClass('exposed');
-    var dim = e.data('original');
-    if(!dim) {
-        dim = {
-            'width': e.outerWidth(),
-            'height': e.outerHeight(),
-            'left': parseInt(e.css('left')),
-            'top': parseInt(e.css('top'))
-        }
-        e.data('original', dim);
-    }
-    e.width(Math.min(dim.width * 2, 800));
-    e.height(dim.height * 4);
-    e.css('left', Math.max(dim.left - dim.width/2, 0));
-    e.css('top', Math.max(dim.top - dim.height/2, 0));
-    e.trigger('exposed');
-}
-function unexpose(e) {
-    e.removeClass('exposed');
-    var dim = e.data('original');
-    if(dim) {
-        e.width(dim.width);
-        e.height(dim.height);
-        e.css('left', dim.left);
-        e.css('top', dim.top);
-    }
-}
-$('.event')
-    .bind('click', function(ev) {
-        var e = $(this);
-        if(e.hasClass('exposed') && !$(ev.target).hasClass('event'))
-            return;
-        $('.exposed')
-            .not(e)
-            .each(function() { unexpose($(this)) });
-        if(e.hasClass('exposed')) {
-            unexpose(e);
-        }
-        else {
-            expose(e);
-        }
-    })
-    .bind('exposed', function(ev) {
-        var e = $(this);
-        if(!e.data('loaded')) {
-            var talk = $('h3.name a', e).attr('href');
-            if(talk) {
-                var ab = $('.abstract', e)
-                    .text('loading...');
-                $.ajax({
-                    url: talk + '.xml',
-                    dataType: 'xml',
-                    success: function(data, text, xhr) {
-                        ab.html($('talk abstract', data).html());
-                    }
-                });
+(function() {
+    function expose(e) {
+        e.addClass('exposed');
+        var dim = e.data('original');
+        if(!dim) {
+            dim = {
+                'width': e.outerWidth(),
+                'height': e.outerHeight(),
+                'left': parseInt(e.css('left')),
+                'top': parseInt(e.css('top'))
             }
-            e.data('loaded', 1);
+            e.data('original', dim);
         }
-    })
-    .find('.talk-interest button')
-        .bind('click', function(ev) {
-            var base = "{% url conference-schedule-event-interest conference="_C_" slug="_S_" eid="0" %}"
+        e.width(Math.min(dim.width * 2, 800));
+        e.height(dim.height * 4);
+        e.css('left', Math.max(dim.left - dim.width/2, 0));
+        e.css('top', Math.max(dim.top - dim.height/2, 0));
+        e.trigger('exposed');
+    }
+    function unexpose(e) {
+        e.removeClass('exposed');
+        var dim = e.data('original');
+        if(dim) {
+            e.width(dim.width);
+            e.height(dim.height);
+            e.css('left', dim.left);
+            e.css('top', dim.top);
+        }
+    }
+    {% user_votes as votes %}
+    var user_votes = {{ votes|json_ }};
+    {% user_events_interest as einterests %}
+    var user_interest = {{ einterests|json_ }};
+    var user_interest_toolbar = '' +
+    '   <div class="talk-interest">' + 
+    '       <button class="down"></button>' +
+    '       <button class="up"></button>' +
+    '   </div>' +
+    '';
+    $('.event')
+        .filter(function(ix) {
+            // escludo gli elementi "strutturali", non devo interagirci
             var e = $(this);
-            var sch = e.parents('.schedule');
-            var evt = e.parents('.event');
-            var url = base
-                .replace('0', evt.attr('data-id'))
-                .replace('_S_', sch.attr('id'))
-                .replace('_C_', sch.parent().attr('data-conference'));
-            var up = e.hasClass('up');
-            if(!e.hasClass('active')) {
-                var val = up ? 1 : -1;
+            return !e.hasClass('special') && !e.hasClass('break');
+        })
+        .bind('click', function(ev) {
+            var e = $(this);
+            if(e.hasClass('exposed') && !$(ev.target).hasClass('event'))
+                return;
+            $('.exposed')
+                .not(e)
+                .each(function() { unexpose($(this)) });
+            if(e.hasClass('exposed')) {
+                unexpose(e);
             }
             else {
-                var val = 0;
+                expose(e);
             }
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: {
-                    interest: val
-                },
-                success: function() {
-                    evt.removeClass('highlighted shadowed');
-                    var wrap = e.parents('.talk-interest');
-                    $('button', wrap).removeClass('active');
-                    if(val > 0) {
-                        $('button.up', wrap).addClass('active');
-                        evt.addClass('highlighted');
-                    }
-                    else if(val < 0) {
-                        $('button.down', wrap).addClass('active');
-                        evt.addClass('shadowed');
-                    }
-                }
-            });
-            return false;
         })
+        .bind('exposed', function(ev) {
+            var e = $(this);
+            if(!e.data('loaded')) {
+                var talk = $('h3.name a', e).attr('href');
+                if(talk) {
+                    var ab = $('.abstract', e)
+                        .text('loading...');
+                    $.ajax({
+                        url: talk + '.xml',
+                        dataType: 'xml',
+                        success: function(data, text, xhr) {
+                            ab.html($('talk abstract', data).html());
+                        }
+                    });
+                }
+                e.data('loaded', 1);
+            }
+        })
+        .each(function(ix, val) {
+            var e = $(this);
+            var tid = e.attr('data-talk');
+            var tools = e.children('.tools');
+            if(tid && tid in user_votes) {
+                tools.append('<div class="maximized talk-vote">' + user_votes[tid] + '/10</div>');
+            }
+            var i = user_interest[e.attr('data-id')];
+            if(i == 1) {
+                e.addClass('highlighted');
+            }
+            else if(i == -1) {
+                e.addClass('shadowed');
+            }
+            {% if request.user.is_authenticated %}
+            tools.append(user_interest_toolbar);
+            if(i == 1) {
+                tools.children('button.up').addClass('active');
+            }
+            else if(i == -1) {
+                tools.children('button.down').addClass('active');
+            }
+            {% endif %}
+        })
+        .find('.talk-interest button')
+            .bind('click', function(ev) {
+                var base = "{% url conference-schedule-event-interest conference="_C_" slug="_S_" eid="0" %}"
+                var e = $(this);
+                var sch = e.parents('.schedule');
+                var evt = e.parents('.event');
+                var url = base
+                    .replace('0', evt.attr('data-id'))
+                    .replace('_S_', sch.attr('id'))
+                    .replace('_C_', sch.parent().attr('data-conference'));
+                var up = e.hasClass('up');
+                if(!e.hasClass('active')) {
+                    var val = up ? 1 : -1;
+                }
+                else {
+                    var val = 0;
+                }
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        interest: val
+                    },
+                    success: function() {
+                        evt.removeClass('highlighted shadowed');
+                        var wrap = e.parents('.talk-interest');
+                        $('button', wrap).removeClass('active');
+                        if(val > 0) {
+                            $('button.up', wrap).addClass('active');
+                            evt.addClass('highlighted');
+                        }
+                        else if(val < 0) {
+                            $('button.down', wrap).addClass('active');
+                            evt.addClass('shadowed');
+                        }
+                    }
+                });
+                return false;
+            });
+})();
 </script>
 {% endblock %}
 
