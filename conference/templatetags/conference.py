@@ -1556,9 +1556,13 @@ def contains_(it, key):
     return key in it
 
 @fancy_tag(register, takes_context=True)
-def user_votes(context, uid=None, conference=None):
+def user_votes(context, uid=None, conference=None, talk_id=None):
     if uid is None:
         uid = context['request'].user.id
     if conference is None:
         conference = settings.CONFERENCE
-    return dataaccess.user_votes(uid, conference)
+    votes = dataaccess.user_votes(uid, conference)
+    if talk_id:
+        return votes.get(talk_id)
+    else:
+        return votes
