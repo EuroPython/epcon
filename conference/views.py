@@ -352,40 +352,6 @@ def schedule(request, conference, slug):
         'form': form,
     }
 
-@json
-def schedule_event(request, conference, slug, eid):
-    evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
-    if request.user.is_staff:
-        if request.method == 'POST':
-            pdata = request.POST.copy()
-            # essere permissivo sulla presenza di talk e custom mi facilita
-            # l'implementazione del "muovi"
-            if 'talk' not in pdata:
-                pdata['talk'] = evt.talk_id
-            if 'custom' not in pdata:
-                pdata['custom'] = evt.custom
-            # quando muovo un evento mi aspetto che lo schedule di destinazione
-            # sia specificato tramire conference + slug
-            if 'schedule_conference' in pdata:
-                sch = get_object_or_404(models.Schedule, conference=pdata['schedule_conference'], slug=pdata['schedule_slug'])
-                evt.schedule = sch
-            form = EventForm(instance=evt, data=pdata)
-            if form.is_valid():
-                evt = form.save()
-            else:
-                return http.HttpResponseBadRequest(simplejson.dumps(dict(form.errors)))
-        elif request.method == 'DELETE':
-            evt.delete()
-            return {}
-    elif request.method not in ('GET', 'HEAD'):
-        return http.HttpResponseNotAllowed(('GET', 'HEAD',))
-    return {
-        'id': evt.id,
-        'talk': evt.talk_id,
-        'custom': evt.custom,
-        'track': evt.track,
-    }
-
 @login_required
 @json
 def schedule_event_interest(request, conference, slug, eid):
