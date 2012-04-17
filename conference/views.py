@@ -328,28 +328,10 @@ def talk_report(request):
         context_instance = RequestContext(request))
 
 @render_to('conference/schedule.html')
-@transaction.commit_on_success
 def schedule(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
-    if request.method == 'POST':
-        if not request.user.is_staff:
-            return http.HttpResponseForbidden()
-        form = EventForm(data=request.POST, schedule=sch)
-        if form.is_valid():
-            evt = form.save(commit=False)
-            evt.schedule = sch
-            evt.save()
-    else:
-        form = EventForm(schedule=sch)
-    if request.is_ajax():
-        return render_to_response(
-            'conference/schedule_body.html', { 'schedule': sch },
-            context_instance = RequestContext(request),
-        )
     return {
         'schedule': sch,
-        'slug': slug,
-        'form': form,
     }
 
 @login_required
