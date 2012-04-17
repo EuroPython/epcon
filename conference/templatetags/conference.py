@@ -1540,7 +1540,6 @@ def user_events_interest(context, uid=None, conference=None, event_id=None):
     if conference is None:
         conference = settings.CONFERENCE
     ei = dataaccess.user_events_interest(uid, conference)
-    print ei
     if event_id:
         return ei.get(event_id, 0)
     else:
