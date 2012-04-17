@@ -1083,40 +1083,6 @@ def convert_twitter_links(text, args=None):
     text = re.sub(r'([^&])#([^\s]*)', r'\1<a href="http://twitter.com/search?q=%23\2">#\2</a>', text)
     return mark_safe(text)
 
-@register.filter
-def user_interest(event, user):
-    if not user.is_authenticated():
-        return 0
-    return models.EventInterest.objects.get_for_user(event, user)
-
-@fancy_tag(register, takes_context=True)
-def user_interest(context, event, user=None):
-    """
-    {% user_interest event [ user ] as var %}
-    Restituisce l'interesse di un utente, se manca viene recuperato dalla
-    request, per l'evento passato.
-    """
-    request = context.get('request')
-    if user is None:
-        if not request:
-            raise ValueError('request not found')
-        else:
-            user = request.user
-
-    if not user.is_authenticated():
-        return 0
-
-    try:
-        cached = request._user__events_interests
-    except AttributeError:
-        cached = dict((x['event_id'], x) for x in models.EventInterest.objects.filter(user=user).values())
-        request._user__events_interests = cached
-
-    try:
-        return cached[event.id]['interest']
-    except KeyError:
-        return 0
-
 @fancy_tag(register)
 def randint():
     return random.randint(0, sys.maxint)
@@ -1566,3 +1532,17 @@ def user_votes(context, uid=None, conference=None, talk_id=None):
         return votes.get(talk_id)
     else:
         return votes
+
+@fancy_tag(register, takes_context=True)
+def user_events_interest(context, uid=None, conference=None, event_id=None):
+    if uid is None:
+        uid = context['request'].user.id
+    if conference is None:
+        conference = settings.CONFERENCE
+    ei = dataaccess.user_events_interest(uid, conference)
+    print ei
+    if event_id:
+        return ei.get(event_id, 0)
+    else:
+        return ei
+
