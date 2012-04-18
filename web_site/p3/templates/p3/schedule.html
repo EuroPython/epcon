@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load conference assopy_tags %}
+{% load p3 conference assopy_tags %}
 
 {% block EXTRA_HEAD %}
 <style>
@@ -326,7 +326,7 @@
 .book-event .book, .book-event .cancel {
     background: #4895A3;
 }
-.book-event .sold-out {
+.book-event .sold-out, .book-event .restricted {
     background: #ABA18F;
 }
 .book-event a {
@@ -605,6 +605,19 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </div>
 <script>
 (function() {
+    {% user_votes as votes %}
+    var user_votes = {{ votes|json_ }};
+    {% user_events_interest as einterests %}
+    var user_interest = {{ einterests|json_ }};
+    var user_interest_toolbar = '' +
+    '   <div class="talk-interest">' +
+    '       <button class="down"></button>' +
+    '       <button class="up"></button>' +
+    '   </div>' +
+    '';
+    {% all_user_tickets as tickets %}
+    var user_tickets = {{ tickets|json_ }};
+
     function expose(e) {
         e.addClass('exposed');
         e.trigger('exposed');
@@ -630,6 +643,17 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         var be = $('<div class="book-event maximized">loading...</div>');
         $('.book-event', evt).remove();
         $('.tools', evt).append(be);
+        var full = false;
+        for(var ix=0; ix<user_tickets.length; ix++) {
+            if(user_tickets[1] == 'conference' && user_tickets[2].substr(2, 1) == 'F') {
+                full = true;
+                break;
+            }
+        }
+        if(!full) {
+            be.html('<div class="restricted"><a href="/training">Restricted access</a></div>');
+            return;
+        }
         var base = "{% url conference-schedule-event-booking conference="_C_" slug="_S_" eid="0" %}";
         $.get(event_url(base, evt), function(data) {
             if(data.user) {
@@ -640,7 +664,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     be.html('<div class="book"><a href="#">Book this event</a></div>');
                 }
                 else {
-                    be.html('<div class="sold-out">sold out</div>');
+                    be.html('<div class="sold-out">Sold out</div>');
                 }
             }
         }, 'json');
@@ -656,7 +680,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         var evt = b.parents('.event');
         var url = event_url(base, evt);
         if(b.hasClass('book')) {
-            if(confirm('EuroPython - Training reservation')) {
+            if(confirm('You are booking a seat in this training. You can cancel your booking at any time if you change your mind, to leave your seat available for someone else.')) {
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -685,7 +709,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             }
         }
         else if(b.hasClass('cancel')) {
-            if(confirm('EuroPython - Cancel reservation')) {
+            if(confirm('Are you sure to cancel your reservation?')) {
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -696,18 +720,11 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 });
             }
         }
+        else {
+            return true;
+        }
         return false;
     });
-    {% user_votes as votes %}
-    var user_votes = {{ votes|json_ }};
-    {% user_events_interest as einterests %}
-    var user_interest = {{ einterests|json_ }};
-    var user_interest_toolbar = '' +
-    '   <div class="talk-interest">' +
-    '       <button class="down"></button>' +
-    '       <button class="up"></button>' +
-    '   </div>' +
-    '';
     $('.event')
         .filter(function(ix) {
             // escludo gli elementi "strutturali", non devo interagirci
