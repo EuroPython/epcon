@@ -105,6 +105,64 @@
     width: 100%;
 }
 
+.vertical-narrow .hhmm {
+    float: left;
+    width: 40px;
+    height: 1395px;
+}
+.vertical-narrow.schedule { width: 1400px; }
+.vertical-narrow.schedule:after {
+    content: ' ';
+    display: block;
+    clear: both;
+}
+.vertical-narrow .track {
+    position: relative;
+    float: left;
+    width: 100px;
+    height: 1395px;
+}
+.vertical-narrow .event {
+    width: 100%;
+}
+.vertical-narrow .event.duration-15 { height: 30px; }
+.vertical-narrow .event.duration-30 { height: 60px; }
+.vertical-narrow .event.duration-45 { height: 90px; }
+.vertical-narrow .event.duration-60 { height: 120px; }
+.vertical-narrow .event.duration-75 { height: 150px; }
+.vertical-narrow .event.duration-90 { height: 180px; }
+.vertical-narrow .event.duration-240 { height: 480px; }
+.vertical-narrow .event.duration-480 { height: 960px; }
+.vertical-narrow .time-0900 { top: 15px; }
+.vertical-narrow .time-0930 { top: 75px; }
+.vertical-narrow .time-0945 { top: 105px; }
+.vertical-narrow .time-1030 { top: 195px; }
+.vertical-narrow .time-1115 { top: 285px; }
+.vertical-narrow .time-1215 { top: 405px; }
+.vertical-narrow .time-1300 { top: 495px; }
+.vertical-narrow .time-1315 { top: 525px; }
+.vertical-narrow .time-1430 { top: 675px; }
+.vertical-narrow .time-1530 { top: 795px; }
+.vertical-narrow .time-1630 { top: 915px; }
+.vertical-narrow .time-1715 { top: 1005px; }
+.vertical-narrow .time-1815 { top: 1125px; }
+.vertical-narrow .time-1830 { top: 1155px; }
+.vertical-narrow .time-1930 { top: 1275px; }
+.vertical-narrow .event.tracks-1 { width: 100px; }
+.vertical-narrow .event.tracks-2 { width: 200px; }
+.vertical-narrow .event.tracks-3 { width: 300px; }
+.vertical-narrow .event.tracks-4 { width: 400px; }
+.vertical-narrow .event.tracks-5 { width: 500px; }
+.vertical-narrow .event.tracks-6 { width: 600px; }
+.vertical-narrow .event.tracks-7 { width: 700px; }
+.vertical-narrow .event.tracks-8 { width: 800px; }
+.vertical-narrow .track .title {
+    position: absolute;
+    top: 0;
+    text-align: center;
+    width: 100%;
+}
+
 .event { z-index: 101; }
 .event.special { z-index: 100; }
 
@@ -150,6 +208,8 @@
     z-index: 200;
     box-shadow: 0 3px 8px 0 #aaa;
     border: 4px solid white;
+    width: 400px !important;
+    height: 350px !important;
 }
 .event .maximized {
     display: none;
@@ -164,7 +224,7 @@
 .event.exposed .name {
     height: auto;
     font-weight: bold;
-    margin: 4px 0;
+    margin: 8px 0;
     font-size: 12px;
 }
 
@@ -203,10 +263,11 @@
 
 .event .abstract {
     font-variant: normal;
-    margin: 10px 0;
     line-height: 1.5em;
-    height: 180px;
     overflow-y: auto;
+    height: 200px;
+    border: 1px solid #B0AB63;
+    padding: 2px;
 }
 
 .tools {
@@ -219,6 +280,10 @@
     bottom: 0;
     background: white;
     padding: 0 4px;
+}
+
+.tools > div {
+    margin-left: 5px;
 }
 
 .tools > div, .event.exposed .tools > div.maximized {
@@ -250,6 +315,22 @@
 }
 .talk-interest button.down.active {
     background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-down-lit.png) no-repeat left center;
+}
+
+.book-event {
+    padding: 0 4px;
+}
+.book-event > div {
+    padding: 0 4px;
+}
+.book-event .book, .book-event .cancel {
+    background: #4895A3;
+}
+.book-event .sold-out {
+    background: #ABA18F;
+}
+.book-event a {
+    color: white;
 }
 
 #schedule-navigator {
@@ -382,7 +463,8 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 else {
                     tracks.hide();
                 }
-                var direction = tracks.eq(0).parents('.schedule').hasClass('vertical') ? 'v' : 'h';
+                var sch = tracks.eq(0).parents('.schedule');
+                var direction = sch.get(0).className.indexOf('vertical') != -1 ? 'v' : 'h';
                 var offset = direction == 'v' ? tracks.width() : tracks.height();
                 if(!visible)
                     offset *= -1;
@@ -413,8 +495,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                                     var match = this.className.match(/tracks-(\d)/);
                                     if(!match)
                                         return false;
-                                    if(this.id == 'e543')
-                                        console.log(match, previous.length - tix -1, previous.length);
                                     return parseInt(match[1]) + (previous.length - tix -1) > previous.length;
                                 })
                                 .each(function() {
@@ -475,7 +555,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     {% for sid, timet in timetables %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
-        <div id="{{ sdata.slug }}" class="schedule vertical">
+        <div id="{{ sdata.slug }}" class="schedule vertical-narrow">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
                 {% for time_, events in tt.iterOnTimes %}
@@ -527,20 +607,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 (function() {
     function expose(e) {
         e.addClass('exposed');
-        var dim = e.data('original');
-        if(!dim) {
-            dim = {
-                'width': e.outerWidth(),
-                'height': e.outerHeight(),
-                'left': parseInt(e.css('left')),
-                'top': parseInt(e.css('top'))
-            }
-            e.data('original', dim);
-        }
-        e.width(Math.min(dim.width * 2, 800));
-        e.height(dim.height * 4);
-        e.css('left', Math.max(dim.left - dim.width/2, 0));
-        e.css('top', Math.max(dim.top - dim.height/2, 0));
         e.trigger('exposed');
     }
     function unexpose(e) {
@@ -553,12 +619,91 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             e.css('top', dim.top);
         }
     }
+    function event_url(base, evt) {
+        var sch = evt.parents('.schedule');
+        return base
+            .replace('0', evt.attr('data-id'))
+            .replace('_S_', sch.attr('id'))
+            .replace('_C_', sch.parent().attr('data-conference'));
+    }
+    function update_booking_status(evt) {
+        var be = $('<div class="book-event maximized">loading...</div>');
+        $('.book-event', evt).remove();
+        $('.tools', evt).append(be);
+        var base = "{% url conference-schedule-event-booking conference="_C_" slug="_S_" eid="0" %}";
+        $.get(event_url(base, evt), function(data) {
+            if(data.user) {
+                be.html('<div class="cancel"><a href="#">Cancel booking</a></div>');
+            }
+            else {
+                if(data.available) {
+                    be.html('<div class="book"><a href="#">Book this event</a></div>');
+                }
+                else {
+                    be.html('<div class="sold-out">sold out</div>');
+                }
+            }
+        }, 'json');
+    }
+    $('.track[data-track=training1] .event, .track[data-track=training2] .event')
+        .bind('exposed', function(ev) {
+            update_booking_status($(this));
+            return false;
+        });
+    $('.book-event a').live('click', function(ev) {
+        var b = $(this).parent();
+        var base = "{% url conference-schedule-event-booking conference="_C_" slug="_S_" eid="0" %}";
+        var evt = b.parents('.event');
+        var url = event_url(base, evt);
+        if(b.hasClass('book')) {
+            if(confirm('EuroPython - Training reservation')) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        value: 1
+                    },
+                    success: function() {
+                        update_booking_status(evt);
+                    },
+                    error: function(xhr, status, error_) {
+                        var msg = 'Cannot proceed';
+                        switch(xhr.responseText) {
+                            case 'sold out':
+                                msg = 'Training full';
+                                break;
+                            case 'time conflict':
+                                msg = 'Another training booked in this time slot';
+                                break;
+                            case 'ticket error':
+                                msg = 'Restricted access';
+                                break;
+                        }
+                        alert(msg);
+                    }
+                });
+            }
+        }
+        else if(b.hasClass('cancel')) {
+            if(confirm('EuroPython - Cancel reservation')) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {},
+                    success: function() {
+                        update_booking_status(evt);
+                    }
+                });
+            }
+        }
+        return false;
+    });
     {% user_votes as votes %}
     var user_votes = {{ votes|json_ }};
     {% user_events_interest as einterests %}
     var user_interest = {{ einterests|json_ }};
     var user_interest_toolbar = '' +
-    '   <div class="talk-interest">' + 
+    '   <div class="talk-interest">' +
     '       <button class="down"></button>' +
     '       <button class="up"></button>' +
     '   </div>' +
@@ -629,12 +774,8 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             .bind('click', function(ev) {
                 var base = "{% url conference-schedule-event-interest conference="_C_" slug="_S_" eid="0" %}"
                 var e = $(this);
-                var sch = e.parents('.schedule');
                 var evt = e.parents('.event');
-                var url = base
-                    .replace('0', evt.attr('data-id'))
-                    .replace('_S_', sch.attr('id'))
-                    .replace('_C_', sch.parent().attr('data-conference'));
+                var url = event_url(base, evt);
                 var up = e.hasClass('up');
                 if(!e.hasClass('active')) {
                     var val = up ? 1 : -1;
