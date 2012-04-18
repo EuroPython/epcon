@@ -337,6 +337,11 @@
     font-size: 10px;
 }
 
+.close-event {
+    position: absolute;
+    right: 5px;
+}
+
 #schedule-navigator {
     position: fixed;
     top: 33%;
@@ -860,20 +865,25 @@ var user_tickets = [];
             var e = $(this);
             return !e.hasClass('special') && !e.hasClass('break');
         })
+        .prepend('' +
+            '<div class="maximized close-event">' +
+            '   <a href="#"><img src="{{ STATIC_URL }}p5/i/close.png" width="24" /></a>' +
+            '</div>')
         .bind('click', function(ev) {
             var e = $(this);
-            if(e.hasClass('exposed') && !$(ev.target).hasClass('event'))
+            if(e.hasClass('exposed'))
                 return;
             $('.exposed')
                 .not(e)
                 .each(function() { unexpose($(this)) });
-            if(e.hasClass('exposed')) {
-                unexpose(e);
-            }
-            else {
-                expose(e);
-            }
+            expose(e);
         })
+        .find('.close-event a')
+            .bind('click', function(ev) {
+                unexpose($(this).parents('.event'));
+                return false;
+            })
+            .end()
         .bind('exposed', function(ev) {
             var e = $(this);
             if(!e.data('loaded')) {
