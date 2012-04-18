@@ -328,62 +328,10 @@ def talk_report(request):
         context_instance = RequestContext(request))
 
 @render_to('conference/schedule.html')
-@transaction.commit_on_success
 def schedule(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
-    if request.method == 'POST':
-        if not request.user.is_staff:
-            return http.HttpResponseForbidden()
-        form = EventForm(data=request.POST, schedule=sch)
-        if form.is_valid():
-            evt = form.save(commit=False)
-            evt.schedule = sch
-            evt.save()
-    else:
-        form = EventForm(schedule=sch)
-    if request.is_ajax():
-        return render_to_response(
-            'conference/schedule_body.html', { 'schedule': sch },
-            context_instance = RequestContext(request),
-        )
     return {
         'schedule': sch,
-        'slug': slug,
-        'form': form,
-    }
-
-@json
-def schedule_event(request, conference, slug, eid):
-    evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
-    if request.user.is_staff:
-        if request.method == 'POST':
-            pdata = request.POST.copy()
-            # essere permissivo sulla presenza di talk e custom mi facilita
-            # l'implementazione del "muovi"
-            if 'talk' not in pdata:
-                pdata['talk'] = evt.talk_id
-            if 'custom' not in pdata:
-                pdata['custom'] = evt.custom
-            # quando muovo un evento mi aspetto che lo schedule di destinazione
-            # sia specificato tramire conference + slug
-            if 'schedule_conference' in pdata:
-                sch = get_object_or_404(models.Schedule, conference=pdata['schedule_conference'], slug=pdata['schedule_slug'])
-                evt.schedule = sch
-            form = EventForm(instance=evt, data=pdata)
-            if form.is_valid():
-                evt = form.save()
-            else:
-                return http.HttpResponseBadRequest(simplejson.dumps(dict(form.errors)))
-        elif request.method == 'DELETE':
-            evt.delete()
-            return {}
-    elif request.method not in ('GET', 'HEAD'):
-        return http.HttpResponseNotAllowed(('GET', 'HEAD',))
-    return {
-        'id': evt.id,
-        'talk': evt.talk_id,
-        'custom': evt.custom,
-        'track': evt.track,
     }
 
 @login_required
@@ -409,6 +357,34 @@ def schedule_event_interest(request, conference, slug, eid):
         except models.EventInterest.DoesNotExist:
             val = 0
     return { 'interest': val }
+
+@login_required
+@json
+def schedule_event_booking(request, conference, slug, eid):
+    evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
+    status = models.EventBooking.objects.booking_status(evt.id)
+    if request.method == 'POST':
+        fc = utils.dotted_import(settings.FORMS['EventBooking'])
+        form = fc(event=evt.id, user=request.user.id, data=request.POST)
+        if form.is_valid():
+            if form.cleaned_data['value']:
+                models.EventBooking.objects.book_event(evt.id, request.user.id)
+                status['booked'].append(request.user.id)
+            else:
+                models.EventBooking.objects.cancel_reservation(evt.id, request.user.id)
+                status['booked'].remove(request.user.id)
+        else:
+            try:
+                msg = unicode(form.errors['value'][0])
+            except:
+                msg = ""
+            return http.HttpResponseBadRequest(msg)
+    return {
+        'booked': len(status['booked']),
+        'available': max(status['available'], 0),
+        'seats': status['seats'],
+        'user': request.user.id in status['booked'],
+    }
 
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)

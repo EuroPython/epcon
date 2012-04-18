@@ -1047,6 +1047,44 @@ class EventInterest(models.Model):
     class Meta:
         unique_together = (('user', 'event'),)
 
+class EventBookingManager(models.Manager):
+    def booking_status(self, eid):
+        seats = sum(EventTrack.objects\
+            .filter(event=eid)\
+            .values_list('track__seats', flat=True))
+        booked = list(EventBooking.objects\
+            .filter(event=eid)\
+            .values_list('user', flat=True))
+        return {
+            'seats': seats,
+            'booked': booked,
+            'available': seats - len(booked),
+        }
+
+    def booking_available(self, eid, uid):
+        st = self.booking_status(eid)
+        return (uid in st['booked']) or (st['available'] > 0)
+
+    def book_event(self, eid, uid):
+        try:
+            e = EventBooking.objects.get(event=eid, user=uid)
+        except EventBooking.DoesNotExist:
+            e = EventBooking(event_id=eid, user_id=uid)
+            e.save()
+        return e
+
+    def cancel_reservation(self, eid, uid):
+        EventBooking.objects.filter(event=eid, user=uid).delete()
+
+class EventBooking(models.Model):
+    event = models.ForeignKey(Event)
+    user = models.ForeignKey('auth.User')
+
+    objects = EventBookingManager()
+
+    class Meta:
+        unique_together = (('user', 'event'),)
+
 class Hotel(models.Model):
     """
     Gli hotel permettono di tenere traccia dei posti convenzionati e non dove
