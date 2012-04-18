@@ -464,6 +464,18 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     </div>
 </nav>
 <script>
+{% if request.user.is_authenticated %}
+{% user_votes as votes %}
+var user_votes = {{ votes|json_ }};
+{% user_events_interest as einterests %}
+var user_interest = {{ einterests|json_ }};
+{% all_user_tickets as tickets %}
+var user_tickets = {{ tickets|json_ }};
+{% else %}
+var user_votes = {};
+var user_interest = {};
+var user_tickets = [];
+{% endif %}
 (function($) {
     $.fn.extend({
         'events': function() {
@@ -581,8 +593,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         .end()
     .find('.highlight-chart')
         .bind('click', function(ev) {
-            {% user_votes as votes %}
-            var votes = {{ votes|json_ }};
             var slices = {};
             var srex = /time-(\d+)/;
             $('.event').dim()
@@ -611,7 +621,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     var kvotes = [];
                     for(var ix=0; ix<events.length; ix++) {
                         var tid = events[ix].attr('data-talk');
-                        kvotes.push([ votes[tid] || 0, events[ix] ]);
+                        kvotes.push([ user_votes[tid] || 0, events[ix] ]);
                     }
                     kvotes.sort(function(a,b) { return a[0] - b[0]; }).reverse();
                     var max = kvotes[0][0];
@@ -719,18 +729,12 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </div>
 <script>
 (function() {
-    {% user_votes as votes %}
-    var user_votes = {{ votes|json_ }};
-    {% user_events_interest as einterests %}
-    var user_interest = {{ einterests|json_ }};
     var user_interest_toolbar = '' +
     '   <div class="talk-interest">' +
     '       <button class="down"></button>' +
     '       <button class="up"></button>' +
     '   </div>' +
     '';
-    {% all_user_tickets as tickets %}
-    var user_tickets = {{ tickets|json_ }};
 
     function expose(e) {
         e.addClass('exposed');
