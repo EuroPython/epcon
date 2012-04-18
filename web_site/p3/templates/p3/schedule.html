@@ -108,7 +108,7 @@
 .vertical-narrow .hhmm {
     float: left;
     width: 40px;
-    height: 1395px;
+    height: 1360px;
 }
 .vertical-narrow.schedule:after {
     content: ' ';
@@ -119,7 +119,7 @@
     position: relative;
     float: left;
     width: 100px;
-    height: 1395px;
+    height: 1360px;
 }
 .vertical-narrow .event {
     width: 100%;
@@ -132,21 +132,21 @@
 .vertical-narrow .event.duration-90 { height: 180px; }
 .vertical-narrow .event.duration-240 { height: 480px; }
 .vertical-narrow .event.duration-480 { height: 960px; }
-.vertical-narrow .time-0900 { top: 15px; }
-.vertical-narrow .time-0930 { top: 75px; }
-.vertical-narrow .time-0945 { top: 105px; }
-.vertical-narrow .time-1030 { top: 195px; }
-.vertical-narrow .time-1115 { top: 285px; }
-.vertical-narrow .time-1215 { top: 405px; }
-.vertical-narrow .time-1300 { top: 495px; }
-.vertical-narrow .time-1315 { top: 525px; }
-.vertical-narrow .time-1430 { top: 675px; }
-.vertical-narrow .time-1530 { top: 795px; }
-.vertical-narrow .time-1630 { top: 915px; }
-.vertical-narrow .time-1715 { top: 1005px; }
-.vertical-narrow .time-1815 { top: 1125px; }
-.vertical-narrow .time-1830 { top: 1155px; }
-.vertical-narrow .time-1930 { top: 1275px; }
+.vertical-narrow .time-0900 { top: 40px; }
+.vertical-narrow .time-0930 { top: 100px; }
+.vertical-narrow .time-0945 { top: 130px; }
+.vertical-narrow .time-1030 { top: 220px; }
+.vertical-narrow .time-1115 { top: 310px; }
+.vertical-narrow .time-1215 { top: 430px; }
+.vertical-narrow .time-1300 { top: 520px; }
+.vertical-narrow .time-1315 { top: 550px; }
+.vertical-narrow .time-1430 { top: 700px; }
+.vertical-narrow .time-1530 { top: 820px; }
+.vertical-narrow .time-1630 { top: 940px; }
+.vertical-narrow .time-1715 { top: 1030px; }
+.vertical-narrow .time-1815 { top: 1150px; }
+.vertical-narrow .time-1830 { top: 1180px; }
+.vertical-narrow .time-1930 { top: 1300px; }
 .vertical-narrow .event.tracks-1 { width: 100px; }
 .vertical-narrow .event.tracks-2 { width: 200px; }
 .vertical-narrow .event.tracks-3 { width: 300px; }
@@ -681,6 +681,7 @@ var user_tickets = [];
         <div id="{{ sdata.slug }}" class="schedule vertical-narrow">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
+                <div>TRACK</div>
                 {% for time_, events in tt.iterOnTimes %}
                 <div class="time-{{ time_|time:"Hi" }}"><span>{{ time_|time:"H" }}</span>:{{ time_|time:"i" }}</div>
                 {% endfor %}
