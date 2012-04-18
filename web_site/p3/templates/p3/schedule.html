@@ -309,10 +309,10 @@
     padding-left: 18px;
 }
 .talk-interest button.up {
-    background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-up.png) no-repeat left center;
+    background: transparent url({{ STATIC_URL }}p5/i/star-on-16.png) no-repeat left center;
 }
 .talk-interest button.up.active {
-    background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-up-lit.png) no-repeat left center;
+    background: transparent url({{ STATIC_URL }}p5/i/star-off-16.png) no-repeat left center;
 }
 .talk-interest button.down {
     background: transparent url({{ STATIC_URL }}p5/i/icon-thumb-down.png) no-repeat left center;
@@ -731,7 +731,6 @@ var user_tickets = [];
 (function() {
     var user_interest_toolbar = '' +
     '   <div class="talk-interest">' +
-    '       <button class="down"></button>' +
     '       <button class="up"></button>' +
     '   </div>' +
     '';
