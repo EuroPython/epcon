@@ -878,6 +878,17 @@ var user_tickets = [];
                 .each(function() { unexpose($(this)) });
             expose(e);
         })
+        .find('a')
+            .bind('click', function(ev) {
+                /*
+                 * non voglio seguire i link su un evento collassato
+                 */
+                var evt = $(this).parents('.event');
+                if(!evt.hasClass('exposed'))
+                    ev.preventDefault();
+                return true;
+            })
+            .end()
         .find('.close-event a')
             .bind('click', function(ev) {
                 unexpose($(this).parents('.event'));
