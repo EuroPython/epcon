@@ -382,6 +382,34 @@
     padding: 5px;
     width: 150px;
 }
+
+/* eventi evidenziati */
+
+/* starred dall'utente (+1) */
+.event.interest-up {
+    background: #d7f5fa;
+}
+
+/* downvoted dall'utente (-1) */
+.event.interest-down {
+    opacity: .7;
+    background: #999;
+}
+
+/* risultato di una ricerca */
+.event.highlighted {
+    box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
+    -moz-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
+    -webkit-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
+    -o-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
+    -ms-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
+}
+
+/* escluso da una ricerca */
+.event.dimmed {
+    opacity: 1;
+    background: #bbb;
+}
 </style>
 {% endblock %}
 
@@ -772,18 +800,18 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             }
             var i = user_interest[e.attr('data-id')];
             if(i == 1) {
-                e.addClass('highlighted');
+                e.addClass('interest-up');
             }
             else if(i == -1) {
-                e.addClass('shadowed');
+                e.addClass('interest-down');
             }
             {% if request.user.is_authenticated %}
             tools.append(user_interest_toolbar);
             if(i == 1) {
-                tools.children('button.up').addClass('active');
+                tools.find('button.up').addClass('active');
             }
             else if(i == -1) {
-                tools.children('button.down').addClass('active');
+                tools.find('button.down').addClass('active');
             }
             {% endif %}
         })
@@ -807,16 +835,16 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         interest: val
                     },
                     success: function() {
-                        evt.removeClass('highlighted shadowed');
+                        evt.removeClass('interest-up interest-down');
                         var wrap = e.parents('.talk-interest');
                         $('button', wrap).removeClass('active');
                         if(val > 0) {
                             $('button.up', wrap).addClass('active');
-                            evt.addClass('highlighted');
+                            evt.addClass('interest-up');
                         }
                         else if(val < 0) {
                             $('button.down', wrap).addClass('active');
-                            evt.addClass('shadowed');
+                            evt.addClass('interest-down');
                         }
                     }
                 });
