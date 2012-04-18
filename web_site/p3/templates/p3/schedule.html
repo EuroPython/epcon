@@ -196,6 +196,10 @@
     margin-top: 100px;
 }
 
+.event a {
+    border: none;
+}
+
 .event .name {
     line-height: 14px;
     height: 28px;
@@ -210,6 +214,7 @@
     border: 4px solid white;
     width: 400px !important;
     height: 350px !important;
+    opacity: 1 !important;
 }
 .event .maximized {
     display: none;
@@ -333,6 +338,12 @@
     color: white;
 }
 
+.event .tag {
+    cursor: pointer;
+    margin: 0 2px 2px 0;
+    font-size: 10px;
+}
+
 #schedule-navigator {
     position: fixed;
     top: 33%;
@@ -407,8 +418,8 @@
 
 /* escluso da una ricerca */
 .event.dimmed {
-    opacity: 1;
-    background: #bbb;
+    opacity: 0.7;
+    background: #ddd;
 }
 </style>
 {% endblock %}
@@ -447,12 +458,38 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             </ul>
             <h3>Talks</h3>
             <ul>
-                <li><a href="#">Italian track</a></li>
+                <li><a href="#" class="highlight-chart">Highlight using my votes</a></li>
             </ul>
         </div>
     </div>
 </nav>
 <script>
+(function($) {
+    $.fn.extend({
+        'events': function() {
+            return this.filter('.event');
+        },
+        'highlight': function() {
+            return this.events()
+                .removeClass('dimmed')
+                .addClass('highlighted');
+        },
+        'dim': function() {
+            return this.events()
+                .removeClass('highlighted')
+                .addClass('dimmed');
+        },
+        'removeDimHighlight': function() {
+            return this.events()
+                .removeClass('dimmed highlighted')
+        },
+        'byTag': function(tag) {
+            return this.events()
+                .find('.tag:contains(' + tag + ')')
+                .parents('.event')
+        }
+    });
+})(jQuery);
 (function() {
     var nav = $('#schedule-navigator');
     var options = nav.children('div');
@@ -541,6 +578,55 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 }
                 return false;
             })
+        .end()
+    .find('.highlight-chart')
+        .bind('click', function(ev) {
+            {% user_votes as votes %}
+            var votes = {{ votes|json_ }};
+            var slices = {};
+            var srex = /time-(\d+)/;
+            $('.event').dim()
+            $('.track')
+                .each(function() {
+                    var track = $(this);
+                    var sch = track.parents('.schedule').attr('id');
+                    if(!(sch in slices)) {
+                        var sslices = {};
+                        slices[sch] = sslices;
+                    }
+                    else {
+                        var sslices = slices[sch];
+                    }
+                    track.children('.event[data-talk]')
+                        .each(function() {
+                            var start = parseInt(this.className.match(srex)[1]);
+                            if(!(start in sslices)) {
+                                sslices[start] = [];
+                            }
+                            sslices[start].push($(this));
+                        });
+                })
+            $.each(slices, function(schedule, subslice) {
+                $.each(subslice, function(key, events) {
+                    var kvotes = [];
+                    for(var ix=0; ix<events.length; ix++) {
+                        var tid = events[ix].attr('data-talk');
+                        kvotes.push([ votes[tid] || 0, events[ix] ]);
+                    }
+                    kvotes.sort(function(a,b) { return a[0] - b[0]; }).reverse();
+                    var max = kvotes[0][0];
+                    if(max > 5) {
+                        for(var ix=0; ix<kvotes.length; ix++) {
+                            var vote = kvotes[ix][0];
+                            if(vote == max) {
+                                kvotes[ix][1].highlight();
+                            }
+                        }
+                    }
+                });
+            });
+            return false;
+        })
 })();
 </script>
 {% comment %}
@@ -607,7 +693,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     <h3 class="name"><a href="{% url conference-talk slug=e.talk.slug %}">{{ e.name }}</a></h3>
                     <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
                     <div class="maximized all-tags">
-                        {% for tag in e.talk.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+                        {% for tag in e.talk.tags %}<a class="tag">{{ tag }}</a>{% endfor %}
                     </div>
                     <div class="maximized abstract cms"> </div>
                     {% else %}
@@ -849,7 +935,16 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     }
                 });
                 return false;
-            });
+            })
+            .end()
+        .find('.tag')
+            .bind('click', function(ev) {
+                $('.event')
+                    .removeDimHighlight()
+                    .byTag($(this).text())
+                    .highlight();
+                return false;
+            })
 })();
 </script>
 {% endblock %}
