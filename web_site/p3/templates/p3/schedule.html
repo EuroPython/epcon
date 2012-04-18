@@ -354,6 +354,15 @@
     -ms-transform: translate(-145px, 0) rotate(-90deg);
 }
 
+#schedule-navigator a {
+    border: 0;
+}
+
+#schedule-navigator .disabled {
+    color: #999;
+    opacity: 0.7;
+}
+
 #schedule-navigator > div {
     float: left;
     margin-right: 20px;
@@ -438,7 +447,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             </ul>
         </div>
     </div>
-    <div>My schedule</div>
+    <div class="disabled">My schedule</div>
     <div>
         <a href="#">Filters</a>
         <div>
@@ -502,13 +511,20 @@ var user_tickets = [];
         .children('a')
             .bind('click', function(ev) {
                 var e = $(this);
+                var target = e.parent().children('div');
+                var visible = !target.is(':hidden');
                 options
-                    .children('div').hide();
-                e.parent()
-                    .children('div').show();
+                    .removeClass('selected')
+                    .children('div')
+                        .hide();
+                if(!visible)
+                    target
+                        .show()
+                        .parent()
+                        .addClass('selected');
                 return false;
             })
-        .end()
+            .end()
         .children('div')
             .bind('click', function(ev) {
                 $(this).hide();
@@ -529,9 +545,11 @@ var user_tickets = [];
                  */
                 if(visible) {
                     tracks.show();
+                    e.removeClass('filter-active');
                 }
                 else {
                     tracks.hide();
+                    e.addClass('filter-active');
                 }
                 var sch = tracks.eq(0).parents('.schedule');
                 var direction = sch.get(0).className.indexOf('vertical') != -1 ? 'v' : 'h';
