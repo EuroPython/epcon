@@ -362,30 +362,28 @@ def schedule_event_interest(request, conference, slug, eid):
 @json
 def schedule_event_booking(request, conference, slug, eid):
     evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
-    seats = sum(evt.tracks.values_list('seats', flat=True))
-    booked = set(models.EventBooking.objects.filter(event=eid).values_list('user', flat=True))
+    status = models.EventBooking.objects.booking_status(evt.id)
     if request.method == 'POST':
-        val = int(request.POST['booking'])
-        if val not in (0, 1):
-            return http.HttpResponseBadRequest()
-        if val == 1 and request.user.id not in booked:
-            if len(booked) >= seats:
-                return http.HttpResponseForbidden('no space left')
-            models.EventBooking(event=evt, user=request.user).save()
-            booked.add(request.user.id)
-        elif val == 0:
-            try:
-                booked.remove(request.user.id)
-            except KeyError:
-                pass
+        fc = utils.dotted_import(settings.FORMS['EventBooking'])
+        form = fc(event=evt.id, user=request.user.id, data=request.POST)
+        if form.is_valid():
+            if form.cleaned_data['value']:
+                models.EventBooking.objects.book_event(evt.id, request.user.id)
+                status['booked'].append(request.user.id)
             else:
-                models.EventBooking.objects\
-                    .filter(event=eid, user=request.user)\
-                    .delete()
+                models.EventBooking.objects.cancel_reservation(evt.id, request.user.id)
+                status['booked'].remove(request.user.id)
+        else:
+            try:
+                msg = unicode(form.errors['value'][0])
+            except:
+                msg = ""
+            return http.HttpResponseBadRequest(msg)
     return {
-        'booked': len(booked),
-        'available': seats,
-        'user': request.user.id in booked,
+        'booked': len(status['booked']),
+        'available': max(status['available'], 0),
+        'seats': status['seats'],
+        'user': request.user.id in status['booked'],
     }
 
 def schedule_xml(request, conference, slug):

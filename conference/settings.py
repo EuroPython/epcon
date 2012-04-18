@@ -23,6 +23,7 @@ FORMS = {
     'PaperSubmission': 'conference.forms.SubmissionForm',
     'AdditionalPaperSubmission': 'conference.forms.TalkForm',
     'Profile': 'conference.forms.ProfileForm',
+    'EventBooking': 'conference.forms.EventBookingForm',
 }
 FORMS.update(getattr(settings, 'CONFERENCE_FORMS', {}))
 

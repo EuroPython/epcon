@@ -386,3 +386,17 @@ class ProfileForm(forms.ModelForm):
         profile = super(ProfileForm, self).save(commit)
         profile.setBio(self.cleaned_data.get('bio', ''))
         return profile
+
+class EventBookingForm(forms.Form):
+    value = forms.BooleanField(required=False)
+
+    def __init__(self, event, user, *args, **kwargs):
+        super(EventBookingForm, self).__init__(*args, **kwargs)
+        self.event = event
+        self.user = user
+
+    def clean_value(self):
+        data = self.cleaned_data.get('value', False)
+        if data and not models.EventBooking.objects.booking_available(self.event, self.user):
+            raise forms.ValidationError('sold out')
+        return data
