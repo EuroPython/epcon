@@ -10,6 +10,7 @@ import assopy.forms as aforms
 import conference.forms as cforms 
 import conference.models as cmodels
 
+from p3 import dataaccess
 from p3 import models
 
 import datetime
@@ -753,4 +754,17 @@ class P3FormTickets(aforms.FormTickets):
         if not data['tickets']:
             raise forms.ValidationError('No tickets')
 
+        return data
+
+class P3EventBookingForm(cforms.EventBookingForm):
+    def clean_value(self):
+        data = super(P3EventBookingForm, self).clean_value()
+        if data:
+            tickets = dataaccess.user_tickets(
+                user=User.objects.get(id=self.user), conference=settings.CONFERENCE_CONFERENCE, only_complete=True)
+            for t in tickets:
+                if t.fare.ticket_type == 'conference' and t.fare.code[2] == 'F':
+                    break
+            else:
+                raise forms.ValidationError('ticket error')
         return data

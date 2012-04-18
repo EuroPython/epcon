@@ -220,6 +220,7 @@ CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
     'AdditionalPaperSubmission': 'p3.forms.P3SubmissionAdditionalForm',
     'Profile': 'p3.forms.P3ProfileForm',
+    'EventBooking': 'p3.forms.P3EventBookingForm',
 }
 
 def CONFERENCE_VOTING_OPENED(conf, user):
