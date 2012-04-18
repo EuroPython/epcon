@@ -2,6 +2,7 @@
 from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels
+from assopy import models as amodels
 from p3 import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -83,11 +84,7 @@ def profiles_data(uids):
 
     return output
 
-def user_tickets(user, conference, only_complete=False):
-    """
-    Restituisce i biglietti associati all'utente (perché li ha comprati o
-    perché gli sono stati assegnati).
-    """
+def _user_ticket(user, conference):
     q1 = user.ticket_set.all()\
         .conference(conference)
 
@@ -97,6 +94,62 @@ def user_tickets(user, conference, only_complete=False):
 
     qs = (q1 | q2)\
         .select_related('orderitem__order', 'fare')
+    return qs
+
+def _ticket_complete(t):
+    # considero come complete i ticket pagati tramite bonifico bancario o via
+    # admin; poiché la notifica IPN è quasi contestuale al ritorno dell'utente
+    # sul nostro sito, filtrando via gli ordini non confermati elimino di fatto
+    # vecchi record rimasti nel db dopo che l'utente non ha confermato il
+    # pagamento sul sito paypal o dopo che è tornato indietro utilizzando il
+    # pulsante back
+    order = t.orderitem.order
+    return (order.method in ('bank', 'admin')) or order.complete()
+
+def all_user_tickets(uid, conference):
+    """
+    Versione cache-friendly della user_tickets, restituisce un elenco di
+        (ticket_id, fare_type, fare_code, complete)
+    per ogni biglietto associato all'utente
+    """
+    qs = _user_ticket(User.objects.get(id=uid), conference)
+    output = []
+    for t in qs:
+        output.append((
+            t.id, t.fare.ticket_type, t.fare.code,
+            _ticket_complete(t)
+        ))
+    return output
+
+def _i_all_user_tickets(sender, **kw):
+    o = kw['instance']
+    if sender is models.TicketConference:
+        uid = o.ticket.user_id
+        conference = o.ticket.fare.conference
+    elif sender is cmodels.Ticket:
+        uid = o.user_id
+        conference = o.fare.conference
+    else:
+        uid = o.user.user_id
+        try:
+            conference = o.orderitem_set\
+                .all()\
+                .distinct()\
+                .values('ticket__fare__conference')[0]
+        except IndexError:
+            return []
+    return 'all_user_tickets:%s:%s' % (uid, conference)
+
+all_user_tickets = cache_me(
+    models=(models.TicketConference, cmodels.Ticket, amodels.Order,),
+    key='all_user_tickets:%(uid)s:%(conference)s')(all_user_tickets, _i_all_user_tickets)
+
+def user_tickets(user, conference, only_complete=False):
+    """
+    Restituisce i biglietti associati all'utente (perché li ha comprati o
+    perché gli sono stati assegnati).
+    """
+    qs = _user_ticket(user, conference)
     if not only_complete:
         return qs
     else:
@@ -108,8 +161,7 @@ def user_tickets(user, conference, only_complete=False):
         # utilizzando il pulsante back
         tickets = list(qs)
         for ix, t in list(enumerate(tickets))[::-1]:
-            order = t.orderitem.order
-            if order.method not in ('bank', 'admin') and not order.complete():
+            if not _ticket_complete(t):
                 del tickets[ix]
         return tickets
 

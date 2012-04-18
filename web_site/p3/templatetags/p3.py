@@ -500,3 +500,16 @@ def frozen_reason(ticket):
         return 'refund pending'
     else:
         return ''
+
+@fancy_tag(register, takes_context=True)
+def all_user_tickets(context, uid=None, conference=None, status="complete"):
+    if uid is None:
+        uid = context['request'].user.id
+    if conference is None:
+        conference = settings.CONFERENCE_CONFERENCE
+    tickets = dataaccess.all_user_tickets(uid, conference)
+    if status == 'complete':
+        tickets = filter(lambda x: x[3], tickets)
+    elif status == 'incomplete':
+        tickets = filter(lambda x: not x[3], tickets)
+    return tickets

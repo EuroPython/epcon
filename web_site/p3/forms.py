@@ -760,10 +760,9 @@ class P3EventBookingForm(cforms.EventBookingForm):
     def clean_value(self):
         data = super(P3EventBookingForm, self).clean_value()
         if data:
-            tickets = dataaccess.user_tickets(
-                user=User.objects.get(id=self.user), conference=settings.CONFERENCE_CONFERENCE, only_complete=True)
-            for t in tickets:
-                if t.fare.ticket_type == 'conference' and t.fare.code[2] == 'F':
+            tickets = dataaccess.all_user_tickets(self.user, conference=settings.CONFERENCE_CONFERENCE)
+            for tid, ttype, fcode, complete in tickets:
+                if complete and ttype == 'conference' and fcode[2] == 'F':
                     break
             else:
                 raise forms.ValidationError('ticket error')
