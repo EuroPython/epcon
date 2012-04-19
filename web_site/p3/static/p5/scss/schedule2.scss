@@ -380,6 +380,7 @@ body#schedule > .page > .container {
     .duration-90 { height: $slot15*6; }
     .duration-240 { height: $slot15*16; }
     .duration-480 { height: $slot15*32; }
+    .duration-630 { height: $slot15*42; }
     .time-0900 { top: $event0 + $slot15 * 0; }
     .time-0930 { top: $event0 + $slot15 * 2; }
     .time-0945 { top: $event0 + $slot15 * 3; }

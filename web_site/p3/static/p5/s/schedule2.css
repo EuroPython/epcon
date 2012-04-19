@@ -303,6 +303,8 @@ body#schedule > .page > .container {
   height: 480px; }
 .conference-schedules.timetable.vertical-narrow .duration-480 {
   height: 960px; }
+.conference-schedules.timetable.vertical-narrow .duration-630 {
+  height: 1260px; }
 .conference-schedules.timetable.vertical-narrow .time-0900 {
   top: 40px; }
 .conference-schedules.timetable.vertical-narrow .time-0930 {
