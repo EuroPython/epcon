@@ -192,60 +192,30 @@ class TNode(template.Node):
         except AttributeError:
             return v
 
-@register.tag
-def conference_talks(parser, token):
-    """
-    {% conference_talks [ speaker ] [ conference ] [ "random" ] [ tags ] as var %}
-    inserisce in var l'elenco dei talk (opzionalmente è possibile
-    filtrare per speaker e conferenza).
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    if contents[-2] != 'as':
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    var_name = contents[-1]
-    contents = contents[1:-2]
+@fancy_tag(register)
+def conference_talks(conference=None, status="accepted", tag=None, type=None):
+    if conference is None:
+        conference = settings.CONFERENCE
+    qs = models.Talk.objects\
+        .filter(conference=conference)\
+        .order_by('title')
+    if type is not None:
+        qs = qs.filter(type=type)
+    if status is not None:
+        qs = qs.filter(status=status)
+    if tag is not None:
+        qs = qs.filter(tags__icontains=tag)
 
-    speaker = conference = tags = None
-    random = False
+    if tag is not None:
+        qs = qs.values('id', 'tags')
+        tids = []
+        for t in qs:
+            if tag in map(lambda x: x.strip(), t['tags'].split(',')):
+                tids.append(t['id'])
+    else:
+        tids = list(qs.values_list('id', flat=True))
 
-    if contents:
-        speaker = contents.pop(0)
-    if contents:
-        conference = contents.pop(0)
-    if contents and 'random' in contents[0]:
-        contents.pop(0)
-        random = True
-    if contents:
-        tags = contents.pop(0)
-
-    class TalksNode(TNode):
-        def __init__(self, speaker, conference, tags, random, var_name):
-            self.var_name = var_name
-            self.speaker = self._set_var(speaker)
-            self.conference = self._set_var(conference)
-            self.tags = self._set_var(tags)
-            self.random = random
-
-        def render(self, context):
-            talks = models.Talk.objects.all()
-            speaker = self._get_var(self.speaker, context)
-            tags = self._get_var(self.tags, context)
-            conference = self._get_var(self.conference, context)
-            if speaker:
-                talks = talks.filter(speakers = speaker)
-            if conference:
-                if not isinstance(conference, (list, tuple)):
-                    conference = [ conference ]
-                talks = talks.filter(conference__in = conference)
-            if tags:
-                talks = TaggedItem.objects.get_by_model(talks, tags)
-            if self.random:
-                talks = list(talks.order_by('?'))
-            context[self.var_name] = talks
-            return ''
-
-    return TalksNode(speaker, conference, tags, random, var_name)
+    return dataaccess.talks_data(tids)
 
 @register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
 def render_talk_report(context, speaker, conference, tags):
@@ -256,6 +226,7 @@ def render_talk_report(context, speaker, conference, tags):
     })
     return context
 
+# XXX - remove
 def schedule_context(schedule):
     from datetime import time
 
@@ -444,6 +415,7 @@ def render_schedule(context, schedule):
         'timetable': utils.TimeTable2.fromSchedule(sid),
     }
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def timetable_slice(context, timetable, start=None, end=None):
     if start:
@@ -454,10 +426,12 @@ def timetable_slice(context, timetable, start=None, end=None):
 
     return timetable.slice(start=start, end=end)
 
+# XXX - remove
 @register.filter
 def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def schedule_timetable(context, schedule, start=None, end=None):
     if start:
@@ -519,6 +493,7 @@ def schedule_timetable(context, schedule, start=None, end=None):
 
     return tt
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def render_schedule_timetable(context, schedule, timetable, start=None, end=None, collapse='auto'):
     if start:
@@ -539,6 +514,7 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
     })
     return render_to_string('conference/render_schedule_timetable.html', ctx)
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def render_schedule_timetable_as_list(context, schedule, timetable, start=None, end=None):
     if start:
@@ -600,6 +576,7 @@ def event_time_span(timetable, event, time_slot=15):
     end = start + timedelta(minutes=time_slot * event.columns)
     return start.time(), end.time()
 
+# XXX - remove
 @register.tag
 def conference_schedule(parser, token):
     """
@@ -630,6 +607,7 @@ def conference_schedule(parser, token):
 
     return ScheduleNode(conference, schedule, var_name)
 
+# XXX - remove (dup)
 @register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
 def render_talk_report(context, speaker, conference, tags):
     context.update({
@@ -1094,6 +1072,7 @@ def truncate_chars(text, length):
     else:
         return text
 
+# XXX - remove
 @register.filter
 def timetable_columns(timetable):
     """
@@ -1116,6 +1095,7 @@ def timetable_columns(timetable):
         output.append((c, events, collapse))
     return output
 
+# XXX - remove
 @fancy_tag(register)
 def timetable_cells(timetable, width, height, outer_width=None, outer_height=None, collapse='auto'):
     if outer_width is None:
@@ -1258,6 +1238,7 @@ def teaser_event(events):
         if event_has_track(e, 'teaser'):
             return e
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def get_talk_speakers(context, talk):
     c = _request_cache(context['request'], 'talk_speakers_%s' % talk.conference)
@@ -1266,6 +1247,7 @@ def get_talk_speakers(context, talk):
     return c['items'].get(talk.id, [])
 
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def current_events(context, time=None):
     if time is None:
@@ -1286,6 +1268,7 @@ def current_events(context, time=None):
         output = {}
     return output
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def next_events(context, time=None):
     if time is None:
