@@ -378,9 +378,18 @@ function highlighter(mode) {
             })
         .end()
     .find('.highlight-chart')
-        .bind('click', function(ev) {
-            highlighter('chart');
-            return false;
+        .each(function(ix, val) {
+            if($.isEmptyObject(user_votes)) {
+                $(this)
+                    .addClass('disabled')
+                    .after(' <a href="#" title="You have not participated to the community vote">?</a>');
+            }
+            else {
+                $(this).bind('click', function(ev) {
+                    highlighter('chart');
+                    return false;
+                })
+            }
         })
 })();
 </script>

@@ -300,9 +300,8 @@ body#schedule > .page > .container {
       width: 150px; }
       #schedule-navigator > div > div h3 {
         padding: 5px; }
-      #schedule-navigator > div > div ul li a {
-        padding: 5px;
-        display: block; }
+      #schedule-navigator > div > div ul li {
+        padding: 5px; }
   #schedule-navigator > div:first-child {
     background: #301D1D;
     color: #FCFAD9;
