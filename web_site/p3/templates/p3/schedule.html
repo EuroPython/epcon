@@ -421,7 +421,6 @@ function highlighter(mode) {
                         {% for s in e.talk.speakers %}
                         <a href="{% url conference-profile slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                         {% endfor %}
-                        <span class="maximized">presents:</span>
                     </div>
                     <h3 class="name"><a href="{% url conference-talk slug=e.talk.slug %}">{{ e.name }}</a></h3>
                     <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
