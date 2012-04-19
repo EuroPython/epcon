@@ -444,7 +444,7 @@ function highlighter(mode) {
             </div>
             {% for track, events in tt.iterOnTracks %}
             <div class="track" data-track="{{ track }}">
-                <div class="title">{% for st in sdata.tracks %}{% if st.track == track %}{{ st.title|safe }}{% endif %}{% endfor %}</div>
+                <div class="title">{{ sdata.tracks|attrib_:track|attrib_:"title"|safe }}</div>
                 {% for e in events %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
                 <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}" data-id="{{ e.id }}"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}>
