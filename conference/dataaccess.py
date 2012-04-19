@@ -144,7 +144,7 @@ def schedule_data(sid, preload=None):
             .order_by('order')
     output = _dump_fields(schedule)
     output.update({
-        'tracks': list(tracks),
+        'tracks': dict([ (x.track, x) for x in tracks]),
     })
     return output
 

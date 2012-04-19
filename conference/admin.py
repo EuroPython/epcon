@@ -72,7 +72,8 @@ class ConferenceAdmin(admin.ModelAdmin):
         )
         tracks = []
         for sch in schedules:
-            tracks.append([ sch['id'], [ t for t in sch['tracks'] ] ])
+            tks = sorted(sch['tracks'].values(), key=lambda x: x.order)
+            tracks.append([ sch['id'], [ t for t in tks ] ])
 
         from conference.forms import EventForm
         return render_to_response(
