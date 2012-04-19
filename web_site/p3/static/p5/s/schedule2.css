@@ -74,7 +74,8 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .event.exposed .maximized {
       display: block; }
     .conference-schedules.timetable .event.exposed span.maximized {
-      display: inline; }
+      display: inline;
+      font-weight: bold; }
 
 .conference-schedules.timetable {
   /*
@@ -154,7 +155,8 @@ body#schedule > .page > .container {
     line-height: 1.5em;
     overflow-y: auto;
     height: 200px;
-    border: 1px solid #B0AB63;
+    border-top: 1px solid #B0AB63;
+    border-bottom: 1px solid #B0AB63;
     padding: 2px; }
   .conference-schedules.timetable .event .tag {
     cursor: pointer;
@@ -237,12 +239,17 @@ body#schedule > .page > .container {
       background: #ABA18F; }
   .conference-schedules.timetable .event.special {
     background: white url(../i/empty-track.png) bottom left;
-    font-size: 15px;
+    font-size: 15px; }
+  .conference-schedules.timetable .event.special, .conference-schedules.timetable .event.keynote {
+    height: 100%;
     text-align: center;
-    height: 100%; }
-    .conference-schedules.timetable .event.special h3 {
+    padding-top: 20px; }
+    .conference-schedules.timetable .event.special h3, .conference-schedules.timetable .event.keynote h3 {
       font-size: 13px;
-      font-variant: small-caps; }
+      font-variant: small-caps;
+      display: inline;
+      padding: 7px;
+      border: 1px dotted #878181; }
   .conference-schedules.timetable .event.special > div {
     margin-top: 100px; }
   .conference-schedules.timetable .event.interest-up {
@@ -430,7 +437,7 @@ body#schedule > .page > .container {
         
 OK - stellina gialla        
 OK - Nomi delle tracce da stilare
-Traccia keynote: non si capiscono i nomi delle celle
+?? - Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli
 Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla
 Pause: le scritte coffee break e lunch sono piccole e allineate in alto

@@ -99,7 +99,7 @@ body#schedule > .page > .container {
         opacity: 1 !important;
 
         .maximized { display: block; }
-        span.maximized { display: inline; }
+        span.maximized { display: inline; font-weight: bold; }
     }
 }
 
@@ -178,7 +178,8 @@ body#schedule > .page > .container {
             line-height: 1.5em;
             overflow-y: auto;
             height: 200px;
-            border: 1px solid #B0AB63;
+            border-top: 1px solid #B0AB63;
+            border-bottom: 1px solid #B0AB63;
             padding: 2px;
         }
         .tag {
@@ -319,16 +320,23 @@ body#schedule > .page > .container {
      * - lunch
      * - registration
      */
-    .event.special {
-        background: white url(../i/empty-track.png) bottom left;
-        font-size: 15px;
-        text-align: center;
-        height: 100%;
-        h3{
-            font-size: 13px;
-            font-variant: small-caps;            
-        }
-    }
+     .event.special {
+          background: white url(../i/empty-track.png) bottom left;
+          font-size: 15px;
+      }
+
+      .event.special, .event.keynote{
+          height: 100%;
+          text-align: center;
+          padding-top: 20px;
+          h3{
+              font-size: 13px;
+              font-variant: small-caps;
+              display: inline;
+              padding: 7px;
+              border: 1px dotted $cGray;
+          }
+      }
 
     .event.special > div {
         margin-top: 100px;
@@ -524,7 +532,7 @@ body#schedule > .page > .container {
         
 OK - stellina gialla        
 OK - Nomi delle tracce da stilare
-Traccia keynote: non si capiscono i nomi delle celle
+?? - Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli
 Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla
 Pause: le scritte coffee break e lunch sono piccole e allineate in alto
