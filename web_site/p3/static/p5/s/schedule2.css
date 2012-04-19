@@ -234,7 +234,11 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event.special {
     background: white url(../i/empty-track.png) bottom left;
     font-size: 15px;
-    text-align: center; }
+    text-align: center;
+    height: 100%; }
+    .conference-schedules.timetable .event.special h3 {
+      font-size: 13px;
+      font-variant: small-caps; }
   .conference-schedules.timetable .event.special > div {
     margin-top: 100px; }
   .conference-schedules.timetable .event.interest-up {
@@ -305,12 +309,12 @@ body#schedule > .page > .container {
     font-weight: bold;
     padding: 4px 8px; }
   #schedule-navigator > div.selected {
-    background-color: #e1dbc5; }
+    background-color: #99886a; }
     #schedule-navigator > div.selected > a {
       color: white; }
     #schedule-navigator > div.selected a.filter-active {
-      background-color: #e1dbc5;
-      color: white; }
+      color: #878181;
+      opacity: .6; }
 
 .conference-schedules.timetable.vertical-narrow .schedule > .hhmm {
   float: left;
@@ -421,8 +425,8 @@ body#schedule > .page > .container {
         # tipo di track
         # tipo di evento (special, keynote, normale)
         
-stellina gialla        
-Nomi delle tracce da stilare
+OK - stellina gialla        
+OK - Nomi delle tracce da stilare
 Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli
 Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla

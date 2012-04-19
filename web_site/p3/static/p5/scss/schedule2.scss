@@ -316,6 +316,11 @@ body#schedule > .page > .container {
         background: white url(../i/empty-track.png) bottom left;
         font-size: 15px;
         text-align: center;
+        height: 100%;
+        h3{
+            font-size: 13px;
+            font-variant: small-caps;            
+        }
     }
 
     .event.special > div {
@@ -412,13 +417,13 @@ body#schedule > .page > .container {
         padding: 4px 8px;
     }
     > div.selected{
-        background-color: $cBeige;
+        background-color: $cBrown;
         >a{
             color: $cWhite;            
         }
         a.filter-active{
-            background-color: $cBeige;
-            color: $cWhite;                
+            color: $cGray;
+            opacity: .6;
         }
     }
 }
@@ -513,8 +518,8 @@ body#schedule > .page > .container {
         # tipo di track
         # tipo di evento (special, keynote, normale)
         
-stellina gialla        
-Nomi delle tracce da stilare
+OK - stellina gialla        
+OK - Nomi delle tracce da stilare
 Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli
 Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla
