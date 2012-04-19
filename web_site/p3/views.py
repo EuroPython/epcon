@@ -19,6 +19,7 @@ from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
 from conference import forms as cforms
 from conference import models as cmodels
 from conference.views import profile_access
+from conference.utils import TimeTable2
 from email_template import utils
 
 import datetime
@@ -360,7 +361,6 @@ def billing(request):
 
 @render_to('p3/schedule.html')
 def schedule(request, conference):
-    from conference.utils import TimeTable2
     sids = cmodels.Schedule.objects\
         .filter(conference=conference)\
         .values_list('id', flat=True)
@@ -372,20 +372,13 @@ def schedule(request, conference):
 
 @render_to('p3/schedule_list.html')
 def schedule_list(request, conference):
-    qs = cmodels.Event.objects\
-        .filter(schedule__conference=conference)\
-        .select_related('schedule', 'talk')
-
-    events = []
-    for e in qs:
-        if 'partner' not in e.track:
-            events.append({
-                'time': datetime.datetime.combine(e.schedule.date, e.start_time),
-                'event': e,
-            })
+    sids = cmodels.Schedule.objects\
+        .filter(conference=conference)\
+        .values_list('id', flat=True)
     return {
         'conference': conference,
-        'events': events,
+        'sids': sids,
+        'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
     }
 
 @render_to('p3/schedule_speakers.html')

@@ -3,6 +3,34 @@
 {% block MAIN_CONTENT %}
 <div class="cms">
     <h1>{% block CONTENT_TITLE %}Europython schedule{% endblock %}</h1>
+    <div class="conference-schedules list"  data-conference="{{ CONFERENCE }}">
+    {% for sid, timet in timetables %}
+        {% with schedules|attrib_:forloop.counter0 as sdata %}
+        {% timetable_slice timet start="09:00" as tt %}
+        <div id="{{ sdata.slug }}" class="schedule">
+            <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
+            <table>
+            {% for time_, events in tt.iterOnTimes %}
+            <tr>
+                <th rowspan="{{ events|length }}">{{ time_|time:"H:i" }}</th>
+                <td class="event">
+                    {{ events.0.name }}
+                </td>
+            </tr>
+            {% for e in events|slice:"1:" %}
+            <tr>
+                <td class="event">
+                    {{ e.name }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+            </table>
+        </div>
+        {% endwith %}
+    {% endfor %}
+    </div>
+    {% comment %}
     {% regroup events|dictsort:"time" by event.schedule.date as grouped %}
     {% for data in grouped %}
     <h2>{{ data.grouper }}</h2>
@@ -46,5 +74,6 @@
     {% endfor %}
     </ul>
     {% endfor %}
+    {% endcomment %}
 </div>
 {% endblock %}
