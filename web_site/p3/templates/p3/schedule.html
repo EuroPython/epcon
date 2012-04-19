@@ -457,7 +457,8 @@ var user_tickets = [];
         $('.tools', evt).append(be);
         var full = false;
         for(var ix=0; ix<user_tickets.length; ix++) {
-            if(user_tickets[1] == 'conference' && user_tickets[2].substr(2, 1) == 'F') {
+            var t = user_tickets[ix];
+            if(t[1] == 'conference' && t[2].substr(2, 1) == 'S') {
                 full = true;
                 break;
             }
