@@ -196,6 +196,12 @@ MICROBLOG_TWITTER_USERNAME = 'europython'
 MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
 MICROBLOG_TWITTER_INTEGRATION = False
 
+def MICROBLOG_POST_FILTER(posts, user):
+    if user and user.is_staff:
+        return posts
+    else:
+        return filter(lambda x: x.is_published(), posts)
+
 SESSION_COOKIE_NAME = 'ep_sessionid'
 
 GNR_CONFERENCE = {
