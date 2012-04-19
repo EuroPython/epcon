@@ -226,6 +226,7 @@ def render_talk_report(context, speaker, conference, tags):
     })
     return context
 
+# XXX - remove
 def schedule_context(schedule):
     from datetime import time
 
@@ -414,6 +415,7 @@ def render_schedule(context, schedule):
         'timetable': utils.TimeTable2.fromSchedule(sid),
     }
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def timetable_slice(context, timetable, start=None, end=None):
     if start:
@@ -424,10 +426,12 @@ def timetable_slice(context, timetable, start=None, end=None):
 
     return timetable.slice(start=start, end=end)
 
+# XXX - remove
 @register.filter
 def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def schedule_timetable(context, schedule, start=None, end=None):
     if start:
@@ -489,6 +493,7 @@ def schedule_timetable(context, schedule, start=None, end=None):
 
     return tt
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def render_schedule_timetable(context, schedule, timetable, start=None, end=None, collapse='auto'):
     if start:
@@ -509,6 +514,7 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
     })
     return render_to_string('conference/render_schedule_timetable.html', ctx)
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def render_schedule_timetable_as_list(context, schedule, timetable, start=None, end=None):
     if start:
@@ -570,6 +576,7 @@ def event_time_span(timetable, event, time_slot=15):
     end = start + timedelta(minutes=time_slot * event.columns)
     return start.time(), end.time()
 
+# XXX - remove
 @register.tag
 def conference_schedule(parser, token):
     """
@@ -600,6 +607,7 @@ def conference_schedule(parser, token):
 
     return ScheduleNode(conference, schedule, var_name)
 
+# XXX - remove (dup)
 @register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
 def render_talk_report(context, speaker, conference, tags):
     context.update({
@@ -1064,6 +1072,7 @@ def truncate_chars(text, length):
     else:
         return text
 
+# XXX - remove
 @register.filter
 def timetable_columns(timetable):
     """
@@ -1086,6 +1095,7 @@ def timetable_columns(timetable):
         output.append((c, events, collapse))
     return output
 
+# XXX - remove
 @fancy_tag(register)
 def timetable_cells(timetable, width, height, outer_width=None, outer_height=None, collapse='auto'):
     if outer_width is None:
@@ -1228,6 +1238,7 @@ def teaser_event(events):
         if event_has_track(e, 'teaser'):
             return e
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def get_talk_speakers(context, talk):
     c = _request_cache(context['request'], 'talk_speakers_%s' % talk.conference)
@@ -1236,6 +1247,7 @@ def get_talk_speakers(context, talk):
     return c['items'].get(talk.id, [])
 
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def current_events(context, time=None):
     if time is None:
@@ -1256,6 +1268,7 @@ def current_events(context, time=None):
         output = {}
     return output
 
+# XXX - remove
 @fancy_tag(register, takes_context=True)
 def next_events(context, time=None):
     if time is None:
