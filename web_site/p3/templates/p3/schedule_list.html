@@ -4,6 +4,7 @@
 <div class="cms">
     <h1>{% block CONTENT_TITLE %}Europython schedule{% endblock %}</h1>
     <div class="conference-schedules list"  data-conference="{{ CONFERENCE }}">
+    {% schedules_data sids as schedules %}
     {% for sid, timet in timetables %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
@@ -11,16 +12,30 @@
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <table>
             {% for time_, events in tt.iterOnTimes %}
+            {% for e in events %}
             <tr>
+                {% if forloop.counter0 == 0 %}
                 <th rowspan="{{ events|length }}">{{ time_|time:"H:i" }}</th>
-                <td class="event">
-                    {{ events.0.name }}
-                </td>
-            </tr>
-            {% for e in events|slice:"1:" %}
-            <tr>
-                <td class="event">
-                    {{ e.name }}
+                {% endif %}
+                <td class="event"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}>
+                    {% if e.talk %}
+                    <div class="talk-level {{ e.talk.level }}">&nbsp;</div>
+                    <a href="{% url conference-talk slug=e.talk.slug %}" class="trigger-overlay">{{ e.name }}</a>
+                    by
+                    <div class="speakers">
+                        {% for s in e.talk.speakers %}
+                        <a href="{% url conference-profile slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ e.name|safe }}
+                    {% endif %}
+                    in
+                    <strong>
+                        {% for t in e.tracks %}
+                        <i>{{ sdata.tracks|attrib_:t|attrib_:"title"|safe }}</i>
+                        {% endfor %}
+                    </strong>
                 </td>
             </tr>
             {% endfor %}

@@ -414,22 +414,27 @@ def schedule_speakers(request, conference):
     }
 
 @login_required
+def jump_to_my_schedule(request):
+    return redirect('p3-schedule-my-schedule', conference=settings.CONFERENCE_CONFERENCE)
+
+@login_required
 @render_to('p3/my_schedule.html')
-def my_schedule(request):
+def my_schedule(request, conference):
     qs = cmodels.Event.objects\
         .filter(eventinterest__user=request.user, eventinterest__interest__gt=0)\
-        .filter(schedule__conference=settings.CONFERENCE_CONFERENCE)\
-        .select_related('schedule', 'talk')
+        .filter(schedule__conference=conference)\
+        .values('id', 'schedule')
 
-    events = []
-    for e in qs:
-        events.append({
-            'time': datetime.datetime.combine(e.schedule.date, e.start_time),
-            'event': e,
-        })
+    events = defaultdict(list)
+    for x in qs:
+        events[x['schedule']].append(x['id'])
+
+    sids = sorted(events.keys())
+    timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
     return {
-        'conference': settings.CONFERENCE_CONFERENCE,
-        'events': events,
+        'conference': conference,
+        'sids': sids,
+        'timetables': zip(sids, timetables),
     }
 
 @render_to_json
