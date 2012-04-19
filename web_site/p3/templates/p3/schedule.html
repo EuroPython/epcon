@@ -193,6 +193,9 @@ var user_tickets = [];
     var nav = $('#schedule-navigator');
     var options = nav.children('div');
     options
+        .find('.disabled')
+            .bind('click', function(ev) { ev.stopImmediatePropagation(); return false;})
+            .end()
         .children('a')
             .bind('click', function(ev) {
                 var e = $(this);
