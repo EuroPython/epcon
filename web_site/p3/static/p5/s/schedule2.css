@@ -130,6 +130,10 @@ body#schedule > .page > .container {
       background-image: url("img/arrow.png");
       background-position: bottom center;
       background-repeat: no-repeat; }
+    .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
+      background-image: url("img/arrow.png"), url("img/italian_track.jpg");
+      background-position: bottom center, left top;
+      background-repeat: no-repeat; }
   .conference-schedules.timetable .event a {
     border: none; }
   .conference-schedules.timetable .event .close-event {
