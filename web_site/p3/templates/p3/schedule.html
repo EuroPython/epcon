@@ -278,6 +278,7 @@ function highlighter(mode) {
             .find('.close')
                 .bind('click', function(ev) {
                     $(this).parent().hide();
+                    return false;
                 })
 
     options
