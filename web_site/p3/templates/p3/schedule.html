@@ -189,6 +189,63 @@ var user_tickets = [];
         }
     });
 })(jQuery);
+
+function highlight_chart() {
+    var slices = {};
+    var srex = /time-(\d+)/;
+    $('.event').dim()
+    $('.track')
+        .each(function() {
+            var track = $(this);
+            var sch = track.parents('.schedule').attr('id');
+            if(!(sch in slices)) {
+                var sslices = {};
+                slices[sch] = sslices;
+            }
+            else {
+                var sslices = slices[sch];
+            }
+            track.children('.event[data-talk]')
+                .each(function() {
+                    var start = parseInt(this.className.match(srex)[1]);
+                    if(!(start in sslices)) {
+                        sslices[start] = [];
+                    }
+                    sslices[start].push($(this));
+                });
+        })
+    $.each(slices, function(schedule, subslice) {
+        $.each(subslice, function(key, events) {
+            var kvotes = [];
+            for(var ix=0; ix<events.length; ix++) {
+                var tid = events[ix].attr('data-talk');
+                kvotes.push([ user_votes[tid] || 0, events[ix] ]);
+            }
+            kvotes.sort(function(a,b) { return a[0] - b[0]; }).reverse();
+            var max = kvotes[0][0];
+            if(max > 5) {
+                for(var ix=0; ix<kvotes.length; ix++) {
+                    var vote = kvotes[ix][0];
+                    if(vote == max) {
+                        kvotes[ix][1].highlight();
+                    }
+                }
+            }
+        });
+    });
+}
+function highlighter(mode) {
+    if($(document).data('highlighter') == mode)
+        mode = '';
+    switch(mode) {
+        case 'chart':
+            highlight_chart();
+            break;
+        default:
+            $('.event').removeDimHighlight();
+    }
+    $(document).data('highlighter', mode);
+}
 (function() {
     var nav = $('#schedule-navigator');
     var options = nav.children('div');
@@ -297,48 +354,7 @@ var user_tickets = [];
         .end()
     .find('.highlight-chart')
         .bind('click', function(ev) {
-            var slices = {};
-            var srex = /time-(\d+)/;
-            $('.event').dim()
-            $('.track')
-                .each(function() {
-                    var track = $(this);
-                    var sch = track.parents('.schedule').attr('id');
-                    if(!(sch in slices)) {
-                        var sslices = {};
-                        slices[sch] = sslices;
-                    }
-                    else {
-                        var sslices = slices[sch];
-                    }
-                    track.children('.event[data-talk]')
-                        .each(function() {
-                            var start = parseInt(this.className.match(srex)[1]);
-                            if(!(start in sslices)) {
-                                sslices[start] = [];
-                            }
-                            sslices[start].push($(this));
-                        });
-                })
-            $.each(slices, function(schedule, subslice) {
-                $.each(subslice, function(key, events) {
-                    var kvotes = [];
-                    for(var ix=0; ix<events.length; ix++) {
-                        var tid = events[ix].attr('data-talk');
-                        kvotes.push([ user_votes[tid] || 0, events[ix] ]);
-                    }
-                    kvotes.sort(function(a,b) { return a[0] - b[0]; }).reverse();
-                    var max = kvotes[0][0];
-                    if(max > 5) {
-                        for(var ix=0; ix<kvotes.length; ix++) {
-                            var vote = kvotes[ix][0];
-                            if(vote == max) {
-                                kvotes[ix][1].highlight();
-                            }
-                        }
-                    }
-                });
-            });
+            highlighter('chart');
             return false;
         })
 })();
