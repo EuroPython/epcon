@@ -104,6 +104,10 @@
 
 /* *********************** */
 
+#schedule-navigator .close {
+    position: absolute;
+    right: 0;
+}
 </style>
 {% endblock %}
 
@@ -207,9 +211,14 @@ var user_tickets = [];
             })
             .end()
         .children('div')
-            .bind('click', function(ev) {
-                $(this).hide();
-            })
+            .prepend('' +
+                '<div class="close">' +
+                '   <a href="#"><img src="{{ STATIC_URL }}p5/i/close.png" width="24" /></a>' +
+                '</div>')
+            .find('.close')
+                .bind('click', function(ev) {
+                    $(this).parent().hide();
+                })
 
     options
         .find('.track-toggle')

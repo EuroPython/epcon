@@ -249,7 +249,7 @@ body#schedule > .page > .container {
     margin-right: 20px;
     padding: 4px;
     line-height: 32px; }
-    #schedule-navigator > div div {
+    #schedule-navigator > div > div {
       display: none;
       position: absolute;
       border: 2px solid #7D6F60;
