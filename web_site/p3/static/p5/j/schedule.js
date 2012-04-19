@@ -138,7 +138,7 @@ function highlighter(mode) {
                     e.addClass('filter-active');
                 }
                 var sch = tracks.eq(0).parents('.schedule');
-                var direction = sch.get(0).className.indexOf('vertical') != -1 ? 'v' : 'h';
+                var direction = sch.parent().get(0).className.indexOf('vertical') != -1 ? 'v' : 'h';
                 var offset = direction == 'v' ? tracks.width() : tracks.height();
                 if(!visible)
                     offset *= -1;
