@@ -5,6 +5,37 @@
  *  - list
  *      gli eventi dispositi in una lista uno di seguito all'altro
  */
+ 
+/*
+ * SETTINGS AND MIXINS
+ */
+$cYellow: #FCFAD9;
+$cBrown: #99886a;
+$cOrange: #ffb871;
+$cGreen: #d0d8bb;
+$cGray: #878181;
+$cPetrol: #4895A3;
+$cBeige: #e1dbc5;
+$cWhite: #ffffff;
+$cBeginner: #a8c361;
+$cIntermediate: #ffb871;
+$cAdvanced: #4895A3;
+
+.box-sizing{
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+@mixin boxshadow($size: 20px, $color: #ccc){
+    box-shadow: inset 0px 0 $size 0px rgba($color, 1);
+    -moz-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
+    -webkit-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
+    -o-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
+    -ms-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
+} 
+/********** END SETTINGS ******/
+
+
 body#schedule > .page > .container {
     margin-left: 60px;
 }
@@ -93,6 +124,25 @@ body#schedule > .page > .container {
                 color: #301d1d;
                 font-size: 14px;
             }
+            >div{
+                /* the first div to name the TRACK line */
+                font-size: 11px;
+                font-variant: small-caps;
+            }
+        }
+        .track {
+            .title {
+                font-variant: small-caps;
+                @extend .box-sizing;
+                height: 40px;
+                border: 2px solid #fff;
+                background-color: $cBeige;
+                padding: 2px;
+                line-height: 11px;
+                background-image: url("img/arrow.png");
+                background-position: bottom center;
+                background-repeat: no-repeat;
+            }
         }
     }
 
@@ -129,6 +179,12 @@ body#schedule > .page > .container {
             margin: 0 2px 2px 0;
             font-size: 10px;
         }
+        .speakers{
+            border-bottom: 1px dotted $cBeige;
+            margin-bottom: 5px;
+            line-height: 1.4em;
+            padding-bottom: 3px;
+        }
     }
     .event.exposed {
         .name {
@@ -156,13 +212,13 @@ body#schedule > .page > .container {
             color: white;
         }
         .talk-level.beginner {
-            background: #c9f76f;
+            background: $cBeginner;
         }
         .talk-level.intermediate {
-            background: #679b00;
+            background: $cIntermediate;
         }
         .talk-level.advanced {
-            background: #a68000;
+            background: $cAdvanced;
         }
     }
 
@@ -280,11 +336,7 @@ body#schedule > .page > .container {
 
     /* risultato di una ricerca */
     .event.highlighted {
-        box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
-        -moz-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
-        -webkit-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
-        -o-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
-        -ms-box-shadow: inset 0px 0 20px 0px rgba(255, 128, 0, 1);
+        @include boxshadow(59px, $cGreen);
     }
 
     /* escluso da una ricerca */
@@ -317,10 +369,11 @@ body#schedule > .page > .container {
         color: #999;
         opacity: 0.7;
     }
+    $nav_pad: 5px;
     > div {
         float: left;
         margin-right: 20px;
-        padding: 4px;
+        padding: 0;
         line-height: 32px;
         > div {
             display: none;
@@ -337,8 +390,19 @@ body#schedule > .page > .container {
             -o-transform-origin: left top;
             -ms-transform-origin: left top;
             background: white;
-            padding: 5px;
+            padding: 0;
             width: 150px;
+            h3{
+                padding: $nav_pad;
+            }
+            ul{
+                li{
+                    a{
+                        padding: $nav_pad;
+                        display: block;
+                    }
+                }   
+            }
         }
     }
     > div:first-child {
@@ -346,6 +410,16 @@ body#schedule > .page > .container {
         color: #FCFAD9;
         font-weight: bold;
         padding: 4px 8px;
+    }
+    > div.selected{
+        background-color: $cBeige;
+        >a{
+            color: $cWhite;            
+        }
+        a.filter-active{
+            background-color: $cBeige;
+            color: $cWhite;                
+        }
     }
 }
 
@@ -412,3 +486,44 @@ body#schedule > .page > .container {
         text-align: center;
     }
 }
+
+
+
+/*
+- toppone bianco dietro gli schedule
+- titolo track
+- distinzione speaker/titolo
+- stellina al posto di +1/-1
+
+* navigazione
+    - effetto "disabled" per link (ad esempio "My Schedule") da poter utilizzare
+      anche nei sotto menu
+    - quando attivo una voce forse potremmo selezionarla?
+    - sotto menu Filters, serve una classe "selected" per i filtri sulla track
+    - sotto menu Filters, spaziature e titolo
+    - iconcina per chiudere i sottomenu (la riuserei anche nello zoom degli eventi)
+* highlight
+    - eventi evidenziati (apri un evento a caso e scegli un tag)
+    - eventi "dimmed" opacizzati è il contrario del precedente potremmo usarlo
+        nelle ricerchè per "nascondere" i risultati
+        $('.event').dim()
+    - +1 (e -1 anche se forse non lo useremo)
+* colori
+    - come ti piace di più, possiamo selezionare gli eventi per:
+        # tipo di track
+        # tipo di evento (special, keynote, normale)
+        
+stellina gialla        
+Nomi delle tracce da stilare
+Traccia keynote: non si capiscono i nomi delle celle
+Troncamento titoli: mancano i puntini per indicare i titoli
+Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla
+Pause: le scritte coffee break e lunch sono piccole e allineate in alto
+Stellina: non si vede perché è troppo trasparente, e va invertita chiara/scura
+La giornata di Lunedì è brutta a vedersi: tutta allineata a sinistra e con lo spazio bianco a lato.
+I training non sono marcati in modo diverso dai talk (l'anno scorso c'era un background diverso e una scritta "training" sopra la cella)
+L'italian track non è marcata in modo diverso dalle altre.
+I keynote non sono marcati di colore diverso.
+La spaziatura interlinea applicata ai nomi degli speaker è più ampia di quella che divide nomi di speaker da titolo di talk; vedi l'esempio del talk chiamato "How to boostrap" dove la spaziatura interlinea è confusionaria.
+Per me non c'è abbastanza differenza stilistica/dimensione tra titolo del talk (più importante) e nome dello speaker (meno importante).
+*/

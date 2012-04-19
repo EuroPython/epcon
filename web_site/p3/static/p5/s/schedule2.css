@@ -5,6 +5,15 @@
  *  - list
  *      gli eventi dispositi in una lista uno di seguito all'altro
  */
+/*
+ * SETTINGS AND MIXINS
+ */
+.box-sizing, .conference-schedules.timetable .schedule .track .title {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/********** END SETTINGS ******/
 body#schedule > .page > .container {
   margin-left: 60px; }
 
@@ -107,6 +116,20 @@ body#schedule > .page > .container {
       .conference-schedules.timetable .schedule .hhmm span {
         color: #301d1d;
         font-size: 14px; }
+      .conference-schedules.timetable .schedule .hhmm > div {
+        /* the first div to name the TRACK line */
+        font-size: 11px;
+        font-variant: small-caps; }
+    .conference-schedules.timetable .schedule .track .title {
+      font-variant: small-caps;
+      height: 40px;
+      border: 2px solid #fff;
+      background-color: #e1dbc5;
+      padding: 2px;
+      line-height: 11px;
+      background-image: url("img/arrow.png");
+      background-position: bottom center;
+      background-repeat: no-repeat; }
   .conference-schedules.timetable .event a {
     border: none; }
   .conference-schedules.timetable .event .close-event {
@@ -133,6 +156,11 @@ body#schedule > .page > .container {
     cursor: pointer;
     margin: 0 2px 2px 0;
     font-size: 10px; }
+  .conference-schedules.timetable .event .speakers {
+    border-bottom: 1px dotted #e1dbc5;
+    margin-bottom: 5px;
+    line-height: 1.4em;
+    padding-bottom: 3px; }
   .conference-schedules.timetable .event.exposed .name {
     height: auto;
     font-weight: bold;
@@ -149,11 +177,11 @@ body#schedule > .page > .container {
     background: transparent;
     color: white; }
   .conference-schedules.timetable .event .talk-level.beginner {
-    background: #c9f76f; }
+    background: #a8c361; }
   .conference-schedules.timetable .event .talk-level.intermediate {
-    background: #679b00; }
+    background: #ffb871; }
   .conference-schedules.timetable .event .talk-level.advanced {
-    background: #a68000; }
+    background: #4895a3; }
   .conference-schedules.timetable .event.exposed .talk-level {
     height: 20px; }
   .conference-schedules.timetable .tools > div {
@@ -215,11 +243,11 @@ body#schedule > .page > .container {
     opacity: .7;
     background: #999; }
   .conference-schedules.timetable .event.highlighted {
-    box-shadow: inset 0px 0 20px 0px #ff8000;
-    -moz-box-shadow: inset 0px 0 20px 0px #ff8000;
-    -webkit-box-shadow: inset 0px 0 20px 0px #ff8000;
-    -o-box-shadow: inset 0px 0 20px 0px #ff8000;
-    -ms-box-shadow: inset 0px 0 20px 0px #ff8000; }
+    box-shadow: inset 0px 0 59px 0px #d0d8bb;
+    -moz-box-shadow: inset 0px 0 59px 0px #d0d8bb;
+    -webkit-box-shadow: inset 0px 0 59px 0px #d0d8bb;
+    -o-box-shadow: inset 0px 0 59px 0px #d0d8bb;
+    -ms-box-shadow: inset 0px 0 59px 0px #d0d8bb; }
   .conference-schedules.timetable .event.dimmed {
     opacity: 0.7;
     background: #ddd; }
@@ -247,7 +275,7 @@ body#schedule > .page > .container {
   #schedule-navigator > div {
     float: left;
     margin-right: 20px;
-    padding: 4px;
+    padding: 0;
     line-height: 32px; }
     #schedule-navigator > div > div {
       display: none;
@@ -264,13 +292,25 @@ body#schedule > .page > .container {
       -o-transform-origin: left top;
       -ms-transform-origin: left top;
       background: white;
-      padding: 5px;
+      padding: 0;
       width: 150px; }
+      #schedule-navigator > div > div h3 {
+        padding: 5px; }
+      #schedule-navigator > div > div ul li a {
+        padding: 5px;
+        display: block; }
   #schedule-navigator > div:first-child {
     background: #301D1D;
     color: #FCFAD9;
     font-weight: bold;
     padding: 4px 8px; }
+  #schedule-navigator > div.selected {
+    background-color: #e1dbc5; }
+    #schedule-navigator > div.selected > a {
+      color: white; }
+    #schedule-navigator > div.selected a.filter-active {
+      background-color: #e1dbc5;
+      color: white; }
 
 .conference-schedules.timetable.vertical-narrow .schedule > .hhmm {
   float: left;
@@ -356,3 +396,42 @@ body#schedule > .page > .container {
   width: 100%;
   top: 0;
   text-align: center; }
+
+/*
+- toppone bianco dietro gli schedule
+- titolo track
+- distinzione speaker/titolo
+- stellina al posto di +1/-1
+
+* navigazione
+    - effetto "disabled" per link (ad esempio "My Schedule") da poter utilizzare
+      anche nei sotto menu
+    - quando attivo una voce forse potremmo selezionarla?
+    - sotto menu Filters, serve una classe "selected" per i filtri sulla track
+    - sotto menu Filters, spaziature e titolo
+    - iconcina per chiudere i sottomenu (la riuserei anche nello zoom degli eventi)
+* highlight
+    - eventi evidenziati (apri un evento a caso e scegli un tag)
+    - eventi "dimmed" opacizzati è il contrario del precedente potremmo usarlo
+        nelle ricerchè per "nascondere" i risultati
+        $('.event').dim()
+    - +1 (e -1 anche se forse non lo useremo)
+* colori
+    - come ti piace di più, possiamo selezionare gli eventi per:
+        # tipo di track
+        # tipo di evento (special, keynote, normale)
+        
+stellina gialla        
+Nomi delle tracce da stilare
+Traccia keynote: non si capiscono i nomi delle celle
+Troncamento titoli: mancano i puntini per indicare i titoli
+Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla
+Pause: le scritte coffee break e lunch sono piccole e allineate in alto
+Stellina: non si vede perché è troppo trasparente, e va invertita chiara/scura
+La giornata di Lunedì è brutta a vedersi: tutta allineata a sinistra e con lo spazio bianco a lato.
+I training non sono marcati in modo diverso dai talk (l'anno scorso c'era un background diverso e una scritta "training" sopra la cella)
+L'italian track non è marcata in modo diverso dalle altre.
+I keynote non sono marcati di colore diverso.
+La spaziatura interlinea applicata ai nomi degli speaker è più ampia di quella che divide nomi di speaker da titolo di talk; vedi l'esempio del talk chiamato "How to boostrap" dove la spaziatura interlinea è confusionaria.
+Per me non c'è abbastanza differenza stilistica/dimensione tra titolo del talk (più importante) e nome dello speaker (meno importante).
+*/
