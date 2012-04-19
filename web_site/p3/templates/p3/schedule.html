@@ -115,6 +115,21 @@
 .event.exposed .speakers {
     opacity: 1;
 }
+
+#schedule-navigator {
+    width: 250px;
+    transform: translate(-105px, 0px) rotate(-90deg);
+    -moz-transform: translate(-105px, 0px) rotate(-90deg);
+    -webkit-transform: translate(-105px, 0px) rotate(-90deg);
+    -o-transform: translate(-105px, 0px) rotate(-90deg);
+    -ms-transform: translate(-105px, 0px) rotate(-90deg);
+}
+
+#schedule-navigator > div {
+    padding: 0 10px !important;
+    margin: 0;
+    height: 40px;
+}
 </style>
 {% endblock %}
 
@@ -139,7 +154,9 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             </ul>
         </div>
     </div>
+    {% comment %}
     <div class="disabled">My schedule</div>
+    {% endcomment %}
     <div>
         <a href="#">Filters</a>
         <div>
