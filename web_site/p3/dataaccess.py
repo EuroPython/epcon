@@ -174,7 +174,7 @@ def user_tickets(user, conference, only_complete=False):
                 del tickets[ix]
         return tickets
 
-def conference_users(conference):
+def conference_users(conference, speakers=True):
     """
     Restituisce l'elenco degli user_id che partecipano alla conferenza.
     """
@@ -198,4 +198,15 @@ def conference_users(conference):
                 .values('p3_conference__assigned_to')
         )\
         .values_list('id', flat=True)
-    return q1 | q2
+
+    if speakers:
+        q3 = User.objects\
+            .filter(id__in=\
+                cmodels.TalkSpeaker.objects\
+                    .filter(talk__conference=conference, talk__status='accepted')\
+                    .values('speaker')
+            )\
+            .values_list('id', flat=True)
+    else:
+        q3 = User.objects.none()
+    return q1 | q2 | q3
