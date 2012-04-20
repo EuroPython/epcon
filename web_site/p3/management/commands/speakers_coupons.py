@@ -1,6 +1,4 @@
 # -*- coding: UTF-8 -*-
-import haystack
-
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -21,29 +19,45 @@ class Command(BaseCommand):
             raise CommandError('conference missing')
         
         speakers = {}
-        fares = models.Fare.objects.filter(conference=conference.code, ticket_type='conference')
-        talks = models.Talk.objects.accepted(conference.code)
-        for t in talks:
-            for s in t.get_all_speakers():
-                if t.training_available:
-                    speakers[s] = 'training'
-                elif s not in speakers:
-                    speakers[s] = 'talk'
-        codes = set(c['code'] for c in Coupon.objects.filter(conference=conference.code).values('code'))
-        for spk, tt in speakers.items():
+        qs = models.TalkSpeaker.objects\
+            .filter(talk__conference=conference.code, talk__status='accepted')\
+            .select_related('talk', 'speaker__user')
+        for row in qs:
+            if row.talk.type not in ('t', 's'):
+                continue
+            if row.speaker_id not in speakers:
+                 speakers[row.speaker_id] = {
+                    'spk': row.speaker,
+                    'discount': 'talk',
+                }
+            s = speakers[row.speaker_id]
+            if row.talk.type == 't':
+                s['discount'] = 'training'
+
+
+        fares = models.Fare.objects\
+            .filter(conference=conference.code, ticket_type='conference')
+        codes = set([c['code'] for c in Coupon.objects\
+            .filter(conference=conference.code)\
+            .values('code')])
+
+        for sid, data in speakers.items():
             while True:
                 code = ''.join(random.sample(string.uppercase, 6))
                 if code not in codes:
                     codes.add(code)
                     break
-            if tt == 'training':
+            if data['discount'] == 'training':
                 value = '100%'
             else:
                 value = '100'
-            print code, spk.user.assopy_user.name().encode('utf-8'), spk.user.email, 'value:', value
+
+            u = data['spk'].user
+            name = '%s %s' % (u.first_name, u.last_name)
+            print code, name.encode('utf-8'), u.email, 'value:', value
             c = Coupon(conference=conference)
             c.code = code
-            c.user = spk.user.assopy_user
+            c.user = u.assopy_user
             c.max_usage = 1
             c.items_per_usage = 1
             c.value = value
