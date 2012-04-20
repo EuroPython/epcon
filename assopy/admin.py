@@ -32,12 +32,25 @@ class OrderItemInlineAdmin(admin.TabularInline):
     form = OrderItemAdminForm
 
 class OrderAdminForm(forms.ModelForm):
+    method = forms.ChoiceField(choices=(
+        ('admin', 'Admin'),
+        ('paypal', 'PayPal'),
+        ('cc', 'Credit Card'),
+        ('bank', 'Bank'),
+    ))
     class Meta:
         model = models.Order
+        exclude = ('method',)
 
     def __init__(self, *args, **kwargs):
         super(OrderAdminForm, self).__init__(*args, **kwargs)
         self.fields['user'].queryset = models.User.objects.all().select_related('user')
+        if self.initial:
+            self.fields['method'].initial = self.instance.method
+
+    def save(self, *args, **kwargs):
+        self.instance.method = self.cleaned_data['method']
+        return super(OrderAdminForm, self).save(*args, **kwargs)
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
@@ -411,7 +424,7 @@ class UserAdmin(admin.ModelAdmin):
         user = get_object_or_404(models.User, pk=uid)
 
         class FormTickets(aforms.FormTickets):
-            coupon = forms.CharField(label='Coupon(s)', required=False)
+            coupon = forms.CharField(label='Coupon(s)', required=True)
             country = forms.CharField(max_length=2, required=False)
             address = forms.CharField(max_length=150, required=False)
             card_name = forms.CharField(max_length=200, required=True, initial=user.card_name or user.name())
@@ -442,6 +455,10 @@ class UserAdmin(admin.ModelAdmin):
                             output.append(models.Coupon.objects.get(conference=CONFERENCE, code=c))
                         except models.Coupon.DoesNotExist:
                             raise forms.ValidationError('invalid coupon "%s"' % c)
+                if self.cleaned_data.get('payment') == 'admin':
+                    for c in output:
+                        if c.value != '100%':
+                            raise forms.ValidationError('admin orders must have a 100% discount coupon')
                 return output
 
         if request.method == 'POST':
