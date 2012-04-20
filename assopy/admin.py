@@ -156,92 +156,143 @@ class OrderAdmin(admin.ModelAdmin):
         }
         return render_to_response('assopy/admin/edit_invoices.html', ctx, context_instance=template.RequestContext(request))
 
-    def stats(self, request):
+    def stats_conference(self, conf):
         from conference.models import Ticket
         from django.db.models import Sum, Count, Q
-        orders = models.Order.objects.filter(_complete=True)
-        tickets = Ticket.objects.filter(orderitem__order__in=orders)
-        order_items_details = models.OrderItem.objects\
-            .filter(order___complete=True)\
-            .values('ticket__fare__code', 'ticket__fare__name')\
-            .annotate(total=Sum('price'), count=Count('pk'))\
-            .order_by('-total')
-        order_items_grouped_by_ticket_type = models.OrderItem.objects\
-            .filter(order___complete=True)\
-            .values('ticket__fare__ticket_type')\
-            .annotate(total=Sum('price'), count=Count('pk'))\
-            .order_by('-total')
-        order_items_grouped_by_recipient_type = models.OrderItem.objects\
-            .filter(order___complete=True)\
-            .values('ticket__fare__recipient_type')\
-            .annotate(total=Sum('price'), count=Count('pk'))\
-            .order_by('-total')
 
-        from django.db import connection
-        from collections import defaultdict
-        from decimal import Decimal
-        cursor = connection.cursor()
-        cursor.execute('''
-        SELECT "conference_fare"."code", "conference_fare"."name", "assopy_orderitem"."price", "assopy_orderitem"."order_id"
-        FROM "assopy_orderitem" INNER JOIN "assopy_order"
-            ON ("assopy_orderitem"."order_id" = "assopy_order"."id")
-        LEFT OUTER JOIN "conference_ticket"
-            ON ("assopy_orderitem"."ticket_id" = "conference_ticket"."id")
-        LEFT OUTER JOIN "conference_fare"
-            ON ("conference_ticket"."fare_id" = "conference_fare"."id")
-        WHERE ("assopy_order"."_complete" = 1 AND ("conference_fare"."ticket_type" = 'conference'  OR "conference_ticket"."id" IS NULL))
-        ORDER BY "assopy_orderitem"."order_id"
-''')
-        def _calc_prices(order_id):
-            if order_id is None:
-                return
+        def _orders():
+            """
+            Ordini completi
+            """
+            return models.Order.objects\
+                .filter(_complete=True, orderitem__ticket__fare__conference=conf.code)\
+                .distinct()
 
-            rows = grouped[order_id]
-            prices = set()
-            discount = Decimal('0')
-            total = Decimal('0')
-            for item in rows:
-                if item['price'] > 0:
-                    prices.add(item['price'])
-                    total += item['price']
-                else:
-                    discount += item['price'] * -1
-            for ix, item in reversed(list(enumerate(rows))):
-                if item['price'] > 0:
-                    item['price'] = item['price'] * (total - discount) / total
-                else:
-                    del rows[ix]
-        grouped = defaultdict(list)
-        last_order = None
-        for row in cursor.fetchall():
-            if row[3] != last_order:
-                _calc_prices(last_order)
-                last_order = row[3]
-            grouped[row[3]].append({ 'code': row[0], 'name': row[1], 'price': row[2] })
-        _calc_prices(last_order)
+        def _tickets():
+            """
+            Biglietti venduti
+            """
+            return Ticket.objects\
+                .filter(orderitem__order__in=_orders())
 
-        tcp = {}
-        for rows in grouped.values():
-            for item in rows:
-                code = item['code']
-                if code not in tcp:
-                    tcp[code] = {
-                        'code': code,
-                        'name': item['name'],
-                        'prices': {}
-                    }
-                price = item['price']
-                if price not in tcp[code]['prices']:
-                    tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
-                tcp[code]['prices'][price]['count'] += 1
+        def _order_items_by_fare():
+            """
+            Dettaglio ordini: raggruppato per tariffa
+            """
+            return models.OrderItem.objects\
+                .filter(order__in=_orders())\
+                .values('ticket__fare__code', 'ticket__fare__name')\
+                .annotate(total=Sum('price'), count=Count('pk'))\
+                .order_by('ticket__fare__code')
+
+        def _order_items_by_ticket():
+            """
+            Dettaglio ordini: raggruppato per tipo biglietto
+            """
+            return models.OrderItem.objects\
+                .filter(order__in=_orders())\
+                .values('ticket__fare__ticket_type')\
+                .annotate(total=Sum('price'), count=Count('pk'))\
+                .order_by('-total')
+
+        def _order_items_by_recipient():
+            """
+            Dettaglio ordini: raggruppato per tipo acquirente
+            """
+            return models.OrderItem.objects\
+                .filter(order__in=_orders(), ticket__fare__ticket_type='conference')\
+                .values('ticket__fare__recipient_type')\
+                .annotate(total=Sum('price'), count=Count('pk'))\
+                .order_by('-total')
+
+        def _recalculated_ticket_prices():
+            """
+            Ricalcola il ricavo dei biglietti eliminando quelli gratuiti e
+            ridistribuendo il prezzo sui rimanenti.
+            """
+            from collections import defaultdict
+            from decimal import Decimal
+
+            qs = models.OrderItem.objects\
+                .filter(order__in=_orders())\
+                .filter(Q(ticket__fare__ticket_type='conference')|Q(ticket=None))\
+                .order_by('order')\
+                .values_list('ticket__fare__code', 'ticket__fare__name', 'price', 'order')
+
+            def _calc_prices(order_id, items):
+                """
+                Elimina gli item degli sconti e riduce in maniera proporzionale
+                il valore dei restanti.
+                """
+                prices = set()
+                discount = Decimal('0')
+                total = Decimal('0')
+                for item in items:
+                    if item['price'] > 0:
+                        prices.add(item['price'])
+                        total += item['price']
+                    else:
+                        discount += item['price'] * -1
+
+                for ix, item in reversed(list(enumerate(items))):
+                    if item['price'] > 0:
+                        item['price'] = item['price'] * (total - discount) / total
+                    else:
+                        del rows[ix]
+
+            grouped = defaultdict(list)
+            for fcode, fname, price, oid in qs:
+                grouped[oid].append({
+                    'code': fcode,
+                    'name': fname,
+                    'price': price,
+                })
+            for oid, items in grouped.items():
+                _calc_prices(oid, items)
+
+            # dopo l'utilizzo di _calc_prices ottengo dei prezzi che non trovo
+            # più tra le tariffe ordinarie, raggruppo gli OrderItem risultanti
+            # per codice tariffa e nuovo prezzo
+            tcp = {}
+            for rows in grouped.values():
+                for item in rows:
+                    code = item['code']
+                    if code not in tcp:
+                        tcp[code] = {
+                            'code': code,
+                            'name': item['name'],
+                            'prices': {}
+                        }
+                    price = item['price']
+                    if price not in tcp[code]['prices']:
+                        tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
+                    tcp[code]['prices'][price]['count'] += 1
+            return tcp.values()
+
+        output = []
+        for f in (
+            _orders,
+            _tickets,
+            _order_items_by_ticket,
+            _order_items_by_recipient,
+            _order_items_by_fare,
+            _recalculated_ticket_prices):
+            if hasattr(f, 'short_description'):
+                name = f.short_description
+            else:
+                name = f.__name__.replace('_', ' ').strip()
+            output.append((name, f.__doc__, f()))
+        return output
+
+    def stats(self, request):
+        from conference.models import Conference
+
         ctx = {
-            'orders': orders,
-            'tickets': tickets,
-            'order_items_details': order_items_details,
-            'order_items_grouped_by_ticket_type': order_items_grouped_by_ticket_type,
-            'order_items_grouped_by_recipient_type': order_items_grouped_by_recipient_type,
-            'tickets_calculated_prices': tcp.values(),
+            'conferences': [],
         }
+        for c in Conference.objects.order_by('-conference_start')[:3]:
+            ctx['conferences'].append((c, self.stats_conference(c)))
+
         return render_to_response('assopy/admin/order_stats.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.register(models.Order, OrderAdmin)
