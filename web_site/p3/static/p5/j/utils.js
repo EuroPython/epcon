@@ -861,3 +861,30 @@ function setup_cart_form(ctx) {
 
     $('#id_order_type').change();
 }
+
+$.fn.extend({
+    'vertical_align': function(mode) {
+        this.each(function() {
+            var e = $(this);
+            var ph = e.parent().height() / 2 +
+                (parseInt(e.parent().css('padding-top')) || 0) / 2 +
+                (parseInt(e.parent().css('padding-bottom')) || 0) / 2;
+            var offset = ph - e.height() / 2;
+            if(e.offsetParent().index(e.parent()) != -1) {
+                var top = offset;
+            }
+            else {
+                console.log('TODO: vertical_align')
+                return this;
+            }
+            mode = mode || 'relative';
+            if(mode == 'relative') {
+                var pos = e.position();
+                var top = pos.top - (parseInt(e.css('top')) || 0);
+                e.css('position', 'relative');
+                e.css('top', (offset - top));
+            }
+        })
+        return this;
+    }
+});

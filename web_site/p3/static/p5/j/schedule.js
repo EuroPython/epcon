@@ -440,4 +440,5 @@ function highlighter(mode) {
                     .highlight();
                 return false;
             })
+    $('.special > *:first-child').vertical_align();
 })();
