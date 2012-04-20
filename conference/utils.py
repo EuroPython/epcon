@@ -353,6 +353,35 @@ class TimeTable2(object):
 
         return self
 
+def collapse_events(tt, threshold):
+    """
+    Data una timetable cerca i momenti temporali che possono essere
+    "collassati" perchè non interessanti, che non portano modifiche allo
+    schedule.
+
+    Ad esempio una timetable con eventi molto lunghi 
+    """
+    if isinstance(threshold, int):
+        threshold = { None: threshold }
+    
+    output = []
+    for time, events in tt.iterOnTimes():
+        limits = []
+        durations = []
+        checks = []
+        for e in events:
+            l = threshold.get('talk' if e['talk'] else 'custom', threshold[None])
+            limits.append(l)
+            durations.append(e['duration'])
+            checks.append(e['duration'] > l)
+
+        if all(checks):
+            offset = min(limits)
+            st = time + timedelta(seconds=offset*60)
+            d = min(durations) - offset
+            output.append((st, d))
+    return output
+
 class TimeTable(object):
     class Event(object):
         def __init__(self, time, row, ref, columns, rows):
