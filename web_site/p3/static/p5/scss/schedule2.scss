@@ -320,27 +320,44 @@ body#schedule > .page > .container {
      * - lunch
      * - registration
      */
-     .event.special {
-          background: white url(../i/empty-track.png) bottom left;
-          font-size: 15px;
-      }
 
-      .event.special, .event.keynote{
-          height: 100%;
-          text-align: center;
-          padding-top: 20px;
-          h3{
-              font-size: 13px;
-              font-variant: small-caps;
-              display: inline;
-              padding: 7px;
-              border: 1px dotted $cGray;
-          }
-      }
-
-    .event.special > div {
-        margin-top: 100px;
+    .event.keynote {
+        height: 100%;
+        text-align: center;
+        padding-top: 20px;
+        h3{
+            font-size: 13px;
+            font-variant: small-caps;
+            display: inline;
+            padding: 7px;
+            border: 1px dotted $cGray;
+        }
     }
+
+    .event.special {
+        @extend .event.keynote;
+        background: white url(../i/empty-track.png) bottom left;
+        h3 {
+            font-size: 1.3em;
+            border: 0;
+            padding: 0;
+            .hhmm {
+                display: inline;
+                font-size: inherit;
+                span {
+                    font-size: inherit;
+                }
+                &:after {
+                    content: " - ";
+                }
+            }
+        }
+    }
+
+    .event.keynote.exposed, .event.special.exposed {
+        text-align: left;
+    }
+
     /* eventi evidenziati */
 
     /* starred dall'utente (+1) */

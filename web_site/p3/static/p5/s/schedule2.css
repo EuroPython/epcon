@@ -237,21 +237,31 @@ body#schedule > .page > .container {
       background: #ABA18F; }
     .conference-schedules.timetable .event .book-event .restricted {
       background: #ABA18F; }
-  .conference-schedules.timetable .event.special {
-    background: white url(../i/empty-track.png) bottom left;
-    font-size: 15px; }
-  .conference-schedules.timetable .event.special, .conference-schedules.timetable .event.keynote {
+  .conference-schedules.timetable .event.keynote, .conference-schedules.timetable .event.special {
     height: 100%;
     text-align: center;
     padding-top: 20px; }
-    .conference-schedules.timetable .event.special h3, .conference-schedules.timetable .event.keynote h3 {
+    .conference-schedules.timetable .event.keynote h3, .conference-schedules.timetable .event.special h3 {
       font-size: 13px;
       font-variant: small-caps;
       display: inline;
       padding: 7px;
       border: 1px dotted #878181; }
-  .conference-schedules.timetable .event.special > div {
-    margin-top: 100px; }
+  .conference-schedules.timetable .event.special {
+    background: white url(../i/empty-track.png) bottom left; }
+    .conference-schedules.timetable .event.special h3 {
+      font-size: 1.3em;
+      border: 0;
+      padding: 0; }
+      .conference-schedules.timetable .event.special h3 .hhmm {
+        display: inline;
+        font-size: inherit; }
+        .conference-schedules.timetable .event.special h3 .hhmm span {
+          font-size: inherit; }
+        .conference-schedules.timetable .event.special h3 .hhmm:after {
+          content: " - "; }
+  .conference-schedules.timetable .event.keynote.exposed, .conference-schedules.timetable .exposed.event.special, .conference-schedules.timetable .event.special.exposed {
+    text-align: left; }
   .conference-schedules.timetable .event.interest-up {
     background: #d7f5fa; }
   .conference-schedules.timetable .event.interest-down {

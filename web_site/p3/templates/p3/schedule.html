@@ -221,7 +221,12 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             <div class="hhmm">
                 <div>TRACK</div>
                 {% for time_, events in tt.iterOnTimes %}
+                {% with events|attrib_:"tags"|eval_:"set(sum(map(list, x), []))" as tlist %}
+                {% comment %}Se gli eventi sono solo special non metto l'ora (è ripetuta nel testo){% endcomment %}
+                {% if tlist|length > 1 or "special" not in tlist %}
                 <div class="time-{{ time_|time:"Hi" }}"><span>{{ time_|time:"H" }}</span>:{{ time_|time:"i" }}</div>
+                {% endif %}
+                {% endwith %}
                 {% endfor %}
             </div>
             {% for track, events in tt.iterOnTracks %}
@@ -244,7 +249,12 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     </div>
                     <div class="maximized abstract cms"> </div>
                     {% else %}
-                    <h3 class="name">{{ e.name|safe }}</h3>
+                    <h3 class="name">
+                        {% if "special" in e.tags %}
+                        <div class="hhmm"><span>{{ e.time|time:"H" }}</span>:{{ e.time|time:"i" }}</div>
+                        {% endif %}
+                        {{ e.name|safe }}
+                    </h3>
                     {% endif %}
                     <div class="tools">
                         {% comment %}
