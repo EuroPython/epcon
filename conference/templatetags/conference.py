@@ -1352,6 +1352,12 @@ def talk_data(tid):
     return dataaccess.talk_data(tid)
 
 @fancy_tag(register)
+def event_data(eid):
+    event = dataaccess.event_data(eid)
+    event.update({'schedule':dataaccess.schedule_data(event['schedule_id'])})
+    return event
+
+@fancy_tag(register)
 def talks_data(tids):
     return dataaccess.talks_data(tids)
 
