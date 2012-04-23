@@ -223,6 +223,11 @@ def talk_data(tid, preload=None):
         abstract = talk.getAbstract()
 
     try:
+        event = preload['event']
+    except KeyError:
+        event = list(talk.event_set.all().values_list('id', flat=True))
+
+    try:
         comment_list = preload['comments']
     except KeyError:
         comment_list = comments.get_model().objects\
@@ -234,6 +239,7 @@ def talk_data(tid, preload=None):
         'abstract': getattr(abstract, 'body', ''),
         'speakers': speakers,
         'tags': tags,
+        'events_id': event,
         'comments': list(comment_list),
     })
     return output
