@@ -429,6 +429,7 @@ def event_data(eid, preload=None):
         duration = event.duration
     return {
         'id': event.id,
+        'schedule_id': event.schedule_id,
         'name': name,
         'time': datetime.combine(sch['date'], event.start_time),
         'custom': event.custom,
