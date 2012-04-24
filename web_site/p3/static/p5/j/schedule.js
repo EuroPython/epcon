@@ -374,25 +374,29 @@ function highlighter(mode) {
         })
         .each(function(ix, val) {
             var e = $(this);
-            var tid = e.attr('data-talk');
             var tools = e.children('.tools');
-            if(tid && tid in user_votes) {
-                tools.append('<div class="maximized talk-vote">' + user_votes[tid] + '/10</div>');
-            }
-            var i = user_interest[e.attr('data-id')];
-            if(i == 1) {
-                e.addClass('interest-up');
-            }
-            else if(i == -1) {
-                e.addClass('interest-down');
-            }
             if(user_authenticated) {
-                tools.append(user_interest_toolbar);
-                if(i == 1) {
-                    tools.find('button.up').addClass('active');
+                var tid = e.attr('data-talk');
+                if(tid && tid in user_votes) {
+                    tools.append('<div class="maximized talk-vote">' + user_votes[tid] + '/10</div>');
                 }
-                else if(i == -1) {
-                    tools.find('button.down').addClass('active');
+
+                var track = e.parents('.track').attr('data-track');
+                if(track != 'training1' && track != 'training2') {
+                    var i = user_interest[e.attr('data-id')];
+                    if(i == 1) {
+                        e.addClass('interest-up');
+                    }
+                    else if(i == -1) {
+                        e.addClass('interest-down');
+                    }
+                    tools.append(user_interest_toolbar);
+                    if(i == 1) {
+                        tools.find('button.up').addClass('active');
+                    }
+                    else if(i == -1) {
+                        tools.find('button.down').addClass('active');
+                    }
                 }
             }
             /*
