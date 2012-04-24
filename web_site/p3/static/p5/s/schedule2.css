@@ -165,7 +165,8 @@ body#schedule > .page > .container {
     border-bottom: 1px dotted #e1dbc5;
     margin-bottom: 5px;
     line-height: 1.4em;
-    padding-bottom: 3px; }
+    padding-bottom: 3px;
+    opacity: 0.7; }
   .conference-schedules.timetable .event.exposed .name {
     height: auto;
     font-weight: bold;
@@ -173,6 +174,8 @@ body#schedule > .page > .container {
     font-size: 12px; }
   .conference-schedules.timetable .event.exposed .hhmm {
     font-weight: bold; }
+  .conference-schedules.timetable .event.exposed .speakers {
+    opacity: 1; }
   .conference-schedules.timetable .event .talk-level {
     position: absolute;
     left: 0;
@@ -295,6 +298,9 @@ body#schedule > .page > .container {
   -webkit-transform: translate(-145px, 0) rotate(-90deg);
   -o-transform: translate(-145px, 0) rotate(-90deg);
   -ms-transform: translate(-145px, 0) rotate(-90deg); }
+  #schedule-navigator .close {
+    position: absolute;
+    right: 0; }
   #schedule-navigator a {
     border: 0; }
   #schedule-navigator .disabled {
@@ -302,8 +308,9 @@ body#schedule > .page > .container {
     opacity: 0.7; }
   #schedule-navigator > div {
     float: left;
-    margin-right: 20px;
-    padding: 0;
+    height: 40px;
+    margin: 0;
+    padding: 0 10px !important;
     line-height: 32px; }
     #schedule-navigator > div > div {
       display: none;
@@ -419,6 +426,93 @@ body#schedule > .page > .container {
 .conference-schedules.timetable.vertical-narrow .tracks-8 {
   width: 800px; }
 .conference-schedules.timetable.vertical-narrow .track .title {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  text-align: center; }
+
+.conference-schedules.timetable.vertical .schedule {
+  width: 1400px; }
+.conference-schedules.timetable.vertical .schedule > .hhmm {
+  float: left;
+  width: 40px;
+  height: 730px; }
+.conference-schedules.timetable.vertical .schedule:after {
+  content: ' ';
+  display: block;
+  clear: both; }
+.conference-schedules.timetable.vertical .track {
+  position: relative;
+  float: left;
+  width: 190px;
+  height: 730px; }
+.conference-schedules.timetable.vertical .event {
+  width: 100%; }
+.conference-schedules.timetable.vertical .duration-15 {
+  height: 15px; }
+.conference-schedules.timetable.vertical .duration-30 {
+  height: 30px; }
+.conference-schedules.timetable.vertical .duration-45 {
+  height: 45px; }
+.conference-schedules.timetable.vertical .duration-60 {
+  height: 60px; }
+.conference-schedules.timetable.vertical .duration-75 {
+  height: 75px; }
+.conference-schedules.timetable.vertical .duration-90 {
+  height: 90px; }
+.conference-schedules.timetable.vertical .duration-240 {
+  height: 240px; }
+.conference-schedules.timetable.vertical .duration-480 {
+  height: 480px; }
+.conference-schedules.timetable.vertical .duration-630 {
+  height: 630px; }
+.conference-schedules.timetable.vertical .time-0900 {
+  top: 40px; }
+.conference-schedules.timetable.vertical .time-0930 {
+  top: 70px; }
+.conference-schedules.timetable.vertical .time-0945 {
+  top: 85px; }
+.conference-schedules.timetable.vertical .time-1030 {
+  top: 130px; }
+.conference-schedules.timetable.vertical .time-1115 {
+  top: 175px; }
+.conference-schedules.timetable.vertical .time-1215 {
+  top: 235px; }
+.conference-schedules.timetable.vertical .time-1300 {
+  top: 280px; }
+.conference-schedules.timetable.vertical .time-1315 {
+  top: 295px; }
+.conference-schedules.timetable.vertical .time-1430 {
+  top: 370px; }
+.conference-schedules.timetable.vertical .time-1530 {
+  top: 430px; }
+.conference-schedules.timetable.vertical .time-1630 {
+  top: 490px; }
+.conference-schedules.timetable.vertical .time-1715 {
+  top: 535px; }
+.conference-schedules.timetable.vertical .time-1815 {
+  top: 595px; }
+.conference-schedules.timetable.vertical .time-1830 {
+  top: 610px; }
+.conference-schedules.timetable.vertical .time-1930 {
+  top: 670px; }
+.conference-schedules.timetable.vertical .tracks-1 {
+  width: 190px; }
+.conference-schedules.timetable.vertical .tracks-2 {
+  width: 380px; }
+.conference-schedules.timetable.vertical .tracks-3 {
+  width: 570px; }
+.conference-schedules.timetable.vertical .tracks-4 {
+  width: 760px; }
+.conference-schedules.timetable.vertical .tracks-5 {
+  width: 950px; }
+.conference-schedules.timetable.vertical .tracks-6 {
+  width: 1140px; }
+.conference-schedules.timetable.vertical .tracks-7 {
+  width: 1330px; }
+.conference-schedules.timetable.vertical .tracks-8 {
+  width: 1520px; }
+.conference-schedules.timetable.vertical .track .title {
   position: absolute;
   width: 100%;
   top: 0;

@@ -4,6 +4,7 @@
 {% block EXTRA_HEAD %}
 <link type="text/css" href="{{ STATIC_URL }}p5/s/schedule2.css" rel="stylesheet" />
 <style>
+{% comment %}
 /* layout */
 .horizontal .hhmm { height: 20px; }
 .horizontal.schedule { width: 3000px; }
@@ -43,78 +44,7 @@
     position: absolute;
     left: -40px;
 }
-
-.vertical .hhmm {
-    float: left;
-    width: 40px;
-    height: 735px;
-}
-.vertical.schedule { width: 1400px; }
-.vertical.schedule:after {
-    content: ' ';
-    display: block;
-    clear: both;
-}
-.vertical .track {
-    position: relative;
-    float: left;
-    width: 190px;
-    height: 735px;
-}
-.vertical .event {
-    width: 100%;
-}
-.vertical .event.duration-15 { height: 15px; }
-.vertical .event.duration-30 { height: 30px; }
-.vertical .event.duration-45 { height: 45px; }
-.vertical .event.duration-60 { height: 60px; }
-.vertical .event.duration-75 { height: 75px; }
-.vertical .event.duration-90 { height: 90px; }
-.vertical .event.duration-240 { height: 240px; }
-.vertical .event.duration-480 { height: 480px; }
-.vertical .time-0900 { top: 15px; }
-.vertical .time-0930 { top: 45px; }
-.vertical .time-0945 { top: 60px; }
-.vertical .time-1030 { top: 105px; }
-.vertical .time-1115 { top: 150px; }
-.vertical .time-1215 { top: 210px; }
-.vertical .time-1300 { top: 255px; }
-.vertical .time-1315 { top: 270px; }
-.vertical .time-1430 { top: 345px; }
-.vertical .time-1530 { top: 405px; }
-.vertical .time-1630 { top: 465px; }
-.vertical .time-1715 { top: 510px; }
-.vertical .time-1815 { top: 570px; }
-.vertical .time-1830 { top: 585px; }
-.vertical .time-1930 { top: 645px; }
-.vertical .event.tracks-1 { width: 190px; }
-.vertical .event.tracks-2 { width: 380px; }
-.vertical .event.tracks-3 { width: 570px; }
-.vertical .event.tracks-4 { width: 760px; }
-.vertical .event.tracks-5 { width: 950px; }
-.vertical .event.tracks-6 { width: 1140px; }
-.vertical .event.tracks-7 { width: 1330px; }
-.vertical .event.tracks-8 { width: 1520px; }
-.vertical .track .title {
-    position: absolute;
-    top: 0;
-    text-align: center;
-    width: 100%;
-}
-
-/* *********************** */
-
-#schedule-navigator .close {
-    position: absolute;
-    right: 0;
-}
-
-.event .speakers {
-    opacity: 0.7;
-}
-.event.exposed .speakers {
-    opacity: 1;
-}
+{% endcomment %}
 
 #schedule-navigator {
     width: 250px;
@@ -125,11 +55,6 @@
     -ms-transform: translate(-105px, 0px) rotate(-90deg);
 }
 
-#schedule-navigator > div {
-    padding: 0 10px !important;
-    margin: 0;
-    height: 40px;
-}
 </style>
 {% endblock %}
 
