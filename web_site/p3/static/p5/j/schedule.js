@@ -206,7 +206,7 @@ function highlighter(mode) {
 (function() {
     var user_interest_toolbar = '' +
     '   <div class="talk-interest">' +
-    '       <button class="up"></button>' +
+    '       <a class="up" href="#" />' +
     '   </div>' +
     '';
 
@@ -395,10 +395,10 @@ function highlighter(mode) {
                     }
                     tools.append(user_interest_toolbar);
                     if(i == 1) {
-                        tools.find('button.up').addClass('active');
+                        tools.find('a.up').addClass('active');
                     }
                     else if(i == -1) {
-                        tools.find('button.down').addClass('active');
+                        tools.find('a.down').addClass('active');
                     }
                 }
             }
@@ -434,7 +434,7 @@ function highlighter(mode) {
                 return false;
             })
             .end()
-        .find('.talk-interest button')
+        .find('.talk-interest a')
             .bind('click', function(ev) {
                 var base = "/conference/schedule/_C_/_S_/0/interest"
                 var e = $(this);
@@ -456,13 +456,13 @@ function highlighter(mode) {
                     success: function() {
                         evt.removeClass('interest-up interest-down');
                         var wrap = e.parents('.talk-interest');
-                        $('button', wrap).removeClass('active');
+                        $('a', wrap).removeClass('active');
                         if(val > 0) {
-                            $('button.up', wrap).addClass('active');
+                            $('a.up', wrap).addClass('active');
                             evt.addClass('interest-up');
                         }
                         else if(val < 0) {
-                            $('button.down', wrap).addClass('active');
+                            $('a.down', wrap).addClass('active');
                             evt.addClass('interest-down');
                         }
                     }

@@ -311,13 +311,13 @@ body#schedule > .page > .container {
             }
         }
         .talk-interest {
-            button {
+            a {
                 padding-left: 18px;
             }
-            button.up {
+            a.up {
                 background: transparent url(../i/star-on-16.png) no-repeat left center;
             }
-            button.up.active {
+            a.up.active {
                 background: transparent url(../i/star-off-16.png) no-repeat left center;
             }
         }
