@@ -318,60 +318,63 @@ function highlighter(mode) {
         }
         return false;
     });
+    var counter = 0;
     $('.event')
         .filter(function(ix) {
             // escludo gli elementi "strutturali", non devo interagirci
             var e = $(this);
             return !e.hasClass('special') && !e.hasClass('break');
         })
-        .prepend('' +
-            '<div class="maximized close-event">' +
-            '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
-            '</div>')
-        .bind('click', function(ev) {
-            var e = $(this);
-            if(e.hasClass('exposed'))
-                return;
-            $('.exposed')
-                .not(e)
-                .each(function() { unexpose($(this)) });
-            expose(e);
-        })
-        .find('a')
+        .filter('[data-talk]')
+            .prepend('' +
+                '<div class="maximized close-event">' +
+                '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
+                '</div>')
             .bind('click', function(ev) {
-                /*
-                 * non voglio seguire i link su un evento collassato
-                 */
-                var evt = $(this).parents('.event');
-                if(!evt.hasClass('exposed'))
-                    ev.preventDefault();
-                return true;
+                var e = $(this);
+                if(e.hasClass('exposed'))
+                    return;
+                $('.exposed')
+                    .not(e)
+                    .each(function() { unexpose($(this)) });
+                expose(e);
             })
-            .end()
-        .find('.close-event a')
-            .bind('click', function(ev) {
-                unexpose($(this).parents('.event'));
-                return false;
-            })
-            .end()
-        .bind('exposed', function(ev) {
-            var e = $(this);
-            if(!e.data('loaded')) {
-                var talk = $('h3.name a', e).attr('href');
-                if(talk) {
-                    var ab = $('.abstract', e)
-                        .text('loading...');
-                    $.ajax({
-                        url: talk + '.xml',
-                        dataType: 'xml',
-                        success: function(data, text, xhr) {
-                            ab.html($('talk abstract', data).html());
-                        }
-                    });
+            .find('a')
+                .bind('click', function(ev) {
+                    /*
+                    * non voglio seguire i link su un evento collassato
+                    */
+                    var evt = $(this).parents('.event');
+                    if(!evt.hasClass('exposed'))
+                        ev.preventDefault();
+                    return true;
+                })
+                .end()
+            .find('.close-event a')
+                .bind('click', function(ev) {
+                    unexpose($(this).parents('.event'));
+                    return false;
+                })
+                .end()
+            .bind('exposed', function(ev) {
+                var e = $(this);
+                if(!e.data('loaded')) {
+                    var talk = $('h3.name a', e).attr('href');
+                    if(talk) {
+                        var ab = $('.abstract', e)
+                            .text('loading...');
+                        $.ajax({
+                            url: talk + '.xml',
+                            dataType: 'xml',
+                            success: function(data, text, xhr) {
+                                ab.html($('talk abstract', data).html());
+                            }
+                        });
+                    }
+                    e.data('loaded', 1);
                 }
-                e.data('loaded', 1);
-            }
-        })
+            })
+            .end()
         .each(function(ix, val) {
             var e = $(this);
             var tools = e.children('.tools');
@@ -399,6 +402,7 @@ function highlighter(mode) {
                     }
                 }
             }
+            var t0 = Date.now();
             /*
              * aggiunta elisione
              */
@@ -413,7 +417,23 @@ function highlighter(mode) {
                     name.truncateText(h);
                 }
             }
+            counter += Date.now() - t0;
         })
+        .find('.toggle-notice')
+            .bind('click', function(ev) {
+                $(this)
+                    .parents('.event')
+                    .children('.notice')
+                    .css('left', 0)
+                return false;
+            })
+            .end()
+        .find('.notice')
+            .bind('click', function(ev) {
+                $(this).css('left', '100%');
+                return false;
+            })
+            .end()
         .find('.talk-interest button')
             .bind('click', function(ev) {
                 var base = "/conference/schedule/_C_/_S_/0/interest"
@@ -458,5 +478,6 @@ function highlighter(mode) {
                     .highlight();
                 return false;
             })
+    console.log('x', counter);
     $('.special > *:first-child').verticalAlign();
 })();

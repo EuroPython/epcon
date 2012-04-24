@@ -55,6 +55,44 @@
     -ms-transform: translate(-105px, 0px) rotate(-90deg);
 }
 
+.event .toggle-notice {
+    width: 16px;
+    height: 16px;
+    background: red;
+    pointer: cursor;
+}
+.event .notice {
+    transition: all 0.8s ease 0s;
+    -moz-transition: all 0.8s ease 0s;
+    -webkit-transition: all 0.8s ease 0s;
+    -o-transition: all 0.8s ease 0s;
+    -ms-transition: all 0.8s ease 0s;
+    position: absolute;
+    background: pink;
+    top: 0;
+    left: 100%;
+    right: 0;
+    bottom: 0;
+}
+.conference-schedules.timetable .event.poster h3 {
+    margin: 10px 0;
+    font-size: 16px;
+    text-align: center;
+}
+.event.poster ul {
+    columns: 2;
+    -moz-columns: 2;
+    -webkit-columns: 2;
+    -o-columns: 2;
+    -ms-columns: 2;
+    display: inline-block;
+}
+.event.poster li {
+    height: 16px;
+    line-height: 16px;
+    overflow: hidden;
+    text-transform: lowercase;
+}
 </style>
 {% endblock %}
 
@@ -180,6 +218,16 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         {% endif %}
                         {{ e.name|safe }}
                     </h3>
+                    {% if "poster" in e.tags %}
+                        {% conference_talks type="p"  as posters %}
+                        <ul>
+                            {% for t in posters %}
+                            <li>
+                            <a href="{% url conference-talk slug=t.slug %}" title="by {% for s in t.speakers %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">{{ t.title }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     {% endif %}
                     <div class="tools">
                         {% comment %}
@@ -189,7 +237,16 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         </div>
                         {% endif %}
                         {% endcomment %}
+                        {% if "keynote" in e.tags %}
+                        <div class="toggle-notice">x</div>
+                        {% endif %}
                     </div>
+                    {% if "keynote" in e.tags %}
+                    <div class="notice">
+                        <h3>This is a keynote</h3>
+                        <p>This talk can be followed from any track.</p>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
                 {% endfor %}
