@@ -244,6 +244,7 @@ body#schedule > .page > .container {
         }
         .speakers {
             opacity: 1;
+            margin: 0;
         }
         .ellipsis {
             display: none;
@@ -446,8 +447,12 @@ body#schedule > .page > .container {
         }
     }
 
-    .event.keynote.exposed, .event.special.exposed {
+    .event.keynote.exposed {
         text-align: left;
+        .name {
+            border: 0;
+            padding: 0;
+        }
     }
 
     /* eventi evidenziati */

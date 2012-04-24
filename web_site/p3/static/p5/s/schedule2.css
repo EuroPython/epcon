@@ -82,6 +82,9 @@ body#schedule > .page > .container {
    * UI
    */
   /*
+   * notices
+   */
+  /*
    * talk level
    */
   /*
@@ -199,7 +202,44 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event.exposed .hhmm {
     font-weight: bold; }
   .conference-schedules.timetable .event.exposed .speakers {
-    opacity: 1; }
+    opacity: 1;
+    margin: 0; }
+  .conference-schedules.timetable .event.exposed .ellipsis {
+    display: none; }
+  .conference-schedules.timetable .event.exposed .after-ellipsis {
+    display: inline; }
+  .conference-schedules.timetable .event.exposed .talk-level {
+    height: 20px; }
+  .conference-schedules.timetable .event .toggle-notice {
+    width: 16px;
+    height: 16px;
+    pointer: cursor;
+    background-image: url("img/suggest.png");
+    background-repeat: no-repeat;
+    background-position: bottom center; }
+  .conference-schedules.timetable .event .notice {
+    transition: all 0.8s ease 0s;
+    -moz-transition: all 0.8s ease 0s;
+    -webkit-transition: all 0.8s ease 0s;
+    -o-transition: all 0.8s ease 0s;
+    -ms-transition: all 0.8s ease 0s;
+    position: absolute;
+    background: #a4d4d4;
+    border: 6px solid #93c3c3;
+    top: 0;
+    left: 100%;
+    right: 0;
+    bottom: 0; }
+    .conference-schedules.timetable .event .notice h3 {
+      border: 0 !important;
+      display: block !important;
+      margin: 10px 0;
+      padding: 0 !important; }
+    .conference-schedules.timetable .event .notice p {
+      padding: 0 3px; }
+      .conference-schedules.timetable .event .notice p a {
+        border-bottom: 1px solid #e7880f;
+        color: #e7880f; }
   .conference-schedules.timetable .event .talk-level {
     position: absolute;
     left: 0;
@@ -214,12 +254,6 @@ body#schedule > .page > .container {
     background: #e7c30f; }
   .conference-schedules.timetable .event .talk-level.advanced {
     background: #da4a0f; }
-  .conference-schedules.timetable .event.exposed .ellipsis {
-    display: none; }
-  .conference-schedules.timetable .event.exposed .after-ellipsis {
-    display: inline; }
-  .conference-schedules.timetable .event.exposed .talk-level {
-    height: 20px; }
   .conference-schedules.timetable .tools > div {
     display: inline-block; }
   .conference-schedules.timetable .event .tools {
@@ -241,11 +275,11 @@ body#schedule > .page > .container {
       -webkit-box-shadow: none;
       -o-box-shadow: none;
       -ms-box-shadow: none; }
-  .conference-schedules.timetable .event .talk-interest button {
+  .conference-schedules.timetable .event .talk-interest a {
     padding-left: 18px; }
-  .conference-schedules.timetable .event .talk-interest button.up {
+  .conference-schedules.timetable .event .talk-interest a.up {
     background: transparent url(../i/star-on-16.png) no-repeat left center; }
-  .conference-schedules.timetable .event .talk-interest button.up.active {
+  .conference-schedules.timetable .event .talk-interest a.up.active {
     background: transparent url(../i/star-off-16.png) no-repeat left center; }
   .conference-schedules.timetable .event.exposed .tools {
     background: white;
@@ -292,8 +326,11 @@ body#schedule > .page > .container {
           font-size: inherit; }
         .conference-schedules.timetable .event.special h3 .hhmm:after {
           content: " - "; }
-  .conference-schedules.timetable .event.keynote.exposed, .conference-schedules.timetable .exposed.event.special, .conference-schedules.timetable .event.special.exposed {
+  .conference-schedules.timetable .event.keynote.exposed, .conference-schedules.timetable .exposed.event.special {
     text-align: left; }
+    .conference-schedules.timetable .event.keynote.exposed .name, .conference-schedules.timetable .exposed.event.special .name {
+      border: 0;
+      padding: 0; }
   .conference-schedules.timetable .event.interest-up {
     background: #d7f5fa; }
   .conference-schedules.timetable .event.interest-down {
