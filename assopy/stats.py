@@ -82,7 +82,7 @@ movimento_cassa.template = '''
     <tr>
         <td title="{{ code.1 }}">{{ code.0 }}</td>
         <td>{{ row.0 }}</td>
-        <td style="text-align: right;">€ {{ row.1|floatformat:".2" }}</td>
+        <td style="text-align: right;">€ {{ row.1|floatformat:"2" }}</td>
     </tr>
     {% endfor %}
     <tr>
@@ -93,7 +93,7 @@ movimento_cassa.template = '''
     <tr>
         <td title="{{ code.1 }}">{{ code.0 }}</td>
         <td>{{ row.0 }}</td>
-        <td style="text-align: right; color: red;">€ {{ row.1|floatformat:".2" }}</td>
+        <td style="text-align: right; color: red;">€ {{ row.1|floatformat:"2" }}</td>
     </tr>
     {% endfor %}
     <tr>
@@ -111,7 +111,7 @@ movimento_cassa.template = '''
     {% for code, row in data.errors %}
     <tr>
         <td>{{ code.0 }}</th>
-        <td style="text-align: right;">€ {{ row.1|floatformat:".2" }}</th>
+        <td style="text-align: right;">€ {{ row.1|floatformat:"2" }}</th>
     </tr>
     {% endfor %}
     <tr>
@@ -205,7 +205,7 @@ prezzo_biglietti_ricalcolato.template = '''
             <td title="{{ ticket.name }}" rowspan="{{ ticket.prices|length }}">{{ ticket.code }}</td>
             {% endif %}
             <td>{{ p.count }}</td>
-            <td>€ {{ p.price|floatformat:".2" }}</td>
+            <td>€ {{ p.price|floatformat:"2" }}</td>
         </tr>
         {% endfor %}
     {% endfor %}
