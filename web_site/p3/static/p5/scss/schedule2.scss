@@ -245,6 +245,16 @@ body#schedule > .page > .container {
         .speakers {
             opacity: 1;
         }
+        .ellipsis {
+            display: none;
+        }
+        .after-ellipsis {
+            display: inline;
+        }
+        .talk-level {
+            height: 20px;
+        }
+    }
 
     /*
      * notices
@@ -313,18 +323,6 @@ body#schedule > .page > .container {
         }
         .talk-level.advanced {
             background: $cAdvanced;
-        }
-    }
-
-    .event.exposed {
-        .ellipsis {
-            display: none;
-        }
-        .after-ellipsis {
-            display: inline;
-        }
-        .talk-level {
-            height: 20px;
         }
     }
 
