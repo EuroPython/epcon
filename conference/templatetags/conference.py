@@ -195,27 +195,21 @@ class TNode(template.Node):
 @fancy_tag(register)
 def conference_talks(conference=None, status="accepted", tag=None, type=None):
     if conference is None:
-        conference = settings.CONFERENCE
+        conference = [settings.CONFERENCE]
+    elif isinstance(conference, basestring):
+        conference = [ conference ]
     qs = models.Talk.objects\
-        .filter(conference=conference)\
+        .filter(conference__in=conference)\
+        .values_list('id', flat=True)\
         .order_by('title')
     if type is not None:
         qs = qs.filter(type=type)
     if status is not None:
         qs = qs.filter(status=status)
     if tag is not None:
-        qs = qs.filter(tags__icontains=tag)
+        qs = qs.filter(tags__name__in=tag)
 
-    if tag is not None:
-        qs = qs.values('id', 'tags')
-        tids = []
-        for t in qs:
-            if tag in map(lambda x: x.strip(), t['tags'].split(',')):
-                tids.append(t['id'])
-    else:
-        tids = list(qs.values_list('id', flat=True))
-
-    return dataaccess.talks_data(tids)
+    return dataaccess.talks_data(qs)
 
 @register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
 def render_talk_report(context, speaker, conference, tags):
@@ -1356,6 +1350,12 @@ def tagged_items(context, tag):
 @fancy_tag(register)
 def talk_data(tid):
     return dataaccess.talk_data(tid)
+
+@fancy_tag(register)
+def event_data(eid):
+    event = dataaccess.event_data(eid)
+    event.update({'schedule':dataaccess.schedule_data(event['schedule_id'])})
+    return event
 
 @fancy_tag(register)
 def talks_data(tids):
