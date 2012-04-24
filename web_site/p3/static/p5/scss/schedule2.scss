@@ -163,7 +163,7 @@ body#schedule > .page > .container {
         }
         .name {
             line-height: 14px;
-            height: 28px;
+            //height: 28px;
             font-size: 11px;
             overflow: hidden;
         }
@@ -231,6 +231,12 @@ body#schedule > .page > .container {
     }
 
     .event.exposed {
+        .ellipsis {
+            display: none;
+        }
+        .after-ellipsis {
+            display: inline;
+        }
         .talk-level {
             height: 20px;
         }

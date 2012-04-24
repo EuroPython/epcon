@@ -395,6 +395,20 @@ function highlighter(mode) {
                     tools.find('button.down').addClass('active');
                 }
             }
+            /*
+             * aggiunta elisione
+             */
+            var name = e.find('.name a');
+            if(name.length) {
+                // numero di linee visibili
+                var lh = parseFloat(name.css('line-height'));
+                var lines = Math.floor((e.height() - name.position().top) / lh);
+                // nuova altezza del tag a
+                var h = lines * lh;
+                if(h < name.height()) {
+                    name.truncateText(h);
+                }
+            }
         })
         .find('.talk-interest button')
             .bind('click', function(ev) {

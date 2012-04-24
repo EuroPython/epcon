@@ -142,7 +142,6 @@ body#schedule > .page > .container {
     right: 5px; }
   .conference-schedules.timetable .event .name {
     line-height: 14px;
-    height: 28px;
     font-size: 11px;
     overflow: hidden; }
   .conference-schedules.timetable .event .hhmm {
@@ -188,6 +187,10 @@ body#schedule > .page > .container {
     background: #ffb871; }
   .conference-schedules.timetable .event .talk-level.advanced {
     background: #4895a3; }
+  .conference-schedules.timetable .event.exposed .ellipsis {
+    display: none; }
+  .conference-schedules.timetable .event.exposed .after-ellipsis {
+    display: inline; }
   .conference-schedules.timetable .event.exposed .talk-level {
     height: 20px; }
   .conference-schedules.timetable .tools > div {
