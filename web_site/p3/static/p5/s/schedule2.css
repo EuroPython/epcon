@@ -38,9 +38,9 @@ body#schedule > .page > .container {
     position: relative; }
   .conference-schedules.timetable .event {
     position: absolute;
-    z-index: 101; }
-  .conference-schedules.timetable .event.special {
     z-index: 100; }
+  .conference-schedules.timetable .event.special {
+    z-index: 101; }
   .conference-schedules.timetable .hhmm {
     position: relative; }
   .conference-schedules.timetable .hhmm > div {
@@ -138,6 +138,12 @@ body#schedule > .page > .container {
       background-color: #a9cb0f; }
     .conference-schedules.timetable .schedule .track[data-track=sprint1] .event, .conference-schedules.timetable .schedule .track[data-track=sprint2] .event, .conference-schedules.timetable .schedule .track[data-track=sprint3] .event {
       border-left: 1px dotted #a9cb0f; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .event {
+      z-index: 102; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .event.special,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .event.special {
+      z-index: 101; }
     .conference-schedules.timetable .schedule .track[data-track=track1] .title,
     .conference-schedules.timetable .schedule .track[data-track=track2] .title,
     .conference-schedules.timetable .schedule .track[data-track=track3] .title,
@@ -151,9 +157,24 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .schedule .track[data-track=track-ita] .event {
       border-left: 1px dotted #e1dbc5; }
     .conference-schedules.timetable .schedule .track[data-track=training1] .title, .conference-schedules.timetable .schedule .track[data-track=training2] .title {
-      background-color: #e7880f; }
+      background-color: #a4d4d4; }
     .conference-schedules.timetable .schedule .track[data-track=training1] .event, .conference-schedules.timetable .schedule .track[data-track=training2] .event {
-      border-left: 1px dotted #e7880f; }
+      border-left: 1px dotted #a4d4d4; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info {
+      text-transform: uppercase;
+      -moz-transform: translate(75px, 53px) rotate(-90deg);
+      -moz-transform-origin: left top;
+      bottom: 0;
+      letter-spacing: 0.09em;
+      position: absolute;
+      text-transform: uppercase;
+      width: 235px; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.available, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.available {
+      color: #a4d4d4; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.booked, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.booked {
+      color: #738023; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.sold-out, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.sold-out {
+      color: #e7880f; }
     .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
       background-image: url("img/arrow.png"), url("img/italian_track.jpg");
       background-position: bottom center, left top;
@@ -238,8 +259,8 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .event .notice p {
       padding: 0 3px; }
       .conference-schedules.timetable .event .notice p a {
-        border-bottom: 1px solid #e7880f;
-        color: #e7880f; }
+        border-bottom: 1px solid #a4d4d4;
+        color: #a4d4d4; }
   .conference-schedules.timetable .event .talk-level {
     position: absolute;
     left: 0;
@@ -340,7 +361,7 @@ body#schedule > .page > .container {
     opacity: 0.7;
     background: rgba(225, 219, 197, 0.3); }
   .conference-schedules.timetable .event.exposed.dimmed {
-    opacity: 1;
+    opacity: .3;
     background: #fcfad9; }
 
 #schedule-navigator {
@@ -392,7 +413,7 @@ body#schedule > .page > .container {
       #schedule-navigator > div > div h3 {
         padding: 5px; }
       #schedule-navigator > div > div ul li {
-        padding: 5px; }
+        padding: 0 5px; }
   #schedule-navigator > div:first-child {
     background: #301D1D;
     color: #FCFAD9;

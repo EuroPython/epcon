@@ -21,9 +21,13 @@ $cBeginner: #738023;
 $cIntermediate: #e7c30f;
 $cAdvanced: #da4a0f;
 $cHelpDesk: #d2c7e5;
-$cPartners: #a4d4d4;
+
+
+$cPartners: #e7880f;
+$cSoldout: $cPartners;
+
 $cSprint: #a9cb0f;
-$cTraining: #e7880f;
+$cTraining: #a4d4d4; 
 
 .box-sizing{
     -moz-box-sizing: border-box;
@@ -45,6 +49,21 @@ $cTraining: #e7880f;
         border-left: 1px dotted $color;
     }
 }
+@mixin rotate($angle, $originX, $originY) {
+    transform: rotate($angle);
+    -moz-transform: rotate($angle);
+    -o-transform: rotate($angle);
+    -webkit-transform: rotate($angle);
+    -ms-transform: rotate($angle);
+
+    transform-origin: $originX $originY;
+    -moz-transform-origin: $originX $originY;
+    -webkit-transform-origin: $originX $originY;
+    -o-transform-origin: $originX $originY;
+    -ms-transform-origin: $originX $originY;
+
+
+}
 /********** END SETTINGS ******/
 
 
@@ -60,9 +79,9 @@ body#schedule > .page > .container {
     }
     .event {
         position: absolute;
-        z-index: 101;
+        z-index: 100;
     }
-    .event.special { z-index: 100; }
+    .event.special { z-index: 101; }
     .hhmm { position: relative; }
     .hhmm > div { position: absolute; }
 
@@ -161,6 +180,15 @@ body#schedule > .page > .container {
             @include setTrackColor($cSprint);
         }
         .track[data-track=track1],
+        .track[data-track=track2]{
+            // gli special normalmente stanno sopra gli eventi non espansi
+            // ma gli eventi della track 1 e della track 2 possono sovrapporsi agli special durante il pranzo
+            // per questo devo assicurarmi qui che stiano sopra lo special del pranzo
+            .event{ z-index: 102; }
+            .event.special{ z-index: 101; }
+        }
+
+        .track[data-track=track1],
         .track[data-track=track2],
         .track[data-track=track3],
         .track[data-track=track4],
@@ -169,6 +197,27 @@ body#schedule > .page > .container {
         }        
         .track[data-track=training1], .track[data-track=training2]{
             @include setTrackColor($cTraining);
+            .event{
+                .info{
+                    text-transform: uppercase;
+                    -moz-transform: translate(75px, 53px) rotate(-90deg);
+                    -moz-transform-origin: left top;
+                    bottom: 0;
+                    letter-spacing: 0.09em;
+                    position: absolute;
+                    text-transform: uppercase;
+                    width: 235px; // largo quanto l'altezza del training
+                }
+                .info.available{
+                    color: $cTraining;
+                }
+                .info.booked{
+                    color: $cBeginner;
+                }
+                .info.sold-out{
+                    color: $cSoldout;
+                }
+            }
         }
 
         .track[data-track=track-ita]{
@@ -187,7 +236,9 @@ body#schedule > .page > .container {
                     border-bottom: none;
                 }
             }
-        }    
+        }
+
+
     }
 
     .event {
@@ -281,7 +332,7 @@ body#schedule > .page > .container {
             -o-transition: all 0.8s ease 0s;
             -ms-transition: all 0.8s ease 0s;
             position: absolute;
-            background: $cPartners;
+            background: $cTraining;
             border: 6px solid #93c3c3;
             top: 0;
             left: 100%;
@@ -479,7 +530,7 @@ body#schedule > .page > .container {
         background: rgba($cBeige, 0.3);
     }
     .event.exposed.dimmed {
-        opacity: 1;
+        opacity: .3;
         background: rgba($cYellow, 1);
     }
 
@@ -541,7 +592,7 @@ body#schedule > .page > .container {
             }
             ul{
                 li{
-                    padding: $nav_pad;
+                    padding: 0 $nav_pad;
                 }   
             }
         }
