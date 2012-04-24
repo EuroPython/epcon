@@ -54,26 +54,6 @@
     -o-transform: translate(-105px, 0px) rotate(-90deg);
     -ms-transform: translate(-105px, 0px) rotate(-90deg);
 }
-
-.event .toggle-notice {
-    width: 16px;
-    height: 16px;
-    background: red;
-    pointer: cursor;
-}
-.event .notice {
-    transition: all 0.8s ease 0s;
-    -moz-transition: all 0.8s ease 0s;
-    -webkit-transition: all 0.8s ease 0s;
-    -o-transition: all 0.8s ease 0s;
-    -ms-transition: all 0.8s ease 0s;
-    position: absolute;
-    background: pink;
-    top: 0;
-    left: 100%;
-    right: 0;
-    bottom: 0;
-}
 .conference-schedules.timetable .event.poster h3 {
     margin: 10px 0;
     font-size: 16px;
@@ -238,7 +218,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         {% endif %}
                         {% endcomment %}
                         {% if "keynote" in e.tags %}
-                        <div class="toggle-notice">x</div>
+                        <div class="toggle-notice">&nbsp;</div>
                         {% endif %}
                     </div>
                     {% if "keynote" in e.tags %}

@@ -245,6 +245,51 @@ body#schedule > .page > .container {
         .speakers {
             opacity: 1;
         }
+
+    /*
+     * notices
+     */
+
+    .event{
+        .toggle-notice {
+            width: 16px;
+            height: 16px;
+            pointer: cursor;
+            background:{
+                image: url("img/suggest.png");
+                repeat: no-repeat;
+                position: bottom center;
+            }
+
+
+        }
+        .notice {
+            transition: all 0.8s ease 0s;
+            -moz-transition: all 0.8s ease 0s;
+            -webkit-transition: all 0.8s ease 0s;
+            -o-transition: all 0.8s ease 0s;
+            -ms-transition: all 0.8s ease 0s;
+            position: absolute;
+            background: $cPartners;
+            border: 6px solid #93c3c3;
+            top: 0;
+            left: 100%;
+            right: 0;
+            bottom: 0;
+            h3 {
+                border: 0 !important;
+                display: block !important;
+                margin: 10px 0;
+                padding: 0 !important;
+            }
+            p {
+                padding: 0 3px;
+                a {
+                    border-bottom: 1px solid $cTraining;
+                    color: $cTraining;
+                }
+            }
+        }
     }
 
     /*
