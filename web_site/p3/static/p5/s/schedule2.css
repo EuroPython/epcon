@@ -131,10 +131,34 @@ body#schedule > .page > .container {
       background-image: url("img/arrow.png");
       background-position: bottom center;
       background-repeat: no-repeat; }
+    .conference-schedules.timetable .schedule .track[data-track=sprint1] .title, .conference-schedules.timetable .schedule .track[data-track=sprint2] .title, .conference-schedules.timetable .schedule .track[data-track=sprint3] .title {
+      background-color: #a9cb0f; }
+    .conference-schedules.timetable .schedule .track[data-track=sprint1] .event, .conference-schedules.timetable .schedule .track[data-track=sprint2] .event, .conference-schedules.timetable .schedule .track[data-track=sprint3] .event {
+      border-left: 1px dotted #a9cb0f; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track3] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track4] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
+      background-color: #e1dbc5; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track3] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track4] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track-ita] .event {
+      border-left: 1px dotted #e1dbc5; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .title, .conference-schedules.timetable .schedule .track[data-track=training2] .title {
+      background-color: #e7880f; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event, .conference-schedules.timetable .schedule .track[data-track=training2] .event {
+      border-left: 1px dotted #e7880f; }
     .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
       background-image: url("img/arrow.png"), url("img/italian_track.jpg");
       background-position: bottom center, left top;
       background-repeat: no-repeat; }
+    .conference-schedules.timetable .schedule .track .event.special {
+      border-left: none; }
+    .conference-schedules.timetable .schedule .track .event.keynote .speakers, .conference-schedules.timetable .schedule .track .event.special .speakers {
+      border-bottom: none; }
   .conference-schedules.timetable .event a {
     border: none; }
   .conference-schedules.timetable .event .close-event {
@@ -183,11 +207,11 @@ body#schedule > .page > .container {
     background: transparent;
     color: white; }
   .conference-schedules.timetable .event .talk-level.beginner {
-    background: #a8c361; }
+    background: #738023; }
   .conference-schedules.timetable .event .talk-level.intermediate {
-    background: #ffb871; }
+    background: #e7c30f; }
   .conference-schedules.timetable .event .talk-level.advanced {
-    background: #4895a3; }
+    background: #da4a0f; }
   .conference-schedules.timetable .event.exposed .talk-level {
     height: 20px; }
   .conference-schedules.timetable .tools > div {
@@ -248,7 +272,9 @@ body#schedule > .page > .container {
       padding: 7px;
       border: 1px dotted #878181; }
   .conference-schedules.timetable .event.special {
-    background: white url(../i/empty-track.png) bottom left; }
+    background-color: rgba(225, 219, 197, 0.6);
+    background-image: url(../i/empty-track.png);
+    backround-position: bottom left; }
     .conference-schedules.timetable .event.special h3 {
       font-size: 1.3em;
       border: 0;
@@ -267,15 +293,12 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event.interest-down {
     opacity: .7;
     background: #999; }
-  .conference-schedules.timetable .event.highlighted {
-    box-shadow: inset 0px 0 59px 0px #d0d8bb;
-    -moz-box-shadow: inset 0px 0 59px 0px #d0d8bb;
-    -webkit-box-shadow: inset 0px 0 59px 0px #d0d8bb;
-    -o-box-shadow: inset 0px 0 59px 0px #d0d8bb;
-    -ms-box-shadow: inset 0px 0 59px 0px #d0d8bb; }
   .conference-schedules.timetable .event.dimmed {
     opacity: 0.7;
-    background: #ddd; }
+    background: rgba(225, 219, 197, 0.3); }
+  .conference-schedules.timetable .event.exposed.dimmed {
+    opacity: 1;
+    background: #fcfad9; }
 
 #schedule-navigator {
   position: fixed;

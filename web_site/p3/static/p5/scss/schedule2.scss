@@ -17,9 +17,16 @@ $cGray: #878181;
 $cPetrol: #4895A3;
 $cBeige: #e1dbc5;
 $cWhite: #ffffff;
-$cBeginner: #a8c361;
-$cIntermediate: #ffb871;
-$cAdvanced: #4895A3;
+$cBeginner: #738023;
+$cIntermediate: #e7c30f;
+$cAdvanced: #da4a0f;
+$cHelpDesk: #d2c7e5;
+$cPartners: #a4d4d4;
+$cSprint: #a9cb0f;
+$cTraining: #e7880f;
+
+
+
 
 .box-sizing{
     -moz-box-sizing: border-box;
@@ -32,7 +39,15 @@ $cAdvanced: #4895A3;
     -webkit-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
     -o-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
     -ms-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
-} 
+}
+@mixin setTrackColor($color){
+    .title{
+        background-color: $color;
+    }
+    .event{
+        border-left: 1px dotted $color;
+    }
+}
 /********** END SETTINGS ******/
 
 
@@ -130,6 +145,7 @@ body#schedule > .page > .container {
                 font-variant: small-caps;
             }
         }
+
         .track {
             .title {
                 font-variant: small-caps;
@@ -144,13 +160,37 @@ body#schedule > .page > .container {
                 background-repeat: no-repeat;
             }
         }
+        .track[data-track=sprint1], .track[data-track=sprint2], .track[data-track=sprint3]{
+            @include setTrackColor($cSprint);
+        }
+        .track[data-track=track1],
+        .track[data-track=track2],
+        .track[data-track=track3],
+        .track[data-track=track4],
+        .track[data-track=track-ita]{
+            @include setTrackColor($cBeige);
+        }        
+        .track[data-track=training1], .track[data-track=training2]{
+            @include setTrackColor($cTraining);
+        }
+
         .track[data-track=track-ita]{
             .title{
                 background-image: url("img/arrow.png"), url("img/italian_track.jpg");
                 background-position: bottom center, left top;
                 background-repeat: no-repeat;                
             }
-        }        
+        }
+        .track{
+            .event.special{
+                border-left: none;
+            }
+            .event.keynote{
+                .speakers{
+                    border-bottom: none;
+                }
+            }
+        }    
     }
 
     .event {
@@ -336,7 +376,9 @@ body#schedule > .page > .container {
 
     .event.special {
         @extend .event.keynote;
-        background: white url(../i/empty-track.png) bottom left;
+        background-color: rgba($cBeige, .6);
+        background-image: url(../i/empty-track.png);
+        backround-position: bottom left;
         h3 {
             font-size: 1.3em;
             border: 0;
@@ -373,14 +415,19 @@ body#schedule > .page > .container {
 
     /* risultato di una ricerca */
     .event.highlighted {
-        @include boxshadow(59px, $cGreen);
+        //@include boxshadow(59px, $cGreen);
     }
 
     /* escluso da una ricerca */
     .event.dimmed {
         opacity: 0.7;
-        background: #ddd;
+        background: rgba($cBeige, 0.3);
     }
+    .event.exposed.dimmed {
+        opacity: 1;
+        background: rgba($cYellow, 1);
+    }
+
 }
 
 #schedule-navigator {
