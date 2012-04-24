@@ -862,29 +862,119 @@ function setup_cart_form(ctx) {
     $('#id_order_type').change();
 }
 
-$.fn.extend({
-    'vertical_align': function(mode) {
-        this.each(function() {
-            var e = $(this);
-            var ph = e.parent().height() / 2 +
-                (parseInt(e.parent().css('padding-top')) || 0) / 2 +
-                (parseInt(e.parent().css('padding-bottom')) || 0) / 2;
-            var offset = ph - e.height() / 2;
-            if(e.offsetParent().index(e.parent()) != -1) {
-                var top = offset;
+(function($) {
+    var _tm_helper = null;
+    var _tt_helper = null;
+    $.fn.extend({
+        'verticalAlign': function(mode) {
+            this.each(function() {
+                var e = $(this);
+                var ph = e.parent().height() / 2 +
+                    (parseInt(e.parent().css('padding-top')) || 0) / 2 +
+                    (parseInt(e.parent().css('padding-bottom')) || 0) / 2;
+                var offset = ph - e.height() / 2;
+                if(e.offsetParent().index(e.parent()) != -1) {
+                    var top = offset;
+                }
+                else {
+                    console.log('TODO: vertical_align')
+                    return this;
+                }
+                mode = mode || 'relative';
+                if(mode == 'relative') {
+                    var pos = e.position();
+                    var top = pos.top - (parseInt(e.css('top')) || 0);
+                    e.css('position', 'relative');
+                    e.css('top', (offset - top));
+                }
+            })
+            return this;
+        },
+        'copyFontStylesTo': function(dst) {
+            var src = this.eq(0);
+            var styles = [
+                'font-size', 'font-style', 'font-weight',
+                'font-family', 'line-height', 'text-transform',
+                'letter-spacing'
+            ];
+            for(var ix=0, end=styles.length; ix<end; ix++) {
+                dst.css(styles[ix], src.css(styles[ix]));
             }
-            else {
-                console.log('TODO: vertical_align')
-                return this;
+            return this;
+        },
+        'copyFontStyles': function(src) {
+            src.copyFontStylesTo(this);
+            return this;
+        },
+        'textMetrics': function(width) {
+            var output = {
+                width: 0,
+                height: 0
+            };
+            if(this.length == 0)
+                return output;
+
+            var src = this.eq(0);
+            if(!_tm_helper) {
+                _tm_helper = $('<div id="_tm_helper"></div>')
+                    .appendTo(document.body)
+                    .css({
+                        position: 'absolute',
+                        top: -1000,
+                        visibility: 'hidden'
+                    });
             }
-            mode = mode || 'relative';
-            if(mode == 'relative') {
-                var pos = e.position();
-                var top = pos.top - (parseInt(e.css('top')) || 0);
-                e.css('position', 'relative');
-                e.css('top', (offset - top));
+            _tm_helper
+                .copyFontStyles(src)
+                .css('width', width || 'auto')
+                .html(src.html());
+
+            output['height'] = _tm_helper.outerHeight();
+            output['width'] = _tm_helper.outerWidth();
+
+            return output;
+        },
+        'truncateText': function(height) {
+            height = height || this.height();
+            if(!_tt_helper) {
+                _tt_helper = $('<div id="_tt_helper"></div>')
+                    .appendTo(document.body)
+                    .css({
+                        visibility: 'hidden',
+                        display: 'inline-block'
+                    })
             }
-        })
-        return this;
-    }
-});
+            _tt_helper
+                .css('width', this.width())
+                .copyFontStyles(this);
+            var text = this.text();
+            var ex = text.length;
+            var cx = ex;
+            while(true) {
+                var t = text.substr(0, cx);
+                _tt_helper.text(t);
+                if(_tt_helper.height() > height) {
+                    ex = cx;
+                    cx = Math.floor(ex / 2);
+                }
+                else {
+                    if(ex == cx) {
+                        break;
+                    }
+                    var w = cx;
+                    cx += Math.floor(Math.abs(ex-cx) / 2);
+                    ex = w;
+                }
+            }
+            var tx = t.length;
+            while(tx > 0 && t.substr(tx, 1) != ' ')
+                tx--;
+            this.eq(0).html(
+                '<span>' + text.substr(0, tx) + '</span>'
+                + '<span class="ellipsis">\u2026</span>'
+                + '<span class="after-ellipsis">' + text.substr(tx) + '</span>'
+            );
+            return this;
+        }
+    });
+})(jQuery);
