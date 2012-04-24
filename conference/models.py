@@ -624,7 +624,7 @@ class Fare(models.Model):
     start_validity = models.DateField(null=True)
     end_validity = models.DateField(null=True)
     recipient_type = models.CharField(max_length=1, choices=FARE_TYPES, default='p')
-    ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference')
+    ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference', db_index=True)
     payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
     blob = models.TextField(blank=True)
 
