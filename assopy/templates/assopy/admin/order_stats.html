@@ -35,93 +35,11 @@ table {
     {% for conf, stats in conferences %}
     <div class="conference">
         <h1>{{ conf.code }}</h1>
-        {% for name, doc, data in stats %}
+        {% for name, doc, render in stats %}
         <div class="stat">
             <h2>{{ name }}</h2>
             <h3>{{ doc }}</h3>
-            {% if name == "orders" or name == "tickets" %}
-                {{ data.count }}
-            {% endif %}
-            {% if name == "order items by fare" %}
-            <table>
-                <tr>
-                    <th>Fare</th>
-                    <th class="qty">Ticket #</th>
-                    <th class="sales">Sales</th>
-                </tr>
-                {% for row in data %}
-                <tr>
-                    <th>
-                        {% if not row.ticket__fare__code %}
-                            Coupon
-                        {% else %}
-                            <span title="{{ row.ticket__fare__name }}">{{ row.ticket__fare__code }}</span>
-                        {% endif %}
-                    </th>
-                    <td class="qty">#{{ row.count }}</td>
-                    <td class="sales">€ {{ row.total|floatformat:"2" }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% endif %}
-            {% if name == "order items by ticket" %}
-            <table>
-                <tr>
-                    <th>Ticket type</th>
-                    <th class="qty">Ticket #</th>
-                    <th class="sales">Sales</th>
-                </tr>
-                {% for row in data %}
-                <tr>
-                    <th>{{ row.ticket__fare__ticket_type }}</th>
-                    <td class="qty">#{{ row.count }}</td>
-                    <td class="sales">€ {{ row.total|floatformat:"2" }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% endif %}
-            {% if name == "order items by recipient" %}
-            <table>
-                <tr>
-                    <th>Recipient</th>
-                    <th class="qty">Ticket #</th>
-                    <th class="sales">Sales</th>
-                </tr>
-                {% for row in data %}
-                <tr>
-                    <th>
-                        {% with row.ticket__fare__recipient_type as t %}
-                        {% if t == "c" %}company{% endif %}
-                        {% if t == "p" %}personal{% endif %}
-                        {% if t == "s" %}student{% endif %}
-                        {% endwith %}
-                    </th>
-                    <td class="qty">#{{ row.count }}</td>
-                    <td class="sales">€ {{ row.total|floatformat:"2" }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% endif %}
-            {% if name == "recalculated ticket prices" %}
-            <table>
-                <tr>
-                    <th>Fare</th>
-                    <th class="qty">Ticket #</th>
-                    <th class="sales">Sales</th>
-                </tr>
-                {% for row in data %}
-                {% for p in row.prices.values %}
-                <tr>
-                    {% if forloop.counter0 == 0 %}
-                    <th rowspan="{{ row.prices|length }}"><span title="{{ row.name }}">{{ row.code }}</span></th>
-                    {% endif %}
-                    <td class="qty">{{ p.count }}</td>
-                    <td class="sales">{{ p.price|floatformat:"2" }}</td>
-                </tr>
-                {% endfor %}
-                {% endfor %}
-            </table>
-            {% endif %}
+            {{ render }}
         </div>
         {% endfor %}
     </div>
