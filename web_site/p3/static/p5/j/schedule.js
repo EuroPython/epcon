@@ -318,84 +318,122 @@ function highlighter(mode) {
         }
         return false;
     });
+    var counter = 0;
     $('.event')
         .filter(function(ix) {
             // escludo gli elementi "strutturali", non devo interagirci
             var e = $(this);
             return !e.hasClass('special') && !e.hasClass('break');
         })
-        .prepend('' +
-            '<div class="maximized close-event">' +
-            '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
-            '</div>')
-        .bind('click', function(ev) {
-            var e = $(this);
-            if(e.hasClass('exposed'))
-                return;
-            $('.exposed')
-                .not(e)
-                .each(function() { unexpose($(this)) });
-            expose(e);
-        })
-        .find('a')
+        .filter('[data-talk]')
+            .prepend('' +
+                '<div class="maximized close-event">' +
+                '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
+                '</div>')
             .bind('click', function(ev) {
-                /*
-                 * non voglio seguire i link su un evento collassato
-                 */
-                var evt = $(this).parents('.event');
-                if(!evt.hasClass('exposed'))
-                    ev.preventDefault();
-                return true;
+                var e = $(this);
+                if(e.hasClass('exposed'))
+                    return;
+                $('.exposed')
+                    .not(e)
+                    .each(function() { unexpose($(this)) });
+                expose(e);
+            })
+            .find('a')
+                .bind('click', function(ev) {
+                    /*
+                    * non voglio seguire i link su un evento collassato
+                    */
+                    var evt = $(this).parents('.event');
+                    if(!evt.hasClass('exposed'))
+                        ev.preventDefault();
+                    return true;
+                })
+                .end()
+            .find('.close-event a')
+                .bind('click', function(ev) {
+                    unexpose($(this).parents('.event'));
+                    return false;
+                })
+                .end()
+            .bind('exposed', function(ev) {
+                var e = $(this);
+                if(!e.data('loaded')) {
+                    var talk = $('h3.name a', e).attr('href');
+                    if(talk) {
+                        var ab = $('.abstract', e)
+                            .text('loading...');
+                        $.ajax({
+                            url: talk + '.xml',
+                            dataType: 'xml',
+                            success: function(data, text, xhr) {
+                                ab.html($('talk abstract', data).html());
+                            }
+                        });
+                    }
+                    e.data('loaded', 1);
+                }
             })
             .end()
-        .find('.close-event a')
+        .each(function(ix, val) {
+            var e = $(this);
+            var tools = e.children('.tools');
+            if(user_authenticated) {
+                var tid = e.attr('data-talk');
+                if(tid && tid in user_votes) {
+                    tools.append('<div class="maximized talk-vote">' + user_votes[tid] + '/10</div>');
+                }
+
+                var track = e.parents('.track').attr('data-track');
+                if(track != 'training1' && track != 'training2') {
+                    var i = user_interest[e.attr('data-id')];
+                    if(i == 1) {
+                        e.addClass('interest-up');
+                    }
+                    else if(i == -1) {
+                        e.addClass('interest-down');
+                    }
+                    tools.append(user_interest_toolbar);
+                    if(i == 1) {
+                        tools.find('button.up').addClass('active');
+                    }
+                    else if(i == -1) {
+                        tools.find('button.down').addClass('active');
+                    }
+                }
+            }
+            var t0 = Date.now();
+            /*
+             * aggiunta elisione
+             */
+            var name = e.find('.name a');
+            if(name.length) {
+                // numero di linee visibili
+                var lh = parseFloat(name.css('line-height'));
+                var lines = Math.floor((e.height() - name.position().top) / lh);
+                // nuova altezza del tag a
+                var h = lines * lh;
+                if(h < name.height()) {
+                    name.truncateText(h);
+                }
+            }
+            counter += Date.now() - t0;
+        })
+        .find('.toggle-notice')
             .bind('click', function(ev) {
-                unexpose($(this).parents('.event'));
+                $(this)
+                    .parents('.event')
+                    .children('.notice')
+                    .css('left', 0)
                 return false;
             })
             .end()
-        .bind('exposed', function(ev) {
-            var e = $(this);
-            if(!e.data('loaded')) {
-                var talk = $('h3.name a', e).attr('href');
-                if(talk) {
-                    var ab = $('.abstract', e)
-                        .text('loading...');
-                    $.ajax({
-                        url: talk + '.xml',
-                        dataType: 'xml',
-                        success: function(data, text, xhr) {
-                            ab.html($('talk abstract', data).html());
-                        }
-                    });
-                }
-                e.data('loaded', 1);
-            }
-        })
-        .each(function(ix, val) {
-            var e = $(this);
-            var tid = e.attr('data-talk');
-            var tools = e.children('.tools');
-            if(tid && tid in user_votes) {
-                tools.append('<div class="maximized talk-vote">' + user_votes[tid] + '/10</div>');
-            }
-            var i = user_interest[e.attr('data-id')];
-            if(i == 1) {
-                e.addClass('interest-up');
-            }
-            else if(i == -1) {
-                e.addClass('interest-down');
-            }
-            if(user_authenticated) {
-                tools.append(user_interest_toolbar);
-                if(i == 1) {
-                    tools.find('button.up').addClass('active');
-                }
-                else if(i == -1) {
-                    tools.find('button.down').addClass('active');
-                }
-            }
-        })
+        .find('.notice')
+            .bind('click', function(ev) {
+                $(this).css('left', '100%');
+                return false;
+            })
+            .end()
         .find('.talk-interest button')
             .bind('click', function(ev) {
                 var base = "/conference/schedule/_C_/_S_/0/interest"
@@ -440,5 +478,6 @@ function highlighter(mode) {
                     .highlight();
                 return false;
             })
-    $('.special > *:first-child').vertical_align();
+    console.log('x', counter);
+    $('.special > *:first-child').verticalAlign();
 })();

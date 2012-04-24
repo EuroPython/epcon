@@ -25,9 +25,6 @@ $cPartners: #a4d4d4;
 $cSprint: #a9cb0f;
 $cTraining: #e7880f;
 
-
-
-
 .box-sizing{
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -203,7 +200,7 @@ body#schedule > .page > .container {
         }
         .name {
             line-height: 14px;
-            height: 28px;
+            //height: 28px;
             font-size: 11px;
             overflow: hidden;
         }
@@ -232,6 +229,7 @@ body#schedule > .page > .container {
             margin-bottom: 5px;
             line-height: 1.4em;
             padding-bottom: 3px;
+            opacity: 0.7;
         }
     }
     .event.exposed {
@@ -243,6 +241,9 @@ body#schedule > .page > .container {
         }
         .hhmm {
             font-weight: bold;
+        }
+        .speakers {
+            opacity: 1;
         }
     }
 
@@ -271,6 +272,12 @@ body#schedule > .page > .container {
     }
 
     .event.exposed {
+        .ellipsis {
+            display: none;
+        }
+        .after-ellipsis {
+            display: inline;
+        }
         .talk-level {
             height: 20px;
         }
@@ -446,6 +453,10 @@ body#schedule > .page > .container {
     -o-transform: translate(-145px, 0) rotate(-90deg);
     -ms-transform: translate(-145px, 0) rotate(-90deg);
 
+    .close {
+        position: absolute;
+        right: 0;
+    }
     a {
         border: 0;
     }
@@ -456,8 +467,9 @@ body#schedule > .page > .container {
     $nav_pad: 5px;
     > div {
         float: left;
-        margin-right: 20px;
-        padding: 0;
+        height: 40px;
+        margin: 0;
+        padding: 0 10px !important;
         line-height: 32px;
         > div {
             display: none;
@@ -569,6 +581,72 @@ body#schedule > .page > .container {
 }
 
 
+.conference-schedules.timetable.vertical {
+    $trackW: 190px;
+    $slot15: 15px;
+    $event0: 40px;
+    $height: $event0 + $slot15 * 42 + 60;
+    .schedule {
+        width: 1400px;
+    }
+    .schedule > .hhmm {
+        float: left;
+        width: 40px;
+        height: $height;
+    }
+    .schedule:after {
+        content: ' ';
+        display: block;
+        clear: both;
+    }
+    .track {
+        position: relative;
+        float: left;
+        width: $trackW;
+        height: $height;
+    }
+    .event { width: 100%; }
+
+    .duration-15 { height: $slot15; }
+    .duration-30 { height: $slot15*2; }
+    .duration-45 { height: $slot15*3; }
+    .duration-60 { height: $slot15*4; }
+    .duration-75 { height: $slot15*5; }
+    .duration-90 { height: $slot15*6; }
+    .duration-240 { height: $slot15*16; }
+    .duration-480 { height: $slot15*32; }
+    .duration-630 { height: $slot15*42; }
+    .time-0900 { top: $event0 + $slot15 * 0; }
+    .time-0930 { top: $event0 + $slot15 * 2; }
+    .time-0945 { top: $event0 + $slot15 * 3; }
+    .time-1030 { top: $event0 + $slot15 * 6; }
+    .time-1115 { top: $event0 + $slot15 * 9; }
+    .time-1215 { top: $event0 + $slot15 * 13; }
+    .time-1300 { top: $event0 + $slot15 * 16; }
+    .time-1315 { top: $event0 + $slot15 * 17; }
+    .time-1430 { top: $event0 + $slot15 * 22; }
+    .time-1530 { top: $event0 + $slot15 * 26; }
+    .time-1630 { top: $event0 + $slot15 * 30; }
+    .time-1715 { top: $event0 + $slot15 * 33; }
+    .time-1815 { top: $event0 + $slot15 * 37; }
+    .time-1830 { top: $event0 + $slot15 * 38; }
+    .time-1930 { top: $event0 + $slot15 * 42; }
+    .tracks-1 { width: $trackW * 1; }
+    .tracks-2 { width: $trackW * 2; }
+    .tracks-3 { width: $trackW * 3; }
+    .tracks-4 { width: $trackW * 4; }
+    .tracks-5 { width: $trackW * 5; }
+    .tracks-6 { width: $trackW * 6; }
+    .tracks-7 { width: $trackW * 7; }
+    .tracks-8 { width: $trackW * 8; }
+
+    .track .title {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        text-align: center;
+    }
+}
 
 /*
 - toppone bianco dietro gli schedule
