@@ -669,3 +669,16 @@ user_events_interest = cache_me(
     models=(models.EventInterest,),
     key='user_events_interest:%(uid)s:%(conference)s')(user_events_interest, _i_user_events_interest)
 
+def conference_booking_status(conference):
+    eids = models.EventBooking.objects\
+        .filter(event__schedule__conference=conference)\
+        .values_list('event', flat=True)\
+        .distinct()
+    output = {}
+    for e in eids:
+        output[e] = models.EventBooking.objects.booking_status(e)
+    return output
+
+conference_booking_status = cache_me(
+    models=(models.EventBooking,),
+    key='conference_booking_status:%(conference)s')(conference_booking_status, lambda sender, **kw: 'conference_booking_status:%s' % kw['instance'].event.schedule.conference)

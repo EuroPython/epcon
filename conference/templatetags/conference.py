@@ -1528,3 +1528,12 @@ def user_events_interest(context, uid=None, conference=None, event_id=None):
     else:
         return ei
 
+@fancy_tag(register, takes_context=True)
+def conference_booking_status(context, conference=None, event_id=None):
+    if conference is None:
+        conference = settings.CONFERENCE
+    status = dataaccess.conference_booking_status(conference)
+    if event_id is not None:
+        return status.get(event_id)
+    else:
+        return status

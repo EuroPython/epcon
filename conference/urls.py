@@ -19,6 +19,7 @@ urlpatterns = patterns('conference.views',
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+).xml/?$', 'schedule_xml', name='conference-schedule-xml'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/interest$', 'schedule_event_interest', name='conference-schedule-event-interest'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/booking$', 'schedule_event_booking', name='conference-schedule-event-booking'),
+    url(r'^schedule/(?P<conference>.*)/events/booking$', 'schedule_events_booking_status', name='conference-schedule-events-booking-status'),
 
     url(r'^places/', 'places', name='conference-places'),
     url(r'^sponsors/(?P<sponsor>.*)/', 'sponsor', name='conference-sponsor'),
