@@ -386,6 +386,18 @@ def schedule_event_booking(request, conference, slug, eid):
         'user': request.user.id in status['booked'],
     }
 
+@json
+def schedule_events_booking_status(request, conference):
+    data = dataaccess.conference_booking_status(conference)
+    uid = request.user.id if request.user.is_authenticated() else 0
+    for k, v in data.items():
+        if uid and uid in v['booked']:
+            v['user'] = True
+        else:
+            v['user'] = False
+        del v['booked']
+    return data
+
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
     return render_to_response(
