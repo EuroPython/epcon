@@ -318,7 +318,6 @@ function highlighter(mode) {
         }
         return false;
     });
-    var counter = 0;
     $('.event')
         .filter(function(ix) {
             // escludo gli elementi "strutturali", non devo interagirci
@@ -417,7 +416,6 @@ function highlighter(mode) {
                     name.truncateText(h);
                 }
             }
-            counter += Date.now() - t0;
         })
         .find('.toggle-notice')
             .bind('click', function(ev) {
@@ -478,6 +476,5 @@ function highlighter(mode) {
                     .highlight();
                 return false;
             })
-    console.log('x', counter);
     $('.special > *:first-child').verticalAlign();
 })();
