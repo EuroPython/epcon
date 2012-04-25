@@ -520,4 +520,5 @@ function highlighter(mode) {
                 return false;
             })
     $('.special > *:first-child').verticalAlign();
+    $('.poster ul a').truncateText();
 })();

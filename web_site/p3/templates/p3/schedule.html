@@ -65,9 +65,12 @@
     -webkit-columns: 2;
     -o-columns: 2;
     -ms-columns: 2;
-    display: inline-block;
+    list-style: disc;
+    margin-left: 15px;
 }
-.event.poster li {
+.event.poster li a {
+    /* necessario per far funzionare l'height */
+    display: inline-block;
     height: 16px;
     line-height: 16px;
     overflow: hidden;
