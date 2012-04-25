@@ -894,8 +894,8 @@ function setup_cart_form(ctx) {
             var src = this.eq(0);
             var styles = [
                 'font-size', 'font-style', 'font-weight',
-                'font-family', 'line-height', 'text-transform',
-                'letter-spacing'
+                'font-family', 'font-variant',
+                'line-height', 'text-transform', 'letter-spacing'
             ];
             for(var ix=0, end=styles.length; ix<end; ix++) {
                 dst.css(styles[ix], src.css(styles[ix]));
