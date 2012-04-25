@@ -935,7 +935,6 @@ function setup_cart_form(ctx) {
             return output;
         },
         'truncateText': function(height) {
-            height = height || this.height();
             if(!_tt_helper) {
                 _tt_helper = $('<div id="_tt_helper"></div>')
                     .appendTo(document.body)
@@ -944,37 +943,44 @@ function setup_cart_form(ctx) {
                         display: 'inline-block'
                     })
             }
-            _tt_helper
-                .css('width', this.width())
-                .copyFontStyles(this);
-            var text = this.text();
-            var ex = text.length;
-            var cx = ex;
-            while(true) {
-                var t = text.substr(0, cx);
-                _tt_helper.text(t);
-                if(_tt_helper.height() > height) {
-                    ex = cx;
-                    cx = Math.floor(ex / 2);
-                }
-                else {
-                    if(ex == cx) {
-                        break;
+            return this.each(function() {
+                var e = $(this);
+                var h = height || e.height();
+                _tt_helper
+                    .css('width', e.width())
+                    .copyFontStyles(e);
+                var text = e.text();
+                var ex = text.length;
+                var cx = ex;
+                var counter = 0
+                while(true) {
+                    var t = text.substr(0, cx);
+                    _tt_helper.text(t);
+                    if(_tt_helper.height() > h) {
+                        ex = cx;
+                        cx = Math.floor(ex / 2);
                     }
-                    var w = cx;
-                    cx += Math.floor(Math.abs(ex-cx) / 2);
-                    ex = w;
+                    else {
+                        if(ex == cx) {
+                            break;
+                        }
+                        var w = cx;
+                        cx += Math.floor(Math.abs(ex-cx) / 2);
+                        ex = w;
+                    }
+                    counter += 1;
                 }
-            }
-            var tx = t.length;
-            while(tx > 0 && t.substr(tx, 1) != ' ')
-                tx--;
-            this.eq(0).html(
-                '<span>' + text.substr(0, tx) + '</span>'
-                + '<span class="ellipsis">\u2026</span>'
-                + '<span class="after-ellipsis">' + text.substr(tx) + '</span>'
-            );
-            return this;
+                if(counter > 0) {
+                    var tx = t.length;
+                    while(tx > 0 && t.substr(tx, 1) != ' ')
+                        tx--;
+                    e.html(
+                        '<span>' + text.substr(0, tx) + '</span>'
+                        + '<span class="ellipsis">\u2026</span>'
+                        + '<span class="after-ellipsis">' + text.substr(tx) + '</span>'
+                    );
+                }
+            });
         }
     });
 })(jQuery);
