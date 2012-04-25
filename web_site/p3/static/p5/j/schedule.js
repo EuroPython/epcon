@@ -267,7 +267,7 @@ function highlighter(mode) {
         evt.find('.info').remove();
         if(value.user) {
             evt.append(''
-                + '<div class="info booked">'
+                + '<div class="info booked minimized">'
                 + ' BOOKED'
                 + ' &bull;'
                 + ' BOOKED'
@@ -278,7 +278,7 @@ function highlighter(mode) {
         else {
             if(value.available > 0) {
                 evt.append(''
-                    + '<div class="info available">'
+                    + '<div class="info available minimized">'
                     + ' AVAILABLE &bull; ' + value.available + ' SEATS LEFT'
                     + ' &bull;'
                     + ' AVAILABLE &bull; ' + value.available + ' SEATS LEFT'
@@ -286,7 +286,7 @@ function highlighter(mode) {
             }
             else {
                 evt.append(''
-                    + '<div class="info sold-out">'
+                    + '<div class="info sold-out minimized">'
                     + ' SOLD OUT'
                     + ' &bull;'
                     + ' SOLD OUT'

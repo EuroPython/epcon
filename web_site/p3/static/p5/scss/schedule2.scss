@@ -96,7 +96,8 @@ body#schedule > .page > .container {
      * dettagli.
      *
      * La classe .maximized può essere applicata a i figli dell'evento per
-     * renderli visibili solo nella versione esposta.
+     * renderli visibili solo nella versione esposta. La classe .minimized ha
+     * il comportamento opposto.
      */
     .event {
         overflow: hidden;
@@ -129,6 +130,7 @@ body#schedule > .page > .container {
         height: 350px !important;
         opacity: 1 !important;
 
+        .minimized { display: none; }
         .maximized { display: block; }
         span.maximized { display: inline; font-weight: bold; }
     }

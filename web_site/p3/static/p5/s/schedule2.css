@@ -32,7 +32,8 @@ body#schedule > .page > .container {
    * dettagli.
    *
    * La classe .maximized può essere applicata a i figli dell'evento per
-   * renderli visibili solo nella versione esposta.
+   * renderli visibili solo nella versione esposta. La classe .minimized ha
+   * il comportamento opposto
    */ }
   .conference-schedules.timetable .schedule {
     position: relative; }
@@ -71,6 +72,8 @@ body#schedule > .page > .container {
     width: 400px !important;
     height: 350px !important;
     opacity: 1 !important; }
+    .conference-schedules.timetable .event.exposed .minimized {
+      display: none; }
     .conference-schedules.timetable .event.exposed .maximized {
       display: block; }
     .conference-schedules.timetable .event.exposed span.maximized {
