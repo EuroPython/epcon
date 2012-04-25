@@ -162,13 +162,21 @@ body#schedule > .page > .container {
       border-left: 1px dotted #a4d4d4; }
     .conference-schedules.timetable .schedule .track[data-track=training1] .event .info, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info {
       text-transform: uppercase;
-      -moz-transform: translate(75px, 53px) rotate(-90deg);
+      transform: translate(75px, 0px) rotate(-90deg);
+      -moz-transform: translate(75px, 0px) rotate(-90deg);
+      -webkit-transform: translate(75px, 0px) rotate(-90deg);
+      -o-transform: translate(75px, 0px) rotate(-90deg);
+      -ms-transform: translate(75px, 0px) rotate(-90deg);
+      transform-origin: left top;
       -moz-transform-origin: left top;
+      -webkit-transform-origin: left top;
+      -o-transform-origin: left top;
+      -ms-transform-origin: left top;
       bottom: 0;
       letter-spacing: 0.09em;
       position: absolute;
       text-transform: uppercase;
-      width: 235px; }
+      width: 470px; }
     .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.available, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.available {
       color: #a4d4d4; }
     .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.booked, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.booked {

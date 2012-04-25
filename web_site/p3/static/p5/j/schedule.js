@@ -260,8 +260,51 @@ function highlighter(mode) {
                     be.html('<div class="sold-out">Sold out</div>');
                 }
             }
+            sync_event_book_status(evt, data);
         }, 'json');
     }
+    function sync_event_book_status(evt, value) {
+        evt.find('.info').remove();
+        if(value.user) {
+            evt.append(''
+                + '<div class="info booked">'
+                + ' BOOKED'
+                + ' &bull;'
+                + ' BOOKED'
+                + ' &bull;'
+                + ' BOOKED'
+                + '</div>');
+        }
+        else {
+            if(value.available > 0) {
+                evt.append(''
+                    + '<div class="info available">'
+                    + ' AVAILABLE &bull; ' + value.available + ' SEATS LEFT'
+                    + ' &bull;'
+                    + ' AVAILABLE &bull; ' + value.available + ' SEATS LEFT'
+                    + '</div>');
+            }
+            else {
+                evt.append(''
+                    + '<div class="info sold-out">'
+                    + ' SOLD OUT'
+                    + ' &bull;'
+                    + ' SOLD OUT'
+                    + ' &bull;'
+                    + ' SOLD OUT'
+                    + '</div>');
+            }
+        }
+    }
+    // eseguo la richiesta ajax prima della manipolazione del DOM, in questo
+    // modo le due operazioni dovrebbero procedere parallelamente.
+    (function() {
+        $.getJSON('/conference/schedule/ep2012/events/booking', function(data) {
+            $.each(data, function(key, value) {
+                sync_event_book_status($('#e' + key), value);
+            });
+        });
+    })();
     $('.track[data-track=training1] .event, .track[data-track=training2] .event')
         .bind('exposed', function(ev) {
             update_booking_status($(this));
