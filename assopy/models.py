@@ -882,7 +882,7 @@ class Refund(models.Model):
                 if t:
                     if self.status == 'refunded':
                         item.ticket = None
-                        self.orderitem.save()
+                        item.save()
                         t.delete()
                     elif self.status == 'rejected':
                         t.frozen = False
@@ -918,23 +918,24 @@ def on_refund_changed(sender, **kw):
         utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
     except Http404:
         pass
-    return
-    if kw['new'] == 'pending':
+    uid = items[0].order.user.id
+    order = items[0].order
+    mail_items = '\n'.join([ u' * %s - € %s' % (x.description, x.price) for x in items ])
+    if sender.status == 'pending':
         message = '''
 User: %s (%s)
 Reason: %s
 Order: %s
-Order Item: %s
-Price: %s
+Items:
+%s
 
 Manage link: %s
         ''' % (
             ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(sender.orderitem.order.user_id,)),
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(uid,)),
             sender.reason,
-            sender.orderitem.order.code,
-            sender.orderitem.description,
-            sender.orderitem.price, 
+            order.code,
+            mail_items,
             dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
         )
         send_email(
@@ -942,47 +943,45 @@ Manage link: %s
             message=message,
             recipient_list=settings.REFUND_EMAIL_ADDRESS['approve'],
         )
-    elif kw['new'] == 'approved':
+    elif sender.status == 'approved':
         message = '''
 User: %s (%s)
 Order: %s
-Order Item: %s
-Price: %s
+Items:
+%s
 Payment method: %s
 
 Manage link: %s
         ''' % (
             ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(sender.orderitem.order.user_id,)),
-            sender.orderitem.order.code,
-            sender.orderitem.description,
-            sender.orderitem.price, 
-            sender.orderitem.order.method, 
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(uid,)),
+            order.code,
+            mail_items,
+            order.method,
             dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
         )
         emails = settings.REFUND_EMAIL_ADDRESS['execute']
         send_email(
             subject='Refund for %s approved' % ctx['name'],
             message=message,
-            recipient_list=emails.get(sender.orderitem.order.method, emails[None]),
+            recipient_list=emails.get(order.method, emails[None]),
         )
-    elif kw['new'] == 'refunded':
+    elif sender.status == 'refunded':
         message = '''
 User: %s (%s)
 Order: %s assopy id: %s
-Order Item: %s
-Price: %s
+Items:
+%s
 Payment method: %s
 
 Manage link: %s
         ''' % (
             ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(sender.orderitem.order.user_id,)),
-            sender.orderitem.order.code,
-            sender.orderitem.order.assopy_id,
-            sender.orderitem.description,
-            sender.orderitem.price, 
-            sender.orderitem.order.method, 
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(uid,)),
+            order.code,
+            order.assopy_id,
+            mail_items,
+            order.method,
             dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
         )
         send_email(
