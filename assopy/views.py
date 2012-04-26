@@ -410,11 +410,17 @@ def bank_feedback_ok(request, code):
 
 def invoice_pdf(request, assopy_id):
     data = genro.invoice(assopy_id)
-    order = get_object_or_404(models.Order, assopy_id=data['order_id'])
+    if data.get('credit_note'):
+        order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
+    else:
+        order = get_object_or_404(models.Order, assopy_id=data['order_id'])
 
-    conference = order.orderitem_set.all()[0].ticket.fare.conference
-
-    fname = '[%s] invoice.pdf' % (conference,)
+    from conference import models as cmodels
+    try:
+        conf = cmodels.Conference.objects.get(conference_start__year=order.created.year).code
+    except cmodels.Conference.DoesNotExist:
+        conf = order.created.year
+    fname = '[%s] credit note.pdf' % conf
     f = urllib.urlopen(genro.invoice_url(assopy_id))
     response = http.HttpResponse(f, mimetype='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="%s"' % fname

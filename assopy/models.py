@@ -779,6 +779,59 @@ class Invoice(models.Model):
 
     objects = InvoiceManager()
 
+class CreditNote(models.Model):
+    invoice = models.ForeignKey(Invoice, related_name='credit_notes')
+    code = models.CharField(max_length=9, unique=True)
+    assopy_id =  models.CharField(max_length=22, unique=True)
+    emit_date = models.DateField()
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+class RefundOrderItem(models.Model):
+    orderitem = models.ForeignKey('assopy.OrderItem')
+    refund = models.ForeignKey('assopy.Refund')
+
+    class Meta:
+        unique_together = (('orderitem', 'refund'),)
+
+    def save(self, *args, **kwargs):
+        if self.refund.status != 'pending':
+            raise RuntimeError('Refund must be in "pending" status')
+        out = super(RefundOrderItem, self).save(*args, **kwargs)
+        self.orderitem.ticket.frozen = True
+        self.orderitem.ticket.save()
+        return out
+
+class RefundCreditNote(models.Model):
+    credit_note = models.OneToOneField('assopy.CreditNote')
+    refund = models.ForeignKey('assopy.Refund')
+
+class RefundManager(models.Manager):
+    def create_from_orderitem(self, orderitem, reason=''):
+        # Il primo passo è capire se l'utente ha già una richiesta di rimborso
+        # a cui posso agganciare l'orderitem passato.  Gli item di un Refund
+        # devono appartenere tutti alla stessa Invoice, purtroppo non ho il
+        # collegamento tra Invoice e OrderItem e quindi non posso individuare
+        # con certezza una Refund compatibile senza passare da assopy
+        # Uso un'euristica conservativa che mi porta ad avere più Refund di
+        # quanto dovrei
+        fare = orderitem.ticket.fare
+        qs = Refund.objects\
+            .filter(status='pending', refundorderitem__orderitem__order=orderitem.order)\
+            .filter(refundorderitem__orderitem__ticket__fare__ticket_type=fare.ticket_type)
+        try:
+            r = qs[0]
+        except IndexError:
+            r = Refund(reason=reason)
+            r.save()
+        RefundOrderItem(refund=r, orderitem=orderitem).save()
+
+        items = RefundOrderItem.objects\
+            .filter(refund=r)\
+            .select_related('orderitem__ticket')
+        refund_event.send(
+            sender=r, old='', tickets=[ x.orderitem.ticket for x in items ]
+        )
+
 REFUND_STATUS = (
     ('pending', 'Pending'),
     ('approved', 'Approved'),
@@ -786,12 +839,12 @@ REFUND_STATUS = (
     ('refunded', 'Refunded'),
 )
 class Refund(models.Model):
-    orderitem = models.ForeignKey(OrderItem)
+    items = models.ManyToManyField(OrderItem, through=RefundOrderItem)
     created = models.DateTimeField(auto_now_add=True)
     done = models.DateTimeField(null=True)
+    credit_notes = models.ManyToManyField(CreditNote, through=RefundCreditNote)
     status = models.CharField(max_length=8, choices=REFUND_STATUS, default='pending')
     reason = models.CharField(max_length=200, blank=True)
-    assopy_id = models.CharField(max_length=22, unique=True, blank=True, null=True)
     internal_note = models.TextField(
         blank=True,
         help_text='For internal use (not shown to the user)',
@@ -801,21 +854,22 @@ class Refund(models.Model):
         help_text='Included in the email sent to the user',
     )
 
+    objects = RefundManager()
+
     def clean(self):
-        if self.status == 'rejected' and self.orderitem.ticket is None:
-            from django.core.exceptions import ValidationError
-            raise ValidationError('This refund cannot be rejected, the associated orderitem has no ticket')
-        if not self.assopy_id:
-            self.assopy_id = None
+        if self.status == 'rejected':
+            for item in self.items.all():
+                if item.ticket is None:
+                    from django.core.exceptions import ValidationError
+                    raise ValidationError('Cannot reject a previusly refunded request')
 
     def save(self, *args, **kwargs):
         old = {
             'status': None,
-            'assopy_id': None,
         }
         if self.id:
             try:
-                old = Refund.objects.values('status', 'assopy_id').get(id=self.id)
+                old = Refund.objects.values('status').get(id=self.id)
             except Refund.DoesNotExist:
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
@@ -823,47 +877,48 @@ class Refund(models.Model):
         try:
             return super(Refund, self).save(*args, **kwargs)
         finally:
-            t = self.orderitem.ticket
-            if t:
-                if self.status == 'refunded':
-                    self.orderitem.ticket = None
-                    self.orderitem.save()
-                    t.delete()
-                elif self.status == 'rejected':
-                    t.frozen = False
-                    t.save()
-                else:
-                    t.frozen = True
-                    t.save()
-            refund_event.send(
-                sender=self,
-                old=old['status'],
-                new=self.status,
-                ticket=t,
-                assopy_id=self.assopy_id if self.assopy_id != old['assopy_id'] else '',
-            )
+            for item in self.items.all():
+                t = item.ticket
+                if t:
+                    if self.status == 'refunded':
+                        item.ticket = None
+                        self.orderitem.save()
+                        t.delete()
+                    elif self.status == 'rejected':
+                        t.frozen = False
+                        t.save()
+                    else:
+                        t.frozen = True
+                        t.save()
 
-refund_event = dispatch.Signal(providing_args=['old', 'new', 'ticket', 'assopy_id'])
+
+refund_event = dispatch.Signal(providing_args=['old', 'tickets'])
 
 def on_refund_changed(sender, **kw):
-    if kw['old'] == kw['new'] or not kw['ticket']:
+    if sender.status == kw['old']:
         return
-    if kw['new'] == 'refunded' and kw['assopy_id']:
+    if not kw['tickets']:
+        return
+    cnotes = sender.credit_notes.all()
+    if sender.status == 'refunded' and cnotes: 
         tpl = 'refund-credit-note'
     else:
-        tpl = 'refund-' + kw['new']
+        tpl = 'refund-' + sender.status
+
     from django.http import Http404
+    items = list(sender.items.all().select_related('order__user__user'))
     ctx = {
-        'orderitem': sender.orderitem,
-        'name': sender.orderitem.order.user.name(),
-        'reject_reason': sender.reject_reason,
-        'ticket': kw['ticket'],
-        'invoice_url': '', #credit note url
+        'items': items,
+        'name': items[0].order.user.name(),
+        'refund': sender,
+        'tickets': kw['tickets'],
+        'credit_notes': cnotes,
     }
     try:
-        utils.email(tpl, ctx, to=[sender.orderitem.order.user.user.email]).send()
+        utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
     except Http404:
         pass
+    return
     if kw['new'] == 'pending':
         message = '''
 User: %s (%s)
