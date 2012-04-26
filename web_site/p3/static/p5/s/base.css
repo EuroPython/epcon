@@ -1363,12 +1363,15 @@ hr.stars {
 
 .ticket .preview h2 {
     padding: 5px 15px;
-/*     text-align: center; */
-    
     color: #fff;
     font-size: 21px;
-    
     letter-spacing: 1px;
+    /*
+     * background improbabile :) tutte le tariffe lo ridefiniscono, metto
+     * comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e
+     * ci scordiamo di aggiornare il css
+     */
+    background: thistle;
 }
 
 .ticket.conference .preview h2 {
