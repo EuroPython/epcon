@@ -105,9 +105,12 @@
                                 {% if not invoices %}
                                 N/A
                                 {% else %}
-                                {% for i in invoices %}
-                                <a href="{% url assopy-invoice-pdf assopy_id=i.assopy_id %}">{{ i.code }}</a>
-                                {% endfor %}
+                                    {% for i in invoices %}
+                                    <a href="{% url assopy-invoice-pdf assopy_id=i.assopy_id %}">{{ i.code }}</a>
+                                    {% for cn in i.credit_notes.all %}
+                                        (<a href="{% url assopy-invoice-pdf assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
+                                    {% endfor %}
+                                    {% endfor %}
                                 {% endif %}
                                 {% endwith %}
                             </td>

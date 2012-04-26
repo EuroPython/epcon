@@ -111,10 +111,8 @@ def ticket(request, tid):
             return http.HttpResponseForbidden()
 
         if 'refund' in request.POST:
-            r = amodels.Refund()
-            r.orderitem = t.orderitem
-            r.reason = request.POST['refund'][:200]
-            r.save()
+            r = amodels.Refund.objects.create_from_orderitem(
+                t.orderitem, reason=request.POST['refund'][:200])
             t = cmodels.Ticket.objects.get(id=t.id)
         elif t.fare.ticket_type == 'conference':
             data = request.POST.copy()

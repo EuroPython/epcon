@@ -496,7 +496,7 @@ def warmup_conference_cache(conference=None):
 def frozen_reason(ticket):
     if not ticket.frozen:
         return ''
-    if amodels.Refund.objects.filter(orderitem=ticket.orderitem).exists():
+    if amodels.RefundOrderItem.objects.filter(orderitem=ticket.orderitem).exists():
         return 'refund pending'
     else:
         return ''
