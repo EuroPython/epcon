@@ -790,7 +790,7 @@ def whos_coming(request):
     )
     class FormWhosFilter(forms.Form):
         country = forms.ChoiceField(choices=countries, required=False)
-        speaker = forms.BooleanField(label="Only speaker", required=False)
+        speaker = forms.BooleanField(label="Only speakers", required=False)
         tags = cforms.TagField(
             required=False,
             widget=cforms.ReadonlyTagWidget(),
