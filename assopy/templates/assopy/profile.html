@@ -90,7 +90,7 @@ h1 span {
                 {% if request.user.speaker %}
                 <h4>{% trans "Speaker profile" %}</h4>
                 <p>
-                    <a href="{% url conference-speaker slug=request.user.speaker.slug %}">{% trans "Your public page" %}</a>
+                    <a href="{% url conference-myself-profile %}">{% trans "Your public page" %}</a>
                 </p>
                 {% endif %}
                 {% endblock %}
