@@ -814,7 +814,10 @@ def whos_coming(request):
                 .values('object_id')
             people = people.filter(user__in=qs)
         if data.get('speaker'):
-            people = people.exclude(user__speaker=None)
+            speakers = cmodels.TalkSpeaker.objects\
+                .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
+                .values('speaker')
+            people = people.filter(user__speaker__in=speakers)
 
     ctx = {
         'pids': people,
