@@ -1,7 +1,14 @@
 conference = {{ conference_data|safe }};
 
-function select_tag(field, tag, mode) {
+function select_tag(field, tags, mode) {
     mode = mode || "toggle";
+    if(mode != "toggle" && mode != "exclusive" && mode != "add" && mode != "remove")
+        return false;
+
+    if(Object.prototype.toString.call(tags) != '[object Array]') {
+        tags = [ tags ];
+    }
+
     field = $(field);
     if(!field.hasClass('all-tags')) {
         field = field.next();
@@ -9,7 +16,9 @@ function select_tag(field, tag, mode) {
             return false;
     }
 
-    var t = field.find('.tag[data-tag=' + tag + ']');
+    var t = $();
+    for(var ix=0, ex=tags.length; ix<ex; ix++)
+        t = t.add($('.tag[data-tag=' + tags[ix] + ']'));
     if(!t.length)
         return false;
 
@@ -27,39 +36,43 @@ function select_tag(field, tag, mode) {
         input.val('');
         mode = 'add';
     }
-    if(mode == "toggle") {
-        mode = input.val().indexOf(tag) == -1 ? 'add': 'remove';
-    }
-    var wrapper = t.parent();
-    if(mode == "add") {
-        t.addClass('selected');
-        wrapper.show();
-    }
-    else if(mode == "remove") {
-        t.removeClass('selected');
-        /*
-        if(wrapper.children('.tag.selected').length == 0) {
-            wrapper.hide();
+    t.each(function() {
+        var lmode = mode;
+        var e = $(this);
+        var tag = e.attr('data-tag');
+        if(lmode == "toggle") {
+            lmode = input.val().indexOf(tag) == -1 ? 'add': 'remove';
         }
-        */
-    }
-    else {
-        return false;
-    }
+        var wrapper = e.parent();
+        if(lmode == "add") {
+            e.addClass('selected');
+            wrapper.show();
+        }
+        else {
+            e.removeClass('selected');
+            /*
+            if(wrapper.children('.tag.selected').length == 0) {
+                wrapper.hide();
+            }
+            */
+        }
 
-    var v = input.val();
-    var found = v.indexOf(tag) != -1;
-    if(!found && mode == "add") {
-        v = '"' + tag + '",' + v;
-    }
-    else if(found && mode == "remove") {
-        var r = new RegExp('"' + tag + '",?');
-        v = v.replace(r, '');
-    }
-    if(v.substr(v.length-1) == ',')
-        v = v.slice(0, -1);
+        var v = input.val();
+        var found = v.indexOf(tag) != -1;
+        if(!found && lmode == "add") {
+            v = '"' + tag + '",' + v;
+        }
+        else if(found && lmode == "remove") {
+            var r = new RegExp('"' + tag + '",?');
+            v = v.replace(r, '');
+        }
+        if(v.substr(v.length-1) == ',')
+            v = v.slice(0, -1);
 
-    input.val(v).change();
+        input.val(v);
+    });
+
+    input.change();
 
     return true;
 }
