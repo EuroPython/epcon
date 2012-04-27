@@ -24,11 +24,14 @@
                 {% p3_profile_data user.id as pdata %}
                 {% if pdata.interests %}
                 <div>
-                    <button id="my-tags" data-tags="{{ pdata.interests|join:"," }}">Use my tags</button>
+                    <button id="my-tags">Use my tags</button>
                     <script>
-                    $(function() {
-                        var b = $('#my-tags').show();
-                    });
+                    (function() {
+                        $('#my-tags').click(function(ev) {
+                            select_tag('#{{ form.tags.auto_id }}', {{ pdata.interests|json_ }}, 'exclusive');
+                            return false;
+                        });
+                    })();
                     </script>
                 </div>
                 {% endif %}
