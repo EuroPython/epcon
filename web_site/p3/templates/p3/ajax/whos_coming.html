@@ -50,6 +50,7 @@
                 </div>
                 {% if profile_data.talks_accepted %}
                 {% talks_data profile_data.talks_accepted conference=CONFERENCE as talks %}
+                {% if talks %}
                 <div class="speaker">speaker</div>
                 <div class="person-card-talks cms">
                     <h4>Talks</h4>
@@ -59,6 +60,7 @@
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
                 {% endif %}
             </div>
         </div>
