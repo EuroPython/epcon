@@ -20,6 +20,19 @@
             </div>
             <div class="span-9 last">
             {{ form.tags|field:"autosubmit" }}
+            {% if user.is_authenticated %}
+                {% p3_profile_data user.id as pdata %}
+                {% if pdata.interests %}
+                <div>
+                    <button id="my-tags" data-tags="{{ pdata.interests|join:"," }}">Use my tags</button>
+                    <script>
+                    $(function() {
+                        var b = $('#my-tags').show();
+                    });
+                    </script>
+                </div>
+                {% endif %}
+            {% endif %}
             </div>
         </fieldset>
     </form>
