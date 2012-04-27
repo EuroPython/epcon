@@ -18,7 +18,7 @@ from assopy.forms import BillingData
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
 from conference import forms as cforms
 from conference import models as cmodels
-from conference.views import profile_access
+from conference.views import profile_access, json_dumps
 from conference.utils import TimeTable2
 from email_template import utils
 
@@ -678,7 +678,14 @@ def hotel_report(request):
     }
 
 @profile_access
-def p3_profile(request, slug, profile=None, full_access=False):
+def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
+    if format_ == 'json':
+        pdata = dataaccess.profile_data(profile.user_id)
+        from conference.templatetags.conference import markdown2
+        pdata['bio'] = markdown2(pdata['bio'], "smarty-pants,code-color")
+        return http.HttpResponse(
+            json_dumps(pdata),
+            content_type='text/javascript')
     tpl = 'conference/profile_publicdata_form.html'
     if request.method == 'POST':
         section = request.POST.get('section')

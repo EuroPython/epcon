@@ -36,7 +36,16 @@
                 </div>
                 <div class="person-card-bio cms">
                     {% if profile_data.bio %}
-                    <p class="bio">{{ profile_data.bio|truncatewords_html:50 }}</p>
+                        {% with profile_data.bio|markdown2:"smarty-pants,code-color" as bio %}
+                        {% with bio|truncatewords_html:50 as shorted %}
+                        <div class="bio">
+                            {{ shorted }}
+                        {% if shorted|length < bio|length %}
+                            <a class="see-more" href="#">See more</a>
+                        {% endif %}
+                        </div>
+                        {% endwith %}
+                        {% endwith %}
                     {% endif %}
                 </div>
                 {% if profile_data.talks_accepted %}
@@ -58,3 +67,57 @@
 
     {% endfor %}
 </div>
+<script>
+(function() {
+    function loadProfileData(p, callback) {
+        var cached = p.data('profile-data');
+        if(cached) {
+            callback(cached);
+            return;
+        }
+        var hurl = p.find('.person-card-picture a')
+            .attr('href');
+
+        var _ = hurl.split('/');
+        _.reverse();
+        if(!_[0])
+            _.shift();
+        var slug = _[0];
+
+        var jurl = '/p3/p/profile/' + slug + '.json';
+        $.getJSON(jurl, function(data) {
+            p.data('profile-data', data);
+            callback(data);
+        });
+    }
+    /*
+     * I link "see more" caricano il contenuto via ajax
+     */
+    $('.tags a')
+        .click(function(ev) {
+            var e = $(this);
+            var p = e.parents('.person-card');
+            var tags = e.parents('.tags');
+            tags.html('loading...');
+            loadProfileData(p, function(data) {
+                var h = [];
+                for(var ix=0, ex=data.interests.length; ix<ex; ix++) {
+                    h.push('<span class="tag">' + data.interests[ix] + '</span>');
+                }
+                tags.html(h.join(' '));
+            })
+            return false;
+        })
+    $('.person-card-bio a.see-more')
+        .click(function(ev) {
+            var e = $(this);
+            var p = e.parents('.person-card');
+            var bio = e.parents('.bio');
+            bio.html('loading...');
+            loadProfileData(p, function(data) {
+                bio.html(data.bio);
+            });
+            return false;
+        });
+})();
+</script>
