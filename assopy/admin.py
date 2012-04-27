@@ -10,6 +10,8 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from assopy import models
 from assopy.clients import genro
+from collections import defaultdict
+from datetime import datetime
 
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('printable_name', 'vat_company', 'vat_company_verify', 'vat_person')
@@ -391,29 +393,155 @@ class UserAdmin(admin.ModelAdmin):
         return render_to_response('admin/assopy/user/new_order.html', ctx, context_instance=template.RequestContext(request))
 admin.site.register(models.User, UserAdmin)
 
+# Refund Admin
+# ------------
+# La form dei rimborsi permette di specificare le note di credito associate al
+# rimborso; le note di credito sono collegate tramite una tabella intermedia
+# per motivi di performance ma non voglio esporre questo dettaglio all'utente.
+# Tutto quello di cui ho bisogno sono tre campi:
+#
+# - assopy_id
+# - codice nota di credito
+# - fattura collegata
+#
+# Qui faccio una cosa un po' arzigogolata, il ModelAdmin e la ModelForm della
+# RefundCreditNote espongono e manipolano i dati di una CreditNote e gestisco
+# questa cosa nella save_formset di RefundAdmin
+class RefundCreditNoteInlineAdminForm(forms.ModelForm):
+    code = forms.CharField(label='code', max_length=9)
+    assopy_id = forms.CharField(label='assopy id', max_length=22)
+    invoice = forms.CharField(label='invoice code', max_length=9)
+
+    class Meta:
+        model = models.RefundCreditNote
+        fields = ()
+
+    def clean_invoice(self):
+        data = self.cleaned_data['invoice']
+        try:
+            i = models.Invoice.objects.get(code=data)
+        except models.Invoice.DoesNotExist:
+            raise forms.ValidationError('Invoice does not exist')
+        return i
+
+    def __init__(self, *args, **kwargs):
+        super(RefundCreditNoteInlineAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.credit_note_id:
+            self.fields['code'].initial = self.instance.credit_note.code
+            self.fields['assopy_id'].initial = self.instance.credit_note.assopy_id
+            self.fields['invoice'].initial = self.instance.credit_note.invoice.code
+
+class RefundCreditNoteInlineAdmin(admin.TabularInline):
+    model = models.RefundCreditNote
+    form = RefundCreditNoteInlineAdminForm
+    extra = 1
+
 class RefundAdminForm(forms.ModelForm):
     class Meta:
         model = models.Refund
-        exclude = ('orderitem', 'done',)
+        exclude = ('done',)
 
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('_user', 'reason', '_description', '_price', 'created', 'status', 'done')
+    list_display = ('_user', 'reason', '_order', '_items', '_total', 'created', 'status', 'done')
     form = RefundAdminForm
+
+    inlines = (RefundCreditNoteInlineAdmin,)
 
     def queryset(self, request):
         qs = super(RefundAdmin, self).queryset(request)
         qs = qs.select_related('orderitem__order__user__user')
+        orderitems = defaultdict(list)
+        items = models.RefundOrderItem.objects\
+            .filter(refund__in=qs)\
+            .select_related('orderitem__order')
+        for row in items:
+            orderitems[row.refund_id].append(row.orderitem)
+        self.orderitems = orderitems
         return qs
 
     def _user(self, o):
-        return o.orderitem.order.user.name()
+        data = self.orderitems[o.id]
+        if not data:
+            return "ERROR, no items"
+        else:
+            return data[0].order.user.name()
     _user.admin_order_field = 'orderitem__order__user__user__first_name'
 
-    def _description(self, o):
-        return o.orderitem.description
-    _description.admin_order_field = 'orderitem__description'
+    def _order(self, o):
+        data = self.orderitems[o.id]
+        if data:
+            url = urlresolvers.reverse('admin:assopy_order_change', args=(data[0].order.id,))
+            return '<a href="%s">%s</a>' % (url, data[0].order.code)
+        else:
+            return ''
+    _order.allow_tags = True
 
-    def _price(self, o):
-        return o.orderitem.price
+    def _items(self, o):
+        data = self.orderitems[o.id]
+        output = []
+        for item in data:
+            output.append('<li>%s - %s</li>' % (item.description, item.price))
+        return '<ul>%s</ul>' % ''.join(output)
+    _items.allow_tags = True
+
+    def _total(self, o):
+        data = self.orderitems[o.id]
+        total = 0
+        for item in data:
+            total += item.price
+        return '%.2f€' % total
+
+    def save_model(self, request, obj, form, change):
+        if obj.id:
+            obj.old_status = models.Refund.objects\
+                .values('status')\
+                .get(id=obj.id)['status']
+            obj.old_tickets = list(obj.items.all().values_list('ticket', flat=True))
+        else:
+            obj.old_status = None
+            obj.old_tickets = []
+        return super(RefundAdmin, self).save_model(request, obj, form,change)
+
+    def save_formset(self, request, form, formset, change):
+        # non posso usare il formset perché parla di RefundCreditNote mentre io
+        # voglio manipolare direttamente le CreditNote, chiamo però la
+        # .save(commit=False) per fargli popolare lo stato interno e far
+        # contento l'admin di django
+        formset.save(commit=False)
+        refund = form.instance
+        notes = dict([(x.assopy_id, x)
+            for x in models.CreditNote.objects\
+                .filter(refundcreditnote__refund=refund)])
+        for item in formset.cleaned_data:
+            if not item:
+                continue
+            if item['DELETE']:
+                item['id'].credit_note.delete()
+            else:
+                try:
+                    cn = notes.pop(item['assopy_id'])
+                except KeyError:
+                    cn = models.CreditNote(assopy_id=item['assopy_id'])
+                    total = sum(refund.items.all().values_list('price', flat=True))
+                    cn.price = total
+                    cn.emit_date = datetime.now()
+                    cn.code = item['code']
+                    cn.invoice = item['invoice']
+                    cn.save()
+
+                    r = models.RefundCreditNote(refund=refund)
+                    r.credit_note = cn
+                    r.save()
+                else:
+                    assert cn.refundcreditnote.refund == refund
+                    cn.code = item['code']
+                    cn.invoice = item['invoice']
+                    cn.save()
+
+        # Emetto il segnale da qui perché sono sicuro che le credit_note sono
+        # collegate al refund. Ovviamente mi perdo il segnale emesso quando il
+        # Refund viene creato tramite frontend, quel caso dovrà essere gestito
+        # in maniera speaciale
+        models.refund_event.send(sender=refund, old=refund.old_status, tickets=refund.old_tickets)
 
 admin.site.register(models.Refund, RefundAdmin)
