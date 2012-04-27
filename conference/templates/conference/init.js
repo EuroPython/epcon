@@ -1,5 +1,68 @@
 conference = {{ conference_data|safe }};
 
+function select_tag(field, tag, mode) {
+    mode = mode || "toggle";
+    field = $(field);
+    if(!field.hasClass('all-tags')) {
+        field = field.next();
+        if(!field.hasClass('all-tags'))
+            return false;
+    }
+
+    var t = field.find('.tag[data-tag=' + tag + ']');
+    if(!t.length)
+        return false;
+
+    var input = field
+        .parents('.field')
+        .children('input');
+
+    if(mode == "exclusive") {
+        field
+            .find('.tag')
+                .removeClass('selected')
+                .end()
+            .children('div')
+                .hide()
+        input.val('');
+        mode = 'add';
+    }
+    if(mode == "toggle") {
+        mode = input.val().indexOf(tag) == -1 ? 'add': 'remove';
+    }
+    var wrapper = t.parent();
+    if(mode == "add") {
+        t.addClass('selected');
+        wrapper.show();
+    }
+    else if(mode == "remove") {
+        t.removeClass('selected');
+        /*
+        if(wrapper.children('.tag.selected').length == 0) {
+            wrapper.hide();
+        }
+        */
+    }
+    else {
+        return false;
+    }
+
+    var v = input.val();
+    var found = v.indexOf(tag) != -1;
+    if(!found && mode == "add") {
+        v = '"' + tag + '",' + v;
+    }
+    else if(found && mode == "remove") {
+        var r = new RegExp('"' + tag + '",?');
+        v = v.replace(r, '');
+    }
+    if(v.substr(v.length-1) == ',')
+        v = v.slice(0, -1);
+
+    input.val(v).change();
+
+    return true;
+}
 function _render_tags(tags, selected) {
     if(!selected)
         selected = [];
@@ -48,6 +111,44 @@ function _render_tags(tags, selected) {
 
     return wrapper;
 }
+function _setup_readonly_tag_field(tag_field) {
+        var tags = [];
+        for(var key in conference.taggeditems) {
+            if(conference.taggeditems[key]['talk'] > 0) {
+                tags.push([key, key + ' (' + conference.taggeditems[key]['talk'] +')']);
+            }
+        }
+        tags.sort(function(a, b) {
+            var a = a[0].toLowerCase();
+            var b = b[0].toLowerCase();
+            return a == b ? 0 : (a < b ? -1 : 1);
+        });
+
+        var selected = tag_field.val().split(',');
+        $(selected).each(function(ix, v) {
+            selected[ix] = v.replace(new RegExp('"', 'g'), '');
+        });
+        var wrapper = _render_tags(tags, selected);
+        wrapper.find('a.tag').click(function(e) {
+            select_tag(tag_field, $(this).attr('data-tag'));
+            return false;
+        });
+
+        tag_field.after(wrapper);
+}
+function setup_tag_field(field) {
+    field = $(field);
+    var check = field.data('data-conference-init');
+    if(check)
+        return;
+    field.data('data-conference-init', 1);
+    if(field.hasClass('tag-field')) {
+
+    }
+    else if(field.hasClass('readonly-tag-field')) {
+        _setup_readonly_tag_field(field);
+    }
+}
 function setup_conference_fields(ctx) {
     ctx = ctx || document;
     var tfields = $('.tag-field', ctx);
@@ -92,52 +193,8 @@ function setup_conference_fields(ctx) {
             });
         }
     }
-    var tfields = $('.readonly-tag-field');
-    if(tfields.length && conference) {
-        var tags = [];
-        for(var key in conference.taggeditems) {
-            if(conference.taggeditems[key]['talk'] > 0) {
-                tags.push([key, key + ' (' + conference.taggeditems[key]['talk'] +')']);
-            }
-        }
-        tags.sort(function(a, b) {
-            var a = a[0].toLowerCase();
-            var b = b[0].toLowerCase();
-            return a == b ? 0 : (a < b ? -1 : 1);
-        });
-        tfields
-            .not('[data-conference-init]')
-            .attr('data-conference-init', '1')
-            .each(function() {
-                var tag_field = $(this);
-                var selected = $(this).val().split(',');
-                $(selected).each(function(ix, v) {
-                    selected[ix] = v.replace(new RegExp('"', 'g'), '');
-                });
-                var wrapper = _render_tags(tags, selected);
-                wrapper.find('a.tag').click(function(e) {
-                    var e = $(this);
-                    var input = e.parents('.field').children('input');
-                    var name = e.attr('data-tag');
-                    var v = input.val();
-                    if(v.indexOf(name) == -1) {
-                        v = '"' + name + '",' + v;
-                        e.addClass('selected');
-                    }
-                    else {
-                        var r = new RegExp('"' + name + '",?');
-                        v = v.replace(r, '');
-                        e.removeClass('selected');
-                    }
-                    if(v.substr(v.length-1) == ',')
-                        v = v.slice(0, -1);
-                    input.val(v).change();
-                    return false;
-                });
+    $('.readonly-tag-field').each(function() { setup_tag_field(this) });
 
-                tag_field.after(wrapper);
-            });
-    }
     var mfields = $('.markedit-widget', ctx);
     if(mfields.length) {
         mfields.markedit({
