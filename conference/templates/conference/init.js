@@ -70,7 +70,11 @@ function setup_conference_fields(ctx) {
             for(var key in conference.taggeditems) {
                 tags.push(key);
             }
-            tags.sort();
+            tags.sort(function(a, b) {
+                var a = a.toLowerCase();
+                var b = b.toLowerCase();
+                return a == b ? 0 : (a < b ? -1 : 1);
+            });
             tfields.each(function() {
                 var tag_field = $(this);
                 var wrapper = _render_tags(tags, tag_field.tagit('assignedTags'));
@@ -96,7 +100,11 @@ function setup_conference_fields(ctx) {
                 tags.push([key, key + ' (' + conference.taggeditems[key]['talk'] +')']);
             }
         }
-        tags.sort();
+        tags.sort(function(a, b) {
+            var a = a[0].toLowerCase();
+            var b = b[0].toLowerCase();
+            return a == b ? 0 : (a < b ? -1 : 1);
+        });
         tfields
             .not('[data-conference-init]')
             .attr('data-conference-init', '1')
