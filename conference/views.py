@@ -217,8 +217,10 @@ def talk_access(f):
 
 @render_to('conference/talk.html')
 @talk_access
-def talk(request, slug, talk, full_access, talk_form=TalkForm):
+def talk(request, slug, talk, full_access, talk_form=None):
     conf = models.Conference.objects.current()
+    if talk_form is None:
+        talk_form = utils.dotted_import(settings.FORMS['AdditionalPaperSubmission'])
     if request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
@@ -535,7 +537,7 @@ def paper_submission(request):
             else:
                 talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
-            return HttpResponseRedirectSeeOther('/')#reverse('conference-speaker', kwargs={'slug': request.user.attendeeprofile.slug}))
+            return HttpResponseRedirectSeeOther(reverse('conference-myself-profile'))
     else:
         if not proposed:
             form = fc(user=request.user)
