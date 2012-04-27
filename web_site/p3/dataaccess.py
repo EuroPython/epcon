@@ -41,10 +41,13 @@ def profile_data(uid, preload=None):
         })
     if profile['talks']:
         try:
-            spk = models.SpeakerConference.objects.get(speaker=uid)
-        except models.SpeakerConference.DoesNotExist:
-            pass
-        else:
+            spk = preload['speaker']
+        except KeyError:
+            try:
+                spk = models.SpeakerConference.objects.get(speaker=uid)
+            except models.SpeakerConference.DoesNotExist:
+                spk = None
+        if spk:
             profile.update({
                 'first_time_speaker': spk.first_time,
             })
@@ -73,6 +76,8 @@ def profiles_data(uids):
             object_id__in=missing
         )\
         .values('object_id', 'tag__name')
+    speakers = models.SpeakerConference.objects\
+        .filter(speaker__in=missing)
 
     for p in profiles:
         preload[p.profile_id] = {
@@ -81,6 +86,8 @@ def profiles_data(uids):
         }
     for row in tags:
         preload[row['object_id']]['interests'].add(row['tag__name'])
+    for spk in speakers:
+        preload[spk.speaker_id]['speaker'] = spk
 
     cdata.profiles_data(missing)
 
