@@ -21,7 +21,6 @@
                         {% endif %}
 
                         {% if profile_data.twitter %}
-                        <dt>Twitter</dt>
                         <dd class="twitter">
                             <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
                         </dd>
@@ -34,12 +33,24 @@
                         </dd>
                         {% endif %}
                     </dl>
-
+                </div>
+                <div class="person-card-bio cms">
                     {% if profile_data.bio %}
                     <p class="bio">{{ profile_data.bio|truncatewords_html:50 }}</p>
                     {% endif %}
-
                 </div>
+                {% if profile_data.talks_accepted %}
+                {% talks_data profile_data.talks_accepted conference=CONFERENCE as talks %}
+                <div class="speaker">speaker</div>
+                <div class="person-card-talks cms">
+                    <h4>Talks</h4>
+                    <ul>
+                        {% for t in talks %}
+                        <li><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
         </div>
 

@@ -777,6 +777,7 @@ footer nav li img {
 .person-card .person-card-picture {
     float: left;
     width: 80px;
+    margin-right: 10px;
 }
 
 .person-card .person-card-picture img {
@@ -794,6 +795,36 @@ footer nav li img {
 
 .person-card {
     padding: 10px;
+    position: relative;
+}
+
+.person-card .speaker {
+    position: absolute;
+    height: 0;
+    width: 66px;
+    line-height: 16px;
+    border: 16px solid transparent;
+    border-bottom: 16px solid #E3DFAC;
+    font-variant: small-caps;
+    color: #301D1D;
+    text-align: center;
+    letter-spacing: 0.13em;
+    top: 0;
+    right: 0;
+
+    transform: translate(39px, 8px) rotate(45deg);
+    -moz-transform: translate(39px, 8px) rotate(45deg);
+    -webkit-transform: translate(39px, 8px) rotate(45deg);
+    -o-transform: translate(39px, 8px) rotate(45deg);
+    -ms-transform: translate(39px, 8px) rotate(45deg);
+}
+
+.last .person-card .speaker {
+    transform: translate(27px, 8px) rotate(45deg);
+    -moz-transform: translate(27px, 8px) rotate(45deg);
+    -webkit-transform: translate(27px, 8px) rotate(45deg);
+    -o-transform: translate(27px, 8px) rotate(45deg);
+    -ms-transform: translate(27px, 8px) rotate(45deg);
 }
 
 /*
