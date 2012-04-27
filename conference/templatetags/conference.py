@@ -1358,8 +1358,11 @@ def event_data(eid):
     return event
 
 @fancy_tag(register)
-def talks_data(tids):
-    return dataaccess.talks_data(tids)
+def talks_data(tids, conference=None):
+    data = dataaccess.talks_data(tids)
+    if conference:
+        data = filter(lambda x: x['conference'] == conference, data)
+    return data
 
 @fancy_tag(register)
 def schedule_data(sid):
