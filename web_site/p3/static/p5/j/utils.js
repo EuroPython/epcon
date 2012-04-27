@@ -360,6 +360,12 @@ if(typeof(String.prototype.trim) === "undefined")
         return String(this).replace(/^\s+|\s+$/g, '');
     };
 }
+// http://blog.yjl.im/2012/01/datenow-in-ie8-or-before-ie9.html
+if (!Date.now) {
+  Date.now = function() {
+    return new Date().valueOf();
+  }
+}
 // http://stackoverflow.com/questions/901115/get-querystring-values-in-javascript
 function parseQueryString(qs) {
     if(!qs)
