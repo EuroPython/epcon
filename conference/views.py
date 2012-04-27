@@ -537,7 +537,7 @@ def paper_submission(request):
             else:
                 talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
-            return HttpResponseRedirectSeeOther('/')#reverse('conference-speaker', kwargs={'slug': request.user.attendeeprofile.slug}))
+            return HttpResponseRedirectSeeOther(reverse('conference-myself-profile'))
     else:
         if not proposed:
             form = fc(user=request.user)
