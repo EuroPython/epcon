@@ -62,7 +62,7 @@ class ReadonlyTagWidget(widgets.TextInput):
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = force_unicode(self._format_value(value))
-        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+        return mark_safe(u'<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
 # MarkEditWidget adattameto del codice di esempio presente in 
 # http://tstone.github.com/jquery-markedit/

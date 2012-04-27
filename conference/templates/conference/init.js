@@ -77,7 +77,7 @@ function _render_tags(tags, selected) {
             reverse[conference.tags[category][ix]] = category;
 
         // category, trigger
-        var trigger = $('<h2 class="toggle">' + category + '</h2>');
+        var trigger = $('<h2 class="tag-toggle">' + category + '</h2>');
         trigger.click(function(e) {
             e.preventDefault();
             $(this).next().toggle();
