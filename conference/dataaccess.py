@@ -230,9 +230,9 @@ def talk_data(tid, preload=None):
     try:
         comment_list = preload['comments']
     except KeyError:
-        comment_list = comments.get_model().objects\
+        comment_list = list(comments.get_model().objects\
             .filter(content_type__app_label='conference', content_type__model='talk')\
-            .filter(object_pk=tid, is_public=True)
+            .filter(object_pk=tid, is_public=True))
 
     output = _dump_fields(talk)
     output.update({
@@ -240,7 +240,7 @@ def talk_data(tid, preload=None):
         'speakers': speakers,
         'tags': tags,
         'events_id': event,
-        'comments': list(comment_list),
+        'comments': comment_list,
     })
     return output
 
@@ -288,6 +288,9 @@ def talks_data(tids):
     comment_list = comments.get_model().objects\
         .filter(content_type__app_label='conference', content_type__model='talk')\
         .filter(object_pk__in=talks.values('id'), is_public=True)
+    events = models.Event.objects\
+        .filter(talk__in=missing)\
+        .values('talk', 'id')
 
     for t in talks:
         preload[t.id] = {
@@ -296,6 +299,7 @@ def talks_data(tids):
             'tags': set(),
             'abstract': None,
             'comments': [],
+            'event': [],
         }
     pids = set()
     for r in speakers_data:
@@ -310,6 +314,8 @@ def talks_data(tids):
         preload[r.object_id]['abstract'] = r
     for r in comment_list:
         preload[int(r.object_pk)]['comments'].append(r)
+    for r in events:
+        preload[r['talk']]['event'].append(r['id'])
 
     # talk_data utilizza profile_data per recuperare alcuni dati sullo speaker,
     # precarico l'elenco per minimizzare il numero di query necessario
