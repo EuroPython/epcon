@@ -788,6 +788,13 @@ footer nav li img {
     margin-left: 90px;
 }
 
+/*
+ * i link verso le homepage possono essere molto lunghi
+ */
+.person-card .person-card-profile a {
+    word-wrap: break-word;
+}
+
 .person-card dd {
     margin: 0 0 10px 0;
 }
