@@ -217,8 +217,10 @@ def talk_access(f):
 
 @render_to('conference/talk.html')
 @talk_access
-def talk(request, slug, talk, full_access, talk_form=TalkForm):
+def talk(request, slug, talk, full_access, talk_form=None):
     conf = models.Conference.objects.current()
+    if talk_form is None:
+        talk_form = utils.dotted_import(settings.FORMS['AdditionalPaperSubmission'])
     if request.method == 'POST':
         if not full_access:
             return http.HttpResponseBadRequest()
