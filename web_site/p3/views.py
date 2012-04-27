@@ -771,11 +771,12 @@ def p3_account_spam_control(request):
     return render(request, "assopy/profile_spam_control.html", ctx)
 
 def whos_coming(request):
+    conf = settings.CONFERENCE_CONFERENCE
     # i profili possono essere o pubblici o accessibili solo ai partecipanti,
     # nel secondo caso li possono vedere solo chi ha un biglietto.
     access = ('p',)
     if request.user.is_authenticated():
-        tickets = dataaccess.user_tickets(request.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
+        tickets = dataaccess.user_tickets(request.user, conf, only_complete=True)
         if len(tickets):
             access = ('m', 'p')
     countries = [('', 'All')] + list(amodels.Country.objects\
@@ -797,7 +798,7 @@ def whos_coming(request):
 
     people = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=access)\
-        .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
+        .filter(user__in=dataaccess.conference_users(conf))\
         .values_list('user', flat=True)\
         .order_by('user__first_name', 'user__last_name')
 
@@ -815,13 +816,14 @@ def whos_coming(request):
             people = people.filter(user__in=qs)
         if data.get('speaker'):
             speakers = cmodels.TalkSpeaker.objects\
-                .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
+                .filter(talk__conference=conf)\
                 .values('speaker')
             people = people.filter(user__speaker__in=speakers)
 
     ctx = {
         'pids': people,
         'form': form,
+        'conference': conf,
     }
     if request.is_ajax():
         tpl = 'p3/ajax/whos_coming.html'
