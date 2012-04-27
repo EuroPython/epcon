@@ -1787,11 +1787,11 @@ section.countdown {
     margin: 0 0 20px 0;
 }
 
-/*
-#whos-coming > section {
-    margin-bottom: 10px;
+#whos-coming > h2 {
+    margin-bottom: 30px;
+    font-size: 20px;
+    text-transform: none;
 }
-*/
 
 .after-ellipsis {
     display: none;

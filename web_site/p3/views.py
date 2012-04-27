@@ -796,6 +796,11 @@ def whos_coming(request):
             widget=cforms.ReadonlyTagWidget(),
         )
 
+    all_people = cmodels.AttendeeProfile.objects\
+        .filter(visibility__in=('m', 'p'))\
+        .filter(user__in=dataaccess.conference_users(conf))\
+        .count()
+
     people = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=access)\
         .filter(user__in=dataaccess.conference_users(conf))\
@@ -821,7 +826,8 @@ def whos_coming(request):
             people = people.filter(user__speaker__in=speakers)
 
     ctx = {
-        'pids': people,
+        'all_people': all_people,
+        'pids': list(people),
         'form': form,
         'conference': conf,
     }
