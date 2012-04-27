@@ -234,7 +234,7 @@ a.tag.selected {
 /* ! toggle   */
 /* ========== */
 
-.toggle {
+.toggle, .tag-toggle {
     padding: 0 0 0 15px;
     cursor: pointer;
     background: transparent url(../i/icon-arr-down.png) left center no-repeat;
