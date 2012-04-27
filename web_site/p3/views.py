@@ -782,6 +782,7 @@ def whos_coming(request):
     )
     class FormWhosFilter(forms.Form):
         country = forms.ChoiceField(choices=countries, required=False)
+        speaker = forms.BooleanField(label="Only speaker", required=False)
         tags = cforms.TagField(
             required=False,
             widget=cforms.ReadonlyTagWidget(),
@@ -792,7 +793,8 @@ def whos_coming(request):
         .filter(user__in=dataaccess.conference_users(settings.CONFERENCE_CONFERENCE))\
         .values_list('user', flat=True)\
         .order_by('user__first_name', 'user__last_name')
-    form = FormWhosFilter(request.GET)
+
+    form = FormWhosFilter(data=request.GET)
     if form.is_valid():
         data = form.cleaned_data
         if data.get('country'):
@@ -804,6 +806,9 @@ def whos_coming(request):
                     tag__name__in=data['tags'])\
                 .values('object_id')
             people = people.filter(user__in=qs)
+        if data.get('speaker'):
+            people = people.exclude(user__speaker=None)
+
     ctx = {
         'pids': people,
         'form': form,
