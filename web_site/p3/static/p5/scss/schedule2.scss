@@ -123,7 +123,7 @@ body#schedule > .page > .container {
     }
     .event.exposed {
         padding: 7px;
-        z-index: 200;
+        z-index: 200 !important;
         box-shadow: 0 3px 8px 0 #aaa;
         border: 4px solid white;
         width: 400px !important;
