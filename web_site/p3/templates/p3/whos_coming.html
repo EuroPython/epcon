@@ -3,10 +3,10 @@
 {% block MAIN_CONTENT %}
 <div id="whos-coming">
     <h1>Who's coming?</h1>
-    {% if all_people %}
+    {% if profiles.all %}
     <h2>
-        {{ all_people }} participants have published their profiles!
-        {% if all_people != pids|length %}
+        {{ profiles.all }} participants have published their profiles!
+        {% if profiles.all != profiles.visible %}
         <a href="/find-out-whos-coming">Discover how to see them all!</a>
         {% endif %}
     </h2>

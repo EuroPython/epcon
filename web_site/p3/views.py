@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render_to_response, render
 from django.template import RequestContext, Template
 
@@ -796,10 +797,19 @@ def whos_coming(request):
             widget=cforms.ReadonlyTagWidget(),
         )
 
-    all_people = cmodels.AttendeeProfile.objects\
+
+    qs = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=('m', 'p'))\
         .filter(user__in=dataaccess.conference_users(conf))\
-        .count()
+        .values('visibility')\
+        .annotate(total=Count('visibility'))
+    profiles = {
+        'all': qs[0]['total'] + qs[1]['total'],
+        'visible': 0,
+    }
+    for row in qs:
+        if row['visibility'] in access:
+            profiles['visible'] += row['total']
 
     people = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=access)\
@@ -826,7 +836,7 @@ def whos_coming(request):
             people = people.filter(user__speaker__in=speakers)
 
     ctx = {
-        'all_people': all_people,
+        'profiles': profiles,
         'pids': list(people),
         'form': form,
         'conference': conf,
