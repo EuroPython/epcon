@@ -75,8 +75,9 @@ def render_to_json(f):
             if isinstance(result, http.HttpResponse):
                 return result
             else:
+                from django.forms.util import ErrorDict
+                status = 200 if not isinstance(result, ErrorDict) else 400
                 result = j(result)
-                status = 200
         return http.HttpResponse(content=result, content_type=ct, status=status)
     return wrapper
 
