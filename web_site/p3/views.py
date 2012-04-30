@@ -716,6 +716,10 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
     }
     return render(request, tpl, ctx)
 
+def p3_profile_avatar(request, slug):
+    p = get_object_or_404(cmodels.AttendeeProfile, slug=slug).p3_profile
+    return http.HttpResponseRedirect(p.profile_image_url(anonymous=False))
+
 @login_required
 @render_to_json
 def p3_profile_message(request, slug):

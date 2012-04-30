@@ -28,6 +28,7 @@ urlpatterns = patterns('p3.views',
     url(r'^hotel_report/$', 'hotel_report', name='p3-hotel-report'),
 
     url(r'^p/profile/(?P<slug>[\w-]+)/$', 'p3_profile', name='p3-profile'),
+    url(r'^p/profile/(?P<slug>[\w-]+)/avatar$', 'p3_profile_avatar', name='p3-profile-avatar'),
     url(r'^p/profile/(?P<slug>[\w-]+).json$', 'p3_profile', name='p3-profile-json', kwargs={'format_': 'json'}),
     url(r'^p/profile/(?P<slug>[\w-]+)/message$', 'p3_profile_message', name='p3-profile-message'),
 

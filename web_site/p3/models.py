@@ -5,6 +5,7 @@ import os.path
 from collections import defaultdict
 
 from django.conf import settings as dsettings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -320,13 +321,16 @@ class P3Profile(models.Model):
     spam_user_message = models.BooleanField(default=False)
     spam_sms = models.BooleanField(default=False)
 
-    def profile_image_url(self):
+    def profile_image_url(self, anonymous=True):
         from p3 import utils
         if self.profile.visibility != 'x':
             if self.image_gravatar:
                 return utils.gravatar(self.profile.user.email)
             elif self.image_url:
-                return self.image_url
+                if anonymous:
+                    return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
+                else:
+                    return self.image_url
             elif self.profile.image:
                 return self.profile.image.url
         return dsettings.STATIC_URL + 'p5/i/headshot-default.jpg'
