@@ -502,7 +502,7 @@ def frozen_reason(ticket):
         return ''
 
 @fancy_tag(register, takes_context=True)
-def all_user_tickets(context, uid=None, conference=None, status="complete"):
+def all_user_tickets(context, uid=None, conference=None, status="complete", fare_type="conference"):
     if uid is None:
         uid = context['request'].user.id
     if conference is None:
@@ -512,4 +512,6 @@ def all_user_tickets(context, uid=None, conference=None, status="complete"):
         tickets = filter(lambda x: x[3], tickets)
     elif status == 'incomplete':
         tickets = filter(lambda x: not x[3], tickets)
+    if fare_type == "conference":
+        tickets = filter(lambda x: x[1] == fare_type, tickets)
     return tickets
