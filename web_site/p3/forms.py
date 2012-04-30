@@ -762,7 +762,7 @@ class P3EventBookingForm(cforms.EventBookingForm):
         if data:
             tickets = dataaccess.all_user_tickets(self.user, conference=settings.CONFERENCE_CONFERENCE)
             for tid, ttype, fcode, complete in tickets:
-                if complete and ttype == 'conference' and fcode[2] == 'S':
+                if complete and ttype == 'conference' and fcode[2] in ('S', 'D'):
                     break
             else:
                 raise forms.ValidationError('ticket error')

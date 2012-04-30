@@ -238,7 +238,7 @@ function highlighter(mode) {
         var full = false;
         for(var ix=0; ix<user.tickets.length; ix++) {
             var t = user.tickets[ix];
-            if(t[1] == 'conference' && t[2].substr(2, 1) == 'S') {
+            if(t[1] == 'conference' && (t[2].substr(2, 1) == 'S' || t[2].substr(2, 1) == 'D')) {
                 full = true;
                 break;
             }
