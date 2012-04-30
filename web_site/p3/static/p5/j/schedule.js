@@ -79,7 +79,7 @@ function highlighter(mode) {
         default:
             $('.event').removeDimHighlight();
     }
-    $(document).data('highlighter', mode);
+    $(document).data('highlighter', mode || '');
 }
 (function() {
     var nav = $('#schedule-navigator');
@@ -202,6 +202,13 @@ function highlighter(mode) {
                 })
             }
         })
+        .end()
+    .find('.highlight-remove')
+        .click(function(ev) {
+            highlighter();
+            return false;
+        })
+        .end()
 })();
 (function() {
     var user_interest_toolbar = '' +
