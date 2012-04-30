@@ -717,6 +717,27 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
     return render(request, tpl, ctx)
 
 @login_required
+@render_to_json
+def p3_profile_message(request, slug):
+    if request.method != 'POST':
+        return http.HttpResponseNotAllowed(('POST',))
+
+    class MessageForm(forms.Form):
+        subject = forms.CharField()
+        message = forms.CharField()
+
+    f = MessageForm(data=request.POST)
+    if f.is_valid():
+        data = f.cleaned_data
+        profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(request.user)
+        try:
+            profile.p3_profile.send_user_message(request.user, data['subject'], data['message'])
+        except ValueError, e:
+            return http.HttpResponseBadRequest(str(e))
+        return "OK"
+    return f.errors
+
+@login_required
 def p3_account_data(request):
     ctx = {}
     if request.method == 'POST':
@@ -846,3 +867,4 @@ def whos_coming(request):
     else:
         tpl = 'p3/whos_coming.html'
     return render(request, tpl, ctx)
+

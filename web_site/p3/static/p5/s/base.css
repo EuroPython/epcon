@@ -834,6 +834,27 @@ footer nav li img {
     -ms-transform: translate(27px, 8px) rotate(45deg);
 }
 
+.person-card .user-message {
+    text-align: right;
+}
+
+.person-card .user-message img {
+    cursor: pointer;
+}
+.person-card .user-message > div {
+    display: none;
+}
+.person-card .user-message p {
+    font-size: 11px;
+    line-height: 12px;
+}
+.person-card .user-message form {
+    text-align: left;
+}
+.person-card .user-message form input {
+    display: block;
+}
+
 /*
 
 #people-wrapper .tagline {

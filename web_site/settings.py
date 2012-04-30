@@ -338,6 +338,13 @@ P3_HOTEL_RESERVATION = {
     'period': (date(2012, 6, 29), date(2012, 7, 10)),
     'default': (date(2012, 7, 2), date(2012, 7, 6)),
 }
+P3_USER_MESSAGE_FOOTER = '''
+
+This message was sent from a participant at the conference EuroPython.
+Your email address is not disclosed to anyone, to stop receiving messages
+from other users you can change your privacy settings from this page:
+https://ep2012.europython.eu/accounts/profile/
+'''
 
 TEMPLATESADMIN_EDITHOOKS = (
     'templatesadmin.edithooks.gitcommit.GitCommitHook',

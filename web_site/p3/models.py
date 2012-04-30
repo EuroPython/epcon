@@ -328,4 +328,34 @@ class P3Profile(models.Model):
                 return self.profile.image.url
         return dsettings.STATIC_URL + 'p5/i/headshot-default.jpg'
 
+    def send_user_message(self, from_, subject, message):
+        if not self.spam_user_message:
+            raise ValueError("This user does not want to receive a message")
+        if not from_.email:
+            raise ValueError("Sender without an email address")
+        if not self.profile.user.email:
+            raise ValueError("Recipient without an email address")
+
+        from p3.dataaccess import all_user_tickets
+        from conference.models import Conference
+        conf = Conference.objects.current()
+
+        tickets = [
+            tid
+            for tid, ftype, _, complete in all_user_tickets(from_.id, conf.code)
+            if ftype == 'conference' and complete
+        ]
+        if not tickets:
+            raise ValueError("User without a valid ticket")
+
+        if not conf.conference_end  or datetime.date.today() > conf.conference_end:
+            raise ValueError("conference %s is ended" % conf.code)
+
+        from django.core.mail import send_mail
+        send_mail(
+            subject=subject, message=message + dsettings.P3_USER_MESSAGE_FOOTER,
+            from_email=from_.email,
+            recipient_list=[self.profile.user.email],
+        )
+
 import p3.listeners

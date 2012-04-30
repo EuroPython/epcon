@@ -29,6 +29,7 @@ urlpatterns = patterns('p3.views',
 
     url(r'^p/profile/(?P<slug>[\w-]+)/$', 'p3_profile', name='p3-profile'),
     url(r'^p/profile/(?P<slug>[\w-]+).json$', 'p3_profile', name='p3-profile-json', kwargs={'format_': 'json'}),
+    url(r'^p/profile/(?P<slug>[\w-]+)/message$', 'p3_profile_message', name='p3-profile-message'),
 
     url(r'^p/account/data$', 'p3_account_data', name='p3-account-data'),
     url(r'^p/account/email$', 'p3_account_email', name='p3-account-email'),

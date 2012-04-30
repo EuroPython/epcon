@@ -62,6 +62,12 @@
                 </div>
                 {% endif %}
                 {% endwith %}
+                {% if profile_data.spam_user_message %}
+                <div class="user-message">
+                    <img src="{{ STATIC_URL }}p5/i/icon-mail.png" width="32" />
+                    <div> </div>
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -120,6 +126,47 @@
                 bio.html(data.bio);
             });
             return false;
+        });
+    $('.user-message img')
+        .click(function(ev) {
+            var p = $(this).next();
+            p.toggle();
+            if(p.data('clicked') == 1)
+                return;
+            p.data('clicked', 1);
+            if(user.tickets.length == 0) {
+                p.html('<p>You need a conference ticket in order to send a private message</p>');
+                return;
+            }
+            var form = $(''
+                + '<form class="async" method="POST">'
+                + ' <fieldset>'
+                + '  <div class="field"><label>Subject <input type="text" name="subject" /></label></div>'
+                + '  <div class="field"><label>Message <textarea rows="3" name="message"></textarea></label></div>'
+                + '  <button type="submit">Send</button>'
+                + ' </fieldset>'
+                + '</form>'
+            );
+            var slug = p.parents('.person-card').attr('id');
+            form.attr('action', '/p3/p/profile/' + slug + '/message');
+            p.append(form);
+            form.ajaxForm({
+                beforeSubmit: function(data, form, options) {
+                    var check = {}
+                    for(var ix=0, ex=data.length; ix<ex; ix++) {
+                        check[data[ix].name] = data[ix].value;
+                    }
+                    if(!check['subject'] || !check['message']) {
+                        alert('Both fields are required');
+                        return false;
+                    }
+                },
+                success: function(response, status, jhq, form) {
+                    var s = form.find('input[name=subject]').val();
+                    p.toggle().before('<p title="' + s + '">Message sent</p>');
+                    form.get(0).reset();
+                }
+            });
         });
 })();
 </script>
