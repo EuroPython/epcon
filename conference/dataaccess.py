@@ -569,6 +569,23 @@ def profile_data(uid, preload=None):
     except KeyError:
         bio = profile.getBio()
 
+    talks_map = {
+        'by_conf': {'all': []},
+        'accepted': {'all': []},
+        'proposed': {'all': []},
+    }
+    for t in talks:
+        tid = t['talk']
+        conf = t['talk__conference']
+        status = t['talk__status']
+
+        for k in ('by_conf', status):
+            talks_map[k]['all'].append(tid)
+            try:
+                talks_map[k][conf].append(tid)
+            except KeyError:
+                talks_map[k][conf] = [tid]
+
     return {
         'id': profile.user_id,
         'slug': profile.slug,
@@ -586,9 +603,7 @@ def profile_data(uid, preload=None):
         'location': profile.location,
         'bio': getattr(bio, 'body', ''),
         'visibility': profile.visibility,
-        'talks': [ t['talk'] for t in talks ],
-        'talks_accepted': [ t['talk'] for t in talks if t['talk__status']=='accepted'],
-        'talks_pending': [ t['talk'] for t in talks if t['talk__status']=='proposed' and t['talk__conference']== settings.CONFERENCE_CONFERENCE],
+        'talks': talks_map,
     }
 
 profile_data = cache_me(

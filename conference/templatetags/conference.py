@@ -1436,6 +1436,7 @@ def ordered_talks(talks, criteria="conference"):
         grouped[t['conference']].append(t)
     return sorted(grouped.items(), reverse=True)
 
+#XXX: rimuovere, gli stessi dati sono presenti nella cache ritornata da profile_data
 @fancy_tag(register)
 def visible_talks(talks, filter_="all"):
     """
