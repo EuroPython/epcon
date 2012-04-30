@@ -799,6 +799,9 @@ footer nav li img {
     margin: 0 0 10px 0;
 }
 
+.person-card .person-card-bio {
+    margin-bottom: 10px;
+}
 
 .person-card {
     padding: 10px;
