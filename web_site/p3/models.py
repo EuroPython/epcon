@@ -351,11 +351,14 @@ class P3Profile(models.Model):
         if not conf.conference_end  or datetime.date.today() > conf.conference_end:
             raise ValueError("conference %s is ended" % conf.code)
 
-        from django.core.mail import send_mail
-        send_mail(
-            subject=subject, message=message + dsettings.P3_USER_MESSAGE_FOOTER,
+        from django.core.mail import EmailMessage
+        EmailMessage(
+            subject=subject, body=message + dsettings.P3_USER_MESSAGE_FOOTER,
             from_email=from_.email,
-            recipient_list=[self.profile.user.email],
-        )
+            to=[self.profile.user.email],
+            headers={
+                'Sender': 'info@pycon.it',
+            }
+        ).send()
 
 import p3.listeners
