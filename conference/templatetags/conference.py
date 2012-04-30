@@ -1509,6 +1509,11 @@ def contains_(it, key):
     return key in it
 
 @fancy_tag(register, takes_context=True)
+def assign_(context, varname, value):
+    context[varname] = value
+    return ""
+
+@fancy_tag(register, takes_context=True)
 def user_votes(context, uid=None, conference=None, talk_id=None):
     if uid is None:
         uid = context['request'].user.id
