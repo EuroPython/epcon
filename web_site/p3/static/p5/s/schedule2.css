@@ -363,6 +363,25 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .event.keynote.exposed .name, .conference-schedules.timetable .exposed.event.special .name {
       border: 0;
       padding: 0; }
+  .conference-schedules.timetable .event.poster h3 {
+    margin: 10px 0;
+    font-size: 16px;
+    text-align: center; }
+  .conference-schedules.timetable .event.poster ul {
+    columns: 2;
+    -moz-columns: 2;
+    -webkit-columns: 2;
+    -o-columns: 2;
+    -ms-columns: 2;
+    list-style: disc;
+    margin-left: 15px; }
+    .conference-schedules.timetable .event.poster ul li a {
+      /* necessario per far funzionare l'height */
+      display: inline-block;
+      height: 16px;
+      line-height: 16px;
+      overflow: hidden;
+      text-transform: lowercase; }
   .conference-schedules.timetable .event.interest-up {
     background: #d7f5fa; }
   .conference-schedules.timetable .event.interest-down {

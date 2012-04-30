@@ -516,6 +516,31 @@ body#schedule > .page > .container {
         }
     }
 
+    .event.poster {
+        h3 {
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: center;
+        }
+        ul {
+            columns: 2;
+            -moz-columns: 2;
+            -webkit-columns: 2;
+            -o-columns: 2;
+            -ms-columns: 2;
+            list-style: disc;
+            margin-left: 15px;
+            li a {
+                /* necessario per far funzionare l'height */
+                display: inline-block;
+                height: 16px;
+                line-height: 16px;
+                overflow: hidden;
+                text-transform: lowercase;
+            }
+        }
+    }
+
     /* eventi evidenziati */
 
     /* starred dall'utente (+1) */
