@@ -777,7 +777,7 @@ def whos_coming(request):
     # nel secondo caso li possono vedere solo chi ha un biglietto.
     access = ('p',)
     if request.user.is_authenticated():
-        tickets = dataaccess.user_tickets(request.user, conf, only_complete=True)
+        tickets = [ tid for tid, _, _, complete in dataaccess.all_user_tickets(request.user.id, conf) if complete ]
         if len(tickets):
             access = ('m', 'p')
     countries = [('', 'All')] + list(amodels.Country.objects\
