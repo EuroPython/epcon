@@ -62,7 +62,7 @@
                     | <a href="#" class="button mini assign-button">{% trans "for someone else" %}</a>
                     {% endif %}
                 </p>
-                {% if user == ticket.user %}
+                {% if user == ticket.user and ticket.orderitem.order|attrib_:"_complete" %}
                 <p class="refund"><a href="#" class="refund-button" >Refund this ticket</a></p>
                 {% endif %}
             </div>
