@@ -141,9 +141,10 @@
             var form = $(''
                 + '<form class="async" method="POST">'
                 + ' <fieldset>'
+                + '  <div class="field"><label>From: <strong>{{ user.first_name }} {{ user.last_name }} &lt;{{ user.email }}&gt;</strong></label></div>'
                 + '  <div class="field"><label>Subject <input type="text" name="subject" /></label></div>'
                 + '  <div class="field"><label>Message <textarea rows="3" name="message"></textarea></label></div>'
-                + '  <button type="submit">Send</button>'
+                + '  <button type="submit">Send an e-mail</button>'
                 + ' </fieldset>'
                 + '</form>'
             );
