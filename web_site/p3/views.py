@@ -732,7 +732,10 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
 
 def p3_profile_avatar(request, slug):
     p = get_object_or_404(cmodels.AttendeeProfile, slug=slug).p3_profile
-    return http.HttpResponseRedirect(p.profile_image_url(anonymous=False))
+    from urllib2 import urlopen
+    img = urlopen(p.profile_image_url(anonymous=False))
+    headers = img.info()
+    return http.HttpResponse(img.read(), content_type=headers.get('content-type'))
 
 @login_required
 @render_to_json
