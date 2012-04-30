@@ -241,19 +241,14 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     </div>
 </div>
 <script>
-var STATIC_URL = {{ STATIC_URL|json_ }};
-var user_authenticated = {{ request.user.is_authenticated|json_ }};
 {% if request.user.is_authenticated %}
-{% user_votes as votes %}
-var user_votes = {{ votes|json_ }};
-{% user_events_interest as einterests %}
-var user_interest = {{ einterests|json_ }};
-{% all_user_tickets as tickets %}
-var user_tickets = {{ tickets|json_ }};
+    {% user_votes as votes %}
+    user.votes = {{ votes|json_ }};
+    {% user_events_interest as einterests %}
+    user.interest = {{ einterests|json_ }};
 {% else %}
-var user_votes = {};
-var user_interest = {};
-var user_tickets = [];
+    user.votes = {};
+    user.interest = {};
 {% endif %}
 </script>
 <script src="{{ STATIC_URL }}p5/j/schedule.js" />

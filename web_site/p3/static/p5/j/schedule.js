@@ -54,7 +54,7 @@ function highlight_chart() {
             var kvotes = [];
             for(var ix=0; ix<events.length; ix++) {
                 var tid = events[ix].attr('data-talk');
-                kvotes.push([ user_votes[tid] || 0, events[ix] ]);
+                kvotes.push([ user.votes[tid] || 0, events[ix] ]);
             }
             kvotes.sort(function(a,b) { return a[0] - b[0]; }).reverse();
             var max = kvotes[0][0];
@@ -190,7 +190,7 @@ function highlighter(mode) {
         .end()
     .find('.highlight-chart')
         .each(function(ix, val) {
-            if($.isEmptyObject(user_votes)) {
+            if($.isEmptyObject(user.votes)) {
                 $(this)
                     .addClass('disabled')
                     .after(' <a href="#" title="You have not participated to the community vote">?</a>');
@@ -236,8 +236,8 @@ function highlighter(mode) {
         $('.book-event', evt).remove();
         $('.tools', evt).append(be);
         var full = false;
-        for(var ix=0; ix<user_tickets.length; ix++) {
-            var t = user_tickets[ix];
+        for(var ix=0; ix<user.tickets.length; ix++) {
+            var t = user.tickets[ix];
             if(t[1] == 'conference' && t[2].substr(2, 1) == 'S') {
                 full = true;
                 break;
@@ -420,15 +420,15 @@ function highlighter(mode) {
         .each(function(ix, val) {
             var e = $(this);
             var tools = e.children('.tools');
-            if(user_authenticated) {
+            if(user.authenticated) {
                 var tid = e.attr('data-talk');
-                if(tid && tid in user_votes) {
-                    tools.append('<div class="maximized talk-vote">' + user_votes[tid] + '/10</div>');
+                if(tid && tid in user.votes) {
+                    tools.append('<div class="maximized talk-vote">' + user.votes[tid] + '/10</div>');
                 }
 
                 var track = e.parents('.track').attr('data-track');
                 if(track != 'training1' && track != 'training2') {
-                    var i = user_interest[e.attr('data-id')];
+                    var i = user.interest[e.attr('data-id')];
                     if(i == 1) {
                         e.addClass('interest-up');
                     }
