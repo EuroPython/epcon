@@ -94,6 +94,20 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             <h3>Highlight</h3>
             <ul>
                 <li><a href="#" class="highlight-chart">Using my votes</a></li>
+                <li>
+                    <a href="#" class="">By tag</a>
+                    <div class="tag-list">
+                    {% tags_for_talks as taglist %}
+                    {% for category, tags in taglist|group_tags %}
+                        <h2 class="toggle">{{ category }}</h2>
+                        <div>
+                            {% for tag in tags %}
+                            <a class="tag">{{ tag }} ({{ tag.count }})</a>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                </li>
                 <li><a href="#" class="highlight-remove">Remove highlight</a></li>
             </ul>
         </div>

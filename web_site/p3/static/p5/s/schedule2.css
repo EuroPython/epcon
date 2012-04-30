@@ -460,6 +460,17 @@ body#schedule > .page > .container {
     #schedule-navigator > div.selected a.filter-active {
       color: #878181;
       opacity: .6; }
+  #schedule-navigator .tag-list {
+    position: absolute;
+    top: 0;
+    left: 160px;
+    background: white;
+    border: 2px solid #7D6F60;
+    padding: 5px;
+    line-height: 20px;
+    width: 630px; }
+    #schedule-navigator .tag-list .tag {
+      padding: 2px; }
 
 .conference-schedules.timetable.vertical-narrow .schedule > .hhmm {
   float: left;

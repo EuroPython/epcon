@@ -597,10 +597,10 @@ body#schedule > .page > .container {
             background: white;
             padding: 0;
             width: 150px;
-            h3{
+            h3 {
                 padding: $nav_pad;
             }
-            ul{
+            ul {
                 li{
                     padding: 0 $nav_pad;
                 }   
@@ -621,6 +621,19 @@ body#schedule > .page > .container {
         a.filter-active{
             color: $cGray;
             opacity: .6;
+        }
+    }
+    .tag-list {
+        position: absolute;
+        top: 0;
+        left: 160px;
+        background: white;
+        border: 2px solid #7D6F60;
+        padding: $nav_pad;
+        line-height: 20px;
+        width: 630px;
+        .tag {
+            padding: 2px;
         }
     }
 }
