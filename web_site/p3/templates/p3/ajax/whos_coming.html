@@ -48,9 +48,9 @@
                         {% endwith %}
                     {% endif %}
                 </div>
-                {% if profile_data.talks_accepted %}
-                {% talks_data profile_data.talks_accepted conference=CONFERENCE as talks %}
-                {% if talks %}
+                {% with profile_data.talks.accepted|attrib_:conference as tids %}
+                {% if tids %}
+                {% talks_data tids as talks %}
                 <div class="speaker">speaker</div>
                 <div class="person-card-talks cms">
                     <h4>Talks</h4>
@@ -61,7 +61,7 @@
                     </ul>
                 </div>
                 {% endif %}
-                {% endif %}
+                {% endwith %}
             </div>
         </div>
 

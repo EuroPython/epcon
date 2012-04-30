@@ -34,12 +34,12 @@
     <div class="span-4 last">
         {% current_conference as conf %}
         {% if conf.voting %}
-            {% visible_talks profile_data.talks filter_="conference" as talks %}
+            {% assign_ "talks" profile_data.talks.all|attrib_:conf.code %}
         {% else %}
             {% if full_access %}
-                {% visible_talks profile_data.talks as talks %}
+                {% assign_ "talks" profile_data.talks.by_conf.all %}
             {% else %}
-                {% visible_talks profile_data.talks filter_="accepted" as talks %}
+                {% assign_ "talks" profile_data.talks.accepted.all %}
             {% endif %}
         {% endif %}
         {% if talks %}
