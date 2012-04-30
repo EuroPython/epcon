@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count
 from tagging.models import TaggedItem
 
 cache_me = cachef.CacheFunction(prefix='conf:')
@@ -470,6 +471,38 @@ def tags():
 
 tags = cache_me(
     models=(models.ConferenceTaggedItem,))(tags)
+
+def tags_for_talks(conference=None, status=None):
+    """
+    Ritorna i tag utilizzati per i talk filtrandoli per conferenza e stato del
+    talk.
+    """
+    talks = models.Talk.objects.all().values('id')
+    if conference:
+        talks = talks.filter(conference=conference)
+    if status:
+        talks = talks.filter(status=status)
+
+    qs = models.ConferenceTag.objects\
+        .filter(
+            conference_conferencetaggeditem_items__content_type=ContentType.objects.get_for_model(models.Talk),
+            conference_conferencetaggeditem_items__object_id__in=talks
+        )\
+        .annotate(count=Count('conference_conferencetaggeditem_items'))\
+        .extra(select={'lname': 'lower(name)'}, order_by=['lname'])
+    return list(qs)
+
+def _i_tags_for_talks(sender, **kw):
+    statuses = [ x[0] for x in models.TALK_STATUS ]
+    if sender is models.Talk:
+        conf = [ kw['instance'].conference ]
+    else:
+        conf = models.Conference.objects.all().values_list('code', flat=True)
+    return [ 'talks_data:%s:%s' % (c, s) for s in statuses for c in conf ]
+
+tags_for_talks = cache_me(
+    models=(models.Talk, models.ConferenceTaggedItem, models.ConferenceTag,),
+    key='talks_data:%(conference)s:%(status)s')(tags_for_talks, _i_tags_for_talks)
 
 def _i_event_data(sender, **kw):
     if sender is models.Event:

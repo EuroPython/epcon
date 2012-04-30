@@ -1347,6 +1347,21 @@ def markdown2(text, arg=''):
 def tagged_items(context, tag):
     return dataaccess.tags().get(tag, {})
 
+@fancy_tag(register, takes_context=True)
+def tags_for_talks(context, conference=None, status="accepted"):
+    if conference is None:
+        conference = settings.CONFERENCE
+    if not status:
+        status = None
+    return dataaccess.tags_for_talks(conference=conference, status=status)
+
+@register.filter
+def group_tags(tags):
+    groups = defaultdict(list)
+    for t in tags:
+        groups[t.category].append(t)
+    return groups.items()
+
 @fancy_tag(register)
 def talk_data(tid):
     return dataaccess.talk_data(tid)
