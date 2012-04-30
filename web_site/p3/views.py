@@ -729,7 +729,7 @@ def p3_profile_message(request, slug):
     f = MessageForm(data=request.POST)
     if f.is_valid():
         data = f.cleaned_data
-        profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(request.user)
+        profile = get_object_or_404(cmodels.AttendeeProfile, slug=slug)
         try:
             profile.p3_profile.send_user_message(request.user, data['subject'], data['message'])
         except ValueError, e:
