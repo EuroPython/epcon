@@ -12,6 +12,9 @@ from django.db.models.query import QuerySet
 from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
 from taggit.managers import TaggableManager
 
+import logging
+log = logging.getLogger('p3.models')
+
 class SpeakerConference(models.Model):
     speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
     first_time = models.BooleanField(default=False)
@@ -360,5 +363,6 @@ class P3Profile(models.Model):
                 'Sender': 'info@pycon.it',
             }
         ).send()
+        log.info('email from "%s" to "%s" sent', from_.email, self.profile.user.email)
 
 import p3.listeners
