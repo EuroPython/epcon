@@ -55,8 +55,8 @@
             'authenticated': {{ request.user.is_authenticated|json_ }}
         }
         {% if request.user.is_authenticated %}
-            {% all_user_tickets as tickets %}
-            user.tickets = {{ tickets|json_ }};
+            {% all_user_tickets as tmp %}
+            user.tickets = {{ tmp|json_ }};
         {% else %}
             user.tickets = [];
         {% endif %}
