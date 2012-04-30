@@ -49,20 +49,18 @@ $cTraining: #a4d4d4;
         border-left: 1px dotted $color;
     }
 }
-@mixin rotate($angle, $originX, $originY) {
-    transform: rotate($angle);
-    -moz-transform: rotate($angle);
-    -o-transform: rotate($angle);
-    -webkit-transform: rotate($angle);
-    -ms-transform: rotate($angle);
+@mixin transform($recipe, $originX: center, $originY: center) {
+    transform: $recipe;
+    -moz-transform: $recipe;
+    -o-transform: $recipe;
+    -webkit-transform: $recipe;
+    -ms-transform: $recipe;
 
     transform-origin: $originX $originY;
     -moz-transform-origin: $originX $originY;
     -webkit-transform-origin: $originX $originY;
     -o-transform-origin: $originX $originY;
     -ms-transform-origin: $originX $originY;
-
-
 }
 /********** END SETTINGS ******/
 
@@ -202,20 +200,10 @@ body#schedule > .page > .container {
             .event{
                 .info{
                     text-transform: uppercase;
-                    transform: translate(75px, 0px) rotate(-90deg);
-                    -moz-transform: translate(75px, 0px) rotate(-90deg);
-                    -webkit-transform: translate(75px, 0px) rotate(-90deg);
-                    -o-transform: translate(75px, 0px) rotate(-90deg);
-                    -ms-transform: translate(75px, 0px) rotate(-90deg);
-                    transform-origin: left top;
-                    -moz-transform-origin: left top;
-                    -webkit-transform-origin: left top;
-                    -o-transform-origin: left top;
-                    -ms-transform-origin: left top;
+                    @include transform(translate(75px, 0px) rotate(-90deg), left, top);
                     bottom: 0;
                     letter-spacing: 0.09em;
                     position: absolute;
-                    text-transform: uppercase;
                     width: 470px; // largo quanto l'altezza del training
                 }
                 .info.available{
@@ -581,11 +569,7 @@ body#schedule > .page > .container {
     padding: 0;
     border: 1px solid #7D6F60;
     z-index: 2000;
-    transform: translate(-145px, 0) rotate(-90deg);
-    -moz-transform: translate(-145px, 0) rotate(-90deg);
-    -webkit-transform: translate(-145px, 0) rotate(-90deg);
-    -o-transform: translate(-145px, 0) rotate(-90deg);
-    -ms-transform: translate(-145px, 0) rotate(-90deg);
+    @include transform(translate(-145px, 0) rotate(-90deg));
 
     .close {
         position: absolute;
@@ -609,16 +593,7 @@ body#schedule > .page > .container {
             display: none;
             position: absolute;
             border: 2px solid #7D6F60;
-            transform: rotate(90deg) translate(10px, -10px);
-            -moz-transform: rotate(90deg) translate(10px, -10px);
-            -webkit-transform: rotate(90deg) translate(10px, -10px);
-            -o-transform: rotate(90deg) translate(10px, -10px);
-            -ms-transform: rotate(90deg) translate(10px, -10px);
-            transform-origin: left top;
-            -moz-transform-origin: left top;
-            -webkit-transform-origin: left top;
-            -o-transform-origin: left top;
-            -ms-transform-origin: left top;
+            @include transform(rotate(90deg) translate(10px, -10px), left, top);
             background: white;
             padding: 0;
             width: 150px;

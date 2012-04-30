@@ -167,8 +167,8 @@ body#schedule > .page > .container {
       text-transform: uppercase;
       transform: translate(75px, 0px) rotate(-90deg);
       -moz-transform: translate(75px, 0px) rotate(-90deg);
-      -webkit-transform: translate(75px, 0px) rotate(-90deg);
       -o-transform: translate(75px, 0px) rotate(-90deg);
+      -webkit-transform: translate(75px, 0px) rotate(-90deg);
       -ms-transform: translate(75px, 0px) rotate(-90deg);
       transform-origin: left top;
       -moz-transform-origin: left top;
@@ -178,7 +178,6 @@ body#schedule > .page > .container {
       bottom: 0;
       letter-spacing: 0.09em;
       position: absolute;
-      text-transform: uppercase;
       width: 470px; }
     .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.available, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.available {
       color: #a4d4d4; }
@@ -406,9 +405,14 @@ body#schedule > .page > .container {
   z-index: 2000;
   transform: translate(-145px, 0) rotate(-90deg);
   -moz-transform: translate(-145px, 0) rotate(-90deg);
-  -webkit-transform: translate(-145px, 0) rotate(-90deg);
   -o-transform: translate(-145px, 0) rotate(-90deg);
-  -ms-transform: translate(-145px, 0) rotate(-90deg); }
+  -webkit-transform: translate(-145px, 0) rotate(-90deg);
+  -ms-transform: translate(-145px, 0) rotate(-90deg);
+  transform-origin: center center;
+  -moz-transform-origin: center center;
+  -webkit-transform-origin: center center;
+  -o-transform-origin: center center;
+  -ms-transform-origin: center center; }
   #schedule-navigator .close {
     position: absolute;
     right: 0; }
@@ -429,8 +433,8 @@ body#schedule > .page > .container {
       border: 2px solid #7D6F60;
       transform: rotate(90deg) translate(10px, -10px);
       -moz-transform: rotate(90deg) translate(10px, -10px);
-      -webkit-transform: rotate(90deg) translate(10px, -10px);
       -o-transform: rotate(90deg) translate(10px, -10px);
+      -webkit-transform: rotate(90deg) translate(10px, -10px);
       -ms-transform: rotate(90deg) translate(10px, -10px);
       transform-origin: left top;
       -moz-transform-origin: left top;
