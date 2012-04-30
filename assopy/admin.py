@@ -442,7 +442,7 @@ class RefundAdminForm(forms.ModelForm):
         exclude = ('done',)
 
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('_user', 'reason', '_order', '_items', '_total', 'created', 'status', 'done')
+    list_display = ('_user', 'reason', '_order', '_items', '_total', 'created', '_status', 'done')
     form = RefundAdminForm
 
     inlines = (RefundCreditNoteInlineAdmin,)
@@ -490,6 +490,15 @@ class RefundAdmin(admin.ModelAdmin):
         for item in data:
             total += item.price
         return '%.2f€' % total
+
+    def _status(self, o):
+        if o.status in ('refunded', 'rejected'):
+            return '<span style="color: green">%s</span>' % o.status
+        elif o.status == 'pending':
+            return '<span style="color: red; font-weight: bold;">%s</span>' % o.status
+        else:
+            return '<span style="color: orange">%s</span>' % o.status
+    _status.allow_tags = True
 
     def save_model(self, request, obj, form, change):
         if obj.id:
