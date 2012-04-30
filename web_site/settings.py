@@ -325,7 +325,7 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
         None: ['dvd@gnx.it'],
         'bank': ['matteo@pycon.it'],
     },
-    'credit-note': ['dvd@gnx.it'],
+    'credit-note': ['michele.bertoldi@gmail.com'],
 }
 
 ASSOPY_OTC_CODE_HANDLERS = {
