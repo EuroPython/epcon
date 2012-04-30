@@ -6,7 +6,7 @@
         {% cycle '<div class="row clearfix">' '' '<div class="row even clearfix">' '' %}
 
         <div class="span-6 {% cycle 'border' 'last' %}">
-            <div class="person-card">
+            <div id="{{ profile_data.slug }}" class="person-card">
                 <div class="person-card-picture">
                     <a href="{% url conference-profile slug=profile_data.slug %}"><img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="76" /></a>
                 </div>
