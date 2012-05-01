@@ -73,6 +73,8 @@
             {% endif %}
             <fieldset class="tickets hotel-reservations">
                 <legend>Room sharing at Grand Hotel Mediterraneo</legend>
+                <h3>Hotel rooms are currently sold out</h3>
+                {% comment %}
                 <p>Book single beds in shared rooms, save money and get to meet other Pythoners! See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
                 <div class="cms">
@@ -94,6 +96,7 @@
                 <div class="total">
                     {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
                 </div>
+                {% endcomment %}
             </fieldset>
             <fieldset class="tickets hotel-reservations">
                 <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
