@@ -387,11 +387,25 @@ body#schedule > .page > .container {
     opacity: .7;
     background: #999; }
   .conference-schedules.timetable .event.dimmed {
-    opacity: 0.7;
+    opacity: 0.4;
     background: rgba(225, 219, 197, 0.3); }
+    .conference-schedules.timetable .event.dimmed .talk-level {
+      background: none; }
   .conference-schedules.timetable .event.exposed.dimmed {
     opacity: .3;
-    background: #fcfad9; }
+    background: #fcfad9;
+    /*
+     * la classe .dimmed rimuove il background da .talk-level per eliminare
+     * la barra colorata ed accentuare l'effetto di "fade". Se però apro un
+     * evento voglio vedere i colori anche se è "dimmed", non ho trovato
+     * altro modo che ripetere le classi
+     */ }
+    .conference-schedules.timetable .event.exposed.dimmed .talk-level.beginner {
+      background: #738023; }
+    .conference-schedules.timetable .event.exposed.dimmed .talk-level.intermediate {
+      background: #e7c30f; }
+    .conference-schedules.timetable .event.exposed.dimmed .talk-level.advanced {
+      background: #da4a0f; }
 
 #schedule-navigator {
   position: fixed;
