@@ -234,7 +234,7 @@ def render_cart_rows(context, fare_type, form):
         #   on desk
         #       ...
         #
-        # L'ordine temporale viene implicitamente garantito dall'aver esclude
+        # L'ordine temporale viene implicitamente garantito dall'aver escluso
         # le fare non più valide (non permettiamo overlap nel range di
         # validità)
         fares = dict((f['code'][2:], f) for f in fares_list if f['code'][0] == 'T')
