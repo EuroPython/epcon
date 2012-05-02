@@ -448,6 +448,8 @@ body#schedule > .page > .container {
         padding: 5px; }
       #schedule-navigator > div > div ul li {
         padding: 0 5px; }
+      #schedule-navigator > div > div .tag-list {
+        display: none; }
   #schedule-navigator > div:first-child {
     background: #301D1D;
     color: #FCFAD9;
@@ -460,6 +462,8 @@ body#schedule > .page > .container {
     #schedule-navigator > div.selected a.filter-active {
       color: #878181;
       opacity: .6; }
+    #schedule-navigator > div.selected a.highlight-active {
+      font-weight: bold; }
   #schedule-navigator .tag-list {
     position: absolute;
     top: 0;

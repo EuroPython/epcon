@@ -69,17 +69,83 @@ function highlight_chart() {
         });
     });
 }
-function highlighter(mode) {
-    if($(document).data('highlighter') == mode)
-        mode = '';
+function highlight_tag(tag) {
+    if(!$.isArray(tag))
+        tag = [ tag ];
+
+    var events = $('.event');
+    if(!tag.length) {
+        events.removeDimHighlight();
+    }
+    else {
+        events.dim();
+        for(var ix=0, ex=tag.length; ix<ex; ix++) {
+            events.byTag(tag[ix]).removeDimHighlight();
+        }
+        if(tag.length == 1) {
+            var positions = [];
+            events.byTag(tag[0]).each(function() {
+                positions.push($(this).offset().top);
+            });
+            positions.sort();
+            window.scroll(0, positions[0]);
+        }
+    }
+}
+function highlighter(mode, option) {
+    mode = mode || '';
+    option = option || '';
+    var hstatus = $(document).data('highlighter') || ['', []];
+    var remove = false;
+    if(hstatus[0] != mode) {
+        $('.event').removeDimHighlight();
+        hstatus[1] = [];
+    }
+    else if(hstatus[1].indexOf(option) != -1) {
+        remove = true;
+    }
     switch(mode) {
         case 'chart':
-            highlight_chart();
+            if(remove) {
+                $('.event').removeDimHighlight();
+            }
+            else {
+                highlight_chart();
+            }
+            break;
+        case 'tag':
+            var tags = hstatus[1];
+            if(remove) {
+                var ix = tags.indexOf(option);
+                tags.splice(ix, 1);
+            }
+            else {
+                tags = tags.concat([ option ]);
+            }
+            highlight_tag(tags);
             break;
         default:
+            mode = '';
+            option = null;
             $('.event').removeDimHighlight();
     }
-    $(document).data('highlighter', mode || '');
+    hstatus[0] = mode;
+    if(option == null) {
+        hstatus[1] = [];
+    }
+    else {
+        var ix = hstatus[1].indexOf(option);
+        if(remove && ix != -1) {
+            hstatus[1].splice(ix, 1);
+        }
+        else if(!remove && ix == -1) {
+            hstatus[1].push(option);
+        }
+
+    }
+    $(document)
+        .data('highlighter', hstatus)
+        .trigger('highlighter', hstatus);
 }
 (function() {
     var nav = $('#schedule-navigator');
@@ -203,12 +269,48 @@ function highlighter(mode) {
             }
         })
         .end()
+    .find('.highlight-tag')
+        .click(function(ev) {
+            $(this).next().toggle();
+            return false;
+        })
+        .end()
+    .find('.tag-list a.tag')
+        .click(function(ev) {
+            var tag = $(this).attr('data-tag');
+            highlighter('tag', tag);
+            return false;
+        })
+        .end()
     .find('.highlight-remove')
         .click(function(ev) {
             highlighter();
             return false;
         })
         .end()
+    $(document)
+        .bind('highlighter', function(ev, mode, moptions) {
+            var h = options.find('.highlight-chart');
+            if(mode == "chart") {
+                h.addClass('highlight-active');
+            }
+            else {
+                h.removeClass('highlight-active');
+            }
+
+            h = options.find('.highlight-tag')
+            tags = options.find('.tag-list .tag');
+            tags.removeClass('selected');
+            if(mode == "tag") {
+                h.addClass('highlight-active');
+                for(var ix=0, ex=moptions.length; ix<ex; ix++) {
+                    tags.filter('[data-tag=' + moptions[ix] + ']').addClass('selected');
+                }
+            }
+            else {
+                h.removeClass('highlight-active');
+            }
+        });
 })();
 (function() {
     var user_interest_toolbar = '' +

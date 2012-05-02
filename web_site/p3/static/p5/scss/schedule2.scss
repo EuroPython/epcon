@@ -601,9 +601,12 @@ body#schedule > .page > .container {
                 padding: $nav_pad;
             }
             ul {
-                li{
+                li {
                     padding: 0 $nav_pad;
-                }   
+                }
+            }
+            .tag-list {
+                display: none;
             }
         }
     }
@@ -618,9 +621,12 @@ body#schedule > .page > .container {
         >a{
             color: $cWhite;            
         }
-        a.filter-active{
+        a.filter-active {
             color: $cGray;
             opacity: .6;
+        }
+        a.highlight-active {
+            font-weight: bold;
         }
     }
     .tag-list {

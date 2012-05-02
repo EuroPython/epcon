@@ -95,14 +95,14 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             <ul>
                 <li><a href="#" class="highlight-chart">Using my votes</a></li>
                 <li>
-                    <a href="#" class="">By tag</a>
+                    <a href="#" class="highlight-tag">By tag</a>
                     <div class="tag-list">
                     {% tags_for_talks as taglist %}
                     {% for category, tags in taglist|group_tags %}
                         <h2 class="toggle">{{ category }}</h2>
                         <div>
                             {% for tag in tags %}
-                            <a class="tag">{{ tag }} ({{ tag.count }})</a>
+                            <a class="tag" data-tag="{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
                             {% endfor %}
                         </div>
                     {% endfor %}
