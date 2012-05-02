@@ -796,8 +796,9 @@ def p3_account_spam_control(request):
             form.save()
     return render(request, "assopy/profile_spam_control.html", ctx)
 
-def whos_coming(request):
-    conf = settings.CONFERENCE_CONFERENCE
+def whos_coming(request, conf=None):
+    if conf is None:
+        return redirect('p3-whos-coming-conference', conf=settings.CONFERENCE_CONFERENCE)
     # i profili possono essere o pubblici o accessibili solo ai partecipanti,
     # nel secondo caso li possono vedere solo chi ha un biglietto.
     access = ('p',)
