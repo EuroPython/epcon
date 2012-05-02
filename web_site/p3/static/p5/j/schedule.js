@@ -256,6 +256,14 @@ function highlighter(mode, option) {
                 return false;
             })
         .end()
+    .find('.highlights li > a')
+        .click(function(ev) {
+            $(this)
+                .parents('.highlights')
+                .find('li > div')
+                .hide()
+        })
+        .end()
     .find('.highlight-chart')
         .each(function(ix, val) {
             if($.isEmptyObject(user.votes)) {
