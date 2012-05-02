@@ -17,6 +17,41 @@
 body#schedule > .page > .container {
   margin-left: 60px; }
 
+.conference-schedules .event .talk-level.beginner {
+  background: #738023; }
+.conference-schedules .event .talk-level.intermediate {
+  background: #e7c30f; }
+.conference-schedules .event .talk-level.advanced {
+  background: #da4a0f; }
+
+.conference-schedules.list h2, .conference-schedules.list table {
+  margin: 0; }
+.conference-schedules.list .schedule {
+  margin-bottom: 40px; }
+  .conference-schedules.list .schedule th {
+    width: 70px; }
+.conference-schedules.list .event {
+  line-height: 24px; }
+  .conference-schedules.list .event .talk-level, .conference-schedules.list .event .name {
+    display: inline-block;
+    vertical-align: middle; }
+  .conference-schedules.list .event .talk-level {
+    width: 12px;
+    height: 12px; }
+  .conference-schedules.list .event .speakers {
+    display: inline; }
+  .conference-schedules.list .event .video-opener {
+    display: inline;
+    height: 24px; }
+    .conference-schedules.list .event .video-opener a {
+      border: 0; }
+    .conference-schedules.list .event .video-opener img {
+      vertical-align: middle; }
+  .conference-schedules.list .event .details {
+    padding: 4px; }
+    .conference-schedules.list .event .details > div {
+      margin-bottom: 10px 0; }
+
 .conference-schedules.timetable {
   /*
    * layout della timetable
@@ -279,12 +314,6 @@ body#schedule > .page > .container {
     height: 3px;
     background: transparent;
     color: white; }
-  .conference-schedules.timetable .event .talk-level.beginner {
-    background: #738023; }
-  .conference-schedules.timetable .event .talk-level.intermediate {
-    background: #e7c30f; }
-  .conference-schedules.timetable .event .talk-level.advanced {
-    background: #da4a0f; }
   .conference-schedules.timetable .tools > div {
     display: inline-block; }
   .conference-schedules.timetable .event .tools {

@@ -68,6 +68,60 @@ $cTraining: #a4d4d4;
 body#schedule > .page > .container {
     margin-left: 60px;
 }
+.conference-schedules {
+    .event {
+        .talk-level.beginner {
+            background: $cBeginner;
+        }
+        .talk-level.intermediate {
+            background: $cIntermediate;
+        }
+        .talk-level.advanced {
+            background: $cAdvanced;
+        }
+    }
+}
+.conference-schedules.list {
+    h2, table {
+        margin: 0;
+    }
+    .schedule {
+        margin-bottom: 40px;
+        th {
+            width: 70px;
+        }
+    }
+    .event {
+        line-height: 24px;
+        .talk-level, .name {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .talk-level {
+            width: 12px;
+            height: 12px;
+        }
+        .speakers {
+            display: inline;
+        }
+        .video-opener {
+            display: inline;
+            height: 24px;
+            a {
+                border: 0;
+            }
+            img {
+                vertical-align: middle;
+            }
+        }
+        .details {
+            padding: 4px;
+            > div {
+                margin-bottom: 10px 0;
+            }
+        }
+    }
+}
 .conference-schedules.timetable {
     /*
      * layout della timetable
@@ -364,15 +418,6 @@ body#schedule > .page > .container {
             height: 3px;
             background: transparent;
             color: white;
-        }
-        .talk-level.beginner {
-            background: $cBeginner;
-        }
-        .talk-level.intermediate {
-            background: $cIntermediate;
-        }
-        .talk-level.advanced {
-            background: $cAdvanced;
         }
     }
 
