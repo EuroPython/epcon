@@ -322,7 +322,6 @@ body#schedule > .page > .container {
     right: 0;
     bottom: 0;
     height: 3px;
-    background: transparent;
     color: white; }
   .conference-schedules.timetable .tools > div {
     display: inline-block; }
