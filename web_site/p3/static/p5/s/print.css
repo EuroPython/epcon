@@ -26,21 +26,8 @@ nav {
     display: none;
 }
 
-div.schedule {
-    page-break-inside: avoid;
-    page-break-after: always;
-}
-
-.schedule-date {
-    display: block !important;
-}
-
-.schedule-date span {
-    display: inline !important;
-}
-
-.schedule-wrapper .csm h2 {
-    display: none !important;
+.schedule .details {
+    display: none;
 }
 
 .sponsors {
