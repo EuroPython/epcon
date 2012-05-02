@@ -1,0 +1,702 @@
+/*
+ * Il programma di una conferenza può essere rappresentato in diversi modi:
+ *  - timetable
+ *      la versione più complessa e completa, con una disposizione a griglia
+ *  - list
+ *      gli eventi dispositi in una lista uno di seguito all'altro
+ */
+/*
+ * SETTINGS AND MIXINS
+ */
+.box-sizing, .conference-schedules.timetable .schedule .track .title {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/********** END SETTINGS ******/
+body#schedule > .page > .container {
+  margin-left: 60px; }
+
+.conference-schedules.timetable {
+  /*
+   * layout della timetable
+   */
+  /*
+   * layout dell'evento; un evento può trovarsi in due stati:
+   *  - normale
+   *  - esposto (.exposed)
+   *
+   * Lo stato normale ha una dimensione contenuta e mostra un
+   * sottoinsieme dei dati dell'evento; lo stato esposto, attivato
+   * dall'utente, aumenta la dimensione dell'evento e rivela più
+   * dettagli.
+   *
+   * La classe .maximized può essere applicata a i figli dell'evento per
+   * renderli visibili solo nella versione esposta. La classe .minimized ha
+   * il comportamento opposto.
+   */ }
+  .conference-schedules.timetable .schedule {
+    position: relative; }
+  .conference-schedules.timetable .event {
+    position: absolute;
+    z-index: 100; }
+  .conference-schedules.timetable .event.special {
+    z-index: 101; }
+  .conference-schedules.timetable .hhmm {
+    position: relative; }
+  .conference-schedules.timetable .hhmm > div {
+    position: absolute; }
+  .conference-schedules.timetable .event {
+    overflow: hidden;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    border: 2px solid white;
+    padding: 3px;
+    background: #FCFAD9;
+    font-variant: small-caps;
+    transition: all 0.8s ease 0s;
+    -moz-transition: all 0.8s ease 0s;
+    -webkit-transition: all 0.8s ease 0s;
+    -o-transition: all 0.8s ease 0s;
+    -ms-transition: all 0.8s ease 0s; }
+    .conference-schedules.timetable .event .maximized {
+      display: none; }
+  .conference-schedules.timetable .event.exposed {
+    padding: 7px;
+    z-index: 200 !important;
+    box-shadow: 0 3px 8px 0 #aaa;
+    border: 4px solid white;
+    width: 400px !important;
+    height: 350px !important;
+    opacity: 1 !important; }
+    .conference-schedules.timetable .event.exposed .minimized {
+      display: none; }
+    .conference-schedules.timetable .event.exposed .maximized {
+      display: block; }
+    .conference-schedules.timetable .event.exposed span.maximized {
+      display: inline;
+      font-weight: bold; }
+
+.conference-schedules.timetable {
+  /*
+   * UI
+   */
+  /*
+   * notices
+   */
+  /*
+   * talk level
+   */
+  /*
+   * event tools
+   */
+  /*
+   * prenotazione evento
+   */
+  /*
+   * gli eventi "special" sono quelli "strutturali":
+   *
+   * - coffee break
+   * - lunch
+   * - registration
+   */
+  /* eventi evidenziati */
+  /* starred dall'utente (+1) */
+  /* downvoted dall'utente (-1) */
+  /* risultato di una ricerca */
+  /* escluso da una ricerca */ }
+  .conference-schedules.timetable .schedule {
+    font-size: 0.85em;
+    background: white;
+    border: 10px solid white;
+    margin: 0 0 40px; }
+    .conference-schedules.timetable .schedule h3 {
+      font: 13px/20px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+      margin: 0 0 2px;
+      text-transform: none; }
+    .conference-schedules.timetable .schedule .hhmm {
+      color: #7d6f60;
+      font: 13px/20px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif; }
+      .conference-schedules.timetable .schedule .hhmm span {
+        color: #301d1d;
+        font-size: 14px; }
+      .conference-schedules.timetable .schedule .hhmm > div {
+        /* the first div to name the TRACK line */
+        font-size: 11px;
+        font-variant: small-caps; }
+    .conference-schedules.timetable .schedule .track .title {
+      font-variant: small-caps;
+      height: 40px;
+      border: 2px solid #fff;
+      background-color: #e1dbc5;
+      padding: 2px;
+      line-height: 11px;
+      background-image: url("img/arrow.png");
+      background-position: bottom center;
+      background-repeat: no-repeat; }
+    .conference-schedules.timetable .schedule .track[data-track=sprint1] .title, .conference-schedules.timetable .schedule .track[data-track=sprint2] .title, .conference-schedules.timetable .schedule .track[data-track=sprint3] .title {
+      background-color: #a9cb0f; }
+    .conference-schedules.timetable .schedule .track[data-track=sprint1] .event, .conference-schedules.timetable .schedule .track[data-track=sprint2] .event, .conference-schedules.timetable .schedule .track[data-track=sprint3] .event {
+      border-left: 1px dotted #a9cb0f; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .event {
+      z-index: 102; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .event.special,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .event.special {
+      z-index: 101; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track3] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track4] .title,
+    .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
+      background-color: #e1dbc5; }
+    .conference-schedules.timetable .schedule .track[data-track=track1] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track2] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track3] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track4] .event,
+    .conference-schedules.timetable .schedule .track[data-track=track-ita] .event {
+      border-left: 1px dotted #e1dbc5; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .title, .conference-schedules.timetable .schedule .track[data-track=training2] .title {
+      background-color: #a4d4d4; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event, .conference-schedules.timetable .schedule .track[data-track=training2] .event {
+      border-left: 1px dotted #a4d4d4; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info {
+      text-transform: uppercase;
+      transform: translate(75px, 0px) rotate(-90deg);
+      -moz-transform: translate(75px, 0px) rotate(-90deg);
+      -o-transform: translate(75px, 0px) rotate(-90deg);
+      -webkit-transform: translate(75px, 0px) rotate(-90deg);
+      -ms-transform: translate(75px, 0px) rotate(-90deg);
+      transform-origin: left top;
+      -moz-transform-origin: left top;
+      -webkit-transform-origin: left top;
+      -o-transform-origin: left top;
+      -ms-transform-origin: left top;
+      bottom: 0;
+      letter-spacing: 0.09em;
+      position: absolute;
+      width: 470px; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.available, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.available {
+      color: #a4d4d4; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.booked, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.booked {
+      color: #738023; }
+    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.sold-out, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.sold-out {
+      color: #e7880f; }
+    .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
+      background-image: url("img/arrow.png"), url("img/italian_track.jpg");
+      background-position: bottom center, left top;
+      background-repeat: no-repeat; }
+    .conference-schedules.timetable .schedule .track .event.special {
+      border-left: none; }
+    .conference-schedules.timetable .schedule .track .event.keynote .speakers, .conference-schedules.timetable .schedule .track .event.special .speakers {
+      border-bottom: none; }
+  .conference-schedules.timetable .event a {
+    border: none; }
+  .conference-schedules.timetable .event .close-event {
+    position: absolute;
+    right: 5px; }
+  .conference-schedules.timetable .event .name {
+    line-height: 14px;
+    font-size: 11px;
+    overflow: hidden; }
+  .conference-schedules.timetable .event .hhmm {
+    position: static;
+    height: auto;
+    width: auto;
+    margin-right: 5px; }
+  .conference-schedules.timetable .event .abstract {
+    font-variant: normal;
+    line-height: 1.5em;
+    overflow-y: auto;
+    height: 200px;
+    border-top: 1px solid #B0AB63;
+    border-bottom: 1px solid #B0AB63;
+    padding: 2px; }
+  .conference-schedules.timetable .event .tag {
+    cursor: pointer;
+    margin: 0 2px 2px 0;
+    font-size: 10px; }
+  .conference-schedules.timetable .event .speakers {
+    border-bottom: 1px dotted #e1dbc5;
+    margin-bottom: 5px;
+    line-height: 1.4em;
+    padding-bottom: 3px;
+    opacity: 0.7; }
+  .conference-schedules.timetable .event.exposed .name {
+    height: auto;
+    font-weight: bold;
+    margin: 8px 0;
+    font-size: 12px; }
+  .conference-schedules.timetable .event.exposed .hhmm {
+    font-weight: bold; }
+  .conference-schedules.timetable .event.exposed .speakers {
+    opacity: 1;
+    margin: 0; }
+  .conference-schedules.timetable .event.exposed .ellipsis {
+    display: none; }
+  .conference-schedules.timetable .event.exposed .after-ellipsis {
+    display: inline; }
+  .conference-schedules.timetable .event.exposed .talk-level {
+    height: 20px; }
+  .conference-schedules.timetable .event .toggle-notice {
+    width: 16px;
+    height: 16px;
+    pointer: cursor;
+    background-image: url("img/suggest.png");
+    background-repeat: no-repeat;
+    background-position: bottom center; }
+  .conference-schedules.timetable .event .notice {
+    transition: all 0.8s ease 0s;
+    -moz-transition: all 0.8s ease 0s;
+    -webkit-transition: all 0.8s ease 0s;
+    -o-transition: all 0.8s ease 0s;
+    -ms-transition: all 0.8s ease 0s;
+    position: absolute;
+    background: #a4d4d4;
+    border: 6px solid #93c3c3;
+    top: 0;
+    left: 100%;
+    right: 0;
+    bottom: 0; }
+    .conference-schedules.timetable .event .notice h3 {
+      border: 0 !important;
+      display: block !important;
+      margin: 10px 0;
+      padding: 0 !important; }
+    .conference-schedules.timetable .event .notice p {
+      padding: 0 3px; }
+      .conference-schedules.timetable .event .notice p a {
+        border-bottom: 1px solid #a4d4d4;
+        color: #a4d4d4; }
+  .conference-schedules.timetable .event .talk-level {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: transparent;
+    color: white; }
+  .conference-schedules.timetable .event .talk-level.beginner {
+    background: #738023; }
+  .conference-schedules.timetable .event .talk-level.intermediate {
+    background: #e7c30f; }
+  .conference-schedules.timetable .event .talk-level.advanced {
+    background: #da4a0f; }
+  .conference-schedules.timetable .tools > div {
+    display: inline-block; }
+  .conference-schedules.timetable .event .tools {
+    position: absolute;
+    right: 0;
+    bottom: 3px;
+    padding: 0; }
+    .conference-schedules.timetable .event .tools > div {
+      margin-left: 5px; }
+    .conference-schedules.timetable .event .tools button {
+      background-color: transparent;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      width: 16px;
+      height: 16px;
+      box-shadow: none;
+      -moz-box-shadow: none;
+      -webkit-box-shadow: none;
+      -o-box-shadow: none;
+      -ms-box-shadow: none; }
+  .conference-schedules.timetable .event .talk-interest a {
+    padding-left: 18px; }
+  .conference-schedules.timetable .event .talk-interest a.up {
+    background: transparent url(../i/star-on-16.png) no-repeat left center; }
+  .conference-schedules.timetable .event .talk-interest a.up.active {
+    background: transparent url(../i/star-off-16.png) no-repeat left center; }
+  .conference-schedules.timetable .event.exposed .tools {
+    background: white;
+    bottom: 0;
+    padding: 0 4px; }
+    .conference-schedules.timetable .event.exposed .tools > div.maximized {
+      display: inline-block; }
+  .conference-schedules.timetable .event .book-event {
+    padding: 0 4px; }
+    .conference-schedules.timetable .event .book-event > div {
+      padding: 0 4px; }
+    .conference-schedules.timetable .event .book-event a {
+      color: white; }
+    .conference-schedules.timetable .event .book-event .book {
+      background: #4895A3; }
+    .conference-schedules.timetable .event .book-event .cancel {
+      background: #4895A3; }
+    .conference-schedules.timetable .event .book-event .sold-out {
+      background: #ABA18F; }
+    .conference-schedules.timetable .event .book-event .restricted {
+      background: #ABA18F; }
+  .conference-schedules.timetable .event.keynote, .conference-schedules.timetable .event.special {
+    height: 100%;
+    text-align: center;
+    padding-top: 20px; }
+    .conference-schedules.timetable .event.keynote h3, .conference-schedules.timetable .event.special h3 {
+      font-size: 13px;
+      font-variant: small-caps;
+      display: inline;
+      padding: 7px;
+      border: 1px dotted #878181; }
+  .conference-schedules.timetable .event.special {
+    background-color: rgba(225, 219, 197, 0.6);
+    background-image: url(../i/empty-track.png);
+    backround-position: bottom left; }
+    .conference-schedules.timetable .event.special h3 {
+      font-size: 1.3em;
+      border: 0;
+      padding: 0; }
+      .conference-schedules.timetable .event.special h3 .hhmm {
+        display: inline;
+        font-size: inherit; }
+        .conference-schedules.timetable .event.special h3 .hhmm span {
+          font-size: inherit; }
+        .conference-schedules.timetable .event.special h3 .hhmm:after {
+          content: " - "; }
+  .conference-schedules.timetable .event.keynote.exposed, .conference-schedules.timetable .exposed.event.special {
+    text-align: left; }
+    .conference-schedules.timetable .event.keynote.exposed .name, .conference-schedules.timetable .exposed.event.special .name {
+      border: 0;
+      padding: 0; }
+  .conference-schedules.timetable .event.poster h3 {
+    margin: 10px 0;
+    font-size: 16px;
+    text-align: center; }
+  .conference-schedules.timetable .event.poster ul {
+    columns: 2;
+    -moz-columns: 2;
+    -webkit-columns: 2;
+    -o-columns: 2;
+    -ms-columns: 2;
+    list-style: disc;
+    margin-left: 15px; }
+    .conference-schedules.timetable .event.poster ul li a {
+      /* necessario per far funzionare l'height */
+      display: inline-block;
+      height: 16px;
+      line-height: 16px;
+      overflow: hidden;
+      text-transform: lowercase; }
+  .conference-schedules.timetable .event.interest-up {
+    background: #d7f5fa; }
+  .conference-schedules.timetable .event.interest-down {
+    opacity: .7;
+    background: #999; }
+  .conference-schedules.timetable .event.dimmed {
+    opacity: 0.4;
+    background: rgba(225, 219, 197, 0.3); }
+    .conference-schedules.timetable .event.dimmed .talk-level {
+      background: none; }
+  .conference-schedules.timetable .event.exposed.dimmed {
+    opacity: .3;
+    background: #fcfad9;
+    /*
+     * la classe .dimmed rimuove il background da .talk-level per eliminare
+     * la barra colorata ed accentuare l'effetto di "fade". Se però apro un
+     * evento voglio vedere i colori anche se è "dimmed", non ho trovato
+     * altro modo che ripetere le classi
+     */ }
+    .conference-schedules.timetable .event.exposed.dimmed .talk-level.beginner {
+      background: #738023; }
+    .conference-schedules.timetable .event.exposed.dimmed .talk-level.intermediate {
+      background: #e7c30f; }
+    .conference-schedules.timetable .event.exposed.dimmed .talk-level.advanced {
+      background: #da4a0f; }
+
+#schedule-navigator {
+  position: fixed;
+  top: 33%;
+  left: 0;
+  height: 40px;
+  width: 330px;
+  background: white;
+  padding: 0;
+  border: 1px solid #7D6F60;
+  z-index: 2000;
+  transform: translate(-145px, 0) rotate(-90deg);
+  -moz-transform: translate(-145px, 0) rotate(-90deg);
+  -o-transform: translate(-145px, 0) rotate(-90deg);
+  -webkit-transform: translate(-145px, 0) rotate(-90deg);
+  -ms-transform: translate(-145px, 0) rotate(-90deg);
+  transform-origin: center center;
+  -moz-transform-origin: center center;
+  -webkit-transform-origin: center center;
+  -o-transform-origin: center center;
+  -ms-transform-origin: center center; }
+  #schedule-navigator .close {
+    position: absolute;
+    right: 0; }
+  #schedule-navigator a {
+    border: 0; }
+  #schedule-navigator .disabled {
+    color: #999;
+    opacity: 0.7; }
+  #schedule-navigator > div {
+    float: left;
+    height: 40px;
+    margin: 0;
+    padding: 0 10px !important;
+    line-height: 32px; }
+    #schedule-navigator > div > div {
+      display: none;
+      position: absolute;
+      border: 2px solid #7D6F60;
+      transform: rotate(90deg) translate(10px, -10px);
+      -moz-transform: rotate(90deg) translate(10px, -10px);
+      -o-transform: rotate(90deg) translate(10px, -10px);
+      -webkit-transform: rotate(90deg) translate(10px, -10px);
+      -ms-transform: rotate(90deg) translate(10px, -10px);
+      transform-origin: left top;
+      -moz-transform-origin: left top;
+      -webkit-transform-origin: left top;
+      -o-transform-origin: left top;
+      -ms-transform-origin: left top;
+      background: white;
+      padding: 0;
+      width: 150px; }
+      #schedule-navigator > div > div h3 {
+        padding: 5px; }
+      #schedule-navigator > div > div ul li {
+        padding: 0 5px; }
+      #schedule-navigator > div > div .tag-list {
+        display: none; }
+  #schedule-navigator > div:first-child {
+    background: #301D1D;
+    color: #FCFAD9;
+    font-weight: bold;
+    padding: 4px 8px; }
+  #schedule-navigator > div.selected {
+    background-color: #99886a; }
+    #schedule-navigator > div.selected > a {
+      color: white; }
+    #schedule-navigator > div.selected a.filter-active {
+      color: #878181;
+      opacity: .6; }
+    #schedule-navigator > div.selected a.highlight-active {
+      font-weight: bold; }
+  #schedule-navigator .tag-list {
+    position: absolute;
+    top: 0;
+    left: 160px;
+    background: white;
+    border: 2px solid #7D6F60;
+    padding: 5px;
+    line-height: 20px;
+    width: 630px; }
+    #schedule-navigator .tag-list .tag {
+      padding: 2px; }
+
+.conference-schedules.timetable.vertical-narrow .schedule > .hhmm {
+  float: left;
+  width: 40px;
+  height: 1360px; }
+.conference-schedules.timetable.vertical-narrow .schedule:after {
+  content: ' ';
+  display: block;
+  clear: both; }
+.conference-schedules.timetable.vertical-narrow .track {
+  position: relative;
+  float: left;
+  width: 100px;
+  height: 1360px; }
+.conference-schedules.timetable.vertical-narrow .event {
+  width: 100%; }
+.conference-schedules.timetable.vertical-narrow .duration-15 {
+  height: 30px; }
+.conference-schedules.timetable.vertical-narrow .duration-30 {
+  height: 60px; }
+.conference-schedules.timetable.vertical-narrow .duration-45 {
+  height: 90px; }
+.conference-schedules.timetable.vertical-narrow .duration-60 {
+  height: 120px; }
+.conference-schedules.timetable.vertical-narrow .duration-75 {
+  height: 150px; }
+.conference-schedules.timetable.vertical-narrow .duration-90 {
+  height: 180px; }
+.conference-schedules.timetable.vertical-narrow .duration-240 {
+  height: 480px; }
+.conference-schedules.timetable.vertical-narrow .duration-480 {
+  height: 960px; }
+.conference-schedules.timetable.vertical-narrow .duration-630 {
+  height: 1260px; }
+.conference-schedules.timetable.vertical-narrow .time-0900 {
+  top: 40px; }
+.conference-schedules.timetable.vertical-narrow .time-0930 {
+  top: 100px; }
+.conference-schedules.timetable.vertical-narrow .time-0945 {
+  top: 130px; }
+.conference-schedules.timetable.vertical-narrow .time-1030 {
+  top: 220px; }
+.conference-schedules.timetable.vertical-narrow .time-1115 {
+  top: 310px; }
+.conference-schedules.timetable.vertical-narrow .time-1215 {
+  top: 430px; }
+.conference-schedules.timetable.vertical-narrow .time-1300 {
+  top: 520px; }
+.conference-schedules.timetable.vertical-narrow .time-1315 {
+  top: 550px; }
+.conference-schedules.timetable.vertical-narrow .time-1430 {
+  top: 700px; }
+.conference-schedules.timetable.vertical-narrow .time-1530 {
+  top: 820px; }
+.conference-schedules.timetable.vertical-narrow .time-1630 {
+  top: 940px; }
+.conference-schedules.timetable.vertical-narrow .time-1715 {
+  top: 1030px; }
+.conference-schedules.timetable.vertical-narrow .time-1815 {
+  top: 1150px; }
+.conference-schedules.timetable.vertical-narrow .time-1830 {
+  top: 1180px; }
+.conference-schedules.timetable.vertical-narrow .time-1930 {
+  top: 1300px; }
+.conference-schedules.timetable.vertical-narrow .tracks-1 {
+  width: 100px; }
+.conference-schedules.timetable.vertical-narrow .tracks-2 {
+  width: 200px; }
+.conference-schedules.timetable.vertical-narrow .tracks-3 {
+  width: 300px; }
+.conference-schedules.timetable.vertical-narrow .tracks-4 {
+  width: 400px; }
+.conference-schedules.timetable.vertical-narrow .tracks-5 {
+  width: 500px; }
+.conference-schedules.timetable.vertical-narrow .tracks-6 {
+  width: 600px; }
+.conference-schedules.timetable.vertical-narrow .tracks-7 {
+  width: 700px; }
+.conference-schedules.timetable.vertical-narrow .tracks-8 {
+  width: 800px; }
+.conference-schedules.timetable.vertical-narrow .track .title {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  text-align: center; }
+
+.conference-schedules.timetable.vertical .schedule {
+  width: 1400px; }
+.conference-schedules.timetable.vertical .schedule > .hhmm {
+  float: left;
+  width: 40px;
+  height: 730px; }
+.conference-schedules.timetable.vertical .schedule:after {
+  content: ' ';
+  display: block;
+  clear: both; }
+.conference-schedules.timetable.vertical .track {
+  position: relative;
+  float: left;
+  width: 190px;
+  height: 730px; }
+.conference-schedules.timetable.vertical .event {
+  width: 100%; }
+.conference-schedules.timetable.vertical .duration-15 {
+  height: 15px; }
+.conference-schedules.timetable.vertical .duration-30 {
+  height: 30px; }
+.conference-schedules.timetable.vertical .duration-45 {
+  height: 45px; }
+.conference-schedules.timetable.vertical .duration-60 {
+  height: 60px; }
+.conference-schedules.timetable.vertical .duration-75 {
+  height: 75px; }
+.conference-schedules.timetable.vertical .duration-90 {
+  height: 90px; }
+.conference-schedules.timetable.vertical .duration-240 {
+  height: 240px; }
+.conference-schedules.timetable.vertical .duration-480 {
+  height: 480px; }
+.conference-schedules.timetable.vertical .duration-630 {
+  height: 630px; }
+.conference-schedules.timetable.vertical .time-0900 {
+  top: 40px; }
+.conference-schedules.timetable.vertical .time-0930 {
+  top: 70px; }
+.conference-schedules.timetable.vertical .time-0945 {
+  top: 85px; }
+.conference-schedules.timetable.vertical .time-1030 {
+  top: 130px; }
+.conference-schedules.timetable.vertical .time-1115 {
+  top: 175px; }
+.conference-schedules.timetable.vertical .time-1215 {
+  top: 235px; }
+.conference-schedules.timetable.vertical .time-1300 {
+  top: 280px; }
+.conference-schedules.timetable.vertical .time-1315 {
+  top: 295px; }
+.conference-schedules.timetable.vertical .time-1430 {
+  top: 370px; }
+.conference-schedules.timetable.vertical .time-1530 {
+  top: 430px; }
+.conference-schedules.timetable.vertical .time-1630 {
+  top: 490px; }
+.conference-schedules.timetable.vertical .time-1715 {
+  top: 535px; }
+.conference-schedules.timetable.vertical .time-1815 {
+  top: 595px; }
+.conference-schedules.timetable.vertical .time-1830 {
+  top: 610px; }
+.conference-schedules.timetable.vertical .time-1930 {
+  top: 670px; }
+.conference-schedules.timetable.vertical .tracks-1 {
+  width: 190px; }
+.conference-schedules.timetable.vertical .tracks-2 {
+  width: 380px; }
+.conference-schedules.timetable.vertical .tracks-3 {
+  width: 570px; }
+.conference-schedules.timetable.vertical .tracks-4 {
+  width: 760px; }
+.conference-schedules.timetable.vertical .tracks-5 {
+  width: 950px; }
+.conference-schedules.timetable.vertical .tracks-6 {
+  width: 1140px; }
+.conference-schedules.timetable.vertical .tracks-7 {
+  width: 1330px; }
+.conference-schedules.timetable.vertical .tracks-8 {
+  width: 1520px; }
+.conference-schedules.timetable.vertical .track .title {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  text-align: center; }
+
+/*
+- toppone bianco dietro gli schedule
+- titolo track
+- distinzione speaker/titolo
+- stellina al posto di +1/-1
+
+* navigazione
+    - effetto "disabled" per link (ad esempio "My Schedule") da poter utilizzare
+      anche nei sotto menu
+    - quando attivo una voce forse potremmo selezionarla?
+    - sotto menu Filters, serve una classe "selected" per i filtri sulla track
+    - sotto menu Filters, spaziature e titolo
+    - iconcina per chiudere i sottomenu (la riuserei anche nello zoom degli eventi)
+* highlight
+    - eventi evidenziati (apri un evento a caso e scegli un tag)
+    - eventi "dimmed" opacizzati è il contrario del precedente potremmo usarlo
+        nelle ricerchè per "nascondere" i risultati
+        $('.event').dim()
+    - +1 (e -1 anche se forse non lo useremo)
+* colori
+    - come ti piace di più, possiamo selezionare gli eventi per:
+        # tipo di track
+        # tipo di evento (special, keynote, normale)
+        
+OK - stellina gialla        
+OK - Nomi delle tracce da stilare
+?? - Traccia keynote: non si capiscono i nomi delle celle
+Troncamento titoli: mancano i puntini per indicare i titoli
+Troncamento titoli: visualizzare più testo se la cella è più ampia e non serve troncarla
+Pause: le scritte coffee break e lunch sono piccole e allineate in alto
+Stellina: non si vede perché è troppo trasparente, e va invertita chiara/scura
+La giornata di Lunedì è brutta a vedersi: tutta allineata a sinistra e con lo spazio bianco a lato.
+I training non sono marcati in modo diverso dai talk (l'anno scorso c'era un background diverso e una scritta "training" sopra la cella)
+L'italian track non è marcata in modo diverso dalle altre.
+I keynote non sono marcati di colore diverso.
+La spaziatura interlinea applicata ai nomi degli speaker è più ampia di quella che divide nomi di speaker da titolo di talk; vedi l'esempio del talk chiamato "How to boostrap" dove la spaziatura interlinea è confusionaria.
+Per me non c'è abbastanza differenza stilistica/dimensione tra titolo del talk (più importante) e nome dello speaker (meno importante).
+*/
