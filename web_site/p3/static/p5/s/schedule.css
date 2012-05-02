@@ -56,6 +56,8 @@ body#schedule > .page > .container {
   /*
    * layout della timetable
    */
+  /* centra gli schedule (grazie al display di .schedule) */
+  text-align: center;
   /*
    * layout dell'evento; un evento può trovarsi in due stati:
    *  - normale
@@ -71,7 +73,15 @@ body#schedule > .page > .container {
    * il comportamento opposto.
    */ }
   .conference-schedules.timetable .schedule {
-    position: relative; }
+    position: relative;
+    /* serve a limitare la larghezza al contenuto*/
+    display: inline-block;
+    min-width: 440px; }
+  .conference-schedules.timetable .track {
+    /* ripristino il default in modo da minimizzare l'impatto del
+     * text-align utilizzato per centrare gli schedule
+     */
+    text-align: left; }
   .conference-schedules.timetable .event {
     position: absolute;
     z-index: 100; }
