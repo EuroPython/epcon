@@ -66,6 +66,7 @@
                 e.find('details').toggle();
             }
             else {
+                e.data('loaded', 1);
                 var url = $(this).attr('href') + '.xml';
                 var details = $('<div class="details">loading...</div>')
                     .appendTo(e);
