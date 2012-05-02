@@ -796,14 +796,14 @@ def p3_account_spam_control(request):
             form.save()
     return render(request, "assopy/profile_spam_control.html", ctx)
 
-def whos_coming(request, conf=None):
-    if conf is None:
-        return redirect('p3-whos-coming-conference', conf=settings.CONFERENCE_CONFERENCE)
+def whos_coming(request, conference=None):
+    if conference is None:
+        return redirect('p3-whos-coming-conference', conference=settings.CONFERENCE_CONFERENCE)
     # i profili possono essere o pubblici o accessibili solo ai partecipanti,
     # nel secondo caso li possono vedere solo chi ha un biglietto.
     access = ('p',)
     if request.user.is_authenticated():
-        tickets = [ tid for tid, _, _, complete in dataaccess.all_user_tickets(request.user.id, conf) if complete ]
+        tickets = [ tid for tid, _, _, complete in dataaccess.all_user_tickets(request.user.id, conference) if complete ]
         if len(tickets):
             access = ('m', 'p')
     countries = [('', 'All')] + list(amodels.Country.objects\
@@ -826,7 +826,7 @@ def whos_coming(request, conf=None):
 
     qs = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=('m', 'p'))\
-        .filter(user__in=dataaccess.conference_users(conf))\
+        .filter(user__in=dataaccess.conference_users(conference))\
         .values('visibility')\
         .annotate(total=Count('visibility'))
     profiles = {
@@ -839,7 +839,7 @@ def whos_coming(request, conf=None):
 
     people = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=access)\
-        .filter(user__in=dataaccess.conference_users(conf))\
+        .filter(user__in=dataaccess.conference_users(conference))\
         .values_list('user', flat=True)\
         .order_by('user__first_name', 'user__last_name')
 
@@ -857,7 +857,7 @@ def whos_coming(request, conf=None):
             people = people.filter(user__in=qs)
         if data.get('speaker'):
             speakers = cmodels.TalkSpeaker.objects\
-                .filter(talk__conference=conf)\
+                .filter(talk__conference=conference)\
                 .values('speaker')
             people = people.filter(user__speaker__in=speakers)
 
@@ -865,7 +865,7 @@ def whos_coming(request, conf=None):
         'profiles': profiles,
         'pids': list(people),
         'form': form,
-        'conference': conf,
+        'conference': conference,
     }
     if request.is_ajax():
         tpl = 'p3/ajax/whos_coming.html'

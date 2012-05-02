@@ -36,6 +36,6 @@ urlpatterns = patterns('p3.views',
     url(r'^p/account/email$', 'p3_account_email', name='p3-account-email'),
     url(r'^p/account/spam_control$', 'p3_account_spam_control', name='p3-account-spam-control'),
 
-    url(r'^whos-coming$', 'whos_coming', name='p3-whos-coming', kwargs={'conf': None}),
-    url(r'^(?P<conf>[\w-]+)/whos-coming$', 'whos_coming', name='p3-whos-coming-conference'),
+    url(r'^whos-coming$', 'whos_coming', name='p3-whos-coming', kwargs={'conference': None}),
+    url(r'^(?P<conference>[\w-]+)/whos-coming$', 'whos_coming', name='p3-whos-coming-conference'),
 )
