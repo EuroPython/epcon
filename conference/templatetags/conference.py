@@ -1523,6 +1523,26 @@ def attrib_(ob, attrib):
 def contains_(it, key):
     return key in it
 
+@register.filter
+def remove_duplicates(val, attr=None):
+    if attr is None:
+        key = lambda x: x
+    else:
+        def key(x):
+            try:
+                return x.get(attr)
+            except AttributeError:
+                return getattr(x, attr)
+
+    check = set()
+    output = []
+    for x in val:
+        k = key(x)
+        if k not in check:
+            output.append(x)
+            check.add(k)
+    return output
+
 @fancy_tag(register, takes_context=True)
 def assign_(context, varname, value):
     context[varname] = value
