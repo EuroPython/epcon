@@ -46,14 +46,6 @@
 }
 {% endcomment %}
 
-#schedule-navigator {
-    width: 250px;
-    transform: translate(-105px, 0px) rotate(-90deg);
-    -moz-transform: translate(-105px, 0px) rotate(-90deg);
-    -webkit-transform: translate(-105px, 0px) rotate(-90deg);
-    -o-transform: translate(-105px, 0px) rotate(-90deg);
-    -ms-transform: translate(-105px, 0px) rotate(-90deg);
-}
 </style>
 {% endblock %}
 
@@ -78,9 +70,14 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             </ul>
         </div>
     </div>
-    {% comment %}
-    <div class="disabled">My schedule</div>
-    {% endcomment %}
+    <div>
+        <a href="#">Schedule view</a>
+        <div>
+            <ul>
+                <li><a href="{% url p3-whos-coming-conference conf=conference %}?speaker=on">Speakers list</a></li>
+            </ul>
+        </div>
+    </div>
     <div>
         <a href="#">Filters</a>
         <div>
@@ -151,7 +148,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 </nav>
 {% endcomment %}
 <div class="page clearfix">
-    <div class="conference-schedules timetable vertical-narrow"  data-conference="{{ CONFERENCE }}">
+    <div class="conference-schedules timetable vertical-narrow"  data-conference="{{ conference }}">
     {% for sid, timet in timetables %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
