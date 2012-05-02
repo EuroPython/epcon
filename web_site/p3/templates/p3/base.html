@@ -117,7 +117,7 @@
                         {% endif %}
                         <a href="/accounts/logout/?next=/">Log out</a>
                     {% else %}
-                        <a href="/accounts/login/?next=/">Log in</a>
+                        <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
                     {% endif %}
                 </div>
             </div>
