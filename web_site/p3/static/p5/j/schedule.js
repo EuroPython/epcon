@@ -178,7 +178,9 @@ function highlighter(mode, option) {
                 '</div>')
             .find('.close')
                 .bind('click', function(ev) {
-                    $(this).parent().hide();
+                    $(this)
+                        .parent().hide()
+                        .parent().removeClass('selected');
                     return false;
                 })
 
