@@ -2,6 +2,7 @@
 from django.conf import settings as dsettings
 from django.core.cache import cache
 from django.core.mail import send_mail as real_send_mail
+from django.core.urlresolvers import reverse
 
 from conference import settings
 from conference.models import VotoTalk, EventTrack
@@ -664,3 +665,46 @@ def render_badge(tickets, cmdargs=None):
         tfile.seek(0)
         files.append(tfile)
     return files
+
+def timetables2ical(tts, altf=lambda d, comp: d):
+    from conference import ical
+    from conference import dataaccess
+    from datetime import timedelta
+    from django.utils.html import strip_tags
+
+    cal = altf({
+        'uid': '1',
+        'events': [],
+    }, 'calendar')
+    for tt in tts:
+        sdata = dataaccess.schedule_data(tt.sid)
+        for time, events in tt.iterOnTimes():
+            uniq = set()
+            for e in events:
+                if e['id'] in uniq:
+                    continue
+                uniq.add(e['id'])
+                track = strip_tags(sdata['tracks'][e['tracks'][0]].title)
+                ce = {
+                    'uid': e['id'],
+                    'start': (e['time'], {'TZID': dsettings.TIME_ZONE}),
+                    'duration': timedelta(seconds=e['duration']*60),
+                    'location': 'Track: %s' % track,
+                }
+                if e['talk']:
+                    url = dsettings.DEFAULT_URL_PREFIX + reverse('conference-talk', kwargs={'slug': e['talk']['slug']})
+                    ce['summary'] = (e['talk']['title'], {'ALTREP': url})
+                else:
+                    ce['summary'] = e['name']
+                cal['events'].append(ical.Event(**altf(ce, 'event')))
+    return ical.Calendar(**cal)
+
+def conference2ical(conf, altf=lambda d, comp: d):
+    from conference import models
+
+    sids = models.Schedule.objects\
+        .filter(conference=conf)\
+        .values_list('id', flat=True)
+    tts = map(TimeTable2.fromSchedule, sids)
+    return timetables2ical(tts, altf=altf)
+
