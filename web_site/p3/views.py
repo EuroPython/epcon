@@ -391,38 +391,6 @@ def schedule_list(request, conference):
         'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
     }
 
-@render_to('p3/schedule_speakers.html')
-def schedule_speakers(request, conference):
-    events = cmodels.Event.objects\
-        .filter(schedule__conference=settings.CONFERENCE_CONFERENCE)\
-        .exclude(talk=None)\
-        .select_related('schedule', 'track', 'talk')
-    tmap = defaultdict(list)
-    for x in events:
-        tmap[x.talk_id].append(x)
-
-    speakers = cmodels.Speaker.objects\
-                .filter(talkspeaker__talk__in=tmap.keys())\
-                .select_related('user')\
-                .extra(select={'talk_id': 'conference_talkspeaker.talk_id'})
-
-    data = {}
-    for s in speakers:
-        if s.id not in data:
-            data[s.id] = {
-                'speaker': s,
-                'events': [],
-            }
-        data[s.id]['events'].extend(tmap[s.talk_id])
-
-    speakers_sorted = sorted(
-        data.values(),
-        key=lambda x: '%s %s' % (x['speaker'].user.first_name, x['speaker'].user.last_name)
-    )
-    return {
-        'speakers': speakers_sorted,
-    }
-
 @login_required
 def jump_to_my_schedule(request):
     return redirect('p3-schedule-my-schedule', conference=settings.CONFERENCE_CONFERENCE)
