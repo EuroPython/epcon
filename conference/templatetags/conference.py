@@ -630,7 +630,10 @@ def image_resized(value, size='resized'):
         if not url.startswith(dsettings.DEFAULT_URL_PREFIX + dsettings.MEDIA_URL):
             return url
     else:
-        url = value.url
+        try:
+            url = value.url
+        except AttributeError:
+            return ''
     try:
         dirname, basename = os.path.split(url)
     except:
