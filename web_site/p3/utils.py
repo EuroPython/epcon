@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Q
 
 from conference.models import Conference, Ticket
@@ -190,3 +191,64 @@ def invalidate_template_cache(fragment_name, *variables):
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
     return
+
+def conference2ical(conf, user=None):
+    from conference import models as cmodels
+    from datetime import timedelta
+
+    curr = cmodels.Conference.objects.current()
+    try:
+        hotel = cmodels.SpecialPlace.objects.get(type='conf-hq')
+    except cmodels.SpecialPlace.DoesNotExist:
+        hotel = None
+    else:
+        if not hotel.lat or not hotel.lng:
+            hotel = None
+
+    def altf(data, component):
+        if component == 'calendar':
+            if user is None:
+                url = reverse('p3-schedule', kwargs={'conference': conf})
+            else:
+                url = reverse('p3-schedule-my-schedule', kwargs={'conference': conf})
+            data['uid'] = settings.DEFAULT_URL_PREFIX + url
+            if curr.code == conf:
+                data['ttl'] = timedelta(seconds=3600)
+            else:
+                data['ttl'] = timedelta(days=365)
+        elif component == 'event':
+            data['uid'] = settings.DEFAULT_URL_PREFIX + '/p3/event/' + str(data['uid'])
+            data['organizer'] = ('mailto:info@pycon.it', {'CN': 'Python Italia'})
+            if hotel:
+                data['coordinates'] = [hotel.lat, hotel.lng]
+            if not isinstance(data['summary'], tuple):
+                # questo è un evento custom, se inizia con un anchor posso
+                # estrane il riferimento
+                import re
+                m = re.match(r'<a href="(.*)">(.*)</a>', data['summary'])
+                if m:
+                    url = m.group(1)
+                    if url.startswith('/'):
+                        url = settings.DEFAULT_URL_PREFIX + url
+                    data['summary'] = (m.group(2), {'ALTREP': url})
+        return data
+    if user is None:
+        from conference.utils import conference2ical as f
+        cal = f(conf, altf=altf)
+    else:
+        from conference.utils import TimeTable2
+        from conference.utils import timetables2ical as f
+
+        qs = cmodels.Event.objects\
+            .filter(eventinterest__user=user, eventinterest__interest__gt=0)\
+            .filter(schedule__conference=conf)\
+            .values('id', 'schedule')
+
+        events = defaultdict(list)
+        for x in qs:
+            events[x['schedule']].append(x['id'])
+
+        sids = sorted(events.keys())
+        timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
+        cal = f(timetables, altf=altf)
+    return cal

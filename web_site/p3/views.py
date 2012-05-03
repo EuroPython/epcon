@@ -369,6 +369,17 @@ def schedule(request, conference):
         'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
     }
 
+def schedule_ics(request, conference, mode='conference'):
+    if mode == 'my-schedule':
+        if not request.user.is_authenticated():
+            return http.Http404()
+        uid = request.user.id
+    else:
+        uid = None
+    from p3.utils import conference2ical
+    cal = conference2ical(conference, user=uid)
+    return http.HttpResponse(list(cal.encode()), content_type='text/calendar')
+
 @render_to('p3/schedule_list.html')
 def schedule_list(request, conference):
     sids = cmodels.Schedule.objects\
