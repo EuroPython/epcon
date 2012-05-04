@@ -11,7 +11,7 @@
         {% endif %}
     </h2>
     {% endif %}
-    <form id="filter-form" class="async" rel="#people-wrapper" action="{% url p3-whos-coming %}" method="GET">
+    <form id="filter-form" class="async" rel="#people-wrapper" action="{% url p3-whos-coming-conference conference=conference %}" method="GET">
         <fieldset>
             <legend>Filter by</legend>
             <div class="span-3">
@@ -42,4 +42,35 @@
     <hr class="stars" />
     {% include "p3/ajax/whos_coming.html" %}
 </div>
+<script>
+(function() {
+    $(window).scroll(function(ev) {
+        var w = $(window);
+        var p = $('#people-wrapper');
+        var trigger = (p.offset().top + p.height())  - (w.scrollTop() + w.height()) < 1000;
+        if(!trigger || p.data('loading') || p.data('done') == 1)
+            return;
+        p.data('loading', 1);
+        var count = p.find('.person-card').length;
+        var url = document.location.href;
+        if(document.location.search) {
+            url += document.location.search;
+        }
+        else {
+            url += '?';
+        }
+        url += '&counter=' + count;
+        $.get(url, function(response, status, xhr) {
+            var h = $('#people-wrapper', '<div>' + response + '</div>').html();
+            if(!h.trim()) {
+                p.data('done', 1);
+            }
+            else {
+                p.append(h);
+            }
+            p.data('loading', 0);
+        })
+    });
+})();
+</script>
 {% endblock %}

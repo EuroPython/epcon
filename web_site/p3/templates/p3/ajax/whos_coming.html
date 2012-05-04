@@ -102,7 +102,7 @@
      * I link "see more" caricano il contenuto via ajax
      */
     $('.tags a')
-        .click(function(ev) {
+        .live('click', function(ev) {
             var e = $(this);
             var p = e.parents('.person-card');
             var tags = e.parents('.tags');
@@ -117,7 +117,7 @@
             return false;
         })
     $('.person-card-bio a.see-more')
-        .click(function(ev) {
+        .live('click', function(ev) {
             var e = $(this);
             var p = e.parents('.person-card');
             var bio = e.parents('.bio');
@@ -128,7 +128,7 @@
             return false;
         });
     $('.user-message img')
-        .click(function(ev) {
+        .live('click', function(ev) {
             var p = $(this).next();
             p.toggle();
             if(p.data('clicked') == 1)

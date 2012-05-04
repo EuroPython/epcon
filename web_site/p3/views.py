@@ -840,9 +840,14 @@ def whos_coming(request, conference=None):
                 .values('speaker')
             people = people.filter(user__speaker__in=speakers)
 
+    try:
+        ix = max(int(request.GET.get('counter', 0)), 0)
+    except:
+        ix = 0
+    pids = people[ix:ix+20]
     ctx = {
         'profiles': profiles,
-        'pids': list(people),
+        'pids': pids,
         'form': form,
         'conference': conference,
     }
