@@ -142,7 +142,7 @@ def check_map(page):
 def render_map(context):
     return {}
 
-@register.inclusion_tag('p3/render_ticket.html', takes_context=True)
+@register.inclusion_tag('p3/fragments/render_ticket.html', takes_context=True)
 def render_ticket(context, ticket):
     from p3 import forms
     user = context['request'].user
