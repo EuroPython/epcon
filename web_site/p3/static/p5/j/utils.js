@@ -30,7 +30,7 @@ function setup_fragment(ctx) {
     setup_disabled_form(ctx);
     if(setup_conference_fields && !(ctx === document))
         setup_conference_fields(ctx);
-    if(twttr)
+    if(typeof(twttr) != "undefined")
         twttr.widgets.load();
     return ctx;
 }
