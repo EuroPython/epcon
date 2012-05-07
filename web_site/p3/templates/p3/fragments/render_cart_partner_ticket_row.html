@@ -1,0 +1,13 @@
+{% load conference %}
+{% for f in fares %}
+    <tr>
+        <td>
+            {{ f.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]">(details)</a>
+            <div class="overlay" data-fare="{{ f.code }}"><h1>{{ f.name }}</h1>{{ f.description|safe }}</div>
+        </td>
+        <td>{{ f|fare_blob:"data" }}</td>
+        <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
+        <td data-fare="{{ f.code }}"><input type="text" name="{{ f.code }}" size="2" /></td>
+    </tr>
+{% endfor %}
+

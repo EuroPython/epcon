@@ -270,6 +270,9 @@ def render_cart_rows(context, fare_type, form):
     elif fare_type == 'other':
         tpl = 'p3/fragments/render_cart_og_ticket_row.html'
         ctx['fares'] = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
+    elif fare_type == 'partner':
+        tpl = 'p3/fragments/render_cart_partner_ticket_row.html'
+        ctx['fares'] = [ f for f in fares_list if f['ticket_type'] in 'partner' ]
 
     return render_to_string(tpl, ctx)
 

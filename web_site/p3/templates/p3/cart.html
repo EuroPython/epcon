@@ -141,47 +141,8 @@
                     {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b>
                 </div>
             </fieldset>
-            {% comment %}
-            <fieldset class="tickets">
-                
-                <legend>PyEvents</legend>
-                
-                <p>{Sample text} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus orci at lectus ornare 
-                et suscipit orci luctus.</p>
-                
-                <div class="cms">   
-        
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>{% trans "Event name" %}</th>
-                                <th>{% trans "Price" %}</th>
-                                <th>{% trans "Q.ty" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="toggle">PyFiorentina</span>
-                                    <span class="more">The only dinner that any self-respecting Gourmet doesn't want to miss, set in one of the best steak houses in the historic center of Florence where you can taste our famous bistecca alla fiorentina. If you don't like to drink or you are vegetarian... Come anyway, you won't regret it!</span>
-                                </td>
-                                <td id="fare-XXX1" data-amount="30">€ 30</td>
-                                <td><input type="text" size="2" name="XXX1" /></td>
-                            </tr>
-                        </tbody>
-                    </table>
 
-                <!-- /cms -->
-                </div>                
-        
-                <div class="total"> 
-                    PyEvents total (VAT inc.): <b>€ 0</b>
-                </div> 
-
-            </fieldset>
-
-
-
-            <fieldset class="tickets">
+            <fieldset class="tickets partner-program">
                 <legend>{% trans "Partner Program" %}</legend>
                 <p>{% trans "Partner Program intro" %}</p>
                 <div class="cms">                    
@@ -191,7 +152,6 @@
                                 <th>{% trans "Event name" %}</th>
                                 <th>{% trans "Event date" %}</th>
                                 <th>{% trans "Price" %}</th>
-                                <th>{% trans "Deposit" %}</th>
                                 <th>{% trans "Q.ty" %}</th>
                             </tr>
                         </thead>
@@ -204,7 +164,6 @@
                     {% trans "Partner Program total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
-            {% endcomment %}
 
             <fieldset class="tickets coupon">
                 <legend>{% trans "Coupon code" %}</legend>
@@ -233,13 +192,6 @@
                 $('#form-cart select').attr('disabled', true);
             {% endif %}
         </script>
+        <script src="{{ STATIC_URL }}p5/j/cart.js" />
     </div>
 {% endblock %}
-
-
-
-
-
-
-
-
