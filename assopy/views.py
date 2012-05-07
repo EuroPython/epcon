@@ -209,7 +209,7 @@ def otc_code(request, token):
 
 def _linkProfileToEmail(email, profile):
     try:
-        current = auth.models.User.objects.get(email=email)
+        current = auth.models.User.objects.get(email__iexact=email)
     except auth.models.User.DoesNotExist:
         current = auth.models.User.objects.create_user(janrain.suggest_username(profile), email)
         try:
