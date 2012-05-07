@@ -3,7 +3,7 @@ from assopy import django_urls
 from assopy import janrain
 from assopy import settings
 from assopy.clients import genro, vies
-from assopy.utils import send_email
+from assopy.utils import check_database_schema, send_email
 from conference.models import Fare, Ticket
 from email_template import utils
 
@@ -26,6 +26,8 @@ from datetime import date, datetime
 from decimal import Decimal
 
 log = logging.getLogger('assopy.models')
+
+check_database_schema()
 
 def _cache(f):
     """
