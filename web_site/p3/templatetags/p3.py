@@ -288,18 +288,20 @@ def box_image_gallery(context):
     })
     return context
 
-@register.inclusion_tag('p3/render_partner_program.html', takes_context=True)
-def render_partner_program(context):
-    from conference.templatetags.conference import fare_blob
-    fares = list(ConferenceModels.Fare.objects.filter(ticket_type='partner'))
+@fancy_tag(register, takes_context=True)
+def render_partner_program(context, conference=None):
+    if conference is None:
+        conference = settings.CONFERENCE_CONFERENCE
 
-    def key(f):
-        date = datetime.strptime(fare_blob(f, 'data').split(',')[0][:-2] + ' 2011', '%B %d %Y').date()
-        return (slugify(f.name), date)
-    fares.sort(key=key)
-    return {
-        'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x.name)) ],
-    }
+    from conference import dataaccess
+    from conference.templatetags.conference import fare_blob
+    fares = [ x for x in dataaccess.fares(conference) if x['ticket_type'] == 'partner' ]
+    fares.sort(key=lambda x: fare_blob(x, 'date'))
+    ctx = Context(context)
+    ctx.update({
+        'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x['name'])) ],
+    })
+    return render_to_string('p3/render_partner_program.html', ctx)
 
 @fancy_tag(register, takes_context=True)
 def event_partner_program(context, event):

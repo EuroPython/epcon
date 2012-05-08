@@ -3,7 +3,7 @@
 {% for slug, group in fares %}
 {% with group.0 as fare0 %}
     <h3 id="{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span> <a href="/partner-program/#{{ fare0.name|slugify }}">¶</a><a href="#" class="share" style="float: right;">Share this</a></h3>
-    <p><img src="http://ep2011.europython.eu/media/uploads/{{ fare0.code|lower }}.jpg" style="border: 4px solid #e1dbc5;"></p>
+    <p><img src="https://ep2012.europython.eu/media/uploads/{{ fare0.code|lower }}.jpg" style="border: 4px solid #e1dbc5;"></p>
     <div>{{ fare0.description|safe }}</div>
     <ul>
         <li>Cost per person: <strong>€{{ fare0|fare_blob:"prezzo" }}</strong></li>
@@ -20,7 +20,7 @@
     </ul>
     <div class="call-to-action partner-program">
     {% for fare in group %}
-        <a href="{% url p3-cart %}?f={{ fare.code }}">{{ fare|fare_blob:"data" }}→</a>
+        <a href="{% url p3-cart %}?f={{ fare.code }}">{{ fare|fare_blob:"date"|as_datetime|date:"F jS, D" }} →</a>
     {% endfor %}
     </div>
 {% endwith %}
@@ -38,11 +38,11 @@
                     'Spread the world',
                     'Discover "' + text + '" in the partner program at #europython',
                     url);
-                activity.setTitle('Europython 2011 - Partner program');
+                activity.setTitle('Europython 2012 - Partner program');
                 activity.setDescription('This is for people would like to share the experience of visiting a new place with other like-minded people.');
-                activity.addActionLink('Check the partner program', 'http://ep2011.europython.eu/partner-program/');
+                activity.addActionLink('Check the partner program', 'https://ep2012.europython.eu/partner-program/');
                 var media = new RPXNOW.Social.ImageMediaCollection();
-                media.addImage('http://ep2011.europython.eu/media/versions/uploads/twitter-avatar_thumbnail.png', url);
+                media.addImage('https://ep2012.europython.eu/media/uploads/twitter-avatar.png', url);
                 activity.setMediaItem(media);
                 RPXNOW.Social.publishActivity(activity);
             });
