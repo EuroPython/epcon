@@ -2,6 +2,7 @@
 from django.conf import settings as dsettings
 from django.core.cache import cache
 from django.core.mail import send_mail as real_send_mail
+from django.core.urlresolvers import reverse
 
 from conference import settings
 from conference.models import VotoTalk, EventTrack
@@ -185,12 +186,27 @@ class TimeTable2(object):
         events -> dict(track -> list(events))
         """
         self.sid = sid
+        self._analyzed = False
         self.events = events
         # elenco track nell'ordine giusto
         self._tracks = list(Track.objects\
             .filter(schedule=sid)\
             .order_by('order')\
             .values_list('track', flat=True))
+
+    def addEvents(self, events):
+        from conference import dataaccess
+        for e in events:
+            if isinstance(e, int):
+                e = dataaccess.event_data(e)
+            for t in e['tracks']:
+                if t not in self._tracks:
+                    raise ValueError("Unknown track: %s" % t)
+                try:
+                    self.events[t].append(e)
+                except KeyError:
+                    self.events[t] = [e]
+        self._analyzed = False
 
     @classmethod
     def fromEvents(cls, sid, eids):
@@ -240,11 +256,38 @@ class TimeTable2(object):
             .distinct()
         return cls.fromEvents(sid, qs)
 
+    def _analyze(self):
+        if self._analyzed:
+            return
+        # step 1 - cerco eventi "sovrapposti"
+        for t in self._tracks:
+            events = {}
+            timeline = []
+            for e in self.events.get(t, []):
+                row = (e['time'], e['time'] + timedelta(seconds=e['duration'] * 60), e['id'])
+                events[e['id']] = e
+                timeline.append(row)
+            for ix, e1 in enumerate(timeline):
+                for e2 in timeline[ix+1:]:
+                    # http://stackoverflow.com/questions/9044084/efficient-data-range-overlap-calculation-in-python
+                    latest_start = max(e1[0], e2[0])
+                    earliest_end = min(e1[1], e2[1])
+                    overlap = (earliest_end - latest_start)
+                    if overlap.seconds > 0 and overlap.days >= 0:
+                        for eid in (e1[2], e2[2]):
+                            e = events[eid]
+                            try:
+                                e['intersection'] += 1
+                            except KeyError:
+                                e['intersection'] = 1
+        self._analyzed = True
+
     def iterOnTracks(self):
         """
         Itera sugli eventi della timetable una track per volta, restituisce un
         iter((track, [events])).
         """
+        self._analyze()
         for t in self._tracks:
             try:
                 yield t, self.events[t]
@@ -256,6 +299,7 @@ class TimeTable2(object):
         Itera sugli eventi della timetable raggruppandoli a seconda del tempo
         di inizio, restituisce un iter((time, [events])).
         """
+        self._analyze()
         trasposed = defaultdict(list)
         for events in self.events.values():
             for e in events:
@@ -664,3 +708,46 @@ def render_badge(tickets, cmdargs=None):
         tfile.seek(0)
         files.append(tfile)
     return files
+
+def timetables2ical(tts, altf=lambda d, comp: d):
+    from conference import ical
+    from conference import dataaccess
+    from datetime import timedelta
+    from django.utils.html import strip_tags
+
+    cal = altf({
+        'uid': '1',
+        'events': [],
+    }, 'calendar')
+    for tt in tts:
+        sdata = dataaccess.schedule_data(tt.sid)
+        for time, events in tt.iterOnTimes():
+            uniq = set()
+            for e in events:
+                if e['id'] in uniq:
+                    continue
+                uniq.add(e['id'])
+                track = strip_tags(sdata['tracks'][e['tracks'][0]].title)
+                ce = {
+                    'uid': e['id'],
+                    'start': (e['time'], {'TZID': dsettings.TIME_ZONE}),
+                    'duration': timedelta(seconds=e['duration']*60),
+                    'location': 'Track: %s' % track,
+                }
+                if e['talk']:
+                    url = dsettings.DEFAULT_URL_PREFIX + reverse('conference-talk', kwargs={'slug': e['talk']['slug']})
+                    ce['summary'] = (e['talk']['title'], {'ALTREP': url})
+                else:
+                    ce['summary'] = e['name']
+                cal['events'].append(ical.Event(**altf(ce, 'event')))
+    return ical.Calendar(**cal)
+
+def conference2ical(conf, altf=lambda d, comp: d):
+    from conference import models
+
+    sids = models.Schedule.objects\
+        .filter(conference=conf)\
+        .values_list('id', flat=True)
+    tts = map(TimeTable2.fromSchedule, sids)
+    return timetables2ical(tts, altf=altf)
+
