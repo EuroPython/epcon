@@ -52,7 +52,7 @@ def DURATION(value):
 def URI(value):
     return value
         
-def Property(value, params=None, fmt=TEXT, property_values=1):
+def Property(value, params=None, fmt=TEXT, property_values=1, values_sep=','):
     if value is None:
         return None
 
@@ -65,7 +65,7 @@ def Property(value, params=None, fmt=TEXT, property_values=1):
     if property_values > 0 and len(value) != property_values:
         raise ValueError("Invalid number of values")
 
-    values = ','.join(map(fmt, value))
+    values = values_sep.join(map(fmt, value))
     return values, params
 
 class Component(dict):
@@ -114,7 +114,7 @@ class Event(Component):
             'CLASS': Property(classification, fmt=TEXT),
             'SUMMARY': Property(summary, fmt=TEXT),
             'DESCRIPTION': Property(description, fmt=TEXT),
-            'GEO': Property(coordinates, fmt=FLOAT, property_values=2),
+            'GEO': Property(coordinates, fmt=FLOAT, property_values=2, values_sep=';'),
             'LOCATION': Property(location, fmt=TEXT),
             'URL': Property(url, fmt=URI),
             'ORGANIZER': Property(organizer, fmt=URI),
