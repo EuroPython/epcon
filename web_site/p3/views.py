@@ -836,7 +836,7 @@ def whos_coming(request, conference=None):
             people = people.filter(user__in=qs)
         if data.get('speaker'):
             speakers = cmodels.TalkSpeaker.objects\
-                .filter(talk__conference=conference)\
+                .filter(talk__conference=conference, talk__status='accepted')\
                 .values('speaker')
             people = people.filter(user__speaker__in=speakers)
 
