@@ -39,7 +39,7 @@ else:
     log.setLevel(logging.WARNING)
 
 def inspect():
-    for root, subdirs, files in os.walk(work_dir):
+    for root, subdirs, files in os.walk(work_dir, followlinks=True):
         for f in files:
             if f.endswith('.ini'):
                 yield os.path.join(root, f)
