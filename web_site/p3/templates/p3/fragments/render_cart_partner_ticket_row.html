@@ -10,7 +10,7 @@
             {% endif %}
             <div class="overlay" data-fare="{{ f.code }}"><h1>{{ f.name }}</h1>{{ f.description|safe }}</div>
         </td>
-        <td>{{ f|fare_blob:"date" }}</td>
+        <td>{{ f|fare_blob:"date"|as_datetime|date:"F jS, D" }}</td>
         <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
         <td data-fare="{{ f.code }}"><input type="text" name="{{ f.code }}" size="2" /></td>
     </tr>
