@@ -301,7 +301,7 @@ def render_partner_program(context, conference=None):
     ctx.update({
         'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x['name'])) ],
     })
-    return render_to_string('p3/render_partner_program.html', ctx)
+    return render_to_string('p3/fragments/render_partner_program.html', ctx)
 
 @fancy_tag(register, takes_context=True)
 def event_partner_program(context, event):
