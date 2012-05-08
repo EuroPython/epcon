@@ -376,7 +376,7 @@ def _conference_timetables(conference):
         d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
         t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
         partner[d].append({
-            'duration': 60,
+            'duration': int(fare_blob(f, 'duration')),
             'name': f['name'],
             'id': f['id'] * -1,
             'abstract': f['description'],

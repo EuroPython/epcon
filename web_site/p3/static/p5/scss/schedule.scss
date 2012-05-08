@@ -292,6 +292,11 @@ body#schedule > .page > .container {
                 background-repeat: no-repeat;                
             }
         }
+
+        .track[data-track=partner0], .track[data-track=partner1], .track[data-track=partner2]{
+            @include setTrackColor($cPartners);
+        }
+
         .track{
             .event.special{
                 border-left: none;
@@ -748,6 +753,8 @@ body#schedule > .page > .container {
     .duration-60 { height: $slot15*4; }
     .duration-75 { height: $slot15*5; }
     .duration-90 { height: $slot15*6; }
+    .duration-150 { height: $slot15*10; }
+    .duration-180 { height: $slot15*12; }
     .duration-240 { height: $slot15*16; }
     .duration-480 { height: $slot15*32; }
     .duration-630 { height: $slot15*42; }
@@ -806,8 +813,29 @@ body#schedule > .page > .container {
         top: 0;
         text-align: center;
     }
-}
 
+    /*
+     * le collisioni tra eventi non devono esserci nel programma (in realtà le
+     * abbiamo tra le track 1, 2 e il pranzo) quelle presenti nella track
+     * partner program sono state messe di proposito per compattare lo schedule
+     */
+    .track[data-track=partner0], .track[data-track=partner1], .track[data-track=partner2]{
+        /*
+         * l'attributo data-intersection indica il livello di overlap, o1
+         * significa che al massimo ci sono due eventi che si sovrappongono
+         */
+        .event[data-intersection=o1] {
+            width: $trackW * 3 / 4;
+            &.left-intersection-0 {
+                left: 0;
+            }
+            &.left-intersection-1 {
+                right: 0;
+                z-index: 102;
+            }
+        }
+    }
+}
 
 .conference-schedules.timetable.vertical {
     $trackW: 190px;

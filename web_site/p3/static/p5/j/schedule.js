@@ -647,6 +647,41 @@ function highlighter(mode, option) {
                     .highlight();
                 return false;
             })
+            .end()
+    /*
+     * Eventi sovrapposti; non riesco a stilare in maniera oppurtuna gli eventi
+     * sovrapposti usando solo selettori CSS.  questo pezzetto di js mi serve
+     * per assegnare le classi corrette agli eventi
+     *
+     * Divido gli eventi in classi di intersezione (gli eventi che si
+     * intersecano due alla volta, tre alla volta, etc); ad ogni evento associa
+     * una classe "left-intersection-X" con X che va da 0 al numero di elementi
+     * nella gruppo di intersezione.
+     */
+    $('.track[data-track=partner0]').each(function() {
+        var events = {};
+        $('.event[data-intersection]', this).each(function() {
+            var group = $(this).attr('data-intersection');
+            var start = this.className.match(/time-(\d+)/)[1];
+            if(group in events) {
+                events[group].push([start, this]);
+            }
+            else {
+                events[group] = [[start, this]];
+            }
+        });
+        $.each(events, function(group, events) {
+            events.sort(function(a,b) {
+                var a = Number(a[0]);
+                var b = Number(b[0]);
+                return a == b ? 0 : (a < b ? -1 : 1);
+            });
+            group = Number(group.substr(1)) + 1;
+            $.each(events, function(ix, el) {
+                $(el).addClass('left-intersection-' + (ix % group));
+            });
+        });
+    });
     $('.special > *:first-child').verticalAlign();
     $('.poster ul a').truncateText();
 })();
