@@ -699,7 +699,12 @@ body#schedule > .page > .container {
         left: 0; }
       .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1].left-intersection-1, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1].left-intersection-1, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1].left-intersection-1 {
         right: 0;
-        z-index: 102; }
+        z-index: 102;
+        box-shadow: -3px 3px 8px 0 #aaaaaa;
+        -moz-box-shadow: -3px 3px 8px 0 #aaaaaa;
+        -webkit-box-shadow: -3px 3px 8px 0 #aaaaaa;
+        -o-box-shadow: -3px 3px 8px 0 #aaaaaa;
+        -ms-box-shadow: -3px 3px 8px 0 #aaaaaa; }
 
 .conference-schedules.timetable.vertical .schedule {
   width: 1400px; }
