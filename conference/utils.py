@@ -186,6 +186,7 @@ class TimeTable2(object):
         events -> dict(track -> list(events))
         """
         self.sid = sid
+        self._analyzed = False
         self.events = events
         # elenco track nell'ordine giusto
         self._tracks = list(Track.objects\
@@ -205,6 +206,7 @@ class TimeTable2(object):
                     self.events[t].append(e)
                 except KeyError:
                     self.events[t] = [e]
+        self._analyzed = False
 
     @classmethod
     def fromEvents(cls, sid, eids):
@@ -254,11 +256,38 @@ class TimeTable2(object):
             .distinct()
         return cls.fromEvents(sid, qs)
 
+    def _analyze(self):
+        if self._analyzed:
+            return
+        # step 1 - cerco eventi "sovrapposti"
+        for t in self._tracks:
+            events = {}
+            timeline = []
+            for e in self.events.get(t, []):
+                row = (e['time'], e['time'] + timedelta(seconds=e['duration'] * 60), e['id'])
+                events[e['id']] = e
+                timeline.append(row)
+            for ix, e1 in enumerate(timeline):
+                for e2 in timeline[ix+1:]:
+                    # http://stackoverflow.com/questions/9044084/efficient-data-range-overlap-calculation-in-python
+                    latest_start = max(e1[0], e2[0])
+                    earliest_end = min(e1[1], e2[1])
+                    overlap = (earliest_end - latest_start)
+                    if overlap.seconds > 0 and overlap.days >= 0:
+                        for eid in (e1[2], e2[2]):
+                            e = events[eid]
+                            try:
+                                e['intersection'] += 1
+                            except KeyError:
+                                e['intersection'] = 1
+        self._analyzed = True
+
     def iterOnTracks(self):
         """
         Itera sugli eventi della timetable una track per volta, restituisce un
         iter((track, [events])).
         """
+        self._analyze()
         for t in self._tracks:
             try:
                 yield t, self.events[t]
@@ -270,6 +299,7 @@ class TimeTable2(object):
         Itera sugli eventi della timetable raggruppandoli a seconda del tempo
         di inizio, restituisce un iter((time, [events])).
         """
+        self._analyze()
         trasposed = defaultdict(list)
         for events in self.events.values():
             for e in events:
