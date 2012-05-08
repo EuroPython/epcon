@@ -1,29 +1,32 @@
 {% load conference %}
 <div class="cms partner-program">
 {% for slug, group in fares %}
-{% with group.0 as fare0 %}
-    <h3 id="{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span> <a href="/partner-program/#{{ fare0.name|slugify }}">¶</a><a href="#" class="share" style="float: right;">Share this</a></h3>
-    <p><img src="https://ep2012.europython.eu/media/uploads/{{ fare0.code|lower }}.jpg" style="border: 4px solid #e1dbc5;"></p>
-    <div>{{ fare0.description|safe }}</div>
-    <ul>
-        <li>Cost per person: <strong>€{{ fare0|fare_blob:"prezzo" }}</strong></li>
-        {% with fare0|fare_blob:"include" as t %}
-        {% if t %}
-        <li>Includes: <strong>{{ t }}</strong></li>
-        {% endif %}
-        {% endwith %}
-        {% with fare0|fare_blob:"departure" as t %}
-        {% if t %}
-        <li>Departure: <strong>{{ t }}</strong></li>
-        {% endif %}
-        {% endwith %}
-    </ul>
-    <div class="call-to-action partner-program">
-    {% for fare in group %}
-        <a href="{% url p3-cart %}?f={{ fare.code }}">{{ fare|fare_blob:"date"|as_datetime|date:"F jS, D" }} →</a>
-    {% endfor %}
+    <div class="event">
+    {% with group.0 as fare0 %}
+        <h3 id="{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span> <a href="/partner-program/#{{ fare0.name|slugify }}">¶</a><a href="#" class="share" style="float: right;">Share this</a></h3>
+        <p><img src="https://ep2012.europython.eu/media/uploads/{{ fare0.code|lower }}.jpg" style="border: 4px solid #e1dbc5;"></p>
+        <div>{{ fare0.description|safe }}</div>
+        <ul>
+            <li>Cost per person: <strong>€{{ fare0|fare_blob:"prezzo" }}</strong></li>
+            {% with fare0|fare_blob:"include" as t %}
+            {% if t %}
+            <li>Includes: <strong>{{ t }}</strong></li>
+            {% endif %}
+            {% endwith %}
+            {% with fare0|fare_blob:"departure" as t %}
+            {% if t %}
+            <li>Departure: <strong>{{ t }}</strong></li>
+            {% endif %}
+            {% endwith %}
+        </ul>
+        <div class="call-to-action partner-program">
+        {% for fare in group %}
+            <a href="{% url p3-cart %}?f={{ fare.code }}">{{ fare|fare_blob:"date"|as_datetime|date:"F jS, D" }} →</a>
+        {% endfor %}
+        </div>
+    {% endwith %}
+        <hr class="stars" />
     </div>
-{% endwith %}
 {% endfor %}
     <script type="text/javascript">
     (function() {
