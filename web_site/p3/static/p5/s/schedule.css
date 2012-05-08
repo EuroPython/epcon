@@ -242,6 +242,12 @@ body#schedule > .page > .container {
       background-color: #e7880f; }
     .conference-schedules.timetable .schedule .track[data-track=partner0] .event, .conference-schedules.timetable .schedule .track[data-track=partner1] .event, .conference-schedules.timetable .schedule .track[data-track=partner2] .event {
       border-left: 1px dotted #e7880f; }
+    .conference-schedules.timetable .schedule .track[data-track=partner0] .event .info, .conference-schedules.timetable .schedule .track[data-track=partner1] .event .info, .conference-schedules.timetable .schedule .track[data-track=partner2] .event .info {
+      font-weight: bold;
+      float: right;
+      margin: 0 7px; }
+    .conference-schedules.timetable .schedule .track[data-track=partner0] .event.booked, .conference-schedules.timetable .schedule .track[data-track=partner1] .event.booked, .conference-schedules.timetable .schedule .track[data-track=partner2] .event.booked {
+      border-right: 4px solid gold; }
     .conference-schedules.timetable .schedule .track .event.special {
       border-left: none; }
     .conference-schedules.timetable .schedule .track .event.keynote .speakers, .conference-schedules.timetable .schedule .track .event.special .speakers {

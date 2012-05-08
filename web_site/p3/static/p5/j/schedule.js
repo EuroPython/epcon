@@ -681,6 +681,22 @@ function highlighter(mode, option) {
                 $(el).addClass('left-intersection-' + (ix % group));
             });
         });
+        var tickets = {};
+        for(var ix=0, ex=user.tickets.length; ix<ex; ix++) {
+            tickets[user.tickets[ix][2]] = 1;
+        }
+        $('.event', this).each(function() {
+            var e = $(this);
+            var fcode = e.attr('data-fare');
+            var sbar = e.find('.status-bar');
+            if(fcode in tickets) {
+                sbar.append('<div class="info">You have bought a ticket for this event</div>');
+                e.addClass('booked');
+            }
+            else {
+                sbar.append('<div class="info"><a href="/p3/cart/?f=' + fcode + '">Buy a ticket</a></div>');
+            }
+        });
     });
     $('.special > *:first-child').verticalAlign();
     $('.poster ul a').truncateText();

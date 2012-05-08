@@ -295,6 +295,16 @@ body#schedule > .page > .container {
 
         .track[data-track=partner0], .track[data-track=partner1], .track[data-track=partner2]{
             @include setTrackColor($cPartners);
+            .event {
+                .info {
+                    font-weight: bold;
+                    float: right;
+                    margin: 0 7px;
+                }
+            }
+            .event.booked {
+                border-right: 4px solid gold;
+            }
         }
 
         .track{

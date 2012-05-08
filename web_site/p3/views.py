@@ -380,6 +380,7 @@ def _conference_timetables(conference):
             'name': f['name'],
             'id': f['id'] * -1,
             'abstract': f['description'],
+            'fare': f['code'],
             'schedule_id': None,
             'tags': set(['partner-program']),
             'time': datetime.datetime.combine(d, t),
