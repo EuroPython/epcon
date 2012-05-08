@@ -840,6 +840,15 @@ body#schedule > .page > .container {
      * partner program sono state messe di proposito per compattare lo schedule
      */
     .track[data-track=partner0], .track[data-track=partner1], .track[data-track=partner2]{
+        .event {
+            /*
+             * imposto il right (che in questo caso è equivalente a left=0) per
+             * ottenre a costo zero l'apertura della versione "exposed" verso
+             * sinistra (utile perché la colonna partner-program è sulla destra
+             * dello schedule)
+             */
+            right: 0;
+        }
         /*
          * l'attributo data-intersection indica il livello di overlap, o1
          * significa che al massimo ci sono due eventi che si sovrappongono
@@ -847,7 +856,7 @@ body#schedule > .page > .container {
         .event[data-intersection=o1] {
             width: $trackW * 3 / 4;
             &.left-intersection-0 {
-                left: 0;
+                right: $trackW * 1 / 4;
             }
             &.left-intersection-1 {
                 right: 0;

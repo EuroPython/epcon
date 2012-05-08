@@ -693,10 +693,18 @@ body#schedule > .page > .container {
      * l'attributo data-intersection indica il livello di overlap, o1
      * significa che al massimo ci sono due eventi che si sovrappongono
      */ }
+    .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event {
+      /*
+       * imposto il right (che in questo caso è equivalente a left=0) per
+       * ottenre a costo zero l'apertura della versione "exposed" verso
+       * sinistra (utile perché la colonna partner-program è sulla destra
+       * dello schedule)
+       */
+      right: 0; }
     .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1], .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1], .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1] {
       width: 75px; }
       .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1].left-intersection-0, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1].left-intersection-0, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1].left-intersection-0 {
-        left: 0; }
+        right: 25px; }
       .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1].left-intersection-1, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1].left-intersection-1, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1].left-intersection-1 {
         right: 0;
         z-index: 102;
