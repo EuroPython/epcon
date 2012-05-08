@@ -515,6 +515,6 @@ def all_user_tickets(context, uid=None, conference=None, status="complete", fare
         tickets = filter(lambda x: x[3], tickets)
     elif status == 'incomplete':
         tickets = filter(lambda x: not x[3], tickets)
-    if fare_type == "conference":
+    if fare_type != "all":
         tickets = filter(lambda x: x[1] == fare_type, tickets)
     return tickets
