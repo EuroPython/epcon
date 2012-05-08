@@ -27,7 +27,8 @@ from decimal import Decimal
 
 log = logging.getLogger('assopy.models')
 
-check_database_schema()
+if settings.CHECK_DB_SCHEMA:
+    check_database_schema()
 
 def _cache(f):
     """
