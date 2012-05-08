@@ -1016,7 +1016,12 @@ def full_url(url):
 
 @register.filter
 def fare_blob(fare, field):
-    match = re.search(r'%s\s*=\s*(.*)$' % field, fare.blob, re.M)
+    try:
+        blob = fare.blob
+    except AttributeError:
+        blob = fare['blob']
+
+    match = re.search(r'%s\s*=\s*(.*)$' % field, blob, re.M)
     if match:
         return match.group(1).strip()
     return ''
