@@ -193,6 +193,19 @@ class TimeTable2(object):
             .order_by('order')\
             .values_list('track', flat=True))
 
+    def addEvents(self, events):
+        from conference import dataaccess
+        for e in events:
+            if isinstance(e, int):
+                e = dataaccess.event_data(e)
+            for t in e['tracks']:
+                if t not in self._tracks:
+                    raise ValueError("Unknown track: %s" % t)
+                try:
+                    self.events[t].append(e)
+                except KeyError:
+                    self.events[t] = [e]
+
     @classmethod
     def fromEvents(cls, sid, eids):
         from conference import dataaccess
