@@ -32,7 +32,6 @@ def _dump_fields(o):
     return output
 
 def navigation(lang, page_type):
-    print 'x', lang, page_type
     pages = []
     qs = Page.objects\
         .published()\
