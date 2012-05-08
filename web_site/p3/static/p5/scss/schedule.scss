@@ -373,9 +373,6 @@ body#schedule > .page > .container {
         .after-ellipsis {
             display: inline;
         }
-        .talk-level {
-            height: 20px;
-        }
     }
 
     /*
@@ -425,16 +422,34 @@ body#schedule > .page > .container {
     }
 
     /*
-     * talk level
+     * status bar
      */
     .event {
-        .talk-level {
+        .status-bar {
+            position: relative;
+            background: transparent;
+            height: 3px;
             position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
-            height: 3px;
+        }
+    }
+    .event.exposed {
+        .status-bar {
+            background: cyan;
+            height: 20px;
+        }
+    }
+
+    /*
+     * talk level
+     */
+    .event {
+        .talk-level {
             color: white;
+            width: 100%;
+            height: 100%;
         }
     }
 

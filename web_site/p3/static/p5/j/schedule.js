@@ -545,7 +545,7 @@ function highlighter(mode, option) {
             .end()
         .each(function(ix, val) {
             var e = $(this);
-            var tools = e.children('.tools');
+            var tools = e.find('.tools');
             if(user.authenticated) {
                 var tid = e.attr('data-talk');
                 if(tid && tid in user.votes) {

@@ -185,7 +185,6 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         {% endfor %}
                     </div>
                     <h3 class="name"><a href="{% url conference-talk slug=e.talk.slug %}">{{ e.name }}</a></h3>
-                    <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
                     <div class="maximized all-tags">
                         {% for tag in e.talk.tags %}<a class="tag">{{ tag }}</a>{% endfor %}
                     </div>
@@ -213,17 +212,22 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         </ul>
                     {% endif %}
                     {% endif %}
-                    <div class="tools">
-                        {% comment %}
-                        {% if ref in overbooked %}
-                        <div class="room-full">
-                            <img src="{{ STATIC_URL }}p5/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
+                    <div class="status-bar">
+                        {% if e.talk %}
+                            <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
+                        {% endif %}
+                        <div class="tools">
+                            {% comment %}
+                            {% if ref in overbooked %}
+                            <div class="room-full">
+                                <img src="{{ STATIC_URL }}p5/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
+                            </div>
+                            {% endif %}
+                            {% endcomment %}
+                            {% if "keynote" in e.tags %}
+                            <div class="toggle-notice">&nbsp;</div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% endcomment %}
-                        {% if "keynote" in e.tags %}
-                        <div class="toggle-notice">&nbsp;</div>
-                        {% endif %}
                     </div>
                     {% if "keynote" in e.tags %}
                     <div class="notice">

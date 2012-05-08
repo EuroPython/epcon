@@ -134,6 +134,9 @@ body#schedule > .page > .container {
    * notices
    */
   /*
+   * status bar
+   */
+  /*
    * talk level
    */
   /*
@@ -289,8 +292,6 @@ body#schedule > .page > .container {
     display: none; }
   .conference-schedules.timetable .event.exposed .after-ellipsis {
     display: inline; }
-  .conference-schedules.timetable .event.exposed .talk-level {
-    height: 20px; }
   .conference-schedules.timetable .event .toggle-notice {
     width: 16px;
     height: 16px;
@@ -321,13 +322,21 @@ body#schedule > .page > .container {
       .conference-schedules.timetable .event .notice p a {
         border-bottom: 1px solid #a4d4d4;
         color: #a4d4d4; }
-  .conference-schedules.timetable .event .talk-level {
+  .conference-schedules.timetable .event .status-bar {
+    position: relative;
+    background: transparent;
+    height: 3px;
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
-    height: 3px;
-    color: white; }
+    bottom: 0; }
+  .conference-schedules.timetable .event.exposed .status-bar {
+    background: cyan;
+    height: 20px; }
+  .conference-schedules.timetable .event .talk-level {
+    color: white;
+    width: 100%;
+    height: 100%; }
   .conference-schedules.timetable .tools > div {
     display: inline-block; }
   .conference-schedules.timetable .event .tools {
