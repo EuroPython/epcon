@@ -424,6 +424,8 @@ body#schedule > .page > .container {
       line-height: 16px;
       overflow: hidden;
       text-transform: lowercase; }
+  .conference-schedules.timetable .event.partner-program .abstract {
+    height: 260px; }
   .conference-schedules.timetable .event.interest-up {
     background: #d7f5fa; }
   .conference-schedules.timetable .event.interest-down {
