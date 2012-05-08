@@ -276,13 +276,6 @@ def render_cart_rows(context, fare_type, form):
 
     return render_to_string(tpl, ctx)
 
-@register.inclusion_tag('p3/render_pp_cart_row.html', takes_context=True)
-def render_pp_cart_row(context, fare):
-    return {
-        'f': fare,
-    }
-
-
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
     request = context['request']
