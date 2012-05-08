@@ -191,12 +191,17 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     </div>
                     <div class="maximized abstract cms"> </div>
                     {% else %}
+                    {% if "abstract" not in e %}
                     <h3 class="name">
                         {% if "special" in e.tags %}
                         <div class="hhmm"><span>{{ e.time|time:"H" }}</span>:{{ e.time|time:"i" }}</div>
                         {% endif %}
                         {{ e.name|safe }}
                     </h3>
+                    {% else %}
+                    <h3 class="name"><a href="#">{{ e.name|safe }}</a></h3>
+                    <div class="maximized abstract cms">{{ e.abstract|safe }}</div>
+                    {% endif %}
                     {% if "poster" in e.tags %}
                         {% conference_talks type="p"  as posters %}
                         <ul>

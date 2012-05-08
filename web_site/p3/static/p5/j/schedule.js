@@ -486,7 +486,7 @@ function highlighter(mode, option) {
             var e = $(this);
             return !e.hasClass('special') && !e.hasClass('break');
         })
-        .filter('[data-talk]')
+        .filter(function() { return !!$(this).attr('data-talk') || $('.abstract', this).length; })
             .prepend('' +
                 '<div class="maximized close-event">' +
                 '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
@@ -519,6 +519,13 @@ function highlighter(mode, option) {
                 .end()
             .bind('exposed', function(ev) {
                 var e = $(this);
+                /* se ho aperto un evento che non è collegato ad un talk
+                 * significa che tutti i dati da mostrare sono già presenti
+                 * nell'html.
+                 */
+                if(!e.attr('data-talk')) {
+                    return;
+                }
                 if(!e.data('loaded')) {
                     var talk = $('h3.name a', e).attr('href');
                     if(talk) {
@@ -545,21 +552,23 @@ function highlighter(mode, option) {
                     tools.append('<div class="maximized talk-vote">' + user.votes[tid] + '/10</div>');
                 }
 
-                var track = e.parents('.track').attr('data-track');
-                if(track != 'training1' && track != 'training2') {
-                    var i = user.interest[e.attr('data-id')];
-                    if(i == 1) {
-                        e.addClass('interest-up');
-                    }
-                    else if(i == -1) {
-                        e.addClass('interest-down');
-                    }
-                    tools.append(user_interest_toolbar);
-                    if(i == 1) {
-                        tools.find('a.up').addClass('active');
-                    }
-                    else if(i == -1) {
-                        tools.find('a.down').addClass('active');
+                if(e.attr('data-id') > 0) {
+                    var track = e.parents('.track').attr('data-track');
+                    if(track != 'training1' && track != 'training2') {
+                        var i = user.interest[e.attr('data-id')];
+                        if(i == 1) {
+                            e.addClass('interest-up');
+                        }
+                        else if(i == -1) {
+                            e.addClass('interest-down');
+                        }
+                        tools.append(user_interest_toolbar);
+                        if(i == 1) {
+                            tools.find('a.up').addClass('active');
+                        }
+                        else if(i == -1) {
+                            tools.find('a.down').addClass('active');
+                        }
                     }
                 }
             }

@@ -58,6 +58,7 @@ body#schedule > .page > .container {
    */
   /* centra gli schedule (grazie al display di .schedule) */
   text-align: center;
+  width: 890px;
   /*
    * layout dell'evento; un evento può trovarsi in due stati:
    *  - normale
@@ -563,28 +564,78 @@ body#schedule > .page > .container {
   height: 1260px; }
 .conference-schedules.timetable.vertical-narrow .time-0900 {
   top: 40px; }
+.conference-schedules.timetable.vertical-narrow .time-0915 {
+  top: 70px; }
 .conference-schedules.timetable.vertical-narrow .time-0930 {
   top: 100px; }
 .conference-schedules.timetable.vertical-narrow .time-0945 {
   top: 130px; }
+.conference-schedules.timetable.vertical-narrow .time-1000 {
+  top: 160px; }
+.conference-schedules.timetable.vertical-narrow .time-1015 {
+  top: 190px; }
 .conference-schedules.timetable.vertical-narrow .time-1030 {
   top: 220px; }
+.conference-schedules.timetable.vertical-narrow .time-1045 {
+  top: 250px; }
+.conference-schedules.timetable.vertical-narrow .time-1100 {
+  top: 280px; }
 .conference-schedules.timetable.vertical-narrow .time-1115 {
   top: 310px; }
+.conference-schedules.timetable.vertical-narrow .time-1130 {
+  top: 340px; }
+.conference-schedules.timetable.vertical-narrow .time-1145 {
+  top: 370px; }
+.conference-schedules.timetable.vertical-narrow .time-1200 {
+  top: 400px; }
 .conference-schedules.timetable.vertical-narrow .time-1215 {
   top: 430px; }
+.conference-schedules.timetable.vertical-narrow .time-1230 {
+  top: 460px; }
+.conference-schedules.timetable.vertical-narrow .time-1245 {
+  top: 490px; }
 .conference-schedules.timetable.vertical-narrow .time-1300 {
   top: 520px; }
 .conference-schedules.timetable.vertical-narrow .time-1315 {
   top: 550px; }
+.conference-schedules.timetable.vertical-narrow .time-1330 {
+  top: 580px; }
+.conference-schedules.timetable.vertical-narrow .time-1345 {
+  top: 610px; }
+.conference-schedules.timetable.vertical-narrow .time-1400 {
+  top: 640px; }
+.conference-schedules.timetable.vertical-narrow .time-1415 {
+  top: 670px; }
 .conference-schedules.timetable.vertical-narrow .time-1430 {
   top: 700px; }
+.conference-schedules.timetable.vertical-narrow .time-1445 {
+  top: 730px; }
+.conference-schedules.timetable.vertical-narrow .time-1500 {
+  top: 760px; }
+.conference-schedules.timetable.vertical-narrow .time-1515 {
+  top: 790px; }
 .conference-schedules.timetable.vertical-narrow .time-1530 {
   top: 820px; }
+.conference-schedules.timetable.vertical-narrow .time-1545 {
+  top: 850px; }
+.conference-schedules.timetable.vertical-narrow .time-1600 {
+  top: 880px; }
+.conference-schedules.timetable.vertical-narrow .time-1615 {
+  top: 910px; }
 .conference-schedules.timetable.vertical-narrow .time-1630 {
   top: 940px; }
+.conference-schedules.timetable.vertical-narrow .time-1645 {
+  top: 970px; }
+.conference-schedules.timetable.vertical-narrow .time-1700 {
+  top: 1000px; }
 .conference-schedules.timetable.vertical-narrow .time-1715 {
   top: 1030px; }
+.conference-schedules.timetable.vertical-narrow .time-1730 {
+  top: 1060px; }
+.conference-schedules.timetable.vertical-narrow .time-1745 {
+  top: 1090px; }
+.conference-schedules.timetable.vertical-narrow .time-1800 {
+  top: 1120px; }
 .conference-schedules.timetable.vertical-narrow .time-1815 {
   top: 1150px; }
 .conference-schedules.timetable.vertical-narrow .time-1830 {
@@ -650,28 +701,78 @@ body#schedule > .page > .container {
   height: 630px; }
 .conference-schedules.timetable.vertical .time-0900 {
   top: 40px; }
+.conference-schedules.timetable.vertical .time-0915 {
+  top: 55px; }
 .conference-schedules.timetable.vertical .time-0930 {
   top: 70px; }
 .conference-schedules.timetable.vertical .time-0945 {
   top: 85px; }
+.conference-schedules.timetable.vertical .time-1000 {
+  top: 100px; }
+.conference-schedules.timetable.vertical .time-1015 {
+  top: 115px; }
 .conference-schedules.timetable.vertical .time-1030 {
   top: 130px; }
+.conference-schedules.timetable.vertical .time-1045 {
+  top: 145px; }
+.conference-schedules.timetable.vertical .time-1100 {
+  top: 160px; }
 .conference-schedules.timetable.vertical .time-1115 {
   top: 175px; }
+.conference-schedules.timetable.vertical .time-1130 {
+  top: 190px; }
+.conference-schedules.timetable.vertical .time-1145 {
+  top: 205px; }
+.conference-schedules.timetable.vertical .time-1200 {
+  top: 220px; }
 .conference-schedules.timetable.vertical .time-1215 {
   top: 235px; }
+.conference-schedules.timetable.vertical .time-1230 {
+  top: 250px; }
+.conference-schedules.timetable.vertical .time-1245 {
+  top: 265px; }
 .conference-schedules.timetable.vertical .time-1300 {
   top: 280px; }
 .conference-schedules.timetable.vertical .time-1315 {
   top: 295px; }
+.conference-schedules.timetable.vertical .time-1330 {
+  top: 310px; }
+.conference-schedules.timetable.vertical .time-1345 {
+  top: 325px; }
+.conference-schedules.timetable.vertical .time-1400 {
+  top: 340px; }
+.conference-schedules.timetable.vertical .time-1415 {
+  top: 355px; }
 .conference-schedules.timetable.vertical .time-1430 {
   top: 370px; }
+.conference-schedules.timetable.vertical .time-1445 {
+  top: 385px; }
+.conference-schedules.timetable.vertical .time-1500 {
+  top: 400px; }
+.conference-schedules.timetable.vertical .time-1515 {
+  top: 415px; }
 .conference-schedules.timetable.vertical .time-1530 {
   top: 430px; }
+.conference-schedules.timetable.vertical .time-1545 {
+  top: 445px; }
+.conference-schedules.timetable.vertical .time-1600 {
+  top: 460px; }
+.conference-schedules.timetable.vertical .time-1615 {
+  top: 475px; }
 .conference-schedules.timetable.vertical .time-1630 {
   top: 490px; }
+.conference-schedules.timetable.vertical .time-1645 {
+  top: 505px; }
+.conference-schedules.timetable.vertical .time-1700 {
+  top: 520px; }
 .conference-schedules.timetable.vertical .time-1715 {
   top: 535px; }
+.conference-schedules.timetable.vertical .time-1730 {
+  top: 550px; }
+.conference-schedules.timetable.vertical .time-1745 {
+  top: 565px; }
+.conference-schedules.timetable.vertical .time-1800 {
+  top: 580px; }
 .conference-schedules.timetable.vertical .time-1815 {
   top: 595px; }
 .conference-schedules.timetable.vertical .time-1830 {

@@ -352,21 +352,55 @@ def billing(request):
         if not request.user.assopy_user.card_name:
             request.user.assopy_user.card_name = request.user.assopy_user.name()
         form = P3BillingData(instance=request.user.assopy_user)
-        
+
     return {
         'totals': totals,
         'form': form,
     }
 
-@render_to('p3/schedule.html')
-def schedule(request, conference):
+def _conference_timetables(conference):
+    """
+    Restituisce le TimeTable relative alla conferenza.
+    """
+    # Le timetable devono contenere sia gli eventi presenti nel db sia degli
+    # eventi "artificiali" del partner program
+
     sids = cmodels.Schedule.objects\
         .filter(conference=conference)\
-        .values_list('id', flat=True)
+        .values('id', 'date')
+
+    from conference.templatetags.conference import fare_blob
+    from conference.dataaccess import fares
+    partner = defaultdict(list)
+    for f in [ f for f in fares(conference) if f['ticket_type'] == 'partner' ]:
+        d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
+        t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
+        partner[d].append({
+            'duration': 60,
+            'name': f['name'],
+            'id': f['id'] * -1,
+            'abstract': f['description'],
+            'schedule_id': None,
+            'tags': set(['partner-program']),
+            'time': datetime.datetime.combine(d, t),
+            'tracks': ['partner0'],
+        })
+    tts = []
+    for row in sids:
+        tt = TimeTable2.fromSchedule(row['id'])
+        for e in partner[row['date']]:
+            e['schedule_id'] = row['id']
+            tt.addEvents([e])
+        tts.append((row['id'], tt))
+    return tts
+
+@render_to('p3/schedule.html')
+def schedule(request, conference):
+    tts = _conference_timetables(conference)
     return {
         'conference': conference,
-        'sids': sids,
-        'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
+        'sids': [ x[0] for x in tts ],
+        'timetables': tts,
     }
 
 def schedule_ics(request, conference, mode='conference'):

@@ -129,6 +129,7 @@ body#schedule > .page > .container {
 
     /* centra gli schedule (grazie al display di .schedule) */
     text-align: center;
+    width: 890px;
     .schedule {
         position: relative;
         /* serve a limitare la larghezza al contenuto*/
@@ -751,17 +752,42 @@ body#schedule > .page > .container {
     .duration-480 { height: $slot15*32; }
     .duration-630 { height: $slot15*42; }
     .time-0900 { top: $event0 + $slot15 * 0; }
+    .time-0915 { top: $event0 + $slot15 * 1; }
     .time-0930 { top: $event0 + $slot15 * 2; }
     .time-0945 { top: $event0 + $slot15 * 3; }
+    .time-1000 { top: $event0 + $slot15 * 4; }
+    .time-1015 { top: $event0 + $slot15 * 5; }
     .time-1030 { top: $event0 + $slot15 * 6; }
+    .time-1045 { top: $event0 + $slot15 * 7; }
+    .time-1100 { top: $event0 + $slot15 * 8; }
     .time-1115 { top: $event0 + $slot15 * 9; }
+    .time-1130 { top: $event0 + $slot15 * 10; }
+    .time-1145 { top: $event0 + $slot15 * 11; }
+    .time-1200 { top: $event0 + $slot15 * 12; }
     .time-1215 { top: $event0 + $slot15 * 13; }
+    .time-1230 { top: $event0 + $slot15 * 14; }
+    .time-1245 { top: $event0 + $slot15 * 15; }
     .time-1300 { top: $event0 + $slot15 * 16; }
     .time-1315 { top: $event0 + $slot15 * 17; }
+    .time-1330 { top: $event0 + $slot15 * 18; }
+    .time-1345 { top: $event0 + $slot15 * 19; }
+    .time-1400 { top: $event0 + $slot15 * 20; }
+    .time-1415 { top: $event0 + $slot15 * 21; }
     .time-1430 { top: $event0 + $slot15 * 22; }
+    .time-1445 { top: $event0 + $slot15 * 23; }
+    .time-1500 { top: $event0 + $slot15 * 24; }
+    .time-1515 { top: $event0 + $slot15 * 25; }
     .time-1530 { top: $event0 + $slot15 * 26; }
+    .time-1545 { top: $event0 + $slot15 * 27; }
+    .time-1600 { top: $event0 + $slot15 * 28; }
+    .time-1615 { top: $event0 + $slot15 * 29; }
     .time-1630 { top: $event0 + $slot15 * 30; }
+    .time-1645 { top: $event0 + $slot15 * 31; }
+    .time-1700 { top: $event0 + $slot15 * 32; }
     .time-1715 { top: $event0 + $slot15 * 33; }
+    .time-1730 { top: $event0 + $slot15 * 34; }
+    .time-1745 { top: $event0 + $slot15 * 35; }
+    .time-1800 { top: $event0 + $slot15 * 36; }
     .time-1815 { top: $event0 + $slot15 * 37; }
     .time-1830 { top: $event0 + $slot15 * 38; }
     .time-1930 { top: $event0 + $slot15 * 42; }
@@ -819,17 +845,42 @@ body#schedule > .page > .container {
     .duration-480 { height: $slot15*32; }
     .duration-630 { height: $slot15*42; }
     .time-0900 { top: $event0 + $slot15 * 0; }
+    .time-0915 { top: $event0 + $slot15 * 1; }
     .time-0930 { top: $event0 + $slot15 * 2; }
     .time-0945 { top: $event0 + $slot15 * 3; }
+    .time-1000 { top: $event0 + $slot15 * 4; }
+    .time-1015 { top: $event0 + $slot15 * 5; }
     .time-1030 { top: $event0 + $slot15 * 6; }
+    .time-1045 { top: $event0 + $slot15 * 7; }
+    .time-1100 { top: $event0 + $slot15 * 8; }
     .time-1115 { top: $event0 + $slot15 * 9; }
+    .time-1130 { top: $event0 + $slot15 * 10; }
+    .time-1145 { top: $event0 + $slot15 * 11; }
+    .time-1200 { top: $event0 + $slot15 * 12; }
     .time-1215 { top: $event0 + $slot15 * 13; }
+    .time-1230 { top: $event0 + $slot15 * 14; }
+    .time-1245 { top: $event0 + $slot15 * 15; }
     .time-1300 { top: $event0 + $slot15 * 16; }
     .time-1315 { top: $event0 + $slot15 * 17; }
+    .time-1330 { top: $event0 + $slot15 * 18; }
+    .time-1345 { top: $event0 + $slot15 * 19; }
+    .time-1400 { top: $event0 + $slot15 * 20; }
+    .time-1415 { top: $event0 + $slot15 * 21; }
     .time-1430 { top: $event0 + $slot15 * 22; }
+    .time-1445 { top: $event0 + $slot15 * 23; }
+    .time-1500 { top: $event0 + $slot15 * 24; }
+    .time-1515 { top: $event0 + $slot15 * 25; }
     .time-1530 { top: $event0 + $slot15 * 26; }
+    .time-1545 { top: $event0 + $slot15 * 27; }
+    .time-1600 { top: $event0 + $slot15 * 28; }
+    .time-1615 { top: $event0 + $slot15 * 29; }
     .time-1630 { top: $event0 + $slot15 * 30; }
+    .time-1645 { top: $event0 + $slot15 * 31; }
+    .time-1700 { top: $event0 + $slot15 * 32; }
     .time-1715 { top: $event0 + $slot15 * 33; }
+    .time-1730 { top: $event0 + $slot15 * 34; }
+    .time-1745 { top: $event0 + $slot15 * 35; }
+    .time-1800 { top: $event0 + $slot15 * 36; }
     .time-1815 { top: $event0 + $slot15 * 37; }
     .time-1830 { top: $event0 + $slot15 * 38; }
     .time-1930 { top: $event0 + $slot15 * 42; }
