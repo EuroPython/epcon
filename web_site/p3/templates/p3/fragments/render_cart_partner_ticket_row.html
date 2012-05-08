@@ -4,10 +4,9 @@
         <td>
             {{ f.name }}
             {% if f|fare_blob:"minimum" == "1" %}
-                <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]"><strong>(min booking required: details)</strong></a>
-            {% else %}
-                <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]">(details)</a>
+                <strong style="font-variant: small-caps;">min booking required</strong>
             {% endif %}
+            <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]" tabindex="-1">(details)</a>
             <div class="overlay" data-fare="{{ f.code }}"><h1>{{ f.name }}</h1>{{ f.description|safe }}</div>
         </td>
         <td>{{ f|fare_blob:"date"|as_datetime|date:"F jS, D" }}</td>
