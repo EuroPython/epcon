@@ -331,7 +331,6 @@ body#schedule > .page > .container {
     right: 0;
     bottom: 0; }
   .conference-schedules.timetable .event.exposed .status-bar {
-    background: cyan;
     height: 20px; }
   .conference-schedules.timetable .event .talk-level {
     color: white;
@@ -435,6 +434,9 @@ body#schedule > .page > .container {
       text-transform: lowercase; }
   .conference-schedules.timetable .event.partner-program .abstract {
     height: 260px; }
+  .conference-schedules.timetable .event.exposed.partner-program .status-bar {
+    background: #e7880f;
+    color: #301d1d; }
   .conference-schedules.timetable .event.interest-up {
     background: #d7f5fa; }
   .conference-schedules.timetable .event.interest-down {

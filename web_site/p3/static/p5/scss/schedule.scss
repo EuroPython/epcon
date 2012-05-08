@@ -437,7 +437,6 @@ body#schedule > .page > .container {
     }
     .event.exposed {
         .status-bar {
-            background: cyan;
             height: 20px;
         }
     }
@@ -608,6 +607,12 @@ body#schedule > .page > .container {
     .event.partner-program {
         .abstract {
             height: 260px;
+        }
+    }
+    .event.exposed.partner-program {
+        .status-bar {
+            background: $cPartners;
+            color: #301d1d;
         }
     }
 
