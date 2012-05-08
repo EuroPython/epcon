@@ -1556,6 +1556,10 @@ def assign_(context, varname, value):
     context[varname] = value
     return ""
 
+@register.filter
+def as_datetime(value, format="%Y/%m/%d"):
+    return datetime.strptime(value, format)
+
 @fancy_tag(register, takes_context=True)
 def user_votes(context, uid=None, conference=None, talk_id=None):
     if uid is None:
