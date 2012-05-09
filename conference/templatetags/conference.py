@@ -666,11 +666,11 @@ def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
         conference = settings.CONFERENCE
     data = dataaccess.sponsor(conference)
     if only_tags:
-        t = set(only_tags)
-        data = filter(lambda x: x['tags'] & t, data)
+        t = set((only_tags,))
+        data = filter(lambda x: len(x['tags'] & t)>0, data)
     if exclude_tags:
-        t = set(exclude_tags)
-        data = filter(lambda x: not (x['tags'] & t), data)
+        t = set((exclude_tags,))
+        data = filter(lambda x: len(x['tags'] & t)==0, data)
     return data
 
 @register.tag
