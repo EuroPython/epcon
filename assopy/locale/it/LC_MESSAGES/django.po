@@ -8,23 +8,27 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-28 14:02+0200\n"
-"PO-Revision-Date: 2011-05-11 15:42\n"
+"PO-Revision-Date: 2012-05-08 21:23\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
-"X-Translated-Using: django-rosetta 0.5.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Translated-Using: django-rosetta 0.6.6\n"
 
 #: forms.py:84
 msgid "First Name"
 msgstr "Nome"
 
 #: forms.py:85
-msgid "Please do not enter a company name here.<br />You will be able to specify billing details during the checkout."
-msgstr "Inserisci il tuo nome, non quello dell'azienda. Potrai specificare successivamente i dati di fatturazione."
+msgid ""
+"Please do not enter a company name here.<br />You will be able to specify "
+"billing details during the checkout."
+msgstr ""
+"Inserisci il tuo nome, non quello dell'azienda. Potrai specificare "
+"successivamente i dati di fatturazione."
 
 #: forms.py:88
 msgid "Last Name"
@@ -56,11 +60,11 @@ msgstr "twitter.com/ ... "
 
 #: models.py:178
 msgid "Skype"
-msgstr "Skype"
+msgstr "Skype ID"
 
 #: models.py:179
 msgid "Jabber"
-msgstr "GTalk"
+msgstr "Account GTalk"
 
 #: models.py:180
 msgid "Www"
@@ -71,8 +75,12 @@ msgid "Phone"
 msgstr "Telefono"
 
 #: models.py:184
-msgid "Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456"
-msgstr "Inserisci un numero al quale poterti contattare per comunicazioni urgenti. Il numero non sarà pubblicato. Usa il formato internazionale: <i>+39-333-1234567</i>"
+msgid ""
+"Enter a phone number where we can contact you in case of administrative "
+"issues.<br />Use the international format, eg: +39-055-123456"
+msgstr ""
+"Inserisci un numero al quale poterti contattare per comunicazioni urgenti. "
+"Il numero non sarà pubblicato. Usa il formato: <i>3331122444</i>"
 
 #: models.py:186
 msgid "Birthday"
@@ -107,8 +115,12 @@ msgid "Address and City"
 msgstr "Indirizzo di residenza / Sede Legale"
 
 #: models.py:197
-msgid "Insert the full address, including city and zip code. We will help you through google."
-msgstr "Inserisci l'indirizzo completo, includendo città e CAP. Verrai aiutato da Google premendo TAB."
+msgid ""
+"Insert the full address, including city and zip code. We will help you "
+"through google."
+msgstr ""
+"Inserisci l'indirizzo completo, includendo città e CAP. Verrai aiutato da "
+"Google premendo TAB."
 
 #: models.py:198 models.py:506
 msgid "City"
@@ -153,8 +165,12 @@ msgid "Activation required"
 msgstr "E' richiesta l'attivazione"
 
 #: templates/assopy/new_account_feedback.html:7
-msgid "your account is created, you need to activate it following the instruction sent to you by email at"
-msgstr "Il tuo account è stato creato, devi attivarlo seguendo le istruzioni che ti abbiamo inviato via mail su "
+msgid ""
+"your account is created, you need to activate it following the instruction "
+"sent to you by email at"
+msgstr ""
+"Il tuo account è stato creato, devi attivarlo seguendo le istruzioni che ti "
+"abbiamo inviato via mail su "
 
 #: templates/assopy/paypal_feedback_ok.html:12
 msgid "Waiting for Paypal response..."
@@ -232,15 +248,22 @@ msgid "Web access removed"
 msgstr "Accesso rimosso"
 
 #: templates/assopy/profile.html:102
-msgid "Cannot remove the requested item, please contact info@pycon.it for assistance"
-msgstr "Non posso cancellare l'oggetto richiesto, contattate info@bettersoftware.it per assistenza"
+msgid ""
+"Cannot remove the requested item, please contact info@pycon.it for "
+"assistance"
+msgstr ""
+"Non posso cancellare l'oggetto richiesto, contattate "
+"<b>info@bettersoftware.it</b> per assistenza"
 
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"
 msgstr "Aggiungi un account"
 
 #: templates/registration/login.html:52
-msgid "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere."
+msgid ""
+"You will be able to specify billing and personal info later; e.g.: you can "
+"use your personal Facebook account to buy tickets for your company and the "
+"Facebook name will not appear anywhere."
 msgstr ""
 "<p>Puoi fare login utilizzando uno dei tuoi account web attivi.</p>\n"
 "\n"
@@ -261,7 +284,8 @@ msgstr "Non hai un account?"
 
 #: templates/registration/password_reset_email.html:2
 msgid "You're receiving this e-mail because you requested a password reset"
-msgstr "Stai ricevendo questa mail perchè hai richiesto un reset della tua password"
+msgstr ""
+"Stai ricevendo questa mail perchè hai richiesto un reset della tua password"
 
 #: templates/registration/password_reset_email.html:3
 #, python-format
@@ -297,7 +321,9 @@ msgstr "(obbligatorio)"
 #~ msgid "save"
 #~ msgstr "Salva"
 
-#~ msgid "If you really really don't want to use an existing web account but you prefer a standard registration/login form,"
+#~ msgid ""
+#~ "If you really really don't want to use an existing web account but you "
+#~ "prefer a standard registration/login form,"
 #~ msgstr ""
 #~ "Se non hai mai partecipato a Better Software e non vuoi usare uno dei\n"
 #~ "tuoi account web, questa è la procedura per creare un nuovo profilo."
