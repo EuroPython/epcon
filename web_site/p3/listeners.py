@@ -6,6 +6,7 @@ from assopy.models import order_created, purchase_completed, ticket_for_user, us
 from conference.listeners import fare_price, fare_tickets
 from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save
 from email_template import utils
 
@@ -115,3 +116,57 @@ def create_hotel_tickets(sender, **kw):
             kw['params']['tickets'].append(t)
 
 fare_tickets.connect(create_hotel_tickets)
+
+# ridefinisco la user_tickets di assopy per includere i biglietti assegnati
+from assopy import dataaccess as cd
+_original = cd.user_tickets
+def _user_tickets(u):
+    data = _original(u)
+    # aggiungo ai biglietti già individuati l'email della persona a cui sono
+    # stati assegnati
+    from p3.models import TicketConference
+    tids = [ x['id'] for x in data ]
+    info = dict([
+        (x['ticket'], x['assigned_to'])
+        for x in TicketConference.objects\
+            .filter(ticket__in=tids)\
+            .exclude(assigned_to="")\
+            .values('ticket', 'assigned_to')])
+    for x in data:
+        try:
+            x['note'] = 'to: %s' % info[x['id']]
+        except KeyError:
+            continue
+
+    # aggiungo i biglietti assegnati all'utente
+    qs = Ticket.objects\
+        .filter(p3_conference__assigned_to__iexact=u.email)\
+        .order_by('-fare__conference')\
+        .select_related('fare')
+
+    from assopy.models import Order
+    def order(t):
+        try:
+            o = Order.objects\
+                .get(orderitem__ticket=t)
+        except models.Order.DoesNotExist:
+            return {}
+        return {
+            'code': o.code,
+            'created': o.created,
+            'url': reverse('admin:assopy_order_change', args=(o.id,)),
+        }
+    for t in qs:
+        data.append({
+            'id': t.id,
+            'type': t.ticket_type,
+            'fare': {
+                'code': t.fare.code,
+                'conference': t.fare.conference,
+                'recipient': t.fare.recipient_type,
+            },
+            'note': 'from: %s %s' % (t.user.first_name, t.user.last_name),
+            'order': order(t),
+        })
+    return data
+cd.user_tickets = _user_tickets
