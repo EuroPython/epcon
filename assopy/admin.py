@@ -393,6 +393,55 @@ class UserAdmin(admin.ModelAdmin):
         return render_to_response('admin/assopy/user/new_order.html', ctx, context_instance=template.RequestContext(request))
 admin.site.register(models.User, UserAdmin)
 
+from django.contrib.auth.models import User as aUser
+from django.contrib.auth.admin import UserAdmin as aUserAdmin
+
+admin.site.unregister(aUser)
+class AuthUserAdmin(aUserAdmin):
+    list_display = aUserAdmin.list_display + ('_doppelganger',)
+
+    def get_urls(self):
+        f = self.admin_site.admin_view
+        urls = patterns('',
+            url(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
+            #url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-user-order'),
+            url(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
+        )
+        return urls + super(AuthUserAdmin, self).get_urls()
+
+    def create_doppelganger(self, request, uid):
+        # user è l'utente corrente, quello che vuole creare un doppelganger.
+        # salvo nella sessione del nuovo utente i dati che mi servono per
+        # conoscere chi sta controllando il doppelganger.
+        user = request.user
+        udata = (user.id, '%s %s' % (user.first_name, user.last_name),)
+
+        from django.contrib import auth
+        auth.logout(request)
+        user = auth.authenticate(uid=uid)
+        auth.login(request, user)
+        request.session['doppelganger'] = udata
+
+        return http.HttpResponseRedirect(urlresolvers.reverse('assopy-tickets'))
+
+    def kill_doppelganger(self, request):
+        uid = request.session.pop('doppelganger')[0]
+
+        from django.contrib import auth
+        auth.logout(request)
+        user = auth.authenticate(uid=uid)
+        if user.is_superuser:
+            auth.login(request, user)
+        return http.HttpResponseRedirect('/')
+
+    def _doppelganger(self, o):
+        url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
+        return '<a href="%s">become this user</a>' % url
+    _doppelganger.allow_tags = True
+    _doppelganger.short_description = 'Doppelganger'
+
+admin.site.register(aUser, AuthUserAdmin)
+
 # Refund Admin
 # ------------
 # La form dei rimborsi permette di specificare le note di credito associate al
