@@ -404,7 +404,7 @@ class AuthUserAdmin(aUserAdmin):
         f = self.admin_site.admin_view
         urls = patterns('',
             url(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
-            #url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-user-order'),
+            url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-order'),
             url(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
         )
         return urls + super(AuthUserAdmin, self).get_urls()
@@ -433,6 +433,78 @@ class AuthUserAdmin(aUserAdmin):
         if user.is_superuser:
             auth.login(request, user)
         return http.HttpResponseRedirect('/')
+
+    @transaction.commit_on_success
+    def new_order(self, request, uid):
+        from assopy import forms as aforms
+        from conference.models import Fare
+        from conference.settings import CONFERENCE
+
+        user = get_object_or_404(models.User, user=uid)
+
+        class FormTickets(aforms.FormTickets):
+            coupon = forms.CharField(label='Coupon(s)', required=True)
+            country = forms.CharField(max_length=2, required=False)
+            address = forms.CharField(max_length=150, required=False)
+            card_name = forms.CharField(max_length=200, required=True, initial=user.card_name or user.name())
+            billing_notes = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
+            remote = forms.BooleanField(required=False, initial=True, help_text='debug only, fill the order on the remote backend')
+            def __init__(self, *args, **kwargs):
+                super(FormTickets, self).__init__(*args, **kwargs)
+                self.fields['payment'].choices = (('admin', 'Admin'),) + tuple(self.fields['payment'].choices)
+                self.fields['payment'].initial = 'admin'
+
+            def available_fares(self):
+                return Fare.objects.available(conference=CONFERENCE)
+
+            def clean_country(self):
+                data = self.cleaned_data.get('country')
+                if data:
+                    try:
+                        data = models.Country.objects.get(pk=data)
+                    except models.Country.DoesNotExist:
+                        raise forms.ValidationError('Invalid country: %s' % data)
+                return data
+
+            def clean_coupon(self):
+                data = self.cleaned_data.get('coupon')
+                output = []
+                if data:
+                    for c in data.split(' '):
+                        try:
+                            output.append(models.Coupon.objects.get(conference=CONFERENCE, code=c))
+                        except models.Coupon.DoesNotExist:
+                            raise forms.ValidationError('invalid coupon "%s"' % c)
+                if self.cleaned_data.get('payment') == 'admin':
+                    for c in output:
+                        if c.value != '100%':
+                            raise forms.ValidationError('admin orders must have a 100% discount coupon')
+                return output
+
+        if request.method == 'POST':
+            form = FormTickets(data=request.POST)
+            if form.is_valid():
+                data = form.cleaned_data
+                # non salvo l'utente per non sovrascrivere il suo card_name
+                user.card_name = data['card_name']
+                models.Order.objects.create(
+                    user=user,
+                    payment=data['payment'], 
+                    items=data['tickets'],
+                    billing_notes=data['billing_notes'],
+                    coupons=data['coupon'],
+                    remote=data['remote'],
+                    country=data['country'],
+                    address=data['address'],
+                )
+                return redirect('admin:auth_user_change', user.user_id,)
+        else:
+            form = FormTickets()
+        ctx = {
+            'user': user,
+            'form': form,
+        }
+        return render_to_response('admin/auth/user/new_order.html', ctx, context_instance=template.RequestContext(request))
 
     def _doppelganger(self, o):
         url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
