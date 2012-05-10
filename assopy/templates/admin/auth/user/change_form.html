@@ -89,8 +89,8 @@
                     <td>{{ x.complete }}</td>
                     <td>{{ x.created }}</td>
                     <td>{{ x.method }}</td>
-                    <td>{{ x.total.gross }}</td>
-                    <td>{{ x.total.net }}</td>
+                    <td style="text-align: right;">{{ x.total.gross }}</td>
+                    <td style="text-align: right;">{{ x.total.net }}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -109,7 +109,6 @@
                     <th>Used</th>
                     <th>Orders</th>
                 </tr>
-                {{ d.0.keys }}
                 {% for x in d %}
                 <tr>
                     <td><a href="{{ x.url }}">{{ x.code }}</a></td>
