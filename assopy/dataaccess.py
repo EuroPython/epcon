@@ -11,7 +11,7 @@ cache_me = cachef.CacheFunction(prefix='assopy:')
 def user_data(u):
     return {
         'name': '%s %s' % (u.first_name, u.last_name),
-        'email': u.email
+        'email': u.email,
     }
 
 def user_identities(u):
@@ -56,6 +56,10 @@ def user_orders(u):
         'created': o.created,
         'method': o.method,
         'complete': o._complete,
+        'billing': {
+            'address': o.address,
+            'notes': o.billing_notes,
+        },
         'total': {
             'gross': o.total(apply_discounts=False),
             'net': o.total(),

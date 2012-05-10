@@ -82,6 +82,7 @@
                     <th>Method</th>
                     <th>Total (gross)</th>
                     <th>Total (net)</th>
+                    <th>Billing notes/address</th>
                 </tr>
                 {% for x in d %}
                 <tr>
@@ -91,6 +92,11 @@
                     <td>{{ x.method }}</td>
                     <td style="text-align: right;">{{ x.total.gross }}</td>
                     <td style="text-align: right;">{{ x.total.net }}</td>
+                    <td>
+                        <span>{{ x.billing.notes }}</span>
+                        <a href="#" onclick="django.jQuery(this).hide().next().show(); return false;">Show address</a>
+                        <div style="display: none; margin-top: 10px;">{{ x.billing.address }}</div>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>
