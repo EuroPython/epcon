@@ -810,10 +810,4 @@ def user_profile(request, slug, profile=None, full_access=False):
 @login_required
 def myself_profile(request):
     p = models.AttendeeProfile.objects.getOrCreateForUser(request.user)
-    slug = p.slug
-    if not slug:
-        # Talvolta un user ha lo slug nel caso lo aggiono
-        slug = models.AttendeeProfile.objects.findSlugForUser(p.user)
-        p.slug = slug
-        p.save()
     return redirect('conference-profile', slug=p.slug)
