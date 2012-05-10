@@ -3,8 +3,7 @@
 {% for slug, group in fares %}
     <div class="event">
     {% with group.0 as fare0 %}
-        <h3 id="{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span> <a href="/partner-program/#{{ fare0.name|slugify }}">¶</a><a href="#" class="share" style="float: right;">Share this</a></h3>
-        <p><img src="https://ep2012.europython.eu/media/uploads/{{ fare0.code|lower }}.jpg" style="border: 4px solid #e1dbc5;"></p>
+        <h2 id="{{ fare0.name|slugify }}" class="name"><a href="/partner-program/#{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span></a><a href="#" class="share" style="float: right;">Share this</a></h2>
         <div>{{ fare0.description|safe }}</div>
         <ul>
             <li>Cost per person: <strong>€{{ fare0|fare_blob:"prezzo" }}</strong></li>

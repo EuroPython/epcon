@@ -1820,3 +1820,20 @@ section.countdown {
 .after-ellipsis {
     display: none;
 }
+
+.partner-program .event h3 {
+    margin-bottom: 10px;
+}
+.partner-program h2 {
+    text-transform: none;
+    font-size: 21px;
+    color: #301d1d !important;
+}
+.partner-program h2.name {
+    text-transform: uppercase;
+    margin: 40px 0 20px 0;
+}
+
+.partner-program h2.name a {
+    color: #4895a3;
+}
