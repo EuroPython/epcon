@@ -343,39 +343,21 @@ class AttendeeProfile(models.Model):
 post_save.connect(postSaveResizeImageHandler, sender=AttendeeProfile)
 
 class SpeakerManager(models.Manager):
-    def createFromName(self, name, user=None):
+    def byConference(self, conf, only_accepted=True):
         """
-        Crea uno speaker, collegandolo all'utente passato, calcolando uno slug
-        univoco per il nome passato.
+        Ritorna tutti gli speaker della conferenza
         """
-        slug = slugify(name)
-        speaker = Speaker()
-        cursor = connection.cursor()
-        # qui ho bisogno di impedire che altre connessioni possano leggere il
-        # db fino a quando non ho finito
-        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
-        # È importante assicurarsi che la transazione venga chiusa, con successo
-        # o fallimento, il prima possibile
-        try:
-            count = 0
-            check = slug
-            while True:
-                if self.filter(slug=check).count() == 0:
-                    break
-                count += 1
-                check = '%s-%d' % (slug, count)
-            speaker.name = name
-            speaker.slug = check
-            speaker.user = user
-            speaker.save()
-        except:
-            transaction.rollback()
-            raise
-        else:
-            transaction.commit()
-        return speaker
+        qs = TalkSpeaker.objects\
+            .filter(talk__conference=conf)\
+            .values('speaker')
+        if only_accepted:
+            qs = qs.filter(talk__status='accepted')
+        return Speaker.objects.filter(user__in=qs)
+
 class Speaker(models.Model, UrlMixin):
     user = models.OneToOneField('auth.User', primary_key=True)
+
+    objects = SpeakerManager()
 
     def __unicode__(self):
         return '%s %s' % (self.user.first_name, self.user.last_name)
