@@ -233,27 +233,27 @@ body#schedule > .page > .container {
       border: 4px dashed transparent;
       border-radius: 8px;
       font-size: 10px;
-      color: orange;
+      color: #e7880f;
       line-height: 13px; }
       .conference-schedules.timetable .schedule .track[data-track=training1] .event .info:first-line, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info:first-line {
         font-size: 20px; }
-    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.available, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.available {
-      color: #738023;
-      border-color: #738023; }
-    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.booked, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.booked {
-      color: #e7c30f;
-      border-color: #e7c30f; }
-    .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.sold-out, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.sold-out {
-      color: #da2300;
-      border-color: #da2300; }
+      .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.available, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.available {
+        color: #738023;
+        border-color: #738023; }
+      .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.booked, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.booked {
+        color: #e7c30f;
+        border-color: #e7c30f; }
+      .conference-schedules.timetable .schedule .track[data-track=training1] .event .info.sold-out, .conference-schedules.timetable .schedule .track[data-track=training2] .event .info.sold-out {
+        color: #da2300;
+        border-color: #da2300; }
     .conference-schedules.timetable .schedule .track[data-track=track-ita] .title {
       background-image: url("img/arrow.png"), url("img/italian_track.jpg");
       background-position: bottom center, left top;
       background-repeat: no-repeat; }
     .conference-schedules.timetable .schedule .track[data-track=partner0] .title, .conference-schedules.timetable .schedule .track[data-track=partner1] .title, .conference-schedules.timetable .schedule .track[data-track=partner2] .title {
-      background-color: #e7880f; }
+      background-color: #ff93c9; }
     .conference-schedules.timetable .schedule .track[data-track=partner0] .event, .conference-schedules.timetable .schedule .track[data-track=partner1] .event, .conference-schedules.timetable .schedule .track[data-track=partner2] .event {
-      border-right: 2px solid #e7880f; }
+      border-right: 2px solid #ff93c9; }
     .conference-schedules.timetable .schedule .track[data-track=partner0] .event .info, .conference-schedules.timetable .schedule .track[data-track=partner1] .event .info, .conference-schedules.timetable .schedule .track[data-track=partner2] .event .info {
       font-weight: bold;
       float: right;
@@ -262,7 +262,7 @@ body#schedule > .page > .container {
       border-right: 4px solid gold; }
     .conference-schedules.timetable .schedule .track .event.special {
       border-left: none; }
-    .conference-schedules.timetable .schedule .track .event.keynote .speakers, .conference-schedules.timetable .schedule .track .event.special .speakers {
+    .conference-schedules.timetable .schedule .track .event.keynote .speakers {
       border-bottom: none; }
   .conference-schedules.timetable .event a {
     border: none; }
@@ -401,16 +401,20 @@ body#schedule > .page > .container {
       background: #ABA18F; }
     .conference-schedules.timetable .event .book-event .restricted {
       background: #ABA18F; }
-  .conference-schedules.timetable .event.keynote, .conference-schedules.timetable .event.special {
+  .conference-schedules.timetable .EXT_special_event_basic_style, .conference-schedules.timetable .event.keynote, .conference-schedules.timetable .event.special {
     height: 100%;
     text-align: center;
     padding-top: 20px; }
-    .conference-schedules.timetable .event.keynote h3, .conference-schedules.timetable .event.special h3 {
+    .conference-schedules.timetable .EXT_special_event_basic_style h3, .conference-schedules.timetable .event.keynote h3, .conference-schedules.timetable .event.special h3 {
       font-size: 13px;
       font-variant: small-caps;
       display: inline;
       padding: 7px;
       border: 1px dotted #878181; }
+  .conference-schedules.timetable .event.keynote {
+    background-color: #d3db9c; }
+    .conference-schedules.timetable .event.keynote h3 {
+      background-color: white; }
   .conference-schedules.timetable .event.special {
     background-color: rgba(225, 219, 197, 0.6);
     background-image: url(../i/empty-track.png);
@@ -426,9 +430,9 @@ body#schedule > .page > .container {
           font-size: inherit; }
         .conference-schedules.timetable .event.special h3 .hhmm:after {
           content: " - "; }
-  .conference-schedules.timetable .event.keynote.exposed, .conference-schedules.timetable .exposed.event.special {
+  .conference-schedules.timetable .event.keynote.exposed {
     text-align: left; }
-    .conference-schedules.timetable .event.keynote.exposed .name, .conference-schedules.timetable .exposed.event.special .name {
+    .conference-schedules.timetable .event.keynote.exposed .name {
       border: 0;
       padding: 0; }
   .conference-schedules.timetable .event.poster h3 {
@@ -453,7 +457,7 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event.partner-program .abstract {
     height: 260px; }
   .conference-schedules.timetable .event.exposed.partner-program .status-bar {
-    background: #e7880f;
+    background: #ff93c9;
     color: #301d1d; }
   .conference-schedules.timetable .event.interest-up {
     background: #d7f5fa; }
@@ -720,7 +724,8 @@ body#schedule > .page > .container {
        * sinistra (utile perché la colonna partner-program è sulla destra
        * dello schedule)
        */
-      right: 0; }
+      right: 0;
+      background-color: #fff0ef; }
     .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1], .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1], .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1] {
       width: 75px; }
       .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1].left-intersection-0, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1].left-intersection-0, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1].left-intersection-0 {

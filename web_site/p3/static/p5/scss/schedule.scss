@@ -11,11 +11,14 @@
  */
 $cYellow: #FCFAD9;
 $cBrown: #99886a;
-$cOrange: #ffb871;
+$cOrange: #e7880f;
 $cGreen: #d0d8bb;
+$cGreenLight: #D3DB9C;
 $cGray: #878181;
 $cPetrol: #4895A3;
 $cBeige: #e1dbc5;
+$cPink: #ff93c9;
+$cPinkLight: #FFF0EF;
 $cWhite: #ffffff;
 $cBeginner: #738023;
 $cIntermediate: #e7c30f;
@@ -26,11 +29,12 @@ $cAvailable: $cBeginner;
 $cBooked: $cIntermediate;
 $cSoldout: $cAdvanced;
 
-
-$cPartners: #e7880f;
+$cPartners: $cPink;
+$cPartnersBackground: $cPinkLight;
 
 $cSprint: #a9cb0f;
-$cTraining: #a4d4d4; 
+$cTraining: #a4d4d4;
+$cKeynoteBackground: $cGreenLight; 
 
 .box-sizing{
     -moz-box-sizing: border-box;
@@ -279,23 +283,23 @@ body#schedule > .page > .container {
                     border: 4px dashed transparent;
                     border-radius: 8px;
                     font-size: 10px;
-                    color: orange;
+                    color: $cOrange;
                     line-height: 13px;
                     &:first-line{
                         font-size: 20px;                        
                     }
-                }
-                .info.available{
-                    color: $cAvailable;
-                    border-color: $cAvailable;
-                }
-                .info.booked{
-                    color: $cBooked;
-                    border-color: $cBooked;
-                }
-                .info.sold-out{
-                    color: $cSoldout;
-                    border-color: $cSoldout;
+                    &.available{
+                        color: $cAvailable;
+                        border-color: $cAvailable;                        
+                    }
+                    &.booked{
+                        color: $cBooked;
+                        border-color: $cBooked;
+                    }
+                    &.sold-out{
+                        color: $cSoldout;
+                        border-color: $cSoldout;
+                    }
                 }
             }
         }
@@ -562,7 +566,7 @@ body#schedule > .page > .container {
      * - registration
      */
 
-    .event.keynote {
+     .EXT_special_event_basic_style{
         height: 100%;
         text-align: center;
         padding-top: 20px;
@@ -572,11 +576,19 @@ body#schedule > .page > .container {
             display: inline;
             padding: 7px;
             border: 1px dotted $cGray;
+        }        
+     }
+
+    .event.keynote {
+        @extend .EXT_special_event_basic_style;
+        background-color: $cKeynoteBackground;
+        h3{
+            background-color: $cWhite;
         }
     }
 
     .event.special {
-        @extend .event.keynote;
+        @extend .EXT_special_event_basic_style;
         background-color: rgba($cBeige, .6);
         background-image: url(../i/empty-track.png);
         backround-position: bottom left;
@@ -878,6 +890,7 @@ body#schedule > .page > .container {
              * dello schedule)
              */
             right: 0;
+            background-color: $cPartnersBackground;
         }
         /*
          * l'attributo data-intersection indica il livello di overlap, o1
