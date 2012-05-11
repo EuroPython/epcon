@@ -236,6 +236,7 @@ def talk(request, slug, talk, full_access, talk_form=None):
         form = talk_form(data=data, files=request.FILES, instance=talk)
         if form.is_valid():
             talk = form.save()
+            messages.info(request, 'Your talk has been modified.')
             return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': talk.slug}))
     else:
         form = talk_form(instance=talk)

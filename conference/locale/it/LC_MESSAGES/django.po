@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-02-24 13:13+0100\n"
-"PO-Revision-Date: 2011-04-09 12:30\n"
+"PO-Revision-Date: 2012-05-08 21:40\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
-"X-Translated-Using: django-rosetta 0.5.1\n"
+"X-Translated-Using: django-rosetta 0.6.6\n"
 
 #: forms.py:10 forms.py:135
 msgid "Job title"
@@ -42,32 +42,44 @@ msgid "Compact biography"
 msgstr "Breve biografia"
 
 #: forms.py:19 forms.py:136
-msgid "Please enter a short biography (one or two paragraphs). Do not paste your CV!"
-msgstr "Inserisci una tua breve biografia di 2/3 paragrafi. La biografia sarà visibile al pubblico una volta che il tuo talk sarà approvato. Per favore <b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e <b>P</b> per formattare il tuo testo."
+msgid ""
+"Please enter a short biography (one or two paragraphs). Do not paste your "
+"CV!"
+msgstr ""
+"Inserisci una tua breve biografia di 2/3 paragrafi. La biografia sarà "
+"visibile al pubblico una volta che il tuo talk sarà approvato. Per favore "
+"<b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e"
+" <b>P</b> per formattare il tuo testo."
 
 #: forms.py:23
 msgid "Previous experience"
-msgstr "Precedenti esperienze"
+msgstr "Precedenti esperienze come speaker"
 
 #: forms.py:24
 msgid "List yout previous experiences"
-msgstr "Inserisci una o più esperienze di intervento come speaker in conferenze che ritieni importanti (<i>nome conferenza, anno, argomento del talk</i>)"
+msgstr ""
+"Inserisci una o più esperienze di intervento come speaker in conferenze che "
+"ritieni significative (<i>nome conferenza, anno, argomento del talk</i>)"
 
 #: forms.py:28
 msgid "Last year talks"
-msgstr "Talk nel 2010"
+msgstr "N° talk tenuti nel 2011"
 
 #: forms.py:29
 msgid "How many talks you have held during the last year?"
-msgstr "Inserisci, se ne hai tenuti, il numero dei talk effettuati in altre conferenze nel 2010."
+msgstr ""
+"Inserisci, se ne hai tenuti, il numero dei talk effettuati in altre "
+"conferenze nel 2011."
 
 #: forms.py:33
 msgid "Maximum audience"
-msgstr "Platea massima"
+msgstr "Platea massima raggiunta"
 
 #: forms.py:34
 msgid "Specify the size of your biggest audience"
-msgstr "Il numero massimo di partecipanti ad una conferenza davanti ai quali hai già tenuto un intervento. "
+msgstr ""
+"Il numero massimo di partecipanti ad una conferenza davanti ai quali hai "
+"tenuto un intervento in una diversa conferenza."
 
 #: forms.py:38 forms.py:150
 msgid "Talk title"
@@ -78,16 +90,24 @@ msgid "Training"
 msgstr "Training"
 
 #: forms.py:41 forms.py:153
-msgid "Check if you are willing to also deliver a 4-hours hands-on training on this subject.<br />See the Call for paper for details."
-msgstr "Check Training se sei disponibile a tenere un approfondimento sull'argomento con una audience selezionata su prenotazione."
+msgid ""
+"Check if you are willing to also deliver a 4-hours hands-on training on this"
+" subject.<br />See the Call for paper for details."
+msgstr ""
+"Check Training se sei disponibile a tenere un approfondimento sull'argomento"
+" con una audience selezionata su prenotazione."
 
 #: forms.py:44 forms.py:162
 msgid "Talk Type"
-msgstr "Tipo talk"
+msgstr "Tipo di intervento"
 
 #: forms.py:45
 msgid "Talk Type description"
-msgstr "<b>Standard Talk</b>: è il classico talk con slide e Q&A finali. <b>Sessione Interattiva</b>: una sessione ad alta interazione con una platea ridotta (20/30 persone), in cui approfondire l'argomento con esempi e casi reali."
+msgstr ""
+"<b>Talk</b>: è il classico intervento con slide, tempo prestabilito e Q&A "
+"finali. <b>Poster</b>: un modo innovativo per presentare i vostri progetti e"
+" il vostro know-how in una conferenza, preparando un poster di grande "
+"formato e spiegandolo direttamente alle persone."
 
 #: forms.py:50 forms.py:156
 msgid "Suggested duration"
@@ -95,31 +115,49 @@ msgstr "Durata prevista"
 
 #: forms.py:51 forms.py:157
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
-msgstr "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al pubblico per eventuali domande finali. <b>Sessione Interattiva</b>: non influente, specificate direttamente nell'abstract."
+msgstr ""
+"<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al "
+"pubblico per eventuali domande finali. <b>Poster</b>: non influente, il "
+"poster sarà sempre a disposizione dei partecipanti."
 
 #: forms.py:56 forms.py:167
 msgid "Select Italian only if you are not comfortable in speaking English."
-msgstr "Seleziona Italiano solo se non sei in grado di tenere un intervento in Inglese."
+msgstr ""
+"Seleziona Italiano solo se non sei in grado di tenere un intervento in "
+"Inglese."
 
 #: forms.py:59 forms.py:170
 msgid "Audience level"
-msgstr "Audience"
+msgstr "Livello del pubblico"
 
 #: forms.py:63 forms.py:173
 msgid "Talk abstract"
 msgstr "Abstract del talk"
 
 #: forms.py:64 forms.py:174
-msgid "<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>"
-msgstr "Inserisci una breve descrizione dell'intervento che intendi proporre. Particolarmente utile specificare gli obiettivi del talk e se si presentano esperienze dirette e case study. La dimensione consigliata sono 4/5 paragrafi."
+msgid ""
+"<p>Please enter a short description of the talk you are submitting. Be sure "
+"to includes the goals of your talk and any prerequisite required to fully "
+"understand it.</p><p>Suggested size: two or three paragraphs.</p>"
+msgstr ""
+"Inserisci una breve descrizione dell'intervento che intendi proporre. "
+"Particolarmente utile specificare gli obiettivi del talk e se si presentano "
+"esperienze dirette e case study. La dimensione consigliata sono 4/5 "
+"paragrafi."
 
 #: forms.py:67 forms.py:177
 msgid "Promo video"
-msgstr "Video presentazione Talk"
+msgstr "Video di presentazione"
 
 #: forms.py:68 forms.py:178
 msgid "Promo video description"
-msgstr "Url del video di presentazione del talk condiviso su Youtube. Il video deve essere <b>pubblico</b> e taggato <b>bsw2011</b>. <a href=\"http://www.bettersoftware.it/blog/2011/02/24/call-paper-2011\">More &rarr;</a>"
+msgstr ""
+"URL del video di presentazione del talk condiviso su Youtube. Il video deve "
+"essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
+"l'accettazione dei talk, verranno condivisi sul sito web nella pagina "
+"pubblica dello speaker. <a "
+"href=\"http://www.bettersoftware.it/blog/2011/02/24/call-paper-2011\">More "
+"&rarr;</a>"
 
 #: forms.py:147
 msgid "Presentation"
@@ -212,7 +250,7 @@ msgstr "email"
 
 #: templates/conference/render_place.html:20
 msgid "url"
-msgstr "url"
+msgstr "URL"
 
 #: templates/conference/render_place.html:26
 msgid "price"

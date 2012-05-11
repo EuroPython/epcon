@@ -48,13 +48,20 @@ def navigation(lang, page_type):
     return pages
 
 def _i_navigation(sender, **kw):
-    page = kw['instance']
-    languages = page.get_languages()
+    if sender is Page:
+        page = kw['instance']
+        
+    elif sender is TaggedItem:
+        item = kw['instance']
+        if not isinstance(item.content_object, Page):
+            return []
+        page = item.content_object
     tags = page.tags.all().values_list('name', flat=True)
+    languages = page.get_languages()
     return [ 'nav:%s:%s' % (l, t) for l in languages for t in tags ]
 
 navigation = cache_me(
-    models=(Page,),
+    models=(Page,TaggedItem),
     key='nav:%(lang)s:%(page_type)s')(navigation, _i_navigation)
 
 def _i_deadlines(sender, **kw):
