@@ -391,7 +391,7 @@ function highlighter(mode, option) {
             if(value.available > 0) {
                 evt.append(''
                     + '<div class="info available minimized">'
-                    + 'BOOK IT<br/><span title="let me do the math for you: ' + value.available + '">0x' + value.available.toString(16) + '</span> LEFT'
+                    + 'BOOK IT<br/><span title="Are you still doing the math instead of booking? Only ' + value.available + ' seats are availables; book your seat now!">0x' + value.available.toString(16) + '</span> LEFT'
                     + '</div>');
             }
             else {
