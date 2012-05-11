@@ -921,7 +921,7 @@ def on_refund_changed(sender, **kw):
         utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
     except Http404:
         pass
-    uid = items[0].order.user.id
+    uid = items[0].order.user.user_id
     order = items[0].order
     mail_items = '\n'.join([ u' * %s - € %s' % (x.description, x.price) for x in items ])
     if sender.status == 'pending':

@@ -87,7 +87,7 @@ class OrderAdmin(admin.ModelAdmin):
         return actions
 
     def _user(self, o):
-        url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.id,))
+        url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.user_id,))
         return '<a href="%s">%s</a>' % (url, o.user.name())
     _user.short_description = 'buyer'
     _user.allow_tags = True
@@ -249,7 +249,7 @@ class CouponAdmin(admin.ModelAdmin):
     def _user(self, o):
         if not o.user:
             return ''
-        url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.id,))
+        url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.user_id,))
         return '<a href="%s">%s</a> (<a href="mailto:%s">email</a>)' % (url, o.user.name(), o.user.user.email)
     _user.short_description = 'user'
     _user.allow_tags = True
