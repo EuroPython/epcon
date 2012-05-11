@@ -289,9 +289,13 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     else:
         return stats[0]['count']
 
-def CONFERENCE_ADMIN_STATS(conference, stat=None):
-    from p3.utils import conference_stats
-    return conference_stats(conference, stat)
+CONFERENCE_ADMIN_STATS = (
+    'p3.stats.tickets_status',
+    'p3.stats.speaker_status',
+    'p3.stats.presence_days',
+    'p3.stats.shirt_sizes',
+    'p3.stats.diet_types',
+)
 
 CONFERENCE_TICKET_BADGE_ENABLED = True
 def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
