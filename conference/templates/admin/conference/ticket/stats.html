@@ -1,5 +1,19 @@
 {% extends "admin/base_site.html" %}
+{% load conference %}
 
+{% block extrahead %}
+<style>
+.stat {
+    margin-bottom: 20px;
+}
+.stat table td {
+    text-align: right;
+}
+.stat table .title {
+    width: 300px;
+}
+</style>
+{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
      <a href="../../../">Home</a> &rsaquo;
@@ -8,17 +22,44 @@
      stats
 </div>
 {% endblock %}{% block content %}
-<form action="{% url admin:conference-ticket-stats %}" method="GET">
-    {{ form }}
-    <input type="submit" />
-</form>
-<table>
-{% for v in stats|dictsort:"title" %}
-<tr>
-    <th>{{ v.title }}</th>
-    <td>{{ v.count }}</td>
-    <td>{{ v.additional_info.text }}</td>
-</tr>
-{% endfor %}
-</table>
+<div>
+    <form action="{% url admin:conference-ticket-stats %}" method="GET">
+        {{ form }}
+        <input type="submit" />
+    </form>
+    {% for s in stats %}
+    <div class="stat">
+        <h1>{{ s.short_description }}</h1>
+        {% if s.description %}
+        <h2>{{ s.description }}</h2>
+        {% endif %}
+        {% with s.get_data as results %}
+        <table>
+            <thead>
+                <tr>
+                    <th class="title">Title</th>
+                    {% for colid, colname in results.columns %}
+                    <th class="{{ colid }}">{{ colname|safe }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results.data %}
+                <tr>
+                    <th>
+                        {{ row.title }}
+                        {% if row.id %} <a href="{% url admin:conference-ticket-stats-details %}?conference={{ conference }}&code={{ results.id }}.{{ row.id }}">(details)</a>{% endif %}
+                    </th>
+                    {% for colid, colname in results.columns %}
+                    <td>{{ row|attrib_:colid }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endwith %}
+    </div>
+    {% endfor %}
+    {{ stats }}
+</div>
 {% endblock %}

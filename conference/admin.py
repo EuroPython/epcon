@@ -773,7 +773,7 @@ class FareAdmin(admin.ModelAdmin):
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(FareAdmin,self).changelist_view(request, extra_context=extra_context)
-    
+
 admin.site.register(models.Fare, FareAdmin)
 
 class TicketAdmin(admin.ModelAdmin):
@@ -825,35 +825,84 @@ class TicketAdmin(admin.ModelAdmin):
     do_ticket_badge.short_description = 'Ticket Badge'
 
     def get_urls(self):
-        urls = super(TicketAdmin, self).get_urls()
-        my_urls = patterns('',
-            url(r'^stats/$', self.admin_site.admin_view(self.stats_list), name='conference-ticket-stats'),
+        f = self.admin_site.admin_view
+        urls = patterns('',
+            url(r'^stats/$', f(self.stats_list), name='conference-ticket-stats'),
+            url(r'^stats/details$', f(self.stats_details), name='conference-ticket-stats-details'),
         )
-        return my_urls + urls
+        return urls + super(TicketAdmin, self).get_urls()
 
-    def stats(self, conference, stat=None):
-        return settings.ADMIN_STATS(conference, stat=stat)
+    def _stat_wrapper(self, func, conf):
+        def wrapper(*args, **kwargs):
+            result = func(conf, *args, **kwargs)
+            if 'columns' not in result:
+                result = {
+                    'columns': (
+                        ('total', 'Total'),
+                    ),
+                    'data': result,
+                }
+            result['id'] = wrapper.stat_id
+            return result
+        wrapper.stat_id = func.__name__
+        return wrapper
+
+    def available_stats(self, conf):
+        stats = []
+        for path in settings.ADMIN_STATS:
+            func = utils.dotted_import(path)
+            w = {
+                'get_data': self._stat_wrapper(func, conf),
+                'short_description': getattr(func, 'short_description', func.__name__.replace('_', ' ').strip()),
+                'description': getattr(func, 'description', func.__doc__),
+            }
+            stats.append(w)
+        return stats
+
+    def single_stat(self, conf, sid, code):
+        for s in self.available_stats(conf):
+            if s['get_data'].stat_id == sid:
+                r = s['get_data']
+                s['get_data'] = lambda: r(code=code)
+                return s
 
     def stats_list(self, request):
         class FormConference(forms.Form):
             conference = forms.ChoiceField(
-                choices=models.Conference.objects.all().values_list('code', 'name'),
-                required=False
+                choices=models.Conference.objects.all().values_list('code', 'name').order_by('-code'),
+                required=False,
             )
+
         form = FormConference(data=request.GET)
+
         stats = []
         if form.is_valid():
-            conference = form.cleaned_data['conference'] or settings.CONFERENCE
-            stats = self.stats(conference)
+            conf = form.cleaned_data['conference'] or settings.CONFERENCE
+            stats = self.available_stats(conf)
         else:
-            stats = []
+            conf = ''
 
-        ctx = {
-            'form': form,
-            'conference': conference,
-            'stats': stats,
-        }
-        return render_to_response('conference/admin/ticket_stats.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response(
+            'admin/conference/ticket/stats.html',
+            {
+                'form': form,
+                'conference': conf,
+                'stats': stats,
+            },
+            context_instance=template.RequestContext(request))
+
+    def stats_details(self, request):
+        sid, rowid = request.GET['code'].split('.')
+        conf = request.GET['conference']
+        stat = self.single_stat(conf, sid, rowid)
+        return render_to_response(
+            'admin/conference/ticket/stats_details.html',
+            {
+                'conference': conf,
+                'stat': stat,
+            },
+            context_instance=template.RequestContext(request))
+
 
 admin.site.register(models.Ticket, TicketAdmin)
 
