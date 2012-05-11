@@ -57,8 +57,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         urls = super(TicketConferenceAdmin, self).get_urls()
         my_urls = patterns('',
             url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
-            url(r'^stats/details/$', self.admin_site.admin_view(self.stats_details), name='p3-ticket-stats-details'),
-            url(r'^stats/details/csv$', self.admin_site.admin_view(self.stats_details_csv), name='p3-ticket-stats-details-csv'),
+            #url(r'^stats/details/$', self.admin_site.admin_view(self.stats_details), name='p3-ticket-stats-details'),
+            #url(r'^stats/details/csv$', self.admin_site.admin_view(self.stats_details_csv), name='p3-ticket-stats-details-csv'),
         )
         return my_urls + urls
 
@@ -117,7 +117,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
-    def stats_details(self, request):
+    def _stats_details(self, request):
         code = request.GET['code']
         conference = request.GET['conference']
         stats = self.stats(conference, stat=code)
