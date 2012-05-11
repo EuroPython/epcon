@@ -385,33 +385,17 @@ function highlighter(mode, option) {
     function sync_event_book_status(evt, value) {
         evt.find('.info').remove();
         if(value.user) {
-            evt.append(''
-                + '<div class="info booked minimized">'
-                + ' BOOKED'
-                + ' &bull;'
-                + ' BOOKED'
-                + ' &bull;'
-                + ' BOOKED'
-                + '</div>');
+            evt.append('<div class="info booked minimized">BOOKED</div>');
         }
         else {
             if(value.available > 0) {
                 evt.append(''
                     + '<div class="info available minimized">'
-                    + ' AVAILABLE &bull; ' + value.available + ' SEATS LEFT'
-                    + ' &bull;'
-                    + ' AVAILABLE &bull; ' + value.available + ' SEATS LEFT'
+                    + 'BOOK IT<br/><span title="let me do the math for you: ' + value.available + '">0x' + value.available.toString(16) + '</span> LEFT'
                     + '</div>');
             }
             else {
-                evt.append(''
-                    + '<div class="info sold-out minimized">'
-                    + ' SOLD OUT'
-                    + ' &bull;'
-                    + ' SOLD OUT'
-                    + ' &bull;'
-                    + ' SOLD OUT'
-                    + '</div>');
+                evt.append('<div class="info sold-out minimized">SOLDOUT</div>');
             }
         }
     }

@@ -19,12 +19,15 @@ $cBeige: #e1dbc5;
 $cWhite: #ffffff;
 $cBeginner: #738023;
 $cIntermediate: #e7c30f;
-$cAdvanced: #da4a0f;
+$cAdvanced: #DA2300;
 $cHelpDesk: #d2c7e5;
+
+$cAvailable: $cBeginner;
+$cBooked: $cIntermediate;
+$cSoldout: $cAdvanced;
 
 
 $cPartners: #e7880f;
-$cSoldout: $cPartners;
 
 $cSprint: #a9cb0f;
 $cTraining: #a4d4d4; 
@@ -46,7 +49,7 @@ $cTraining: #a4d4d4;
         background-color: $color;
     }
     .event{
-        border-left: 1px dotted $color;
+        border-right: 2px solid $color;
     }
 }
 @mixin transform($recipe, $originX: center, $originY: center) {
@@ -178,11 +181,11 @@ body#schedule > .page > .container {
         background: #FCFAD9;
         font-variant: small-caps;
 
-        transition: all 0.8s ease 0s;
-        -moz-transition: all 0.8s ease 0s;
-        -webkit-transition: all 0.8s ease 0s;
-        -o-transition: all 0.8s ease 0s;
-        -ms-transition: all 0.8s ease 0s;
+        transition: all 0.4s ease 0s;
+        -moz-transition: all 0.4s ease 0s;
+        -webkit-transition: all 0.4s ease 0s;
+        -o-transition: all 0.4s ease 0s;
+        -ms-transition: all 0.4s ease 0s;
 
         .maximized { display: none; }
     }
@@ -267,20 +270,32 @@ body#schedule > .page > .container {
             .event{
                 .info{
                     text-transform: uppercase;
-                    @include transform(translate(75px, 0px) rotate(-90deg), left, top);
+                    @include transform(translate(0px, 0px) rotate(-30deg), left, top);
                     bottom: 0;
-                    letter-spacing: 0.09em;
+                    letter-spacing: -0.05em;
                     position: absolute;
-                    width: 470px; // largo quanto l'altezza del training
+                    width: 90px;
+                    padding: 12px;
+                    border: 4px dashed transparent;
+                    border-radius: 8px;
+                    font-size: 10px;
+                    color: orange;
+                    line-height: 13px;
+                    &:first-line{
+                        font-size: 20px;                        
+                    }
                 }
                 .info.available{
-                    color: $cTraining;
+                    color: $cAvailable;
+                    border-color: $cAvailable;
                 }
                 .info.booked{
-                    color: $cBeginner;
+                    color: $cBooked;
+                    border-color: $cBooked;
                 }
                 .info.sold-out{
                     color: $cSoldout;
+                    border-color: $cSoldout;
                 }
             }
         }
@@ -301,9 +316,9 @@ body#schedule > .page > .container {
                     float: right;
                     margin: 0 7px;
                 }
-            }
-            .event.booked {
-                border-right: 4px solid gold;
+                &.booked {
+                    border-right: 4px solid gold;
+                }
             }
         }
 
