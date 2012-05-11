@@ -546,36 +546,10 @@ class Talk(models.Model, UrlMixin):
     def getAbstract(self, language=None):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
-class TalkSpeakerManager(models.Manager):
-    pass
-#    def _conference_cache_key(self, conference):
-#        cid = conference.pk if isinstance(conference, Conference) else conference
-#        return 'conf:ts:%s' % cid
-#
-#    def clear_cache(self, conference):
-#        if conference:
-#            cache.delete(self._conference_cache_key(conference))
-#        else:
-#            for c in Conference.objects.all():
-#                cache.delete(self._conference_cache_key(c))
-#
-#    def speakers_by_talks(self, conference):
-#        key = self._conference_cache_key(conference)
-#        output = cache.get(key)
-#        if output is None:
-#            output = defaultdict(list)
-#            for ts in TalkSpeaker.objects.filter(talk__conference=conference).select_related('speaker__user'):
-#                output[ts.talk_id].append({ 'speaker': ts.speaker, 'helper': ts.helper })
-#            output = dict(output)
-#            cache.set(key, output)
-#        return output
-
 class TalkSpeaker(models.Model):
     talk = models.ForeignKey(Talk)
     speaker = models.ForeignKey(Speaker)
     helper = models.BooleanField(default=False)
-
-    objects = TalkSpeakerManager()
 
     class Meta:
         unique_together = (('talk', 'speaker'),)
