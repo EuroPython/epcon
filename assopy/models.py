@@ -935,7 +935,7 @@ Items:
 Manage link: %s
         ''' % (
             ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(uid,)),
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
             sender.reason,
             order.code,
             mail_items,
@@ -957,7 +957,7 @@ Payment method: %s
 Manage link: %s
         ''' % (
             ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(uid,)),
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
             order.code,
             mail_items,
             order.method,
@@ -980,7 +980,7 @@ Payment method: %s
 Manage link: %s
         ''' % (
             ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_user_change', args=(uid,)),
+            dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
             order.code,
             order.assopy_id,
             mail_items,
