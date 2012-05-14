@@ -829,6 +829,7 @@ class TicketAdmin(admin.ModelAdmin):
         urls = patterns('',
             url(r'^stats/$', f(self.stats_list), name='conference-ticket-stats'),
             url(r'^stats/details$', f(self.stats_details), name='conference-ticket-stats-details'),
+            url(r'^stats/details.csv$', f(self.stats_details_csv), name='conference-ticket-stats-details-csv'),
         )
         return urls + super(TicketAdmin, self).get_urls()
 
@@ -914,10 +915,35 @@ class TicketAdmin(admin.ModelAdmin):
             {
                 'conference': conf,
                 'stat': stat,
+                'stat_code': '%s.%s' % (sid, rowid),
                 'form': form,
                 'preview': preview,
             },
             context_instance=template.RequestContext(request))
+
+    def stats_details_csv(self, request):
+        sid, rowid = request.GET['code'].split('.')
+        conf = request.GET['conference']
+        stat = self.single_stat(conf, sid, rowid)
+
+        buff = StringIO()
+        result = stat['get_data']()
+
+        colid = []
+        colnames = []
+        for cid, cname in result['columns']:
+            colid.append(cid)
+            colnames.append(cname)
+
+        writer = csv.writer(buff)
+        writer.writerow(colnames)
+        for row in result['data']:
+            writer.writerow([ row[c].encode('utf-8') for c in colid ])
+
+        fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
+        r = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
+        r['content-disposition'] = 'attachment; filename="%s"' % fname
+        return r
 
 admin.site.register(models.Ticket, TicketAdmin)
 

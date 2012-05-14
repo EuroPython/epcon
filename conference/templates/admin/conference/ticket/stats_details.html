@@ -51,8 +51,8 @@ th {
      details
 </div>
 {% endblock %}{% block content %}
-<h1>{{ stat.short_description }} (<a href="">csv</a>)</h1>
 {% with stat.get_data as result %}
+<h1>{{ stat.short_description }} (<a href="{% url admin:conference-ticket-stats-details-csv %}?conference={{ conference }}&code={{ stat_code }}">csv</a>)</h1>
 <table>
     <tr>
         {% for colid, colname in result.columns %}
