@@ -330,8 +330,8 @@ def tickets_url(user):
     """
     ritorna la url più diretta per mandare l'utente sulla sua pagina ticket
     """
-    if user.token:
-        u = reverse('p3-user', kwargs={'token': user.token})
+    if user.assopy_user.token:
+        u = reverse('p3-user', kwargs={'token': user.assopy_user.token})
     else:
         u = reverse('p3-tickets')
 
