@@ -221,7 +221,7 @@ class MultilingualContentManager(models.Manager):
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField(db_index=True)
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     language = models.CharField(max_length = 3)
     content = models.CharField(max_length = 20)
