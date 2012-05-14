@@ -376,7 +376,7 @@ class AuthUserAdmin(aUserAdmin):
 
     def _doppelganger(self, o):
         url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
-        return '<a href="%s">become this user</a>' % url
+        return '<a href="%s" target="_blank">become this user</a>' % url
     _doppelganger.allow_tags = True
     _doppelganger.short_description = 'Doppelganger'
 
