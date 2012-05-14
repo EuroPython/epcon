@@ -34,7 +34,7 @@ class ConferenceAdmin(admin.ModelAdmin):
     _schedule_view.allow_tags = True
 
     def _attendee_stats(self, o):
-        u = urlresolvers.reverse('admin:conference-ticket-stats')
+        u = urlresolvers.reverse('admin:conference-ticket-stats', args=(o.code,))
         return '<a href="%s">Attendee Stats</a>' % u
     _attendee_stats.allow_tags = True
 
@@ -48,13 +48,13 @@ class ConferenceAdmin(admin.ModelAdmin):
                 v(self.schedule_view_track),
                 name='conference-conference-schedule-track'),
 
-            url(r'^stats/$',
+            url(r'^(?P<cid>[\w-]+)/stats/$',
                 v(self.stats_list),
                 name='conference-ticket-stats'),
-            url(r'^stats/details$',
+            url(r'^(?P<cid>[\w-]+)/stats/details$',
                 v(self.stats_details),
                 name='conference-ticket-stats-details'),
-            url(r'^stats/details.csv$',
+            url(r'^(?P<cid>[\w-]+)/stats/details.csv$',
                 v(self.stats_details_csv),
                 name='conference-ticket-stats-details-csv'),
         )
@@ -146,35 +146,21 @@ class ConferenceAdmin(admin.ModelAdmin):
                 s['get_data'] = lambda: r(code=code)
                 return s
 
-    def stats_list(self, request):
-        class FormConference(forms.Form):
-            conference = forms.ChoiceField(
-                choices=models.Conference.objects.all().values_list('code', 'name').order_by('-code'),
-                required=False,
-            )
-
-        form = FormConference(data=request.GET)
-
+    def stats_list(self, request, cid):
         stats = []
-        if form.is_valid():
-            conf = form.cleaned_data['conference'] or settings.CONFERENCE
-            stats = self.available_stats(conf)
-        else:
-            conf = ''
+        stats = self.available_stats(cid)
 
         return render_to_response(
             'admin/conference/conference/attendee_stats.html',
             {
-                'form': form,
-                'conference': conf,
+                'conference': cid,
                 'stats': stats,
             },
             context_instance=template.RequestContext(request))
 
-    def stats_details(self, request):
+    def stats_details(self, request, cid):
         sid, rowid = request.GET['code'].split('.')
-        conf = request.GET['conference']
-        stat = self.single_stat(conf, sid, rowid)
+        stat = self.single_stat(cid, sid, rowid)
 
         from conference.forms import AdminSendMailForm
         preview = None
@@ -192,7 +178,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         return render_to_response(
             'admin/conference/conference/attendee_stats_details.html',
             {
-                'conference': conf,
+                'conference': cid,
                 'stat': stat,
                 'stat_code': '%s.%s' % (sid, rowid),
                 'form': form,
@@ -200,10 +186,9 @@ class ConferenceAdmin(admin.ModelAdmin):
             },
             context_instance=template.RequestContext(request))
 
-    def stats_details_csv(self, request):
+    def stats_details_csv(self, request, cid):
         sid, rowid = request.GET['code'].split('.')
-        conf = request.GET['conference']
-        stat = self.single_stat(conf, sid, rowid)
+        stat = self.single_stat(cid, sid, rowid)
 
         buff = StringIO()
         result = stat['get_data']()

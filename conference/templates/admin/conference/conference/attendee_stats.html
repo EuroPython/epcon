@@ -23,10 +23,6 @@
 </div>
 {% endblock %}{% block content %}
 <div>
-    <form action="{% url admin:conference-ticket-stats %}" method="GET">
-        {{ form }}
-        <input type="submit" />
-    </form>
     {% for s in stats %}
     <div class="stat">
         <h1>{{ s.short_description }}</h1>
@@ -48,7 +44,7 @@
                 <tr>
                     <th>
                         {{ row.title }}
-                        {% if row.id %} <a href="{% url admin:conference-ticket-stats-details %}?conference={{ conference }}&code={{ results.id }}.{{ row.id }}">(details)</a>{% endif %}
+                        {% if row.id %} <a href="{% url admin:conference-ticket-stats-details conference %}?code={{ results.id }}.{{ row.id }}">(details)</a>{% endif %}
                     </th>
                     {% for colid, colname in results.columns %}
                     <td>{{ row|attrib_:colid }}</td>
