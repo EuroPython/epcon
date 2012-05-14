@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from conference.utils import send_email
-from conference.models import Talk
+from conference.models import Talk, Event
 
 from django.dispatch import Signal
 from django.db.models.signals import post_save
@@ -63,15 +63,21 @@ def on_talk_saved(sender, **kw):
     """
     Si assicura che il profilo di uno speaker con talk 'accepted' sia visibile.
     """
-    o = kw['instance']
-    if o.status == 'accepted':
+    if sender == Talk:
+        o = kw['instance']
+    else:
+        o = kw['instance'].talk
+    if o and o.status == 'accepted':
         from conference import models
         profiles = models.AttendeeProfile.objects\
-            .filter(user__in=models.TalkSpeaker.objects.filter(talk=o).values('speaker__user'))
+            .filter(user__in=models.TalkSpeaker.objects\
+                .filter(talk=o)\
+                .values('speaker__user'))\
+            .exclude(visibility='p')
         for p in profiles:
-            if p.visibility != 'p':
-                log.info('Set "%s"\'s profile to be visible because his talk "%s" has been accepted', '%s %s' % (p.user.first_name, p.user.last_name), o.title)
-                p.visibility = 'p'
-                p.save()
+            log.info('Set "%s"\'s profile to be visible because his talk "%s" has been accepted', '%s %s' % (p.user.first_name, p.user.last_name), o.title)
+            p.visibility = 'p'
+            p.save()
 
 post_save.connect(on_talk_saved, sender=Talk)
+post_save.connect(on_talk_saved, sender=Event)
