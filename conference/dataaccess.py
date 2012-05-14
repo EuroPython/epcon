@@ -471,8 +471,7 @@ def tags():
 
     tags = defaultdict(set)
     for item in qs:
-        t = tags[item.tag]
-        t.add((item.content_type_id, item.object_id))
+        tags[item.tag].add((item.content_type_id, item.object_id))
 
     return dict(tags)
 

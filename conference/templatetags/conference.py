@@ -1597,3 +1597,36 @@ def conference_booking_status(context, conference=None, event_id=None):
         return status.get(event_id)
     else:
         return status
+
+@fancy_tag(register)
+def conference_js_data(tags=None):
+    """
+    Js di inizializzazione per l'app conference. L'utilizzo di
+    `conference_js_data` innietta nell'oggetto `window` una variabile
+    `conference` con alcuni dati sulla conferenza.
+    """
+    if tags is None:
+        tags = dataaccess.tags()
+
+    cts = dict(ContentType.objects.all().values_list('id', 'model'))
+    items = {}
+    for t, objects in tags.items():
+        key = t.name.encode('utf-8')
+        if key not in items:
+            items[key] = {}
+        for ctid, oid in objects:
+            k = cts[ctid]
+            if k not in items[key]:
+                items[key][k] = 0
+            items[key][k] += 1
+
+    tdata = defaultdict(list)
+    for x in tags:
+        tdata[x.category.encode('utf-8')].append(x.name.encode('utf-8'))
+
+    data = {
+        'tags': dict(tdata),
+        'taggeditems': items,
+    }
+
+    return 'window.conference = %s;' % json_(data)

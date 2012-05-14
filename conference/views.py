@@ -10,7 +10,7 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
-from conference.forms import EventForm, SpeakerForm, TalkForm
+from conference.forms import SpeakerForm, TalkForm
 
 from django import forms
 from django import http
@@ -718,38 +718,6 @@ def voting(request):
         else:
             tpl = 'conference/voting.html'
         return render(request, tpl, ctx)
-
-def init_js(request):
-    """
-    Conference javascript module.
-    """
-    cts = dict(ContentType.objects.all().values_list('id', 'model'))
-    tags = dataaccess.tags()
-    items = {}
-    for t, objects in tags.items():
-        key = t.name.encode('utf-8')
-        if key not in items:
-            items[key] = {}
-        for ctid, oid in objects:
-            k = cts[ctid]
-            if k not in items[key]:
-                items[key][k] = 0
-            items[key][k] += 1
-
-    tdata = defaultdict(list)
-    for x in tags:
-        tdata[x.category.encode('utf-8')].append(x.name.encode('utf-8'))
-
-    data = {
-        'tags': dict(tdata),
-        'taggeditems': items,
-    }
-    return render(
-        request,
-        'conference/init.js',
-        { 'conference_data': json_dumps(data), },
-        content_type='text/javascript',
-    )
 
 def profile_access(f):
     """
