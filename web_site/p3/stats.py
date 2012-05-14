@@ -154,6 +154,7 @@ def speaker_status(conf, code=None):
         for x in spk.select_related('user'):
             data.append({
                 'name': '%s %s' % (x.user.first_name, x.user.last_name),
+                'uid': x.user_id,
                 'email': x.user.email,
             })
     return output
