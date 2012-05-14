@@ -32,23 +32,6 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}p5/s/ie.css" type="text/css" media="screen, projection" />
 <![endif]-->
     <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest/" />
-    {% comment %}
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery/1.5.1/jquery.min.js"></script>
-    {% endcomment %}
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery-ui/js/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquerytools/1.2.5/jquery.tools.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery-ui/js/jquery-ui-1.8.17.custom.min.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.form.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquery.cookie.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/utils.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/rateit/src/jquery.rateit.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
-    {% if current_page|check_map %}
-    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
-    <script type="text/javascript" src="{% url p3-map-js %}"></script>
-    {% endif %}
     <script>
         var STATIC_URL = {{ STATIC_URL|json_ }};
         var user = {
@@ -61,7 +44,19 @@
             user.tickets = [];
         {% endif %}
     </script>
-    <script type="text/javascript" src="{% url conference-init.js %}"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquerytools/1.2.5/jquery.tools.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-ui-1.8.17.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}conference/init.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/utils.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/j/rateit/src/jquery.rateit.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
+    {% if current_page|check_map %}
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="{% url p3-map-js %}"></script>
+    {% endif %}
     {% block EXTRA_HEAD %}{% endblock %}
 
     <meta property="og:image" content="http://a1.twimg.com/profile_images/1231560986/Twitter-Avatar_bigger.png" />
