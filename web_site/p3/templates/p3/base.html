@@ -43,6 +43,8 @@
         {% else %}
             user.tickets = [];
         {% endif %}
+        {% p3_tags as ptags %}
+        {% conference_js_data tags=ptags %}
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/j/jquerytools/1.2.5/jquery.tools.min.js"></script>

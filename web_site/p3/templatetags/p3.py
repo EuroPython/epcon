@@ -513,3 +513,7 @@ def all_user_tickets(context, uid=None, conference=None, status="complete", fare
     if fare_type != "all":
         tickets = filter(lambda x: x[1] == fare_type, tickets)
     return tickets
+
+@fancy_tag(register)
+def p3_tags():
+    return dataaccess.tags()

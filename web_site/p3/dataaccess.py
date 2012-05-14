@@ -217,3 +217,23 @@ def conference_users(conference, speakers=True):
     else:
         q3 = User.objects.none()
     return q1 | q2 | q3
+
+def tags():
+    """
+    Fa la stessa cosa di `conference.dataaccess.tags` ma elimina le
+    informazioni sui tag associati ad un profilo non pubblico.
+    """
+    from conference.dataaccess import tags as ctags
+    cid = ContentType.objects.get(app_label='p3', model='p3profile').id
+    hprofiles = set(models.P3Profile.objects\
+        .exclude(profile__visibility__in=('m', 'p'))\
+        .values_list('profile_id', flat=True))
+    hset = set([(cid, pid) for pid in hprofiles])
+    data = ctags()
+    for tag, objects in data.items():
+        data[tag] = objects - hset
+    return data
+
+tags = cache_me(
+    signals=(cdata.tags.invalidated,),
+    models=(models.P3Profile, cmodels.AttendeeProfile))(tags)
