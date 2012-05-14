@@ -26,25 +26,39 @@ from cStringIO import StringIO
 log = logging.getLogger('conference')
 
 class ConferenceAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', '_schedule_view')
+    list_display = ('code', 'name', '_schedule_view', '_attendee_stats')
 
     def _schedule_view(self, o):
-        url = urlresolvers.reverse('admin:conference-conference-schedule', args=(o.code,))
-        return '<a href="%s">schedule</a>' % url
+        u = urlresolvers.reverse('admin:conference-conference-schedule', args=(o.code,))
+        return '<a href="%s">schedule</a>' % u
     _schedule_view.allow_tags = True
 
+    def _attendee_stats(self, o):
+        u = urlresolvers.reverse('admin:conference-ticket-stats')
+        return '<a href="%s">Attendee Stats</a>' % u
+    _attendee_stats.allow_tags = True
+
     def get_urls(self):
-        urls = super(ConferenceAdmin, self).get_urls()
         v = self.admin_site.admin_view
-        my_urls = patterns('',
+        urls = patterns('',
             url(r'^(?P<cid>[\w-]+)/schedule/$',
                 v(self.schedule_view),
                 name='conference-conference-schedule'),
             url(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
                 v(self.schedule_view_track),
                 name='conference-conference-schedule-track'),
+
+            url(r'^stats/$',
+                v(self.stats_list),
+                name='conference-ticket-stats'),
+            url(r'^stats/details$',
+                v(self.stats_details),
+                name='conference-ticket-stats-details'),
+            url(r'^stats/details.csv$',
+                v(self.stats_details_csv),
+                name='conference-ticket-stats-details-csv'),
         )
-        return my_urls + urls
+        return urls + super(ConferenceAdmin, self).get_urls()
 
     def schedule_view_talks(self, conf):
         tids = []
@@ -97,6 +111,118 @@ class ConferenceAdmin(admin.ModelAdmin):
             'admin/conference/conference/schedule_view_schedule.html',
             { 'timetable': tt, },
             context_instance=template.RequestContext(request))
+
+    def _stat_wrapper(self, func, conf):
+        def wrapper(*args, **kwargs):
+            result = func(conf, *args, **kwargs)
+            if 'columns' not in result:
+                result = {
+                    'columns': (
+                        ('total', 'Total'),
+                    ),
+                    'data': result,
+                }
+            result['id'] = wrapper.stat_id
+            return result
+        wrapper.stat_id = func.__name__
+        return wrapper
+
+    def available_stats(self, conf):
+        stats = []
+        for path in settings.ADMIN_ATTENDEE_STATS:
+            func = utils.dotted_import(path)
+            w = {
+                'get_data': self._stat_wrapper(func, conf),
+                'short_description': getattr(func, 'short_description', func.__name__.replace('_', ' ').strip()),
+                'description': getattr(func, 'description', func.__doc__),
+            }
+            stats.append(w)
+        return stats
+
+    def single_stat(self, conf, sid, code):
+        for s in self.available_stats(conf):
+            if s['get_data'].stat_id == sid:
+                r = s['get_data']
+                s['get_data'] = lambda: r(code=code)
+                return s
+
+    def stats_list(self, request):
+        class FormConference(forms.Form):
+            conference = forms.ChoiceField(
+                choices=models.Conference.objects.all().values_list('code', 'name').order_by('-code'),
+                required=False,
+            )
+
+        form = FormConference(data=request.GET)
+
+        stats = []
+        if form.is_valid():
+            conf = form.cleaned_data['conference'] or settings.CONFERENCE
+            stats = self.available_stats(conf)
+        else:
+            conf = ''
+
+        return render_to_response(
+            'admin/conference/conference/attendee_stats.html',
+            {
+                'form': form,
+                'conference': conf,
+                'stats': stats,
+            },
+            context_instance=template.RequestContext(request))
+
+    def stats_details(self, request):
+        sid, rowid = request.GET['code'].split('.')
+        conf = request.GET['conference']
+        stat = self.single_stat(conf, sid, rowid)
+
+        from conference.forms import AdminSendMailForm
+        preview = None
+        if request.method == 'POST':
+            form = AdminSendMailForm(data=request.POST)
+            if form.is_valid():
+                uids = [ x['uid'] for x in stat['get_data']()['data']]
+                if 'preview' in request.POST:
+                    preview = form.preview(uids[0])[0]
+                else:
+                    form.send_emails(uids, request.user.email)
+                    form.save_email()
+        else:
+            form = AdminSendMailForm()
+        return render_to_response(
+            'admin/conference/conference/attendee_stats_details.html',
+            {
+                'conference': conf,
+                'stat': stat,
+                'stat_code': '%s.%s' % (sid, rowid),
+                'form': form,
+                'preview': preview,
+            },
+            context_instance=template.RequestContext(request))
+
+    def stats_details_csv(self, request):
+        sid, rowid = request.GET['code'].split('.')
+        conf = request.GET['conference']
+        stat = self.single_stat(conf, sid, rowid)
+
+        buff = StringIO()
+        result = stat['get_data']()
+
+        colid = []
+        colnames = []
+        for cid, cname in result['columns']:
+            colid.append(cid)
+            colnames.append(cname)
+
+        writer = csv.writer(buff)
+        writer.writerow(colnames)
+        for row in result['data']:
+            writer.writerow([ row[c].encode('utf-8') for c in colid ])
+
+        fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
+        r = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
+        r['content-disposition'] = 'attachment; filename="%s"' % fname
+        return r
 
 admin.site.register(models.Conference, ConferenceAdmin)
 
@@ -823,127 +949,6 @@ class TicketAdmin(admin.ModelAdmin):
             raise RuntimeError()
         return response
     do_ticket_badge.short_description = 'Ticket Badge'
-
-    def get_urls(self):
-        f = self.admin_site.admin_view
-        urls = patterns('',
-            url(r'^stats/$', f(self.stats_list), name='conference-ticket-stats'),
-            url(r'^stats/details$', f(self.stats_details), name='conference-ticket-stats-details'),
-            url(r'^stats/details.csv$', f(self.stats_details_csv), name='conference-ticket-stats-details-csv'),
-        )
-        return urls + super(TicketAdmin, self).get_urls()
-
-    def _stat_wrapper(self, func, conf):
-        def wrapper(*args, **kwargs):
-            result = func(conf, *args, **kwargs)
-            if 'columns' not in result:
-                result = {
-                    'columns': (
-                        ('total', 'Total'),
-                    ),
-                    'data': result,
-                }
-            result['id'] = wrapper.stat_id
-            return result
-        wrapper.stat_id = func.__name__
-        return wrapper
-
-    def available_stats(self, conf):
-        stats = []
-        for path in settings.ADMIN_STATS:
-            func = utils.dotted_import(path)
-            w = {
-                'get_data': self._stat_wrapper(func, conf),
-                'short_description': getattr(func, 'short_description', func.__name__.replace('_', ' ').strip()),
-                'description': getattr(func, 'description', func.__doc__),
-            }
-            stats.append(w)
-        return stats
-
-    def single_stat(self, conf, sid, code):
-        for s in self.available_stats(conf):
-            if s['get_data'].stat_id == sid:
-                r = s['get_data']
-                s['get_data'] = lambda: r(code=code)
-                return s
-
-    def stats_list(self, request):
-        class FormConference(forms.Form):
-            conference = forms.ChoiceField(
-                choices=models.Conference.objects.all().values_list('code', 'name').order_by('-code'),
-                required=False,
-            )
-
-        form = FormConference(data=request.GET)
-
-        stats = []
-        if form.is_valid():
-            conf = form.cleaned_data['conference'] or settings.CONFERENCE
-            stats = self.available_stats(conf)
-        else:
-            conf = ''
-
-        return render_to_response(
-            'admin/conference/ticket/stats.html',
-            {
-                'form': form,
-                'conference': conf,
-                'stats': stats,
-            },
-            context_instance=template.RequestContext(request))
-
-    def stats_details(self, request):
-        sid, rowid = request.GET['code'].split('.')
-        conf = request.GET['conference']
-        stat = self.single_stat(conf, sid, rowid)
-
-        from conference.forms import AdminSendMailForm
-        preview = None
-        if request.method == 'POST':
-            form = AdminSendMailForm(data=request.POST)
-            if form.is_valid():
-                uids = [ x['uid'] for x in stat['get_data']()['data']]
-                if 'preview' in request.POST:
-                    preview = form.preview(uids[0])[0]
-                else:
-                    form.send_emails(uids, request.user.email)
-                    form.save_email()
-        else:
-            form = AdminSendMailForm()
-        return render_to_response(
-            'admin/conference/ticket/stats_details.html',
-            {
-                'conference': conf,
-                'stat': stat,
-                'stat_code': '%s.%s' % (sid, rowid),
-                'form': form,
-                'preview': preview,
-            },
-            context_instance=template.RequestContext(request))
-
-    def stats_details_csv(self, request):
-        sid, rowid = request.GET['code'].split('.')
-        conf = request.GET['conference']
-        stat = self.single_stat(conf, sid, rowid)
-
-        buff = StringIO()
-        result = stat['get_data']()
-
-        colid = []
-        colnames = []
-        for cid, cname in result['columns']:
-            colid.append(cid)
-            colnames.append(cname)
-
-        writer = csv.writer(buff)
-        writer.writerow(colnames)
-        for row in result['data']:
-            writer.writerow([ row[c].encode('utf-8') for c in colid ])
-
-        fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
-        r = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
-        r['content-disposition'] = 'attachment; filename="%s"' % fname
-        return r
 
 admin.site.register(models.Ticket, TicketAdmin)
 
