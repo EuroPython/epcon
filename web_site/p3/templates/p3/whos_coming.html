@@ -18,7 +18,7 @@
             {{ form.country|field:"autosubmit" }}
             {{ form.speaker|field:"autosubmit" }}
             </div>
-            <div class="span-9 last">
+            <div class="span-9 last" data-conference-tags-counter="p3profile">
             {{ form.tags|field:"autosubmit" }}
             {% if user.is_authenticated %}
                 {% p3_profile_data user.id as pdata %}
