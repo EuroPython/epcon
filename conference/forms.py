@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.conf import settings as dsettings
 from django.contrib.admin import widgets as admin_widgets
+from django.core import mail
 from django.db import transaction
 from django.forms import widgets
 from django.forms.util import flatatt
@@ -400,3 +402,101 @@ class EventBookingForm(forms.Form):
         if data and not models.EventBooking.objects.booking_available(self.event, self.user):
             raise forms.ValidationError('sold out')
         return data
+
+class AdminSendMailForm(forms.Form):
+    """
+    Form utilizzata dall'admin nella pagina con le statistiche dei biglietti;
+    permette di inviare una email ad un gruppo di utenti.
+    """
+    from_ = forms.EmailField(max_length=50, initial=dsettings.DEFAULT_FROM_EMAIL)
+    subject = forms.CharField(max_length=200)
+    body = forms.CharField(widget=forms.Textarea)
+
+    def load_emails(self):
+        if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
+            return []
+        output = []
+        with file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG) as f:
+            while True:
+                try:
+                    msg = {
+                        'from_': eval(f.readline()).strip(),
+                        'subject': eval(f.readline()).strip(),
+                        'body': eval(f.readline()).strip(),
+                    }
+                except:
+                    break
+                f.readline()
+                if msg['from_']:
+                    output.append(msg)
+                else:
+                    break
+        return output
+
+    def save_email(self):
+        if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
+            return False
+        data = self.cleaned_data
+        with file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as f:
+            f.write('%s\n' % repr(data['from_']))
+            f.write('%s\n' % repr(data['subject']))
+            f.write('%s\n' % repr(data['body']))
+            f.write('------------------------------------------\n')
+        return True
+
+    def preview(self, *uids):
+        from django.template import Template, Context
+        from django.contrib.auth.models import User
+
+        data = self.cleaned_data
+
+        if settings.ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY:
+            libs = '{%% load %s %%}' % ' '.join(settings.ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY)
+        else:
+            libs = ''
+        tSubject = Template(libs + data['subject'])
+        tBody = Template(libs + data['body'])
+
+        conf = models.Conference.objects.current()
+
+        output = []
+        for u in User.objects.filter(id__in=uids):
+            ctx = Context({
+                'user': u,
+                'conf': conf,
+            })
+            output.append((
+                tSubject.render(ctx),
+                tBody.render(ctx),
+                u,
+            ))
+        return output
+
+    def send_emails(self, uids, feedback_address):
+        messages = []
+        addresses = []
+        data = self.cleaned_data
+        for sbj, body, user in self.preview(*uids):
+            messages.append((sbj, body, data['from_'], [user.email]))
+            addresses.append('"%s %s" - %s' % (user.first_name, user.last_name, user.email))
+        mail.send_mass_mail(messages)
+
+        # feedback mail
+        ctx = dict(data)
+        ctx['addresses'] = '\n'.join(addresses)
+        mail.send_mail(
+            '[%s] feedback mass mailing (admin stats)',
+            '''
+message sent
+-------------------------------
+FROM: %(from_)s
+SUBJECT: %(subject)s
+BODY:
+%(body)s
+-------------------------------
+sent to:
+%(addresses)s
+            ''' % ctx,
+            dsettings.DEFAULT_FROM_EMAIL,
+            recipient_list=[feedback_address],
+        )

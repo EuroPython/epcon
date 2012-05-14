@@ -895,14 +895,29 @@ class TicketAdmin(admin.ModelAdmin):
         sid, rowid = request.GET['code'].split('.')
         conf = request.GET['conference']
         stat = self.single_stat(conf, sid, rowid)
+
+        from conference.forms import AdminSendMailForm
+        preview = None
+        if request.method == 'POST':
+            form = AdminSendMailForm(data=request.POST)
+            if form.is_valid():
+                uids = [ x['uid'] for x in stat['get_data']()['data']]
+                if 'preview' in request.POST:
+                    preview = form.preview(uids[0])[0]
+                else:
+                    form.send_emails(uids, request.user.email)
+                    form.save_email()
+        else:
+            form = AdminSendMailForm()
         return render_to_response(
             'admin/conference/ticket/stats_details.html',
             {
                 'conference': conf,
                 'stat': stat,
+                'form': form,
+                'preview': preview,
             },
             context_instance=template.RequestContext(request))
-
 
 admin.site.register(models.Ticket, TicketAdmin)
 

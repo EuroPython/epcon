@@ -68,3 +68,10 @@ ADMIN_STATS = getattr(settings, 'CONFERENCE_ADMIN_STATS', ())
 X_SENDFILE = getattr(settings, 'CONFERENCE_X_SENDFILE', None)
 
 TALK_VIDEO_ACCESS = getattr(settings, 'CONFERENCE_TALK_VIDEO_ACCESS', lambda r, t: True)
+
+# absolute path of a file used to log the email sent from the admin (tickets
+# stats section); the log file is also used to show a list of "last recently
+# sent email" in the admin page.
+ADMIN_TICKETS_STATS_EMAIL_LOG = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG', None)
+
+ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY', ['conference'])

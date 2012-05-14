@@ -1015,6 +1015,10 @@ def full_url(url):
     return url
 
 @register.filter
+def full_name(u):
+    return "%s %s" % (u.first_name, u.last_name)
+
+@register.filter
 def fare_blob(fare, field):
     try:
         blob = fare.blob
