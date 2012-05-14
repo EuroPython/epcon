@@ -122,24 +122,47 @@ tickets_status.short_description = 'Statistiche biglietti'
 
 def speaker_status(conf, code=None):
     t = _tickets(conf, 'conference')
-    spk = Speaker.objects.byConference(conf)\
+    spk_noticket = Speaker.objects.byConference(conf)\
         .exclude(
             user__in=t.values('user'),
             user__email__in=t.values('p3_conference__assigned_to'))
+    spk_nodata = Speaker.objects.byConference(conf)\
+        .filter(Q(
+                user__attendeeprofile__image='',
+                user__attendeeprofile__p3_profile__image_gravatar=False,
+                user__attendeeprofile__p3_profile__image_url='')
+            | Q(user__attendeeprofile__bios__language=None)
+            | Q(
+                user__attendeeprofile__bios__language='en',
+                user__attendeeprofile__bios__content='bios',
+                user__attendeeprofile__bios__body='')
+            )
     if code is None:
         output = {
             'columns': (
                 ('total', 'Total'),
+                ('note', 'Note'),
             ),
             'data': [
                 {
                     'id': 'no_ticket',
                     'title': 'Senza biglietto',
-                    'total': spk.count(),
+                    'total': spk_noticket.count(),
+                    'note': '',
+                },
+                {
+                    'id': 'no_data',
+                    'title': 'Senza avatar o biografia',
+                    'total': spk_nodata.count(),
+                    'note': 'Non vengono inclusi gli utenti con gravatar (ma l\'avatar potrebbe non essere significativo)',
                 }
             ]
         }
-    elif code == "no_ticket":
+    else:
+        if code == 'no_ticket':
+            qs = spk_noticket
+        elif code == 'no_data':
+            qs = spk_nodata
         output = {
             'columns': (
                 ('name', 'Name'),
@@ -148,10 +171,10 @@ def speaker_status(conf, code=None):
             'data': [],
         }
         data = output['data']
-        spk = spk\
+        qs = qs\
             .select_related('user')\
             .order_by('user__first_name', 'user__last_name')
-        for x in spk.select_related('user'):
+        for x in qs:
             data.append({
                 'name': '%s %s' % (x.user.first_name, x.user.last_name),
                 'uid': x.user_id,
