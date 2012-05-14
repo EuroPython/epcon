@@ -889,26 +889,6 @@ class Schedule(models.Model):
     class Meta:
         ordering = ['date']
 
-class TrackManager(models.Manager):
-    pass
-#    def _schedule_cache_key(self, schedule):
-#        sid = schedule.id if not isinstance(schedule, int) else schedule
-#        return 'conf:track-schedule:%s' % sid
-#
-#    def clear_cache(self, schedule):
-#        cache.delete(self._schedule_cache_key(schedule))
-#
-#    def by_schedule(self, schedule):
-#        """
-#        ritorna le track associate allo schedule; questo metodo cacha i risultati
-#        """
-#        key = self._schedule_cache_key(schedule)
-#        output = cache.get(key)
-#        if output is None:
-#            output = list(Track.objects.filter(schedule=schedule))
-#            cache.set(key, output)
-#        return output
-
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length=20)
@@ -917,8 +897,6 @@ class Track(models.Model):
     order = models.PositiveIntegerField('ordine', default=0)
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
-
-    objects = TrackManager()
 
     def __unicode__(self):
         return self.track
