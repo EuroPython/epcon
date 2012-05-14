@@ -289,7 +289,7 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     else:
         return stats[0]['count']
 
-CONFERENCE_ADMIN_STATS = (
+CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.tickets_status',
     'p3.stats.speaker_status',
     'p3.stats.presence_days',
