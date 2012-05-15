@@ -1817,6 +1817,21 @@ section.countdown {
     text-transform: none;
 }
 
+#whos-coming .twitter a {
+    font: 11px/18px 'Helvetica Neue',Arial,sans-serif;
+    font-weight: bold;
+    background-image: -moz-linear-gradient(center top , #FFFFFF, #DEDEDE);
+    border: 1px solid #CCCCCC;
+    border-radius: 3px 3px 3px 3px;
+    color: #333;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    padding: 3px;
+}
+
+#whos-coming .twitter a img{
+    vertical-align: middle;
+}
+
 .after-ellipsis {
     display: none;
 }

@@ -22,16 +22,10 @@
 
                         {% if profile_data.twitter %}
                         <dd class="twitter">
-                            <a href="https://twitter.com/intent/user?screen_name={{ profile_data.twitter }}" style="border: 0">
-                                <img src="https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png" alt="" style="vertical-align: middle;"/>
-                                @{{ profile_data.twitter }}
+                            <a href="https://twitter.com/intent/user?screen_name={{ profile_data.twitter }}">
+                                <img src="https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png" alt=""/>
+                                Follow @{{ profile_data.twitter }}
                             </a>
-                        {% comment %}
-                        <iframe allowtransparency="true" frameborder="0" scrolling="no"
-                            src="//platform.twitter.com/widgets/follow_button.html?screen_name={{ profile_data.twitter }}"
-                            style="width:300px; height:20px;"></iframe>
-                            {% endcomment %}
-                            {% comment %}<span><a class="twitter-follow-button" href="https://twitter.com/{{ profile_data.twitter }}" data-show-count="false">@{{ profile_data.twitter }}</a></span>{% endcomment %}
                         </dd>
                         {% endif %}
 
