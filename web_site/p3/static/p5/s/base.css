@@ -1821,6 +1821,8 @@ section.countdown {
     font: 11px/18px 'Helvetica Neue',Arial,sans-serif;
     font-weight: bold;
     background-image: -moz-linear-gradient(center top , #FFFFFF, #DEDEDE);
+    background-image: -webkit-gradient(linear, center top, center bottom, from(#FFFFFF), to(#DEDEDE));
+    background-image: -o-linear-gradient(center top , #FFFFFF, #DEDEDE);
     border: 1px solid #CCCCCC;
     border-radius: 3px 3px 3px 3px;
     color: #333;
