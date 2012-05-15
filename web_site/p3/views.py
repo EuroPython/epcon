@@ -882,7 +882,7 @@ def whos_coming(request, conference=None):
         ix = max(int(request.GET.get('counter', 0)), 0)
     except:
         ix = 0
-    pids = people[ix:ix+20]
+    pids = people[ix:ix+10]
     ctx = {
         'profiles': profiles,
         'pids': pids,
