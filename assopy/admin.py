@@ -459,7 +459,14 @@ class RefundAdmin(admin.ModelAdmin):
         if not data:
             return "ERROR, no items"
         else:
-            return data[0].order.user.name()
+            u = data[0].order.user.user
+            links = [
+                '%s %s <br/>' % (u.first_name, u.last_name),
+                '<a href="%s" title="user page">U</a>' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
+                '<a href="%s" title="doppelganger" target="_blank">D</a>' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
+            ]
+            return ' '.join(links)
+    _user.allow_tags = True
     _user.admin_order_field = 'orderitem__order__user__user__first_name'
 
     def _order(self, o):
