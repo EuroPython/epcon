@@ -27,10 +27,18 @@
 /* ============== */
 
 body {
-		
     background: #fcfad9 url(../i/body.png) top left repeat fixed;    
 	font: normal 13px/20px  "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
 	color: #301d1d;
+}
+
+/*
+ * editors must notice that the page is a draft and so not accessibile by anonymous users
+ */
+body.draft {
+    background-image: url(../i/flames.gif), url(../i/body.png);
+    background-position: top left, top left;
+    background-repeat: repeat-y, repeat;
 }
 
 
