@@ -246,9 +246,8 @@ tickets_status.short_description = 'Statistiche biglietti'
 def speaker_status(conf, code=None):
     t = _tickets(conf, 'conference')
     spk_noticket = Speaker.objects.byConference(conf)\
-        .exclude(
-            user__in=t.values('user'),
-            user__email__in=t.values('p3_conference__assigned_to'))
+        .exclude(user__in=t.values('user'))\
+        .exclude(user__email__in=t.extra(where=["assigned_to!=''"]).values('p3_conference__assigned_to'))
     spk_nodata = Speaker.objects.byConference(conf)\
         .filter(Q(
                 user__attendeeprofile__image='',
