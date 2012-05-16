@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-24 13:13+0100\n"
-"PO-Revision-Date: 2012-05-08 21:40\n"
-"Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
+"POT-Creation-Date: 2012-05-16 12:52+0200\n"
+"PO-Revision-Date: 2012-05-16 12:55\n"
+"Last-Translator: maurizio melani <melamala@develer.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,31 +17,53 @@ msgstr ""
 "Language: \n"
 "X-Translated-Using: django-rosetta 0.6.6\n"
 
-#: forms.py:10 forms.py:135
+#: forms.py:120
+msgid "First name"
+msgstr ""
+
+#: forms.py:123
+msgid "Last name"
+msgstr ""
+
+#: forms.py:126
+msgid "Date of birth"
+msgstr ""
+
+#: forms.py:127
+msgid ""
+"We require date of birth for speakers to accomodate for Italian laws "
+"regarding minors.<br />Format: YYYY-MM-DD<br />This date will "
+"<strong>never</strong> be published."
+msgstr ""
+
+#: forms.py:132 forms.py:233 models.py:317
 msgid "Job title"
 msgstr "Mansione/Ruolo"
 
-#: forms.py:11 forms.py:136
+#: forms.py:133 forms.py:234
 msgid "eg: student, developer, CTO, js ninja, BDFL"
 msgstr "es: CEO, Sviluppatore, Studente, Ruby Ninja, Coffee Addicted, etc"
 
-#: forms.py:14 forms.py:139
-msgid "Personal homepage"
-msgstr "Sito web personale"
+#: forms.py:137
+msgid ""
+"We require a mobile number for all speakers for important last minutes "
+"contacts.<br />Use the international format, eg: +39-055-123456.<br />This "
+"number will <strong>never</strong> be published."
+msgstr ""
 
-#: forms.py:15 forms.py:140
+#: forms.py:139 forms.py:238
 msgid "Your company"
 msgstr "Azienda"
 
-#: forms.py:16 forms.py:141
+#: forms.py:140 forms.py:239 models.py:316
 msgid "Company homepage"
 msgstr "Sito web aziendale"
 
-#: forms.py:19 forms.py:144
+#: forms.py:142 forms.py:242 forms.py:370
 msgid "Compact biography"
 msgstr "Breve biografia"
 
-#: forms.py:19 forms.py:136
+#: forms.py:143 forms.py:243 forms.py:371
 msgid ""
 "Please enter a short biography (one or two paragraphs). Do not paste your "
 "CV!"
@@ -51,57 +73,15 @@ msgstr ""
 "<b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e"
 " <b>P</b> per formattare il tuo testo."
 
-#: forms.py:23
-msgid "Previous experience"
-msgstr "Precedenti esperienze come speaker"
-
-#: forms.py:24
-msgid "List yout previous experiences"
-msgstr ""
-"Inserisci una o più esperienze di intervento come speaker in conferenze che "
-"ritieni significative (<i>nome conferenza, anno, argomento del talk</i>)"
-
-#: forms.py:28
-msgid "Last year talks"
-msgstr "N° talk tenuti nel 2011"
-
-#: forms.py:29
-msgid "How many talks you have held during the last year?"
-msgstr ""
-"Inserisci, se ne hai tenuti, il numero dei talk effettuati in altre "
-"conferenze nel 2011."
-
-#: forms.py:33
-msgid "Maximum audience"
-msgstr "Platea massima raggiunta"
-
-#: forms.py:34
-msgid "Specify the size of your biggest audience"
-msgstr ""
-"Il numero massimo di partecipanti ad una conferenza davanti ai quali hai "
-"tenuto un intervento in una diversa conferenza."
-
-#: forms.py:38 forms.py:150
+#: forms.py:146 forms.py:248
 msgid "Talk title"
 msgstr "Titolo talk"
 
-#: forms.py:40 forms.py:152
-msgid "Training"
-msgstr "Training"
-
-#: forms.py:41 forms.py:153
-msgid ""
-"Check if you are willing to also deliver a 4-hours hands-on training on this"
-" subject.<br />See the Call for paper for details."
-msgstr ""
-"Check Training se sei disponibile a tenere un approfondimento sull'argomento"
-" con una audience selezionata su prenotazione."
-
-#: forms.py:44 forms.py:162
+#: forms.py:148 forms.py:256
 msgid "Talk Type"
 msgstr "Tipo di intervento"
 
-#: forms.py:45
+#: forms.py:149
 msgid "Talk Type description"
 msgstr ""
 "<b>Talk</b>: è il classico intervento con slide, tempo prestabilito e Q&A "
@@ -109,32 +89,32 @@ msgstr ""
 " il vostro know-how in una conferenza, preparando un poster di grande "
 "formato e spiegandolo direttamente alle persone."
 
-#: forms.py:50 forms.py:156
+#: forms.py:154 forms.py:250
 msgid "Suggested duration"
 msgstr "Durata prevista"
 
-#: forms.py:51 forms.py:157
+#: forms.py:155 forms.py:251
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr ""
 "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al "
 "pubblico per eventuali domande finali. <b>Poster</b>: non influente, il "
 "poster sarà sempre a disposizione dei partecipanti."
 
-#: forms.py:56 forms.py:167
+#: forms.py:160
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr ""
 "Seleziona Italiano solo se non sei in grado di tenere un intervento in "
 "Inglese."
 
-#: forms.py:59 forms.py:170
+#: forms.py:163 forms.py:261
 msgid "Audience level"
 msgstr "Livello del pubblico"
 
-#: forms.py:63 forms.py:173
+#: forms.py:166 forms.py:265
 msgid "Talk abstract"
 msgstr "Abstract del talk"
 
-#: forms.py:64 forms.py:174
+#: forms.py:167 forms.py:266
 msgid ""
 "<p>Please enter a short description of the talk you are submitting. Be sure "
 "to includes the goals of your talk and any prerequisite required to fully "
@@ -145,79 +125,137 @@ msgstr ""
 "esperienze dirette e case study. La dimensione consigliata sono 4/5 "
 "paragrafi."
 
-#: forms.py:67 forms.py:177
-msgid "Promo video"
-msgstr "Video di presentazione"
+#: forms.py:237 models.py:314
+msgid "Personal homepage"
+msgstr "Sito web personale"
 
-#: forms.py:68 forms.py:178
-msgid "Promo video description"
-msgstr ""
-"URL del video di presentazione del talk condiviso su Youtube. Il video deve "
-"essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
-"l'accettazione dei talk, verranno condivisi sul sito web nella pagina "
-"pubblica dello speaker. <a "
-"href=\"http://www.bettersoftware.it/blog/2011/02/24/call-paper-2011\">More "
-"&rarr;</a>"
-
-#: forms.py:147
+#: forms.py:245
 msgid "Presentation"
 msgstr "Presentazione"
 
-#: models.py:287
+#: forms.py:269
+msgid "Teaser video"
+msgstr "Video di presentazione"
+
+#: forms.py:270
+msgid "Insert the url for your teaser video"
+msgstr ""
+
+#: models.py:58
+msgid "Tagged Item"
+msgstr ""
+
+#: models.py:59
+msgid "Tagged Items"
+msgstr ""
+
+#: models.py:307
+msgid "Birthday"
+msgstr ""
+
+#: models.py:309
+msgid "Phone"
+msgstr ""
+
+#: models.py:311
+msgid ""
+"Enter a phone number where we can contact you in case of administrative "
+"issues.<br />Use the international format, eg: +39-055-123456"
+msgstr ""
+
+#: models.py:315
+msgid "Company"
+msgstr "Azienda"
+
+#: models.py:319
+msgid "Location"
+msgstr ""
+
+#: models.py:384
 msgid "5 minutes"
 msgstr "5 minuti"
 
-#: models.py:288
+#: models.py:385
+msgid "10 minutes"
+msgstr "10 minuti"
+
+#: models.py:386
 msgid "15 minutes"
 msgstr "15 minuti"
 
-#: models.py:289
+#: models.py:387
+msgid "25 minutes"
+msgstr "25 minuti"
+
+#: models.py:388
 msgid "30 minutes"
 msgstr "30 minuti"
 
-#: models.py:290
+#: models.py:389
+msgid "40 minutes"
+msgstr "40 minuti"
+
+#: models.py:390
 msgid "45 minutes"
 msgstr "45 minuti"
 
-#: models.py:291
+#: models.py:391
 msgid "60 minutes"
 msgstr "60 minuti"
 
-#: models.py:292
+#: models.py:392
+msgid "75 minutes"
+msgstr "75 minuti"
+
+#: models.py:393
 msgid "90 minutes"
 msgstr "90 minuti"
 
-#: models.py:293
+#: models.py:394
 msgid "120 minutes"
 msgstr "120 minuti"
 
-#: models.py:296
+#: models.py:395
+msgid "240 minutes"
+msgstr "240 minuti"
+
+#: models.py:396
+msgid "480 minutes"
+msgstr "480 minuti"
+
+#: models.py:399
 msgid "Italian"
 msgstr "Italiano"
 
-#: models.py:297
+#: models.py:400
 msgid "English"
 msgstr "Inglese"
 
-#: models.py:300
+#: models.py:403
 msgid "Proposed"
 msgstr "Proposto"
 
-#: models.py:301
+#: models.py:404
 msgid "Accepted"
 msgstr "Accettato"
 
-#: models.py:310
+#: models.py:413
 msgid "Beginner"
 msgstr "Introduttivo"
 
-#: models.py:311
+#: models.py:414
 msgid "Intermediate"
 msgstr "Approfondimento"
 
-#: models.py:312
+#: models.py:415
 msgid "Advanced"
 msgstr "Per Esperti"
+
+#: templates/admin/conference/schedule/change_list.html:8
+#: templates/admin/conference/speaker/change_list.html:8
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
 
 #: templates/conference/render_hotels.html:5
 msgid "Nome"
@@ -255,3 +293,46 @@ msgstr "URL"
 #: templates/conference/render_place.html:26
 msgid "price"
 msgstr "prezzo"
+
+#~ msgid "Previous experience"
+#~ msgstr "Precedenti esperienze come speaker"
+
+#~ msgid "List yout previous experiences"
+#~ msgstr ""
+#~ "Inserisci una o più esperienze di intervento come speaker in conferenze che "
+#~ "ritieni significative (<i>nome conferenza, anno, argomento del talk</i>)"
+
+#~ msgid "Last year talks"
+#~ msgstr "N° talk tenuti nel 2011"
+
+#~ msgid "How many talks you have held during the last year?"
+#~ msgstr ""
+#~ "Inserisci, se ne hai tenuti, il numero dei talk effettuati in altre "
+#~ "conferenze nel 2011."
+
+#~ msgid "Maximum audience"
+#~ msgstr "Platea massima raggiunta"
+
+#~ msgid "Specify the size of your biggest audience"
+#~ msgstr ""
+#~ "Il numero massimo di partecipanti ad una conferenza davanti ai quali hai "
+#~ "tenuto un intervento in una diversa conferenza."
+
+#~ msgid "Training"
+#~ msgstr "Training"
+
+#~ msgid ""
+#~ "Check if you are willing to also deliver a 4-hours hands-on training on this"
+#~ " subject.<br />See the Call for paper for details."
+#~ msgstr ""
+#~ "Check Training se sei disponibile a tenere un approfondimento sull'argomento"
+#~ " con una audience selezionata su prenotazione."
+
+#~ msgid "Promo video description"
+#~ msgstr ""
+#~ "URL del video di presentazione del talk condiviso su Youtube. Il video deve "
+#~ "essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
+#~ "l'accettazione dei talk, verranno condivisi sul sito web nella pagina "
+#~ "pubblica dello speaker. <a "
+#~ "href=\"http://www.bettersoftware.it/blog/2011/02/24/call-paper-2011\">More "
+#~ "&rarr;</a>"
