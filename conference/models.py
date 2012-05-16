@@ -311,12 +311,12 @@ class AttendeeProfile(models.Model):
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
 
-    personal_homepage = models.URLField(verify_exists=False, blank=True)
-    company = models.CharField(max_length=50, blank=True)
-    company_homepage = models.URLField(verify_exists=False, blank=True)
-    job_title = models.CharField(max_length=50, blank=True)
+    personal_homepage = models.URLField(_('Personal homepage'), verify_exists=False, blank=True)
+    company = models.CharField(_('Company'), max_length=50, blank=True)
+    company_homepage = models.URLField(_('Company homepage'), verify_exists=False, blank=True)
+    job_title = models.CharField(_('Job title'), max_length=50, blank=True)
 
-    location = models.CharField(max_length=100, blank=True)
+    location = models.CharField(_('Location'), max_length=100, blank=True)
     bios = generic.GenericRelation(MultilingualContent)
 
     visibility = models.CharField(max_length=1, choices=ATTENDEEPROFILE_VISIBILITY, default='x')
