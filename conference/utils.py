@@ -151,7 +151,7 @@ def latest_tweets(screen_name, count):
         # che gira con un utente diverso).
         client.SetCache(None)
         try:
-            tweets = client.GetUserTimeline(screen_name, count=count)
+            tweets = client.GetUserTimeline(screen_name, count=count, include_rts=True)
         except (ValueError, urllib2.HTTPError):
             # ValueError: a volte twitter.com non risponde correttamente, e
             # twitter (il modulo) non verifica. Di conseguenza viene
