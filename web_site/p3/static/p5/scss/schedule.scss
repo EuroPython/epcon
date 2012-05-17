@@ -636,11 +636,11 @@ body#schedule > .page > .container {
         .abstract {
             height: 260px;
         }
-    }
-    .event.exposed.partner-program {
-        .status-bar {
-            background: $cPartners;
-            color: #301d1d;
+        &.exposed {
+            .status-bar {
+                background: $cPartners;
+                color: #301d1d;
+            }
         }
     }
 

@@ -454,7 +454,7 @@ body#schedule > .page > .container {
       text-transform: lowercase; }
   .conference-schedules.timetable .event.partner-program .abstract {
     height: 260px; }
-  .conference-schedules.timetable .event.exposed.partner-program .status-bar {
+  .conference-schedules.timetable .event.partner-program.exposed .status-bar {
     background: #ff93c9;
     color: #301d1d; }
   .conference-schedules.timetable .event.interest-up {
