@@ -330,7 +330,7 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event .toggle-notice {
     width: 16px;
     height: 16px;
-    pointer: cursor;
+    cursor: pointer;
     background-image: url("img/suggest.png");
     background-repeat: no-repeat;
     background-position: bottom center; }

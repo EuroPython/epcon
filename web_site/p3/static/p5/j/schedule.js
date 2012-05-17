@@ -587,7 +587,8 @@ function highlighter(mode, option) {
             .end()
         .find('.notice')
             .bind('click', function(ev) {
-                $(this).css('left', '100%');
+                /* over the top! 100% non è abbastanza per chrome! */
+                $(this).css('left', '110%');
                 return false;
             })
             .end()
