@@ -326,18 +326,6 @@ body#schedule > .page > .container {
             }
         }
 
-        .track{
-            .event.special{
-                border-left: none;
-            }
-            .event.keynote{
-                .speakers{
-                    border-bottom: none;
-                }
-            }
-        }
-
-
     }
 
     .event {
@@ -585,6 +573,9 @@ body#schedule > .page > .container {
         h3{
             background-color: $cWhite;
         }
+        .speakers{
+            border-bottom: none;
+        }
     }
 
     .event.special {
@@ -592,6 +583,7 @@ body#schedule > .page > .container {
         background-color: rgba($cBeige, .6);
         background-image: url(../i/empty-track.png);
         backround-position: bottom left;
+        border-left: none;
         h3 {
             font-size: 1.3em;
             border: 0;

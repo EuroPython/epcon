@@ -259,10 +259,6 @@ body#schedule > .page > .container {
       margin: 0 7px; }
     .conference-schedules.timetable .schedule .track[data-track=partner0] .event.booked, .conference-schedules.timetable .schedule .track[data-track=partner1] .event.booked, .conference-schedules.timetable .schedule .track[data-track=partner2] .event.booked {
       border-right: 4px solid gold; }
-    .conference-schedules.timetable .schedule .track .event.special {
-      border-left: none; }
-    .conference-schedules.timetable .schedule .track .event.keynote .speakers {
-      border-bottom: none; }
   .conference-schedules.timetable .event a {
     border: none; }
   .conference-schedules.timetable .event .close-event {
@@ -414,10 +410,13 @@ body#schedule > .page > .container {
     background-color: #d3db9c; }
     .conference-schedules.timetable .event.keynote h3 {
       background-color: white; }
+    .conference-schedules.timetable .event.keynote .speakers {
+      border-bottom: none; }
   .conference-schedules.timetable .event.special {
     background-color: rgba(225, 219, 197, 0.6);
     background-image: url(../i/empty-track.png);
-    backround-position: bottom left; }
+    backround-position: bottom left;
+    border-left: none; }
     .conference-schedules.timetable .event.special h3 {
       font-size: 1.3em;
       border: 0;
