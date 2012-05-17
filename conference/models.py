@@ -260,13 +260,21 @@ class AttendeeProfileManager(models.Manager):
             try:
                 counter = int(r.rsplit('-', 1)[1])
             except (ValueError, IndexError):
-                last = 0
+                if last is None:
+                    # l'if mi tutela da slug del tipo "str-str-str"
+                    last = 0
                 continue
             if counter > last:
                 last = counter
 
         if last is not None:
             slug = '%s-%d' % (slug, last+1)
+        elif not slug:
+            # slug può essere una stringa vuota solo se lo user ha nome e
+            # cognome vuoti e se è il primo con questa anomalia.
+            # impostando lo slug a "-1" risolvo la situazione anche per i
+            # successivi che trovando un precedente continueranno la sequenza
+            slug = '-1'
         return slug
 
     # TODO: non posso usare il commit_manually o il commit_on_success perché non
