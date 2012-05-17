@@ -305,7 +305,7 @@ def talk_video(request, slug):
         return settings.X_SENDFILE['f'](tlk, url=vurl, fpath=vfile, mimetype=mt)
     else:
         raise RuntimeError('invalid X_SENDFILE')
-    fname = '%s%s' % (tlk.title.encode('utf-8'), vext)
+    fname = '%s%s' % (tlk.title.encode('utf-8'), vext.encode('utf-8'))
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
 

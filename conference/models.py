@@ -260,13 +260,21 @@ class AttendeeProfileManager(models.Manager):
             try:
                 counter = int(r.rsplit('-', 1)[1])
             except (ValueError, IndexError):
-                last = 0
+                if last is None:
+                    # l'if mi tutela da slug del tipo "str-str-str"
+                    last = 0
                 continue
             if counter > last:
                 last = counter
 
         if last is not None:
             slug = '%s-%d' % (slug, last+1)
+        elif not slug:
+            # slug può essere una stringa vuota solo se lo user ha nome e
+            # cognome vuoti e se è il primo con questa anomalia.
+            # impostando lo slug a "-1" risolvo la situazione anche per i
+            # successivi che trovando un precedente continueranno la sequenza
+            slug = '-1'
         return slug
 
     # TODO: non posso usare il commit_manually o il commit_on_success perché non
@@ -311,12 +319,12 @@ class AttendeeProfile(models.Model):
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
 
-    personal_homepage = models.URLField(verify_exists=False, blank=True)
-    company = models.CharField(max_length=50, blank=True)
-    company_homepage = models.URLField(verify_exists=False, blank=True)
-    job_title = models.CharField(max_length=50, blank=True)
+    personal_homepage = models.URLField(_('Personal homepage'), verify_exists=False, blank=True)
+    company = models.CharField(_('Company'), max_length=50, blank=True)
+    company_homepage = models.URLField(_('Company homepage'), verify_exists=False, blank=True)
+    job_title = models.CharField(_('Job title'), max_length=50, blank=True)
 
-    location = models.CharField(max_length=100, blank=True)
+    location = models.CharField(_('Location'), max_length=100, blank=True)
     bios = generic.GenericRelation(MultilingualContent)
 
     visibility = models.CharField(max_length=1, choices=ATTENDEEPROFILE_VISIBILITY, default='x')
