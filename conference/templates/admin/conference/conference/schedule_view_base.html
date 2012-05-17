@@ -261,9 +261,25 @@ select[name=tracks] {
         if(!slot_length_px)
             slot_length_px = 10;
         var dates = [
-            new Date(track.attr('data-date') + ' ' + (track.attr('data-start-time') || '8:00')),
-            new Date(track.attr('data-date') + ' ' + (track.attr('data-end-time') || '21:00'))
+            new Date(track.attr('data-date') + ' 8:00'),
+            new Date(track.attr('data-date') + ' 21:00')
         ]
+        var s0 = s1 = null;
+        track
+            .find('.event')
+            .each(function() {
+                var t = new Date($(this).attr('data-start-time'));
+                if(s0 == null || t < s0)
+                    s0 = t;
+                if(s1 == null || t > s1)
+                    s1 = t;
+            })
+        if(so && s0 < dates[0]) {
+            dates[0] = s0;
+        }
+        if(s1 && s1 >= dates[1]) {
+            dates[1] = s1.setHours(s1.getHours() + 1);
+        }
         var slot_length_min = track.attr('data-slot-length') || 15;
         var slots = (dates[1] - dates[0]) / 1000 / 60 / slot_length_min;
 
@@ -393,10 +409,10 @@ select[name=tracks] {
         if(track.hasClass('track')) {
             var sid = track.parent().attr('data-id');
             var tid = track.attr('data-id');
-            var ruler = new Ruler(track);
             unbindEventList(track);
             return $('.event-list',track)
                 .load('/admin/conference/conference/{{ conference.code }}/schedule/' + sid + '/' + tid + '/', function() {
+                    var ruler = new Ruler(track);
                     ruler.configure();
                     $('<a href="#">&#x1F511;</a>')
                         .click(function() {
