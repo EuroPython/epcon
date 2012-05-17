@@ -507,14 +507,14 @@ body#schedule > .page > .container {
                 background: transparent url(../i/star-off-16.png) no-repeat left center;
             }
         }
-    }
-    .event.exposed {
-        .tools {
-            background: white;
-            bottom: 0;
-            padding: 0 4px;
-            > div.maximized {
-                display: inline-block;
+        &.exposed {
+            .tools {
+                background: white;
+                bottom: 0;
+                padding: 0 4px;
+                > div.maximized {
+                    display: inline-block;
+                }
             }
         }
     }
