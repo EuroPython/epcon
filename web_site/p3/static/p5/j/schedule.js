@@ -536,6 +536,10 @@ function highlighter(mode, option) {
                     tools.append('<div class="maximized talk-vote">' + user.votes[tid] + '/10</div>');
                 }
 
+                /*
+                 * gli eventi del partner program sono "virtuali" non esistano
+                 * nel db e hanno un id < 0
+                 */
                 if(e.attr('data-id') > 0) {
                     var track = e.parents('.track').attr('data-track');
                     if(track != 'training1' && track != 'training2') {
