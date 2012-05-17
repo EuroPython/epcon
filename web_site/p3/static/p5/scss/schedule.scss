@@ -451,8 +451,9 @@ body#schedule > .page > .container {
             p {
                 padding: 0 3px;
                 a {
-                    border-bottom: 1px solid $cTraining;
-                    color: $cTraining;
+                    border-bottom: 1px solid black;
+                    color: black;
+                    margin: 0 0 0 10px;
                 }
             }
         }

@@ -355,8 +355,9 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .event .notice p {
       padding: 0 3px; }
       .conference-schedules.timetable .event .notice p a {
-        border-bottom: 1px solid #a4d4d4;
-        color: #a4d4d4; }
+        border-bottom: 1px solid black;
+        color: black;
+        margin: 0 0 0 10px; }
   .conference-schedules.timetable .event .status-bar {
     position: relative;
     background: transparent;

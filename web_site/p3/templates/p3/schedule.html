@@ -224,15 +224,27 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                             </div>
                             {% endif %}
                             {% endcomment %}
-                            {% if "keynote" in e.tags %}
+                            {% if "recruiting" in e.tags or "lightning" in e.tags or "poster" in e.tags %}
                             <div class="toggle-notice">&nbsp;</div>
                             {% endif %}
                         </div>
                     </div>
-                    {% if "keynote" in e.tags %}
+                    {% if "recruiting" in e.tags %}
                     <div class="notice">
-                        <h3>This is a keynote</h3>
-                        <p>This talk can be followed from any track.</p>
+                        <h3>Recruiting session</h3>
+                        <p>Are you a professional looking for a job? Is your company looking for proficient programmers? EuroPython is your greatest opportunity to hire the best Python programmers! <a href="/recruiting">More details</a></p>
+                    </div>
+                    {% endif %}
+                    {% if "lightning" in e.tags %}
+                    <div class="notice">
+                        <h3>Lightning talks</h3>
+                        <p>A lightning talk is a short talk, typically only five minutes in duration, providing an opportunity for participants to deliver a presentation on a subject of their choosing. <a href="/talks/lightning-talks">More details</a></p>
+                    </div>
+                    {% endif %}
+                    {% if "poster" in e.tags %}
+                    <div class="notice">
+                        <h3>Poster session</h3>
+                        <p>We are glad to introduce a poster session at EuroPython for the first time, to provide an alternative and innovative way to discuss and share your experiences with other people. <a href="/poster-session">More details</a></p>
                     </div>
                     {% endif %}
                 </div>
