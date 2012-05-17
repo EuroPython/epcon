@@ -110,21 +110,21 @@ body#schedule > .page > .container {
     -ms-transition: all 0.4s ease 0s; }
     .conference-schedules.timetable .event .maximized {
       display: none; }
-  .conference-schedules.timetable .event.exposed {
-    padding: 7px;
-    z-index: 200 !important;
-    box-shadow: 0 3px 8px 0 #aaa;
-    border: 4px solid white;
-    width: 400px !important;
-    height: 350px !important;
-    opacity: 1 !important; }
-    .conference-schedules.timetable .event.exposed .minimized {
-      display: none; }
-    .conference-schedules.timetable .event.exposed .maximized {
-      display: block; }
-    .conference-schedules.timetable .event.exposed span.maximized {
-      display: inline;
-      font-weight: bold; }
+    .conference-schedules.timetable .event.exposed {
+      padding: 7px;
+      z-index: 200 !important;
+      box-shadow: 0 3px 8px 0 #aaa;
+      border: 4px solid white;
+      width: 400px !important;
+      height: 350px !important;
+      opacity: 1 !important; }
+      .conference-schedules.timetable .event.exposed .minimized {
+        display: none; }
+      .conference-schedules.timetable .event.exposed .maximized {
+        display: block; }
+      .conference-schedules.timetable .event.exposed span.maximized {
+        display: inline;
+        font-weight: bold; }
 
 .conference-schedules.timetable {
   /*
@@ -304,15 +304,15 @@ body#schedule > .page > .container {
       line-height: 1.4em;
       padding-bottom: 3px;
       opacity: 0.7; }
-  .conference-schedules.timetable .event.exposed .hhmm {
-    font-weight: bold; }
-  .conference-schedules.timetable .event.exposed .speakers {
-    opacity: 1;
-    margin: 0; }
-  .conference-schedules.timetable .event.exposed .ellipsis {
-    display: none; }
-  .conference-schedules.timetable .event.exposed .after-ellipsis {
-    display: inline; }
+    .conference-schedules.timetable .event.exposed .hhmm {
+      font-weight: bold; }
+    .conference-schedules.timetable .event.exposed .speakers {
+      opacity: 1;
+      margin: 0; }
+    .conference-schedules.timetable .event.exposed .ellipsis {
+      display: none; }
+    .conference-schedules.timetable .event.exposed .after-ellipsis {
+      display: inline; }
   .conference-schedules.timetable .event[data-talk], .conference-schedules.timetable .event.partner-program, .conference-schedules.timetable .track[data-track=sprint1] .event, .conference-schedules.timetable .track[data-track=sprint2] .event, .conference-schedules.timetable .track[data-track=sprint3] .event {
     padding-top: 0; }
     .conference-schedules.timetable .event[data-talk] .name, .conference-schedules.timetable .event.partner-program .name, .conference-schedules.timetable .track[data-track=sprint1] .event .name, .conference-schedules.timetable .track[data-track=sprint2] .event .name, .conference-schedules.timetable .track[data-track=sprint3] .event .name {
@@ -493,21 +493,21 @@ body#schedule > .page > .container {
     background: rgba(225, 219, 197, 0.3); }
     .conference-schedules.timetable .event.dimmed .talk-level {
       background: none; }
-  .conference-schedules.timetable .event.exposed.dimmed {
-    opacity: .3;
-    background: #fcfad9;
-    /*
-     * la classe .dimmed rimuove il background da .talk-level per eliminare
-     * la barra colorata ed accentuare l'effetto di "fade". Se però apro un
-     * evento voglio vedere i colori anche se è "dimmed", non ho trovato
-     * altro modo che ripetere le classi
-     */ }
-    .conference-schedules.timetable .event.exposed.dimmed .talk-level.beginner {
-      background: #738023; }
-    .conference-schedules.timetable .event.exposed.dimmed .talk-level.intermediate {
-      background: #e7c30f; }
-    .conference-schedules.timetable .event.exposed.dimmed .talk-level.advanced {
-      background: #da2300; }
+    .conference-schedules.timetable .event.dimmed.exposed.dimmed {
+      opacity: .3;
+      background: #fcfad9;
+      /*
+      * la classe .dimmed rimuove il background da .talk-level per eliminare
+      * la barra colorata ed accentuare l'effetto di "fade". Se però apro un
+      * evento voglio vedere i colori anche se è "dimmed", non ho trovato
+      * altro modo che ripetere le classi
+      */ }
+      .conference-schedules.timetable .event.dimmed.exposed.dimmed .talk-level.beginner {
+        background: #738023; }
+      .conference-schedules.timetable .event.dimmed.exposed.dimmed .talk-level.intermediate {
+        background: #e7c30f; }
+      .conference-schedules.timetable .event.dimmed.exposed.dimmed .talk-level.advanced {
+        background: #da2300; }
 
 #schedule-navigator {
   position: fixed;
