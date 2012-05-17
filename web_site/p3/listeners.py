@@ -85,7 +85,7 @@ user_created.connect(on_user_created)
 
 def on_user_identity_created(sender, **kw):
     identity = kw['identity']
-    profile = AttendeeProfile.objects.getOrCreateForUser(sender.user.user)
+    profile = AttendeeProfile.objects.getOrCreateForUser(sender.user)
     if identity.user.identities.count() > 1:
         # non è la prima identità non copio niente per non sovrascrivere
         # i dati cambiati dall'utente
