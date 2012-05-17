@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /*
  * Il programma di una conferenza può essere rappresentato in diversi modi:
  *  - timetable
@@ -577,7 +576,7 @@ body#schedule > .page > .container {
   .conference-schedules.timetable.vertical-narrow .schedule > .hhmm {
     float: left;
     width: 40px;
-    height: 1360px; }
+    height: 1600px; }
   .conference-schedules.timetable.vertical-narrow .schedule:after {
     content: ' ';
     display: block;
@@ -586,7 +585,7 @@ body#schedule > .page > .container {
     position: relative;
     float: left;
     width: 100px;
-    height: 1360px; }
+    height: 1600px; }
   .conference-schedules.timetable.vertical-narrow .event {
     width: 100%; }
   .conference-schedules.timetable.vertical-narrow .duration-15 {
@@ -689,8 +688,12 @@ body#schedule > .page > .container {
     top: 1150px; }
   .conference-schedules.timetable.vertical-narrow .time-1830 {
     top: 1180px; }
+  .conference-schedules.timetable.vertical-narrow .time-1900 {
+    top: 1240px; }
   .conference-schedules.timetable.vertical-narrow .time-1930 {
     top: 1300px; }
+  .conference-schedules.timetable.vertical-narrow .time-2100 {
+    top: 1480px; }
   .conference-schedules.timetable.vertical-narrow .tracks-1 {
     width: 100px; }
   .conference-schedules.timetable.vertical-narrow .tracks-2 {
@@ -707,6 +710,8 @@ body#schedule > .page > .container {
     width: 700px; }
   .conference-schedules.timetable.vertical-narrow .tracks-8 {
     width: 800px; }
+  .conference-schedules.timetable.vertical-narrow .tracks-9 {
+    width: 900px; }
   .conference-schedules.timetable.vertical-narrow .track .title {
     position: absolute;
     width: 100%;

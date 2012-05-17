@@ -790,7 +790,7 @@ body#schedule > .page > .container {
     $trackW: 100px;
     $slot15: 30px;
     $event0: 40px;
-    $height: $event0 + $slot15 * 42 + 60;
+    $height: $event0 + $slot15 * 52;
     .schedule > .hhmm {
         float: left;
         width: 40px;
@@ -859,7 +859,9 @@ body#schedule > .page > .container {
     .time-1800 { top: $event0 + $slot15 * 36; }
     .time-1815 { top: $event0 + $slot15 * 37; }
     .time-1830 { top: $event0 + $slot15 * 38; }
+    .time-1900 { top: $event0 + $slot15 * 40; }
     .time-1930 { top: $event0 + $slot15 * 42; }
+    .time-2100 { top: $event0 + $slot15 * 48; }
     .tracks-1 { width: $trackW * 1; }
     .tracks-2 { width: $trackW * 2; }
     .tracks-3 { width: $trackW * 3; }
@@ -868,6 +870,7 @@ body#schedule > .page > .container {
     .tracks-6 { width: $trackW * 6; }
     .tracks-7 { width: $trackW * 7; }
     .tracks-8 { width: $trackW * 8; }
+    .tracks-9 { width: $trackW * 9; }
 
     .track .title {
         position: absolute;
