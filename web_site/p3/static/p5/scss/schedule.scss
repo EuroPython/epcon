@@ -576,6 +576,13 @@ body#schedule > .page > .container {
         .speakers{
             border-bottom: none;
         }
+        &.exposed {
+            text-align: left;
+            .name {
+                border: 0;
+                padding: 0;
+            }
+        }
     }
 
     .event.special {
@@ -598,14 +605,6 @@ body#schedule > .page > .container {
                     content: " - ";
                 }
             }
-        }
-    }
-
-    .event.keynote.exposed {
-        text-align: left;
-        .name {
-            border: 0;
-            padding: 0;
         }
     }
 

@@ -412,6 +412,11 @@ body#schedule > .page > .container {
       background-color: white; }
     .conference-schedules.timetable .event.keynote .speakers {
       border-bottom: none; }
+    .conference-schedules.timetable .event.keynote.exposed {
+      text-align: left; }
+      .conference-schedules.timetable .event.keynote.exposed .name {
+        border: 0;
+        padding: 0; }
   .conference-schedules.timetable .event.special {
     background-color: rgba(225, 219, 197, 0.6);
     background-image: url(../i/empty-track.png);
@@ -428,11 +433,6 @@ body#schedule > .page > .container {
           font-size: inherit; }
         .conference-schedules.timetable .event.special h3 .hhmm:after {
           content: " - "; }
-  .conference-schedules.timetable .event.keynote.exposed {
-    text-align: left; }
-    .conference-schedules.timetable .event.keynote.exposed .name {
-      border: 0;
-      padding: 0; }
   .conference-schedules.timetable .event.poster h3 {
     margin: 10px 0;
     font-size: 16px;
