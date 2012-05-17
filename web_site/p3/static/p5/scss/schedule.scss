@@ -329,6 +329,7 @@ body#schedule > .page > .container {
     }
 
     .event {
+        padding-top: 20px;
         a {
             border: none;
         }
@@ -337,10 +338,11 @@ body#schedule > .page > .container {
             right: 5px;
         }
         .name {
-            line-height: 14px;
-            //height: 28px;
-            font-size: 11px;
-            overflow: hidden;
+            font-variant: small-caps;
+            font-size: 1.3em;
+            border: 0;
+            padding: 0;
+            text-align: center;
         }
         .hhmm {
             position: static;
@@ -371,12 +373,6 @@ body#schedule > .page > .container {
         }
     }
     .event.exposed {
-        .name {
-            height: auto;
-            font-weight: bold;
-            margin: 8px 0;
-            font-size: 12px;
-        }
         .hhmm {
             font-weight: bold;
         }
@@ -389,6 +385,29 @@ body#schedule > .page > .container {
         }
         .after-ellipsis {
             display: inline;
+        }
+    }
+
+    /*
+     * gli .event[data-talk] sono gli eventi associati ad un talk
+     */
+    .event[data-talk] {
+        padding-top: 0;
+        .name {
+            font-variant: normal;
+            font-size: 11px;
+            margin-top: 0;
+            overflow: hidden;
+            line-height: 14px;
+            text-align: left;
+        }
+        &.exposed {
+            .name {
+                height: auto;
+                font-weight: bold;
+                margin: 8px 0;
+                font-size: 12px;
+            }
         }
     }
 
@@ -554,24 +573,21 @@ body#schedule > .page > .container {
      * - registration
      */
 
-     .EXT_special_event_basic_style {
-        height: 100%;
-        text-align: center;
-        padding-top: 20px;
-        h3{
-            font-variant: small-caps;
-        }
-     }
-
     .event.keynote {
-        @extend .EXT_special_event_basic_style;
+        /*
+         * stesso padding devinito in .event; purtroppo annullato
+         * dall'.event[data-talk]
+         */
+        padding-top: 20px;
         background-color: $cKeynoteBackground;
-        h3 {
+        text-align: center;
+        .name {
             background-color: $cWhite;
             font-size: 13px;
             border: 1px dotted $cGray;
             padding: 7px;
             display: inline;
+            font-variant: small-caps;
         }
         .speakers{
             border-bottom: none;
@@ -586,15 +602,15 @@ body#schedule > .page > .container {
     }
 
     .event.special {
-        @extend .EXT_special_event_basic_style;
         background-color: rgba($cBeige, .6);
         background-image: url(../i/empty-track.png);
         backround-position: bottom left;
         border-left: none;
-        h3 {
+        .name {
             font-size: 1.3em;
             border: 0;
             padding: 0;
+            font-variant: small-caps;
             .hhmm {
                 display: inline;
                 font-size: inherit;
@@ -609,6 +625,7 @@ body#schedule > .page > .container {
     }
 
     .event.poster {
+        padding-top: 0;
         h3 {
             margin: 10px 0;
             font-size: 16px;
@@ -633,6 +650,7 @@ body#schedule > .page > .container {
         }
     }
     .event.partner-program {
+        @extend .event[data-talk];
         .abstract {
             height: 260px;
         }
@@ -641,6 +659,15 @@ body#schedule > .page > .container {
                 background: $cPartners;
                 color: #301d1d;
             }
+        }
+    }
+
+    .track[data-track=sprint1], .track[data-track=sprint2], .track[data-track=sprint3]{
+        .event {
+            @extend .event[data-talk];
+        }
+        .event.special {
+            @extend .event.special;
         }
     }
 
