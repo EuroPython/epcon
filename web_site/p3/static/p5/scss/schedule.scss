@@ -559,19 +559,19 @@ body#schedule > .page > .container {
         text-align: center;
         padding-top: 20px;
         h3{
-            font-size: 13px;
             font-variant: small-caps;
-            display: inline;
-            padding: 7px;
-            border: 1px dotted $cGray;
-        }        
+        }
      }
 
     .event.keynote {
         @extend .EXT_special_event_basic_style;
         background-color: $cKeynoteBackground;
-        h3{
+        h3 {
             background-color: $cWhite;
+            font-size: 13px;
+            border: 1px dotted $cGray;
+            padding: 7px;
+            display: inline;
         }
         .speakers{
             border-bottom: none;

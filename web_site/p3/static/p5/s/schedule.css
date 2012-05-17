@@ -401,15 +401,15 @@ body#schedule > .page > .container {
     text-align: center;
     padding-top: 20px; }
     .conference-schedules.timetable .EXT_special_event_basic_style h3, .conference-schedules.timetable .event.keynote h3, .conference-schedules.timetable .event.special h3 {
-      font-size: 13px;
-      font-variant: small-caps;
-      display: inline;
-      padding: 7px;
-      border: 1px dotted #878181; }
+      font-variant: small-caps; }
   .conference-schedules.timetable .event.keynote {
     background-color: #d3db9c; }
     .conference-schedules.timetable .event.keynote h3 {
-      background-color: white; }
+      background-color: white;
+      font-size: 13px;
+      border: 1px dotted #878181;
+      padding: 7px;
+      display: inline; }
     .conference-schedules.timetable .event.keynote .speakers {
       border-bottom: none; }
     .conference-schedules.timetable .event.keynote.exposed {
