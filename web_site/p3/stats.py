@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 from collections import defaultdict
 from conference.models import Ticket, Speaker
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db.models import Q, Count
 from p3 import models
 
@@ -95,28 +97,148 @@ def presence_days(conf):
     return output
 presence_days.short_description = "Affluenza per giorno (solo biglietti compilati)"
 
-def tickets_status(conf):
-    output = [
-        {
-            'title': 'Venduti',
-            'total': _tickets(conf, 'conference').count(),
-        },
-        {
-            'title': 'Compilati',
-            'total': _compiled(conf).count(),
-        },
-        {
-            'title': 'Non compilati',
-            'total': _not_compiled(conf).count(),
-        }
-    ]
-    qs = _tickets(conf, fare_code='SIM%')\
-        .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
-        .select_related('p3_conference_sim')
-    output.append({
-        'title': 'SIM non compilati',
-        'total': qs.count(),
-    })
+def tickets_status(conf, code=None):
+    orphan_tickets = _tickets(conf, 'conference')\
+        .filter(p3_conference__isnull=False)\
+        .exclude(p3_conference__assigned_to='')\
+        .exclude(p3_conference__assigned_to__in=User.objects.values('email'))
+    multiple_assignments = _tickets(conf, 'conference')\
+        .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))\
+        .values('p3_conference__assigned_to')\
+        .annotate(total=Count('id'))\
+        .filter(total__gt=1)
+    if code is None:
+        output = [
+            {
+                'id': 'ticket_sold',
+                'title': 'Venduti',
+                'total': _tickets(conf, 'conference').count(),
+            },
+            {
+                'title': 'Compilati',
+                'total': _compiled(conf).count(),
+            },
+            {
+                'title': 'Non compilati',
+                'total': _not_compiled(conf).count(),
+            }
+        ]
+        qs = _tickets(conf, fare_code='SIM%')\
+            .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
+            .select_related('p3_conference_sim')
+        output.append({
+            'title': 'SIM non compilati',
+            'total': qs.count(),
+        })
+
+        qs = _tickets(conf, 'conference')\
+            .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
+        output.append({
+            'title': 'Biglietti assegnati',
+            'total': qs.count(),
+        })
+
+        output.append({
+            'id': 'multiple_assignments',
+            'title': 'Biglietti multipli assegnati alla stessa persona',
+            'total': multiple_assignments.count(),
+        })
+
+        output.append({
+            'id': 'orphan_tickets',
+            'title': 'Biglietti assegnati orfani',
+            'total': orphan_tickets.count(),
+        })
+    else:
+        if code == 'ticket_sold':
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                    ('email', 'Email'),
+                    ('buyer', 'Buyer'),
+                    ('buyer_email', 'Buyer Email'),
+                ),
+                'data': [],
+            }
+            qs = _tickets(conf, 'conference')\
+                .select_related('p3_conference', 'user')
+            assignees = dict([
+                (u.email, u) for u in User.objects\
+                    .filter(email__in=qs\
+                        .exclude(p3_conference__assigned_to='')\
+                        .values('p3_conference__assigned_to'))])
+            data = output['data']
+            for x in qs:
+                # p3_conference può essere None perché viene costruito lazy al
+                # primo salvataggio del biglietto.
+                if x.p3_conference and x.p3_conference.assigned_to:
+                    email = x.p3_conference.assigned_to
+                    u = assignees.get(email)
+                else:
+                    email = x.user.email
+                    u = x.user
+                if u:
+                    name = '<a href="%s">%s %s</a>' % (
+                        reverse('admin:auth_user_change', args=(u.id,)),
+                        u.first_name,
+                        u.last_name)
+                    order = u.first_name + u.last_name
+                else:
+                    name = '%s <strong>Biglietto orfano</strong>' % x.name
+                    order = x.name
+                if x.user == u:
+                    buyer = ''
+                else:
+                    buyer = '<a href="%s">%s %s</a>' % (
+                        reverse('admin:auth_user_change', args=(x.user.id,)),
+                        x.user.first_name,
+                        x.user.last_name)
+                    if not order:
+                        order = x.user.first_name + x.user.last_name
+                if x.user.email == email:
+                    buyer_email = ''
+                else:
+                    buyer_email = x.user.email
+                row = {
+                    'name': name,
+                    'email': email,
+                    'buyer': buyer,
+                    'buyer_email': buyer_email,
+                    '_order': order,
+                }
+                data.append(row)
+            data.sort(key=lambda x: x['_order'])
+        elif code in ('orphan_tickets', 'multiple_assignments'):
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                    ('email', 'Email'),
+                    ('fare', 'Fare code'),
+                    ('buyer', 'Buyer'),
+                    ('buyer_email', 'Buyer Email'),
+                ),
+                'data': [],
+            }
+            if code == 'orphan_tickets':
+                qs = orphan_tickets
+            else:
+                qs = _tickets(conf, 'conference')\
+                    .filter(p3_conference__assigned_to__in=multiple_assignments\
+                        .values('p3_conference__assigned_to'))
+            qs = qs.select_related('p3_conference', 'user', 'fare')
+            data = output['data']
+            for x in qs:
+                buyer = '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.user.id,)),
+                    x.user.first_name,
+                    x.user.last_name)
+                data.append({
+                    'name': x.name,
+                    'email': x.p3_conference.assigned_to,
+                    'fare': x.fare.code,
+                    'buyer': buyer,
+                    'buyer_email': x.user.email,
+                })
     return output
 tickets_status.short_description = 'Statistiche biglietti'
 
@@ -176,8 +298,10 @@ def speaker_status(conf, code=None):
             .order_by('user__first_name', 'user__last_name')
         for x in qs:
             data.append({
-                'name': '%s %s' % (x.user.first_name, x.user.last_name),
-                'uid': x.user_id,
+                'name': '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.user_id,)),
+                    x.user.first_name,
+                    x.user.last_name),
                 'email': x.user.email,
             })
     return output
