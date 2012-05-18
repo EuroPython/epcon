@@ -116,6 +116,11 @@ def profile_identities(request):
             x = request.user.assopy_user.identities.get(identifier=request.POST['identifier'])
         except:
             return http.HttpResponseBadRequest()
+        log.info(
+            'Removed the identity "%s" from the user "%s" "%s"',
+            x.identifier,
+            x.user.name(),
+            x.user.user.email)
         x.delete()
     if request.is_ajax():
         return http.HttpResponse('')
