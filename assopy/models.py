@@ -800,6 +800,11 @@ class RefundOrderItem(models.Model):
         if self.refund.status != 'pending':
             raise RuntimeError('Refund must be in "pending" status')
         out = super(RefundOrderItem, self).save(*args, **kwargs)
+        log.info(
+            'Froze a ticket (%d) according to the refund request of "%s" for the order "%s"',
+            self.orderitem.ticket.id,
+            self.orderitem.order.user.name(),
+            self.orderitem.order.code)
         self.orderitem.ticket.frozen = True
         self.orderitem.ticket.save()
         return out
@@ -867,9 +872,7 @@ class Refund(models.Model):
                     raise ValidationError('Cannot reject a previusly refunded request')
 
     def save(self, *args, **kwargs):
-        old = {
-            'status': None,
-        }
+        old = None
         if self.id:
             try:
                 old = Refund.objects.values('status').get(id=self.id)
@@ -877,6 +880,15 @@ class Refund(models.Model):
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
             self.done = datetime.now()
+        if self.status != old:
+            o = self.items.all()[0].order
+            log.info(
+                'Status change of the refund request "%d" issued by "%s" for the order "%s" from "%s" to "%s"',
+                self.id,
+                o.user.name(),
+                o.code,
+                self.status,
+                old)
         try:
             return super(Refund, self).save(*args, **kwargs)
         finally:
@@ -884,10 +896,12 @@ class Refund(models.Model):
                 t = item.ticket
                 if t:
                     if self.status == 'refunded':
+                        log.info('Delete the ticket "%d" because it as been refuneded', t.id)
                         item.ticket = None
                         item.save()
                         t.delete()
                     elif self.status == 'rejected':
+                        log.info('Unfroze the ticket "%d" because the refund as been rejected', t.id)
                         t.frozen = False
                         t.save()
                     else:
