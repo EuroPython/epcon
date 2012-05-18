@@ -55,6 +55,9 @@ table {
 <h1>{{ stat.short_description }} (<a href="{% url admin:conference-ticket-stats-details-csv conference %}?code={{ stat_code }}">csv</a>)</h1>
 <table>
     <tr>
+        {% if result.data.0.uid %}
+        <th>#id</th>
+        {% endif %}
         {% for colid, colname in result.columns %}
         <th>{{ colname }}</th>
         {% endfor %}
@@ -62,6 +65,9 @@ table {
     {% paginate result.data count=50 as page %}
     {% for row in page.object_list %}
     <tr>
+        {% if row.uid %}
+        <td>{{ row.uid }}</td>
+        {% endif %}
         {% for colid, colname in result.columns %}
         <td>{{ row|attrib_:colid|safe }}</td>
         {% endfor %}
@@ -95,6 +101,7 @@ table {
                     </table>
                 </fieldset>
                 <input type="submit" name="send" value="invia" />
+                <label>Preview id <input type="text" size="5" maxlength="5" name="preview_id" /></label>
                 <input type="submit" name="preview" value="preview" />
             </form>
         </div>

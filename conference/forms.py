@@ -411,6 +411,7 @@ class AdminSendMailForm(forms.Form):
     from_ = forms.EmailField(max_length=50, initial=dsettings.DEFAULT_FROM_EMAIL)
     subject = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
+    preview_id = forms.IntegerField(min_value=1, required=False)
 
     def load_emails(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
