@@ -168,14 +168,18 @@ class ConferenceAdmin(admin.ModelAdmin):
             form = AdminSendMailForm(data=request.POST)
             if form.is_valid():
                 uids = [ x['uid'] for x in stat['get_data']()['data']]
-                pid = form.cleaned_data.get('preview_id')
+                try:
+                    pid = int(request.POST['preview_id'])
+                except:
+                    pid = None
                 if pid is None or pid not in uids:
                     pid = None
                 if 'preview' in request.POST:
                     preview = form.preview(pid or uids[0])[0]
                 else:
-                    form.send_emails(uids, request.user.email)
-                    form.save_email()
+                    if form.cleaned_data['send_email']:
+                        form.send_emails(uids, request.user.email)
+                        form.save_email()
         else:
             form = AdminSendMailForm()
         return render_to_response(
