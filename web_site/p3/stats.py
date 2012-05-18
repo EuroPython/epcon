@@ -205,6 +205,7 @@ def tickets_status(conf, code=None):
                     'buyer': buyer,
                     'buyer_email': buyer_email,
                     '_order': order,
+                    'uid': (u or x.user).id,
                 }
                 data.append(row)
             data.sort(key=lambda x: x['_order'])
@@ -303,6 +304,7 @@ def speaker_status(conf, code=None):
                     x.user.first_name,
                     x.user.last_name),
                 'email': x.user.email,
+                'uid': x.user_id,
             })
     return output
 speaker_status.short_description = 'Statistiche speaker'
