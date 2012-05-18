@@ -48,7 +48,7 @@ table {
      <a href="../../../">Conference</a> &rsaquo;
      <a href="../../">Conference</a>&rsaquo;
      <a href=".">stats</a>&rsaquo;
-     {{ stat.short_description }}
+     {{ stat.short_description }} | {{ stat_code }}
 </div>
 {% endblock %}{% block content %}
 {% with stat.get_data as result %}
@@ -63,13 +63,7 @@ table {
     {% for row in page.object_list %}
     <tr>
         {% for colid, colname in result.columns %}
-        <td>
-            {% if forloop.counter == 1 and row.uid %}
-            <a href="{% url admin:auth_user_change row.uid %}">{{ row|attrib_:colid }}</a>
-            {% else %}
-            {{ row|attrib_:colid }}
-            {% endif %}
-        </td>
+        <td>{{ row|attrib_:colid|safe }}</td>
         {% endfor %}
     </tr>
     {% endfor %}
