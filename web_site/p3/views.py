@@ -793,6 +793,11 @@ def p3_account_email(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             if email != request.user.email:
+                log.info(
+                    'requested an email change from "%s" to "%s" for the user "%s"',
+                    request.user.email,
+                    email,
+                    request.user.username,)
                 utils.email(
                     'verify-account',
                     ctx={
