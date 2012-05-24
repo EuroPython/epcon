@@ -8,8 +8,9 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
-from assopy import models
-from assopy.clients import genro
+from assopy import models, settings
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 from collections import defaultdict
 from datetime import datetime
 

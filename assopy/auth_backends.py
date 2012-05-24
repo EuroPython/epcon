@@ -5,7 +5,8 @@ from django.db import transaction
 
 from assopy import models
 from assopy import settings
-from assopy.clients import genro
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 
 import logging
 

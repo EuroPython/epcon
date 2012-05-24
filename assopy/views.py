@@ -15,7 +15,8 @@ from assopy import forms as aforms
 from assopy import janrain
 from assopy import models
 from assopy import settings
-from assopy.clients import genro
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 from email_template import utils
 
 import json
