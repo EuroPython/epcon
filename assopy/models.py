@@ -149,7 +149,7 @@ class UserManager(models.Manager):
             'new local user "%s" created; for "%s %s" (%s)',
             duser.username, first_name, last_name, email,
         )
-        if assopy_id is not None:
+        if assopy_id is not None and settings.GENRO_BACKEND:
             genro.user_remote2local(user)
         if send_mail:
             utils.email(
@@ -243,7 +243,7 @@ class User(models.Model):
             
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
-        if self.assopy_id:
+        if self.assopy_id and settings.GENRO_BACKEND:
             genro.user_local2remote(self)
 
     def tickets(self):
@@ -514,12 +514,15 @@ class OrderManager(models.Manager):
                             item.save()
                             log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
         log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
-        if remote:
+        if remote and settings.GENRO_BACKEND:
             genro.create_order(
                 o,
                 return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok', kwargs={'code': '%(code)s'})
             )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
+        else:
+            # aggiungere code al ordine
+            pass
         if o.total() == 0:
             o._complete = True
             o.save()
@@ -580,7 +583,7 @@ class Order(models.Model):
     def __unicode__(self):
         msg = 'Order %d' % self.id
         if self.code:
-            msg += ' #' + self.code
+            msg += ' #%s' % self.code
         return msg
 
     def billable(self):
@@ -742,36 +745,41 @@ order_created.connect(_order_feedback)
 class InvoiceManager(models.Manager):
     @transaction.commit_on_success
     def creates_from_order(self, order, update=True):
-        if not order.assopy_id:
-            return
-        remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
 
-        def _copy(invoice, data):
-            invoice.code = data['number']
-            invoice.assopy_id = data['id']
-            invoice.emit_date = data['invoice_date']
-            invoice.payment_date = data['payment_date']
-            invoice.price = str(data['gross_price'])
-            return invoice
+        if settings.GENRO_BACKEND:
+            if not order.assopy_id:
+                return
+            remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
 
-        invoices = []
-        if update:
-            for i in order.invoices.all():
-                try:
-                    data = remote.pop(i.code)
-                except KeyError:
-                    i.delete()
-                else:
-                    _copy(i, data)
-                    i.save()
-                    invoices.append(i)
+            def _copy(invoice, data):
+                invoice.code = data['number']
+                invoice.assopy_id = data['id']
+                invoice.emit_date = data['invoice_date']
+                invoice.payment_date = data['payment_date']
+                invoice.price = str(data['gross_price'])
+                return invoice
 
-        for data in remote.values():
-            i = Invoice(order=order)
-            _copy(i, data)
-            i.save()
-            invoices.append(i)
-        return invoices
+            invoices = []
+            if update:
+                for i in order.invoices.all():
+                    try:
+                        data = remote.pop(i.code)
+                    except KeyError:
+                        i.delete()
+                    else:
+                        _copy(i, data)
+                        i.save()
+                        invoices.append(i)
+
+            for data in remote.values():
+                i = Invoice(order=order)
+                _copy(i, data)
+                i.save()
+                invoices.append(i)
+            return invoices
+        else:
+            # cosa faccio qui
+            pass
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')

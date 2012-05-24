@@ -120,7 +120,11 @@ class OrderAdmin(admin.ModelAdmin):
     def _invoice(self, o):
         output = []
         for i in o.invoices.all():
-            output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
+            if settings.GENRO_BACKEND:
+                output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
+            else:
+                # mettere link alla fattura
+                pass
         return ' '.join(output)
     _invoice.allow_tags = True
 
@@ -160,7 +164,8 @@ class OrderAdmin(admin.ModelAdmin):
             if form.is_valid():
                 d = form.cleaned_data['date']
                 for o in orders:
-                    genro.confirm_order(o.assopy_id, o.total(), d)
+                    if settings.GENRO_BACKEND:
+                        genro.confirm_order(o.assopy_id, o.total(), d)
                     o.complete()
                 return redirect('admin:assopy_order_changelist')
         else:
