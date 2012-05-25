@@ -166,6 +166,8 @@ class OrderAdmin(admin.ModelAdmin):
                 for o in orders:
                     if settings.GENRO_BACKEND:
                         genro.confirm_order(o.assopy_id, o.total(), d)
+                    else:
+                        o.confirm_order(d)
                     o.complete()
                 return redirect('admin:assopy_order_changelist')
         else:
