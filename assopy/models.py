@@ -521,8 +521,12 @@ class OrderManager(models.Manager):
             )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
         else:
-            # aggiungere code al ordine
-            pass
+            # per quanto riguarda l'assopy_id, lo mantengo per retrocompatibilita
+            # con genro per gli url ecc, in un fututro andrebbe eliminato
+            o.save()
+            o.assopy_id = o.pk
+            o.code = settings.ORDER_CODE(o)
+            o.save()
         if o.total() == 0:
             o._complete = True
             o.save()
