@@ -649,6 +649,11 @@ class Order(models.Model):
             self.save()
         return r
 
+    def confirm_order(self, payment_date):
+        # metodo per confermare un ordine simile a genro.confirm_order
+        # una volta confermato un ordine si crea una fattura con data 
+        Invoice.objects.creates_from_order(self,payment_date=payment_date)
+
     def deductible(self):
         """
         Ritorna True/False a seconda che l'ordine sia deducibile o meno
