@@ -43,3 +43,9 @@ OTC_CODE_HANDLERS = {
     'j': 'assopy.views.OTCHandler_J',
 }
 OTC_CODE_HANDLERS.update(getattr(settings, 'ASSOPY_OTC_CODE_HANDLERS', {}))
+
+def _ASSOPY_ORDER_CODE(order):
+    import datetime
+    return "O/%s.%s" % (str(datetime.date.today().year)[2:], str(order.pk).zfill(4))
+
+ORDER_CODE = getattr(settings, 'ASSOPY_ORDER_CODE', _ASSOPY_ORDER_CODE)
