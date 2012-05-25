@@ -714,6 +714,9 @@ class OrderItem(models.Model):
     code = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.CharField(max_length=100, blank=True)
+    # aggiungo un campo per iva... poi potra essere un fk ad un altra tabella
+    # o venire copiato da conference
+    vat = models.IntegerField(default=0)
 
     def delete(self, **kwargs):
         if self.ticket:
@@ -788,8 +791,18 @@ class Invoice(models.Model):
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+    # indica il tipo di regime iva associato alla fattura
+    # perche vengono generate più fatture per ogni ordine
+    # contente orderitems con diverso regime fiscale
+    vat = models.IntegerField(null=True, blank=True)
 
     objects = InvoiceManager()
+
+    def __unicode__(self):
+        msg = 'Invoice %d' % self.id
+        if self.code:
+            msg += ' #%s' % self.code
+        return msg
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
