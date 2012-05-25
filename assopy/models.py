@@ -751,11 +751,11 @@ order_created.connect(_order_feedback)
 
 class InvoiceManager(models.Manager):
     @transaction.commit_on_success
-    def creates_from_order(self, order, update=True):
-
+    def creates_from_order(self, order, update=True, payment_date=None):
         if settings.GENRO_BACKEND:
             if not order.assopy_id:
                 return
+
             remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
 
             def _copy(invoice, data):
@@ -785,8 +785,32 @@ class InvoiceManager(models.Manager):
                 invoices.append(i)
             return invoices
         else:
-            # cosa faccio qui
-            pass
+            # devo generare x fatture in funzione degli order items
+            # raggruppati per la loro vat
+            invoices = []
+            vat_list = order.orderitem_set.filter(price__gt=0) \
+                            .values_list('vat', flat=True) \
+                            .distinct('vat')
+            if update:
+                # non so se questo metodo è necessario cmq
+                # in questo modo evito che ci siano delle fatture
+                # fantasma.
+                order.invoices.exclude(vat__in=vat_list).delete()
+
+            for vat in vat_list:
+                i, created = Invoice.objects.get_or_create(order=order,vat=vat)
+
+                if created:
+                    # anche qui metto l'assopy_id uguale alla pk
+                    i.assopy_id = i.pk
+                    i.code = i.pk
+                    i.save()
+
+                if payment_date:
+                    i.payment_date = payment_date
+                    i.save()
+                invoices.append(i)
+            return invoices
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
