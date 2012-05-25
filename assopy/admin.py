@@ -564,3 +564,10 @@ class RefundAdmin(admin.ModelAdmin):
         models.refund_event.send(sender=refund, old=refund.old_status, tickets=refund.old_tickets)
 
 admin.site.register(models.Refund, RefundAdmin)
+
+
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'order', 'vat','payment_date','price')
+
+
+admin.site.register(models.Invoice,InvoiceAdmin)
