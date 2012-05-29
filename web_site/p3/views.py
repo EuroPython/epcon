@@ -623,7 +623,8 @@ def sim_report(request):
         return http.HttpResponseForbidden()
     tickets = cmodels.Ticket.objects.filter(
         orderitem__order___complete=True,
-        fare__in=cmodels.Fare.objects.filter(code__startswith='SIM'),
+        fare__in=cmodels.Fare.objects.filter(
+            code__startswith='SIM', conference=settings.CONFERENCE_CONFERENCE),
     ).order_by('orderitem__order').select_related('p3_conference_sim')
     if request.method == 'POST':
         t = tickets.get(id=request.POST['ticket'])
