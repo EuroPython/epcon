@@ -483,6 +483,10 @@ class OrderManager(models.Manager):
 
         o.save()
         for f, params in items:
+            try:
+                vat = f.vat_set.all()[0]
+            except  IndexError:
+                vat = None
             cp = dict(params)
             del cp['qty']
             for _ in range(params['qty']):
@@ -490,7 +494,7 @@ class OrderManager(models.Manager):
                 price = Decimal('%.3f' % f.calculated_price(qty=1, **cp))
                 row_price = price / len(tickets)
                 for ix, t in enumerate(tickets):
-                    item = OrderItem(order=o, ticket=t)
+                    item = OrderItem(order=o, ticket=t, vat=vat)
                     item.code = f.code
                     item.description = f.name
                     if len(tickets) > 1:
