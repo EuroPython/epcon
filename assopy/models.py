@@ -862,6 +862,18 @@ class Invoice(models.Model):
             msg += ' #%s' % self.code
         return msg
 
+    def invoice_items(self):
+        return self.order.orderitem_set.filter(vat=self.vat) \
+                                  .values('code','description') \
+                                  .annotate(price=models.Sum('price'), count=models.Count('price'))
+
+    def vat_value(self):
+        return self.price * (self.vat.value/100)
+
+    def net_price(self):
+        return self.price - self.vat_value()
+
+
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
     code = models.CharField(max_length=9, unique=True)
