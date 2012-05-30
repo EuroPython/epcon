@@ -8,14 +8,48 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Adding model 'Vat'
+        db.create_table('assopy_vat', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('value', self.gf('django.db.models.fields.DecimalField')(max_digits=2, decimal_places=0)),
+            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+        ))
+        db.send_create_signal('assopy', ['Vat'])
+
+        # Adding M2M table for field fares on 'Vat'
+        db.create_table('assopy_vat_fares', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('vat', models.ForeignKey(orm['assopy.vat'], null=False)),
+            ('fare', models.ForeignKey(orm['conference.fare'], null=False))
+        ))
+        db.create_unique('assopy_vat_fares', ['vat_id', 'fare_id'])
+
         # Adding field 'OrderItem.vat'
-        db.add_column('assopy_orderitem', 'vat', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+        db.add_column('assopy_orderitem', 'vat', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['assopy.Vat'], null=True, blank=True), keep_default=False)
+
+        # Adding field 'Invoice.vat'
+        db.add_column('assopy_invoice', 'vat', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['assopy.Vat'], null=True, blank=True), keep_default=False)
+
+        # Changing field 'Invoice.code'
+        db.alter_column('assopy_invoice', 'code', self.gf('django.db.models.fields.CharField')(max_length=9, unique=True, null=True))
 
 
     def backwards(self, orm):
         
+        # Deleting model 'Vat'
+        db.delete_table('assopy_vat')
+
+        # Removing M2M table for field fares on 'Vat'
+        db.delete_table('assopy_vat_fares')
+
         # Deleting field 'OrderItem.vat'
-        db.delete_column('assopy_orderitem', 'vat')
+        db.delete_column('assopy_orderitem', 'vat_id')
+
+        # Deleting field 'Invoice.vat'
+        db.delete_column('assopy_invoice', 'vat_id')
+
+        # User chose to not deal with backwards NULL issues for 'Invoice.code'
+        raise RuntimeError("Cannot reverse this migration. 'Invoice.code' and its values cannot be restored.")
 
 
     models = {
@@ -56,12 +90,13 @@ class Migration(SchemaMigration):
         'assopy.invoice': {
             'Meta': {'object_name': 'Invoice'},
             'assopy_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '22'}),
-            'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '9'}),
+            'code': ('django.db.models.fields.CharField', [], {'max_length': '9', 'unique': 'True', 'null': 'True'}),
             'emit_date': ('django.db.models.fields.DateField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'order': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'invoices'", 'to': "orm['assopy.Order']"}),
             'payment_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '6', 'decimal_places': '2'})
+            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '6', 'decimal_places': '2'}),
+            'vat': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['assopy.Vat']", 'null': 'True', 'blank': 'True'})
         },
         'assopy.order': {
             'Meta': {'object_name': 'Order'},
@@ -91,7 +126,7 @@ class Migration(SchemaMigration):
             'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['assopy.Order']"}),
             'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '6', 'decimal_places': '2'}),
             'ticket': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['conference.Ticket']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'vat': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+            'vat': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['assopy.Vat']", 'null': 'True', 'blank': 'True'})
         },
         'assopy.refund': {
             'Meta': {'object_name': 'Refund'},
@@ -169,6 +204,13 @@ class Migration(SchemaMigration):
             'service': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'token': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'oauth_infos'", 'to': "orm['assopy.User']"})
+        },
+        'assopy.vat': {
+            'Meta': {'object_name': 'Vat'},
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'fares': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['conference.Fare']", 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'value': ('django.db.models.fields.DecimalField', [], {'max_digits': '2', 'decimal_places': '0'})
         },
         'auth.group': {
             'Meta': {'object_name': 'Group'},

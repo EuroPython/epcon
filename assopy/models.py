@@ -533,6 +533,14 @@ class OrderManager(models.Manager):
         order_created.send(sender=o, raw_items=items)
         return o
 
+class Vat(models.Model):
+    fares = models.ManyToManyField('conference.fare', null=True, blank=True)
+    value = models.DecimalField(max_digits=2, decimal_places=0)
+    description = models.TextField(null=True, blank=True)
+    def __unicode__(self):
+        return unicode(self.fares)
+
+
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
 # in locale e sul backend. `raw_items` è la lista degli item utilizzata per
 # generare l'ordine; sebbene al momento dell'invio del segnale l'ordine sia già
@@ -726,7 +734,7 @@ class OrderItem(models.Model):
     description = models.CharField(max_length=100, blank=True)
     # aggiungo un campo per iva... poi potra essere un fk ad un altra tabella
     # o venire copiato da conference
-    vat = models.IntegerField(default=0)
+    vat = models.ForeignKey(Vat, null=True, blank=True)
 
     def delete(self, **kwargs):
         if self.ticket:
@@ -818,9 +826,10 @@ class InvoiceManager(models.Manager):
                 invoices.append(i)
             return invoices
 
+
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
-    code = models.CharField(max_length=9, unique=True)
+    code = models.CharField(max_length=9, null=True, unique=True)
     assopy_id = models.CharField(max_length=22, unique=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
@@ -828,7 +837,7 @@ class Invoice(models.Model):
     # indica il tipo di regime iva associato alla fattura
     # perche vengono generate più fatture per ogni ordine
     # contente orderitems con diverso regime fiscale
-    vat = models.IntegerField(null=True, blank=True)
+    vat = models.ForeignKey(Vat, null=True, blank=True)
 
     objects = InvoiceManager()
 
