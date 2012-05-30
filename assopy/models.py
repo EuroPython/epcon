@@ -817,9 +817,7 @@ class InvoiceManager(models.Manager):
             # devo generare x fatture in funzione degli order items
             # raggruppati per la loro vat
             invoices = []
-            vat_list = order.orderitem_set.filter(price__gt=0) \
-                            .values_list('vat', flat=True) \
-                            .distinct('vat')
+            vat_list = order.vat_list()
             if update:
                 # non so se questo metodo è necessario cmq
                 # in questo modo evito che ci siano delle fatture
@@ -832,7 +830,9 @@ class InvoiceManager(models.Manager):
                 if created:
                     # anche qui metto l'assopy_id uguale alla pk
                     i.assopy_id = i.pk
+                    # mo vediamo come generare il codice
                     i.code = i.pk
+                    i.price = order.orderitem_set.filter(vat=vat).aggregate(t=models.Sum('price'))['t']
                     i.save()
 
                 if payment_date:
