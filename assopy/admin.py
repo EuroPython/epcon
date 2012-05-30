@@ -123,14 +123,14 @@ class OrderAdmin(admin.ModelAdmin):
             if settings.GENRO_BACKEND:
                 output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
             else:
-                # mettere link alla fattura
-                pass
+                output.append('<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i.code, ' *' if not i.payment_date else ''))
         return ' '.join(output)
     _invoice.allow_tags = True
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
         my_urls = patterns('',
+            url(r'^invoices/(?P<id>\d+)/$', self.admin_site.admin_view(self.view_invoices), name='assopy-view-invoices'),
             url(r'^invoices/$', self.admin_site.admin_view(self.edit_invoices), name='assopy-edit-invoices'),
             url(r'^stats/$', self.admin_site.admin_view(self.stats), name='assopy-order-stats'),
         )
@@ -144,6 +144,10 @@ class OrderAdmin(admin.ModelAdmin):
         else:
             self.message_user(request, 'no orders')
     do_edit_invoices.short_description = 'Edit/Make invoices'
+
+    def view_invoices(self, request, id):
+        invoice = get_object_or_404(models.Invoice, pk=id)
+        return render_to_response('assopy/invoice.html', {'invoice':invoice}, context_instance=template.RequestContext(request))
 
     def edit_invoices(self, request):
         try:
