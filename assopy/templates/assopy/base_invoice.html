@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <title>_invoice</title>
+        <meta name="description" content="" />
+    <style>
+        <!--
+            html, body, div, span, applet, object, iframe,
+            h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+            a, abbr, acronym, address, big, cite, code,
+            del, dfn, em, img, ins, kbd, q, s, samp,
+            small, strike, strong, sub, sup, tt, var,
+            b, u, i, center,
+            dl, dt, dd, ol, ul, li,
+            fieldset, form, label, legend,
+            table, caption, tbody, tfoot, thead, tr, th, td,
+            article, aside, canvas, details, embed,
+            figure, figcaption, footer, header, hgroup,
+            menu, nav, output, ruby, section, summary,
+            time, mark, audio, video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+            }
+            body {
+                line-height: 1;
+            }
+            ol, ul {
+                list-style: none;
+            }
+            blockquote, q {
+                quotes: none;
+            }
+            blockquote:before, blockquote:after,
+            q:before, q:after {
+                content: '';
+                content: none;
+            }
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+            
+            /*
+             *  Layout
+             */
+
+            @page { margin: 1.5cm }
+
+            .clear {
+                clear: both;
+            }
+
+            body {
+                font-family: Arial,'DejaVu Sans','Liberation Sans',Freesans,sans-serif;
+                font-size: 12pt;
+            }
+
+            .conteier {
+                width: 18cm
+            }
+
+            .section {
+                border: 1px solid black;
+                margin-top:0.5cm;
+            }
+
+            .companyinfo {
+                font-size: 90%;
+                float: right;
+            }
+
+            .companylogo {
+                font-size: 90%;
+                float: left;
+            }
+
+            .table {
+                width: 100%;
+            }
+            .table {
+                border-collapse: collapse;
+                border: 0px none;
+            }
+            .table td, .table th {
+                border: 1px solid black;
+            }
+            .table tr:first-child th,
+            .table tr:first-child td {
+                border-top: 0;
+            }
+            .table tr:last-child td {
+                border-bottom: 0;
+            }
+            .table tr td:first-child,
+            .table tr th:first-child {
+                border-left: 0;
+            }
+            .table tr td:last-child,
+            .table tr th:last-child {
+                border-right: 0;
+            }
+            
+            .cell-legend {
+                font-size: 70%;
+                color: #333;
+            }
+            
+            .alt-language{
+                font-style: italic;
+            }
+            
+            .cell-content {
+                margin: 0.2cm;
+            }
+            
+            .number {
+                text-align: right;
+            }
+            
+            .invoice-items {
+                min-height: 18cm;
+            }
+            
+            .invoice-items TD {
+                padding: 0.1cm;
+                border-bottom: 1px dotted #000!important;
+                border-top:none;
+            }
+            
+            .invoice-items-w0 {
+                width: 2cm;
+            }
+            
+            .invoice-items-w1 {
+                width: 2.4cm;
+            }
+            
+            .invoice-items TH DIV {
+                padding: 0.1cm;
+            }
+            
+            .invoice-detail TD {
+                height: 1.5cm;
+            }
+            
+            .invoice-amount {
+                display: inline-block;
+                float: right;
+            }
+            
+            .invoice-amount TD {
+                height: 1cm;
+            }
+            
+            .invoice-amount TABLE {
+                width: 15cm;
+            }
+        -->
+    </style>
+    </head>
+    <body>
+        <div class="conteier">
+            <div>
+                <img src="" class="companylogo">
+                <div class="companylogo">
+                    {% block COMPANY_LOGO %}
+                    COMPANY_LOGO BLOCK
+                    {% endblock %}
+                </div>
+                <div class="companyinfo">
+                    {% block COMPANY_INFO %}
+                    COMPANY_INFO BLOCK
+                    {% endblock %}
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="section invoice-detail">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="cell-legend">
+                                    Fattura N. <span class="alt-language">Invoice N.</span>
+                                </div>
+                                <div class="cell-content">
+                                    {{ invoice.code }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    Data <span class="alt-language">Date</span>
+                                </div>
+                                <div class="cell-content">
+                                    {{ invoice.emit_date }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    Valuta <span class="alt-language">Currency</span>
+                                </div>
+                                <div class="cell-content">
+                                    Euro
+                                </div>
+                            </td>
+                            <td rowspan ="3">
+                                <div class="cell-legend">
+                                    Cliente <span class="alt-language">Customer</span>
+                                </div>
+                                <div class="cell-content">
+                                    {{ invoice.order.card_name }} <br/>
+                                    {{ invoice.order.address }}, {{ order.zip_code }} <br/>
+                                    {{ invoice.order.city }} <br/>
+                                    {{ invoice.order.state }} <br/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="cell-legend">
+                                    Banca <span class="alt-language">Bank</span>
+                                </div>
+                                <div class="cell-content">
+                                    {% block BANK %}
+                                        BLOCK_BANK BLOCK
+                                    {% endblock %}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="section invoice-items">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="invoice-items-w1">
+                                <div class="cell-legend">
+                                    Codice 
+                                </div>
+                                <div class="cell-legend alt-language">
+                                    Code
+                                </div>
+                            </th>
+                            <th>
+                                <div class="cell-legend">
+                                    Descrizione 
+                                </div>
+                                <div class="cell-legend alt-language">
+                                    Description
+                                </div>
+                            </th>
+                            <th class="invoice-items-w0">
+                                <div class="cell-legend">
+                                    Quantità
+                                </div>
+                                <div class="cell-legend alt-language">
+                                    Quantity
+                                </div>
+                            </th>
+                            <th class="invoice-items-w1">
+                                <div class="cell-legend">
+                                    Totale
+                                </div>
+                                <div class="cell-legend alt-language">
+                                    Amount
+                                </div>
+                            </th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                        {% for item in invoice.invoice_items %}
+                        <tr>
+                            <td class="invoice-items-w1">
+                                {% if not item.code.0 == '_' %}
+                                    {{ item.code }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                 {{ item.description }}
+                            </td>
+                            <td class="invoice-items-w0 number">
+                                 {{ item.count }}
+                            </td>
+                            <td class="invoice-items-w1 number">
+                                 {{ item.price }}
+                            </td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                </table>
+            </div>
+            <div class="section invoice-amount">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="cell-legend">
+                                    Imponibile <span class="alt-language">Net price</span>
+                                </div>
+                                <div class="cell-content number">
+                                    {{ invoice.net_price|floatformat:2 }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    IVA <span class="alt-language">VAT</span>
+                                </div>
+                                <div class="cell-content number">
+                                     {{ invoice.vat_value|floatformat:2 }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    Totale <span class="alt-language">Total</span>
+                                </div>
+                                <div class="cell-content number">
+                                    {{ invoice.price|floatformat:2 }}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </body>
+</html>
