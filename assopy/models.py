@@ -697,11 +697,14 @@ class Order(models.Model):
             t = self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
-    def rows(self, include_discounts=True):
+    def rows(self, include_discounts=True, vat=None):
+        qs = self.orderitem_set
+        if vat:
+            qs = qs.filter(vat=vat)
         if include_discounts:
-            return self.orderitem_set.all()
+            return qs
         else:
-            return self.orderitem_set.exclude(ticket=None)
+            return qs.exclude(ticket=None)
 
     @classmethod
     def calculator(self, items, coupons=None, user=None):
