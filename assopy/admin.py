@@ -575,3 +575,5 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Invoice,InvoiceAdmin)
+
+admin.site.register(models.Vat)
