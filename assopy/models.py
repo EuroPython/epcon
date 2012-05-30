@@ -641,6 +641,13 @@ class Order(models.Model):
         #else:
         #    return 20.0
 
+    def vat_list(self):
+        """
+        Ritorna una lista di importi iva usati nel ordine
+        """
+        vat_list = self.orderitem_set.filter(price__gt=0).values_list('vat', flat=True).distinct('vat')
+        return map(lambda x: Vat.objects.get(pk=x) if x else None, vat_list)
+
     def complete(self, update_cache=True, ignore_cache=False):
         if settings.GENRO_BACKEND:
             if self._complete and not ignore_cache:
