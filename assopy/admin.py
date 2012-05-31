@@ -123,7 +123,7 @@ class OrderAdmin(admin.ModelAdmin):
             if settings.GENRO_BACKEND:
                 output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
             else:
-                output.append('<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i.code, ' *' if not i.payment_date else ''))
+                output.append('<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i, ' *' if not i.payment_date else ''))
         return ' '.join(output)
     _invoice.allow_tags = True
 
