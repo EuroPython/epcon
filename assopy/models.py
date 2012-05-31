@@ -902,8 +902,31 @@ def ck_delete_invoice(sender, **kwargs):
     invoices quando una fattura del relativo ordine è stata emessa
     """
     instance = kwargs['instance']
-    if _has_issues_invoice(instance):
-        raise IntegrityError(u'you can not delete "%s" when an invoice already issued' % instance)
+    if instance.pk and _has_issues_invoice(instance):
+        raise IntegrityError(u'you can not delete "%s" when an invoice is already issued' % instance)
+
+@dispatch.receiver(pre_save)
+def ck_change_invoice(sender, **kwargs):
+    """
+    Se una fattura è stata emessa, non posso cambiare alcuni 
+    campi del order e del orderitems
+    """
+    instance = kwargs['instance'] 
+    if instance.pk and isinstance(instance, (Order, OrderItem)) and _has_issues_invoice(instance):
+        original = instance._default_manager.get(pk=instance.pk)
+
+        if isinstance(instance, Order):
+            lk_fields = ('billing_notes', 'card_name', 'country', 'zip_code', 'address', 'city', 'state')
+        elif isinstance(instance, OrderItem):
+            lk_fields = ('ticket', 'code', 'price', 'vat')
+
+        changed_fileds = []
+        for field in lk_fields:
+            if getattr(instance,field, object()) != getattr(original,field, object()):
+                changed_fileds.append(field)
+
+        if len(changed_fileds)>0:
+            raise IntegrityError(u'you can not change %s of "%s" when an invoice is already issued' % (",".join(changed_fileds), instance))
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
