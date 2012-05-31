@@ -13,9 +13,10 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.db import models, IntegrityError
 from django.db import transaction
 from django.db.models.query import QuerySet
+from django.db.models.signals import pre_delete, pre_save
 from django.utils.translation import ugettext_lazy as _
 
 import re
@@ -873,6 +874,29 @@ class Invoice(models.Model):
     def net_price(self):
         return self.price - self.vat_value()
 
+def _has_issues_invoice(instance):
+    """
+    Ritorna True se l'ordine associato al istanza ha emesso una Fattura
+    """
+    order = None
+    if isinstance(instance, (Invoice,OrderItem)):
+        order = instance.order
+    elif isinstance(instance, Order):
+        order = instance
+    if order :
+        return order.invoices.exclude(payment_date=None).exists()
+    else:
+        return False
+
+@dispatch.receiver(pre_delete)
+def ck_delete_invoice(sender, **kwargs):
+    """
+    Impedisco la cancellazione di un ordine, orderItems, o
+    invoices quando una fattura del relativo ordine è stata emessa
+    """
+    instance = kwargs['instance']
+    if _has_issues_invoice(instance):
+        raise IntegrityError(u'you can not delete "%s" when an invoice already issued' % instance)
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
