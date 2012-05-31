@@ -539,13 +539,20 @@ class OrderManager(models.Manager):
         order_created.send(sender=o, raw_items=items)
         return o
 
+
 class Vat(models.Model):
-    fares = models.ManyToManyField('conference.fare', null=True, blank=True)
+    fares = models.ManyToManyField('conference.fare', null=True, blank=True, through='Vat_fares')
     value = models.DecimalField(max_digits=2, decimal_places=0)
     description = models.TextField(null=True, blank=True)
     def __unicode__(self):
         return unicode(self.value)
 
+class Vat_fares(models.Model):
+    fare = models.ForeignKey('conference.fare')
+    vat = models.ForeignKey(Vat)
+
+    class Meta:
+        unique_together =('fare', 'vat')
 
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
 # in locale e sul backend. `raw_items` è la lista degli item utilizzata per
