@@ -865,10 +865,10 @@ class Invoice(models.Model):
     objects = InvoiceManager()
 
     def __unicode__(self):
-        msg = 'Invoice %d' % self.id
         if self.code:
-            msg += ' #%s' % self.code
-        return msg
+            return ' #%s' % self.code
+        else:
+            return 'Invoice id:%d' % self.id
 
     def invoice_items(self):
         return self.order.orderitem_set.filter(vat=self.vat) \
@@ -886,7 +886,7 @@ def _has_issues_invoice(instance):
     Ritorna True se l'ordine associato al istanza ha emesso una Fattura
     """
     order = None
-    if isinstance(instance, (Invoice,OrderItem)):
+    if isinstance(instance, (Invoice, OrderItem)):
         order = instance.order
     elif isinstance(instance, Order):
         order = instance
