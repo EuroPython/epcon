@@ -544,7 +544,7 @@ class Vat(models.Model):
     value = models.DecimalField(max_digits=2, decimal_places=0)
     description = models.TextField(null=True, blank=True)
     def __unicode__(self):
-        return unicode(self.fares)
+        return unicode(self.value)
 
 
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
