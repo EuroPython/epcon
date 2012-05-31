@@ -577,3 +577,44 @@ class InvoiceAdmin(admin.ModelAdmin):
 admin.site.register(models.Invoice,InvoiceAdmin)
 
 admin.site.register(models.Vat)
+
+from conference import admin as cadmin
+
+class AssopyFareForm(forms.ModelForm):
+    vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
+
+    class Meta:
+        model = cadmin.models.Fare
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance',None)
+        if instance:
+            try:
+                vat = instance.vat_set.all()[0]
+                initial = kwargs.get('instance',{})
+                initial.update({'vat' : vat })
+                kwargs['initial'] = initial
+            except  IndexError:
+                pass
+        super(AssopyFareForm, self).__init__(*args, **kwargs)
+
+class AssopyFareAdmin(cadmin.FareAdmin):
+    form = AssopyFareForm
+    list_display = cadmin.FareAdmin.list_display + ('_vat',)
+
+    def _vat(self,obj):
+        try:
+            return obj.vat_set.all()[0]
+        except IndexError:
+            return None
+    _vat.short_description = 'VAT'
+
+    def save_model(self, request, obj, form, change):
+        super(AssopyFareAdmin, self).save_model(request, obj, form, change)
+        vat_fares, created = models.Vat_fares.objects.get_or_create(fare=obj, defaults={'vat':form.cleaned_data['vat']})
+        if not created and vat_fares.vat != form.cleaned_data['vat']:
+            vat_fares.vat = form.cleaned_data['vat']
+            vat_fares.save()
+
+admin.site.unregister(cadmin.models.Fare)
+admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
