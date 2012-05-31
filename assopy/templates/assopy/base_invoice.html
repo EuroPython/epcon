@@ -58,7 +58,7 @@
 
             body {
                 font-family: Arial,'DejaVu Sans','Liberation Sans',Freesans,sans-serif;
-                font-size: 12pt;
+                font-size: 10pt;
             }
 
             .conteier {
@@ -161,24 +161,16 @@
             .invoice-amount TABLE {
                 width: 15cm;
             }
+            
         -->
     </style>
     </head>
     <body>
         <div class="conteier">
             <div>
-                <img src="" class="companylogo">
-                <div class="companylogo">
-                    {% block COMPANY_LOGO %}
-                    COMPANY_LOGO BLOCK
-                    {% endblock %}
-                </div>
-                <div class="companyinfo">
-                    {% block COMPANY_INFO %}
-                    COMPANY_INFO BLOCK
-                    {% endblock %}
-                </div>
-                <div class="clear"></div>
+                {% block HEADER %}
+                
+                {% endblock %}
             </div>
             <div class="section invoice-detail">
                 <table class="table">
@@ -189,7 +181,7 @@
                                     Fattura N. <span class="alt-language">Invoice N.</span>
                                 </div>
                                 <div class="cell-content">
-                                    {{ invoice.code }}
+                                    {{ invoice.code|default:'' }}
                                 </div>
                             </td>
                             <td>
@@ -197,7 +189,7 @@
                                     Data <span class="alt-language">Date</span>
                                 </div>
                                 <div class="cell-content">
-                                    {{ invoice.emit_date }}
+                                    {{ invoice.emit_date|default:'' }}
                                 </div>
                             </td>
                             <td>
