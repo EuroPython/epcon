@@ -757,7 +757,7 @@ class OrderItem(models.Model):
     description = models.CharField(max_length=100, blank=True)
     # aggiungo un campo per iva... poi potra essere un fk ad un altra tabella
     # o venire copiato da conference
-    vat = models.ForeignKey(Vat, null=True, blank=True)
+    vat = models.ForeignKey(Vat)
 
     def delete(self, **kwargs):
         if self.ticket:
@@ -875,7 +875,7 @@ class Invoice(models.Model):
     # indica il tipo di regime iva associato alla fattura
     # perche vengono generate più fatture per ogni ordine
     # contente orderitems con diverso regime fiscale
-    vat = models.ForeignKey(Vat, null=True, blank=True)
+    vat = models.ForeignKey(Vat)
 
     objects = InvoiceManager()
 
