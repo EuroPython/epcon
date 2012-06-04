@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>_invoice</title>
+        <title>{{ invoice }}</title>
         <meta name="description" content="" />
     <style>
         <!--
@@ -106,6 +106,10 @@
                 border-right: 0;
             }
             
+            td.customer {
+                width: 6cm;
+            }
+            
             .cell-legend {
                 font-size: 70%;
                 color: #333;
@@ -156,6 +160,7 @@
             
             .invoice-amount TD {
                 height: 1cm;
+                width: 6cm;
             }
             
             .invoice-amount TABLE {
@@ -200,15 +205,16 @@
                                     Euro
                                 </div>
                             </td>
-                            <td rowspan ="3">
+                            <td rowspan ="3" class="customer">
                                 <div class="cell-legend">
                                     Cliente <span class="alt-language">Customer</span>
                                 </div>
                                 <div class="cell-content">
                                     {{ invoice.order.card_name }} <br/>
-                                    {{ invoice.order.address }}, {{ order.zip_code }} <br/>
-                                    {{ invoice.order.city }} <br/>
-                                    {{ invoice.order.state }} <br/>
+                                    {{ invoice.order.address }}, {{ invoice.order.zip_code }} <br/>
+                                    {% if invoice.order.city %}{{ invoice.order.city }},{% endif %}{{ invoice.order.country }}<br/>
+                                    {{ invoice.order.billing_notes|linebreaks }}<br/>
+                                     <br/>
                                 </div>
                             </td>
                         </tr>
