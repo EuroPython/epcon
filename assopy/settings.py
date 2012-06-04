@@ -50,11 +50,11 @@ def _ASSOPY_ORDER_CODE(order):
 
 ORDER_CODE = getattr(settings, 'ASSOPY_ORDER_CODE', _ASSOPY_ORDER_CODE)
 
-def _ASSOPY_INVOICE_CODE(invoice):
+def _ASSOPY_INVOICE_CODE(invoice, code_offset=0):
     import datetime
-    invoice_number = invoice._meta.models \
-                            .filter(emit_date__gte = datetime.date(datetime.date.today().year, 0 ,0 )) \
+    invoice_number = invoice._default_manager \
+                            .filter(emit_date__gte = datetime.date(datetime.date.today().year, 1 ,1 )) \
                             .exclude(code=None).count()
-    return "I/%s.%s" % (str(datetime.date.today().year)[2:], str(invoice_number+1).zfill(4))
+    return "I/%s.%s" % (str(datetime.date.today().year)[2:], str(invoice_number+1+code_offset).zfill(4))
 
 INVOICE_CODE = getattr(settings, 'ASSOPY_INVOICE_CODE', _ASSOPY_INVOICE_CODE)

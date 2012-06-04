@@ -825,6 +825,13 @@ class InvoiceManager(models.Manager):
             # devo generare x fatture in funzione degli order items
             # raggruppati per la loro vat
             invoices = []
+            # il codice della fattura, viene calcolata contando le 
+            # fatture precedenti nel medesiomo anno.
+            # Essendo questa funzione all'interno di una transaction
+            # se vengono generate più di una fattura devo implementare un 
+            # offset interno alla transazione visto che non effettuo commit 
+            # per aggiornare il db
+            code_offset = 0
             vat_list = order.vat_list()
             if update:
                 # non so se questo metodo è necessario cmq
@@ -838,14 +845,22 @@ class InvoiceManager(models.Manager):
                 if created:
                     # anche qui metto l'assopy_id uguale alla pk
                     i.assopy_id = i.pk
-                    # mo vediamo come generare il codice
-                    i.code = i.pk
                     i.price = order.orderitem_set.filter(vat=vat).aggregate(t=models.Sum('price'))['t']
                     i.save()
 
                 if payment_date:
-                    i.payment_date = payment_date
-                    i.save()
+                    success = False
+                    while success == False:
+                        try:
+                            i.code = settings.INVOICE_CODE(i, code_offset)
+                            i.payment_date = payment_date
+                            i.save()
+                            code_offset += 1
+                        except IntegrityError ,e:
+                            if not e.message =='column code is not unique':
+                                raise e
+                        else:
+                            success = True
                 invoices.append(i)
             return invoices
 
