@@ -852,11 +852,12 @@ class InvoiceManager(models.Manager):
 
                 if payment_date:
                     i.payment_date = payment_date
+                    i.emit_date = payment_date
                     if not created and not last_invoice_code:
                         i.save()
-                        # salvo almeno sono sicuro di aver effettuato 
+                        # salvo almeno sono sicuro di aver effettuato
                         # un operazione di insert nella transazione
-                        # in modo da crere un lock su db che gestisce la concorrenza 
+                        # in modo da crere un lock su db che gestisce la concorrenza
                         # nella creazione di un indice univoco nella fattura
                         # questo è valido solo per db SQLITE
                     i.code = settings.NEXT_INVOICE_CODE(
