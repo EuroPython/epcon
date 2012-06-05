@@ -484,11 +484,19 @@ class OrderManager(models.Manager):
         o.state = user.state
 
         o.save()
+        vat_list = []
         for f, params in items:
             try:
                 vat = f.vat_set.all()[0]
-            except  IndexError:
-                vat = None
+            except IndexError:
+                if settings.GENRO_BACKEND:
+                    vat = None
+                else :
+                    # se non è il BACKEND genro deve avere 
+                    # l'orderitems deve avere associato un 
+                    # regime iva
+                    raise
+            vat_list.append(vat)
             cp = dict(params)
             del cp['qty']
             for _ in range(params['qty']):
@@ -512,7 +520,7 @@ class OrderManager(models.Manager):
             #
             # queste regole servono a preparare un ordine (e una fattura) che
             # risulti il più capibile possibile per l'utente.
-            for v in o.vat_list():
+            for v in set(vat_list):
                 for t in ('perc', 'val'):
                     for c in coupons:
                         if c.type() == t:
