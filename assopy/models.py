@@ -539,7 +539,6 @@ class OrderManager(models.Manager):
             # per quanto riguarda l'assopy_id, lo mantengo per retrocompatibilita
             # con genro per gli url ecc, in un fututro andrebbe eliminato
             o.save()
-            o.assopy_id = o.pk
             o.code = settings.ASSOPY_NEXT_ORDER_CODE(o)
             o.save()
         if o.total() == 0:
