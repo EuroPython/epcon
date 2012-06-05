@@ -26,6 +26,7 @@ import logging
 from uuid import uuid4
 from datetime import date, datetime
 from decimal import Decimal
+from collections import defaultdict
 
 log = logging.getLogger('assopy.models')
 
@@ -652,10 +653,15 @@ class Order(models.Model):
 
     def vat_list(self):
         """
-        Ritorna una lista di importi iva usati nel ordine
+        Ritorna una lista di dizionari con import iva e import 
+        e numero di orderitems prezzi
         """
-        vat_list = self.orderitem_set.filter(price__gt=0).values_list('vat', flat=True).distinct('vat')
-        return map(lambda x: Vat.objects.get(pk=x) if x else None, vat_list)
+        vat_list = defaultdict(lambda:{'vat':None, 'orderItems':[], 'price':0})
+        for i in self.orderitem_set.all():
+            vat_list[i.vat]['vat'] = i.vat
+            vat_list[i.vat]['orderItems'].append(i)
+            vat_list[i.vat]['price'] += i.price
+        return vat_list.values()
 
     def complete(self, update_cache=True, ignore_cache=False):
         if settings.GENRO_BACKEND:
