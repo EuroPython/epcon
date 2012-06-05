@@ -540,7 +540,7 @@ class OrderManager(models.Manager):
             # con genro per gli url ecc, in un fututro andrebbe eliminato
             o.save()
             o.assopy_id = o.pk
-            o.code = settings.ORDER_CODE(o)
+            o.code = settings.ASSOPY_NEXT_ORDER_CODE(o)
             o.save()
         if o.total() == 0:
             o._complete = True
@@ -836,45 +836,37 @@ class InvoiceManager(models.Manager):
                 invoices.append(i)
             return invoices
         else:
+            # Genero un save point almeno isolo la transazione
+            from django.db import connection
+            cursor = connection.cursor()
+            cursor.execute(
+                'savepoint pregenerateinvoice;'
+            )
             # devo generare x fatture in funzione degli order items
             # raggruppati per la loro vat
             invoices = []
-            # il codice della fattura, viene calcolata contando le 
-            # fatture precedenti nel medesiomo anno.
-            # Essendo questa funzione all'interno di una transaction
-            # se vengono generate più di una fattura devo implementare un 
-            # offset interno alla transazione visto che non effettuo commit 
-            # per aggiornare il db
-            code_offset = 0
             vat_list = order.vat_list()
-            if update:
-                # non so se questo metodo è necessario cmq
-                # in questo modo evito che ci siano delle fatture
-                # fantasma.
-                order.invoices.exclude(vat__in=vat_list).delete()
-
-            for vat in vat_list:
-                i, created = Invoice.objects.get_or_create(order=order,vat=vat)
-
-                if created:
-                    # anche qui metto l'assopy_id uguale alla pk
-                    i.assopy_id = i.pk
-                    i.price = order.orderitem_set.filter(vat=vat).aggregate(t=models.Sum('price'))['t']
-                    i.save()
+            last_invoice_code = None
+            for vat_item in vat_list:
+                print vat_item
+                i, created = Invoice.objects.get_or_create(order=order,vat=vat_item['vat'], defaults={'price':vat_item['price']})
 
                 if payment_date:
-                    success = False
-                    while success == False:
-                        try:
-                            i.code = settings.INVOICE_CODE(i, code_offset)
-                            i.payment_date = payment_date
-                            i.save()
-                            code_offset += 1
-                        except IntegrityError ,e:
-                            if not e.message =='column code is not unique':
-                                raise e
-                        else:
-                            success = True
+                    i.payment_date = payment_date
+                    if not created and not last_invoice_code:
+                        i.save()
+                        # salvo almeno sono sicuro di aver effettuato 
+                        # un operazione di insert nella transazione
+                        # in modo da crere un lock su db che gestisce la concorrenza 
+                        # nella creazione di un indice univoco nella fattura
+                        # questo è valido solo per db SQLITE
+                    i.code = settings.NEXT_INVOICE_CODE(
+                                last_invoice_code or settings.LAST_INVOICE_CODE(vat_item), 
+                                vat_item
+                            )
+                    i.save()
+                    last_invoice_code = i.code
+
                 invoices.append(i)
             return invoices
 

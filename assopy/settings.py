@@ -44,17 +44,40 @@ OTC_CODE_HANDLERS = {
 }
 OTC_CODE_HANDLERS.update(getattr(settings, 'ASSOPY_OTC_CODE_HANDLERS', {}))
 
-def _ASSOPY_ORDER_CODE(order):
+def _ASSOPY_NEXT_ORDER_CODE(order):
+    """
+    Ritorna un codice di ordine nel formato specificato
+    """
     import datetime
     return "O/%s.%s" % (str(datetime.date.today().year)[2:], str(order.pk).zfill(4))
 
-ORDER_CODE = getattr(settings, 'ASSOPY_ORDER_CODE', _ASSOPY_ORDER_CODE)
+NEXT_ORDER_CODE = getattr(settings, 'ASSOPY_NEXT_ORDER_CODE', _ASSOPY_NEXT_ORDER_CODE)
 
-def _ASSOPY_INVOICE_CODE(invoice, code_offset=0):
+def _ASSOPY_LAST_INVOICE_CODE(details):
+    """
+    Ritorna l'ultimo codice di fattura utilizzato nel corrente anno
+    """
     import datetime
-    invoice_number = invoice._default_manager \
-                            .filter(emit_date__gte = datetime.date(datetime.date.today().year, 1 ,1 )) \
-                            .exclude(code=None).count()
-    return "I/%s.%s" % (str(datetime.date.today().year)[2:], str(invoice_number+1+code_offset).zfill(4))
+    import models
+    try:
+        return models.Invoice.objects \
+                      .filter(code__startswith='I/%s.' % str(datetime.date.today().year)[2:]) \
+                      .order_by('-code') \
+                      .values_list('code',flat=True)[0]
+    except IndexError:
+        return None
 
-INVOICE_CODE = getattr(settings, 'ASSOPY_INVOICE_CODE', _ASSOPY_INVOICE_CODE)
+LAST_INVOICE_CODE = getattr(settings, 'ASSOPY_LAST_INVOICE_CODE', _ASSOPY_LAST_INVOICE_CODE)
+
+def _ASSOPY_NEXT_INVOICE_CODE(last_invoice_code, details):
+    """
+    Ritorna il codice di fattura successivo
+    """
+    import datetime
+    if last_invoice_code:
+        invoice_number = int(last_invoice_code[4:])
+    else:
+        invoice_number = 0
+    return "I/%s.%s" % (str(datetime.date.today().year)[2:], str(invoice_number+1).zfill(4))
+
+NEXT_INVOICE_CODE = getattr(settings, 'ASSOPY_NEXT_INVOICE_CODE', _ASSOPY_NEXT_INVOICE_CODE)
