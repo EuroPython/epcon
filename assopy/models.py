@@ -536,10 +536,7 @@ class OrderManager(models.Manager):
             )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
         else:
-            # per quanto riguarda l'assopy_id, lo mantengo per retrocompatibilita
-            # con genro per gli url ecc, in un fututro andrebbe eliminato
-            o.save()
-            o.code = settings.ASSOPY_NEXT_ORDER_CODE(o)
+            o.code = settings.NEXT_ORDER_CODE(o)
             o.save()
         if o.total() == 0:
             o._complete = True
@@ -950,6 +947,14 @@ def ck_change_invoice(sender, **kwargs):
         if len(changed_fileds)>0:
             raise IntegrityError(u'you can not change %s of "%s" when an invoice is already issued' % (",".join(changed_fileds), instance))
 
+if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
+    from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
+    def confirm_order(sender, **kwargs):
+        ipn_obj = sender
+        o = get_object_or_404(models.Order, code=ipn_obj.invoice.replace('-', '/'))
+        o.confirm_order(ipn_obj.payment_date)
+
+    paypal_payment_was_successful.connect(confirm_order)
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
