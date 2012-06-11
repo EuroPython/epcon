@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     url(r'paypal_return/(?P<code>.+)/$', 'assopy.views.paypal_feedback_ok', name='assopy-paypal-feedback-ok'),
     url(r'bank_return/(?P<code>.+)/$', 'assopy.views.bank_feedback_ok', name='assopy-bank-feedback-ok'),
 
-    url(r'invoice/(?P<assopy_id>.+)/$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
+    url(r'invoice/(?P<id>.+)/$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
     url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$', 'assopy.views.voucher', name='assopy-orderitem-voucher'),
     url(r'orders/(?P<assopy_id>.+)/completed$', 'assopy.views.order_complete', name='assopy-order-complete'),
 )
