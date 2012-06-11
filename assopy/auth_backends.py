@@ -19,6 +19,8 @@ class _AssopyBackend(ModelBackend):
         collega l'utente assopy passato con il backend; crea l'utente remoto se
         necessario.
         """
+        if not settings.GENRO_BACKEND:
+            return user
         if user.assopy_id:
             return user
         name = unicode(user.user).encode('utf-8')
