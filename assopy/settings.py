@@ -81,3 +81,18 @@ def _ASSOPY_NEXT_INVOICE_CODE(last_invoice_code, details):
     return "I/%s.%s" % (str(datetime.date.today().year)[2:], str(invoice_number+1).zfill(4))
 
 NEXT_INVOICE_CODE = getattr(settings, 'ASSOPY_NEXT_INVOICE_CODE', _ASSOPY_NEXT_INVOICE_CODE)
+
+if 'paypal.standard.ipn' in settings.INSTALLED_APPS:
+    # settings per paypal
+    PAYPAL_CURRENCY_CODE = getattr(settings, 'ASSOPY_CURRENCY_CODE', 'EUR')
+    # si possono sofrascrivere gli url di default utile nel debug
+    PAYPAL_CANCEL_URL = getattr(settings, 'PAYPAL_CANCEL_URL', None)
+
+    PAYPAL_NOTIFY_URL = getattr(settings, 'PAYPAL_NOTIFY_URL', None)
+
+    PAYPAL_RETURN_URL = getattr(settings, 'PAYPAL_RETURN_URL', None)
+
+    def _PAYPAL_ITEM_NAME(order):
+        unicode(order)
+    # personalizzazione del nome del per paypal
+    PAYPAL_ITEM_NAME = getattr(settings, 'PATPAL_ITEM_NAME', _PAYPAL_ITEM_NAME)
