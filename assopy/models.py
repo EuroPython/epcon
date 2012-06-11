@@ -874,7 +874,7 @@ class InvoiceManager(models.Manager):
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
     code = models.CharField(max_length=9, null=True, unique=True)
-    assopy_id = models.CharField(max_length=22, unique=True)
+    assopy_id = models.CharField(max_length=22, unique=True, null=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -950,10 +950,11 @@ def ck_change_invoice(sender, **kwargs):
         if len(changed_fileds)>0:
             raise IntegrityError(u'you can not change %s of "%s" when an invoice is already issued' % (",".join(changed_fileds), instance))
 
+
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
     code = models.CharField(max_length=9, unique=True)
-    assopy_id =  models.CharField(max_length=22, unique=True)
+    assopy_id =  models.CharField(max_length=22, unique=True, null=True)
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
