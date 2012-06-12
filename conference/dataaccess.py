@@ -455,6 +455,7 @@ def event_data(eid, preload=None):
         'custom': event.custom,
         'duration': duration,
         'sponsor': event.sponsor,
+        'bookable': event.bookable,
         'tracks': tracks,
         'tags': tags,
         'talk': talk,
@@ -730,12 +731,15 @@ user_events_interest = cache_me(
     key='user_events_interest:%(uid)s:%(conference)s')(user_events_interest, _i_user_events_interest)
 
 def conference_booking_status(conference):
-    eids = models.EventBooking.objects\
+    booked = models.EventBooking.objects\
         .filter(event__schedule__conference=conference)\
         .values_list('event', flat=True)\
         .distinct()
+    bookable = models.Event.objects\
+        .filter(bookable=True, schedule__conference=conference)\
+        .values_list('id', flat=True)
     output = {}
-    for e in eids:
+    for e in set(list(booked) + list(bookable)):
         output[e] = models.EventBooking.objects.booking_status(e)
     return output
 

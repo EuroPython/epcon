@@ -924,6 +924,8 @@ class Event(models.Model):
     sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
     video = models.CharField(max_length=1000, blank=True)
 
+    bookable = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['start_time']
 

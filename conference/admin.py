@@ -661,6 +661,10 @@ class ScheduleAdmin(admin.ModelAdmin):
                 max_length=200, required=False,
                 help_text='comma separated list of tags. Something like: special, break, keynote'
             )
+            bookable = forms.BooleanField(
+                required=False,
+                help_text='check if the event expect a reservation'
+            )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
                     .filter(sponsorincome__conference=settings.CONFERENCE)\
@@ -678,6 +682,10 @@ class ScheduleAdmin(admin.ModelAdmin):
             tags = forms.CharField(
                 max_length=200, required=False,
                 help_text='comma separated list of tags. Something like: special, break, keynote'
+            )
+            bookable = forms.BooleanField(
+                required=False,
+                help_text='check if the event expect a reservation'
             )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
@@ -706,6 +714,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     data = form.cleaned_data
                     ev.sponsor = data['sponsor']
                     ev.tags = data['tags']
+                    ev.bookable = data['bookable']
                     if not ev.talk_id:
                         ev.sponsor = data['sponsor']
                         ev.custom = data['custom']
@@ -751,12 +760,14 @@ class ScheduleAdmin(admin.ModelAdmin):
                 form = SimplifiedTalkForm(data={
                     'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
+                    'bookable': ev.bookable,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
             else:
                 form = SimplifiedCustomForm(data={
                     'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
+                    'bookable': ev.bookable,
                     'custom': ev.custom,
                     'duration': ev.duration,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
