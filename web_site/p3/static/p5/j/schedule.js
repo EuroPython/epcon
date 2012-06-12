@@ -354,10 +354,16 @@ function highlighter(mode, option) {
         var be = $('<div class="book-event maximized">loading...</div>');
         $('.book-event', evt).remove();
         $('.tools', evt).append(be);
+
+        /* i training sono prenotabili solo da chi ha acquisitato un biglietto
+         * standard o daily; il server impone il vincolo ma replico la logica
+         * per poter dare un feedback immediato.
+         */
         var full = false;
+        var training = evt.parents('.track[data-track=training1], .track[data-track=training2]').length > 0;
         for(var ix=0; ix<user.tickets.length; ix++) {
             var t = user.tickets[ix];
-            if(t[1] == 'conference' && (t[2].substr(2, 1) == 'S' || t[2].substr(2, 1) == 'D')) {
+            if(t[1] == 'conference' && ((t[2].substr(2, 1) == 'S' || t[2].substr(2, 1) == 'D') || !training)) {
                 full = true;
                 break;
             }
@@ -366,6 +372,7 @@ function highlighter(mode, option) {
             be.html('<div class="restricted"><a href="/training">Restricted access</a></div>');
             return;
         }
+
         var base = "/conference/schedule/_C_/_S_/0/booking";
         $.get(event_url(base, evt), function(data) {
             if(data.user) {
@@ -391,7 +398,7 @@ function highlighter(mode, option) {
             if(value.available > 0) {
                 evt.append(''
                     + '<div class="info available minimized">'
-                    + 'BOOK IT<br/><span title="Are you still doing the math instead of booking? Only ' + value.available + ' seats are availables; book your seat now!">0x' + value.available.toString(16) + '</span> LEFT'
+                    + 'BOOK IT<br /><span title="Are you still doing the math instead of booking? Only ' + value.available + ' seats are availables; book your seat now!">0<span>x</span>' + value.available.toString(16) + '</span> LEFT'
                     + '</div>');
             }
             else {
@@ -408,7 +415,7 @@ function highlighter(mode, option) {
             });
         });
     })();
-    $('.track[data-track=training1] .event, .track[data-track=training2] .event')
+    $('.event.bookable')
         .bind('exposed', function(ev) {
             update_booking_status($(this));
             return false;

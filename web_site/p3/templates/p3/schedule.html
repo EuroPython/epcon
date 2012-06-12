@@ -155,7 +155,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 {% endcomment %}
 <div class="page clearfix">
     <div class="conference-schedules timetable vertical-narrow"  data-conference="{{ conference }}">
-    {% for sid, timet in timetables %}
+    {% for sid, timet in timetables|slice:"0:2" %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% timetable_slice timet start="09:00" as tt %}
         <div id="{{ sdata.slug }}" class="schedule">
@@ -176,7 +176,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 <div class="title">{{ sdata.tracks|attrib_:track|attrib_:"title"|safe }}</div>
                 {% for e in events %}
                 {% if e.tracks|length == 1 or e.tracks.0 == track %}
-                <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}" data-id="{{ e.id }}"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}{% if e.intersection %} data-intersection="o{{ e.intersection }}"{% endif %}{% if "partner-program" in e.tags %} data-fare="{{ e.fare }}"{% endif %}>
+                <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if e.bookable %} bookable{% endif %}" data-id="{{ e.id }}"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}{% if e.intersection %} data-intersection="o{{ e.intersection }}"{% endif %}{% if "partner-program" in e.tags %} data-fare="{{ e.fare }}"{% endif %}>
                     {% if e.talk %}
                     <div class="speakers">
                         <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>

@@ -272,37 +272,6 @@ body#schedule > .page > .container {
         }        
         .track[data-track=training1], .track[data-track=training2]{
             @include setTrackColor($cTraining);
-            .event{
-                .info{
-                    text-transform: uppercase;
-                    @include transform(translate(0px, 0px) rotate(-30deg), left, top);
-                    bottom: 0;
-                    letter-spacing: -0.05em;
-                    position: absolute;
-                    width: 90px;
-                    padding: 12px;
-                    border: 4px dashed transparent;
-                    border-radius: 8px;
-                    font-size: 10px;
-                    color: $cOrange;
-                    line-height: 13px;
-                    &:first-line{
-                        font-size: 20px;                        
-                    }
-                    &.available{
-                        color: $cAvailable;
-                        border-color: $cAvailable;                        
-                    }
-                    &.booked{
-                        color: $cBooked;
-                        border-color: $cBooked;
-                    }
-                    &.sold-out{
-                        color: $cSoldout;
-                        border-color: $cSoldout;
-                    }
-                }
-            }
         }
 
         .track[data-track=track-ita]{
@@ -563,6 +532,61 @@ body#schedule > .page > .container {
             }
             .restricted {
                 background: #ABA18F;
+            }
+        }
+    }
+
+    .event {
+        .info.booked,.info.available,.info.sold-out {
+            text-transform: uppercase;
+            bottom: 0;
+            position: absolute;
+            width: 90px;
+            padding: 12px;
+            font-size: 10px;
+            color: $cOrange;
+            line-height: 13px;
+            &:first-line {
+                font-size: 16px;
+            }
+            &.available{
+                color: $cAvailable;
+                span {
+                    /* 0xAB la x la voglio minuscola */
+                    span {
+                        text-transform: none;
+                        padding: 0 1px;
+                    }
+                }
+            }
+            &.booked{
+                color: $cBooked;
+            }
+            &.sold-out{
+                color: $cSoldout;
+            }
+        }
+    }
+
+    .track[data-track=training1], .track[data-track=training2]{
+        .event {
+            .info.booked,.info.available,.info.sold-out {
+                @include transform(translate(0px, 0px) rotate(-30deg), left, top);
+                letter-spacing: -0.05em;
+                border: 4px dashed transparent;
+                border-radius: 8px;
+                &:first-line{
+                    font-size: 20px;
+                }
+                &.available{
+                    border-color: $cAvailable;
+                }
+                &.booked{
+                    border-color: $cBooked;
+                }
+                &.sold-out{
+                    border-color: $cSoldout;
+                }
             }
         }
     }
