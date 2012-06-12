@@ -58,7 +58,7 @@ body#schedule > .page > .container {
    */
   /* centra gli schedule (grazie al display di .schedule) */
   text-align: center;
-  width: 990px;
+  width: 1090px;
   /*
    * layout dell'evento; un evento può trovarsi in due stati:
    *  - normale
