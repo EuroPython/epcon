@@ -914,8 +914,16 @@ class Event(models.Model):
     start_time = models.TimeField()
 
     talk = models.ForeignKey(Talk, blank=True, null=True)
-    custom = models.TextField(blank=True)
-    duration = models.PositiveIntegerField(default=0, help_text='duration of the event (in minutes). Override the talk duration if present')
+    custom = models.TextField(
+        blank=True,
+        help_text="title for a custom event (an event without a talk)")
+    abstract = models.TextField(
+        blank=True,
+        help_text="description for a custom event")
+
+    duration = models.PositiveIntegerField(
+        default=0,
+        help_text='duration of the event (in minutes). Override the talk duration if present')
 
     tags = models.CharField(
         max_length=200, blank=True,

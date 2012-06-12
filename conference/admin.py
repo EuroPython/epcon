@@ -677,7 +677,8 @@ class ScheduleAdmin(admin.ModelAdmin):
             )
 
         class SimplifiedCustomForm(forms.Form):
-            custom = forms.CharField(widget=forms.Textarea)
+            custom = forms.CharField(max_length=200)
+            abstract = forms.CharField(widget=forms.Textarea, required=False)
             duration = forms.IntegerField(min_value=0)
             tags = forms.CharField(
                 max_length=200, required=False,
@@ -718,6 +719,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     if not ev.talk_id:
                         ev.sponsor = data['sponsor']
                         ev.custom = data['custom']
+                        ev.abstract = data['abstract']
                         ev.duration = data['duration']
                     ev.save()
                     models.EventTrack.objects.filter(event=ev).delete()
@@ -769,6 +771,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     'tags': ev.tags,
                     'bookable': ev.bookable,
                     'custom': ev.custom,
+                    'abstract': ev.abstract,
                     'duration': ev.duration,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })

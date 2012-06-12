@@ -453,6 +453,7 @@ def event_data(eid, preload=None):
         'name': name,
         'time': datetime.combine(sch['date'], event.start_time),
         'custom': event.custom,
+        'abstract': event.abstract,
         'duration': duration,
         'sponsor': event.sponsor,
         'bookable': event.bookable,
@@ -460,6 +461,23 @@ def event_data(eid, preload=None):
         'tags': tags,
         'talk': talk,
     }
+
+def _i_event_data(sender, **kw):
+    if sender is models.Event:
+        ids = [ kw['instance'].id ]
+    elif sender is models.Talk:
+        ids = models.Event.objects.filter(talk=kw['instance']).values_list('id', flat=True)
+    elif sender is models.Schedule:
+        ids = kw['instance'].event_set.all().values_list('id', flat=True)
+    elif sender is models.Track:
+        ids = models.EventTrack.objects\
+            .filter(track=kw['instance'])\
+            .values_list('event', flat=True)
+    return [ 'event:%s' % x for x in ids ]
+
+event_data = cache_me(
+    models=(models.Event, models.Talk, models.Schedule, models.Track),
+    key='event:%(eid)s')(event_data, _i_event_data)
 
 def tags():
     """
@@ -510,23 +528,6 @@ def _i_tags_for_talks(sender, **kw):
 tags_for_talks = cache_me(
     models=(models.Talk, models.ConferenceTaggedItem, models.ConferenceTag,),
     key='talks_data:%(conference)s:%(status)s')(tags_for_talks, _i_tags_for_talks)
-
-def _i_event_data(sender, **kw):
-    if sender is models.Event:
-        ids = [ kw['instance'].id ]
-    elif sender is models.Talk:
-        ids = models.Event.objects.filter(talk=kw['instance']).values_list('id', flat=True)
-    elif sender is models.Schedule:
-        ids = kw['instance'].event_set.all().values_list('id', flat=True)
-    elif sender is models.Track:
-        ids = models.EventTrack.objects\
-            .filter(track=kw['instance'])\
-            .values_list('event', flat=True)
-    return [ 'event:%s' % x for x in ids ]
-
-event_data = cache_me(
-    models=(models.Event, models.Talk, models.Schedule, models.Track),
-    key='event:%(eid)s')(event_data, _i_event_data)
 
 def events(eids=None, conf=None):
     if eids is None:
