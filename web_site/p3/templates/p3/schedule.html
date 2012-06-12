@@ -190,7 +190,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     </div>
                     <div class="maximized abstract cms"> </div>
                     {% else %}
-                    {% if "abstract" not in e %}
+                    {% if not e.abstract %}
                     <h3 class="name">
                         {% if "special" in e.tags %}
                         <div class="hhmm"><span>{{ e.time|time:"H" }}</span>:{{ e.time|time:"i" }}</div>
