@@ -778,8 +778,12 @@ def p3_account_data(request):
                     profile.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
+@transaction.commit_on_success
 def OTCHandler_E(request, token):
     user = token.user
+    models.TicketConference.objects\
+        .filter(assigned_to=user.email)\
+        .update(assigned_to=token.payload)
     user.email = token.payload
     user.save()
     log.info('"%s" has verified the new email "%s"', user.username, user.email)
