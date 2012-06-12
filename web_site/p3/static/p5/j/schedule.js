@@ -548,8 +548,7 @@ function highlighter(mode, option) {
                  * nel db e hanno un id < 0
                  */
                 if(e.attr('data-id') > 0) {
-                    var track = e.parents('.track').attr('data-track');
-                    if(track != 'training1' && track != 'training2') {
+                    if(!e.hasClass('bookable')) {
                         var i = user.interest[e.attr('data-id')];
                         if(i == 1) {
                             e.addClass('interest-up');
