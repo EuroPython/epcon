@@ -64,7 +64,7 @@
     <meta property="og:image" content="http://a1.twimg.com/profile_images/1231560986/Twitter-Avatar_bigger.png" />
     <meta property="fb:admins" content="789244177" />
 </head>
-<body id="{% block BODY_ID %}{% endblock %}">
+<body id="{% block BODY_ID %}{% endblock %}"{% if current_page.status == 0 or current_page.status == 2 or current_page.status == 3 %} class="draft"{% endif %}>
 
  <!--[if lt IE 8]>
     <div id="promptChromeFrame">

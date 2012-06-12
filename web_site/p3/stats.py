@@ -107,6 +107,9 @@ def tickets_status(conf, code=None):
         .values('p3_conference__assigned_to')\
         .annotate(total=Count('id'))\
         .filter(total__gt=1)
+    sim_tickets = _tickets(conf, fare_code='SIM%')\
+        .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
+        .select_related('p3_conference_sim')
     if code is None:
         output = [
             {
@@ -121,15 +124,13 @@ def tickets_status(conf, code=None):
             {
                 'title': 'Non compilati',
                 'total': _not_compiled(conf).count(),
-            }
+            },
+            {
+                'id': 'sim_tickets',
+                'title': 'SIM non compilati',
+                'total': sim_tickets.count(),
+            },
         ]
-        qs = _tickets(conf, fare_code='SIM%')\
-            .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
-            .select_related('p3_conference_sim')
-        output.append({
-            'title': 'SIM non compilati',
-            'total': qs.count(),
-        })
 
         qs = _tickets(conf, 'conference')\
             .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
@@ -240,15 +241,38 @@ def tickets_status(conf, code=None):
                     'buyer': buyer,
                     'buyer_email': x.user.email,
                 })
+        elif code in ('sim_tickets',):
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                    ('email', 'Email'),
+                    ('fare', 'Fare code'),
+                ),
+                'data': [],
+            }
+            if code == 'sim_tickets':
+                qs = sim_tickets
+            qs = qs.select_related('user', 'fare')
+            data = output['data']
+            for x in qs:
+                buyer = '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.user.id,)),
+                    x.user.first_name,
+                    x.user.last_name)
+                data.append({
+                    'name': buyer,
+                    'email': x.user.email,
+                    'fare': x.fare.code,
+                    'uid': x.user.id,
+                })
     return output
 tickets_status.short_description = 'Statistiche biglietti'
 
 def speaker_status(conf, code=None):
     t = _tickets(conf, 'conference')
     spk_noticket = Speaker.objects.byConference(conf)\
-        .exclude(
-            user__in=t.values('user'),
-            user__email__in=t.values('p3_conference__assigned_to'))
+        .exclude(user__in=t.values('user'))\
+        .exclude(user__email__in=t.extra(where=["assigned_to!=''"]).values('p3_conference__assigned_to'))
     spk_nodata = Speaker.objects.byConference(conf)\
         .filter(Q(
                 user__attendeeprofile__image='',
