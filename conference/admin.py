@@ -716,7 +716,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             if 'delete' in request.POST:
                 ev.delete()
-            elif 'save' in request.POST or 'copy' in request.POST:
+            elif 'save' in request.POST or 'copy' in request.POST or 'update' in request.POST:
                 if ev.talk_id:
                     form = SimplifiedTalkForm(data=request.POST)
                 else:
@@ -728,7 +728,6 @@ class ScheduleAdmin(admin.ModelAdmin):
                     ev.bookable = data['bookable']
                     ev.seats = data['seats'] or 0
                     if not ev.talk_id:
-                        ev.sponsor = data['sponsor']
                         ev.custom = data['custom']
                         ev.abstract = data['abstract']
                         ev.duration = data['duration']
@@ -758,6 +757,21 @@ class ScheduleAdmin(admin.ModelAdmin):
                             for x in etracks:
                                 if x in tracks:
                                     models.EventTrack(event=ev, track_id=tracks[x]).save()
+                    elif 'update' in request.POST and not ev.talk_id:
+                        eids = models.EventTrack.objects\
+                            .filter(track__in=data['tracks'], event__custom=ev.custom)\
+                            .exclude(event=ev)\
+                            .values('event')
+                        events = models.Event.objects\
+                            .filter(id__in=eids)
+                        for e in events:
+                            e.sponsor = ev.sponsor
+                            e.tags = ev.tags
+                            e.bookable = ev.bookable
+                            e.seats = ev.seats
+                            e.abstract = ev.abstract
+                            e.duration = ev.duration
+                            e.save()
             elif 'move' in request.POST:
                 form = MoveEventForm(data=request.POST)
                 if form.is_valid():
@@ -795,6 +809,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     <input type="submit" name="save" value="save"/>
                     <input type="submit" name="delete" value="delete"/>
                     <input type="submit" name="copy" value="save and copy in all schedules"/>
+                    <input type="submit" name="update" value="save and update same track same title"/>
                 </div>
             </form>
             ''')
