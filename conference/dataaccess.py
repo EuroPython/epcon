@@ -747,10 +747,12 @@ def conference_booking_status(conference):
 def _i_conference_booking_status(sender, **kw):
     if sender is models.EventBooking:
         conference = kw['instance'].event.schedule.conference
-    else:
+    elif sender is models.Track:
+        conference = kw['instance'].schedule.conference
+    elif sender is models.Event:
         conference = kw['instance'].schedule.conference
     return 'conference_booking_status:%s' % conference
 
 conference_booking_status = cache_me(
-    models=(models.EventBooking,models.Track),
+    models=(models.EventBooking, models.Track, models.Event,),
     key='conference_booking_status:%(conference)s')(conference_booking_status, _i_conference_booking_status)

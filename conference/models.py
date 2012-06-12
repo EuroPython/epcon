@@ -933,6 +933,9 @@ class Event(models.Model):
     video = models.CharField(max_length=1000, blank=True)
 
     bookable = models.BooleanField(default=False)
+    seats = models.PositiveIntegerField(
+        default=0,
+        help_text='seats available. Override the track default if set')
 
     class Meta:
         ordering = ['start_time']
@@ -1001,9 +1004,11 @@ class EventInterest(models.Model):
 
 class EventBookingManager(models.Manager):
     def booking_status(self, eid):
-        seats = sum(EventTrack.objects\
-            .filter(event=eid)\
-            .values_list('track__seats', flat=True))
+        seats = Event.objects.values('seats').get(id=eid)['seats']
+        if not seats:
+            seats = sum(EventTrack.objects\
+                .filter(event=eid)\
+                .values_list('track__seats', flat=True))
         booked = list(EventBooking.objects\
             .filter(event=eid)\
             .values_list('user', flat=True))

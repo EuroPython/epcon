@@ -665,6 +665,11 @@ class ScheduleAdmin(admin.ModelAdmin):
                 required=False,
                 help_text='check if the event expect a reservation'
             )
+            seats = forms.IntegerField(
+                min_value=0,
+                required=False,
+                help_text='Seats available. Override the track default if set'
+            )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
                     .filter(sponsorincome__conference=settings.CONFERENCE)\
@@ -687,6 +692,11 @@ class ScheduleAdmin(admin.ModelAdmin):
             bookable = forms.BooleanField(
                 required=False,
                 help_text='check if the event expect a reservation'
+            )
+            seats = forms.IntegerField(
+                min_value=0,
+                required=False,
+                help_text='Seats available. Override the track default if set'
             )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
@@ -716,6 +726,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     ev.sponsor = data['sponsor']
                     ev.tags = data['tags']
                     ev.bookable = data['bookable']
+                    ev.seats = data['seats'] or 0
                     if not ev.talk_id:
                         ev.sponsor = data['sponsor']
                         ev.custom = data['custom']
@@ -763,6 +774,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
                     'bookable': ev.bookable,
+                    'seats': ev.seats,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
             else:
@@ -770,6 +782,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
                     'bookable': ev.bookable,
+                    'seats': ev.seats,
                     'custom': ev.custom,
                     'abstract': ev.abstract,
                     'duration': ev.duration,
