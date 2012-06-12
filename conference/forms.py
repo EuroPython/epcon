@@ -345,26 +345,6 @@ class EventForm(forms.ModelForm):
             raise forms.ValidationError('set the talk or the custom text')
         return data
 
-        schedule_tracks = set()
-        indoor_tracks = set()
-        for t in self.schedule.track_set.all():
-            schedule_tracks.add(t.track)
-            if not t.outdoor:
-                indoor_tracks.add(t.track)
-
-        tracks = set(parse_tag_input(data['track']))
-        if 'special' in tracks or 'break' in tracks:
-            if not tracks & schedule_tracks:
-                tracks |= indoor_tracks
-        for t in schedule_tracks:
-            conflicts = set(TaggedItem.objects.get_by_model(models.Event.objects.filter(schedule=self.schedule, start_time=data['start_time']), t))
-            if self.instance:
-                conflicts = conflicts - set((self.instance,))
-            if conflicts:
-                raise forms.ValidationError('conflicts on "%s"' % data['start_time'])
-
-        return data
-
 class ProfileForm(forms.ModelForm):
     bio = forms.CharField(
         label=_('Compact biography'),
