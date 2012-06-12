@@ -122,6 +122,7 @@ def tickets_status(conf, code=None):
                 'total': _compiled(conf).count(),
             },
             {
+                'id': 'not_compiled',
                 'title': 'Non compilati',
                 'total': _not_compiled(conf).count(),
             },
@@ -151,7 +152,7 @@ def tickets_status(conf, code=None):
             'total': orphan_tickets.count(),
         })
     else:
-        if code == 'ticket_sold':
+        if code in ('ticket_sold', 'not_compiled'):
             output = {
                 'columns': (
                     ('name', 'Name'),
@@ -161,8 +162,11 @@ def tickets_status(conf, code=None):
                 ),
                 'data': [],
             }
-            qs = _tickets(conf, 'conference')\
-                .select_related('p3_conference', 'user')
+            if code == 'ticket_sold':
+                qs = _tickets(conf, 'conference')
+            else:
+                qs = _not_compiled(conf)
+            qs = qs.select_related('p3_conference', 'user')
             assignees = dict([
                 (u.email, u) for u in User.objects\
                     .filter(email__in=qs\
