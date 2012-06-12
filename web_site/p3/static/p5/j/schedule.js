@@ -396,9 +396,16 @@ function highlighter(mode, option) {
         }
         else {
             if(value.available > 0) {
+                var training = evt.parents('.track[data-track=training1], .track[data-track=training2]').length > 0;
+                if(training) {
+                    var msg = 'BOOK IT<br /><span title="Are you still doing the math instead of booking? Only ' + value.available + ' seats are availables; book your seat now!">0<span>x</span>' + value.available.toString(16) + '</span> LEFT';
+                }
+                else {
+                    var msg = 'BOOK IT, ' + value.available + ' LEFT';
+                }
                 evt.append(''
                     + '<div class="info available minimized">'
-                    + 'BOOK IT<br /><span title="Are you still doing the math instead of booking? Only ' + value.available + ' seats are availables; book your seat now!">0<span>x</span>' + value.available.toString(16) + '</span> LEFT'
+                    + msg
                     + '</div>');
             }
             else {
