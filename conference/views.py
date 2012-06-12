@@ -3,7 +3,6 @@ from __future__ import with_statement
 import functools
 import os.path
 import urllib
-from collections import defaultdict
 from decimal import Decimal
 
 from conference import dataaccess
