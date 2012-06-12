@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from conference.utils import send_email
-from conference.models import Talk, Event
+from conference.models import Talk, Event, TalkSpeaker
 
 from django.dispatch import Signal
 from django.db.models.signals import post_save
@@ -63,8 +63,10 @@ def on_talk_saved(sender, **kw):
     """
     Si assicura che il profilo di uno speaker con talk 'accepted' sia visibile.
     """
-    if sender == Talk:
+    if sender is Talk:
         o = kw['instance']
+    elif sender is TalkSpeaker:
+        o = kw['instance'].talk
     else:
         o = kw['instance'].talk
     if o and o.status == 'accepted':
@@ -80,4 +82,7 @@ def on_talk_saved(sender, **kw):
             p.save()
 
 post_save.connect(on_talk_saved, sender=Talk)
+post_save.connect(on_talk_saved, sender=TalkSpeaker)
+# traccio anche gli Event perché c'è una action custom nell'admin che imposta
+# tutti i talk presenti nello schedule come accepted
 post_save.connect(on_talk_saved, sender=Event)
