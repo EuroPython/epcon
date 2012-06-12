@@ -591,6 +591,27 @@ body#schedule > .page > .container {
         }
     }
 
+    .track[data-track=helpdesk1], .track[data-track=helpdesk2]{
+        .event {
+            padding: 3px;
+            .info.booked,.info.available,.info.sold-out {
+                padding: 0;
+                &:first-line{
+                    font-size: 10px;
+                }
+                &.available{
+                    border-color: $cAvailable;
+                }
+                &.booked{
+                    border-color: $cBooked;
+                }
+                &.sold-out{
+                    border-color: $cSoldout;
+                }
+            }
+        }
+    }
+
     /*
      * gli eventi "special" sono quelli "strutturali":
      *
