@@ -296,6 +296,7 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.presence_days',
     'p3.stats.shirt_sizes',
     'p3.stats.diet_types',
+    'p3.stats.pp_tickets',
 )
 
 CONFERENCE_TICKET_BADGE_ENABLED = True

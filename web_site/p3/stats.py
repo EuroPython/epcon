@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Count
 from p3 import models
+from conference import models as cmodels
 
 def _tickets(conf, ticket_type=None, fare_code=None):
     qs = Ticket.objects\
@@ -379,7 +380,7 @@ def hotel_tickets(conf, code=None):
             },
             {
                 'id': 'HB3',
-                'title': 'Posto letto in quadruple',
+                'title': 'Posto letto in quadrupla',
                 'total': qs['HB3'].count(),
             },
         ]
@@ -405,3 +406,45 @@ def hotel_tickets(conf, code=None):
     return output
 
 hotel_tickets.short_description = 'Biglietti hotel'
+
+def pp_tickets(conf, code=None):
+    fcodes = cmodels.Fare.objects\
+        .filter(conference=conf, ticket_type='partner')\
+        .order_by('code')\
+        .values_list('code', flat=True)
+    qs = {}
+    for fcode in fcodes:
+        qs[fcode] = User.objects.filter(
+            id__in=_tickets(conf, fare_code=fcode).values('orderitem__order__user__user'))
+    if code is None:
+        output = []
+        from conference.templatetags.conference import fare_blob
+        titles = {}
+        for f in cmodels.Fare.objects.filter(code__in=fcodes):
+            titles[f.code] = '%s (%s)' % (f.name, fare_blob(f, 'date'))
+        for fcode in fcodes:
+            output.append({
+                'id': fcode,
+                'total': qs[fcode].count(),
+                'title': fcode + ' - ' + titles[fcode],
+            })
+    else:
+        output = {
+            'columns': (
+                ('name', 'Name'),
+                ('email', 'Email'),
+            ),
+            'data': [],
+        }
+        data = output['data']
+        for x in qs[code]:
+            data.append({
+                'name': '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.id,)),
+                    x.first_name,
+                    x.last_name),
+                'email': x.email,
+                'uid': x.id,
+            })
+    return output
+pp_tickets.short_description = 'Biglietti Partner program'
