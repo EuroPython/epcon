@@ -6,8 +6,8 @@
     </script>
 {% endblock %}
 {% block ASSOPY_MAIN_CONTENT %}
-    <form name="assopypaypalredirect" action="{{ url }}" method="POST">
-        {{ form }}
+    <form name="aassopypaypalredirect" action="{{ form.paypal_url }}" method="POST">
+        {{ form.as_p }}
         <H1>{% trans "Please Wait.. You are redirected to paypal" %}</H1>
         <button type="submit">{% trans "if redirect does not start click here" %}</button>
     </form>
