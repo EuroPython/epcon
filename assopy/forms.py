@@ -259,7 +259,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
                                             widget=ValueHiddenInput(),
                                             initial=1
                                         )
-                for c, item in enumerate(items, start=1):
+                for n, item in enumerate(items, start=1):
                     self.fields['item_name_%d' % n ] = forms.CharField(
                                                             widget=ValueHiddenInput(), 
                                                             initial=settings.PAYPAL_ITEM_NAME(item)
