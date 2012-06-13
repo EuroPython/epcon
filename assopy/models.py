@@ -844,7 +844,6 @@ class InvoiceManager(models.Manager):
             vat_list = order.vat_list()
             last_invoice_code = None
             for vat_item in vat_list:
-                print vat_item
                 i, created = Invoice.objects.get_or_create(order=order,vat=vat_item['vat'], defaults={'price':vat_item['price']})
 
                 if payment_date:
@@ -951,7 +950,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
     def confirm_order(sender, **kwargs):
         ipn_obj = sender
-        o = get_object_or_404(models.Order, code=ipn_obj.invoice.replace('-', '/'))
+        o = Order.objects.get(code=ipn_obj.custom)
         o.confirm_order(ipn_obj.payment_date)
 
     paypal_payment_was_successful.connect(confirm_order)
