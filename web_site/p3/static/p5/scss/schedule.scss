@@ -17,9 +17,13 @@ $cGreenLight: #D3DB9C;
 $cGray: #878181;
 $cPetrol: #4895A3;
 $cBeige: #e1dbc5;
+$cBeigeDark: #4895A3;
 $cPink: #ff93c9;
 $cPinkLight: #FFF0EF;
 $cWhite: #ffffff;
+$cPeach: #FDB55A;
+$cPeachLight: #FFE2B8;
+
 $cBeginner: #738023;
 $cIntermediate: #e7c30f;
 $cAdvanced: #DA2300;
@@ -29,12 +33,16 @@ $cAvailable: $cBeginner;
 $cBooked: $cIntermediate;
 $cSoldout: $cAdvanced;
 
+$cHelpDesk: $cPeach;
+$cHelpDeskBackground: $cPeachLight;
+
 $cPartners: $cPink;
 $cPartnersBackground: $cPinkLight;
 
 $cSprint: #a9cb0f;
 $cTraining: #a4d4d4;
 $cKeynoteBackground: $cGreenLight; 
+$cExtraEventInfoExpanded: $cBeigeDark;
 
 .box-sizing{
     -moz-box-sizing: border-box;
@@ -522,16 +530,16 @@ body#schedule > .page > .container {
                 color: white;
             }
             .book {
-                background: #4895A3;
+                background: $cExtraEventInfoExpanded;
             }
             .cancel {
                 background: #4895A3;
             }
             .sold-out {
-                background: #ABA18F;
+                background: $cExtraEventInfoExpanded;
             }
             .restricted {
-                background: #ABA18F;
+                background: $cExtraEventInfoExpanded;
             }
         }
     }
@@ -592,12 +600,22 @@ body#schedule > .page > .container {
     }
 
     .track[data-track=helpdesk1], .track[data-track=helpdesk2]{
+        .title{
+            background-color: $cHelpDesk;
+        }
         .event {
             padding: 3px;
+            background-color: $cHelpDeskBackground;
+            .name{
+                font-size: 1.1em;
+            }
+
+
             .info.booked,.info.available,.info.sold-out {
-                padding: 0;
+                padding: 2px;
+                text-align: center;
                 &:first-line{
-                    font-size: 10px;
+                    font-size: 9px;
                 }
                 &.available{
                     border-color: $cAvailable;
@@ -607,6 +625,8 @@ body#schedule > .page > .container {
                 }
                 &.sold-out{
                     border-color: $cSoldout;
+                    @include transform(translate(0px, 10px) rotate(-13deg), left, bottom);
+                    text-align:right;
                 }
             }
         }
