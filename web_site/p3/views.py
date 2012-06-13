@@ -137,7 +137,7 @@ def ticket(request, tid):
             data = request.POST.copy()
             if t.user == request.user and not data.get('assigned_to'):
                 # vogliamo massimizzare il numero dei biglietti assegnati, e
-                # per farlo scoraggiamo le persone nel compilar ei biglietti di
+                # per farlo scoraggiamo le persone nel compilare i biglietti di
                 # altri. Se il biglietto non è assegnato lo forzo ad avere lo
                 # stesso nome del profilo.
                 data['t%d-ticket_name' % t.id] = '%s %s' % (t.user.first_name, t.user.last_name)
