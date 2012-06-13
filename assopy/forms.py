@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.contrib import auth
+from django.conf import settings as dsettings
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
@@ -213,3 +214,63 @@ class FormTickets(forms.Form):
 
         data['tickets'] = o
         return data
+
+
+if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
+
+    from paypal.standard.forms import PayPalPaymentsForm
+    from paypal.standard.widgets import ValueHiddenInput
+    from paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
+
+    class PayPalForm(PayPalPaymentsForm):
+
+        def __init__(self, order, *args, **kwargs):
+            from django.db import models
+            initial = settings.PAYPAL_DEFAULT_FORM_CONTEXT(order)
+
+            items = list(order.orderitem_set \
+                              .filter(price__gte=0).values('code','description') \
+                              .annotate(price=models.Sum('price'), count=models.Count('price')) \
+                              .order_by('-price'))
+
+            discount =  order.total(apply_discounts=False) - order.total()
+
+            if len(items) > 1:
+                initial.update({'cmd':self.CMD_CHOICES[1][0]})
+            else:
+                initial.update({
+                    "item_name": settings.PAYPAL_ITEM_NAME(items[0]),
+                    "item_number": items[0]['count'],
+                    "amount": order.total(),
+                })
+                if discount > 0:
+                    initial.update({'discount_amount':discount})
+
+            kwargs['initial'] = initial
+            super(PayPalForm, self).__init__(*args, **kwargs)
+
+            if len(items) > 1:
+                if discount > 0:
+                    self.fields['discount_amount_cart'] = forms.IntegerField(
+                                                widget=ValueHiddenInput(),
+                                                initial= discount
+                                            )
+                self.fields['upload'] = forms.IntegerField(
+                                            widget=ValueHiddenInput(),
+                                            initial=1
+                                        )
+                for c, item in enumerate(items, start=1):
+                    self.fields['item_name_%d' % n ] = forms.CharField(
+                                                            widget=ValueHiddenInput(), 
+                                                            initial=settings.PAYPAL_ITEM_NAME(item)
+                                                        )
+                    self.fields['item_number_%d' % n ] = forms.CharField(
+                                                            widget=ValueHiddenInput(), 
+                                                            initial=item['count']
+                                                        )
+                    self.fields['amount_%d' % n ] = forms.CharField(
+                                            widget=ValueHiddenInput(), 
+                                            initial=item['price']
+                                        )
+        def paypal_url(self):
+            return SANDBOX_POSTBACK_ENDPOINT if dsettings.PAYPAL_TEST else POSTBACK_ENDPOINT
