@@ -291,6 +291,7 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
 
 CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.tickets_status',
+    'p3.stats.hotel_tickets',
     'p3.stats.speaker_status',
     'p3.stats.presence_days',
     'p3.stats.shirt_sizes',

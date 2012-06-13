@@ -336,3 +336,72 @@ def speaker_status(conf, code=None):
             })
     return output
 speaker_status.short_description = 'Statistiche speaker'
+
+def hotel_tickets(conf, code=None):
+    qs = {}
+    for x in ('1', '2', '3', '4'):
+        qs['HR' + x] = User.objects.filter(
+            id__in=_tickets(conf, fare_code='HR' + x).values('orderitem__order__user__user'))
+    for x in ('2', '3', '4'):
+        qs['HB' + x] = User.objects.filter(
+            id__in=_tickets(conf, fare_code='HB' + x).values('orderitem__order__user__user'))
+    if code is None:
+        output = [
+            {
+                'id': 'HR1',
+                'title': 'Camere singole',
+                'total': qs['HR1'].count(),
+            },
+            {
+                'id': 'HR2',
+                'title': 'Camere doppie',
+                'total': qs['HR2'].count(),
+            },
+            {
+                'id': 'HR3',
+                'title': 'Camere triple',
+                'total': qs['HR3'].count(),
+            },
+            {
+                'id': 'HR4',
+                'title': 'Camere quadruple',
+                'total': qs['HR4'].count(),
+            },
+            {
+                'id': 'HB2',
+                'title': 'Posto letto in doppia',
+                'total': qs['HB2'].count(),
+            },
+            {
+                'id': 'HB3',
+                'title': 'Posto letto in tripla',
+                'total': qs['HB3'].count(),
+            },
+            {
+                'id': 'HB3',
+                'title': 'Posto letto in quadruple',
+                'total': qs['HB3'].count(),
+            },
+        ]
+    else:
+        output = {
+            'columns': (
+                ('name', 'Name'),
+                ('email', 'Email'),
+            ),
+            'data': [],
+        }
+        data = output['data']
+        for x in qs[code]:
+            data.append({
+                'name': '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.id,)),
+                    x.first_name,
+                    x.last_name),
+                'email': x.email,
+                'uid': x.id,
+            })
+
+    return output
+
+hotel_tickets.short_description = 'Biglietti hotel'
