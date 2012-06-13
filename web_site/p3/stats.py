@@ -414,8 +414,7 @@ def pp_tickets(conf, code=None):
         .values_list('code', flat=True)
     qs = {}
     for fcode in fcodes:
-        qs[fcode] = User.objects.filter(
-            id__in=_tickets(conf, fare_code=fcode).values('orderitem__order__user__user'))
+        qs[fcode] = _tickets(conf, fare_code=fcode)
     if code is None:
         output = []
         from conference.templatetags.conference import fare_blob
@@ -440,11 +439,11 @@ def pp_tickets(conf, code=None):
         for x in qs[code]:
             data.append({
                 'name': '<a href="%s">%s %s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.id,)),
-                    x.first_name,
-                    x.last_name),
-                'email': x.email,
-                'uid': x.id,
+                    reverse('admin:auth_user_change', args=(x.user_id,)),
+                    x.user.first_name,
+                    x.user.last_name),
+                'email': x.user.email,
+                'uid': x.user_id,
             })
     return output
 pp_tickets.short_description = 'Biglietti Partner program'
