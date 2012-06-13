@@ -130,7 +130,7 @@ def profile_identities(request):
 
 @login_required
 @render_to('assopy/billing.html')
-def billing(request):
+def billing(request, order_id=None):
     user = request.user.assopy_user
     if request.method == 'POST':
         form = aforms.BillingData(data=request.POST, files=request.FILES, instance=user)
@@ -398,15 +398,13 @@ def paypal_pro_billing(request, code):
     item = {"amt":  o.total(),
             "inv": "inventory",
             "custom": "tracking",
-            "cancelurl": settings.PAYPAL_CANCEL_URL or request.META.get('HTTP_REFERER'),
-            "returnurl": settings.PAYPAL_NOTIFY_URL or "%s%s" %(dsettings.DEFAULT_URL_PREFIX, reverse('paypal-ipn'))
             }
 
     kw = {
           "item": item,
           "payment_template": "assopy/paypal_pro.html",
           "confirm_template": "assopy/paypal_pro.html",
-          "success_url": settings.PAYPAL_RETURN_URL or "%s%s" % (dsettings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-ok',args={'code':code})),
+          "success_url": "%s%s" % (dsettings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-ok',args={'code':code})),
           }
 
     ppp = PayPalPro(**kw)
@@ -445,20 +443,27 @@ def bank_feedback_ok(request, code):
         'order': o,
     }
 
-def invoice_pdf(request, assopy_id):
-    data = genro.invoice(assopy_id)
-    if data.get('credit_note'):
-        order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
-    else:
-        order = get_object_or_404(models.Order, assopy_id=data['order_id'])
 
-    from conference import models as cmodels
-    try:
-        conf = cmodels.Conference.objects.get(conference_start__year=order.created.year).code
-    except cmodels.Conference.DoesNotExist:
-        conf = order.created.year
+def invoice_pdf(request, id):
+    invoice = get_object_or_404(models.Invoice, id=id)
+    if settings.GENRO_BACKEND:
+        assopy_id = invoice.assopy_id
+        data = genro.invoice(assopy_id)
+        if data.get('credit_note'):
+            order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
+        else:
+            order = get_object_or_404(models.Order, assopy_id=data['order_id'])
+        from conference import models as cmodels
+        try:
+            conf = cmodels.Conference.objects.get(conference_start__year=order.created.year).code
+        except cmodels.Conference.DoesNotExist:
+            conf = order.created.year
+        f = urllib.urlopen(genro.invoice_url(assopy_id))
+    else:
+        pass
+        # print django template
+
     fname = '[%s] credit note.pdf' % conf
-    f = urllib.urlopen(genro.invoice_url(assopy_id))
     response = http.HttpResponse(f, mimetype='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="%s"' % fname
     return response
