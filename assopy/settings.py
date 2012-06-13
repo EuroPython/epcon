@@ -75,7 +75,7 @@ def _ASSOPY_NEXT_INVOICE_CODE(last_invoice_code, details):
     """
     import datetime
     if last_invoice_code:
-        invoice_number = int(last_invoice_code[4:])
+        invoice_number = int(last_invoice_code[5:])
     else:
         invoice_number = 0
     return "I/%s.%s" % (str(datetime.date.today().year)[2:], str(invoice_number+1).zfill(4))
