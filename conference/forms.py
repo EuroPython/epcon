@@ -314,6 +314,9 @@ class TalkForm(forms.Form):
         o.setAbstract(data['abstract'])
         o.tags.set(*data['tags'])
 
+        if not self.instance:
+            from conference.listeners import new_paper_submission
+            new_paper_submission.send(sender=speaker, talk=o)
         return o
 
 from tagging.models import TaggedItem
