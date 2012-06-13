@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
  * Il programma di una conferenza può essere rappresentato in diversi modi:
  *  - timetable
@@ -379,13 +380,13 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .event .book-event a {
       color: white; }
     .conference-schedules.timetable .event .book-event .book {
-      background: #4895A3; }
+      background: #4895a3; }
     .conference-schedules.timetable .event .book-event .cancel {
       background: #4895A3; }
     .conference-schedules.timetable .event .book-event .sold-out {
-      background: #ABA18F; }
+      background: #4895a3; }
     .conference-schedules.timetable .event .book-event .restricted {
-      background: #ABA18F; }
+      background: #4895a3; }
   .conference-schedules.timetable .event .info.booked, .conference-schedules.timetable .event .info.available, .conference-schedules.timetable .event .info.sold-out {
     text-transform: uppercase;
     bottom: 0;
@@ -430,18 +431,35 @@ body#schedule > .page > .container {
       border-color: #e7c30f; }
     .conference-schedules.timetable .track[data-track=training1] .event .info.booked.sold-out, .conference-schedules.timetable .track[data-track=training1] .event .info.available.sold-out, .conference-schedules.timetable .track[data-track=training1] .event .info.sold-out.sold-out, .conference-schedules.timetable .track[data-track=training2] .event .info.booked.sold-out, .conference-schedules.timetable .track[data-track=training2] .event .info.available.sold-out, .conference-schedules.timetable .track[data-track=training2] .event .info.sold-out.sold-out {
       border-color: #da2300; }
+  .conference-schedules.timetable .track[data-track=helpdesk1] .title, .conference-schedules.timetable .track[data-track=helpdesk2] .title {
+    background-color: #fdb55a; }
   .conference-schedules.timetable .track[data-track=helpdesk1] .event, .conference-schedules.timetable .track[data-track=helpdesk2] .event {
-    padding: 3px; }
+    padding: 3px;
+    background-color: #ffe2b8; }
+    .conference-schedules.timetable .track[data-track=helpdesk1] .event .name, .conference-schedules.timetable .track[data-track=helpdesk2] .event .name {
+      font-size: 1.1em; }
     .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.booked, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.available, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.sold-out, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.booked, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.available, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.sold-out {
-      padding: 0; }
+      padding: 2px;
+      text-align: center; }
       .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.booked:first-line, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.available:first-line, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.sold-out:first-line, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.booked:first-line, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.available:first-line, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.sold-out:first-line {
-        font-size: 10px; }
+        font-size: 9px; }
       .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.booked.available, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.available.available, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.sold-out.available, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.booked.available, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.available.available, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.sold-out.available {
         border-color: #738023; }
       .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.booked.booked, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.available.booked, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.sold-out.booked, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.booked.booked, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.available.booked, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.sold-out.booked {
         border-color: #e7c30f; }
       .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.booked.sold-out, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.available.sold-out, .conference-schedules.timetable .track[data-track=helpdesk1] .event .info.sold-out.sold-out, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.booked.sold-out, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.available.sold-out, .conference-schedules.timetable .track[data-track=helpdesk2] .event .info.sold-out.sold-out {
-        border-color: #da2300; }
+        border-color: #da2300;
+        transform: translate(0px, 10px) rotate(-13deg);
+        -moz-transform: translate(0px, 10px) rotate(-13deg);
+        -o-transform: translate(0px, 10px) rotate(-13deg);
+        -webkit-transform: translate(0px, 10px) rotate(-13deg);
+        -ms-transform: translate(0px, 10px) rotate(-13deg);
+        transform-origin: left bottom;
+        -moz-transform-origin: left bottom;
+        -webkit-transform-origin: left bottom;
+        -o-transform-origin: left bottom;
+        -ms-transform-origin: left bottom;
+        text-align: right; }
   .conference-schedules.timetable .event.keynote {
     /*
      * stesso padding devinito in .event; purtroppo annullato
