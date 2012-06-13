@@ -78,6 +78,19 @@ def _assign_ticket(ticket, email):
         except IndexError:
             recipient = None
     if recipient is None:
+        from assopy.clients import genro
+        rid = genro.users(email)['r0']
+        if rid is not None:
+            # l'email non è associata ad un utente django ma genropy la
+            # conosce.  Se rid è assegnato ad un utente assopy riutilizzo
+            # l'utente collegato.  Questo check funziona quando un biglietto
+            # viene assegnato ad un utente, quest'ultimo cambia email ma poi il
+            # biglietto viene riassegnato nuovamente all'email originale.
+            try:
+                recipient = amodels.User.objects.get(assopy_id=rid).user
+            except amodels.User.DoesNotExist:
+                pass
+    if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
         just_created = True
         u = amodels.User.objects.create_user(email=email, token=True, send_mail=False)
