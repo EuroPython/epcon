@@ -83,16 +83,21 @@ def _ASSOPY_NEXT_INVOICE_CODE(last_invoice_code, details):
 NEXT_INVOICE_CODE = getattr(settings, 'ASSOPY_NEXT_INVOICE_CODE', _ASSOPY_NEXT_INVOICE_CODE)
 
 if 'paypal.standard.ipn' in settings.INSTALLED_APPS:
-    # settings per paypal
-    PAYPAL_CURRENCY_CODE = getattr(settings, 'ASSOPY_CURRENCY_CODE', 'EUR')
-    # si possono sofrascrivere gli url di default utile nel debug
-    PAYPAL_CANCEL_URL = getattr(settings, 'PAYPAL_CANCEL_URL', None)
+    def _PAYPAL_DEFAULT_FORM_CONTEXT(order):
+        from django.core.urlresolvers import reverse
+        return {
+            "lc" : settings.LANGUAGE_CODE.upper(),
+            "custom": order.code,
+            "currency_code" : 'EUR',
+            "business": settings.PAYPAL_RECEIVER_EMAIL,
+            "notify_url": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('paypal-ipn')),
+            "return_url": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-ok',args={'code':order.code})),
+            "cancel_return": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-cancel', args={'code':order.code})),
+        }
 
-    PAYPAL_NOTIFY_URL = getattr(settings, 'PAYPAL_NOTIFY_URL', None)
+    PAYPAL_DEFAULT_FORM_CONTEXT = getattr(settings, 'PAYPAL_DEFAULT_FORM_CONTEXT', _PAYPAL_DEFAULT_FORM_CONTEXT)
 
-    PAYPAL_RETURN_URL = getattr(settings, 'PAYPAL_RETURN_URL', None)
-
-    def _PAYPAL_ITEM_NAME(order):
-        unicode(order)
-    # personalizzazione del nome del per paypal
-    PAYPAL_ITEM_NAME = getattr(settings, 'PATPAL_ITEM_NAME', _PAYPAL_ITEM_NAME)
+    def _PAYPAL_ITEM_NAME(item):
+        return "%s %s" % (item['code'], item['description'])
+    
+    PAYPAL_ITEM_NAME = getattr(settings, 'PAYPAL_ITEM_NAME', _PAYPAL_ITEM_NAME)
