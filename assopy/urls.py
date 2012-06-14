@@ -33,15 +33,12 @@ urlpatterns = patterns('',
     url(r'invoice/(?P<id>.+)/$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
     url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$', 'assopy.views.voucher', name='assopy-orderitem-voucher'),
     url(r'orders/(?P<assopy_id>.+)/completed$', 'assopy.views.order_complete', name='assopy-order-complete'),
+    url(r'^paypal/redirect/(?P<code>.+)/$','assopy.views.paypal_billing', name='assopy-paypal-redirect'),
+    url(r'^paypal/cancel/(?P<code>.+)/$','assopy.views.paypal_cancel', name='assopy-paypal-feedback-cancel'),
 )
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     urlpatterns += patterns('',
-        url(r'^paypal/redirect/(?P<code>.+)/$','assopy.views.paypal_billing', name='assopy-paypal-redirect'),
         url(r'^paypal/standard-ipn/', include('paypal.standard.ipn.urls')),
-    )
-if 'paypal.pro' in dsettings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        url(r'^billing/cc/(?P<code>.+)/$','assopy.views.paypal_pro_billing', name='assopy-paypal-pro'),
     )
 

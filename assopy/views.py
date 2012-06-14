@@ -389,27 +389,6 @@ def geocode(request):
     from assopy.utils import geocode as g
     return g(address, region=region)
 
-
-
-def paypal_pro_billing(request, code):
-    from paypal.pro.views import PayPalPro
-    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-
-    item = {"amt":  o.total(),
-            "inv": "inventory",
-            "custom": "tracking",
-            }
-
-    kw = {
-          "item": item,
-          "payment_template": "assopy/paypal_pro.html",
-          "confirm_template": "assopy/paypal_pro.html",
-          "success_url": "%s%s" % (dsettings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-ok',args={'code':code})),
-          }
-
-    ppp = PayPalPro(**kw)
-    return ppp(request)
-
 def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
