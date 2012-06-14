@@ -273,21 +273,22 @@ def CONFERENCE_VOTING_ALLOWED(user):
     return tickets.count() > 0
 
 def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
-    from p3.utils import conference_stats
+    from p3.stats import presence_days
     from conference.models import Schedule
     if not isinstance(schedule, Schedule):
         output = {}
         for s in Schedule.objects.filter(conference=schedule):
             output[s.id] = CONFERENCE_SCHEDULE_ATTENDEES(s, forecast)
         return output
-    code = 'nostaff_days_' + schedule.date.strftime('%Y-%m-%d')
-    stats = conference_stats(schedule.conference, code)
-    if not stats:
-        return 0
-    if forecast:
-        return stats[0]['additional_info']
-    else:
-        return stats[0]['count']
+    d = schedule.date.strftime('%Y-%m-%d')
+    s = presence_days(schedule.conference)
+    for row in s['data']:
+        if row['title'] == '%s (no staff)' % d:
+            if forecast:
+                return row['total_nc']
+            else:
+                return row['total']
+    return 0
 
 CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.tickets_status',
