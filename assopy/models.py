@@ -899,53 +899,6 @@ class Invoice(models.Model):
     def net_price(self):
         return self.price - self.vat_value()
 
-def _has_issues_invoice(instance):
-    """
-    Ritorna True se l'ordine associato al istanza ha emesso una Fattura
-    """
-    order = None
-    if isinstance(instance, (Invoice, OrderItem)):
-        order = instance.order
-    elif isinstance(instance, Order):
-        order = instance
-    if order :
-        return order.invoices.exclude(payment_date=None).exists()
-    else:
-        return False
-
-@dispatch.receiver(pre_delete)
-def ck_delete_invoice(sender, **kwargs):
-    """
-    Impedisco la cancellazione di un ordine, orderItems, o
-    invoices quando una fattura del relativo ordine è stata emessa
-    """
-    instance = kwargs['instance']
-    if instance.pk and _has_issues_invoice(instance):
-        raise IntegrityError(u'you can not delete "%s" when an invoice is already issued' % instance)
-
-@dispatch.receiver(pre_save)
-def ck_change_invoice(sender, **kwargs):
-    """
-    Se una fattura è stata emessa, non posso cambiare alcuni 
-    campi del order e del orderitems
-    """
-    instance = kwargs['instance'] 
-    if instance.pk and isinstance(instance, (Order, OrderItem)) and _has_issues_invoice(instance):
-        original = instance._default_manager.get(pk=instance.pk)
-
-        if isinstance(instance, Order):
-            lk_fields = ('billing_notes', 'card_name', 'country', 'zip_code', 'address', 'city', 'state')
-        elif isinstance(instance, OrderItem):
-            lk_fields = ('ticket', 'code', 'price', 'vat')
-
-        changed_fileds = []
-        for field in lk_fields:
-            if getattr(instance,field, object()) != getattr(original,field, object()):
-                changed_fileds.append(field)
-
-        if len(changed_fileds)>0:
-            raise IntegrityError(u'you can not change %s of "%s" when an invoice is already issued' % (",".join(changed_fileds), instance))
-
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
     def confirm_order(sender, **kwargs):

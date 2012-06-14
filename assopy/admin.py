@@ -29,10 +29,23 @@ class OrderItemAdminForm(forms.ModelForm):
         super(OrderItemAdminForm, self).__init__(*args, **kwargs)
         from conference.models import Ticket
         self.fields['ticket'].queryset = Ticket.objects.all().select_related('fare')
+        instance = kwargs.get('instance',None)
+        if instance and instance.order.invoices.exclude(payment_date=None).exists():
+            for f in ('ticket', 'price', 'vat', 'code'):
+                self.fields[f].widget.attrs.update({'DISABLED':'DISABLED'})
 
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
     form = OrderItemAdminForm
+
+    def get_formset(self, request, obj=None, **kwargs):
+        if obj and obj.invoices.exclude(payment_date=None).exists():
+            self.can_delete = False
+            self.max_num = obj.invoices.exclude(payment_date=None).count()
+        else:
+            self.can_delete = True
+            self.max_num = None
+        return super(OrderItemInlineAdmin, self).get_formset(request, obj, **kwargs)
 
 class OrderAdminForm(forms.ModelForm):
     method = forms.ChoiceField(choices=(
@@ -78,6 +91,12 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = (
         OrderItemInlineAdmin,
     )
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.invoices.exclude(payment_date=None).exists():
+            return False
+        else:
+            return super(OrderAdmin, self).has_delete_permission(request, obj)
 
     def get_actions(self, request):
         # elimino l'action delete per costringere l'utente ad usare il pulsante
@@ -572,6 +591,12 @@ admin.site.register(models.Refund, RefundAdmin)
 
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'order', 'vat','payment_date','price')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.payment_date != None:
+            return False
+        else:
+            return super(InvoiceAdmin, self).has_delete_permission(request, obj)
 
 
 admin.site.register(models.Invoice,InvoiceAdmin)
