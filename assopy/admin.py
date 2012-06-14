@@ -31,6 +31,7 @@ class OrderItemAdminForm(forms.ModelForm):
         self.fields['ticket'].queryset = Ticket.objects.all().select_related('fare')
         instance = kwargs.get('instance',None)
         if instance and instance.order.invoices.exclude(payment_date=None).exists():
+            # se ho emesso un invoice impedisco di variare alcuni campi degli gli order items
             for f in ('ticket', 'price', 'vat', 'code'):
                 self.fields[f].widget.attrs.update({'DISABLED':'DISABLED'})
 
@@ -39,6 +40,7 @@ class OrderItemInlineAdmin(admin.TabularInline):
     form = OrderItemAdminForm
 
     def get_formset(self, request, obj=None, **kwargs):
+        # se ho emesso un invoice impedisco di variare gli order items
         if obj and obj.invoices.exclude(payment_date=None).exists():
             self.can_delete = False
             self.max_num = obj.invoices.exclude(payment_date=None).count()
@@ -93,6 +95,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     def has_delete_permission(self, request, obj=None):
+        # se ho emesso un invoice impedisco di cancellare l'ordine
         if obj and obj.invoices.exclude(payment_date=None).exists():
             return False
         else:
