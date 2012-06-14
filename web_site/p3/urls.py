@@ -11,14 +11,6 @@ urlpatterns = patterns('p3.views',
     url(r'^tickets/(?P<tid>\d+)/$', 'ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'user', name='p3-user'),
 
-    url(r'^schedule/(?P<conference>[\w-]+)/$', 'schedule', name='p3-schedule'),
-    url(r'^schedule/(?P<conference>[\w-]+).ics$', 'schedule_ics', name='p3-schedule-ics'),
-    url(r'^schedule/(?P<conference>[\w-]+)/my-schedule/$', 'my_schedule', name='p3-schedule-my-schedule'),
-    url(r'^schedule/(?P<conference>[\w-]+)/my-schedule.ics$', 'schedule_ics', name='p3-schedule-my-schedule-ics', kwargs={'mode': 'my-schedule'}),
-    url(r'^schedule/(?P<conference>[\w-]+)/list/$', 'schedule_list', name='p3-schedule-list'),
-    url(r'^my-schedule/$', 'jump_to_my_schedule', name='p3-my-schedule'),
-    url(r'^schedule/(?P<conference>[\w-]+)/schedule.js$', direct_to_template, {'template': 'p3/schedule.js' }, name='p3-schedule-js'),
-    url(r'^schedule/(?P<conference>[\w-]+)/search/$', 'schedule_search', name='p3-schedule-search'),
     url(r'^secure_media/(?P<path>.*)', 'secure_media', name='p3-secure-media'),
 
     url(r'^sprint-submission/$', 'sprint_submission', name='p3-sprint-submission'),
@@ -39,4 +31,23 @@ urlpatterns = patterns('p3.views',
 
     url(r'^whos-coming$', 'whos_coming', name='p3-whos-coming', kwargs={'conference': None}),
     url(r'^(?P<conference>[\w-]+)/whos-coming$', 'whos_coming', name='p3-whos-coming-conference'),
+)
+
+urlpatterns += patterns('p3.views',
+    url(r'^schedule/(?P<conference>[\w-]+)/$', 'schedule', name='p3-schedule'),
+    url(r'^schedule/(?P<conference>[\w-]+).ics$', 'schedule_ics', name='p3-schedule-ics'),
+
+    url(r'^schedule/(?P<conference>[\w-]+)/my-schedule/$',
+        'my_schedule', name='p3-schedule-my-schedule'),
+    url(r'^schedule/(?P<conference>[\w-]+)/my-schedule.ics$',
+        'schedule_ics', name='p3-schedule-my-schedule-ics', kwargs={'mode': 'my-schedule'}),
+
+    url(r'^schedule/(?P<conference>[\w-]+)/list/$',
+        'schedule_list', name='p3-schedule-list'),
+
+    url(r'^my-schedule/$', 'jump_to_my_schedule', name='p3-my-schedule'),
+    #url(r'^schedule/(?P<conference>[\w-]+)/schedule.js$',
+    #    direct_to_template, {'template': 'p3/schedule.js' }, name='p3-schedule-js'),
+    #url(r'^schedule/(?P<conference>[\w-]+)/search/$',
+    #    'schedule_search', name='p3-schedule-search'),
 )
