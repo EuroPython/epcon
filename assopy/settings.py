@@ -85,14 +85,15 @@ NEXT_INVOICE_CODE = getattr(settings, 'ASSOPY_NEXT_INVOICE_CODE', _ASSOPY_NEXT_I
 if 'paypal.standard.ipn' in settings.INSTALLED_APPS:
     def _PAYPAL_DEFAULT_FORM_CONTEXT(order):
         from django.core.urlresolvers import reverse
+        code = order.code.replace('/','-')
         return {
             "lc" : settings.LANGUAGE_CODE.upper(),
             "custom": order.code,
             "currency_code" : 'EUR',
             "business": settings.PAYPAL_RECEIVER_EMAIL,
             "notify_url": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('paypal-ipn')),
-            "return_url": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-ok',args={'code':order.code})),
-            "cancel_return": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-cancel', args={'code':order.code})),
+            "return_url": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-ok', kwargs={'code':code})),
+            "cancel_return": "%s%s" % (settings.DEFAULT_URL_PREFIX, reverse('assopy-paypal-feedback-cancel', kwargs={'code':code})),
         }
 
     PAYPAL_DEFAULT_FORM_CONTEXT = getattr(settings, 'PAYPAL_DEFAULT_FORM_CONTEXT', _PAYPAL_DEFAULT_FORM_CONTEXT)
