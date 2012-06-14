@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /*
  * Il programma di una conferenza può essere rappresentato in diversi modi:
  *  - timetable
@@ -550,6 +549,13 @@ body#schedule > .page > .container {
         background: #e7c30f; }
       .conference-schedules.timetable .event.dimmed.exposed.dimmed .talk-level.advanced {
         background: #da2300; }
+  .conference-schedules.timetable .event .warning.overbook {
+    position: absolute;
+    top: 2px;
+    right: 2px; }
+  .conference-schedules.timetable .event.exposed .warning.overbook {
+    top: 4px;
+    right: 30px; }
 
 #schedule-navigator {
   position: fixed;

@@ -413,12 +413,28 @@ function highlighter(mode, option) {
             }
         }
     }
-    // eseguo la richiesta ajax prima della manipolazione del DOM, in questo
+    // eseguo la richiesthe ajax prima della manipolazione del DOM, in questo
     // modo le due operazioni dovrebbero procedere parallelamente.
     (function() {
-        $.getJSON('/conference/schedule/ep2012/events/booking', function(data) {
+        var conf = document.location.pathname.split('/')[3];
+        $.getJSON('/conference/schedule/' + conf + '/events/booking', function(data) {
             $.each(data, function(key, value) {
                 sync_event_book_status($('#e' + key), value);
+            });
+        });
+    })();
+    (function() {
+        var conf = document.location.pathname.split('/')[3];
+        $.getJSON('/conference/schedule/' + conf + '/events/expected_attendance', function(data) {
+            $.each(data, function(eid, data) {
+                var e = $('#e' + eid);
+                e.attr('data-score', data.score_normalized);
+                if(data.overbook) {
+                    e.addClass('overbooked');
+                    e.append('<div class="warning overbook">'
+                        +'<img src="' + STATIC_URL + 'p5/i/warning.png" title="our estimate of attendance exceeds the room size" />'
+                        +'</div>');
+                }
             });
         });
     })();

@@ -783,6 +783,19 @@ body#schedule > .page > .container {
             }
         }
     }
+    .event {
+        .warning.overbook {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+        }
+        &.exposed {
+            .warning.overbook {
+                top: 4px;
+                right: 30px;
+            }
+        }
+    }
 }
 
 #schedule-navigator {
