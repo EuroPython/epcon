@@ -778,3 +778,7 @@ def user_profile(request, slug, profile=None, full_access=False):
 def myself_profile(request):
     p = models.AttendeeProfile.objects.getOrCreateForUser(request.user)
     return redirect('conference-profile', slug=p.slug)
+
+@json
+def schedule_events_expected_attendance(request, conference):
+    return dataaccess.expected_attendance(conference)
