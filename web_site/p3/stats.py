@@ -61,11 +61,23 @@ def diet_types(conf):
     return output
 diet_types.short_description = "Dieta partecipanti (solo biglietti compilati)"
 
-def presence_days(conf):
-    totals = {
-        'c': _compiled(conf).count(),
-        'n': _not_compiled(conf).count(),
+def presence_days(conf, code=None):
+    qs = {
+        'all': {
+            'c': _compiled(conf),
+            'n': _not_compiled(conf),
+        },
+        'nostaff': {
+            'c': _compiled(conf).exclude(ticket_type='staff'),
+            'n': _not_compiled(conf).exclude(ticket_type='staff'),
+        }
     }
+    totals = {}
+    for key in qs:
+        totals[key] = {
+            'c': qs[key]['c'].count(),
+            'n': qs[key]['n'].count(),
+        }
     output = {
         'columns': (
             ('total', 'Totale'),
@@ -74,27 +86,36 @@ def presence_days(conf):
         'data': [],
     }
 
-    days = defaultdict(lambda: 0)
-    qs = _compiled(conf)\
-        .values_list('p3_conference__days', flat=True)
-    for x in qs:
-        val = filter(None, map(lambda v: v.strip(), x.split(',')))
-        if not val:
-            days['x'] += 1
-        else:
-            for v in val:
-                days[v] += 1
+    days = {
+        'all': defaultdict(lambda: 0),
+        'nostaff': defaultdict(lambda: 0),
+    }
+    for key in qs:
+        for x in qs[key]['c'].values_list('p3_conference__days', flat=True):
+            val = filter(None, map(lambda v: v.strip(), x.split(',')))
+            if not val:
+                days[key]['x'] += 1
+            else:
+                for v in val:
+                    days[key][v] += 1
 
-    for day, count in sorted(days.items()):
-        if day != 'x':
-            nc = float(count) / (totals['c'] - days['x']) * (totals['c'] + totals['n'])
-        else:
-            nc = 0.0
-        output['data'].append({
-            'title': day,
-            'total': count,
-            'total_nc': int(round(nc)),
-        })
+    for key in days:
+        dX = days[key].get('x', 0)
+        tC = totals[key]['c']
+        tN = totals[key]['n']
+        for day, count in sorted(days[key].items()):
+            if day != 'x':
+                nc = float(count) / (tC - dX) * (tC + tN)
+            else:
+                nc = 0.0
+            title = day
+            if key == 'nostaff':
+                title += ' (no staff)'
+            output['data'].append({
+                'title': title,
+                'total': count,
+                'total_nc': int(round(nc)),
+            })
     return output
 presence_days.short_description = "Affluenza per giorno (solo biglietti compilati)"
 
