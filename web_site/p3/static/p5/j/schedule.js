@@ -25,6 +25,42 @@
     });
 })(jQuery);
 
+function highlight_events_by_score() {
+    function color(score) {
+        // score 1 -> rosso  (l=50%)
+        // score 0 -> bianco (l=100%)
+        var x = 100 - (score * 50);
+        return "hsla(0, 100%, " + x + "%, 1)";
+    }
+    $('.event').each(function() {
+        var e = $(this);
+        var score = e.attr('data-score');
+        if(typeof(score) == "undefined") {
+            e.css('background', null);
+        }
+        else {
+            e.css('background', color(score));
+        }
+    })
+}
+function highlight_events_by_seats() {
+    function color(score) {
+        // score 1 -> blu  (l=50%)
+        // score 0 -> bianco (l=100%)
+        var x = 100 - (score * 50);
+        return "hsla(240, 100%, " + x + "%, 1)";
+    }
+    $('.event').each(function() {
+        var e = $(this);
+        var score = e.attr('data-seats');
+        if(typeof(score) == "undefined") {
+            e.css('background', null);
+        }
+        else {
+            e.css('background', color(score));
+        }
+    })
+}
 function highlight_chart() {
     var slices = {};
     var srex = /time-(\d+)/;
@@ -429,6 +465,10 @@ function highlighter(mode, option) {
             $.each(data, function(eid, data) {
                 var e = $('#e' + eid);
                 e.attr('data-score', data.score_normalized);
+                var seats_normalized = data.expected / data.seats;
+                if(seats_normalized > 1)
+                    seats_normalized = 1
+                e.attr('data-seats', seats_normalized);
                 if(data.overbook) {
                     e.addClass('overbooked');
                     e.append('<div class="warning overbook">'
