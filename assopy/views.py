@@ -410,12 +410,17 @@ def paypal_pro_billing(request, code):
     ppp = PayPalPro(**kw)
     return ppp(request)
 
-@render_to('assopy/paypal_billing_redirect.html')
 def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     form = aforms.PayPalForm(o)
     return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
+
+@render_to('assopy/paypal_cancel.html')
+def paypal_cancel(request, code):
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    form = aforms.PayPalForm(o)
+    return {'form': form }
 
 # sembra che a volte la redirezione di paypal si concluda con una POST da parte
 # del browser (qualcuno ha detto HttpResponseRedirectSeeOther?), dato che non
