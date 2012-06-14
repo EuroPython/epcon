@@ -247,7 +247,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
             else:
                 initial.update({
                     "item_name": settings.PAYPAL_ITEM_NAME(items[0]),
-                    "item_number": items[0]['count'],
+                    "quantity": items[0]['count'],
                     "amount": order.total(),
                 })
                 if discount > 0:
@@ -271,7 +271,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
                                                             widget=ValueHiddenInput(), 
                                                             initial=settings.PAYPAL_ITEM_NAME(item)
                                                         )
-                    self.fields['item_number_%d' % n ] = forms.CharField(
+                    self.fields['quantity_%d' % n ] = forms.CharField(
                                                             widget=ValueHiddenInput(), 
                                                             initial=item['count']
                                                         )
