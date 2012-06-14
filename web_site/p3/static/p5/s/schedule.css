@@ -484,7 +484,7 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event.special, .conference-schedules.timetable .track[data-track=sprint1] .event.special, .conference-schedules.timetable .track[data-track=sprint2] .event.special, .conference-schedules.timetable .track[data-track=sprint3] .event.special {
     background-color: rgba(225, 219, 197, 0.6);
     background-image: url(../i/empty-track.png);
-    backround-position: bottom left;
+    background-position: bottom left;
     border-left: none; }
     .conference-schedules.timetable .event.special .name, .conference-schedules.timetable .track[data-track=sprint1] .event.special .name, .conference-schedules.timetable .track[data-track=sprint2] .event.special .name, .conference-schedules.timetable .track[data-track=sprint3] .event.special .name {
       font-size: 1.3em;
