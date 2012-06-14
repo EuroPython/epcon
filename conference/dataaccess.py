@@ -756,3 +756,25 @@ def _i_conference_booking_status(sender, **kw):
 conference_booking_status = cache_me(
     models=(models.EventBooking, models.Track, models.Event,),
     key='conference_booking_status:%(conference)s')(conference_booking_status, _i_conference_booking_status)
+
+def expected_attendance(conference):
+    data = models.Schedule.objects.expected_attendance(conference)
+    vals = data.values()
+    max_score = max([ x['score'] for x in vals ])
+    for x in vals:
+        x['score_normalized'] = x['score'] / max_score
+    return data
+
+def _i_expected_attendance(sender, **kw):
+    if sender is models.EventInterest:
+        conf = kw['instance'].event.schedule.conference
+    elif sender is models.Track:
+        conf = kw['instance'].schedule.conference
+    elif sender is models.EventTrack:
+        conf = kw['instance'].track.schedule.conference
+    return 'expected_attendance:%s' % conf
+
+expected_attendance = cache_me(
+    models=(models.EventInterest, models.Track, models.EventTrack,),
+    key='expected_attendance:%(conference)s')(expected_attendance, _i_expected_attendance)
+

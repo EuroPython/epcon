@@ -719,78 +719,49 @@ class MediaPartnerConference(models.Model):
         ordering = ['conference']
 
 class ScheduleManager(models.Manager):
-#    def _conference_cache_key(self, conference):
-#        cid = conference.pk if isinstance(conference, Conference) else conference
-#        return 'conf:schedules:%s' % cid
-#
-#    def clear_cache(self, conference):
-#        cache.delete(self._conference_cache_key(conference))
-
     def attendees(self, conference, forecast=False):
         """
         restituisce il numero di partecipanti per ogni schedule della conferenza.
         """
         return settings.SCHEDULE_ATTENDEES(conference, forecast)
 
-    def expected_attendance(self, conference, factor=0.95):
+    def events_score_by_attendance(self, conference):
         """
-        restituisce per ogni evento la previsione di partecipazione basata
-        sugli EventInterest.
-
-        `overbook` controlla se devono essere ritornati tutti gli eventi o solo
-        quelli in overbook.
+        Utilizzandoi gli EventInterest ritorna un "punteggio di presenza" per
+        ogni evento; Il punteggio è proporzionale al numero di persone che
+        hanno esspresso interesse in quell'evento.
         """
-        # XXX: spostare in dataaccess
-        key = self._conference_cache_key(conference)
-        output = cache.get(key)
-        if output:
-            return output
-
-        track_qs = Track.objects\
-                    .filter(schedule__conference=conference)\
-                    .values('schedule', 'track', 'seats')
-
-        tracks = defaultdict(dict)
-        for t in track_qs:
-            tracks[t['schedule']][t['track']] = t['seats']
-
-        #tracks_to_check = {}
-        #for k, v in tracks.items():
-        #    tracks_to_check[k] = set(v.keys())
-
         # Considero una manifestazione di interesse, interest > 0, come la
         # volontà di partecipare ad un evento e aggiungo l'utente tra i
         # partecipanti. Se l'utente ha "votato" più eventi contemporanei
         # considero la sua presenza in proporzione (quindi gli eventi potranno
         # avere "punteggio" frazionario)
-        qs = EventInterest.objects.all()\
-            .filter(event__schedule__conference=conference, interest__gt=0)\
-            .select_related('event__talk', 'event__schedule')
-
         events = defaultdict(set)
-
-        for x in qs:
+        for x in EventInterest.objects\
+                    .filter(event__schedule__conference=conference, interest__gt=0)\
+                    .select_related('event__schedule'):
             events[x.event].add(x.user_id)
-            #if tracks_to_check[x.event.schedule_id] & set(parse_tag_input(x.event.track)):
-            #    events[x.event].add(x.user_id)
 
+        # associo ad ogni evento il numero di voti che ha ottenuto;
+        # l'operazione è complicata dal fatto che non tutti i voti hanno lo
+        # stesso peso; se un utente ha marcato come +1 due eventi che avvengano
+        # in parallelo ovviamente non potrà partecipare ad entrambi, quindi il
+        # suo voto deve essere scalato
         def group_by_times(events):
             """
-            generatore che organizza gli eventi passati in gruppi che temporali
-            contigui.
+            Raggruppa gli eventi, ovviamente appartenenti a track diverse, che
+            si "accavvallano" temporalmente.
+
+            Rtorna un generatore che ad ogni iterazione restituisce un gruppo:
+                [ (event, set(users)), ...  ]
             """
             sorted_events = sorted(
-                filter(
-                    lambda x: x[0].get_duration(),
-                    map(lambda x: (x[0], set(x[1])),events.items())
-                ),
-                key=lambda x: x[0].get_duration()
-            )
+                filter(lambda x: x[0].get_duration() > 0, events.items()),
+                key=lambda x: x[0].get_duration())
             while sorted_events:
-                item0 = sorted_events.pop()
-                e0 = item0[0]
-                group = [item0]
-                drange = e0.get_time_range()
+                evt0, users = sorted_events.pop()
+                group = [(evt0, users)]
+                drange = evt0.get_time_range()
                 for ix in reversed(range(len(sorted_events))):
                     evt = sorted_events[ix][0]
                     r = evt.get_time_range()
@@ -800,27 +771,46 @@ class ScheduleManager(models.Manager):
                         group.append(sorted_events.pop(ix))
                 yield group
 
-        # associo ad ogni evento il numero di voti che ha ottenuto;
-        # l'operazione è complicata dal fatto che non tutti i voti hanno lo
-        # stesso peso; se un utente ha marcato come +1 due eventi che avvengano
-        # in parallelo ovviamente non potrà partecipare ad entrambi, quindi il
-        # suo voto deve essere scalato
         scores = defaultdict(lambda: 0.0)
-        for group in group_by_times(events):
+        for group in Event.objects.group_events_by_times(events):
             while group:
-                evt, users = group.pop()
+                evt = group.pop()
+                users = events[evt]
                 for u in users:
+                    # Quanto vale la presenza di `u` per l'evento `evt`?  Se
+                    # `u` non partecipa a nessun'altro evento dello stesso
+                    # gruppo allora 1, altrimenti un valore proporzionale al
+                    # numero di eventi che gli interesssano.
                     found = [ evt ]
                     for other in group:
                         try:
-                            other[1].remove(u)
+                            events[other].remove(u)
                         except KeyError:
                             pass
                         else:
-                            found.append(other[0])
+                            found.append(other)
                     score = 1.0 / len(found)
                     for f in found:
-                        scores[f] += score 
+                        scores[f] += score
+        return scores
+
+    def expected_attendance(self, conference, factor=0.95):
+        """
+        restituisce per ogni evento la previsione di partecipazione basata
+        sugli EventInterest.
+        """
+        seats_available = defaultdict(lambda: 0)
+        for row in EventTrack.objects\
+                    .filter(event__schedule__conference='ep2012')\
+                    .values('event', 'track__seats'):
+            seats_available[row['event']] += row['track__seats']
+
+        scores = self.events_score_by_attendance(conference)
+        events = Event.objects\
+            .filter(id__in=EventInterest.objects\
+                .filter(event__schedule__conference=conference, interest__gt=0)\
+                .values('event'))\
+            .select_related('schedule')
 
         output = {}
         # adesso devo fare la previsione dei partecipanti per ogni evento, per
@@ -830,49 +820,30 @@ class ScheduleManager(models.Manager):
         # per la previsione di presenze al giorno mi da un'indicazione di
         # quante persone sono previste per l'evento.
         forecasts = self.attendees(conference, forecast=True)
+
         # per calcolare il punteggio relativo ad una fascia temporale devo fare
         # un doppio for sugli eventi, per limitare il numero delle iterazioni
         # interno raggruppo gli eventi per giorno
         event_by_day = defaultdict(set)
         for e in events:
             event_by_day[e.schedule_id].add(e)
+
         for event in events:
             score = scores[event]
-            group_score = score
-            drange = event.get_time_range()
-            for evt in event_by_day[event.schedule_id]:
-                if evt is event:
-                    continue
-                r = evt.get_time_range()
-                if (drange[0] <= r[0] and drange[1] >= r[1]) or\
-                    (drange[0]>r[0] and drange[0]<r[1]) or\
-                    (drange[1]>r[0] and drange[1]<r[1]):
-                    group_score += scores[evt]
+            group = list(Event.objects\
+                .group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
+
+            group_score = sum([ scores[e] for e in group ])
             k = score / group_score
             expected = k * forecasts[event.schedule_id] * factor
-            seats = 0
-            for t in set(parse_tag_input(event.track)):
-                seats += tracks[event.schedule_id].get(t, 0)
-            output[event] = {
+            seats = seats_available.get(event.id, 0)
+            output[event.id] = {
                 'score': score,
                 'seats': seats,
                 'expected': expected,
                 'overbook': seats and expected > seats,
             }
-#                
-#        for event, score in scores.items():
-#            expected = score * forecasts[event.schedule_id] * factor
-#            seats = 0
-#            for t in set(parse_tag_input(event.track)):
-#                seats += tracks[event.schedule_id].get(t, 0)
-#            output[event] = {
-#                'score': score,
-#                'seats': seats,
-#                'expected': expected,
-#                'overbook': seats and expected > seats,
-#            }
 
-        cache.set(key, output)
         return output
 
 class Schedule(models.Model):
@@ -909,6 +880,43 @@ class Track(models.Model):
     def __unicode__(self):
         return self.track
 
+class EventManager(models.Manager):
+    def group_events_by_times(self, events, event=None):
+        """
+        Raggruppa gli eventi, ovviamente appartenenti a track diverse, che
+        si "accavvallano" temporalmente.
+
+        Rtorna un generatore che ad ogni iterazione restituisce un gruppo(list)
+        di eventi.
+        """
+        def overlap(range1, range2):
+            # http://stackoverflow.com/questions/9044084/efficient-data-range-overlap-calculation-in-python
+            latest_start = max(range1[0], range2[0])
+            earliest_end = min(range1[1], range2[1])
+            _overlap = (earliest_end - latest_start)
+            return _overlap.days == 0 and _overlap.seconds > 0
+
+        def extract_group(event, events):
+            group = []
+            r0 = event.get_time_range()
+            for ix in reversed(range(len(events))):
+                r1 = events[ix].get_time_range()
+                if r0[0].date() == r1[0].date() and overlap(r0, r1):
+                    group.append(events.pop(ix))
+            return group
+
+        if event:
+            group = extract_group(event, list(events))
+            yield group
+        else:
+            sorted_events = sorted(
+                filter(lambda x: x.get_duration() > 0, events),
+                key=lambda x: x.get_duration())
+            while sorted_events:
+                evt0 = sorted_events.pop()
+                group = [evt0] + extract_group(evt0, sorted_events)
+                yield group
+
 class Event(models.Model):
     schedule = models.ForeignKey(Schedule)
     start_time = models.TimeField()
@@ -936,6 +944,8 @@ class Event(models.Model):
     seats = models.PositiveIntegerField(
         default=0,
         help_text='seats available. Override the track default if set')
+
+    objects = EventManager()
 
     class Meta:
         ordering = ['start_time']
@@ -980,12 +990,6 @@ class Event(models.Model):
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:
                 return dbtracks[t.name]
-
-    def expected_attendance(self):
-        if self.talk:
-            return Schedule.objects.expected_attendance(conference=self.talk.conference).get(self)
-        else:
-            return 0
 
 class EventTrack(models.Model):
     track = models.ForeignKey(Track)
