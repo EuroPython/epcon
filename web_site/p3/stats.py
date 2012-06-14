@@ -44,7 +44,7 @@ def shirt_sizes(conf):
             'total': x['total'],
         })
     return output
-shirt_sizes.short_description = "Taglie maglette (solo biglietti compilati)"
+shirt_sizes.short_description = "Taglie magliette (solo biglietti compilati)"
 
 def diet_types(conf):
     diets = dict(models.TICKET_CONFERENCE_DIETS)
