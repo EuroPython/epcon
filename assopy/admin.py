@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.utils.safestring import mark_safe
 from assopy import models, settings
 if settings.GENRO_BACKEND:
     from assopy.clients import genro
@@ -21,6 +22,18 @@ class CountryAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Country, CountryAdmin)
 
+class ReadOnlyWidget(forms.widgets.HiddenInput):
+
+    def __init__(self, display=None, *args, **kwargs):
+        self.display = display
+        super(ReadOnlyWidget, self).__init__(*args, **kwargs)
+
+    def render(self, name, value, attrs=None):
+        output = []
+        output.append('<span>%s</span>' % self.display or value)
+        output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
+        return mark_safe(u''.join(output))
+
 class OrderItemAdminForm(forms.ModelForm):
     class Meta:
         model = models.OrderItem
@@ -33,7 +46,7 @@ class OrderItemAdminForm(forms.ModelForm):
         if instance and instance.order.invoices.exclude(payment_date=None).exists():
             # se ho emesso un invoice impedisco di variare alcuni campi degli gli order items
             for f in ('ticket', 'price', 'vat', 'code'):
-                self.fields[f].widget.attrs.update({'DISABLED':'DISABLED'})
+                self.fields[f].widget = ReadOnlyWidget(display = getattr(self.instance, f))
 
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
