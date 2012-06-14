@@ -223,6 +223,13 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
 
     class PayPalForm(PayPalPaymentsForm):
+        #Do not prompt buyers for a shipping address.
+        #Allowable values are:
+        #
+        #0 – prompt for an address, but do not require one
+        #1 – do not prompt for an address
+        #2 – prompt for an address, and require one
+        no_shipping = forms.IntegerField(initial=1)
 
         def __init__(self, order, *args, **kwargs):
             from django.db import models
