@@ -415,7 +415,7 @@ def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     form = aforms.PayPalForm(o)
-    return {'form':form } 
+    return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
 
 # sembra che a volte la redirezione di paypal si concluda con una POST da parte
 # del browser (qualcuno ha detto HttpResponseRedirectSeeOther?), dato che non
