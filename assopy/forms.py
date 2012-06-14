@@ -284,5 +284,8 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 
         def as_url_args(self):
             import urllib
-            data = dict([(f.name, f.value()) for f in self if f.value()])
+            data = dict(
+                        [(f.field.widget.attrs.get('name', f.html_name), f.value())
+                         for f in self if f.value()]
+                        )
             return urllib.urlencode(data)
