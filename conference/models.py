@@ -741,6 +741,12 @@ class ScheduleManager(models.Manager):
                     .filter(event__schedule__conference=conference, interest__gt=0)\
                     .select_related('event__schedule'):
             events[x.event].add(x.user_id)
+        # Oltre agli EventInterest tengo conto anche degli EventBooking, la
+        # confidenza in questi casi è ancora maggiore
+        for x in EventBooking.objects\
+                    .filter(event__schedule__conference=conference)\
+                    .select_related('event__schedule'):
+            events[x.event].add(x.user_id)
 
         # associo ad ogni evento il numero di voti che ha ottenuto;
         # l'operazione è complicata dal fatto che non tutti i voti hanno lo
