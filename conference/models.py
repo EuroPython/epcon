@@ -807,9 +807,7 @@ class ScheduleManager(models.Manager):
 
         scores = self.events_score_by_attendance(conference)
         events = Event.objects\
-            .filter(id__in=EventInterest.objects\
-                .filter(event__schedule__conference=conference, interest__gt=0)\
-                .values('event'))\
+            .filter(schedule__conference=conference)\
             .select_related('schedule')
 
         output = {}
