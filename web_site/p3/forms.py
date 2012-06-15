@@ -759,16 +759,38 @@ class P3FormTickets(aforms.FormTickets):
 class P3EventBookingForm(cforms.EventBookingForm):
     def clean_value(self):
         data = super(P3EventBookingForm, self).clean_value()
-        if data:
-            # per prenotare un training è necessario un biglietto "standard" o "daily"
-            tt = cmodels.Event.objects\
+        if not data:
+            return data
+        # per prenotare un training è necessario un biglietto "standard" o "daily"
+        tt = cmodels.Event.objects\
+            .filter(id=self.event)\
+            .values('talk__type')[0]['talk__type']
+        tickets = dataaccess.all_user_tickets(self.user, conference=settings.CONFERENCE_CONFERENCE)
+        for tid, ttype, fcode, complete in tickets:
+            if complete and ttype == 'conference'\
+                and (fcode[2] in ('S', 'D') or tt != 't'):
+                break
+        else:
+            raise forms.ValidationError('ticket error')
+
+        # non posso prenotare piŭ di un helpdesk dello stesso tipo
+        helpdesk = None
+        for t in cmodels.EventTrack.objects\
+                    .filter(event=self.event)\
+                    .values('track', 'track__track'):
+            if 'helpdesk' in t['track__track']:
+                helpdesk = t['track']
+                break
+        if helpdesk:
+            custom = cmodels.Event.objects\
                 .filter(id=self.event)\
-                .values('talk__type')[0]['talk__type']
-            tickets = dataaccess.all_user_tickets(self.user, conference=settings.CONFERENCE_CONFERENCE)
-            for tid, ttype, fcode, complete in tickets:
-                if complete and ttype == 'conference'\
-                    and (fcode[2] in ('S', 'D') or tt != 't'):
-                    break
-            else:
-                raise forms.ValidationError('ticket error')
+                .values_list('custom', flat=True)[0]
+            brothers = cmodels.EventTrack.objects\
+                .exclude(event=self.event)\
+                .filter(track=helpdesk, event__custom=custom)\
+                .values('event')
+            booked = cmodels.EventBooking.objects\
+                .filter(event__in=brothers, user=self.user)
+            if booked.count() > 0:
+                raise forms.ValidationError('already booked')
         return data

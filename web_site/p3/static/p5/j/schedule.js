@@ -511,6 +511,9 @@ function highlighter(mode, option) {
                             case 'ticket error':
                                 msg = 'Restricted access';
                                 break;
+                            case 'already booked':
+                                msg = 'You already have another reservation for this type of event';
+                                break;
                         }
                         alert(msg);
                     }
