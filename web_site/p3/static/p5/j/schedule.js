@@ -465,15 +465,22 @@ function highlighter(mode, option) {
             $.each(data, function(eid, data) {
                 var e = $('#e' + eid);
                 e.attr('data-score', data.score_normalized);
+
                 var seats_normalized = data.expected / data.seats;
                 if(seats_normalized > 1)
                     seats_normalized = 1
                 e.attr('data-seats', seats_normalized);
+
                 if(data.overbook) {
-                    e.addClass('overbooked');
-                    e.append('<div class="warning overbook">'
-                        +'<img src="' + STATIC_URL + 'p5/i/warning.png" title="our estimate of attendance exceeds the room size" />'
-                        +'</div>');
+                    var track = e.parents('.track').attr('data-track');
+                    if(track != 'helpdesk1' && track != 'helpdesk2'
+                        && track != 'training1' && track != 'training2'
+                        && !e.hasClass('keynote')) {
+                        e.addClass('overbooked');
+                        e.append('<div class="warning overbook">'
+                            +'<img src="' + STATIC_URL + 'p5/i/warning.png" title="our estimate of attendance exceeds the room size" />'
+                            +'</div>');
+                    }
                 }
             });
         });
