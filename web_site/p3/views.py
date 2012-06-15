@@ -630,8 +630,13 @@ def sim_report(request):
         t = tickets.get(id=request.POST['ticket'])
         t.frozen = not t.frozen
         t.save()
+    compiled = dict(std=0, micro=0)
+    for t in tickets:
+        if t.p3_conference_sim and t.p3_conference_sim.document:
+            compiled[t.p3_conference_sim.sim_type] += 1
     return {
         'tickets': tickets,
+        'compiled': compiled,
     }
 
 @login_required
