@@ -715,6 +715,11 @@ def timetables2ical(tts, altf=lambda d, comp: d):
     from datetime import timedelta
     from django.utils.html import strip_tags
 
+    import pytz
+    from pytz import timezone
+    utc = pytz.utc
+    tz = timezone(dsettings.TIME_ZONE)
+
     cal = altf({
         'uid': '1',
         'events': [],
@@ -728,9 +733,19 @@ def timetables2ical(tts, altf=lambda d, comp: d):
                     continue
                 uniq.add(e['id'])
                 track = strip_tags(sdata['tracks'][e['tracks'][0]].title)
+                # ical supporta date in una timezone diversa da UTC attraverso
+                # il parametro TZID:
+                # DTSTART;TZID=Europe/Rome:20120702T093000
+                #
+                # Il problema nel non usare UTC è che il nome della timezone è
+                # solo un identificativo locale al file ica, e deve esistere
+                # una struttura VTIMEZONE che ne descrive le proprietà.
+                #
+                # Per questo ho deciso di convertire i tempi in UTC
+                start = utc.normalize(tz.localize(e['time']).astimezone(utc))
                 ce = {
                     'uid': e['id'],
-                    'start': (e['time'], {'TZID': dsettings.TIME_ZONE}),
+                    'start': start,
                     'duration': timedelta(seconds=e['duration']*60),
                     'location': 'Track: %s' % track,
                 }
