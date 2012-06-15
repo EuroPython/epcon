@@ -10,8 +10,23 @@ def encode(line):
         fold = [ line ]
         while len(fold[-1]) > 75:
             l = fold[-1]
-            fold[-1] = fold[-1][:73]
-            fold.append(' ' + l[73:])
+            # 73 perché poi verrà aggiunto CRLF
+            pos = 73
+            # troncare una stringa utf-8 dopo un numero arbitrario di byte non
+            # è una buona idea; sicuramente spezzerei una sequenza multibyte
+            # rendendo il file illeggibile (o quanto meno indecodificabile)
+            while True:
+                ready = fold[-1][:pos]
+                try:
+                    ready.decode('utf-8')
+                except UnicodeDecodeError:
+                    pos -= 1
+                    if pos == 0:
+                        raise ValueError('cannot encode: %s' % line)
+                else:
+                    break
+            fold[-1] = ready
+            fold.append(' ' + l[pos:])
         line = '\r\n'.join(fold)
     return line
 
