@@ -412,7 +412,7 @@ def schedule_ics(request, conference, mode='conference'):
     else:
         uid = None
     from p3.utils import conference2ical
-    cal = conference2ical(conference, user=uid)
+    cal = conference2ical(conference, user=uid, abstract='abstract' in request.GET)
     return http.HttpResponse(list(cal.encode()), content_type='text/calendar')
 
 @render_to('p3/schedule_list.html')

@@ -76,7 +76,8 @@ def invalidate_template_cache(fragment_name, *variables):
     cache.delete(cache_key)
     return
 
-def conference2ical(conf, user=None):
+def conference2ical(conf, user=None, abstract=False):
+    from conference import dataaccess
     from conference import models as cmodels
     from datetime import timedelta
 
@@ -101,6 +102,7 @@ def conference2ical(conf, user=None):
             else:
                 data['ttl'] = timedelta(days=365)
         elif component == 'event':
+            eid = data['uid']
             data['uid'] = settings.DEFAULT_URL_PREFIX + '/p3/event/' + str(data['uid'])
             data['organizer'] = ('mailto:info@pycon.it', {'CN': 'Python Italia'})
             if hotel:
@@ -115,6 +117,10 @@ def conference2ical(conf, user=None):
                     if url.startswith('/'):
                         url = settings.DEFAULT_URL_PREFIX + url
                     data['summary'] = (m.group(2), {'ALTREP': url})
+            if abstract:
+                e = dataaccess.event_data(eid)
+                ab = e['talk']['abstract'] if e['talk'] else e['abstract']
+                data['description'] = ab
         return data
     if user is None:
         from conference.utils import conference2ical as f
