@@ -365,8 +365,8 @@ def hotel_tickets(conf, code=None):
         qs['HR' + x] = User.objects.filter(
             id__in=_tickets(conf, fare_code='HR' + x).values('orderitem__order__user__user'))
     for x in ('2', '3', '4'):
-        qs['HB' + x] = User.objects.filter(
-            id__in=_tickets(conf, fare_code='HB' + x).values('orderitem__order__user__user'))
+        qs['HB' + x] = _tickets(conf, fare_code='HB' + x)\
+            .select_related('user', 'orderitem__order__user__user__attendeeprofile__p3_profile')
     if code is None:
         output = [
             {
@@ -406,23 +406,49 @@ def hotel_tickets(conf, code=None):
             },
         ]
     else:
-        output = {
-            'columns': (
-                ('name', 'Name'),
-                ('email', 'Email'),
-            ),
-            'data': [],
-        }
-        data = output['data']
-        for x in qs[code]:
-            data.append({
-                'name': '<a href="%s">%s %s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.id,)),
-                    x.first_name,
-                    x.last_name),
-                'email': x.email,
-                'uid': x.id,
-            })
+        if code[1] == 'R':
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                    ('email', 'Email'),
+                ),
+                'data': [],
+            }
+            data = output['data']
+            for x in qs[code]:
+                data.append({
+                    'name': '<a href="%s">%s %s</a>' % (
+                        reverse('admin:auth_user_change', args=(x.id,)),
+                        x.first_name,
+                        x.last_name),
+                    'email': x.email,
+                    'uid': x.id,
+                })
+        else:
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                    ('email', 'Email'),
+                    ('order', 'Order Number'),
+                    ('interests', 'Interests'),
+                ),
+                'data': [],
+            }
+            data = output['data']
+            for ticket in qs[code]:
+                interests = ', '.join(ticket.orderitem.order.user.user.attendeeprofile.p3_profile.interests.all().values_list('name', flat=True))
+                data.append({
+                    'name': '<a href="%s">%s %s</a>' % (
+                        reverse('admin:auth_user_change', args=(ticket.user_id,)),
+                        ticket.user.first_name,
+                        ticket.user.last_name),
+                    'email': ticket.user.email,
+                    'order': '<a href="%s">%s</a>' % (
+                        reverse('admin:assopy_order_change', args=(ticket.orderitem.order_id,)),
+                        ticket.orderitem.order.code),
+                    'interests': interests,
+                    'uid': ticket.user.id,
+                })
 
     return output
 
