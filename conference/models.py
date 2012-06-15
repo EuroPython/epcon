@@ -754,26 +754,26 @@ class ScheduleManager(models.Manager):
         # in parallelo ovviamente non potrà partecipare ad entrambi, quindi il
         # suo voto deve essere scalato
         scores = defaultdict(lambda: 0.0)
-        for group in Event.objects.group_events_by_times(events):
-            while group:
-                evt = group.pop()
-                users = events[evt]
-                for u in users:
-                    # Quanto vale la presenza di `u` per l'evento `evt`?  Se
-                    # `u` non partecipa a nessun'altro evento dello stesso
-                    # gruppo allora 1, altrimenti un valore proporzionale al
-                    # numero di eventi che gli interesssano.
-                    found = [ evt ]
-                    for other in group:
+        for evt, users in events.items():
+            group = list(Event.objects.group_events_by_times(events, event=evt))[0]
+            while users:
+                u = users.pop()
+                # Quanto vale la presenza di `u` per l'evento `evt`?  Se
+                # `u` non partecipa a nessun'altro evento dello stesso
+                # gruppo allora 1, altrimenti un valore proporzionale al
+                # numero di eventi che gli interesssano.
+                found = [ evt ]
+                for other in group:
+                    if other != evt:
                         try:
                             events[other].remove(u)
                         except KeyError:
                             pass
                         else:
                             found.append(other)
-                    score = 1.0 / len(found)
-                    for f in found:
-                        scores[f.id] += score
+                score = 1.0 / len(found)
+                for f in found:
+                    scores[f.id] += score
         return scores
 
     def expected_attendance(self, conference, factor=0.95):
