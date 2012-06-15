@@ -747,30 +747,6 @@ class ScheduleManager(models.Manager):
         # stesso peso; se un utente ha marcato come +1 due eventi che avvengano
         # in parallelo ovviamente non potrà partecipare ad entrambi, quindi il
         # suo voto deve essere scalato
-        def group_by_times(events):
-            """
-            Raggruppa gli eventi, ovviamente appartenenti a track diverse, che
-            si "accavvallano" temporalmente.
-
-            Rtorna un generatore che ad ogni iterazione restituisce un gruppo:
-                [ (event, set(users)), ...  ]
-            """
-            sorted_events = sorted(
-                filter(lambda x: x[0].get_duration() > 0, events.items()),
-                key=lambda x: x[0].get_duration())
-            while sorted_events:
-                evt0, users = sorted_events.pop()
-                group = [(evt0, users)]
-                drange = evt0.get_time_range()
-                for ix in reversed(range(len(sorted_events))):
-                    evt = sorted_events[ix][0]
-                    r = evt.get_time_range()
-                    if (drange[0] <= r[0] and drange[1] >= r[1]) or\
-                        (drange[0]>r[0] and drange[0]<r[1]) or\
-                        (drange[1]>r[0] and drange[1]<r[1]):
-                        group.append(sorted_events.pop(ix))
-                yield group
-
         scores = defaultdict(lambda: 0.0)
         for group in Event.objects.group_events_by_times(events):
             while group:
