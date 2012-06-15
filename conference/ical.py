@@ -47,6 +47,8 @@ def TEXT(value):
         value = str(value)
     return value\
         .replace('\\', '\\\\')\
+        .replace('\r\n', '\\n')\
+        .replace('\r', '\\n')\
         .replace('\n', '\\n')\
         .replace(';', '\\;')\
         .replace(',', '\\,')
