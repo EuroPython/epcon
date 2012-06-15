@@ -400,9 +400,9 @@ def hotel_tickets(conf, code=None):
                 'total': qs['HB3'].count(),
             },
             {
-                'id': 'HB3',
+                'id': 'HB4',
                 'title': 'Posto letto in quadrupla',
-                'total': qs['HB3'].count(),
+                'total': qs['HB4'].count(),
             },
         ]
     else:
