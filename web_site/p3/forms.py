@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 
 import assopy.models as amodels
 import assopy.forms as aforms
-import conference.forms as cforms 
+import conference.forms as cforms
 import conference.models as cmodels
 
 from p3 import dataaccess
@@ -95,7 +95,7 @@ class P3SubmissionForm(cforms.SubmissionForm):
             p3s = speaker.p3_speaker
         except models.SpeakerConference.DoesNotExist:
             p3s = models.SpeakerConference(speaker=speaker)
-            
+
         data = self.cleaned_data
 
         p3s.first_time = data['first_time']
@@ -334,7 +334,7 @@ class P3ProfileForm(cforms.ProfileForm):
         if data.startswith('@'):
             data = data[1:]
         return data
-    
+
     def save(self, commit=True):
         assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
         profile = super(P3ProfileForm, self).save(commit=commit)
@@ -666,7 +666,7 @@ class P3FormTickets(aforms.FormTickets):
         for k in self.fields.keys():
             if k.startswith('H'):
                 del self.fields[k]
-        
+
         self.fields['room_reservations'] = HotelReservationsField(types=('HR',), required=False)
         self.fields['bed_reservations'] = HotelReservationsField(types=('HB',), required=False)
 
