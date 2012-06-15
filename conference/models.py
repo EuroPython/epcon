@@ -773,7 +773,7 @@ class ScheduleManager(models.Manager):
                             found.append(other)
                     score = 1.0 / len(found)
                     for f in found:
-                        scores[f] += score
+                        scores[f.id] += score
         return scores
 
     def expected_attendance(self, conference, factor=0.95):
@@ -809,12 +809,15 @@ class ScheduleManager(models.Manager):
             event_by_day[e.schedule_id].add(e)
 
         for event in events:
-            score = scores[event]
+            score = scores[event.id]
             group = list(Event.objects\
                 .group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
 
-            group_score = sum([ scores[e] for e in group ])
-            k = score / group_score
+            group_score = sum([ scores[e.id] for e in group ])
+            if group_score:
+                k = score / group_score
+            else:
+                k = 0
             expected = k * forecasts[event.schedule_id] * factor
             seats = seats_available.get(event.id, 0)
             output[event.id] = {
