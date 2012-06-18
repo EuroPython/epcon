@@ -690,7 +690,10 @@ def hotel_report(request):
             g = grouped['rooms']
             if key not in g:
                 g[key] = {}
-            oid = t.ticket.orderitem.order_id
+
+            # oid/order_key servono solo a raggruppare graficamente i biglietti
+            # per la stessa camera
+            oid = '%s:%s' % (t.ticket.orderitem.order_id, fcode)
             order_key = oid + ('_%d' % (omap[oid] / int(fcode[2])))
             omap[oid] += 1
             if order_key not in g[key]:
@@ -707,7 +710,7 @@ def hotel_report(request):
 
     rooms = []
     for type, orders in sorted(grouped['rooms'].items()):
-        rooms.append((type[1:], sorted(orders.items(), key=lambda x: x[1][0].checkin)))
+        rooms.append((type[1:], sorted(orders.items(), key=lambda x: (x[1][0].checkin, x[1][0].ticket.name))))
 
     beds = []
     for type, periods in sorted(grouped['beds'].items()):
