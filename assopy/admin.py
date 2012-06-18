@@ -652,10 +652,10 @@ class AssopyFareAdmin(cadmin.FareAdmin):
 
     def save_model(self, request, obj, form, change):
         super(AssopyFareAdmin, self).save_model(request, obj, form, change)
-        vat_fares, created = models.Vat_fares.objects.get_or_create(fare=obj, defaults={'vat':form.cleaned_data['vat']})
-        if not created and vat_fares.vat != form.cleaned_data['vat']:
-            vat_fares.vat = form.cleaned_data['vat']
-            vat_fares.save()
+        vat_fare, created = models.VatFare.objects.get_or_create(fare=obj, defaults={'vat':form.cleaned_data['vat']})
+        if not created and vat_fare.vat != form.cleaned_data['vat']:
+            vat_fare.vat = form.cleaned_data['vat']
+            vat_fare.save()
 
 admin.site.unregister(cadmin.models.Fare)
 admin.site.register(cadmin.models.Fare, AssopyFareAdmin)

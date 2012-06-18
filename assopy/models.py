@@ -546,13 +546,13 @@ class OrderManager(models.Manager):
 
 
 class Vat(models.Model):
-    fares = models.ManyToManyField('conference.fare', null=True, blank=True, through='Vat_fares')
+    fares = models.ManyToManyField('conference.fare', null=True, blank=True, through='VatFare')
     value = models.DecimalField(max_digits=2, decimal_places=0)
     description = models.TextField(null=True, blank=True)
     def __unicode__(self):
         return unicode(self.value)
 
-class Vat_fares(models.Model):
+class VatFare(models.Model):
     fare = models.ForeignKey('conference.fare')
     vat = models.ForeignKey(Vat)
 
