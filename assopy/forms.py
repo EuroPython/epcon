@@ -236,8 +236,8 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
             initial = settings.PAYPAL_DEFAULT_FORM_CONTEXT(order)
 
             items = list(order.orderitem_set \
-                              .filter(price__gte=0).values('code','description') \
-                              .annotate(price=models.Sum('price'), count=models.Count('price')) \
+                              .filter(price__gte=0).values('code','description','price') \
+                              .annotate(count=models.Count('price')) \
                               .order_by('-price'))
 
             discount =  order.total(apply_discounts=False) - order.total()
