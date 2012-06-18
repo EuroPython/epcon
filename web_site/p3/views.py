@@ -44,6 +44,23 @@ def tickets(request):
         'tickets': tickets,
     }
 
+def _reset_ticket(ticket):
+    # cancello il nome così il ticket compare nelle statistiche "biglietti non
+    # compilati" fino a quando non viene modificato
+    ticket.name = ''
+    ticket.save()
+    try:
+        p3c = ticket.p3_conference
+    except models.TicketConference.DoesNotExist:
+        return
+    # reimposto i default
+    p3c.shirt_size = 'l'
+    p3c.python_experience = 0
+    p3c.diet = 'omnivorous'
+    p3c.tagline = ''
+    p3c.days = ''
+    p3c.save()
+
 def _assign_ticket(ticket, email):
     try:
         recipient = auth.models.User.objects.get(email=email)
@@ -79,9 +96,10 @@ def _assign_ticket(ticket, email):
         if not auser.token:
             recipient.assopy_user.token = str(uuid.uuid4())
             recipient.assopy_user.save()
-        name = recipient.assopy_user.name()
-    ticket.name = name
-    ticket.save()
+        name = '%s %s' % (recipient.first_name, recipient.last_name)
+
+    _reset_ticket(ticket)
+
     utils.email(
         'ticket-assigned',
         ctx={
@@ -150,6 +168,7 @@ def ticket(request, tid):
                     _assign_ticket(t, x.assigned_to)
                 else:
                     log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
+                    _reset_ticket(t)
 
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
                 # l'utente non ha, nel suo profilo, né il nome né il cognome (e
