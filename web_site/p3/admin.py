@@ -1,21 +1,53 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django import http
-from django import template
 from django.conf import settings
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
-from django.core import mail
-from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, redirect
 from conference import admin as cadmin
 from conference import models as cmodels
 from p3 import models
 from p3 import dataaccess
 
+_TICKET_CONFERENCE_COPY_FIELDS = ('shirt_size', 'python_experience', 'diet', 'tagline', 'days', 'badge_image')
+def ticketConferenceForm():
+    class _(forms.ModelForm):
+        class Meta:
+            model = models.TicketConference
+    fields = _().fields
+
+    class TicketConferenceForm(forms.ModelForm):
+        shirt_size = fields['shirt_size']
+        python_experience = fields['python_experience']
+        diet = fields['diet']
+        tagline = fields['tagline']
+        days = fields['days']
+        badge_image = fields['badge_image']
+
+        class Meta:
+            model = cmodels.Ticket
+
+        def __init__(self, *args, **kw):
+            if 'instance' in kw:
+                o = kw['instance']
+                try:
+                    p3c = o.p3_conference
+                except models.TicketConference:
+                    pass
+                else:
+                    initial = kw.pop('initial', {})
+                    for k in _TICKET_CONFERENCE_COPY_FIELDS:
+                        initial[k] = getattr(p3c, k)
+                    kw['initial'] = initial
+            return super(TicketConferenceForm, self).__init__(*args, **kw)
+
+    return TicketConferenceForm
+
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
     list_filter = cadmin.TicketAdmin.list_filter + ('orderitem__order___complete',)
+
+    form = ticketConferenceForm()
 
     class Media:
         js = ('p5/j/jquery-flot/jquery.flot.js',)
@@ -30,10 +62,28 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             return ''
 
     def _tagline(self, o):
-        if o.p3_conference:
-            return o.p3_conference.tagline
-        else:
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
             return ''
+        html = p3c.tagline
+        if p3c.badge_image:
+            i = ['<img src="%s" width="24" />' % p3c.badge_image.url] * p3c.python_experience
+            html += '<br />' + ' '.join(i)
+        return html
+    _tagline.allow_tags = True
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        try:
+            p3c = obj.p3_conference
+        except models.TicketConference:
+            p3c = models.TicketConference(ticket=obj)
+
+        data = form.cleaned_data
+        for k in _TICKET_CONFERENCE_COPY_FIELDS:
+            setattr(p3c, k, data.get(k))
+        p3c.save()
 
     def changelist_view(self, request, extra_context=None):
         if not request.GET:
