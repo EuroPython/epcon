@@ -30,7 +30,7 @@ class ReadOnlyWidget(forms.widgets.HiddenInput):
 
     def render(self, name, value, attrs=None):
         output = []
-        output.append('<span>%s</span>' % self.display or value)
+        output.append(u'<span>%s</span>' % (self.display or value))
         output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
