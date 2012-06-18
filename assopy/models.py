@@ -550,7 +550,7 @@ class Vat(models.Model):
     value = models.DecimalField(max_digits=2, decimal_places=0)
     description = models.TextField(null=True, blank=True)
     def __unicode__(self):
-        return unicode(self.value)
+        return u"%s - %s" % (self.value , self.description or "")
 
 class VatFare(models.Model):
     fare = models.ForeignKey('conference.fare')
