@@ -455,6 +455,8 @@ def bank_feedback_ok(request, code):
 @render_to('assopy/invoice.html')
 def invoice_pdf(request, id):
     invoice = get_object_or_404(models.Invoice, id=id)
+    if request.user != invoice.order.user.user:
+        return http.HttpResponseForbidden()
     if settings.GENRO_BACKEND:
         assopy_id = invoice.assopy_id
         data = genro.invoice(assopy_id)
