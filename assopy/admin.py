@@ -632,7 +632,7 @@ class AssopyFareForm(forms.ModelForm):
         if instance:
             try:
                 vat = instance.vat_set.all()[0]
-                initial = kwargs.get('instance',{})
+                initial = kwargs.get('initial',{})
                 initial.update({'vat' : vat })
                 kwargs['initial'] = initial
             except  IndexError:
