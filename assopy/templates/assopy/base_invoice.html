@@ -167,6 +167,13 @@
                 width: 15cm;
             }
             
+            .invoices-vat-notes {
+                text-align: right;
+                margin-top: 0.2cm;
+                font-size: small;
+                font-style: italic;
+            }
+            
         -->
     </style>
     </head>
@@ -326,6 +333,9 @@
                 </table>
             </div>
             <div class="clear"></div>
+            <div class="invoices-vat-notes">
+                {{ invoice.vat.description }}
+            </div>
         </div>
     </body>
 </html>
