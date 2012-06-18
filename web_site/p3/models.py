@@ -77,6 +77,10 @@ class TicketConference(models.Model):
     diet = models.CharField(max_length=10, choices=TICKET_CONFERENCE_DIETS, default='omnivorous')
     tagline = models.CharField(max_length=60, blank=True, help_text='a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of FooBar Inc.; Student at MIT; Super Python fanboy')
     days = models.TextField(verbose_name='Days of attendance', blank=True)
+    badge_image = models.ImageField(
+        null=True, blank=True,
+        upload_to='p3/tickets/badge_image',
+        help_text='''A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine.''')
     assigned_to = models.EmailField(blank=True)
 
     objects = TicketConferenceManager()

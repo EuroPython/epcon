@@ -205,7 +205,7 @@ class FormTicket(forms.ModelForm):
 
     class Meta:
         model = models.TicketConference
-        exclude = ('ticket',)
+        exclude = ('ticket', 'badge_image',)
         widgets = {
             'assigned_to': forms.HiddenInput(),
         }
