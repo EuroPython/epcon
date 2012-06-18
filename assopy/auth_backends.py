@@ -106,7 +106,7 @@ class EmailBackend(_AssopyBackend):
         except User.DoesNotExist:
             # nel db di django non c'è un utente con quella email, ma potrebbe
             # esserci un utente legacy nel backend di ASSOPY
-            if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
+            if not settings.GENRO_BACKEND or not settings.SEARCH_MISSING_USERS_ON_BACKEND:
                 return None
             rid = genro.users(email=email, password=password)['r0']
             if rid is not None:
