@@ -395,6 +395,30 @@ def paypal_billing(request, code):
     form = aforms.PayPalForm(o)
     return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
 
+def paypal_cc_billing(request, code):
+    # questa vista serve a eseguire il redirect su paypol e aggiungere le info 
+    # per billing con cc
+    import urllib
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    form = aforms.PayPalForm(o)
+    print dir(o.user)
+    cc_data = {
+        "address_override" : 1,
+        "no_shipping" : 1,
+        "email": o.user.user.email,
+        "first_name" : o.card_name,
+        "last_name": "",
+        "address1": o.address,
+        "zip": o.zip_code,
+        "state": o.state,
+        "country": o.country,
+        "address_name":o.card_name,
+    }
+    return HttpResponseRedirectSeeOther("%s?%s&%s" % (form.paypal_url(), 
+                                                      form.as_url_args(), 
+                                                      urllib.urlencode(cc_data))
+                                        )
+
 @render_to('assopy/paypal_cancel.html')
 def paypal_cancel(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
