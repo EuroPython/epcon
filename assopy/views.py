@@ -401,7 +401,6 @@ def paypal_cc_billing(request, code):
     import urllib
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     form = aforms.PayPalForm(o)
-    print dir(o.user)
     cc_data = {
         "address_override" : 1,
         "no_shipping" : 1,
