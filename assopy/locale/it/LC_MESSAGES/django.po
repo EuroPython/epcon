@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-28 14:02+0200\n"
-"PO-Revision-Date: 2012-05-08 21:23\n"
+"PO-Revision-Date: 2012-05-16 14:06\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -155,10 +155,10 @@ msgid ""
 msgstr ""
 "\n"
 "<p>Grazie per il tuo ordine. Riceverai una mail con tutti i dettagli per il bonifico bancario.</p>\n"
-"<p>Se non ricevi la mail nel giro di qualche minuto per favore controlla la tua cartella spam o <a href=\"mailto:info@bettersoftware.it\">scrivici</a> specificando il numero d'ordine seguente: <b>%(ocode)s</b></p>\n"
+"<p>Se non ricevi la mail nel giro di qualche minuto per favore controlla la tua cartella spam o <a href=\"mailto:info@betterembedded.it\">scrivici</a> specificando il numero d'ordine seguente: <b>%(ocode)s</b></p>\n"
 "\n"
 "<h2>Cosa fare adesso?</h2>\n"
-"<p>Nel frattempo puoi <a href=\"%(u)s\">gestire i tuoi biglietti</a> direttamente dal tuo profilo utente.</p>"
+"<p>Nel frattempo puoi <a href=\"/bs/tickets/\">gestire i tuoi biglietti</a> direttamente dal tuo profilo utente.</p>"
 
 #: templates/assopy/new_account_feedback.html:4
 msgid "Activation required"
@@ -184,7 +184,7 @@ msgid ""
 "            "
 msgstr ""
 "\n"
-"<p>Stai attendendo da troppo tempo?? <a href=\"mailto:info@bettersoftware.it\">Scrivici</a> specificando il tuo numero ordine: %(ocode)s</p>"
+"<p>Stai attendendo da troppo tempo?? <a href=\"mailto:info@betterembedded.it\">Scrivici</a> specificando il tuo numero ordine: %(ocode)s</p>"
 
 #: templates/assopy/paypal_feedback_ok.html:23
 msgid "Purchase completed"
@@ -241,7 +241,7 @@ msgstr "Le tue fatture"
 #: templates/assopy/profile.html:76
 #, python-format
 msgid "Order: %(ocode)s of %(odate)s"
-msgstr "ordine: %(ocode)s del %(odate)s"
+msgstr "Ordine: %(ocode)s del %(odate)s"
 
 #: templates/assopy/profile.html:98
 msgid "Web access removed"
@@ -253,7 +253,7 @@ msgid ""
 "assistance"
 msgstr ""
 "Non posso cancellare l'oggetto richiesto, contattate "
-"<b>info@bettersoftware.it</b> per assistenza"
+"<b>info@betterembedded.it</b> per assistenza"
 
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"
