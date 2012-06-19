@@ -552,8 +552,13 @@ def secure_media(request, path):
         if fname.rsplit('-', 1)[0] != request.user.username:
             return http.HttpResponseForbidden()
     fpath = settings.SECURE_STORAGE.path(path)
+    guessed = mimetypes.guess_type(fpath)
     try:
-        return http.HttpResponse(file(fpath), mimetype=mimetypes.guess_type(fpath))
+        r = http.HttpResponse(file(fpath), mimetype=guessed[0])
+        r['Content-Length'] = os.path.getsize(fpath)
+        if guessed[1]:
+            r['Content-Encoding'] = guessed[1]
+        return r
     except IOError, e:
         if e.errno == 2:
             raise http.Http404()
