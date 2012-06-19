@@ -467,6 +467,12 @@ class OrderManager(models.Manager):
                     raise ValueError(c)
 
         log.info('new order for "%s" via "%s": %d items', user.name(), payment, sum(x[1]['qty'] for x in items))
+        # Genero un save point almeno isolo la transazione
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute(
+            'savepoint pregenerateorder;'
+        )
         o = Order()
         o.code = None
         o.method = payment
