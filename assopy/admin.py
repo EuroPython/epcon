@@ -473,7 +473,7 @@ class RefundAdmin(admin.ModelAdmin):
         data = self.orderitems[o.id]
         if data:
             url = urlresolvers.reverse('admin:assopy_order_change', args=(data[0].order.id,))
-            return '<a href="%s">%s</a>' % (url, data[0].order.code)
+            return '<a href="%s">%s</a> del %s' % (url, data[0].order.code, data[0].order.created.strftime('%Y-%m-%d'))
         else:
             return ''
     _order.allow_tags = True

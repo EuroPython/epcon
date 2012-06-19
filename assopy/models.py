@@ -880,7 +880,7 @@ class Refund(models.Model):
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
             self.done = datetime.now()
-        if self.status != old:
+        if old and self.status != old:
             o = self.items.all()[0].order
             log.info(
                 'Status change of the refund request "%d" issued by "%s" for the order "%s" from "%s" to "%s"',
