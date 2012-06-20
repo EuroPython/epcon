@@ -605,94 +605,102 @@ class RefundAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Refund, RefundAdmin)
 
+if not settings.GENRO_BACKEND:
 
-class InvoiceAdminForm(forms.ModelForm):
-    class Meta:
-        model = models.Invoice
-        exclude = "assopy_id"
-        widgets = {
-            'price':ReadOnlyWidget,
-            'vat' : ReadOnlyWidget,
-            'order' : ReadOnlyWidget
-        }
+    class InvoiceAdminForm(forms.ModelForm):
+        class Meta:
+            model = models.Invoice
+            exclude = "assopy_id"
+            widgets = {
+                'price':ReadOnlyWidget,
+                'vat' : ReadOnlyWidget,
+                'order' : ReadOnlyWidget
+            }
 
-class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__','_user','_order', 'vat','payment_date','price','_invoice')
-    form = InvoiceAdminForm
+    class InvoiceAdmin(admin.ModelAdmin):
+        list_display = ('__unicode__','_user','_order', 'vat','payment_date','price','_invoice')
+        form = InvoiceAdminForm
 
-    def _order(self, o):
-        order = o.order
-        url = urlresolvers.reverse('admin:assopy_order_change', args=(order.id,))
-        return '<a href="%s">%s</a>' % (url, order.code)
-    _order.allow_tags = True
-    _order.admin_order_field = 'order'
+        def _order(self, o):
+            order = o.order
+            url = urlresolvers.reverse('admin:assopy_order_change', args=(order.id,))
+            return '<a href="%s">%s</a>' % (url, order.code)
+        _order.allow_tags = True
+        _order.admin_order_field = 'order'
 
-    def _user(self, o):
-        u = o.order.user.user
-        links = [
-            '%s %s <br/>' % (u.first_name, u.last_name),
-            '<a href="%s" title="user page">U</a>' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
-            '<a href="%s" title="doppelganger" target="_blank">D</a>' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
-        ]
-        return ' '.join(links)
-    _user.allow_tags = True
-    _user.admin_order_field = 'order__user__user__first_name'
+        def _user(self, o):
+            u = o.order.user.user
+            links = [
+                '%s %s <br/>' % (u.first_name, u.last_name),
+                '<a href="%s" title="user page">U</a>' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
+                '<a href="%s" title="doppelganger" target="_blank">D</a>' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
+            ]
+            return ' '.join(links)
+        _user.allow_tags = True
+        _user.admin_order_field = 'order__user__user__first_name'
 
-    def _invoice(self, i):
-            if settings.GENRO_BACKEND:
-                return '<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else '')
+        def _invoice(self, i):
+                if settings.GENRO_BACKEND:
+                    return '<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else '')
+                else:
+                    return '<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i, ' *' if not i.payment_date else '')
+        _invoice.allow_tags = True
+
+        def has_delete_permission(self, request, obj=None):
+            if obj and obj.payment_date != None:
+                return False
             else:
-                return '<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i, ' *' if not i.payment_date else '')
-    _invoice.allow_tags = True
-
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.payment_date != None:
-            return False
-        else:
-            return super(InvoiceAdmin, self).has_delete_permission(request, obj)
+                return super(InvoiceAdmin, self).has_delete_permission(request, obj)
 
 
-admin.site.register(models.Invoice,InvoiceAdmin)
+    admin.site.register(models.Invoice,InvoiceAdmin)
 
-admin.site.register(models.Vat)
+    admin.site.register(models.Vat)
+    
+    class InvoiceLogAdmin(admin.ModelAdmin):
+        list_display = (
+            'code', 'order', 'invoice','date'
+        )
 
-from conference import admin as cadmin
+    admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
 
-class AssopyFareForm(forms.ModelForm):
-    vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
+    from conference import admin as cadmin
 
-    class Meta:
-        model = cadmin.models.Fare
+    class AssopyFareForm(forms.ModelForm):
+        vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
 
-    def __init__(self, *args, **kwargs):
-        instance = kwargs.get('instance',None)
-        if instance:
+        class Meta:
+            model = cadmin.models.Fare
+
+        def __init__(self, *args, **kwargs):
+            instance = kwargs.get('instance',None)
+            if instance:
+                try:
+                    vat = instance.vat_set.all()[0]
+                    initial = kwargs.get('initial',{})
+                    initial.update({'vat' : vat })
+                    kwargs['initial'] = initial
+                except  IndexError:
+                    pass
+            super(AssopyFareForm, self).__init__(*args, **kwargs)
+
+    class AssopyFareAdmin(cadmin.FareAdmin):
+        form = AssopyFareForm
+        list_display = cadmin.FareAdmin.list_display + ('_vat',)
+
+        def _vat(self,obj):
             try:
-                vat = instance.vat_set.all()[0]
-                initial = kwargs.get('initial',{})
-                initial.update({'vat' : vat })
-                kwargs['initial'] = initial
-            except  IndexError:
-                pass
-        super(AssopyFareForm, self).__init__(*args, **kwargs)
+                return obj.vat_set.all()[0]
+            except IndexError:
+                return None
+        _vat.short_description = 'VAT'
 
-class AssopyFareAdmin(cadmin.FareAdmin):
-    form = AssopyFareForm
-    list_display = cadmin.FareAdmin.list_display + ('_vat',)
+        def save_model(self, request, obj, form, change):
+            super(AssopyFareAdmin, self).save_model(request, obj, form, change)
+            vat_fare, created = models.VatFare.objects.get_or_create(fare=obj, defaults={'vat':form.cleaned_data['vat']})
+            if not created and vat_fare.vat != form.cleaned_data['vat']:
+                vat_fare.vat = form.cleaned_data['vat']
+                vat_fare.save()
 
-    def _vat(self,obj):
-        try:
-            return obj.vat_set.all()[0]
-        except IndexError:
-            return None
-    _vat.short_description = 'VAT'
-
-    def save_model(self, request, obj, form, change):
-        super(AssopyFareAdmin, self).save_model(request, obj, form, change)
-        vat_fare, created = models.VatFare.objects.get_or_create(fare=obj, defaults={'vat':form.cleaned_data['vat']})
-        if not created and vat_fare.vat != form.cleaned_data['vat']:
-            vat_fare.vat = form.cleaned_data['vat']
-            vat_fare.save()
-
-admin.site.unregister(cadmin.models.Fare)
-admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
+    admin.site.unregister(cadmin.models.Fare)
+    admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
