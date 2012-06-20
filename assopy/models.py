@@ -849,36 +849,66 @@ class InvoiceManager(models.Manager):
                 invoices.append(i)
             return invoices
         else:
+            assert update is False
+
+            def invoices_code(o, fake=False):
+                vat_list = o.vat_list()
+                output = []
+
+                def icode(buff=[None]):
+
+                    if fake is False:
+                        last = settings.LAST_INVOICE_CODE
+                        next = settings.NEXT_INVOICE_CODE
+                    else:
+                        last = settings.LAST_FAKE_INVOICE_CODE
+                        next = settings.NEXT_FAKE_INVOICE_CODE
+
+                    if buff[0] is None:
+                        buff[0] = last(o)
+                    buff[0] = next(buff[0],o)
+                    return buff[0]
+
+                for item in o.vat_list():
+                    item.update({
+                        'code': icode(),
+                    })
+                    output.append(item)
+                return output
+
             # Genero un save point almeno isolo la transazione
             from django.db import connection
             cursor = connection.cursor()
             cursor.execute(
                 'savepoint pregenerateinvoice;'
             )
-            # devo generare x fatture in funzione degli order items
-            # raggruppati per la loro vat
-            invoices = []
-            vat_list = order.vat_list()
-            last_invoice_code = None
-            for vat_item in vat_list:
-                i, created = Invoice.objects.get_or_create(order=order,vat=vat_item['vat'], defaults={'price':vat_item['price']})
+            # salvo almeno sono sicuro di aver effettuato
+            # un operazione di insert nella transazione
+            # in modo da crere un lock su db che gestisce la concorrenza
+            # nella creazione di un indice univoco nella fattura
+            # questo è valido solo per db SQLITE
+            order.save()
 
-                if payment_date:
-                    i.payment_date = payment_date
-                    i.emit_date = payment_date
-                    if not created and not last_invoice_code:
+            invoices = []
+            vat_list = invoices_code(order, fake=payment_date is None)
+            print vat_list
+            for vat_item in vat_list:
+                i, created = Invoice.objects.get_or_create( 
+                                    order=order,
+                                    vat=vat_item['vat'],
+                                    price=vat_item['price'],
+                                    defaults={
+                                       'code' : vat_item['code'],
+                                       'payment_date' : payment_date
+                                    }
+                             )
+                if not created:
+                    if not payment_date or i.payment_date:
+                        raise RuntimeError('Mi incazzo')
+                    else:
+                        i.payment_date = payment_date
+                        i.code = vat_item['code']
                         i.save()
-                        # salvo almeno sono sicuro di aver effettuato
-                        # un operazione di insert nella transazione
-                        # in modo da crere un lock su db che gestisce la concorrenza
-                        # nella creazione di un indice univoco nella fattura
-                        # questo è valido solo per db SQLITE
-                    i.code = settings.NEXT_INVOICE_CODE(
-                                last_invoice_code or settings.LAST_INVOICE_CODE(vat_item), 
-                                vat_item
-                            )
-                    i.save()
-                    last_invoice_code = i.code
 
                 invoices.append(i)
             return invoices
