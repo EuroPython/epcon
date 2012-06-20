@@ -928,6 +928,17 @@ class Invoice(models.Model):
 
     objects = InvoiceManager()
 
+    def save(self, *args, **kwargs):
+        super(Invoice,self).save(*args, **kwargs)
+        if not settings.GENRO_BACKEND:
+            log, create = InvoiceLog.objects.get_or_create(
+                                order = self.order,
+                                code = self.code,
+                                invoice = self
+                          )
+            if create and settings.IS_REAL_INVOICE(self.code):
+                self.order.complete(ignore_cache=True)
+
     def __unicode__(self):
         if self.code:
             return ' #%s' % self.code
