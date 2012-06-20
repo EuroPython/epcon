@@ -675,16 +675,20 @@ class Order(models.Model):
         return vat_list.values()
 
     def complete(self, update_cache=True, ignore_cache=False):
-        if settings.GENRO_BACKEND:
-            if self._complete and not ignore_cache:
+
+        if self._complete and not ignore_cache:
                 return True
+
+        if settings.GENRO_BACKEND:
             if not self.assopy_id:
                 # non ha senso chiamare .complete su un ordine non associato al
                 # backend
                 return False
+            invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
+        else:
+            invoices = [ i.payment_date for i in self.invoices.all()]
         # un ordine risulta pagato se tutte le sue fatture riportano la data
         # del pagamento
-        invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
         r = len(invoices) > 0 and all(invoices)
         if r and not self._complete:
             log.info('purchase of order "%s" completed', self.code)
