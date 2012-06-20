@@ -939,6 +939,11 @@ class Invoice(models.Model):
             if create and settings.IS_REAL_INVOICE(self.code):
                 self.order.complete(ignore_cache=True)
 
+    @models.permalink
+    def get_absolute_url(self):
+        from django.contrib.admin.util import quote
+        return ('assopy-invoice-pdf' , [quote(self.code),])
+
     def __unicode__(self):
         if self.code:
             return ' #%s' % self.code
