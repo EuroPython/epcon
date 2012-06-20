@@ -899,7 +899,8 @@ class InvoiceManager(models.Manager):
                                     price=vat_item['price'],
                                     defaults={
                                        'code' : vat_item['code'],
-                                       'payment_date' : payment_date
+                                       'payment_date' : payment_date,
+                                       'emit_date' : payment_date
                                     }
                              )
                 if not created:
@@ -907,6 +908,7 @@ class InvoiceManager(models.Manager):
                         raise RuntimeError('Mi incazzo')
                     else:
                         i.payment_date = payment_date
+                        i.emit_date = payment_date
                         i.code = vat_item['code']
                         i.save()
 
