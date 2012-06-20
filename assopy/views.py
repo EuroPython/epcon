@@ -5,6 +5,7 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.util import unquote
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
@@ -452,8 +453,8 @@ def bank_feedback_ok(request, code):
 
 @login_required
 @render_to('assopy/invoice.html')
-def invoice_pdf(request, id):
-    invoice = get_object_or_404(models.Invoice, id=id)
+def invoice_pdf(request, code):
+    invoice = get_object_or_404(models.Invoice, code=unquote(code))
     if request.user != invoice.order.user.user:
         return http.HttpResponseForbidden()
     if settings.GENRO_BACKEND:

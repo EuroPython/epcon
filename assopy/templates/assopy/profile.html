@@ -126,7 +126,7 @@ h1 span {
                     {% for i in invoices %}
                         {% with i.order.code as ocode %}
                         {% with i.order.created|date:"d M Y" as odate %}
-                        <li><a href="{% url assopy-invoice-pdf assopy_id=i.pk %}">{% blocktrans %}Order: {{ ocode }} of {{ odate }}{% endblocktrans %}</a></li>
+                        <li><a href="{{ i.get_absolute_url }}">{% blocktrans %}Order: {{ ocode }} of {{ odate }}{% endblocktrans %}</a></li>
                         {% endwith %}
                         {% endwith %}
                     {% endfor %}

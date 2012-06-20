@@ -27,15 +27,18 @@ urlpatterns = patterns('',
 
     url(r'^geocode/$', 'assopy.views.geocode', name='assopy-geocode'),
 
-    url(r'paypal_return/(?P<code>.+)/$', 'assopy.views.paypal_feedback_ok', name='assopy-paypal-feedback-ok'),
-    url(r'bank_return/(?P<code>.+)/$', 'assopy.views.bank_feedback_ok', name='assopy-bank-feedback-ok'),
-
-    url(r'invoice/(?P<id>.+)/$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
+    url(r'invoice/(?P<code>.+)/$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
     url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$', 'assopy.views.voucher', name='assopy-orderitem-voucher'),
     url(r'orders/(?P<assopy_id>.+)/completed$', 'assopy.views.order_complete', name='assopy-order-complete'),
     url(r'^paypal/redirect/(?P<code>.+)/$','assopy.views.paypal_billing', name='assopy-paypal-redirect'),
     url(r'^paypal/cc/redirect/(?P<code>.+)/$','assopy.views.paypal_cc_billing', name='assopy-cc-paypal-redirect'),
+
+    url(r'paypal_return/(?P<code>.+)/$', 'assopy.views.paypal_feedback_ok', name='assopy-paypal-feedback-ok'),
     url(r'^paypal/cancel/(?P<code>.+)/$','assopy.views.paypal_cancel', name='assopy-paypal-feedback-cancel'),
+    url(r'bank_return/(?P<code>.+)/$', 'assopy.views.bank_feedback_ok', name='assopy-bank-feedback-ok'),
+
+#    url(r'orders/(?P<code>[\w-]+)/invoices/(?P<id>.+).pdf$', 'assopy.views.invoice_html', name='assopy-invoice-htl'),
+#    url(r'orders/(?P<code>[\w-]+)/invoices/(?P<id>.+).html$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
 )
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
