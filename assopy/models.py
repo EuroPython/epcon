@@ -944,7 +944,7 @@ class Invoice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         from django.contrib.admin.util import quote
-        return ('assopy-invoice-pdf' , [quote(self.code),])
+        return ('assopy-invoice-pdf' , [quote(self.order.code), quote(self.code),])
 
     def __unicode__(self):
         if self.code:

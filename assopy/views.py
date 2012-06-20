@@ -453,8 +453,10 @@ def bank_feedback_ok(request, code):
 
 @login_required
 @render_to('assopy/invoice.html')
-def invoice_pdf(request, code):
-    invoice = get_object_or_404(models.Invoice, code=unquote(code))
+def invoice_pdf(request,order_code, code):
+    invoice = get_object_or_404(models.Invoice,
+                                code=unquote(code),
+                                order__code=unquote(order_code))
     if request.user != invoice.order.user.user:
         return http.HttpResponseForbidden()
     if settings.GENRO_BACKEND:
