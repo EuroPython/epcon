@@ -188,6 +188,7 @@
                 <table class="table">
                     <tbody>
                         <tr>
+                            {% if real %}
                             <td>
                                 <div class="cell-legend">
                                     Fattura N. <span class="alt-language">Invoice N.</span>
@@ -204,6 +205,24 @@
                                     {{ invoice.emit_date|default:'' }}
                                 </div>
                             </td>
+                            {% else %}
+                            <td>
+                                <div class="cell-legend">
+                                    Proforma N. <span class="alt-language"></span>
+                                </div>
+                                <div class="cell-content">
+                                    {{ invoice.code|default:'' }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    &nbsp;
+                                </div>
+                                <div class="cell-content">
+                                    Documento Non fiscale
+                                </div>
+                            </td>
+                            {% endif %}
                             <td>
                                 <div class="cell-legend">
                                     Valuta <span class="alt-language">Currency</span>
@@ -333,8 +352,9 @@
                 </table>
             </div>
             <div class="clear"></div>
+            
             <div class="invoices-vat-notes">
-                {{ invoice.vat.invoice_notice }}
+                {{ invoice.vat.invoice_notice|default:'' }}
             </div>
         </div>
     </body>

@@ -474,7 +474,8 @@ def invoice_pdf(request, id):
         response['Content-Disposition'] = 'attachment; filename="%s"' % fname
         return response
     else:
-        return {'invoice':invoice}
+        real = settings.IS_REAL_INVOICE(invoice.code)
+        return {'invoice':invoice,'real':real}
 
 @login_required
 @render_to('assopy/voucher.html')

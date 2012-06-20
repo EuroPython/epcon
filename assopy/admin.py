@@ -182,7 +182,8 @@ class OrderAdmin(admin.ModelAdmin):
 
     def view_invoices(self, request, id):
         invoice = get_object_or_404(models.Invoice, pk=id)
-        return render_to_response('assopy/invoice.html', {'invoice':invoice}, context_instance=template.RequestContext(request))
+        real = settings.IS_REAL_INVOICE(invoice.code)
+        return render_to_response('assopy/invoice.html', {'invoice':invoice, 'real':real}, context_instance=template.RequestContext(request))
 
     def edit_invoices(self, request):
         try:
