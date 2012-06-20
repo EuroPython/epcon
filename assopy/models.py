@@ -807,9 +807,15 @@ def _order_feedback(sender, **kwargs):
 
 order_created.connect(_order_feedback)
 
+class InvoiceLog(models.Model):
+    code =  models.CharField(max_length=9, unique=True)
+    order = models.ForeignKey(Order, null=True)
+    invoice = models.ForeignKey('Invoice', null=True)
+    date = models.DateTimeField(auto_now_add=True)
+
 class InvoiceManager(models.Manager):
     @transaction.commit_on_success
-    def creates_from_order(self, order, update=True, payment_date=None):
+    def creates_from_order(self, order, update=False, payment_date=None):
         if settings.GENRO_BACKEND:
             if not order.assopy_id:
                 return
