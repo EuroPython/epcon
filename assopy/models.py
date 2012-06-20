@@ -891,7 +891,7 @@ class InvoiceManager(models.Manager):
 
             invoices = []
             vat_list = invoices_code(order, fake=payment_date is None)
-            print vat_list
+
             for vat_item in vat_list:
                 i, created = Invoice.objects.get_or_create( 
                                     order=order,
