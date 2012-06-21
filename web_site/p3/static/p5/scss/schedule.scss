@@ -322,6 +322,22 @@ body#schedule > .page > .container {
             padding: 0;
             text-align: center;
         }
+        /*
+         * voglio togliere il bordo dai titoli dei talk, ma lasciarlo per gli
+         * altri eventi.
+         */
+        .name {
+            a {
+                border-bottom: 1px solid #0F2424;
+            }
+        }
+        &[data-talk] {
+            .name {
+                a {
+                    border: none;
+                }
+            }
+        }
         .hhmm {
             position: static;
             height: auto;

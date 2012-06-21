@@ -236,7 +236,11 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .schedule .track[data-track=partner0] .event.booked, .conference-schedules.timetable .schedule .track[data-track=partner1] .event.booked, .conference-schedules.timetable .schedule .track[data-track=partner2] .event.booked {
       border-right: 4px solid gold; }
   .conference-schedules.timetable .event {
-    padding-top: 20px; }
+    padding-top: 20px;
+    /*
+     * voglio togliere il bordo dai titoli dei talk, ma lasciarlo per gli
+     * altri eventi
+     */ }
     .conference-schedules.timetable .event a {
       border: none; }
     .conference-schedules.timetable .event .close-event {
@@ -248,6 +252,10 @@ body#schedule > .page > .container {
       border: 0;
       padding: 0;
       text-align: center; }
+    .conference-schedules.timetable .event .name a {
+      border-bottom: 1px solid #0F2424; }
+    .conference-schedules.timetable .event[data-talk] .name a, .conference-schedules.timetable .event.partner-program .name a, .conference-schedules.timetable .track[data-track=sprint1] .event .name a, .conference-schedules.timetable .track[data-track=sprint2] .event .name a, .conference-schedules.timetable .track[data-track=sprint3] .event .name a {
+      border: none; }
     .conference-schedules.timetable .event .hhmm {
       position: static;
       height: auto;
