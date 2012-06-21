@@ -312,6 +312,20 @@ class SprintPresence(models.Model):
     sprint = models.ForeignKey(Sprint)
     user = models.ForeignKey('assopy.User')
 
+class P3ProfileManager(models.Manager):
+    def by_tags(self, tags, ignore_case=False):
+        if ignore_case:
+            from conference.models import ConferenceTag
+            names = []
+            for t in tags:
+                names.extend(ConferenceTag.objects\
+                    .filter(name__iexact=t)\
+                    .values_list('name', flat=True))
+            tags = names
+        return P3Profile.objects\
+            .filter(interests__name__in=tags)\
+            .distinct()
+
 class P3Profile(models.Model):
     profile = models.OneToOneField('conference.AttendeeProfile', related_name='p3_profile', primary_key=True)
     tagline = models.CharField(max_length=60, blank=True, help_text='describe yourself in one line!')
@@ -324,6 +338,8 @@ class P3Profile(models.Model):
     spam_recruiting = models.BooleanField(default=False)
     spam_user_message = models.BooleanField(default=False)
     spam_sms = models.BooleanField(default=False)
+
+    objects = P3ProfileManager()
 
     def profile_image_url(self, anonymous=True):
         from p3 import utils
