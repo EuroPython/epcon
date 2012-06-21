@@ -5,7 +5,7 @@
  *  - list
  *      gli eventi dispositi in una lista uno di seguito all'altro
  */
- 
+
 /*
  * SETTINGS AND MIXINS
  */
@@ -41,7 +41,7 @@ $cPartnersBackground: $cPinkLight;
 
 $cSprint: #a9cb0f;
 $cTraining: #a4d4d4;
-$cKeynoteBackground: $cGreenLight; 
+$cKeynoteBackground: $cGreenLight;
 $cExtraEventInfoExpanded: $cBeigeDark;
 
 .box-sizing{
@@ -277,7 +277,7 @@ body#schedule > .page > .container {
         .track[data-track=track4],
         .track[data-track=track-ita]{
             @include setTrackColor($cBeige);
-        }        
+        }
         .track[data-track=training1], .track[data-track=training2]{
             @include setTrackColor($cTraining);
         }
@@ -286,7 +286,7 @@ body#schedule > .page > .container {
             .title{
                 background-image: url("img/arrow.png"), url("img/italian_track.jpg");
                 background-position: bottom center, left top;
-                background-repeat: no-repeat;                
+                background-repeat: no-repeat;
             }
         }
 
