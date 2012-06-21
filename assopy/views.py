@@ -452,13 +452,14 @@ def bank_feedback_ok(request, code):
     }
 
 @login_required
-@render_to('assopy/invoice.html')
 def invoice_pdf(request,order_code, code):
-    invoice = get_object_or_404(models.Invoice,
-                                code=unquote(code),
-                                order__code=unquote(order_code))
-    if request.user != invoice.order.user.user:
-        return http.HttpResponseForbidden()
+    invoice = get_object_or_404(
+                    models.Invoice,
+                    code=unquote(code),
+                    order__code=unquote(order_code),
+                    order__user__user= request.user
+              )
+
     if settings.GENRO_BACKEND:
         assopy_id = invoice.assopy_id
         data = genro.invoice(assopy_id)
@@ -473,12 +474,43 @@ def invoice_pdf(request,order_code, code):
             conf = order.created.year
         f = urllib.urlopen(genro.invoice_url(assopy_id))
         fname = '[%s] credit note.pdf' % conf
-        response = http.HttpResponse(f, mimetype='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-        return response
     else:
-        real = settings.IS_REAL_INVOICE(invoice.code)
-        return {'invoice':invoice,'real':real}
+        
+        import sys
+        import os
+        import subprocess
+
+        command_args = 'wkhtmltopdf --cookie %s %s --zoom 1.3 %s%s -' % (
+                            dsettings.SESSION_COOKIE_NAME,
+                            request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
+                            dsettings.DEFAULT_URL_PREFIX ,
+                            reverse('assopy-invoice-html', args=(order_code, code))
+                        )
+
+        popen = subprocess.Popen(command_args,
+                                 bufsize=4096,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 shell=True)
+
+        f = popen.stdout.read()
+        fname = unicode(invoice)
+
+    response = http.HttpResponse(f, mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+    return response
+
+@login_required
+@render_to('assopy/invoice.html')
+def invoice_html(request,order_code, code):
+    invoice = get_object_or_404(
+                    models.Invoice,
+                    code=unquote(code),
+                    order__code=unquote(order_code),
+                    order__user__user= request.user
+             )
+    real = settings.IS_REAL_INVOICE(invoice.code)
+    return {'invoice':invoice, 'real':real}
 
 @login_required
 @render_to('assopy/voucher.html')
