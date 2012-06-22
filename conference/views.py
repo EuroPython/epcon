@@ -747,7 +747,7 @@ def profile_access(f):
                 if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
                     if profile.visibility == 'x':
                         return http.HttpResponseForbidden()
-                    elif profile.visibility == 'm' and request.user.is_anonymous:
+                    elif profile.visibility == 'm' and request.user.is_anonymous():
                         return http.HttpResponseForbidden()
         return f(request, slug, profile=profile, full_access=full_access, **kwargs)
     return wrapper
