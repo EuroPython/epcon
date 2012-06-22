@@ -300,6 +300,36 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.pp_tickets',
 )
 
+def CONFERENCE_VIDEO_COVER_EVENTS(conference):
+    from conference import dataaccess
+    invalid = set(['special', 'break'])
+    return [ x for x in dataaccess.events(conf=conference) if x['tags'] - invalid ]
+
+def CONFERENCE_VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False, size=30):
+    import os.path
+    stuff = os.path.normpath(
+        os.path.join(os.path.dirname(__file__), '..', 'documents', 'cover', conference))
+    if not os.path.isdir(stuff):
+        return None
+
+    from PIL import Image, ImageDraw, ImageFont
+    from conference import dataaccess
+
+    event = dataaccess.event_data(eid)
+    if conference == 'ep2012':
+        master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert('RGBA')
+        font = os.path.join(stuff, 'Lucida Sans Unicode.ttf')
+        print size, font
+        ftitle = ImageFont.truetype(font, size) #36*96/72)
+
+        d = ImageDraw.Draw(master)
+        print ftitle.getsize(event['name'])
+        d.text((20, 150), event['name'], font=ftitle, fill=(0x2f, 0x1c, 0x1c, 0xff))
+        
+        master.save('x.jpg')
+    else:
+        return None
+
 CONFERENCE_TICKET_BADGE_ENABLED = True
 def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
     from p3.utils import conference_ticket_badge
