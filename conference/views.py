@@ -782,3 +782,41 @@ def myself_profile(request):
 @json
 def schedule_events_expected_attendance(request, conference):
     return dataaccess.expected_attendance(conference)
+
+def covers(request, conference):
+    events = settings.VIDEO_COVER_EVENTS(conference)
+    if not events:
+        raise http.Http404()
+
+    schedules = dataaccess.schedules_data(
+        models.Schedule.objects\
+            .filter(conference=conference)\
+            .order_by('date')\
+            .values_list('id', flat=True)
+    )
+
+    from collections import defaultdict
+    tracks = defaultdict(dict)
+    for s in schedules:
+        for t in s['tracks'].values():
+            tracks[s['id']][t.track] = t.title
+
+    grouped = defaultdict(lambda: defaultdict(list))
+    for e in events:
+        if not e['tracks']:
+            continue
+        sid = e['schedule_id']
+        t = tracks[sid][e['tracks'][0]]
+        grouped[sid][t].append(e)
+
+    ordered = []
+    for s in schedules:
+        data = grouped[s['id']]
+        if not data:
+            continue
+        ordered.append((s, sorted(data.items())))
+    ctx = {
+        'conference': conference,
+        'events': ordered,
+    }
+    return render(request, 'conference/covers.html', ctx)

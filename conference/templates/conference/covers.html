@@ -1,0 +1,45 @@
+{% load conference %}
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <style>
+    body {
+        font-size: 11pt;
+    }
+    .schedule {
+        margin: 0 0 20px 0;
+    }
+    .schedule, .track {
+        clear: both;
+    }
+    .event {
+        float: left;
+        margin: 0 5px;
+    }
+    .event p {
+        width: 128px;
+        word-wrap: break-word;
+        height: 80px;
+        overflow: hidden;
+    }
+    </style>
+</head>
+<body>
+    {% for schedule, data in events %}
+        <section class="schedule">
+            <h1>{{ schedule.date|date:"jS N Y" }}</h1>
+            {% for track, evts in data %}
+                <div class="track">
+                    <h2>{{ track|safe }}</h2>
+                    {% for e in evts %}
+                    <div class="event">
+                        <img src="" width="128" height="128" />
+                        <p>{{ e.time|date:"H:i" }}<br />{{ e.name|safe }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </section>
+    {% endfor %}
+</body>
+</html>

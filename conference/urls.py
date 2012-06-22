@@ -37,3 +37,8 @@ urlpatterns += patterns('conference.views',
     url(r'^schedule/(?P<conference>.*)/events/expected_attendance$',
         'schedule_events_expected_attendance', name='conference-schedule-events-expected-attendance'),
 )
+
+urlpatterns += patterns('conference.views',
+    url(r'^(?P<conference>[\w-]+)/covers$',
+        'covers', name='conference-covers'),
+)
