@@ -9,7 +9,7 @@ import re
 import sys
 import tarfile
 import time
-import Image, ImageDraw
+from PIL import Image, ImageDraw
 from cStringIO import StringIO
 from itertools import izip_longest
 
@@ -74,7 +74,13 @@ tickets = conf['tickets']
 ticket = conf['ticket']
 DPI = opts.dpi
 WASTE = conf.get('WASTE', 0) * MM2INCH * DPI
-PAGE_SIZE = map(lambda x: int(int(x) * MM2INCH * DPI), opts.page_size.split('x'))
+if opts.page_size == 'A3':
+    psize = "420x297"
+elif opts.page_size == 'A4':
+    psize = "297x210"
+else:
+    psize = opts.page_size
+PAGE_SIZE = map(lambda x: int(int(x) * MM2INCH * DPI), psize.split('x'))
 
 data = json.loads(sys.stdin.read())
 
@@ -112,21 +118,15 @@ def wrap_text(font, text, width):
         lines[ix] = line
     return lines
 
-def draw_info(image, max_width, text, pos, font, color):
+def draw_info(image, max_width, text, pos, font, color, line_offset=8):
     d = ImageDraw.Draw(image)
-
-    #max_width = BADGE['width'] - BADGE['first_name'][0] - 10
-    #if FONTS['name'].getsize(first_name.upper())[0] > max_width or FONTS['name'].getsize(last_name)[0] > max_width:
-    #    font = FONTS['name_small']
-    #else:
-    #    font = FONTS['name']
 
     cx = pos[0]
     cy = pos[1] - font.getsize(text)[1]
     lines = wrap_text(font, text, max_width)
     for l in lines:
         d.text((cx, cy), l, font = font, fill = color) 
-        cy += font.getsize(l)[1] + 8
+        cy += font.getsize(l)[1] + line_offset
 
 def assemble_page(images):
     cols = rows = int(math.ceil(math.sqrt(len(images))))
@@ -185,32 +185,32 @@ def add_page(name, page):
     out.seek(0)
     output.addfile(tinfo, out)
 
+def render_badge(image, attendee, utils, resize_factor=None):
+    i = ticket(image, attendee, utils=utils)
+    if resize_factor:
+        nsize = i.size[0] * resize_factor, i.size[1] * resize_factor
+        i = i.resize(nsize, Image.ANTIALIAS)
+    return i
+
 for group_type, data in groups.items():
     image = data['image']
     attendees = data['attendees']
-    pages = len(attendees) / opts.per_page + 1
+    pages = len(attendees) / opts.per_page
+    if len(attendees) % opts.per_page:
+        pages += 1
 
+    utils = {
+        'wrap_text': wrap_text,
+        'draw_info': draw_info,
+    }
     count = 1
     for block in grouper(opts.per_page, attendees):
-        images = []
-        for ix, a in enumerate(block):
-            i = image.copy()
-            if a is not None:
-                rows = ticket(i, a)
-                for row in rows:
-                    if isinstance(row[0], Image.Image):
-                        i.paste(row[0], row[1], row[0])
-                    else:
-                        t, pos, font, color  = row
-                        draw_info(i, data['max_width'], t, pos, font, color)
-            if opts.resize:
-                i = i.resize(map(lambda x: int(x*opts.resize), i.size), Image.ANTIALIAS)
-            images.append(i)
-
-        if images:
+        if block:
+            images = [
+                render_badge(image, a, utils=utils, resize_factor=opts.resize)
+                for a in block ]
             name = '[%s] pag %s-%s.tif' % (group_type, str(count).zfill(2), str(pages).zfill(2))
-            page = assemble_page(images)
-            add_page(name, page)
+            add_page(name, assemble_page(images))
 
         count += 1
 
@@ -220,7 +220,7 @@ for group_type, data in groups.items():
         additional = int(opts.empty_pages)
     for ix in range(additional):
         name = '[%s][vuoti] pag %s-%s.tif' % (group_type, str(ix+1).zfill(2), str(additional).zfill(2))
-        page = assemble_page([image.copy()] * opts.per_page)
-        add_page(name, page)
+        images = [ render_badge(image, None, utils=utils, resize_factor=opts.resize) for x in range(opts.per_page) ]
+        add_page(name, assemble_page(images))
 
 output.close()

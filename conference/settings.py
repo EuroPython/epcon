@@ -52,14 +52,52 @@ LATEST_TWEETS_FILE = getattr(settings, 'CONFERENCE_LATEST_TWEETS_FILE', None)
 
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
 
+# TICKET_BADGE_ENABLED abilita o meno la possibilità di generare badge tramite
+# admin
 TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', False)
 
-TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION', lambda tickets: [])
-
+# La generazione dei badge è un processo articolato in 3 fasi:
+#
+# Fase 1: L'elenco, o il QuerySet, dei biglietti di cui vogliamo i badge viene
+# passato alla funzione TICKET_BADGE_PREPARE_FUNCTION; questa deve ritornare
+# una lista dove ogni elemento è un "gruppo di biglietti". I biglietti possono
+# essere raggruppati in qualsiasi modo (di solito per conferenza, nel caso che
+# vengano passati biglietti appartenenti a più di una conferenza); un gruppo è
+# un dict con due chiavi: "plugin", "tickets".
+#
+# "tickets" è una lista di biglietti che verrà codificata in json e passata
+# come input a TICKED_BADGE_PROG; tale lista verrà passata allo script
+# specificato tramite "plugin".
+# "plugin" è il percorso assoluto allo script python con il plugin di
+# configurazione da usare con il programma TICKED_BADGE_PROG.
+#
+# Fase 2: Il programma TICKED_BADGE_PROG viene invocato seguendo l'output di
+# TICKET_BADGE_PREPARE_FUNCTION; l'output di TICKED_BADGE_PROG è un file tar
+# contenente i TIFF delle pagine con i badge pronte per andare in stampa.
+#
+# Fase 3: Durante l'esecuzione di TICKED_BADGE_PROG viene eseguito il plugin di
+# configurazione; questo plugin deve esporre due funzioni: "tickets" e
+# "ticket". "tickets" viene invocata passando l'input del programma (generato
+# da TICKET_BADGE_PREPARE_FUNCTION) e deve ritornare un dizionario che
+# raggruppi i biglietti passati secondo un qualsiasi criterio. Le chiavi del
+# dizionario sono arbitrarie, vengono utilizzate solo nella generazione dei
+# nomi dei file tar; i valori d'altro canto devono essere a loro volta dei
+# dizionari e contenenre tre chiavi: "image", "attendees", "max_width".
+#
+# "image" deve essere un'istanza di PIL.Image, "max_width" è la larghezza
+# massima in pixel utilizzabile per scrivere del testo e "attendees" un elenco
+# di partecipanti (un partecipante può essere qualsiasi cosa).
+#
+# "ticket" viene chiamata passando una copia dell'immagine ritornata da
+# "tickets" e l'istanza di un singolo partecipante, deve ritornare l'Image del
+# badge.
 import os.path
 import conference
-
-TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG', os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))
+TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG',
+    os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))
+TICKED_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG_ARGS', [])
+TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION',
+    lambda tickets: [])
 
 SCHEDULE_ATTENDEES = getattr(settings, 'CONFERENCE_SCHEDULE_ATTENDEES', lambda schedule, forecast=False: 0)
 
