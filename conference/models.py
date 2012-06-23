@@ -277,12 +277,16 @@ class AttendeeProfileManager(models.Manager):
             slug = '-1'
         return slug
 
-    # TODO: non posso usare il commit_manually o il commit_on_success perché non
-    # funzionano nestati.  dovrei usare i savepoint ma quello che voglio io è
-    # usare una "BEGIN EXCLUSIVE TRANSACTION" per impedire ad altri di leggere
-    # la tabella. Purtroppo sqlite3 non supporta le transazioni nidificate
-    # quindi non potrebbe essere un sistema "generico" in quanto non so dove
-    # `.getOrCreateForUser` verrebbe chiamata
+    def randomUUID(self, length=6):
+        import string
+        import random
+        return ''.join(random.sample(string.letters + string.digits, length))
+
+    # TODO: usare i savepoint. Ricordarsi che, almeno fino a django 1.4, il
+    # backend sqlite non supporta i savepoint nonostante sqlite lo faccia da
+    # tempo, quindi si deve passare da cursor.execute(); se mai passeremo a
+    # postgres ricordarsi di fare rollback del savepoint nell'except (o
+    # impostare l'autocommit)
     def getOrCreateForUser(self, user):
         """
         Ritorna o crea il profilo associato all'utente.
@@ -294,8 +298,29 @@ class AttendeeProfileManager(models.Manager):
         else:
             return p
 
-        p.slug = self.findSlugForUser(user)
-        p.save()
+        from django.db import IntegrityError
+        slug = None
+        uuid = None
+        while True:
+            if slug is None:
+                slug = self.findSlugForUser(user)
+            if uuid is None:
+                uuid = self.randomUUID()
+
+            p.slug = slug
+            p.uuid = uuis
+            try:
+                p.save()
+            except IntegrityError, e:
+                msg = str(e)
+                if 'uuid' in msg:
+                    uuid = None
+                elif 'slug' in msg:
+                    slug = None
+                else:
+                    raise
+            else:
+                break
         return p
 
 ATTENDEEPROFILE_VISIBILITY = (
@@ -311,6 +336,8 @@ class AttendeeProfile(models.Model):
     """
     user = models.OneToOneField('auth.User', primary_key=True)
     slug = models.SlugField(unique=True)
+    uuid = models.CharField(max_length=6, unique=True)
+
     image = models.ImageField(upload_to=_fs_upload_to('profile'), blank=True)
     birthday = models.DateField(_('Birthday'), null=True, blank=True)
     phone = models.CharField(
