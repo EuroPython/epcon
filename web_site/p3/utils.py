@@ -7,6 +7,9 @@ from django.core.urlresolvers import reverse
 import os.path
 
 def conference_ticket_badge(tickets):
+    """
+    vedi conference.settings.TICKET_BADGE_PREPARE_FUNCTION
+    """
     conferences = {}
     for c in Conference.objects.all():
         conferences[c.code] = {
@@ -20,19 +23,22 @@ def conference_ticket_badge(tickets):
     for t in qs:
         if t.fare.conference not in groups:
             groups[t.fare.conference] = {
-                'args': ['-c', os.path.join(settings.OTHER_STUFF, 'badge', t.fare.conference, 'conf.py'), ],
-                'tickets': []
+                'plugin': os.path.join(settings.OTHER_STUFF, 'badge', t.fare.conference, 'conf.py'),
+                'tickets': [],
             }
-        if t.p3_conference is None:
+        p3c = t.p3_conference
+        if p3c is None:
             tagline = ''
             days = '1'
             experience = 0
+            badge_image = None
         else:
-            tagline = t.p3_conference.tagline
-            experience = t.p3_conference.python_experience
-            tdays = map(lambda x: datetime.date(*map(int, x.split('-'))), filter(None, t.p3_conference.days.split(',')))
+            tagline = p3c.tagline
+            experience = p3c.python_experience
+            tdays = map(lambda x: datetime.date(*map(int, x.split('-'))), filter(None, p3c.days.split(',')))
             cdays = conferences[t.fare.conference]['days']
             days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
+            badge_image = p3c.badge_image.path if p3c.badge_image else None
         groups[t.fare.conference]['tickets'].append({
             'name': t.name or t.orderitem.order.user.name(),
             'tagline': tagline,
@@ -42,6 +48,7 @@ def conference_ticket_badge(tickets):
                 'type': t.fare.recipient_type,
             },
             'experience': experience,
+            'badge_image': badge_image,
             'staff': t.ticket_type == 'staff',
         })
     return groups.values()
