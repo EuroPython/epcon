@@ -822,6 +822,28 @@ def covers(request, conference):
     return render(request, 'conference/covers.html', ctx)
 
 def user_profile_link(request, uuid):
+    """
+    Questa view permette di collegare tra loro due partecipanti.
+    Il workflow implementato è il seguente:
+
+    * se l'utente non è loggato la pagina lo invita a loggarsi; dopo il login
+     l'utente viene rediretto nuovamente su questa vista.
+
+    * se l'utente è loggato e il profilo associato è il suo viene rediretto
+     sulla propria pagina di profilo (ma solo se non è un admin).
+
+    * se l'utente è loggato e il profilo non è il suo viene data la possibilità
+     di "collegare" i due profili;
+     collegare significa tenere traccia delle persone che si sono incontrate
+     durante la conferenza.
+
+    * se l'utente è un admin vengono mostrati i dettagli sull'utente associato
+     al profilo.
+
+    In ogni caso se l'utente è loggato e questa view viene richiamata durante i
+    giorni della conferenza viene registrato un recordo di presenza nel
+    database.
+    """
     try:
         profile = models.AttendeeProfile.objects\
             .select_related('user')\
@@ -830,7 +852,11 @@ def user_profile_link(request, uuid):
         raise http.Http404()
 
     if request.user == profile.user:
-        conf = models.Conference.current()
+        conf = models.Conference.objects.current()
         if conf.conference():
             p, _ = models.Presence.objects.get_or_create(profile=profile, conference=conf.code)
-    1/0
+        return redirect('conference-myself-profile')
+    ctx = {
+        'profile': profile,
+    }
+    return render(request, 'conference/profile_link.html', ctx)
