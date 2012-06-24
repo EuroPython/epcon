@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-from collections import defaultdict
-from conference.models import Conference
 import datetime
+import os.path
+from collections import defaultdict
+from conference.models import Conference, AttendeeProfile
 from django.conf import settings
 from django.core.urlresolvers import reverse
-import os.path
 
 def conference_ticket_badge(tickets):
     """
@@ -39,6 +39,10 @@ def conference_ticket_badge(tickets):
             cdays = conferences[t.fare.conference]['days']
             days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
             badge_image = p3c.badge_image.path if p3c.badge_image else None
+        if p3c and p3c.assigned_to:
+            profile = AttendeeProfile.objects.get(user__email=p3c.assigned_to)
+        else:
+            profile = t.user.attendeeprofile
         groups[t.fare.conference]['tickets'].append({
             'name': t.name or t.orderitem.order.user.name(),
             'tagline': tagline,
@@ -50,6 +54,8 @@ def conference_ticket_badge(tickets):
             'experience': experience,
             'badge_image': badge_image,
             'staff': t.ticket_type == 'staff',
+            'profile-link': settings.DEFAULT_URL_PREFIX + reverse(
+                'conference-profile-link', kwargs={'uuid': profile.uuid}),
         })
     return groups.values()
 

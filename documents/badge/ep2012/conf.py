@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from PIL import Image, ImageFont
 from PyQRNative import QRCode, QRErrorCorrectLevel
-import os.path
 
 _FONT_NAME = 'Arial_Unicode.ttf'
 _FONTS = {
@@ -78,9 +77,6 @@ def ticket(image, ticket, utils):
         font = _FONTS['name']
         name_y = 460, 590
 
-    lname = ticket['name'].lower()
-    ltag = tagline.lower()
-
     if ticket['badge_image']:
         logo = Image.open(ticket['badge_image']).convert('RGBA').resize((64, 64))
     else:
@@ -103,9 +99,10 @@ def ticket(image, ticket, utils):
             t, pos, font, color  = row
             utils['draw_info'](image, w - 60, t, pos, font, color)
 
-    qr = QRCode(8, QRErrorCorrectLevel.H)
-    qr.addData('https://ep2012.europython.eu/conference/p/david-mugnai')
-    qr.make()
-    im = qr.makeImage().resize((int(12*0.03937*300), int(12*0.03937*300)))
-    image.paste(im, (689, 1070))
+    if ticket.get('profile-link'):
+        qr = QRCode(8, QRErrorCorrectLevel.H)
+        qr.addData(ticket['profile-link'])
+        qr.make()
+        im = qr.makeImage().resize((int(12*0.03937*300), int(12*0.03937*300)))
+        image.paste(im, (689, 1070))
     return image
