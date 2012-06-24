@@ -1,0 +1,6 @@
+{% extends "p3/base.html" %}
+{% block MAIN_CONTENT %}
+{% if user.is_anonymous %}
+Hi login to proceed: <a href="/accounts/login/?next={% url conference-profile-link uuid=profile.uuid %}">Login</a>
+{% endif %}
+{% endblock %}
