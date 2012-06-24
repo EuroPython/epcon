@@ -308,7 +308,7 @@ class AttendeeProfileManager(models.Manager):
                 uuid = self.randomUUID()
 
             p.slug = slug
-            p.uuid = uuis
+            p.uuid = uuid
             try:
                 p.save()
             except IntegrityError, e:
@@ -376,6 +376,25 @@ class AttendeeProfile(models.Model):
         return MultilingualContent.objects.getContent(self, 'bios', language)
 
 post_save.connect(postSaveResizeImageHandler, sender=AttendeeProfile)
+
+class Presence(models.Model):
+    """
+    Presenza di un partecipante ad una conferenza.
+    """
+    profile = models.ForeignKey(AttendeeProfile, related_name='presences')
+    conference = models.CharField(max_length=10)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (('profile', 'conference'),)
+
+class AttendeeLink(models.Model):
+    """
+    Collegamento tra due partecipanti
+    """
+    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1')
+    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2')
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 class SpeakerManager(models.Manager):
     def byConference(self, conf, only_accepted=True):

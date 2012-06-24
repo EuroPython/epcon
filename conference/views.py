@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404, render
 from django.template import RequestContext
@@ -820,3 +820,17 @@ def covers(request, conference):
         'events': ordered,
     }
     return render(request, 'conference/covers.html', ctx)
+
+def user_profile_link(request, uuid):
+    try:
+        profile = models.AttendeeProfile.objects\
+            .select_related('user')\
+            .get(uuid=uuid)
+    except models.AttendeeProfile.DoesNotExist:
+        raise http.Http404()
+
+    if request.user == profile.user:
+        conf = models.Conference.current()
+        if conf.conference():
+            p, _ = models.Presence.objects.get_or_create(profile=profile, conference=conf.code)
+    1/0
