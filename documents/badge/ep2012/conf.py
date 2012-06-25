@@ -123,6 +123,6 @@ def ticket(image, ticket, utils):
         qr = QRCode(8, QRErrorCorrectLevel.H)
         qr.addData(ticket['profile-link'])
         qr.make()
-        im = qr.makeImage().resize((int(12*0.03937*300), int(12*0.03937*300)))
-        image.paste(im, (689, 1070))
+        im = qr.makeImage().resize((int(18*0.03937*300), int(18*0.03937*300)))
+        image.paste(im, (w + 600, 1030))
     return image
