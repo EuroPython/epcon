@@ -146,5 +146,7 @@ if 'paypal.standard.ipn' in settings.INSTALLED_APPS:
 
     def _PAYPAL_ITEM_NAME(item):
         return "%s %s" % (item['code'], item['description'])
-    
+
     PAYPAL_ITEM_NAME = getattr(settings, 'PAYPAL_ITEM_NAME', _PAYPAL_ITEM_NAME)
+
+WHTMLTOPDF_PATH = getattr(settings,'ASSOPY_WHTMLTOPDF_PATH', None)
