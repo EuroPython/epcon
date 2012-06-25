@@ -37,6 +37,19 @@ def tickets(tickets):
         v['attendees'].sort(key=lambda x: x['name'])
     return groups
 
+
+# http://stackoverflow.com/questions/765736/using-pil-to-make-all-white-pixels-transparent#answer-4531395
+def distance2(a, b):
+    return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]) + (a[2] - b[2]) * (a[2] - b[2])
+
+def makeColorTransparent(image, color, thresh2=0):
+    from PIL import ImageMath
+    image = image.convert("RGBA")
+    red, green, blue, alpha = image.split()
+    image.putalpha(ImageMath.eval("""convert(((((t - d(c, (r, g, b))) >> 31) + 1) ^ 1) * a, 'L')""",
+        t=thresh2, d=distance2, c=color, r=red, g=green, b=blue, a=alpha))
+    return image
+
 def ticket(image, ticket, utils):
     image = image.copy()
     if not ticket:
@@ -78,7 +91,14 @@ def ticket(image, ticket, utils):
         name_y = 460, 590
 
     if ticket['badge_image']:
-        logo = Image.open(ticket['badge_image']).convert('RGBA').resize((64, 64))
+        logo = Image.open(ticket['badge_image']).resize((64, 64))
+        if logo.mode != 'RGBA':
+            if logo.mode == 'LA':
+                logo = logo.convert('RGBA')
+            else:
+                if logo.mode != 'RGB':
+                    logo = logo.convert('RGB')
+                logo = makeColorTransparent(logo, logo.getpixel((0, 0)), thresh2=150)
     else:
         logo = PY_LOGO
     rows = [
