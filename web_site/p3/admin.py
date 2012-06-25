@@ -30,11 +30,8 @@ def ticketConferenceForm():
         def __init__(self, *args, **kw):
             if 'instance' in kw:
                 o = kw['instance']
-                try:
-                    p3c = o.p3_conference
-                except models.TicketConference:
-                    pass
-                else:
+                p3c = o.p3_conference
+                if p3c:
                     initial = kw.pop('initial', {})
                     for k in _TICKET_CONFERENCE_COPY_FIELDS:
                         initial[k] = getattr(p3c, k)
@@ -75,9 +72,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        try:
-            p3c = obj.p3_conference
-        except models.TicketConference:
+        p3c = obj.p3_conference
+        if p3c is None:
             p3c = models.TicketConference(ticket=obj)
 
         data = form.cleaned_data

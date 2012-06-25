@@ -44,7 +44,7 @@ def conference_ticket_badge(tickets):
         else:
             profile = t.user.attendeeprofile
         groups[t.fare.conference]['tickets'].append({
-            'name': t.name or t.orderitem.order.user.name(),
+            'name': t.name.strip() or t.orderitem.order.user.name(),
             'tagline': tagline,
             'days': days,
             'fare': {

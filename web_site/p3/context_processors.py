@@ -9,7 +9,7 @@ def countdown(request):
             .values('ticket__fare__code')\
             .annotate(c=Count('pk'))
 
-    conference = 679 - sum(
+    conference = 800 - sum(
         x['c'] for x in sold.filter(ticket__fare__ticket_type='conference')
     )
     pyfiorentina = 220 - sum(
