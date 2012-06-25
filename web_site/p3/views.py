@@ -165,7 +165,7 @@ def ticket(request, tid):
 
             data = form.cleaned_data
             # prima di tutto sistemo il ticket di conference...
-            t.name = data['ticket_name']
+            t.name = data['ticket_name'].strip()
             t.save()
             # ...poi penso alle funzionalità aggiuntive dei biglietti p3
             x = form.save(commit=False)
