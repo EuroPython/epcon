@@ -475,30 +475,37 @@ def invoice_pdf(request,order_code, code):
         f = urllib.urlopen(genro.invoice_url(assopy_id))
         fname = '[%s] credit note.pdf' % conf
     else:
-        
+        if not settings.WHTMLTOPDF_PATH:
+            return HttpResponseRedirectSeeOther(
+                        reverse('assopy-invoice-html', args=(order_code, code))
+                    )
         import sys
         import os
         import subprocess
 
-        command_args = 'wkhtmltopdf --cookie %s %s --zoom 1.3 %s%s -' % (
-                            dsettings.SESSION_COOKIE_NAME,
-                            request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
-                            dsettings.DEFAULT_URL_PREFIX ,
-                            reverse('assopy-invoice-html', args=(order_code, code))
-                        )
+        command_args = [
+            settings.WHTMLTOPDF_PATH,
+            '--cookie',
+            dsettings.SESSION_COOKIE_NAME,
+            request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
+            '--zoom',
+            '1.3',
+            "%s%s" % (dsettings.DEFAULT_URL_PREFIX ,reverse('assopy-invoice-html', args=(order_code, code))),
+            '-'
+        ]
 
         popen = subprocess.Popen(command_args,
                                  bufsize=4096,
                                  stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 shell=True)
+                                 stderr=subprocess.PIPE)
 
-        f = popen.stdout.read()
+        f,g = popen.communicate()
         fname = unicode(invoice)
 
     response = http.HttpResponse(f, mimetype='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="%s"' % fname
     return response
+
 
 @login_required
 @render_to('assopy/invoice.html')
