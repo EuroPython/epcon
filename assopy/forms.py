@@ -53,6 +53,9 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
         try:
             return super(PasswordResetForm, self).clean_email()
         except forms.ValidationError:
+            if not settings.GENRO_BACKEND:
+                raise
+
             # v. assopy.auth_backends.EmailBackend
             if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
                 raise
