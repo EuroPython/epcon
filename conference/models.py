@@ -397,7 +397,7 @@ class AttendeeLink(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class SpeakerManager(models.Manager):
-    def byConference(self, conf, only_accepted=True):
+    def byConference(self, conf, only_accepted=True, talk_type=None):
         """
         Ritorna tutti gli speaker della conferenza
         """
@@ -406,6 +406,11 @@ class SpeakerManager(models.Manager):
             .values('speaker')
         if only_accepted:
             qs = qs.filter(talk__status='accepted')
+        if talk_type:
+            if isinstance(talk_type, (list, tuple)):
+                qs = qs.filter(talk__type__in=talk_type)
+            else:
+                qs = qs.filter(talk__type=talk_type)
         return Speaker.objects.filter(user__in=qs)
 
 class Speaker(models.Model, UrlMixin):
