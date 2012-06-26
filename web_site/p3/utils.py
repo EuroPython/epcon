@@ -42,8 +42,13 @@ def conference_ticket_badge(tickets):
             profile = AttendeeProfile.objects.get(user__email=p3c.assigned_to)
         else:
             profile = t.user.attendeeprofile
+        name = t.name.strip()
+        if not name:
+            name = t.orderitem.order.user.name()
+            if p3c and p3c.assigned_to:
+                name = p3c.assigned_to + ' (%s)' % name
         groups[t.fare.conference]['tickets'].append({
-            'name': t.name.strip() or t.orderitem.order.user.name(),
+            'name': name,
             'tagline': tagline,
             'days': days,
             'fare': {
