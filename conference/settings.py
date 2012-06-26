@@ -116,7 +116,7 @@ ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TIC
 
 def _VIDEO_COVER_EVENTS(conference):
     from conference import dataaccess
-    return dataaccess.events(conf=conference)
+    return [ x['id'] for x in dataaccess.events(conf=conference) ]
     
 VIDEO_COVER_EVENTS = getattr(settings, 'CONFERENCE_VIDEO_COVER_EVENTS', _VIDEO_COVER_EVENTS)
 
