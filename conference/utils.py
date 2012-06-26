@@ -742,10 +742,12 @@ def timetables2ical(tts, altf=lambda d, comp: d):
                 #
                 # Per questo ho deciso di convertire i tempi in UTC
                 start = utc.normalize(tz.localize(e['time']).astimezone(utc))
+                end = utc.normalize(tz.localize(e['time'] + timedelta(seconds=e['duration']*60)).astimezone(utc))
                 ce = {
                     'uid': e['id'],
                     'start': start,
-                    'duration': timedelta(seconds=e['duration']*60),
+                    #'duration': timedelta(seconds=e['duration']*60),
+                    'end': end,
                     'location': 'Track: %s' % track,
                 }
                 if e['talk']:
