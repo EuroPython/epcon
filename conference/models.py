@@ -442,6 +442,7 @@ TALK_DURATION = (
     (30,  _('30 minutes')),
     (40,  _('40 minutes')),
     (45,  _('45 minutes')),
+    (55,  _('55 minutes')),
     (60,  _('60 minutes')),
     (75,  _('75 minutes')),
     (90,  _('90 minutes')),
