@@ -802,7 +802,7 @@ def covers(request, conference):
             tracks[s['id']][t.track] = t.title
 
     grouped = defaultdict(lambda: defaultdict(list))
-    for e in events:
+    for e in dataaccess.events(eids=events):
         if not e['tracks']:
             continue
         sid = e['schedule_id']

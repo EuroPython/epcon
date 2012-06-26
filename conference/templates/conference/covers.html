@@ -6,10 +6,15 @@
     body {
         font-size: 11pt;
     }
-    .schedule {
-        margin: 0 0 20px 0;
+    h1 {
+        text-align: center;
     }
-    .schedule, .track {
+    .schedule {
+        margin: 40px 0;
+    }
+    .track:after {
+        content: " ";
+        display: block;
         clear: both;
     }
     .event {
@@ -22,6 +27,12 @@
         height: 80px;
         overflow: hidden;
     }
+    .event .download {
+        text-align: right;
+        font-size: 80%;
+        font-variant: small-caps;
+        padding: 5px 0;
+    }
     </style>
 </head>
 <body>
@@ -33,7 +44,10 @@
                     <h2>{{ track|safe }}</h2>
                     {% for e in evts %}
                     <div class="event">
-                        <img src="" width="128" height="128" />
+                        <img src="{% video_cover_url e thumb=1 %}" width="128" height="128" />
+                        <div class="download">
+                            <a href="{% video_cover_url e thumb=0 %}">front</a>
+                        </div>
                         <p>{{ e.time|date:"H:i" }}<br />{{ e.name|safe }}</p>
                     </div>
                     {% endfor %}

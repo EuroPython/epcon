@@ -839,6 +839,20 @@ def render_hotels(hotels):
         'hotels': hotels,
     }
 
+@fancy_tag(register)
+def video_cover_url(event, type='front', thumb=False):
+    print 'x', event
+    base = dsettings.MEDIA_URL + 'conference/covers/%s/' % event['conference']
+    if event.get('talk'):
+        url = base + event['talk']['slug']
+    else:
+        url = base + 'event-%d' % event['id']
+    if thumb:
+        url += '.jpg.thumb'
+    else:
+        url += '.jpg'
+    return url
+
 @fancy_tag(register, takes_context=True)
 def embed_video(context, value, args=""):
     """
