@@ -452,6 +452,7 @@ def event_data(eid, preload=None):
         'schedule_id': event.schedule_id,
         'name': name,
         'time': datetime.combine(sch['date'], event.start_time),
+        'conference': sch['conference'],
         'custom': event.custom,
         'abstract': event.abstract,
         'duration': duration,
