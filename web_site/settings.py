@@ -302,31 +302,104 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
 
 def CONFERENCE_VIDEO_COVER_EVENTS(conference):
     from conference import dataaccess
-    invalid = set(['special', 'break'])
-    return [ x for x in dataaccess.events(conf=conference) if x['tags'] - invalid ]
+    from conference import models
+    from datetime import timedelta
+    conf = models.Conference.objects.get(code=conference)
+    def valid(e):
+        if e['tags'] & set(['special', 'break']):
+            return False
+        # gli ultimi due giorni si tengono gli sprint
+        if e['time'].date() >= conf.conference_end - timedelta(days=1):
+            return False
+        # gli eventi serali non vengono ripresi
+        if e['time'].hour >= 20:
+            return False
+        if len(e['tracks']) == 1 and (e['tracks'][0] in ('helpdesk1', 'helpdesk2')):
+            return False
+        return True
+    return [ x['id'] for x in filter(valid, dataaccess.events(conf=conference)) ]
 
-def CONFERENCE_VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False, size=30):
+def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
+    import re
     import os.path
+    from PIL import Image, ImageDraw, ImageFont
+    from conference import dataaccess
+
+    event = dataaccess.event_data(eid)
+    conference = event['conference']
+
     stuff = os.path.normpath(
         os.path.join(os.path.dirname(__file__), '..', 'documents', 'cover', conference))
     if not os.path.isdir(stuff):
         return None
 
-    from PIL import Image, ImageDraw, ImageFont
-    from conference import dataaccess
+    def wrap_text(font, text, width):
+        words = re.split(' ', text)
+        lines = []
+        while words:
+            word = words.pop(0).strip()
+            if not word:
+                continue
+            if not lines:
+                lines.append(word)
+            else:
+                line = lines[-1]
+                w, h = font.getsize(line + ' ' + word)
+                if w <= width:
+                    lines[-1] += ' ' + word
+                else:
+                    lines.append(word)
 
-    event = dataaccess.event_data(eid)
+        for ix, line in enumerate(lines):
+            line = line.strip()
+            while True:
+                w, h = font.getsize(line)
+                if w <= width:
+                    break
+                line = line[:-1]
+            lines[ix] = line
+        return lines
+
     if conference == 'ep2012':
         master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert('RGBA')
-        font = os.path.join(stuff, 'Lucida Sans Unicode.ttf')
-        print size, font
-        ftitle = ImageFont.truetype(font, size) #36*96/72)
 
+        if type == 'back':
+            return master
+
+        ftitle = ImageFont.truetype(
+            os.path.join(stuff, 'League Gothic.otf'),
+            36, encoding="unic")
+        fauthor = ImageFont.truetype(
+            os.path.join(stuff, 'Arial_Unicode.ttf'),
+            21, encoding="unic")
+
+        y = 175
+        width = master.size[0] - 40
         d = ImageDraw.Draw(master)
-        print ftitle.getsize(event['name'])
-        d.text((20, 150), event['name'], font=ftitle, fill=(0x2f, 0x1c, 0x1c, 0xff))
-        
-        master.save('x.jpg')
+
+        title = event['name']
+        if event.get('custom'):
+            # questo è un evento custom, se inizia con un anchor posso
+            # estrane il riferimento
+            m = re.match(r'<a href="(.*)">(.*)</a>', title)
+            if m:
+                title = m.group(2)
+        lines = wrap_text(ftitle, title, width)
+        for l in lines:
+            d.text((20, y), l, font=ftitle, fill=(0x2f, 0x1c, 0x1c, 0xff))
+            y += ftitle.getsize(l)[1] + 8
+
+        if event.get('talk'):
+            spks = [ x['name'] for x in event['talk']['speakers'] ]
+            text = 'by ' + ','.join(spks)
+            lines = wrap_text(fauthor, text, width)
+            for l in lines:
+                d.text((20, y), l, font=fauthor, fill=(0x3d, 0x7e, 0x8a, 0xff))
+                y += fauthor.getsize(l)[1] + 8
+
+        if thumb:
+            master.thumbnail(thumb, Image.ANTIALIAS)
+        return master
     else:
         return None
 
