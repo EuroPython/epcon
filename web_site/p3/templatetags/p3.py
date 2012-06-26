@@ -295,7 +295,7 @@ def render_partner_program(context, conference=None):
 
     from conference import dataaccess
     from conference.templatetags.conference import fare_blob
-    fares = [ x for x in dataaccess.fares(conference) if x['ticket_type'] == 'partner' ]
+    fares = [ x for x in dataaccess.fares(conference) if x['ticket_type'] == 'partner' and x['valid'] ]
     fares.sort(key=lambda x: (slugify(x['name']), fare_blob(x, 'date')))
     ctx = Context(context)
     ctx.update({
