@@ -687,6 +687,38 @@ class TimeTable(object):
 
         return tt
 
+def render_event_video_cover(eid, thumb=(256, 256)):
+    """
+    Helper function; utilizza la settings.VIDEO_COVER_IMAGE per generare la
+    cover dell'evento passato e copiarla sotto la MEDIA_ROOT.
+    """
+    import os
+    import os.path
+    from conference import dataaccess
+    from conference import settings
+    from django.conf import settings as dsettings
+
+    event = dataaccess.event_data(eid)
+    conference = event['conference']
+    base = os.path.join(dsettings.MEDIA_ROOT, 'conference', 'covers', conference)
+    if not os.path.exists(base):
+        os.makedirs(base)
+
+    if event.get('talk'):
+        fname = event['talk']['slug']
+    else:
+        fname = 'event-%d' % eid
+
+    image = settings.VIDEO_COVER_IMAGE(eid)
+    if image is None:
+        return False
+    image.save(os.path.join(base, fname + '.jpg'), 'JPEG')
+
+    image = settings.VIDEO_COVER_IMAGE(eid, thumb=thumb)
+    image.save(os.path.join(base, fname + '.jpg.thumb'), 'JPEG')
+
+    return True
+
 def render_badge(tickets, cmdargs=None):
     cmdargs = (cmdargs or []) + settings.TICKED_BADGE_PROG_ARGS
     files = []
