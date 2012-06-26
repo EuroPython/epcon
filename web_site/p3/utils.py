@@ -18,7 +18,6 @@ def conference_ticket_badge(tickets):
         }
     groups = {}
     qs = tickets\
-            .filter(orderitem__order___complete=True)\
             .select_related('fare', 'p3_conference', 'orderitem__order__user__user')
     for t in qs:
         if t.fare.conference not in groups:
