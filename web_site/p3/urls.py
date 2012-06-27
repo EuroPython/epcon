@@ -31,6 +31,9 @@ urlpatterns = patterns('p3.views',
 
     url(r'^whos-coming$', 'whos_coming', name='p3-whos-coming', kwargs={'conference': None}),
     url(r'^(?P<conference>[\w-]+)/whos-coming$', 'whos_coming', name='p3-whos-coming-conference'),
+
+    url(r'^live/$', 'live', name='p3-live'),
+    url(r'^live/events$', 'live_events', name='p3-live-events'),
 )
 
 urlpatterns += patterns('p3.views',

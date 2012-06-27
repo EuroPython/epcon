@@ -521,6 +521,77 @@ LOGGING = {
     }
 }
 
+P3_LIVE_TRACKS = {
+    'track1': {
+        'stream': {
+            #'external': 'https://www.youtube.com/watch?v=MpOzYZIdmqo',
+            'external': 'https://www.youtube.com/watch?v=dZaz1AAsTxk',
+            'internal': 'http://moravia.trilan/live/spaghetti',
+        }
+    },
+    'track2': {
+        'stream': {
+            'external': 'https://www.youtube.com/watch?v=kT-Qgno3li8',
+            'internal': 'http://moravia.trilan/live/lasagne',
+        }
+    },
+    'track3': {
+        'stream': {
+            'external': 'https://www.youtube.com/watch?v=h7iJGt66gSE',
+            'internal': 'http://moravia.trilan/live/ravioli',
+        }
+    },
+    'track4': {
+        'stream': {
+            'external': 'https://www.youtube.com/watch?v=4jPvrK7bPBo',
+            'internal': 'http://moravia.trilan/live/tagliatelle',
+        }
+    },
+    'track-ita': {
+        'stream': {
+            'external': 'https://www.youtube.com/watch?v=-aTjP9_di4E',
+            'internal': 'http://moravia.trilan/live/big-mac',
+        }
+    },
+    'training1': {
+        'stream': {
+            'external': 'https://www.youtube.com/watch?v=iK8WSdZi3Hk',
+            'internal': 'http://moravia.trilan/live/pizza-margherita',
+        }
+    },
+    'training2': {
+        'stream': {
+            'external': 'https://www.youtube.com/watch?v=a8SrynF6ogc',
+            'internal': 'http://moravia.trilan/live/pizza-napoli',
+        }
+    },
+}
+
+def P3_LIVE_EMBED(request, event):
+    from django.core.cache import cache
+
+    track = event['tracks'][0]
+    data = cache.get('p3_live_embed_%s' % track)
+    if data is not None:
+        return data
+
+    try:
+        yurl = P3_LIVE_TRACKS[track]['stream']['external']
+    except KeyError:
+        return None
+
+    import httplib2, json
+    http = httplib2.Http()
+    service = 'https://www.youtube.com/oembed'
+    url = service + '?url=' + yurl + '&format=json&scheme=https'
+    try:
+        response, content = http.request(url)
+        data = json.loads(content)
+    except:
+        return None
+    cache.set('p3_live_embed_%s' % track, data['html'], 3600)
+    return data['html']
+
 from settings_locale import *
 
 # i file sotto SECURE_MEDIA_ROOT devono essere serviti da django, questo if

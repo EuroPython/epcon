@@ -950,3 +950,84 @@ def whos_coming(request, conference=None):
         tpl = 'p3/whos_coming.html'
     return render(request, tpl, ctx)
 
+def _live_conference():
+    conf = cmodels.Conference.objects.current()
+    if not conf.conference():
+        if not settings.DEBUG:
+            raise http.Http404()
+        else:
+            wday = datetime.date.today().weekday()
+            date = conf.conference_start
+            while date <= conf.conference_end:
+                if date.weekday() == wday:
+                    break
+                date = date + datetime.timedelta(days=1)
+    else:
+        date = datetime.date.today()
+    return conf, date
+
+@render_to('p3/live.html')
+def live(request):
+    """
+    What's up doc?
+    """
+    conf, date = _live_conference()
+
+    tracks = cmodels.Track.objects\
+        .filter(track__in=settings.P3_LIVE_TRACKS.keys(), schedule__date=date)\
+        .order_by('order')
+    return {
+        'tracks': tracks,
+    }
+
+@render_to_json
+def live_events(request):
+    conf, date = _live_conference()
+    eids = cmodels.Event.objects\
+        .filter(schedule__conference=conf.code, schedule__date=date)\
+        .filter(start_time__lte=datetime.datetime.now())\
+        .order_by('-start_time')\
+        .values_list('id', flat=True)
+
+    from conference import dataaccess as cdataaccess
+    tracks = settings.P3_LIVE_TRACKS.keys()
+    events = {}
+    for e in cdataaccess.events(eids=eids):
+        try:
+            track = e['tracks'][0]
+        except IndexError:
+            # se succede è un bug, ma questa pagina viene visualizzata durante
+            # la conferenza, non voglio che si rompa.
+            continue
+        if track not in tracks:
+            continue
+        # gli eventi sono ordinati per start_time
+        if track in events:
+            continue
+        events[track] = e
+    output = {}
+    for track, event in events.items():
+        if event.get('talk'):
+            url = reverse('conference-talk', kwargs={'slug': event['talk']['slug']})
+            speakers = [
+                (
+                    reverse('conference-speaker', kwargs={'slug': s['slug']}),
+                    s['name'],
+                    dataaccess.profile_data(s['id'])['image']
+                )
+                for s in event['talk']['speakers']
+            ]
+        else:
+            url = None
+            speakers = None
+        output[track] = {
+            'id': event['id'],
+            'name': event['name'],
+            'url': url,
+            'speakers': speakers,
+            'start': event['time'],
+            'end': event['time'] + datetime.timedelta(seconds=event['duration'] * 60),
+            'tags': event['talk']['tags'] if event.get('talk') else [],
+            'embed': settings.P3_LIVE_EMBED(request, event),
+        }
+    return output
