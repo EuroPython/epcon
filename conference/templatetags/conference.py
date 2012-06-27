@@ -841,7 +841,6 @@ def render_hotels(hotels):
 
 @fancy_tag(register)
 def video_cover_url(event, type='front', thumb=False):
-    print 'x', event
     base = dsettings.MEDIA_URL + 'conference/covers/%s/' % event['conference']
     if event.get('talk'):
         url = base + event['talk']['slug']
