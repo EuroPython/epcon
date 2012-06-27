@@ -880,6 +880,8 @@ def embed_video(context, value, args=""):
                     if os.path.exists(fpath):
                         video_path = fpath
                         break
+                    else:
+                        return ''
             source = 'download'
         else:
             video_url = value.video_url
