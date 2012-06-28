@@ -343,19 +343,20 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 )
             for l, _ in dsettings.LANGUAGES:
                 key =  '%s_%s' % (field_name, l)
-                if change:
-                    try:
-                        instance = contents[l]
-                    except KeyError:
+                if key in form.fields.keys():
+                    if change:
+                        try:
+                            instance = contents[l]
+                        except KeyError:
+                            instance = models.MultilingualContent()
+                    else:
                         instance = models.MultilingualContent()
-                else:
-                    instance = models.MultilingualContent()
-                if not instance.id:
-                    instance.content_object = obj
-                    instance.language = l
-                    instance.content = field_name
-                instance.body = data.get(key, '')
-                instance.save()
+                    if not instance.id:
+                        instance.content_object = obj
+                        instance.language = l
+                        instance.content = field_name
+                    instance.body = data.get(key, '')
+                    instance.save()
 
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
@@ -401,6 +402,13 @@ class SpeakerAdmin(MultiLingualAdminContent):
         qs = super(SpeakerAdmin, self).queryset(request)
         qs = qs.select_related('user__attendeeprofile',)
         return qs
+
+    def add_view(self, request, form_url='', extra_context=None):
+        inline_instances = self.inline_instances
+        self.inline_instances = ()
+        data = super(SpeakerAdmin, self).add_view(request, form_url='', extra_context=None)
+        self.inline_instances = inline_instances
+        return data
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
