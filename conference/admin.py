@@ -402,6 +402,13 @@ class SpeakerAdmin(MultiLingualAdminContent):
         qs = qs.select_related('user__attendeeprofile',)
         return qs
 
+    def add_view(self, request, form_url='', extra_context=None):
+        inline_instances = self.inline_instances
+        self.inline_instances = ()
+        data = super(SpeakerAdmin, self).add_view(request, form_url='', extra_context=None)
+        self.inline_instances = inline_instances
+        return data
+
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
         my_urls = patterns('',
