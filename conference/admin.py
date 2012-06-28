@@ -343,19 +343,20 @@ class MultiLingualAdminContent(admin.ModelAdmin):
                 )
             for l, _ in dsettings.LANGUAGES:
                 key =  '%s_%s' % (field_name, l)
-                if change:
-                    try:
-                        instance = contents[l]
-                    except KeyError:
+                if key in form.fields.keys():
+                    if change:
+                        try:
+                            instance = contents[l]
+                        except KeyError:
+                            instance = models.MultilingualContent()
+                    else:
                         instance = models.MultilingualContent()
-                else:
-                    instance = models.MultilingualContent()
-                if not instance.id:
-                    instance.content_object = obj
-                    instance.language = l
-                    instance.content = field_name
-                instance.body = data.get(key, '')
-                instance.save()
+                    if not instance.id:
+                        instance.content_object = obj
+                        instance.language = l
+                        instance.content = field_name
+                    instance.body = data.get(key, '')
+                    instance.save()
 
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
