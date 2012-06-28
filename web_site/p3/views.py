@@ -982,33 +982,53 @@ def live(request):
 
 @render_to_json
 def live_events(request):
-    conf, date = _live_conference()
-    eids = cmodels.Event.objects\
-        .filter(schedule__conference=conf.code, schedule__date=date)\
-        .filter(start_time__lte=datetime.datetime.now())\
-        .order_by('-start_time')\
-        .values_list('id', flat=True)
+    from django.core.cache import cache
+    data = cache.get('p3_live_events')
+    if data:
+        return data
 
-    from conference import dataaccess as cdataaccess
+    conf, date = _live_conference()
+    sid = cmodels.Schedule.objects\
+        .values('id')\
+        .get(conference=conf.code, date=date)
+
+    tt = TimeTable2.fromSchedule(sid['id'])
+    tt.removeEventsByTag('special')
+    t0 = datetime.datetime.now().time()
+
     tracks = settings.P3_LIVE_TRACKS.keys()
     events = {}
-    for e in cdataaccess.events(eids=eids):
+    for track, tevts in tt.iterOnTracks(start=('current', t0)):
+        curr = None
         try:
-            track = e['tracks'][0]
+            curr = dict(tevts[0])
+            curr['next'] = dict(tevts[1])
         except IndexError:
-            # se succede è un bug, ma questa pagina viene visualizzata durante
-            # la conferenza, non voglio che si rompa.
-            continue
+            pass
+        # Ho eliminato gli eventi special, t0 potrebbe cadere su uno di questi
+        if curr and (curr['time'] + datetime.timedelta(seconds=curr['duration']*60)).time() < t0:
+            curr = None
+
         if track not in tracks:
             continue
-        # gli eventi sono ordinati per start_time
-        if track in events:
-            continue
-        events[track] = e
+        events[track] = curr
+
+    def event_url(event):
+        if event.get('talk'):
+            return reverse('conference-talk', kwargs={'slug': event['talk']['slug']})
+        else:
+            return None
+
     output = {}
     for track, event in events.items():
+        if event is None:
+            output[track] = {
+                'id': None,
+                'embed': settings.P3_LIVE_EMBED(request, track),
+            }
+            continue
+        url = event_url(event)
         if event.get('talk'):
-            url = reverse('conference-talk', kwargs={'slug': event['talk']['slug']})
             speakers = [
                 (
                     reverse('conference-speaker', kwargs={'slug': s['slug']}),
@@ -1018,8 +1038,15 @@ def live_events(request):
                 for s in event['talk']['speakers']
             ]
         else:
-            url = None
             speakers = None
+        if event['next']:
+            next = {
+                'name': event['next']['name'],
+                'url': event_url(event['next']),
+                'time': event['next']['time'],
+            }
+        else:
+            next = None
         output[track] = {
             'id': event['id'],
             'name': event['name'],
@@ -1028,6 +1055,8 @@ def live_events(request):
             'start': event['time'],
             'end': event['time'] + datetime.timedelta(seconds=event['duration'] * 60),
             'tags': event['talk']['tags'] if event.get('talk') else [],
-            'embed': settings.P3_LIVE_EMBED(request, event),
+            'embed': settings.P3_LIVE_EMBED(request, track),
+            'next': next,
         }
+    cache.set('p3_live_events', output, 60)
     return output

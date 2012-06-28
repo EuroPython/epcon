@@ -45,6 +45,13 @@
 #live .time img {
     vertical-align: middle;
 }
+#live .next h4 {
+    margin-top: 40px;
+}
+#live .next > h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
 </style>
 {% endblock %}
 {% block MAIN_CONTENT %}
@@ -72,11 +79,28 @@
                 var meta = t.find('.metadata');
                 var video = t.find('.video');
                 var current = meta.attr('data-event');
-                if(current == evt.id) {
+
+                var eid = evt.id || 0;
+                if(current == eid) {
                     return;
                 }
                 meta.html('');
                 video.html('');
+                if(!eid) {
+                    meta
+                        .append(''
+                            + '<div class="move-along">'
+                            + ' <h1 class="move-along">Nothing to see here. Move Along</h1>'
+                            + ' <div class="speakers"><h4>Presented by:</h4></div>'
+                            + '  <img src="/static/p5/i/nothing-to-see-here.jpg" height="85">'
+                            + '  <div class="name"><a href="https://en.wikipedia.org/wiki/Frank_Drebin">Frank Drebin</a></div>'
+                            + ' </div>'
+                            + '</div>'
+                        )
+                    video.html(evt.embed || '');
+                    meta.attr('data-event', 0);
+                    return;
+                }
                 if(evt.url) {
                     var title = '<h3 class="title"><a href="' + evt.url + '">' + evt.name + '</a></h3>';
                 }
@@ -93,9 +117,9 @@
                     .append(''
                         + '<div class="time">'
                         + '<img src="/static/p5/i/icon-clock.png">'
-                        + evt.start.split(' ')[1].slice(0, -3)
+                        + ' Start: ' + evt.start.split(' ')[1].slice(0, -3)
                         + ' → '
-                        + evt.end.split(' ')[1].slice(0, -3)
+                        + ' End: ' + evt.end.split(' ')[1].slice(0, -3)
                         + '</div>'
                     )
                 if(evt.speakers) {
@@ -111,6 +135,21 @@
                     }
                     meta.append(speakers);
                 }
+                if(evt.next) {
+                    if(evt.next.url) {
+                        var title = '<h3><a href="' + evt.nexy.url + '">' + evt.next.name + '</a></h3>';
+                    }
+                    else {
+                        var title = '<h3>' + evt.next.name + '</h3>';
+                    }
+                    meta
+                        .append(''
+                            + '<div class="next">'
+                            + ' <h4>Next event - ' + evt.next.time.split(' ')[1].slice(0, -3) + '</h4>'
+                            + title
+                            + '</div>'
+                        )
+                }
                 meta.attr('data-event', evt.id);
                 if(evt.embed) {
                     video.append(evt.embed);
@@ -119,7 +158,7 @@
         });
     }
     update_events_metadata();
-    //setInterval(update_events_metadata, 5000);
+    setInterval(update_events_metadata, 5000);
 })();
 </script>
 {% endblock %}

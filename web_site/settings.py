@@ -567,10 +567,9 @@ P3_LIVE_TRACKS = {
     },
 }
 
-def P3_LIVE_EMBED(request, event):
+def P3_LIVE_EMBED(request, track):
     from django.core.cache import cache
 
-    track = event['tracks'][0]
     data = cache.get('p3_live_embed_%s' % track)
     if data is not None:
         return data
