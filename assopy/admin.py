@@ -311,7 +311,7 @@ class AuthUserAdmin(aUserAdmin):
         user = get_object_or_404(models.User, user=uid)
 
         class FormTickets(aforms.FormTickets):
-            coupon = forms.CharField(label='Coupon(s)', required=True)
+            coupon = forms.CharField(label='Coupon(s)', required=False)
             country = forms.CharField(max_length=2, required=False)
             address = forms.CharField(max_length=150, required=False)
             card_name = forms.CharField(max_length=200, required=True, initial=user.card_name or user.name())
