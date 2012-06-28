@@ -208,6 +208,13 @@ class TimeTable2(object):
                     self.events[t] = [e]
         self._analyzed = False
 
+    def removeEventsByTag(self, *tags):
+        tags = set(tags)
+        for events in self.events.values():
+            for ix, e in reversed(list(enumerate(events))):
+                if e['tags'] & tags:
+                    del events[ix]
+
     @classmethod
     def fromEvents(cls, sid, eids):
         from conference import dataaccess
@@ -282,15 +289,37 @@ class TimeTable2(object):
                                 e['intersection'] = 1
         self._analyzed = True
 
-    def iterOnTracks(self):
+    def iterOnTracks(self, start=None):
         """
         Itera sugli eventi della timetable una track per volta, restituisce un
         iter((track, [events])).
         """
         self._analyze()
-        for t in self._tracks:
+        for track in self._tracks:
             try:
-                yield t, self.events[t]
+                events = self.events[track]
+            except KeyError:
+                continue
+            if start is not None:
+                if isinstance(start, time):
+                    mode = 'next'
+                    t0 = start
+                else:
+                    mode, t0 = start
+                for ix, e in enumerate(events):
+                    t = e['time'].time()
+                    if t >= t0:
+                        if t == t0:
+                            break
+                        if mode == 'current':
+                            ix -= 1
+                            break
+                        elif mode == 'next':
+                            ix += 1
+                            break
+                events = events[ix:]
+            try:
+                yield track, events
             except KeyError:
                 continue
 
