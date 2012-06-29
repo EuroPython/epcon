@@ -842,6 +842,10 @@ def user_profile_link(request, uuid):
         if active:
             link = models.AttendeeLink(attendee1_id=uid, attendee2_id=profile)
             link.save()
+
+            from conference.signals import attendees_connected
+            attendees_connected.send(link, attendee1=uid, attendee2=profile)
+
             created = True
             linked = True
     form = AttendeeLinkDescriptionForm(initial={
