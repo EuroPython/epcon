@@ -394,6 +394,7 @@ class AttendeeLink(models.Model):
     """
     attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1')
     attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2')
+    message = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class SpeakerManager(models.Manager):
