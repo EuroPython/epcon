@@ -518,13 +518,16 @@ def all_user_tickets(context, uid=None, conference=None, status="complete", fare
 def p3_tags():
     return dataaccess.tags()
 
-@register.inclusion_tag('p3/fragments/render_profile_box.html')
-def render_profile_box(profile, conference=None):
+@fancy_tag(register, takes_context=True)
+def render_profile_box(context, profile, conference=None, user_message="auto"):
     if conference is None:
         conference = settings.CONFERENCE_CONFERENCE
     if isinstance(profile, int):
         profile = dataaccess.profile_data(profile)
-    return {
+    ctx = Context(context)
+    ctx.update({
         'profile': profile,
         'conference': conference,
-    }
+        'user_message': user_message if user_message in ('auto', 'always') else 'auto',
+    })
+    return render_to_string('p3/fragments/render_profile_box.html', ctx)

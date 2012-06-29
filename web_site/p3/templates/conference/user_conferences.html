@@ -37,7 +37,7 @@ hr.border {
         <div class="span-6 {% cycle '' 'last' %}">
             <div>
                 {% p3_profile_data p.other as profile %}
-                {% render_profile_box profile %}
+                {% render_profile_box profile user_message="always" %}
                 <hr class="border" />
                 <h3>Met on: {{ p.timestamp|date:"dS M Y" }} at {{ p.timestamp|date:"H.i" }}</h3>
                 <p class="message">{{ p.message }}</p>
