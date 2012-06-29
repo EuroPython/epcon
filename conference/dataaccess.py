@@ -631,6 +631,7 @@ def profile_data(uid, preload=None):
     return {
         'id': profile.user_id,
         'slug': profile.slug,
+        'uuid': profile.uuid,
         'first_name': profile.user.first_name,
         'last_name': profile.user.last_name,
         'name': '%s %s' % (profile.user.first_name, profile.user.last_name),
