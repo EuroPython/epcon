@@ -35,12 +35,16 @@
     <script>
         var STATIC_URL = {{ STATIC_URL|json_ }};
         var user = {
-            'authenticated': {{ request.user.is_authenticated|json_ }}
+            'authenticated': {{ user.is_authenticated|json_ }}
         }
-        {% if request.user.is_authenticated %}
+        {% if user.is_authenticated %}
+            user.name = "{{ user.first_name }} {{ user.last_name }}";
+            user.email = "{{ user.email }}";
             {% all_user_tickets fare_type="all" as tmp %}
             user.tickets = {{ tmp|json_ }};
         {% else %}
+            user.name = "Anonymous";
+            user.email = "";
             user.tickets = [];
         {% endif %}
         {% p3_tags as ptags %}
