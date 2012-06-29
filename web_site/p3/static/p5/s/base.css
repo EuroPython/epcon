@@ -1302,16 +1302,25 @@ section.teaser p {
 }
 
 hr.stars {
-
     visibility: visible;
     background: transparent url(../i/hr.png) center center repeat-x;
 
     height: 40px;
     margin: 0 0 40px 0;
-    
+
     /* IE 6-7 */
     *margin: -7px 0 40px 0; 
-    
+}
+
+hr.sep {
+    visibility: visible;
+    background: transparent url(../i/sep.png) center center repeat-x;
+
+    height: 30px;
+    margin: 0 0 30px 0;
+
+    /* IE 6-7 */
+    *margin: -7px 0 30px 0;
 }
 
 .home-notice a {
