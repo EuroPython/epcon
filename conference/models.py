@@ -388,6 +388,12 @@ class Presence(models.Model):
     class Meta:
         unique_together = (('profile', 'conference'),)
 
+class AttendeeLinkManager(models.Manager):
+    def getLink(self, uid1, uid2):
+        return AttendeeLink.objects.get(
+                models.Q(attendee1=uid1, attendee2=uid2) |
+                models.Q(attendee1=uid2, attendee2=uid1))
+
 class AttendeeLink(models.Model):
     """
     Collegamento tra due partecipanti
@@ -396,6 +402,8 @@ class AttendeeLink(models.Model):
     attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2')
     message = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    objects = AttendeeLinkManager()
 
 class SpeakerManager(models.Manager):
     def byConference(self, conf, only_accepted=True, talk_type=None):
