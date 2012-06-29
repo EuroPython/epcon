@@ -290,6 +290,7 @@ function setup_async_form(ctx) {
             else if(form.hasClass('autorefresh')) {
                 autorefresh(form);
             }
+            form.trigger('async-submit', response);
         },
         error: function() {
             //
