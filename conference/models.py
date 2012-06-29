@@ -389,6 +389,11 @@ class Presence(models.Model):
         unique_together = (('profile', 'conference'),)
 
 class AttendeeLinkManager(models.Manager):
+    def findLinks(self, uid):
+        return AttendeeLink.objects.filter(
+                models.Q(attendee1=uid) |
+                models.Q(attendee2=uid))
+
     def getLink(self, uid1, uid2):
         return AttendeeLink.objects.get(
                 models.Q(attendee1=uid1, attendee2=uid2) |

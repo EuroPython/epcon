@@ -874,3 +874,21 @@ def user_profile_link_message(request, uuid):
             link.message = form.cleaned_data['message']
             link.save()
     return {}
+
+@login_required
+def user_conferences(request):
+    uid = request.user.id
+    conferences = models.Conference.objects.filter(
+        code__in=models.Presence.objects.filter(profile=uid).values('conference'))
+    people = []
+    for p in models.AttendeeLink.objects.findLinks(uid).order_by('timestamp'):
+        if p.attendee1_id == uid:
+            p.other = p.attendee2_id
+        else:
+            p.other = p.attendee1_id
+        people.append(p)
+    ctx = {
+        'conferences': conferences,
+        'people': people,
+    }
+    return render(request, 'conference/user_conferences.html', ctx)
