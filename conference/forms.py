@@ -486,4 +486,4 @@ sent to:
         )
 
 class AttendeeLinkDescriptionForm(forms.Form):
-    message = forms.CharField(widget=forms.Textarea)
+    message = forms.CharField(label='A note to yourself (when you met this persone, why you want to stay in touch)', widget=forms.Textarea)
