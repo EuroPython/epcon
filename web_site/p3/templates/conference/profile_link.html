@@ -1,6 +1,71 @@
 {% extends "p3/base.html" %}
+{% load p3 assopy_tags %}
+
+{% block EXTRA_HEAD %}
+<style>
+    #message-form  {
+        width: 400px;
+        margin: 0 auto;
+    }
+    #message-form span.required {
+        display: none;
+    }
+    #message-form textarea {
+        height: 60px;
+    }
+    #message-form .border {
+        text-align: left;
+    }
+    #message-form .border .feedback {
+        margin: 0 10px;
+        font-size: 18px;
+        font-variant: small-caps;
+        padding: 8px;
+    }
+</style>
+{% endblock %}
+
 {% block MAIN_CONTENT %}
-{% if user.is_anonymous %}
-Hi login to proceed: <a href="/accounts/login/?next={% url conference-profile-link uuid=profile.uuid %}">Login</a>
+{% p3_profile_data user.id as p1 %}
+{% p3_profile_data profile2 as p2 %}
+{% if linked %}
+    {% if created %}
+    <h1>{{ p1.name }}, {{ p2.name }} you are now connected</h1>
+    {% else %}
+    <h1>{{ p1.name }}, {{ p2.name }} you was already connected</h1>
+    {% endif %}
+{% endif %}
+<div class="clearfix">
+    <div class="span-6">
+        {% render_profile_box p1 %}
+    </div>
+    <div class="span-6 last">
+        {% render_profile_box p2 %}
+    </div>
+</div>
+{% if linked %}
+<hr class="stars" />
+<div class="cms">
+    <form id="message-form" class="async" action="{% url conference-profile-link-message uuid=p2.uuid %}" method="POST">{% csrf_token %}
+        <fieldset>
+            {{ form.message|field }}
+        </fieldset>
+        <fieldset class="border">
+            <button name="" value="" type="submit">Save</button>
+        </fieldset>
+    </form>
+    <script>
+        (function() {
+            var form = $('#message-form')
+            form.bind('async-submit', function(evt, response) {
+                $('<span class="feedback">done!</span>')
+                    .insertAfter($('button', form))
+                    .fadeOut(10000, function() {
+                        $(this).remove();
+                    });
+            })
+        })();
+    </script>
+</div>
 {% endif %}
 {% endblock %}
