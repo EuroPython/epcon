@@ -9,7 +9,7 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
-from conference.forms import SpeakerForm, TalkForm
+from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
 
 from django import forms
 from django import http
@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db import transaction, IntegrityError
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404, render
 from django.template import RequestContext
@@ -821,42 +821,56 @@ def covers(request, conference):
     }
     return render(request, 'conference/covers.html', ctx)
 
+@login_required
 def user_profile_link(request, uuid):
     """
-    Questa view permette di collegare tra loro due partecipanti.
-    Il workflow implementato è il seguente:
-
-    * se l'utente non è loggato la pagina lo invita a loggarsi; dopo il login
-     l'utente viene rediretto nuovamente su questa vista.
-
-    * se l'utente è loggato e il profilo associato è il suo viene rediretto
-     sulla propria pagina di profilo (ma solo se non è un admin).
-
-    * se l'utente è loggato e il profilo non è il suo viene data la possibilità
-     di "collegare" i due profili;
-     collegare significa tenere traccia delle persone che si sono incontrate
-     durante la conferenza.
-
-    * se l'utente è un admin vengono mostrati i dettagli sull'utente associato
-     al profilo.
-
-    In ogni caso se l'utente è loggato e questa view viene richiamata durante i
-    giorni della conferenza viene registrato un recordo di presenza nel
-    database.
     """
-    try:
-        profile = models.AttendeeProfile.objects\
-            .select_related('user')\
-            .get(uuid=uuid)
-    except models.AttendeeProfile.DoesNotExist:
-        raise http.Http404()
-
-    if request.user == profile.user:
-        conf = models.Conference.objects.current()
-        if conf.conference():
-            p, _ = models.Presence.objects.get_or_create(profile=profile, conference=conf.code)
+    profile = get_object_or_404(models.AttendeeProfile, uuid=uuid).user_id
+    conf = models.Conference.objects.current()
+    active = conf.conference() or 1
+    if request.user.id == profile:
+        if active:
+            p, _ = models.Presence.objects.get_or_create(profile_id=profile, conference=conf.code)
         return redirect('conference-myself-profile')
+
+    uid = request.user.id
+    created = linked = False
+    try:
+        link = models.AttendeeLink.objects.getLink(uid, profile)
+        linked = True
+    except models.AttendeeLink.DoesNotExist:
+        if active:
+            link = models.AttendeeLink(attendee1_id=uid, attendee2_id=profile)
+            link.save()
+            created = True
+            linked = True
+    form = AttendeeLinkDescriptionForm(initial={
+        'message': link.message,
+    })
     ctx = {
-        'profile': profile,
+        'profile2': profile,
+        'created': created,
+        'linked': linked,
+        'form': form,
     }
     return render(request, 'conference/profile_link.html', ctx)
+
+@login_required
+@json
+def user_profile_link_message(request, uuid):
+    profile = get_object_or_404(models.AttendeeProfile, uuid=uuid).user_id
+    uid = request.user.id
+    if uid == profile:
+        return {}
+
+    try:
+        link = models.AttendeeLink.objects.getLink(uid, profile)
+    except models.AttendeeLink.DoesNotExist:
+        raise http.Http404()
+
+    if request.method == 'POST':
+        form = AttendeeLinkDescriptionForm(data=request.POST)
+        if form.is_valid():
+            link.message = form.cleaned_data['message']
+            link.save()
+    return {}

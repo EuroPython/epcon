@@ -484,3 +484,6 @@ sent to:
             dsettings.DEFAULT_FROM_EMAIL,
             recipient_list=[feedback_address],
         )
+
+class AttendeeLinkDescriptionForm(forms.Form):
+    message = forms.CharField(widget=forms.Textarea)
