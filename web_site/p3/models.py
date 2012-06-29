@@ -356,15 +356,20 @@ class P3Profile(models.Model):
         return dsettings.STATIC_URL + 'p5/i/headshot-default.jpg'
 
     def send_user_message(self, from_, subject, message):
+        from conference.models import Conference, AttendeeLink
         if not self.spam_user_message:
-            raise ValueError("This user does not want to receive a message")
+            # esiste un link tra i due utenti, il messaggio è consentito
+            # nonostante spam_user_message
+            try:
+                AttendeeLink.objects.getLink(from_.id, self.profile_id)
+            except AttendeeLink.DoesNotExist:
+                raise ValueError("This user does not want to receive a message")
         if not from_.email:
             raise ValueError("Sender without an email address")
         if not self.profile.user.email:
             raise ValueError("Recipient without an email address")
 
         from p3.dataaccess import all_user_tickets
-        from conference.models import Conference
         conf = Conference.objects.current()
 
         tickets = [
