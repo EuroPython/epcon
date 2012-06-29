@@ -517,3 +517,14 @@ def all_user_tickets(context, uid=None, conference=None, status="complete", fare
 @fancy_tag(register)
 def p3_tags():
     return dataaccess.tags()
+
+@register.inclusion_tag('p3/fragments/render_profile_box.html')
+def render_profile_box(profile, conference=None):
+    if conference is None:
+        conference = settings.CONFERENCE_CONFERENCE
+    if isinstance(profile, int):
+        profile = dataaccess.profile_data(profile)
+    return {
+        'profile': profile,
+        'conference': conference,
+    }

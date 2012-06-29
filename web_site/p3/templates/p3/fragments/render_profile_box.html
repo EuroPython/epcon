@@ -1,0 +1,67 @@
+{% load conference p3 %}
+<div id="{{ profile.slug }}" class="person-card">
+    <div class="person-card-picture">
+        <a href="{% url conference-profile slug=profile.slug %}"><img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="76" /></a>
+    </div>
+    <div class="person-card-profile">
+        <h2>{{ profile.name }}</h2>
+        <div class="tagline"><i>{{ profile.tagline }}</i></div>
+        <dl>
+            {% if profile.personal_homepage %}
+            <dd>
+                <a href="{{ profile.personal_homepage }}">{{ profile.personal_homepage|beautify_url }}</a>
+            </dd>
+            {% endif %}
+
+            {% if profile.twitter %}
+            <dd class="twitter">
+                <a href="https://twitter.com/intent/user?screen_name={{ profile.twitter }}">
+                    <img src="https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png" alt=""/>
+                    Follow @{{ profile.twitter }}
+                </a>
+            </dd>
+            {% endif %}
+
+            {% if profile.interests %}
+            <dd class="tags">
+                {% for t in profile.interests|eval_:"list(x)[:5]" %}<span class="tag">{{ t }}</span>{% endfor %}
+                {% if profile.interests|length > 5 %} and <a href="{% url conference-profile slug=profile.slug %}">{{ profile.interests|length|eval_:"x-5" }} more</a>{% endif %}
+            </dd>
+            {% endif %}
+        </dl>
+    </div>
+    <div class="person-card-bio cms">
+        {% if profile.bio %}
+            {% with profile.bio|markdown2:"smarty-pants,code-color" as bio %}
+            {% with bio|truncatewords_html:50 as shorted %}
+            <div class="bio">
+                {{ shorted }}
+            {% if shorted|length < bio|length %}
+                <a class="see-more" href="#">See more</a>
+            {% endif %}
+            </div>
+            {% endwith %}
+            {% endwith %}
+        {% endif %}
+    </div>
+    {% with profile.talks.accepted|attrib_:conference as tids %}
+    {% if tids %}
+    {% talks_data tids as talks %}
+    <div class="speaker">speaker</div>
+    <div class="person-card-talks cms">
+        <h4>Talks</h4>
+        <ul>
+            {% for t in talks %}
+            <li><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% if profile.spam_user_message %}
+    <div class="user-message">
+        <img src="{{ STATIC_URL }}p5/i/icon-mail.png" width="32" />
+        <div> </div>
+    </div>
+    {% endif %}
+</div>
