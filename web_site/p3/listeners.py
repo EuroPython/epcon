@@ -4,8 +4,10 @@ import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.listeners import fare_price, fare_tickets
+from conference.signals import attendees_connected
 from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save
 from email_template import utils
@@ -170,3 +172,16 @@ def _user_tickets(u):
         })
     return data
 cd.user_tickets = _user_tickets
+
+def _on_attendees_connected(sender, **kw):
+    scanner = User.objects.get(id=kw['attendee1'])
+    scanned = User.objects.get(id=kw['attendee2'])
+    utils.email(
+        'user-connected',
+        ctx={
+            'scanner': scanner,
+            'scanned': scanned
+        },
+        to=[scanned.email]
+    ).send()
+attendees_connected.connect(_on_attendees_connected)
