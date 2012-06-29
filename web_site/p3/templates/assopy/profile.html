@@ -122,6 +122,7 @@
             {% endwith %}
         </div>
     </div>
+    <script>setup_auto_tabs(document);</script>
 </div>
 <hr />
 <div class="clearfix">
@@ -129,10 +130,10 @@
     <h2>Other personal pages</h2>
     <hr/>
 
-    <div class="span-4">
+    <div class="span-6">
         <section>
             <div class="button">
-                <a href="{% url conference-profile slug=profile.slug %}"> Your public profile &rarr; </a>
+                <a href="{% url conference-profile slug=profile.slug %}">Your public profile &rarr;</a>
             </div>
             <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Partecipate in
                   "<a href="/find-out-whos-coming">Find out who's coming</a>": let
@@ -141,17 +142,16 @@
         </section>
     </div>
 
-
-    <div class="span-4 last">
+    <div class="span-6 last">
         {% with request.user.assopy_user.tickets as tickets %}
          {% if tickets|length %}
              <section>
                 <div class="button">
-                   <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr; </a>
+                   <a href="{% url conference-profile-conferences %}">Conference & Contacts &rarr;</a>
                 </div>
 
                 <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">
-                   Fill in and review all your tickets.
+                   See the conferences you have attended and who you have met.
                 </div>
               </section>
          {% endif %}
@@ -160,24 +160,29 @@
 
     <hr/>
 
- {% comment %}
-            <div class="profile-user-utility-links">
-                <ul>
-                    {% with request.user.assopy_user.tickets as tickets %}
-                        {% if tickets|length %}
-                            <li class="tickets">
-                                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %}</a> ({{tickets|length}})
-                            </li>
-                        {% endif %}
-                    {% endwith %}
-
-                    <li class="schedule">
-                        <a href="{% url p3-my-schedule %}">Your personal schedule</a>
-                    </li>
-                </ul>
+    {% with request.user.assopy_user.tickets as tickets %}
+        {% if tickets|length %}
+    <div class="span-6">
+        <section>
+            <div class="button">
+                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr;</a>
             </div>
- {% endcomment %}
 
+            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">
+                Fill in and review all your tickets.
+        </div>
+        </section>
+    </div>
+
+    <div class="span-6 last">
+        <section>
+            <div class="button">
+                <a href="{% url p3-my-schedule %}">Your personal schedule &rarr;</a>
+            </div>
+        </section>
+    </div>
+        {% endif %}
+    {% endwith %}
 
 </div>
 {% endblock %}
