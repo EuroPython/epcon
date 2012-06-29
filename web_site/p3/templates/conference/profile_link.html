@@ -37,14 +37,14 @@
 {% endif %}
 <div class="clearfix">
     <div class="span-6">
-        {% render_profile_box p1 %}
+        {% render_profile_box p1 user_message="none" %}
     </div>
     <div class="span-6 last">
-        {% render_profile_box p2 %}
+        {% render_profile_box p2 user_message="none" %}
     </div>
 </div>
 {% if linked %}
-<hr class="stars" />
+<hr class="sep" />
 <div class="cms">
     <form id="message-form" class="async" action="{% url conference-profile-link-message uuid=p2.uuid %}" method="POST">{% csrf_token %}
         <fieldset>
@@ -68,4 +68,10 @@
     </script>
 </div>
 {% endif %}
+<hr class="stars" />
+<div class="clearfix">
+    <div class="button" style="text-align: center;">
+        <a href="{% url conference-profile-conferences %}">See who you have met!</a>
+    </div>
+</div>
 {% endblock %}
