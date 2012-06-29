@@ -528,6 +528,6 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
     ctx.update({
         'profile': profile,
         'conference': conference,
-        'user_message': user_message if user_message in ('auto', 'always') else 'auto',
+        'user_message': user_message if user_message in ('auto', 'always', 'none') else 'auto',
     })
     return render_to_string('p3/fragments/render_profile_box.html', ctx)

@@ -58,10 +58,12 @@
     </div>
     {% endif %}
     {% endwith %}
+    {% if user_message != "none" %}
     {% if profile.spam_user_message or user_message == "always" %}
     <div class="user-message">
         <img src="{{ STATIC_URL }}p5/i/icon-mail.png" width="32" />
         <div> </div>
     </div>
+    {% endif %}
     {% endif %}
 </div>
