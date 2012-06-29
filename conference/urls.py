@@ -5,7 +5,7 @@ urlpatterns = patterns('conference.views',
     url(r'^p/(?P<slug>[\w-]+)/?$', 'user_profile', name='conference-profile'),
     url(r'^u/(?P<uuid>[\w]{6})/?$', 'user_profile_link', name='conference-profile-link'),
     url(r'^u/(?P<uuid>[\w]{6})/message?$', 'user_profile_link_message', name='conference-profile-link-message'),
-    url(r'^conferences/$', 'user_conferences', name='conference-profile-conferences'),
+    url(r'^my_conferences/$', 'user_conferences', name='conference-profile-conferences'),
 
     url(r'^myself$', 'myself_profile', name='conference-myself-profile'),
 
