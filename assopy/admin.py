@@ -7,6 +7,7 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from assopy import models
 from assopy.clients import genro
@@ -125,11 +126,34 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
+        f = self.admin_site.admin_view
         my_urls = patterns('',
-            url(r'^invoices/$', self.admin_site.admin_view(self.edit_invoices), name='assopy-edit-invoices'),
-            url(r'^stats/$', self.admin_site.admin_view(self.stats), name='assopy-order-stats'),
+            url(r'^invoices/$', f(self.edit_invoices), name='assopy-edit-invoices'),
+            url(r'^stats/$', f(self.stats), name='assopy-order-stats'),
+            url(r'^vouchers/$', f(self.vouchers), name='assopy-order-vouchers'),
+            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', f(self.vouchers_fare), name='assopy-order-vouchers-fare'),
         )
         return my_urls + urls
+
+    def vouchers(self, request):
+        from conference.models import Fare
+        ctx = {
+            'fares': Fare.objects\
+                .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
+        }
+        return render_to_response(
+            'admin/assopy/order/vouchers.html', ctx, context_instance=template.RequestContext(request))
+
+    def vouchers_fare(self, request, conference, fare):
+        items = models.OrderItem.objects\
+            .filter(ticket__fare__conference=conference, ticket__fare__code=fare)\
+            .filter(Q(order___complete=True)|Q(order__method='bank'))\
+            .select_related('ticket__fare', 'order__user__user')
+        ctx = {
+            'items': items,
+        }
+        return render_to_response(
+            'admin/assopy/order/vouchers_fare.html', ctx, context_instance=template.RequestContext(request))
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset if not o.complete() ]

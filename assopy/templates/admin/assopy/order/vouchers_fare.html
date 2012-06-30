@@ -1,0 +1,50 @@
+{% load assopy_tags %}
+<html>
+<head>
+    <style type="text/css">
+    .voucher {
+        margin: 50px 0;
+        border-top: 2px dashed black;
+        border-bottom: 2px dashed black;
+    }
+    table {
+        width: 100%;
+        margin: 40px 0;
+        border-collapse: collapse;
+        border-top: 5px solid #C4B9A5;
+    }
+    h1 {
+        margin: 0 0 30px 0;
+        font: 36px/40px "League Gothic","Arial Narrow",sans-serif;
+    }
+    h2 {
+        text-transform: uppercase;
+        font: 24px/30px "League Gothic","Arial Narrow",sans-serif;
+    }
+    h3 {
+        font: 21px/30px "League Gothic","Arial Narrow",sans-serif;
+    }
+    p {
+        font: 13px/20px Verdana,sans-serif;
+    }
+    th, td {
+        text-align: left;
+        border-bottom: 1px solid #C4B9A5;
+        padding: 5px 0;
+    }
+    th {
+        font-weight: bold;
+    }
+    @media print {
+        .voucher {
+            page-break-inside: avoid;
+        }
+    }
+    </style>
+</head>
+<body>
+{% for item in items %}
+    {% render_voucher item %}
+{% endfor %}
+</body>
+</html>

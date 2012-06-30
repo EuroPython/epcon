@@ -281,3 +281,8 @@ def add_page_number_to_query(context, page, get=None):
     get['page'] = page
     return urllib.urlencode(get)
 
+@register.inclusion_tag('assopy/render_voucher.html', takes_context=True)
+def render_voucher(context, item):
+    return {
+        'item': item,
+    }
