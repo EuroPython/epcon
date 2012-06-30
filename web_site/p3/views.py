@@ -980,6 +980,33 @@ def live(request):
         'tracks': tracks,
     }
 
+@render_to('p3/live_track.html')
+def live_track(request, track):
+    return {}
+
+@render_to_json
+def live_track_events(request, track):
+    conf, date = _live_conference()
+
+    tid = cmodels.Track.objects\
+        .get(track=track, schedule__date=date).id
+    tt = TimeTable2.fromTracks([tid])
+    output = []
+    for _, events in tt.iterOnTracks():
+        for e in events:
+            if e.get('talk'):
+                speakers = ', '.join([ x['name'] for x in e['talk']['speakers']])
+            else:
+                speakers = None
+            output.append({
+                'name': e['name'],
+                'time': e['time'],
+                'duration': e['duration'],
+                'tags': e['tags'],
+                'speakers': speakers,
+            })
+    return output
+
 @render_to_json
 def live_events(request):
     from django.core.cache import cache

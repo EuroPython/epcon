@@ -34,6 +34,8 @@ urlpatterns = patterns('p3.views',
 
     url(r'^live/$', 'live', name='p3-live'),
     url(r'^live/events$', 'live_events', name='p3-live-events'),
+    url(r'^live/(?P<track>[\w-]+)/$', 'live_track', name='p3-live-track'),
+    url(r'^live/(?P<track>[\w-]+)/events$', 'live_track_events', name='p3-live-track-events'),
 )
 
 urlpatterns += patterns('p3.views',

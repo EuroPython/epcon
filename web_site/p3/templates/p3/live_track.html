@@ -1,0 +1,115 @@
+<html>
+<head>
+    <style>
+    @font-face {
+        font-family: 'League Gothic';
+        src: url('{{ STATIC_URL }}p5/f/League_Gothic.eot');
+        src: url('{{ STATIC_URL }}p5/f/League_Gothic.eot?iefix') format('eot'),
+            url('{{ STATIC_URL }}p5/f/League_Gothic.woff') format('woff'),
+            url('{{ STATIC_URL }}p5/f/League_Gothic.ttf') format('truetype'),
+            url('{{ STATIC_URL }}p5/f/League_Gothic.svg#webfont1Lb5Pdit') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+    body {
+        background: #fcfad9 url({{ STATIC_URL }}p5/i/body.png) top left repeat fixed;
+        color: #301d1d;
+    }
+    #countdown {
+        font: normal 600px/600px "League Gothic", Verdana, sans-serif;
+        text-align: center;
+    }
+    #next {
+        font: normal 40px/40px "League Gothic", Verdana, sans-serif;
+    }
+    #now {
+        text-align: center;
+        font: normal 80px/80px "League Gothic", Verdana, sans-serif;
+    }
+    </style>
+    <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
+</head>
+<body>
+    <div id="now"></div>
+    <div id="countdown">--</div>
+    <div id="next"></div>
+</body>
+<script>
+    var events = null;
+    function load() {
+        $.getJSON('./events', function(data, textStatus, xhr) {
+            var parsed = []
+            for(var ix=0, ex=data.length; ix<ex; ix++) {
+                var e = data[ix];
+                var _ = e['time'].split(' ');
+                var date = _[0].split('/');
+                var time = _[1].split(':');
+                var d = new Date(date[2], date[1], date[0], time[0], time[1], time[2]);
+                e['time'] = d;
+                parsed.push(e)
+            }
+            events = parsed;
+        });
+    }
+    load();
+    setInterval(load, 60 * 1000);
+    function update() {
+        if(!events) {
+            return;
+        }
+        var now = new Date();
+        var evt = null;
+        var next = null;
+        for(var ix=0, ex=events.length; ix<ex; ix++) {
+            var e = events[ix];
+            if(e['time'] > now) {
+                if(ix>0) {
+                    evt = events[ix-1];
+                }
+                next = events[ix];
+                break;
+            }
+        }
+        var h = {
+            'now': $('#now'),
+            'countdown': $('#countdown'),
+            'next': $('#next')
+        }
+        if(!evt) {
+            h.now.html('');
+            h.countdown.html('--');
+            h.next.html('');
+        }
+        else {
+            h.now.html(evt['name']);
+            if(next) {
+                var msg = 'Next: ' + next['name'];
+                if(next['speakers'])
+                    msg += ' by ' + next['speakers'];
+                h.next.html(msg);
+            }
+            else {
+                h.next.html('');
+            }
+
+            var special = false;
+            for(var ix=0, ex=evt['tags'].length; ix<ex; ix++) {
+                if(evt['tags'][ix] == 'special') {
+                    special = true;
+                    break;
+                }
+            }
+            var duration = evt['duration'];
+            if(!special)
+                duration -= 5;
+
+            var end = new Date(evt['time']);
+            end.setMinutes(end.getMinutes() + duration);
+
+            var countdown = (end - now) / 1000 / 60;
+            h.countdown.html('-' + countdown + "'");
+        }
+    }
+    setInterval(update, 5 * 1000);
+</script>
+</html>
