@@ -176,6 +176,11 @@ cd.user_tickets = _user_tickets
 def _on_attendees_connected(sender, **kw):
     scanner = User.objects.get(id=kw['attendee1'])
     scanned = User.objects.get(id=kw['attendee2'])
+    log.info(
+        'User link: "%s %s" (%s) -> "%s %s" (%s)',
+        scanner.first_name, scanner.last_name, scanner.id,
+        scanned.first_name, scanned.last_name, scanned.id,
+    )
     utils.email(
         'user-connected',
         ctx={
