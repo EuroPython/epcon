@@ -1,6 +1,7 @@
 {% extends "p3/base.html" %}
 {% load conference p3 %}
 {% block EXTRA_HEAD %}
+<script type="text/javascript" src="{{ STATIC_URL }}p5/flowplayer/flowplayer-3.2.11.min.js"></script>
 <style>
 #live h1 {
     text-align: center;
@@ -38,6 +39,7 @@
 }
 #live .video {
     clear: both;
+    height: 380px;
 }
 #live .time {
     font-weight: bold;
@@ -53,17 +55,17 @@
     font-size: 18px;
 }
 </style>
-{% endblock %}
-{% block MAIN_CONTENT %}
+    {% endblock %}
+    {% block MAIN_CONTENT %}
 <div id="live" class="cms">
     <h1>EuroPython 2012 - Now Live!</h1>
     {% for t in tracks %}
     <div class="track" id="{{ t.track }}">
         <h2>On Track "{{ t.title|safe }}"</h2>
-        <div class="span-6">
+        <div class="span-4">
             <div class="metadata"></div>
         </div>
-        <div class="span-6 last">
+        <div class="span-8 last">
             <div class="video"></div>
         </div>
     </div>
@@ -137,7 +139,7 @@
                 }
                 if(evt.next) {
                     if(evt.next.url) {
-                        var title = '<h3><a href="' + evt.nexy.url + '">' + evt.next.name + '</a></h3>';
+                        var title = '<h3><a href="' + evt.next.url + '">' + evt.next.name + '</a></h3>';
                     }
                     else {
                         var title = '<h3>' + evt.next.name + '</h3>';

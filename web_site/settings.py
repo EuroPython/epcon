@@ -526,43 +526,43 @@ P3_LIVE_TRACKS = {
         'stream': {
             #'external': 'https://www.youtube.com/watch?v=MpOzYZIdmqo',
             'external': 'https://www.youtube.com/watch?v=dZaz1AAsTxk',
-            'internal': 'http://moravia.trilan/live/spaghetti',
+            'internal': 'live/spaghetti',
         }
     },
     'track2': {
         'stream': {
             'external': 'https://www.youtube.com/watch?v=kT-Qgno3li8',
-            'internal': 'http://moravia.trilan/live/lasagne',
+            'internal': 'live/lasagne',
         }
     },
     'track3': {
         'stream': {
             'external': 'https://www.youtube.com/watch?v=h7iJGt66gSE',
-            'internal': 'http://moravia.trilan/live/ravioli',
+            'internal': 'live/ravioli',
         }
     },
     'track4': {
         'stream': {
             'external': 'https://www.youtube.com/watch?v=4jPvrK7bPBo',
-            'internal': 'http://moravia.trilan/live/tagliatelle',
+            'internal': 'live/tagliatelle',
         }
     },
     'track-ita': {
         'stream': {
             'external': 'https://www.youtube.com/watch?v=-aTjP9_di4E',
-            'internal': 'http://moravia.trilan/live/big-mac',
+            'internal': 'live/big_mac',
         }
     },
     'training1': {
         'stream': {
             'external': 'https://www.youtube.com/watch?v=iK8WSdZi3Hk',
-            'internal': 'http://moravia.trilan/live/pizza-margherita',
+            'internal': 'live/pizza_margherita',
         }
     },
     'training2': {
         'stream': {
             'external': 'https://www.youtube.com/watch?v=a8SrynF6ogc',
-            'internal': 'http://moravia.trilan/live/pizza-napoli',
+            'internal': 'live/pizza_napoli',
         }
     },
 }
@@ -570,26 +570,81 @@ P3_LIVE_TRACKS = {
 def P3_LIVE_EMBED(request, track):
     from django.core.cache import cache
 
-    data = cache.get('p3_live_embed_%s' % track)
-    if data is not None:
-        return data
+    if request.META['REMOTE_ADDR'].startswith('2.228.78.'):
+        try:
+            url = 'live.ep/' + P3_LIVE_TRACKS[track]['stream']['internal']
+        except KeyError:
+            return None
+        data = {
+            'track': track,
+            'stream': url.rsplit('/', 1)[1],
+            'url': url.rsplit('/', 1)[0],
+        }
+        html = """
+        <div>
+            <div class="button" style="float: left; margin-right: 20px;">
+                <h5><a href="rtsp://%(url)s">RTSP</a></h5>
+                For almost all<br/>Linux, Windows, Android
+            </div>
+            <div class="button" style="float: left; margin-right: 20px;">
+                <h5><a href="http://live.ep:1935/live/%(stream)s/playlist.m3u8">HLS&#xF8FF;</a></h5>
+                Apple world (mainly)
+            </div>
+            <div class="button" style="float: left; margin-right: 20px;">
+                <h5><a href="#" onclick="start_%(stream)s(); return false;">Flash</a></h5>
+                Old good school
+            </div>
+            <div id="stream-%(track)s" style="clear: both();width:530px;height:298px;margin:0 auto;text-align:center"> </div>
+            <script>
+                function start_%(stream)s() {
+                    $f("stream-%(track)s", "/static/p5/flowplayer/flowplayer-3.2.12.swf", {
 
-    try:
-        yurl = P3_LIVE_TRACKS[track]['stream']['external']
-    except KeyError:
-        return None
+                        clip: {
+                            autoPlay: false,
+                            url: 'mp4:%(stream)s',
+                            scaling: 'fit',
+                            // configure clip to use hddn as our provider, refering to our rtmp plugin
+                            provider: 'hddn'
+                        },
 
-    import httplib2, json
-    http = httplib2.Http()
-    service = 'https://www.youtube.com/oembed'
-    url = service + '?url=' + yurl + '&format=json&scheme=https'
-    try:
-        response, content = http.request(url)
-        data = json.loads(content)
-    except:
-        return None
-    cache.set('p3_live_embed_%s' % track, data['html'], 3600)
-    return data['html']
+                        // streaming plugins are configured under the plugins node
+                        plugins: {
+
+                            // here is our rtmp plugin configuration
+                            hddn: {
+                                url: "/static/p5/flowplayer/flowplayer.rtmp-3.2.10.swf",
+
+                                // netConnectionUrl defines where the streams are found
+                                netConnectionUrl: 'rtmp://%(url)s'
+                            }
+                        }
+                    });
+                }
+            </script>
+        </div>
+        """ % data
+        return html
+    else:
+        data = cache.get('p3_live_embed_%s' % track)
+        if data is not None:
+            return data
+
+        try:
+            yurl = P3_LIVE_TRACKS[track]['stream']['external']
+        except KeyError:
+            return None
+
+        import httplib2, json
+        http = httplib2.Http()
+        service = 'https://www.youtube.com/oembed'
+        url = service + '?url=' + yurl + '&format=json&scheme=https'
+        try:
+            response, content = http.request(url)
+            data = json.loads(content)
+        except:
+            return None
+        cache.set('p3_live_embed_%s' % track, data['html'], 3600)
+        return data['html']
 
 from settings_locale import *
 
