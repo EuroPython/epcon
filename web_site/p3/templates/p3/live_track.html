@@ -95,17 +95,6 @@
             h.next.html('');
         }
         else {
-            h.now.html(evt['name']);
-            if(next) {
-                var msg = 'Next: ' + next['name'];
-                if(next['speakers'])
-                    msg += ' by ' + next['speakers'];
-                h.next.html(msg);
-            }
-            else {
-                h.next.html('');
-            }
-
             var special = false;
             for(var ix=0, ex=evt['tags'].length; ix<ex; ix++) {
                 if(evt['tags'][ix] == 'special') {
@@ -113,14 +102,70 @@
                     break;
                 }
             }
-            var duration = evt['duration'];
-            if(!special)
-                duration -= 5;
 
-            var end = new Date(evt['time']);
-            end.setMinutes(end.getMinutes() + duration);
+            /*
+             * gli special events comprendono pranzi e coffee break;
+             * tutti gli altri vengono suddivisi in tre sezioni:
+             *  - talk
+             *  - sessione di Q&A
+             *  - cambio sala
+             */
 
-            var countdown = (end - now) / 1000 / 60;
+            var elasped = (now - evt['time']) / (60 * 1000 );
+            var duration = 0;
+
+            var data = {
+                'name': evt['name'],
+                'next': {
+                    'name': next['name'],
+                    'speakers': next['speakers'],
+                }
+            };
+
+            if(!special) {
+                // la durata della sessione di Q&A dipende dalla durata del talk:
+                var qa_duration_map = {
+                    90: 10
+                }
+                var durations = {
+                    'qa': qa_duration_map[evt['duration']] || 5,
+                    'change_room': 5,
+                }
+                durations['talk'] = evt['duration'] - durations['qa'] - durations['change_room'];
+
+                if(elasped < durations['talk']) {
+                    data['next']['name'] = 'Q&A session (' + durations['qa'] + ' min)';
+                    data['next']['speakers'] = null;
+                    duration = durations['talk'];
+                }
+                else if(elasped < durations['talk'] + durations['qa']) {
+                    data['name'] = 'Q&A session';
+                    data['next']['name'] = 'Change room';
+                    data['next']['speakers'] = null;
+                    duration = durations['talk'] + durations['qa'];
+                }
+                else {
+                    data['name'] = 'Change room';
+                    duration = durations['talk'] + durations['qa'] + durations['change_room'];
+                }
+            }
+            else {
+                duration = evt['duration'];
+            }
+
+            var countdown = duration - elasped;
+
+            h.now.html(data['name']);
+            if(data['next']) {
+                var msg = 'Next: ' + data['next']['name'];
+                if(data['next']['speakers'])
+                    msg += ' by ' + data['next']['speakers'];
+                h.next.html(msg);
+            }
+            else {
+                h.next.html('');
+            }
+
             h.countdown.html('-' + countdown + "'");
         }
     }
