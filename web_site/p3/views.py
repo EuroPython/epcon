@@ -1051,7 +1051,7 @@ def live_events(request):
         if event is None:
             output[track] = {
                 'id': None,
-                'embed': settings.P3_LIVE_EMBED(request, track),
+                'embed': settings.P3_LIVE_EMBED(request, track=track),
             }
             continue
         url = event_url(event)
@@ -1082,7 +1082,7 @@ def live_events(request):
             'start': event['time'],
             'end': event['time'] + datetime.timedelta(seconds=event['duration'] * 60),
             'tags': event['talk']['tags'] if event.get('talk') else [],
-            'embed': settings.P3_LIVE_EMBED(request, track),
+            'embed': settings.P3_LIVE_EMBED(request, event=event),
             'next': next,
         }
     cache.set('p3_live_events', output, 60)

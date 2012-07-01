@@ -524,8 +524,7 @@ LOGGING = {
 P3_LIVE_TRACKS = {
     'track1': {
         'stream': {
-            #'external': 'https://www.youtube.com/watch?v=MpOzYZIdmqo',
-            'external': 'https://www.youtube.com/watch?v=dZaz1AAsTxk',
+            'external': 'https://www.youtube.com/watch?v=MpOzYZIdmqo',
             'internal': 'live/spaghetti',
         }
     },
@@ -567,8 +566,18 @@ P3_LIVE_TRACKS = {
     },
 }
 
-def P3_LIVE_EMBED(request, track):
+def P3_LIVE_EMBED(request, track=None, event=None):
     from django.core.cache import cache
+
+    if not any((track, event)) or all((track, event)):
+        raise ValueError('track or event, not both')
+
+    if event:
+        # ep2012, tutti i keynote vengono trasmessi dalla track "lasagne"
+        if 'keynote' in event['tags']:
+            track = 'track2'
+        else:
+            track = event['tracks'][0]
 
     if request.META['REMOTE_ADDR'].startswith('2.228.78.'):
         try:
