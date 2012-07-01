@@ -26,10 +26,18 @@
         text-align: center;
         font: normal 80px/80px "League Gothic", Verdana, sans-serif;
     }
+    #load-feedback {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        background: #006600;
+        display: none;
+    }
     </style>
     <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
 </head>
 <body>
+    <div id="load-feedback"></div>
     <div id="now"></div>
     <div id="countdown">--</div>
     <div id="next"></div>
@@ -49,6 +57,12 @@
                 parsed.push(e)
             }
             events = parsed;
+
+            var f = $('#load-feedback');
+            f.show();
+            setTimeout(function() { f.hide(); }, 3000);
+
+            update();
         });
     }
     load();
