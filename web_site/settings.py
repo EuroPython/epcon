@@ -574,7 +574,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
 
     if event:
         # ep2012, tutti i keynote vengono trasmessi dalla track "lasagne"
-        if 'keynote' in event['tags']:
+        if 'keynote' in event['tags'] or len(event['tracks'])>1:
             track = 'track2'
         else:
             track = event['tracks'][0]
