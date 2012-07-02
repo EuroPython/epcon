@@ -43,6 +43,8 @@
     <div id="next"></div>
 </body>
 <script>
+    // debug: set t0 instead of using the current time.
+    var t0 = null;
     var events = null;
     function load() {
         $.getJSON('./events', function(data, textStatus, xhr) {
@@ -71,7 +73,7 @@
         if(!events) {
             return;
         }
-        var now = new Date();
+        var now = t0 ? t0 : new Date();
         var evt = null;
         var next = null;
         for(var ix=0, ex=events.length; ix<ex; ix++) {
