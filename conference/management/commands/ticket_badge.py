@@ -30,6 +30,12 @@ class Command(BaseCommand):
             default=None,
             help='Select tickets by badge name',
         ),
+        make_option('--ids',
+            action='store',
+            dest='ids',
+            default=None,
+            help='Select tickets by ids',
+        ),
     )
     def handle(self, *args, **options):
         try:
@@ -47,6 +53,9 @@ class Command(BaseCommand):
             for n in options['names'].split(','):
                 q |= Q(name__icontains=n)
             tickets = tickets.filter(q)
+            cmdargs.extend(['-e', '0', '-p', 'A4', '-n', '4'])
+        if options['ids']:
+            tickets = tickets.filter(id__in=options['ids'].split(','))
             cmdargs.extend(['-e', '0', '-p', 'A4', '-n', '4'])
         files = utils.render_badge(tickets, cmdargs=cmdargs)
         f = files[0]
