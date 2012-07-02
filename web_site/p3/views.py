@@ -1009,11 +1009,6 @@ def live_track_events(request, track):
 
 @render_to_json
 def live_events(request):
-    from django.core.cache import cache
-    data = cache.get('p3_live_events')
-    if data:
-        return data
-
     conf, date = _live_conference()
     sid = cmodels.Schedule.objects\
         .values('id')\
@@ -1066,7 +1061,7 @@ def live_events(request):
             ]
         else:
             speakers = None
-        if event['next']:
+        if event.get('next'):
             next = {
                 'name': event['next']['name'],
                 'url': event_url(event['next']),
@@ -1085,5 +1080,4 @@ def live_events(request):
             'embed': settings.P3_LIVE_EMBED(request, event=event),
             'next': next,
         }
-    cache.set('p3_live_events', output, 60)
     return output
