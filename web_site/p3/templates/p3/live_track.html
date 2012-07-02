@@ -97,72 +97,88 @@
             'next': null
         };
         if(!evt) {
-            data['name'] = 'Ready to start';
-            data['next'] = events[0];
-            data['countdown'] = (events[0]['time'] - now) / (60 * 1000);
-        }
-        else {
-            var special = false;
-            for(var ix=0, ex=evt['tags'].length; ix<ex; ix++) {
-                if(evt['tags'][ix] == 'special') {
-                    special = true;
-                    break;
-                }
-            }
-
-            /*
-             * gli special events comprendono pranzi e coffee break;
-             * tutti gli altri vengono suddivisi in tre sezioni:
-             *  - talk
-             *  - sessione di Q&A
-             *  - cambio sala
-             */
-
-            var elasped = (now - evt['time']) / (60 * 1000 );
-            var duration = 0;
-
-            if(!special) {
-                // la durata della sessione di Q&A dipende dalla durata del talk:
-                var qa_duration_map = {
-                    90: 10,
-                    60: 10,
-                    45: 10
-                }
-                var durations = {
-                    'qa': qa_duration_map[evt['duration']] || 5,
-                    'change_room': 5,
-                }
-                durations['talk'] = evt['duration'] - durations['qa'] - durations['change_room'];
-
-                if(elasped < durations['talk']) {
-                    data['name'] = evt['name'];
-                    data['next'] = {
-                        'name': 'Q&A session (' + durations['qa'] + ' min)',
-                        'speakers': null
-                    }
-                    duration = durations['talk'];
-                }
-                else if(elasped < durations['talk'] + durations['qa']) {
-                    data['name'] = 'Q&A session';
-                    data['next'] = {
-                        'name': 'Change room',
-                        'speakers': null,
-                    }
-                    duration = durations['talk'] + durations['qa'];
-                }
-                else {
-                    data['name'] = 'Change room';
-                    data['next'] = next;
-                    duration = durations['talk'] + durations['qa'] + durations['change_room'];
-                }
+            if(now < events[0]['time']) {
+                data['name'] = 'Ready to start';
+                data['next'] = events[0];
+                data['countdown'] = (events[0]['time'] - now) / (60 * 1000);
             }
             else {
-                data['name'] = evt['name'];
-                data['next'] = next;
-                duration = evt['duration'];
+                data['name'] = 'Now turn off your computer and go to sleep.'
+                data['countdown'] = null;
+                data['next'] = null;
             }
+        }
+        else {
+            var elasped = (now - evt['time']) / (60 * 1000 );
+            if(elasped > evt['duration']) {
+                // elasped maggiore della durata dell'evento corrente?
+                // probabilmente tra evt e next c'è del vuoto.
+                data['name'] = 'Meditation time';
+                data['next'] = next;
+                data['countdown'] = (next['time'] - now) / (60 * 1000);
+            }
+            else {
+                var special = false;
+                for(var ix=0, ex=evt['tags'].length; ix<ex; ix++) {
+                    if(evt['tags'][ix] == 'special') {
+                        special = true;
+                        break;
+                    }
+                }
 
-            data['countdown'] = duration - elasped;
+                /*
+                * gli special events comprendono pranzi e coffee break;
+                * tutti gli altri vengono suddivisi in tre sezioni:
+                *  - talk
+                *  - sessione di Q&A
+                *  - cambio sala
+                */
+
+                var duration = 0;
+
+                if(!special) {
+                    // la durata della sessione di Q&A dipende dalla durata del talk:
+                    var qa_duration_map = {
+                        90: 10,
+                        60: 10,
+                        45: 10
+                    }
+                    var durations = {
+                        'qa': qa_duration_map[evt['duration']] || 5,
+                        'change_room': 5,
+                    }
+                    durations['talk'] = evt['duration'] - durations['qa'] - durations['change_room'];
+
+                    if(elasped < durations['talk']) {
+                        data['name'] = evt['name'];
+                        data['next'] = {
+                            'name': 'Q&A session (' + durations['qa'] + ' min)',
+                            'speakers': null
+                        }
+                        duration = durations['talk'];
+                    }
+                    else if(elasped < durations['talk'] + durations['qa']) {
+                        data['name'] = 'Q&A session';
+                        data['next'] = {
+                            'name': 'Change room',
+                            'speakers': null,
+                        }
+                        duration = durations['talk'] + durations['qa'];
+                    }
+                    else {
+                        data['name'] = 'Change room';
+                        data['next'] = next;
+                        duration = durations['talk'] + durations['qa'] + durations['change_room'];
+                    }
+                }
+                else {
+                    data['name'] = evt['name'];
+                    data['next'] = next;
+                    duration = evt['duration'];
+                }
+
+                data['countdown'] = duration - elasped;
+            }
         }
 
         function format_next(evt) {
@@ -175,7 +191,11 @@
         }
         $('#now').html(data['name']);
         $('#next').html(format_next(data['next']));
-        $('#countdown').html('-' + Math.ceil(data['countdown']) + "'");
+        var c = $('#countdown');
+        if(data['countdown'])
+            c.html('-' + Math.ceil(data['countdown']) + "'");
+        else
+            c.html('');
     }
     setInterval(update, 1 * 1000);
 </script>
