@@ -312,7 +312,8 @@ class TimeTable2(object):
                         if t == t0:
                             break
                         if mode == 'current':
-                            ix -= 1
+                            if ix > 0:
+                                ix -= 1
                             break
                         elif mode == 'next':
                             ix += 1
