@@ -86,15 +86,16 @@
                 break;
             }
         }
-        var h = {
-            'now': $('#now'),
-            'countdown': $('#countdown'),
-            'next': $('#next')
-        }
+
+        var data = {
+            'name': '',
+            'countdown': 0,
+            'next': null
+        };
         if(!evt) {
-            h.now.html('');
-            h.countdown.html('--');
-            h.next.html('');
+            data['name'] = 'Ready to start';
+            data['next'] = events[0];
+            data['countdown'] = (events[0]['time'] - now) / (60 * 1000);
         }
         else {
             var special = false;
@@ -116,18 +117,12 @@
             var elasped = (now - evt['time']) / (60 * 1000 );
             var duration = 0;
 
-            var data = {
-                'name': evt['name'],
-                'next': {
-                    'name': next['name'],
-                    'speakers': next['speakers'],
-                }
-            };
-
             if(!special) {
                 // la durata della sessione di Q&A dipende dalla durata del talk:
                 var qa_duration_map = {
-                    90: 10
+                    90: 10,
+                    60: 10,
+                    45: 10
                 }
                 var durations = {
                     'qa': qa_duration_map[evt['duration']] || 5,
@@ -136,41 +131,48 @@
                 durations['talk'] = evt['duration'] - durations['qa'] - durations['change_room'];
 
                 if(elasped < durations['talk']) {
-                    data['next']['name'] = 'Q&A session (' + durations['qa'] + ' min)';
-                    data['next']['speakers'] = null;
+                    data['name'] = evt['name'];
+                    data['next'] = {
+                        'name': 'Q&A session (' + durations['qa'] + ' min)',
+                        'speakers': null
+                    }
                     duration = durations['talk'];
                 }
                 else if(elasped < durations['talk'] + durations['qa']) {
                     data['name'] = 'Q&A session';
-                    data['next']['name'] = 'Change room';
-                    data['next']['speakers'] = null;
+                    data['next'] = {
+                        'name': 'Change room',
+                        'speakers': null,
+                    }
                     duration = durations['talk'] + durations['qa'];
                 }
                 else {
                     data['name'] = 'Change room';
+                    data['next'] = next;
                     duration = durations['talk'] + durations['qa'] + durations['change_room'];
                 }
             }
             else {
+                data['name'] = evt['name'];
+                data['next'] = next;
                 duration = evt['duration'];
             }
 
-            var countdown = Math.floor(duration - elasped);
-
-            h.now.html(data['name']);
-            if(data['next']) {
-                var msg = 'Next: ' + data['next']['name'];
-                if(data['next']['speakers'])
-                    msg += ' by ' + data['next']['speakers'];
-                h.next.html(msg);
-            }
-            else {
-                h.next.html('');
-            }
-
-            h.countdown.html('-' + countdown + "'");
+            data['countdown'] = duration - elasped;
         }
+
+        function format_next(evt) {
+            if(!evt)
+                return '';
+            var msg = 'Next: ' + evt['name'];
+            if(evt['speakers'])
+                msg += ' by ' + evt['speakers'];
+            return msg;
+        }
+        $('#now').html(data['name']);
+        $('#next').html(format_next(data['next']));
+        $('#countdown').html('-' + Math.ceil(data['countdown']) + "'");
     }
-    setInterval(update, 5 * 1000);
+    setInterval(update, 1 * 1000);
 </script>
 </html>
