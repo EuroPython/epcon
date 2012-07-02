@@ -19,6 +19,12 @@
         font: normal 600px/600px "League Gothic", Verdana, sans-serif;
         text-align: center;
     }
+    #countdown.alert span {
+        border: 4px solid #fcfad9;
+        display: inline-block;
+        margin: 30px 0;
+        padding: 15px;
+    }
     #next {
         font: normal 40px/40px "League Gothic", Verdana, sans-serif;
     }
@@ -94,6 +100,7 @@
         var data = {
             'name': '',
             'countdown': 0,
+            'class': null,
             'next': null
         };
         if(!evt) {
@@ -156,6 +163,7 @@
                             'speakers': null
                         }
                         duration = durations['talk'];
+                        data['class'] = (duration - elasped) <= 5 ? 'alert' : '';
                     }
                     else if(elasped < durations['talk'] + durations['qa']) {
                         data['name'] = 'Q&A session';
@@ -192,10 +200,14 @@
         $('#now').html(data['name']);
         $('#next').html(format_next(data['next']));
         var c = $('#countdown');
-        if(data['countdown'])
-            c.html('-' + Math.ceil(data['countdown']) + "'");
-        else
+        if(data['countdown']) {
+            c.html('<span>-' + Math.ceil(data['countdown']) + "'</span>");
+            c.attr('class', data['class'] || '');
+        }
+        else {
             c.html('');
+            c.attr('class', '');
+        }
     }
     setInterval(update, 1 * 1000);
 </script>
