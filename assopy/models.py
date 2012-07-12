@@ -58,7 +58,7 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
         'size': size,
         'rating': rating,
     })
-    
+
     return gravatar_url
 
 COUNTRY_VAT_COMPANY_VERIFY = (
@@ -67,7 +67,7 @@ COUNTRY_VAT_COMPANY_VERIFY = (
 )
 class Country(models.Model):
     iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
-    name = models.CharField(max_length=100) 
+    name = models.CharField(max_length=100)
     vat_company = models.BooleanField('VAT for company', default=False)
     vat_company_verify = models.CharField(max_length=1, choices=COUNTRY_VAT_COMPANY_VERIFY, default='-')
     vat_person = models.BooleanField('VAT for person', default=False)
@@ -195,7 +195,7 @@ class User(models.Model):
     jabber = models.EmailField(_('Jabber'), blank=True)
     www = models.URLField(_('Www'), verify_exists=False, blank=True)
     phone = models.CharField(
-        _('Phone'), 
+        _('Phone'),
         max_length=30, blank=True,
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
@@ -242,7 +242,7 @@ class User(models.Model):
             if self.country.vat_company_verify == 'v':
                 if not vies.check_vat(self.country.pk, self.vat_number):
                     raise ValidationError({'vat_number': [_('According to VIES, this is not a valid vat number')]})
-            
+
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         if self.assopy_id and settings.GENRO_BACKEND:
@@ -369,7 +369,7 @@ class Coupon(models.Model):
         fares = self.fares.all()
         apply_to = order.rows(include_discounts=False, vat=vat)
         if fares:
-            apply_to = apply_to.filter(ticket__fare__in=fares) 
+            apply_to = apply_to.filter(ticket__fare__in=fares)
         if self.items_per_usage:
             apply_to = apply_to.order_by('-ticket__fare__price')[:self.items_per_usage]
 
@@ -419,7 +419,7 @@ class Coupon(models.Model):
         if self.type() == 'val':
             discount = Decimal(self.value)
         else:
-            discount = total / 100 * Decimal(self.value[:-1]) 
+            discount = total / 100 * Decimal(self.value[:-1])
         if discount > total:
             discount = total
         if discount > guard:
@@ -498,9 +498,8 @@ class OrderManager(models.Manager):
                 if settings.GENRO_BACKEND:
                     vat = None
                 else :
-                    # se non è il BACKEND genro deve avere 
-                    # l'orderitems deve avere associato un 
-                    # regime iva
+                    # se non è il BACKEND genro deve avere l'orderitems deve
+                    # avere associato un regime iva
                     raise
             vat_list.append(vat)
             cp = dict(params)
@@ -556,6 +555,7 @@ class Vat(models.Model):
     value = models.DecimalField(max_digits=2, decimal_places=0)
     description = models.CharField(null=True, blank=True, max_length = 125)
     invoice_notice = models.TextField(null=True, blank=True)
+
     def __unicode__(self):
         return u"%s - %s" % (self.value , self.description or "")
 
@@ -643,7 +643,7 @@ class Order(models.Model):
                 raise RuntimeError('unknown verification method')
         else:
             return bool(self.vat_number)
-    
+
     def vat_rate(self):
         """
         Regola per determinare l'aliquota iva:
@@ -664,7 +664,7 @@ class Order(models.Model):
 
     def vat_list(self):
         """
-        Ritorna una lista di dizionari con import iva e import 
+        Ritorna una lista di dizionari con import iva e import
         e numero di orderitems prezzi
         """
         vat_list = defaultdict(lambda:{'vat':None, 'orderItems':[], 'price':0})
@@ -700,7 +700,7 @@ class Order(models.Model):
 
     def confirm_order(self, payment_date):
         # metodo per confermare un ordine simile a genro.confirm_order
-        # una volta confermato un ordine si crea una fattura con data 
+        # una volta confermato un ordine si crea una fattura con data
         Invoice.objects.creates_from_order(self,payment_date=payment_date)
 
     def deductible(self):
@@ -923,9 +923,10 @@ class Invoice(models.Model):
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    # indica il tipo di regime iva associato alla fattura
-    # perche vengono generate più fatture per ogni ordine
-    # contente orderitems con diverso regime fiscale
+
+    # indica il tipo di regime iva associato alla fattura perche vengono
+    # generate più fatture per ogni ordine contente orderitems con diverso
+    # regime fiscale
     vat = models.ForeignKey(Vat)
 
     objects = InvoiceManager()
