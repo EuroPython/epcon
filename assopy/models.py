@@ -960,10 +960,10 @@ class Invoice(models.Model):
                                   .order_by('-price')
 
     def vat_value(self):
-        return self.price * (self.vat.value/100)
+        return self.price - self.net_price()
 
     def net_price(self):
-        return self.price - self.vat_value()
+        return self.price / (1 + self.vat.value / 100)
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
