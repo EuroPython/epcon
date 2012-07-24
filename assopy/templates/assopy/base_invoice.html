@@ -59,6 +59,7 @@
             body {
                 font-family: Arial,'DejaVu Sans','Liberation Sans',Freesans,sans-serif;
                 font-size: 10pt;
+                line-height: 10.2pt;
             }
 
             .conteier {
@@ -113,6 +114,7 @@
             .cell-legend {
                 font-size: 70%;
                 color: #333;
+                margin: 0.1cm;
             }
             
             .alt-language{
@@ -120,15 +122,25 @@
             }
             
             .cell-content {
-                margin: 0.2cm;
+                margin: 0.1cm;
             }
             
             .number {
+                text-align: center;
+            }
+
+            .currency {
                 text-align: right;
+                width: 1.7cm;
+                margin: 0 0 0 auto;
+            }
+            .currency:before {
+                content: "€";
+                float: left;
             }
             
             .invoice-items {
-                min-height: 18cm;
+                min-height: 17cm;
             }
             
             .invoice-items TD {
@@ -146,11 +158,9 @@
             }
             
             .invoice-items TH DIV {
-                padding: 0.1cm;
             }
             
             .invoice-detail TD {
-                height: 1.5cm;
             }
             
             .invoice-amount {
@@ -311,8 +321,8 @@
                             <td class="invoice-items-w0 number">
                                  {{ item.count }}
                             </td>
-                            <td class="invoice-items-w1 number">
-                                 {{ item.price }}
+                            <td class="invoice-items-w1">
+                                <div class="currency">{{ item.price }}</div>
                             </td>
                          </tr>
                          {% endfor %}
@@ -327,24 +337,24 @@
                                 <div class="cell-legend">
                                     Imponibile <span class="alt-language">Net price</span>
                                 </div>
-                                <div class="cell-content number">
-                                    {{ invoice.net_price|floatformat:2 }}
+                                <div class="cell-content">
+                                    <div class="currency">{{ invoice.net_price|floatformat:2 }}</div>
                                 </div>
                             </td>
                             <td>
                                 <div class="cell-legend">
                                     IVA <span class="alt-language">VAT</span>
                                 </div>
-                                <div class="cell-content number">
-                                     {{ invoice.vat_value|floatformat:2 }}
+                                <div class="cell-content">
+                                     <div class="currency">{{ invoice.vat_value|floatformat:2 }}</div>
                                 </div>
                             </td>
                             <td>
                                 <div class="cell-legend">
                                     Totale <span class="alt-language">Total</span>
                                 </div>
-                                <div class="cell-content number">
-                                    {{ invoice.price|floatformat:2 }}
+                                <div class="cell-content">
+                                    <div class="currency">{{ invoice.price|floatformat:2 }}</div>
                                 </div>
                             </td>
                         </tr>
