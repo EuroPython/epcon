@@ -852,7 +852,6 @@ class InvoiceManager(models.Manager):
             assert update is False
 
             def invoices_code(o, fake=False):
-                vat_list = o.vat_list()
                 output = []
 
                 def icode(buff=[None]):
