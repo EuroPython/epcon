@@ -960,6 +960,12 @@ class TicketAdmin(admin.ModelAdmin):
     if settings.TICKET_BADGE_ENABLED:
         actions = ('do_ticket_badge',)
 
+    class Media:
+        js = (
+            'conference/jquery-ui/js/jquery-1.7.1.min.js',
+            'conference/jquery-flot/jquery.flot.js',
+        )
+
     def _name(self, o):
         if o.name:
             return o.name
@@ -999,6 +1005,64 @@ class TicketAdmin(admin.ModelAdmin):
             raise RuntimeError()
         return response
     do_ticket_badge.short_description = 'Ticket Badge'
+
+    def get_urls(self):
+        urls = super(TicketAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data_view), name='conference-ticket-stats-data'),
+        )
+        return my_urls + urls
+
+    def stats_data(self):
+        from django.db.models import Q
+        from collections import defaultdict
+        import datetime
+
+        conferences = models.Conference.objects\
+            .order_by('conference_start')
+
+        output = {}
+        for c in conferences:
+            tickets = models.Ticket.objects\
+                .filter(fare__conference=c)\
+                .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
+                .select_related('fare', 'orderitem__order')
+            data = {
+                'conference': defaultdict(lambda: 0),
+                'partner': defaultdict(lambda: 0),
+                'event': defaultdict(lambda: 0),
+                'other': defaultdict(lambda: 0),
+            }
+            for t in tickets:
+                tt = t.fare.ticket_type
+                date = t.orderitem.order.created.date()
+                offset = date - c.conference_start
+                data[tt][offset.days] += 1
+
+            for k, v in data.items():
+                data[k] = sorted(v.items())
+
+            dlimit = datetime.date(c.conference_start.year, 1, 1)
+            deadlines = models.DeadlineContent.objects\
+                .filter(language=dsettings.LANGUAGES[0][0])\
+                .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
+                .select_related('deadline')\
+                .order_by('deadline__date')
+            markers = [
+                ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body))
+                for d in deadlines
+            ]
+
+            output[c.code] = {
+                'data': data,
+                'markers': markers,
+            }
+        return output
+
+    def stats_data_view(self, request):
+        from conference.views import json_dumps
+        output = self.stats_data()
+        return http.HttpResponse(json_dumps(output), 'text/javascript')
 
 admin.site.register(models.Ticket, TicketAdmin)
 
