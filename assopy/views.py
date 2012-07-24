@@ -511,6 +511,8 @@ def invoice(request, order_code, code, mode='html'):
             )
 
             raw, _ = popen.communicate()
+            itype = 'invoice'
+            order = invoice.order
 
         from conference.models import Conference
         try:
