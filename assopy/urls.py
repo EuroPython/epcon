@@ -36,8 +36,18 @@ urlpatterns = patterns('',
     url(r'^paypal/cancel/(?P<code>.+)/$','assopy.views.paypal_cancel', name='assopy-paypal-feedback-cancel'),
     url(r'bank_return/(?P<code>.+)/$', 'assopy.views.bank_feedback_ok', name='assopy-bank-feedback-ok'),
 
-    url(r'orders/(?P<order_code>.+)/invoices/(?P<code>.+).html$', 'assopy.views.invoice_html', name='assopy-invoice-html'),
-    url(r'orders/(?P<order_code>.+)/invoices/(?P<code>.+).pdf$', 'assopy.views.invoice_pdf', name='assopy-invoice-pdf'),
+    url(
+        r'orders/(?P<order_code>.+)/invoices/(?P<code>.+).html$',
+        'assopy.views.invoice',
+        name='assopy-invoice-html',
+        kwargs={'mode': 'html'},
+    ),
+    url(
+        r'orders/(?P<order_code>.+)/invoices/(?P<code>.+).pdf$',
+        'assopy.views.invoice',
+        name='assopy-invoice-pdf',
+        kwargs={'mode': 'pdf'},
+    ),
 )
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:

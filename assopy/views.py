@@ -452,72 +452,73 @@ def bank_feedback_ok(request, code):
     }
 
 @login_required
-def invoice_pdf(request,order_code, code):
-    invoice = get_object_or_404(
-                    models.Invoice,
-                    code=unquote(code),
-                    order__code=unquote(order_code),
-                    order__user__user= request.user
-              )
-
-    if settings.GENRO_BACKEND:
-        assopy_id = invoice.assopy_id
-        data = genro.invoice(assopy_id)
-        if data.get('credit_note'):
-            order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
-        else:
-            order = get_object_or_404(models.Order, assopy_id=data['order_id'])
-        from conference import models as cmodels
-        try:
-            conf = cmodels.Conference.objects.get(conference_start__year=order.created.year).code
-        except cmodels.Conference.DoesNotExist:
-            conf = order.created.year
-        f = urllib.urlopen(genro.invoice_url(assopy_id))
-        fname = '[%s] credit note.pdf' % conf
+def invoice(request, order_code, code, mode='html'):
+    if not request.user.is_staff:
+        userfilter = {
+            'order__user__user': request.user,
+        }
     else:
-        if not settings.WHTMLTOPDF_PATH:
-            return HttpResponseRedirectSeeOther(
-                        reverse('assopy-invoice-html', args=(order_code, code))
-                    )
-        import sys
-        import os
-        import subprocess
-
-        command_args = [
-            settings.WHTMLTOPDF_PATH,
-            '--cookie',
-            dsettings.SESSION_COOKIE_NAME,
-            request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
-            '--zoom',
-            '1.3',
-            "%s%s" % (dsettings.DEFAULT_URL_PREFIX ,reverse('assopy-invoice-html', args=(order_code, code))),
-            '-'
-        ]
-
-        popen = subprocess.Popen(command_args,
-                                 bufsize=4096,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-
-        f,g = popen.communicate()
-        fname = unicode(invoice)
-
-    response = http.HttpResponse(f, mimetype='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-    return response
-
-
-@login_required
-@render_to('assopy/invoice.html')
-def invoice_html(request,order_code, code):
+        userfilter = {}
     invoice = get_object_or_404(
-                    models.Invoice,
-                    code=unquote(code),
-                    order__code=unquote(order_code),
-                    order__user__user= request.user
-             )
-    real = settings.IS_REAL_INVOICE(invoice.code)
-    return {'invoice':invoice, 'real':real}
+        models.Invoice,
+        code=unquote(code),
+        order__code=unquote(order_code),
+        **userfilter
+    )
+    if mode == 'html':
+        ctx = {
+            'invoice': invoice,
+            'real': settings.IS_REAL_INVOICE(invoice.code),
+        }
+        return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
+    else:
+        if settings.GENRO_BACKEND:
+            assopy_id = invoice.assopy_id
+            data = genro.invoice(assopy_id)
+            if data.get('credit_note'):
+                order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
+                itype = 'credit'
+            else:
+                order = get_object_or_404(models.Order, assopy_id=data['order_id'])
+                itype = 'invoice'
+            raw = urllib.urlopen(genro.invoice_url(assopy_id))
+        else:
+            if not settings.WKHTMLTOPDF_PATH:
+                return HttpResponseRedirectSeeOther(
+                    reverse('assopy-invoice-html', args=(order_code, code))
+                )
+            import subprocess
+            command_args = [
+                settings.WKHTMLTOPDF_PATH,
+                '--cookie',
+                dsettings.SESSION_COOKIE_NAME,
+                request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
+                '--zoom',
+                '1.3',
+                "%s%s" % (dsettings.DEFAULT_URL_PREFIX ,reverse('assopy-invoice-html', args=(order_code, code))),
+                '-'
+            ]
+
+            popen = subprocess.Popen(
+                command_args,
+                bufsize=4096,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+
+            raw, _ = popen.communicate()
+
+        from conference.models import Conference
+        try:
+            conf = Conference.objects\
+                .get(conference_start__year=order.created.year).code
+        except Conference.DoesNotExist:
+            conf = order.created.year
+        fname = '[%s] %s.pdf' % (conf, 'invoice' if itype == 'invoice' else 'credit note')
+
+        response = http.HttpResponse(raw, mimetype='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+        return response
 
 @login_required
 @render_to('assopy/voucher.html')

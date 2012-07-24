@@ -153,21 +153,32 @@ class OrderAdmin(admin.ModelAdmin):
     _total_payed.short_description = 'Payed'
 
     def _invoice(self, o):
+        from django.contrib.admin.util import quote
         output = []
+        if dsettings.DEBUG:
+            vname = 'assopy-invoice-html'
+        else:
+            vname = 'assopy-invoice-pdf'
         for i in o.invoices.all():
-            if settings.GENRO_BACKEND:
-                output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
-            else:
-                output.append('<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i, ' *' if not i.payment_date else ''))
+            url = urlresolvers.reverse(
+                vname, kwargs={
+                    'order_code': quote(o.code),
+                    'code': quote(i.code),
+                }
+            )
+            output.append(
+                '<a href="%s">%s%s</a>' % (
+                    url, i.code, ' *' if not i.payment_date else '')
+            )
         return ' '.join(output)
     _invoice.allow_tags = True
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
+        f = self.admin_site.admin_view
         my_urls = patterns('',
-            url(r'^invoices/(?P<id>\d+)/$', self.admin_site.admin_view(self.view_invoices), name='assopy-view-invoices'),
-            url(r'^invoices/$', self.admin_site.admin_view(self.edit_invoices), name='assopy-edit-invoices'),
-            url(r'^stats/$', self.admin_site.admin_view(self.stats), name='assopy-order-stats'),
+            url(r'^invoices/$', f(self.edit_invoices), name='assopy-edit-invoices'),
+            url(r'^stats/$', f(self.stats), name='assopy-order-stats'),
         )
         return my_urls + urls
 
@@ -179,11 +190,6 @@ class OrderAdmin(admin.ModelAdmin):
         else:
             self.message_user(request, 'no orders')
     do_edit_invoices.short_description = 'Edit/Make invoices'
-
-    def view_invoices(self, request, id):
-        invoice = get_object_or_404(models.Invoice, pk=id)
-        real = settings.IS_REAL_INVOICE(invoice.code)
-        return render_to_response('assopy/invoice.html', {'invoice':invoice, 'real':real}, context_instance=template.RequestContext(request))
 
     def edit_invoices(self, request):
         try:
