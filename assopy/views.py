@@ -414,10 +414,14 @@ def paypal_cc_billing(request, code):
         "country": o.country,
         "address_name":o.card_name,
     }
-    return HttpResponseRedirectSeeOther("%s?%s&%s" % (form.paypal_url(), 
-                                                      form.as_url_args(), 
-                                                      urllib.urlencode(cc_data))
-                                        )
+    qparms = urllib.urlencode([ (k,x.encode('utf-8') if isinstance(x, unicode) else x) for k,x in cc_data.items() ])
+    return HttpResponseRedirectSeeOther(
+        "%s?%s&%s" % (
+            form.paypal_url(),
+            form.as_url_args(),
+            qparms
+        )
+    )
 
 @render_to('assopy/paypal_cancel.html')
 def paypal_cancel(request, code):
