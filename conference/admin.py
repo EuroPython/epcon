@@ -404,6 +404,14 @@ class SpeakerAdmin(MultiLingualAdminContent):
         return qs
 
     def add_view(self, request, form_url='', extra_context=None):
+        # commit 0a082a0f51220e78037d46c12eb7ded7bb3c50bd
+        # Author: Maurizio Melani <melamala@develer.com>
+        # Date:   Thu Jun 28 11:37:21 2012 +0200
+        #
+        # Quando creo un nuovo speaker da admin, non posso aggiungere nel
+        # formset i talk associati perchè ancora lo speaker non è stato creato,
+        # disabilito gli inlinefromset nella vista di admin di crezione di un
+        # nuovo speaker
         inline_instances = self.inline_instances
         self.inline_instances = ()
         data = super(SpeakerAdmin, self).add_view(request, form_url='', extra_context=None)
