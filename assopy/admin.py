@@ -79,6 +79,12 @@ class OrderAdminForm(forms.ModelForm):
         if self.initial:
             self.fields['method'].initial = self.instance.method
 
+    def clean_assopy_id(self):
+        aid = self.cleaned_data.get('assopy_id')
+        if aid == '':
+            aid = None
+        return aid
+
     def save(self, *args, **kwargs):
         self.instance.method = self.cleaned_data['method']
         return super(OrderAdminForm, self).save(*args, **kwargs)
