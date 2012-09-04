@@ -895,15 +895,15 @@ class InvoiceManager(models.Manager):
 
             for vat_item in vat_list:
                 i, created = Invoice.objects.get_or_create( 
-                                    order=order,
-                                    vat=vat_item['vat'],
-                                    price=vat_item['price'],
-                                    defaults={
-                                       'code' : vat_item['code'],
-                                       'payment_date' : payment_date,
-                                       'emit_date' : payment_date
-                                    }
-                             )
+                    order=order,
+                    vat=vat_item['vat'],
+                    price=vat_item['price'],
+                    defaults={
+                        'code' : vat_item['code'],
+                        'payment_date' : payment_date,
+                        'emit_date' : payment_date
+                    }
+                )
                 if not created:
                     if not payment_date or i.payment_date:
                         raise RuntimeError('Mi incazzo')
@@ -915,7 +915,6 @@ class InvoiceManager(models.Manager):
 
                 invoices.append(i)
             return invoices
-
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
