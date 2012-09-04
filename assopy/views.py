@@ -23,6 +23,7 @@ from email_template import utils
 import json
 import logging
 import urllib
+from datetime import datetime
 
 log = logging.getLogger('assopy.views')
 
@@ -393,14 +394,19 @@ def geocode(request):
 def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    if o.total() == 0:
+        o.confirm_order(datetime.now())
+        return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
     form = aforms.PayPalForm(o)
     return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
 
 def paypal_cc_billing(request, code):
-    # questa vista serve a eseguire il redirect su paypol e aggiungere le info 
+    # questa vista serve a eseguire il redirect su paypal e aggiungere le info
     # per billing con cc
-    import urllib
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    if o.total() == 0:
+        o.confirm_order(datetime.now())
+        return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
     form = aforms.PayPalForm(o)
     cc_data = {
         "address_override" : 1,
