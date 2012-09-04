@@ -1547,6 +1547,17 @@ def attrib_(ob, attrib):
             return [ attrib_(x, attrib) for x in ob ]
 
 @register.filter
+def escape_amp(data):
+    """
+    Escape dell'&; questa funzione deve essere usata solo su del testo inserito
+    dall'utente che dovrebbe essere html safe (quindi già avere &amp;) ma che
+    non è detto sia corretto. Mi limito all'escape dell'& perché in alcuni casi
+    è l'unico carattere che causa problemi all'xml (mentre con l'html i browser
+    non hanno problemi), se si vuole fare l'escap di tutto si può usare il
+    filtro di django.
+    """
+    return re.sub('&(?!amp;)', '&amp;', data)
+
 def contains_(it, key):
     return key in it
 
