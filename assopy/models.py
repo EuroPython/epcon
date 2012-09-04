@@ -675,9 +675,8 @@ class Order(models.Model):
         return vat_list.values()
 
     def complete(self, update_cache=True, ignore_cache=False):
-
         if self._complete and not ignore_cache:
-                return True
+            return True
 
         if settings.GENRO_BACKEND:
             if not self.assopy_id:
