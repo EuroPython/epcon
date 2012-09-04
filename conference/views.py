@@ -312,7 +312,9 @@ def talk_video(request, slug):
 def conference_xml(request, conference):
     conference = get_object_or_404(models.Conference, code=conference)
     talks = models.Talk.objects.filter(conference=conference)
-    schedules = models.Schedule.objects.filter(conference=conference.code)
+    schedules = [
+        (s, utils.TimeTable2.fromSchedule(s.id))
+        for s in models.Schedule.objects.filter(conference=conference.code)]
     return {
         'conference': conference,
         'talks': talks,
@@ -401,12 +403,12 @@ def schedule_events_booking_status(request, conference):
     return data
 
 def schedule_xml(request, conference, slug):
-    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
-    return render_to_response(
-        'conference/schedule.xml', { 'schedule': sch },
-        context_instance = RequestContext(request),
-        mimetype = 'text/xml',
-    )
+    sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
+    ctx = {
+        'schedule': sch,
+        'timetable': utils.TimeTable2.fromSchedule(sch.id),
+    }
+    return render(request, 'conference/schedule.xml', ctx, content_type='text/xml')
 
 def schedule_speakers_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)

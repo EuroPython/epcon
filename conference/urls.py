@@ -23,11 +23,11 @@ urlpatterns = patterns('conference.views',
     url(r'^sponsors/(?P<sponsor>.*)/', 'sponsor', name='conference-sponsor'),
     url(r'^paper-submission/$', 'paper_submission', name='conference-paper-submission'),
     url(r'^voting/$', 'voting', name='conference-voting'),
-
-    url(r'^(?P<conference>[\w-]+).xml/$', 'conference_xml', name='conference-data-xml'),
 )
 
 urlpatterns += patterns('conference.views',
+    url(r'^(?P<conference>[\w-]+).xml/$',
+        'conference_xml', name='conference-data-xml'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/$',
         'schedule', name='conference-schedule'),
     url(r'^schedule/(?P<conference>.*)/(?P<slug>[\w-]+).xml/?$',

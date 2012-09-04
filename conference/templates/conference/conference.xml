@@ -33,7 +33,7 @@
         {% endfor %}
     </talks>
     <schedules>
-        {% for sch in schedules %}
+        {% for sch, timetable in schedules %}
         <schedule>
             <url>{% url conference-schedule-xml conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</url>
             <public_url>{% url conference-schedule conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</public_url>
@@ -41,6 +41,42 @@
             {% if sch.description %}
             <description xmlns="http://www.w3.org/1999/xhtml">{{ sch.description|safe }}</description>
             {% endif %}
+            <tracks>
+            {% schedule_data sch.id as sdata %}
+            {% for tcode, events in timetable.iterOnTracks %}
+                {% with sdata.tracks|attrib_:tcode as track %}
+                <track>
+                    <code>{{ track.track }}</code>
+                    <title xmlns="http://www.w3.org/1999/xhtml">{{ track.title|safe }}</title>
+                    {% if track.translate %}<translations />{% endif %}
+                    {% if track.outdoor %}<outdoor />{% endif %}
+                </track>
+                {% endwith %}
+            {% endfor %}
+            </tracks>
+            <slots>
+                {% for time, events in timetable.iterOnTimes %}
+                {% for evt in events %}
+                <slot>
+                    <start>{{ evt.time|time:"H:i:s" }}</start>
+                    <end>{{ evt.end_time|time:"H:i:s" }}</end>
+                    <main_track>{{ evt.tracks.0 }}</main_track>
+                    <tracks>
+                        {% for t in evt.tracks %}
+                        <track>{{ t }}</track>
+                        {% endfor %}
+                    </tracks>
+                    <event>
+                        {% if evt.talk %}
+                        <talk>{% url conference-talk-xml evt.talk.slug as x %}{{ x|full_url }}</talk>
+                        {% else %}
+                        <custom xmlns="http://www.w3.org/1999/xhtml">{{ evt.name|escape_amp|safe }}</custom>
+                        {% endif %}
+                    </event>
+                </slot>
+                {% endfor %}
+                {% endfor %}
+            </slots>
         </schedule>
         {% endfor %}
     </schedules>

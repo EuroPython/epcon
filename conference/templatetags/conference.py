@@ -403,6 +403,8 @@ def render_schedule(context, schedule):
         except ValueError:
             raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
         sid = models.Schedule.objects.values('id').get(conference=c, slug=s)['id']
+    else:
+        sid = schedule.id
 
     return {
         'sid': sid,
@@ -1558,6 +1560,7 @@ def escape_amp(data):
     """
     return re.sub('&(?!amp;)', '&amp;', data)
 
+@register.filter
 def contains_(it, key):
     return key in it
 
