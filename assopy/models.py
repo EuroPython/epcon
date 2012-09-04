@@ -850,6 +850,9 @@ class InvoiceManager(models.Manager):
         else:
             assert update is False
 
+            if order.total() == 0:
+                return
+
             def invoices_code(o, fake=False):
                 output = []
 
