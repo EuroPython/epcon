@@ -4,7 +4,7 @@ from conference import models
 from pages.models import Page
 
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib import comments
@@ -447,11 +447,13 @@ def event_data(eid, preload=None):
         talk = None
         name = event.custom
         duration = event.duration
+    start_time = datetime.combine(sch['date'], event.start_time)
     return {
         'id': event.id,
         'schedule_id': event.schedule_id,
         'name': name,
-        'time': datetime.combine(sch['date'], event.start_time),
+        'time': start_time,
+        'end_time': start_time + timedelta(seconds=duration*60),
         'conference': sch['conference'],
         'custom': event.custom,
         'abstract': event.abstract,
