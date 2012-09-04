@@ -47,7 +47,7 @@
                 {% with sdata.tracks|attrib_:tcode as track %}
                 <track>
                     <code>{{ track.track }}</code>
-                    <title xmlns="http://www.w3.org/1999/xhtml">{{ track.title|safe }}</title>
+                    <title xmlns="http://www.w3.org/1999/xhtml">{{ track.title|escape_amp|safe }}</title>
                     {% if track.translate %}<translations />{% endif %}
                     {% if track.outdoor %}<outdoor />{% endif %}
                 </track>
