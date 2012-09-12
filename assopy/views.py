@@ -62,12 +62,13 @@ def render_to(template):
     return renderer
 
 def render_to_json(f):
+    from conference.views import json_dumps
     if dsettings.DEBUG:
         ct = 'text/plain'
-        j = lambda d: json.dumps(d, indent=2)
+        j = lambda d: json_dumps(d, indent=2)
     else:
         ct = 'application/json'
-        j = json.dumps
+        j = json_dumps
     def wrapper(*args, **kw):
         try:
             result = f(*args, **kw)

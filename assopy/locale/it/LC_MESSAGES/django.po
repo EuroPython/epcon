@@ -297,7 +297,11 @@ msgstr "Le tue fatture"
 #: templates/assopy/profile.html:129
 #, python-format
 msgid "Order: %(ocode)s of %(odate)s"
-msgstr "ordine: %(ocode)s del %(odate)s"
+msgstr "Ordine: %(ocode)s del %(odate)s"
+
+#: templates/assopy/profile.html:98
+msgid "Web access removed"
+msgstr "Accesso rimosso"
 
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"

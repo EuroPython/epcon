@@ -7,6 +7,7 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.utils.safestring import mark_safe
 from assopy import models, settings
@@ -185,8 +186,30 @@ class OrderAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             url(r'^invoices/$', f(self.edit_invoices), name='assopy-edit-invoices'),
             url(r'^stats/$', f(self.stats), name='assopy-order-stats'),
+            url(r'^vouchers/$', f(self.vouchers), name='assopy-order-vouchers'),
+            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', f(self.vouchers_fare), name='assopy-order-vouchers-fare'),
         )
         return my_urls + urls
+
+    def vouchers(self, request):
+        from conference.models import Fare
+        ctx = {
+            'fares': Fare.objects\
+                .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
+        }
+        return render_to_response(
+            'admin/assopy/order/vouchers.html', ctx, context_instance=template.RequestContext(request))
+
+    def vouchers_fare(self, request, conference, fare):
+        items = models.OrderItem.objects\
+            .filter(ticket__fare__conference=conference, ticket__fare__code=fare)\
+            .filter(Q(order___complete=True)|Q(order__method='bank'))\
+            .select_related('ticket__fare', 'order__user__user')
+        ctx = {
+            'items': items,
+        }
+        return render_to_response(
+            'admin/assopy/order/vouchers_fare.html', ctx, context_instance=template.RequestContext(request))
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset if not o.complete() ]
@@ -371,7 +394,7 @@ class AuthUserAdmin(aUserAdmin):
         user = get_object_or_404(models.User, user=uid)
 
         class FormTickets(aforms.FormTickets):
-            coupon = forms.CharField(label='Coupon(s)', required=True)
+            coupon = forms.CharField(label='Coupon(s)', required=False)
             country = forms.CharField(max_length=2, required=False)
             address = forms.CharField(max_length=150, required=False)
             card_name = forms.CharField(max_length=200, required=True, initial=user.card_name or user.name())
@@ -533,7 +556,7 @@ class RefundAdmin(admin.ModelAdmin):
         data = self.orderitems[o.id]
         if data:
             url = urlresolvers.reverse('admin:assopy_order_change', args=(data[0].order.id,))
-            return '<a href="%s">%s</a>' % (url, data[0].order.code)
+            return '<a href="%s">%s</a> del %s' % (url, data[0].order.code, data[0].order.created.strftime('%Y-%m-%d'))
         else:
             return ''
     _order.allow_tags = True
