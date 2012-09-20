@@ -996,9 +996,9 @@ class TicketAdmin(admin.ModelAdmin):
         return qs
 
     def do_ticket_badge(self, request, qs):
-        files = utils.render_badge(qs)
+        files = utils.render_badge(qs, cmdargs=['-e', '0', '-p', 'A4', '-n', '4'])
         if len(files) == 1:
-            response = http.HttpResponse(files[0], mimetype="application/x-gzip")
+            response = http.HttpResponse(files[0][0], mimetype="application/x-gzip")
             response['Content-Disposition'] = 'attachment; filename=badge.tar.gz'
         else:
             # TODO zip all the tar files together
