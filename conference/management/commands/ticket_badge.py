@@ -36,6 +36,12 @@ class Command(BaseCommand):
             default=None,
             help='Select tickets by ids',
         ),
+        make_option('--input-data',
+            action='store',
+            dest='input_data',
+            default=None,
+            help='Save the data used to generate the badegs in the given file',
+        ),
     )
     def handle(self, *args, **options):
         try:
@@ -58,7 +64,9 @@ class Command(BaseCommand):
             tickets = tickets.filter(id__in=options['ids'].split(','))
             cmdargs.extend(['-e', '0', '-p', 'A4', '-n', '4'])
         files = utils.render_badge(tickets, cmdargs=cmdargs)
-        f = files[0]
+        f, input_data = files[0]
+        if options['input_data']:
+            file(options['input_data'], 'w').write(input_data)
         f.seek(0)
         while True:
             data = f.read(16*1024)

@@ -762,12 +762,13 @@ def render_badge(tickets, cmdargs=None):
             stderr=subprocess.PIPE,
             close_fds=True,
         )
-        sout, serr = p.communicate(json.dumps(group['tickets']))
+        data = json.dumps(group['tickets'])
+        sout, serr = p.communicate(data)
         if p.returncode:
             log.warn('badge maker exit with "%s"', p.returncode)
             log.warn('badge maker stderr: %s', serr)
         tfile.seek(0)
-        files.append(tfile)
+        files.append((tfile, data))
     return files
 
 def timetables2ical(tts, altf=lambda d, comp: d):
