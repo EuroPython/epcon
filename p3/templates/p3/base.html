@@ -241,10 +241,12 @@
                 <nav class="darker">
                     <h5>&nbsp;</h5>
                     <ul>
+                        {% block BOTTOM_NAV_BLOCK %}
                         {% navigation "menu3" as pages %}
                         {% for page in pages %}
                         <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
                         {% endfor %}
+                        {% endblock %}
                         
                         <li class="sep"><img src="{{ STATIC_URL }}p5/i/facebook-16x16.png" alt="" width="16" height="16" />&nbsp;<a href="http://www.facebook.com/pages/EuroPython/196457473701266">EuroPython on Facebook</a></li>
                     </ul>
