@@ -221,6 +221,7 @@ PAGE_TEMPLATES = (
     ('cms/p5_homepage.html', 'Homepage'),
     ('cms/content.html', 'Content page'),
     ('cms/content-1col.html', 'Content page, single column'),
+    ('cms/p5_home_splash.html', 'Homepage, coming soon'),
     #('cms/content-assopy.html', 'assopy page (una colonna)'),
 )
 PAGE_UNIQUE_SLUG_REQUIRED = False

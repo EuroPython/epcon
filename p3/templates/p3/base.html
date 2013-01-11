@@ -83,6 +83,7 @@
 {% endfor %}
 {% endif %}
 <header>
+    {% block TOP_NAV_BLOCK %}
     <nav class="darker">
         <div class="container clearfix">
 
@@ -127,6 +128,7 @@
             </div>
         </div>
     </nav>
+    {% endblock %}
     {% comment %}
     <div class="container clearfix">
         <section class="notice countdown">

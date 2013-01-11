@@ -1,0 +1,52 @@
+{% extends "p3/base.html" %}
+{% load p3 microblog_tags conference %}
+{% block BODY_CLASS %} home{% endblock %}
+
+{% block TEASER %} {% endblock%}
+{% block SPONSORS %} {% endblock %}
+{% block TOP_NAV_BLOCK %} {% endblock %}
+
+{% block MAIN_CONTENT %}
+    <hr class="stars" />
+
+    <section class="clearfix">
+        {% post_list count=3 as posts %}
+        <div class="blog border span-6">
+            <h2>From the blog</h2>
+            <ul>
+                {% for post in posts %}
+                {% get_post_data post.id as data %}
+                <li>
+                    <h3><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
+                    <div class="meta">Posted on <b>{{ post.date|date:"M j Y" }}</b>{% if data.comments %} &mdash; <a href="{{ data.url }}#comments">{{ data.comments|length }} comments</a>{% endif %}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="home-notice span-6 last">
+            <a href="/ep2011/"><img src="{{ STATIC_URL }}p5/i/notice-archives-2011.png" alt="Browse the EuroPython 2011 archives" width="390" height="210" /></a>
+        </div>
+    </section>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
