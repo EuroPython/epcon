@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
 # Django settings for pycon project.
+import os
+import os.path
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -10,6 +12,19 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+PROJECT_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+DATA_DIR = os.environ.get('DATA_DIR', os.path.join(PROJECT_DIR, 'data'))
+OTHER_STUFF = os.environ.get('OTHER_STUFF', os.path.join(PROJECT_DIR, 'documents'))
+
+SITE_DATA_ROOT = DATA_DIR + '/site'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': SITE_DATA_ROOT + '/p3.db',
+    }
+}
 
 SERVER_EMAIL = 'wtf@python.it'
 DEFAULT_FROM_EMAIL = 'info@pycon.it'
@@ -45,7 +60,8 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = DATA_DIR + 'media_public'
+SECURE_MEDIA_ROOT = DATA_DIR + 'media_private'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -224,7 +240,7 @@ MICROBLOG_POST_PER_PAGE = 10
 MICROBLOG_MODERATION_TYPE = 'akismet'
 MICROBLOG_AKISMET_KEY = '56c34997206c'
 MICROBLOG_EMAIL_RECIPIENTS = ['europython@python.org', 'europython-improve@python.org', 'pycon-organization@googlegroups.com']
-MICROBLOG_EMAIL_INTEGRATION = False
+MICROBLOG_EMAIL_INTEGRATION = True
 
 MICROBLOG_TWITTER_USERNAME = 'europython'
 MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
@@ -257,6 +273,11 @@ CONFERENCE_FORMS = {
     'Profile': 'p3.forms.P3ProfileForm',
     'EventBooking': 'p3.forms.P3EventBookingForm',
 }
+
+CONFERENCE_LATEST_TWEETS_FILE = SITE_DATA_ROOT + '/latest_tweets.txt'
+CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
+CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
+CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
 def CONFERENCE_VOTING_OPENED(conf, user):
     # possono accedere alla pagina:
@@ -450,6 +471,7 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
             .filter(orderitem__order___complete=True, fare__ticket_type='conference')
     return qs.exists()
 
+ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
@@ -645,21 +667,6 @@ def P3_LIVE_EMBED(request, track=None, event=None):
         return data['html']
 
 from settings_locale import *
-
-MEDIA_ROOT = DATA_DIR + 'media_public'
-SECURE_MEDIA_ROOT = DATA_DIR + 'media_private'
-SITE_DATA_ROOT = DATA_DIR + 'site'
-
-CONFERENCE_LATEST_TWEETS_FILE = SITE_DATA_ROOT + '/latest_tweets.txt'
-CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
-CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DATA_ROOT + '/p3.db',
-    }
-}
 
 # i file sotto SECURE_MEDIA_ROOT devono essere serviti da django, questo if
 # serve ad evitare che vengano messi in una subdir di MEDIA_ROOT che
