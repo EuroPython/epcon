@@ -214,14 +214,14 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 FILEBROWSER_URL_FILEBROWSER_MEDIA = '/static/filebrowser/'
 
 PAGE_USE_SITE_ID = False
-DEFAULT_PAGE_TEMPLATE = 'p3/content.html'
+DEFAULT_PAGE_TEMPLATE = 'cms/content.html'
 PAGE_TEMPLATES = (
-    ('p3/index.html', 'homepage'),
-    ('p3/index-simple.html', 'homepage (semplificata)'),
-    ('p3/content.html', 'content page'),
-    ('p3/content-1col.html', 'content page (una colonna)'),
-    ('p3/content-assopy.html', 'assopy page (una colonna)'),
-    ('p3/p5_homepage.html', '(p5) homepage'),
+    #('cms/index.html', 'homepage'),
+    #('cms/index-simple.html', 'homepage (semplificata)'),
+    ('cms/p5_homepage.html', 'Homepage'),
+    ('cms/content.html', 'Content page'),
+    ('cms/content-1col.html', 'Content page, single column'),
+    #('cms/content-assopy.html', 'assopy page (una colonna)'),
 )
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
