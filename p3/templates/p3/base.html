@@ -182,14 +182,15 @@
         {% endblock %}
         </div>
         <div class="span-3">
+            {% conference_fares as fares %}
+            {% if fares %}
             <div class="buy badge">
-                {% comment %}
-                <h5><a href="/pyevents#challenge">Join the Python Challenge</a></h5>
-                <b>Win a MacBook!</b>
-                {% endcomment %}
                 <h5><a href="/registration/">Buy Tickets</a></h5>
                 Starting from <b>350€</b>
             </div>
+            {% else %}
+            &nbsp;
+            {% endif %}
         </div>
         <div class="span-3 last">
             <div id="habla_available_div" class="badge chat hidden">
