@@ -1,5 +1,19 @@
 {% extends "p3/base.html" %}
-{% load p3 microblog_tags conference %}
+{% load pages_tags microblog_tags %}
+{% block EXTRA_HEAD %}
+<style>
+section.splash {
+    background: #534d4c;
+    border: 4px solid #534d4c;
+    margin-bottom: 20px;
+}
+section.splash img {
+    display: block;
+    margin: 0 auto;
+    width: 800px;
+}
+</style>
+{% endblock %}
 {% block BODY_CLASS %} home{% endblock %}
 
 {% block TEASER %} {% endblock%}
@@ -7,7 +21,10 @@
 {% block TOP_NAV_BLOCK %} {% endblock %}
 
 {% block MAIN_CONTENT %}
-    <hr class="stars" />
+    {% imageplaceholder splash-image as imgsrc %}
+    <section class="splash">
+        <img src="{{ MEDIA_URL }}{{ imgsrc }}" alt=""/>
+    </section>
 
     <section class="clearfix">
         {% post_list count=3 as posts %}
