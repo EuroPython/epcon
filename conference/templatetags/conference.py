@@ -1338,6 +1338,10 @@ def next_events(context, time=None):
 def current_conference():
     return models.Conference.objects.current()
 
+@fancy_tag(register)
+def conference_fares(conf=settings.CONFERENCE):
+    return filter(lambda f: f['valid'], dataaccess.fares(conf))
+
 @fancy_tag(register, takes_context=True)
 def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
     ctx = Context(context)
