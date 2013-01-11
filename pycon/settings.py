@@ -140,6 +140,8 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'filebrowser',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -167,7 +169,6 @@ INSTALLED_APPS = (
     'south',
     'templatesadmin',
     'email_template',
-    'filebrowser',
     'develer_tools',
 )
 

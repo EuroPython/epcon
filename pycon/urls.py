@@ -9,9 +9,11 @@ admin.site.index_template = 'p3/admin/index.html'
 
 import p3.forms as pforms
 
+from filebrowser.sites import site as fsite
+
 urlpatterns = patterns('',
     (r'^accounts/', include('assopy.urls')),
-    (r'^admin/filebrowser/', include('filebrowser.urls')),
+    (r'^admin/filebrowser/', include(fsite.urls)),
     (r'^admin/rosetta/', include('rosetta.urls')),
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
     (r'^admin/', include(admin.site.urls)),
