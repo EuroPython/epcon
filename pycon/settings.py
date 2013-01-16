@@ -270,7 +270,7 @@ CONFERENCE_GOOGLE_MAPS = {
     'country': 'it',
 }
 
-CONFERENCE_CONFERENCE = 'ep2012'
+CONFERENCE_CONFERENCE = 'ep2013'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2012.europython.eu/voting-disallowed'
 
