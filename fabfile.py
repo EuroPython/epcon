@@ -34,5 +34,5 @@ def sshagent_run(cmd, capture=True):
                 local('ssh -A %s "%s"' % (h, cmd), capture=capture)
 
 def download_db():
-    get('/srv/europython/db/p3.db', './')
+    get('/srv/europython/data/site/p3.db', './')
 
