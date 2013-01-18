@@ -1871,3 +1871,58 @@ section.countdown {
 .partner-program h2.name a {
     color: #4895a3;
 }
+
+.archive h3 {
+    float: left;
+    margin-right: 10px;
+}
+
+.archive h3 a {
+    color: #635443;
+}
+
+.archive .talk {
+    margin-bottom: 30px;
+    padding: 15px;
+}
+
+.archive .talk:nth-child(even) {
+    background: white;
+}
+
+.archive .talk .abstract a {
+    white-space: nowrap;
+}
+
+.archive .speaker {
+    float: left;
+    margin-right: 5px;
+}
+
+.archive .speaker a {
+    border: 0;
+}
+
+.archive .dates {
+	font: normal 20px/24px "League Gothic", "Arial Narrow", sans-serif;		
+	text-transform: uppercase;
+}
+
+.archive .dates:after {
+    content: " ";
+    clear: both;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.archive .dates span, .archive .dates a {
+    color: #4895a3;
+    margin-right: 6px;
+}
+
+.archive .dates a {
+    border: 0;
+    background-image: url(../i/tv.png);
+    background-repeat: no-repeat;
+    padding-left: 26px;
+}

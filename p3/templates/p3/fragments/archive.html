@@ -1,0 +1,35 @@
+{% load p3 %}
+<div class="cms archive">
+{% for talk in talks %}
+    <div class="talk container clearfix">
+        <h3><a href="{% url conference-talk slug=talk.slug %}">{{ talk.title }}</a></h3>
+        <div class="dates">
+            {% for date, video in talk.dates %}
+            <span>
+            {% if video %}
+            <a href="{{ video }}">{{ date.date }}</a>
+            {% else %}
+            {{ date.date }}
+            {% endif %}
+            </span>
+            {% endfor %}
+        </div>
+        <div class="abstract span-9">
+            <p>{{ talk.abstract|truncatewords_html:40 }}
+                <a href="{% url conference-talk slug=talk.slug %}">Continue reading &rarr;</a>
+            <p>
+            <div class="tags">
+                {% for t in talk.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+            </div>
+        </div>
+        <div class="speakers span-3 last">
+            {% for spk in talk.speakers %}
+            {% p3_profile_data spk.id as pdata %}
+            <div class="speaker">
+                <a href="{% url conference-profile slug=spk.slug %}"><img src="{{ pdata.image }}" height="85" alt="{{ spk.name }}"></a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+</div>

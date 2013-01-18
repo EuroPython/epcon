@@ -531,3 +531,28 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
         'user_message': user_message if user_message in ('auto', 'always', 'none') else 'auto',
     })
     return render_to_string('p3/fragments/render_profile_box.html', ctx)
+
+@register.inclusion_tag('p3/fragments/archive.html', takes_context=True)
+def render_archive(context, conference):
+    ctx = Context(context)
+
+    def match(e, exclude_tags=set(('partner0', 'partner1', 'sprint1', 'sprint2', 'sprint3'))):
+        if e['tags'] & exclude_tags:
+            return False
+        if not e['talk']:
+            return False
+        return True
+    events = { x['id']:x for x in filter(match, cdataaccess.events(conf=conference)) }
+    talks = {}
+    for e in events.values():
+        t = e['talk']
+        if t['id'] in talks:
+            continue
+        t['dates'] = sorted([ (events[x]['time'], events[x]['talk']['video_url']) for x in t['events_id'] ])
+        talks[t['id']] = t
+
+    ctx.update({
+        'conference': conference,
+        'talks': sorted(talks.values(), key=lambda x: x['title']),
+    })
+    return ctx
