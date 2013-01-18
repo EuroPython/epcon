@@ -353,7 +353,7 @@ class P3Profile(models.Model):
                     return self.image_url
             elif self.profile.image:
                 return self.profile.image.url
-        return dsettings.STATIC_URL + 'p5/i/headshot-default.jpg'
+        return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
 
     def send_user_message(self, from_, subject, message):
         from conference.models import Conference, AttendeeLink

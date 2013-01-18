@@ -539,6 +539,8 @@ def HCOMMENTS_MODERATOR_REQUEST(request, comment):
             return request.user in owners
     return False
 
+P3_ANONYMOUS_AVATAR = 'p5/i/headshot-default.jpg'
+
 P3_LIVE_TRACKS = {
     'track1': {
         'stream': {

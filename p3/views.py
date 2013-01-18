@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response, re
 from django.template import RequestContext, Template
 
 import forms as p3forms
+import p3
 from p3 import dataaccess
 from p3 import models
 import assopy.models as amodels
@@ -779,9 +780,16 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
 def p3_profile_avatar(request, slug):
     p = get_object_or_404(cmodels.AttendeeProfile, slug=slug).p3_profile
     from urllib2 import urlopen
-    img = urlopen(p.profile_image_url(anonymous=False))
-    headers = img.info()
-    return http.HttpResponse(img.read(), content_type=headers.get('content-type'))
+    try:
+        img = urlopen(p.profile_image_url(anonymous=False))
+    except Exception:
+        path = os.path.join(os.path.dirname(p3.__file__), 'static', settings.P3_ANONYMOUS_AVATAR)
+        img = file(path)
+        ct = 'image/jpg'
+    else:
+        headers = img.info()
+        ct = headers.get('content-type')
+    return http.HttpResponse(img.read(), content_type=ct)
 
 @login_required
 @render_to_json
