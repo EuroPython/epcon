@@ -1331,7 +1331,39 @@ hr.sep {
  margin: 0 auto;
 }
 
+.home-notice.archives {
+	font-family: "League Gothic", "Arial Narrow", sans-serif;
+}
 
+.home-notice.archives h2 {
+    font-size: 36px;
+    line-height: 40px;
+}
+
+.home-notice.archives h2 span {
+    color: #40ADBE;
+}
+
+.home-notice.archives ul {
+    background-image: url(../i/archives.png);
+    background-repeat: no-repeat;
+    background-position: 0 50%;
+    padding-left: 75px;
+}
+
+.home-notice.archives li {
+    font-size: 45px;
+    line-height: 60px;
+    text-transform: uppercase;
+}
+
+.home-notice.archives li a {
+    color: #7F6F5F;
+}
+
+.home-notice.archives li span {
+    color: #40ADBE;
+}
 
 /* ======= */
 /* ! cal   */
