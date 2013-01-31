@@ -478,6 +478,7 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
             .filter(orderitem__order___complete=True, fare__ticket_type='conference')
     return qs.exists()
 
+GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
