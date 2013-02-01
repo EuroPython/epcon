@@ -463,11 +463,11 @@ class AuthUserAdmin(aUserAdmin):
     _doppelganger.allow_tags = True
     _doppelganger.short_description = 'Doppelganger'
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         from assopy import dataaccess
         ctx = extra_context or {}
         ctx['user_data'] = dataaccess.all_user_data(object_id)
-        return super(AuthUserAdmin, self).change_view(request, object_id, ctx)
+        return super(AuthUserAdmin, self).change_view(request, object_id, form_url, ctx)
 
 admin.site.register(aUser, AuthUserAdmin)
 
