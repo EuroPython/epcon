@@ -9,7 +9,7 @@ class Migration(DataMigration):
     def forwards(self, orm):
         vat20 = orm.Vat(id=1, value='20', description='20%') 
         vat20.save()
-        vat21 = orm.Vat(id=1, value='21', description='21%') 
+        vat21 = orm.Vat(id=2, value='21', description='21%') 
         vat21.save()
 
         for x in orm.OrderItem.objects.all():
