@@ -20,7 +20,8 @@ def _new_paper_email(sender, **kw):
     subject = '[new paper] "%s %s" - %s' % (sender.user.first_name, sender.user.last_name, tlk.title)
     body = '''
 Title: %(title)s
-Duration: %(duration)s
+Duration: %(duration)s (includes Q&A)
+Q&A Session: %(qa_duration)s
 Language: %(language)s
 Type: %(type)s
 
@@ -30,6 +31,7 @@ Tags: %(tags)s
 ''' % {
     'title': tlk.title,
     'duration': tlk.duration,
+    'qa_duration': tlk.qa_duration,
     'language': tlk.language,
     'abstract': getattr(tlk.getAbstract(), 'body', ''),
     'type': tlk.get_type_display(),
