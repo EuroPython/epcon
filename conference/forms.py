@@ -250,80 +250,49 @@ class SpeakerForm(forms.Form):
         widget=forms.Textarea(),)
     ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
 
-class TalkForm(forms.Form):
-    title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
-    duration = forms.TypedChoiceField(
-        label=_('Suggested duration'),
-        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
-        choices=models.TALK_DURATION,
-        coerce=int,
-        initial='30',)
-    type = forms.TypedChoiceField(
-        label=_('Talk Type'),
-        choices=models.TALK_TYPE,
-        initial='s',
-        required=True,)
-    language = forms.TypedChoiceField(choices=models.TALK_LANGUAGES, initial='en')
-    level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
-    slides = forms.FileField(required=False)
+_abstract = models.Talk._meta.get_field_by_name('abstracts')[0]
+class TalkForm(forms.ModelForm):
     abstract = forms.CharField(
         max_length=5000,
-        label=_('Talk abstract'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        label=_abstract.verbose_name,
+        help_text=_abstract.help_text,
         widget=forms.Textarea(),)
-    teaser_video = forms.URLField(
-        label=_('Teaser video'),
-        help_text=_('Insert the url for your teaser video'),
-        required=False,
-    )
-    tags = TagField(widget=TagWidget, required=False)
 
-    def __init__(self, instance=None, *args, **kwargs):
-        if instance:
-            data = {
-                'type': instance.type,
-                'title': instance.title,
-                'duration': instance.duration,
-                'language': instance.language,
-                'level': instance.level,
-                'abstract': getattr(instance.getAbstract(), 'body', ''),
-                'teaser_video': instance.teaser_video,
-                'tags': instance.tags.all(),
-            }
-            data.update(kwargs.get('initial', {}))
-            kwargs['initial'] = data
-        super(TalkForm, self).__init__(*args, **kwargs)
-        self.instance = instance
+    class Meta:
+        model = models.Talk
+        fields = ('title', 'duration', 'qa_duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
 
-    @transaction.commit_on_success
-    def save(self, speaker=None):
+    def __init__(self, *args, **kw):
+        if kw.get('instance'):
+            o = kw['instance']
+            initial = kw.get('initial', {})
+            abstract = o.getAbstract()
+            if abstract:
+                data = {'abstract': abstract.body}
+            data.update(initial)
+            kw['initial'] = data
+        super(TalkForm, self).__init__(*args, **kw)
+
+    def save(self, commit=True, speaker=None):
+        assert commit, "commit==False not supported yet"
         data = self.cleaned_data
-        o = self.instance
-        if o is None:
+        pk = self.instance.pk
+        if not pk:
             assert speaker is not None
-            o = models.Talk.objects.createFromTitle(
+            self.instance = models.Talk.objects.createFromTitle(
                 title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', duration=data['duration'], language=data['language'],
                 level=data['level'],
             )
-        else:
-            o.title = data['title']
-            o.duration = data['duration']
-            o.language = data['language']
-            o.level = data['level']
+        inst = super(TalkForm, self).save(commit=commit)
+        inst.setAbstract(data['abstract'])
 
-        o.type = data['type']
-        o.teaser_video = data['teaser_video']
-        if data['slides']:
-            o.slides = data['slides']
-        o.save()
-        o.setAbstract(data['abstract'])
-        o.tags.set(*data['tags'])
-
-        if not self.instance:
+        if not pk:
             from conference.listeners import new_paper_submission
-            new_paper_submission.send(sender=speaker, talk=o)
-        return o
+            new_paper_submission.send(sender=speaker, talk=self.instance)
+        return inst
+
+del _abstract
 
 from tagging.models import TaggedItem
 from tagging.utils import parse_tag_input

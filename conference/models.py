@@ -549,7 +549,7 @@ TALK_TYPE = (
     ('p', 'Poster session'),
 )
 class Talk(models.Model, UrlMixin):
-    title = models.CharField('titolo del talk', max_length=100)
+    title = models.CharField(_('Talk title'), max_length=100)
     slug = models.SlugField(max_length=100)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
@@ -562,16 +562,26 @@ class Talk(models.Model, UrlMixin):
     qa_duration = models.IntegerField(
         _('Q&A duration'),
         default=0)
-    duration = models.IntegerField(choices=TALK_DURATION)
-    language = models.CharField('lingua del talk', max_length=3, choices=TALK_LANGUAGES)
-    abstracts = generic.GenericRelation(MultilingualContent)
+    language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES)
+    abstracts = generic.GenericRelation(
+        MultilingualContent,
+        verbose_name=_('Talk abstract'),
+        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
     video_url = models.TextField(blank=True)
     video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
-    teaser_video = models.URLField(verify_exists=False, blank=True)
+    teaser_video = models.URLField(
+        _('Teaser video'),
+        verify_exists=False,
+        blank=True,
+        help_text=_('Insert the url for your teaser video'))
     status = models.CharField(max_length=8, choices=TALK_STATUS)
-    level = models.CharField(max_length=12, choices=TALK_LEVEL)
+    level = models.CharField(
+        _('Audience level'),
+        default='beginner',
+        max_length=12,
+        choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
     type = models.CharField(max_length=1, choices=TALK_TYPE, default='s')
     # Questi sono i tag che lo speaker suggerisce per il proprio talk, li ho
