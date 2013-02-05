@@ -40,9 +40,10 @@ register = template.Library()
 
 def _lang(ctx):
     try:
-        return ctx['LANGUAGE_CODE']
+        l = ctx['LANGUAGE_CODE']
     except KeyError:
-        return PAGE_DEFAULT_LANGUAGE
+        l = PAGE_DEFAULT_LANGUAGE
+    return l.split('-', 1)[0]
 
 def _request_cache(request, key):
     """
