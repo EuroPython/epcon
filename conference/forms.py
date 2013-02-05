@@ -156,6 +156,10 @@ class SubmissionForm(forms.Form):
         choices=models.TALK_DURATION,
         coerce=int,
         initial='30',)
+    qa_duration = forms.IntegerField(
+        label=_('Q&A duration'),
+        initial='0',
+        required=False,)
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
@@ -220,6 +224,8 @@ class SubmissionForm(forms.Form):
             status='proposed', duration=data['duration'], language=data['language'],
             level=data['level'], type=data['type'],
         )
+        talk.qa_duration = data.get('qa_duration', 0)
+        talk.save()
         talk.setAbstract(data['abstract'])
         talk.tags.set(*data['tags'])
 

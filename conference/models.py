@@ -553,6 +553,15 @@ class Talk(models.Model, UrlMixin):
     slug = models.SlugField(max_length=100)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
+    # durata totale del talk (include la sessione di Q&A)
+    duration = models.IntegerField(
+        _('Suggested duration'),
+        choices=TALK_DURATION,
+        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'))
+    # durata della sessione di Q&A
+    qa_duration = models.IntegerField(
+        _('Q&A duration'),
+        default=0)
     duration = models.IntegerField(choices=TALK_DURATION)
     language = models.CharField('lingua del talk', max_length=3, choices=TALK_LANGUAGES)
     abstracts = generic.GenericRelation(MultilingualContent)
