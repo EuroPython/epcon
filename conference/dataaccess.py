@@ -32,6 +32,11 @@ def _dump_fields(o):
     return output
 
 def navigation(lang, page_type):
+    if '-' not in lang:
+        for code, _ in settings.PAGE_LANGUAGES:
+            if code.startswith(lang):
+                lang = code
+                break
     pages = []
     qs = Page.objects\
         .published()\
