@@ -431,43 +431,79 @@ function setup_talkform(ctx) {
     $('form.talk-form', ctx).each(function() {
         var f = $(this);
         var field_type = $('input[name=type]', f);
+        var field_duration = $('select[name=duration]', f);
+        var field_language = $('select[name=language]', f);
         /* se viene scelto "training" voglio impostare la duration a 4 ore e
          * renderla readonly */
+        var original_durations = [];
+        $('option', field_duration).each(function() {
+            var o = $(this);
+            original_durations.push([ o.val(), o.text() ]);
+        });
+
+        /*
+         * in questa form voglio che i campi disabilitati vengano comunque inviati al server)
+         */
+        function disable_field(field) {
+            field.attr('disabled', 'disabled');
+            var value = field.val();
+            var name = field.get(0).name;
+            var p = field.parent();
+            var shadow = p.children('input._shadow[type=hidden][name=' + name + ']');
+            if(shadow.length) {
+                shadow.val(value);
+            }
+            else {
+                p.append($('<input type="hidden" class="_shadow" name="' + name + '" value="' + value + '" />'));
+            }
+        }
+        function enable_field(field) {
+            field.attr('disabled', null);
+            var name = field.get(0).name;
+            field
+                .parent()
+                .children('input._shadow[type=hidden][name=' + name + ']')
+                    .remove();
+        }
         function syncPage(last_run) {
             var talk_type = $('input[name=type]', f).val();
-            var field_duration = $('select[name=duration]', f);
-            var field_language = $('select[name=language]', f);
             switch(talk_type) {
                 case 's':
                     $('option[value=240]', field_duration).remove();
-                    field_duration.attr('disabled', null);
+                    enable_field(field_duration);
+                    enable_field(field_language);
                     field_duration.parent().show();
-
-                    field_language.attr('disabled', null);
                     break;
                 case 't':
                     var h = $('option[value=240]', field_duration);
                     if(h.length == 0) {
-                        var h = $('<option value="240">4 hours</option>');
+                        var label = "";
+                        for(var ix=0; ix<original_durations.length; ix++) {
+                            if(original_durations[ix][0] == 240) {
+                                label = original_durations[ix][1];
+                                break;
+                            }
+                        }
+                        var h = $('<option value="240">' + label + '</option>');
                         field_duration.append(h);
                     }
                     h.attr('selected', 'selected');
-                    field_duration.attr('disabled', 'disabled');
+                    disable_field(field_duration);
                     field_duration.parent().show();
 
                     var h = $('option[value=en]', field_language);
                     h.attr('selected', 'selected');
-                    field_language.attr('disabled', 'disabled');
+                    disable_field(field_language);
                     break;
                 case 'p':
                     var h = $('option[value=45]', field_duration);
                     h.attr('selected', 'selected');
-                    field_duration.attr('disabled', 'disabled');
+                    disable_field(field_duration);
                     field_duration.parent().hide();
 
                     var h = $('option[value=en]', field_language);
                     h.attr('selected', 'selected');
-                    field_language.attr('disabled', 'disabled');
+                    disable_field(field_language);
                     break;
                 default:
                     $('input[name=type][value=s]', f).attr('checked', 'checked');
