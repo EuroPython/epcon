@@ -12,7 +12,10 @@
         </div>
 
         <div class="column span-4 last">
-			{% block BLOG_POST_INFO %}{% endblock %}
+            <div class="blog-feed">
+                <h4><a href="/blog/feeds/latest">Blog feed <img src="{{ STATIC_URL }}p5/i/icon-feed.png"></a></h4>
+            </div>
+            {% block BLOG_POST_INFO %}{% endblock %}
 
             <div id="blog-archives-browser">
                 {% render_fb_like ref="like_blog_col" %}

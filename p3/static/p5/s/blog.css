@@ -1,3 +1,10 @@
+.blog-feed {
+    margin: 0 0 10px 0;
+}
+.blog-feed a {
+    border: 0;
+}
+
 .blog-post {
     margin: 0 0 40px 0;
 }
