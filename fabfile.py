@@ -1,38 +1,29 @@
-# -*- coding: UTF-8 -*-
+from fabric.api import env, task, get
+from fabric.contrib import django
 
+import sys
 import os.path
-import string
-import random
+sys.path.insert(0, os.path.dirname(env.real_fabfile))
 
-from fabric.api import *
-from fabric.contrib import files
+django.project('pycon')
+from django.conf import settings
 
+env.use_ssh_config = True
 env.hosts = [ 'pycon.it' ]
 
-# sshagent_run credits to http://lincolnloop.com/blog/2009/sep/22/easy-fabric-deployment-part-1-gitmercurial-and-ssh/
-# modified by dvd :)
-def sshagent_run(cmd, capture=True):
-    """
-    Helper function.
-    Runs a command with SSH agent forwarding enabled.
-    
-    Note:: Fabric (and paramiko) can't forward your SSH agent. 
-    This helper uses your system's ssh to do so.
-    """
+@task
+def sync_db():
+    remote_path = '/srv/europython/data/site/p3.db'
+    local_path = settings.DATABASES['default']['NAME']
+    get(remote_path, local_path)
 
-    cwd = env.get('cwd', '')
-    if cwd:
-        cmd = 'cd %s;%s' % (cwd, cmd)
+def parent_(path):
+    if path[-1] == '/':
+        path = path[:-1]
+    return os.path.dirname(path)
 
-    with settings(cwd=''):
-        for h in env.hosts:
-            try:
-                # catch the port number to pass to ssh
-                host, port = h.split(':')
-                local('ssh -p %s -A %s "%s"' % (port, host, cmd), capture=capture)
-            except ValueError:
-                local('ssh -A %s "%s"' % (h, cmd), capture=capture)
-
-def download_db():
-    get('/srv/europython/data/site/p3.db', './')
-
+@task
+def sync_media():
+    remote_path = '/srv/europython/data/media_public'
+    local_path = parent_(settings.MEDIA_ROOT)
+    get(remote_path, local_path)
