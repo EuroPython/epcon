@@ -261,6 +261,9 @@ class TalkForm(forms.ModelForm):
     class Meta:
         model = models.Talk
         fields = ('title', 'duration', 'qa_duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
+        widgets = {
+            'tags': TagWidget,
+        }
 
     def __init__(self, *args, **kw):
         if kw.get('instance'):
