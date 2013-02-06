@@ -266,9 +266,10 @@ class TalkForm(forms.ModelForm):
         if kw.get('instance'):
             o = kw['instance']
             initial = kw.get('initial', {})
+            data = {}
             abstract = o.getAbstract()
             if abstract:
-                data = {'abstract': abstract.body}
+                data['abstract'] = abstract.body
             data.update(initial)
             kw['initial'] = data
         super(TalkForm, self).__init__(*args, **kw)
