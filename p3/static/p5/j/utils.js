@@ -433,6 +433,7 @@ function setup_talkform(ctx) {
         var field_type = $('input[name=type]', f);
         var field_duration = $('select[name=duration]', f);
         var field_language = $('select[name=language]', f);
+        var field_level = $('select[name=level]', f);
         /* se viene scelto "training" voglio impostare la duration a 4 ore e
          * renderla readonly */
         var original_durations = [];
@@ -471,10 +472,15 @@ function setup_talkform(ctx) {
                 case 's':
                     $('option[value=240]', field_duration).remove();
                     enable_field(field_duration);
-                    enable_field(field_language);
                     field_duration.parent().show();
+
+                    enable_field(field_language);
+
+                    enable_field(field_level);
+                    field_level.parent().show();
                     break;
                 case 't':
+                case 'h':
                     var h = $('option[value=240]', field_duration);
                     if(h.length == 0) {
                         var label = "";
@@ -494,6 +500,17 @@ function setup_talkform(ctx) {
                     var h = $('option[value=en]', field_language);
                     h.attr('selected', 'selected');
                     disable_field(field_language);
+
+                    if(talk_type == 'h') {
+                        var h = $('option[value=beginner]', field_level);
+                        h.attr('selected', 'selected');
+                        disable_field(field_level);
+                        field_level.parent().hide();
+                    }
+                    else {
+                        enable_field(field_level);
+                        field_level.parent().show();
+                    }
                     break;
                 case 'p':
                     var h = $('option[value=45]', field_duration);
@@ -504,6 +521,9 @@ function setup_talkform(ctx) {
                     var h = $('option[value=en]', field_language);
                     h.attr('selected', 'selected');
                     disable_field(field_language);
+
+                    enable_field(field_level);
+                    field_level.parent().show();
                     break;
                 default:
                     $('input[name=type][value=s]', f).attr('checked', 'checked');

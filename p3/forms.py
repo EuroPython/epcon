@@ -20,7 +20,29 @@ TALK_DURATION = (
     (60, '45 minutes + 15 Q&A'),
     (90, '70 minutes + 20 Q&A'),
     (240, '4 hours'))
-class P3SubmissionForm(cforms.SubmissionForm):
+
+class P3TalkFormMixin(object):
+    def clean(self):
+        data = super(P3TalkFormMixin, self).clean()
+        if data['type'] in ('t', 'h'):
+            data['duration'] = 240
+
+        if not data.get('duration'):
+            data['duration'] = 45
+
+        if not data.get('language') or data['type'] != 's':
+            data['language'] = 'en'
+
+        if data['duration'] in (45, 60):
+            data['qa_duration'] = 15
+        elif data['duration'] == 90:
+            data['qa_duration'] = 20
+        else:
+            data['qa_duration'] = 0
+
+        return data
+
+class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
         help_text=_('This is the <b>suggested duration</b> of the talk'),
@@ -36,8 +58,8 @@ class P3SubmissionForm(cforms.SubmissionForm):
     )
     type = forms.TypedChoiceField(
         label=_('Talk Type'),
-        help_text='Choose between a standard talk, a 4-hours in-depth training or a poster session',
-        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'),),
+        help_text='Choose between a standard talk, a 4-hours in-depth training, a poster session or an help desk session',
+        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'), ('h', 'Help Desk')),
         initial='s',
         required=True,
         widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
@@ -78,25 +100,6 @@ class P3SubmissionForm(cforms.SubmissionForm):
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
-    def clean(self):
-        data = super(P3SubmissionForm, self).clean()
-        if data['type'] == 't':
-            data['duration'] = 240
-
-        if not data.get('duration'):
-            data['duration'] = 45
-
-        if not data.get('language') or data['type'] != 's':
-            data['language'] = 'en'
-
-        if data['duration'] in (45, 60):
-            data['qa_duration'] = 15
-        elif data['duration'] == 90:
-            data['qa_duration'] = 20
-        else:
-            data['qa_duration'] = 0
-        return data
-
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
@@ -114,7 +117,7 @@ class P3SubmissionForm(cforms.SubmissionForm):
 
         return talk
 
-class P3SubmissionAdditionalForm(cforms.TalkForm):
+class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
     video_agreement = P3SubmissionForm.base_fields['video_agreement']
@@ -125,25 +128,6 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
 
-    def clean(self):
-        data = super(P3SubmissionAdditionalForm, self).clean()
-        if data['type'] == 't':
-            data['duration'] = 240
-
-        if not data.get('duration'):
-            data['duration'] = 45
-
-        if not data.get('language') or data['type'] != 's':
-            data['language'] = 'en'
-
-        if data['duration'] in (45, 60):
-            data['qa_duration'] = 15
-        elif data['duration'] == 90:
-            data['qa_duration'] = 20
-        else:
-            data['qa_duration'] = 0
-        return data
-
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
         talk.duration = self.cleaned_data['duration']
@@ -151,34 +135,13 @@ class P3SubmissionAdditionalForm(cforms.TalkForm):
         talk.save()
         return talk
 
-class P3TalkForm(cforms.TalkForm):
+class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     duration = P3SubmissionForm.base_fields['duration']
     type = P3SubmissionForm.base_fields['type']
     abstract = P3SubmissionForm.base_fields['abstract']
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
-
-    def clean(self):
-        data = super(P3TalkForm, self).clean()
-        # se instance è None la form viene usata per presentare un nuovo paper
-        if not self.instance:
-            if data['type'] == 't' and data.get('duration', 0) < 240:
-                data['duration'] = 240
-
-            if not data.get('duration'):
-                data['duration'] = 45
-
-            if not data.get('language') or data['type'] != 's':
-                data['language'] = 'en'
-
-        if data['duration'] in (45, 60):
-            data['qa_duration'] = 15
-        elif data['duration'] == 90:
-            data['qa_duration'] = 20
-        else:
-            data['qa_duration'] = 0
-        return data
 
     def save(self, *args, **kwargs):
         talk = super(P3TalkForm, self).save(*args, **kwargs)
