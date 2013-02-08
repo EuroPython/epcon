@@ -1097,7 +1097,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
     _usage.admin_order_field = 'usage'
 
     def do_merge_tags(self, request, queryset):
-        ids = queryset.values_list('id', flat=True)
+        ids = queryset.order_by().values_list('id', flat=True)
         if not ids:
             self.message_user(request, "No tag selected")
             return
