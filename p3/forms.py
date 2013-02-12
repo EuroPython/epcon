@@ -648,7 +648,7 @@ class P3FormTickets(aforms.FormTickets):
 
         checks = []
         for ix, row in enumerate(data):
-            f = cmodels.Fare.objects.get(code=row['fare'])
+            f = cmodels.Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=row['fare'])
             price = f.calculated_price(**row)
             if not price:
                 raise forms.ValidationError('%s:invalid period' % ix)
@@ -706,7 +706,7 @@ class P3FormTickets(aforms.FormTickets):
         from conference.models import Fare
         for fname in ('bed_reservations', 'room_reservations'):
             for r in data.get(fname, []):
-                data['tickets'].append((Fare.objects.get(code=r['fare']), r))
+                data['tickets'].append((Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=r['fare']), r))
 
         if not data['tickets']:
             raise forms.ValidationError('No tickets')
