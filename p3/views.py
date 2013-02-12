@@ -372,7 +372,13 @@ def billing(request):
             if totals['total'] == 0:
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
 
-            if o.payment_url:
+            if order_data['payment'] in ('paypal','cc'):
+                urlname = 'assopy-paypal-redirect' if order_data['payment'] == 'paypal' else 'assopy-cc-paypal-redirect'
+                return HttpResponseRedirectSeeOther(
+                    reverse(
+                        urlname,
+                        kwargs={'code': unicode(o.code).replace('/', '-')}))
+            elif o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:
                 return HttpResponseRedirectSeeOther(
