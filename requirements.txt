@@ -12,6 +12,7 @@ django-tagging==0.3.1
 python-memcached==1.48
 pytz
 Fabric
+-e git+git://github.com/dcramer/django-paypal.git#egg=django-paypal
 
 -e git+ssh://src.develer.com/git/projects/microblog#egg=microblog
 -e git+ssh://src.develer.com/git/projects/hcomments#egg=hcomments

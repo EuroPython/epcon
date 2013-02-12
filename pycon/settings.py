@@ -173,6 +173,7 @@ INSTALLED_APPS = (
     'templatesadmin',
     'email_template',
     'develer_tools',
+    'paypal.standard.ipn',
 )
 
 # A sample logging configuration. The only tangible logging
