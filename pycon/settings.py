@@ -194,6 +194,10 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
         }
     },
     'loggers': {
@@ -682,6 +686,8 @@ def P3_LIVE_EMBED(request, track=None, event=None):
 
 from settings_locale import *
 
+if DEBUG:
+    LOGGING['loggers']['django.request']['handlers'].append('console')
 # i file sotto SECURE_MEDIA_ROOT devono essere serviti da django, questo if
 # serve ad evitare che vengano messi in una subdir di MEDIA_ROOT che
 # normalmente è servita da un webserver esterno.
