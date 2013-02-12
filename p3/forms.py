@@ -16,9 +16,9 @@ from p3 import models
 import datetime
 
 TALK_DURATION = (
-    (45, '30 minutes + 15 Q&A'),
-    (60, '45 minutes + 15 Q&A'),
-    (90, '70 minutes + 20 Q&A'),
+    (45, '30 minutes + 10 Q&A'),
+    (60, '45 minutes + 10 Q&A'),
+    (90, '70 minutes + 15 Q&A'),
     (240, '4 hours'))
 
 class P3TalkFormMixin(object):
@@ -45,7 +45,7 @@ class P3TalkFormMixin(object):
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
-        help_text=_('This is the <b>suggested duration</b> of the talk'),
+        help_text=_('This is the <b>desired duration</b> of the talk'),
         choices=TALK_DURATION,
         coerce=int,
         initial=60,
