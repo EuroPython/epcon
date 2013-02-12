@@ -106,10 +106,16 @@
                                 N/A
                                 {% else %}
                                     {% for i in invoices %}
-                                    <a href="{% url assopy-invoice-pdf assopy_id=i.assopy_id %}">{{ i.code }}</a>
-                                    {% for cn in i.credit_notes.all %}
-                                        (<a href="{% url assopy-invoice-pdf assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
-                                    {% endfor %}
+                                        {% if i.assopy_id %}
+                                            {% comment %}TODO{% endcomment %}
+                                        {% else %}
+                                            <a href="{% url assopy-invoice-pdf order_code=o.code code=i.code %}">{{ i.code }}</a>
+                                            {% comment %}
+                                            {% for cn in i.credit_notes.all %}
+                                                (<a href="{% url assopy-invoice-pdf assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
+                                            {% endfor %}
+                                            {% endcomment %}
+                                        {% endif %}
                                     {% endfor %}
                                 {% endif %}
                                 {% endwith %}
