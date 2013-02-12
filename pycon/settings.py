@@ -2,6 +2,7 @@
 # Django settings for pycon project.
 import os
 import os.path
+import sys
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -16,6 +17,8 @@ MANAGERS = ADMINS
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(os.path.join(os.path.dirname(__file__), '..')))
 DATA_DIR = os.environ.get('DATA_DIR', os.path.join(PROJECT_DIR, 'data'))
 OTHER_STUFF = os.environ.get('OTHER_STUFF', os.path.join(PROJECT_DIR, 'documents'))
+
+sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
 
 SITE_DATA_ROOT = DATA_DIR + '/site'
 
