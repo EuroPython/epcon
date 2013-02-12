@@ -28,6 +28,8 @@
             </fieldset>
             {% if COUNTDOWN.conference > 0 %}
             <fieldset class="tickets conference-tickets">
+                {% fares_available "conference" as fares %}
+                {% if fares %}
                 <legend>{% trans "Conference tickets" %}</legend>
                 <p class="vat-info">{% trans "All prices are 21% VAT included." %}</p>
                 <div class="cms">    
@@ -65,17 +67,18 @@
                         </tbody>
                     </table>
                 </div>
-                
                 <div class="total"> 
                     {% trans "Conference tickets total (VAT inc.)" %}: <b>€ 0</b>
                 </div> 
+                {% else %}
+                <h3>{% trans "Conference tickets - SOLD OUT" %}</h3>
+                {% endif %}
             </fieldset>
             {% endif %}
             <fieldset class="tickets hotel-reservations">
+                {% fares_available "hotel-room-sharing" as fares %}
+                {% if fares %}
                 <legend>Room sharing at Grand Hotel Mediterraneo</legend>
-                {% comment %}
-                <h3>Hotel rooms are currently sold out</h3>
-                {% endcomment %}
                 <p>Book single beds in shared rooms, save money and get to meet other Pythoners! See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
                 <div class="cms">
@@ -97,8 +100,13 @@
                 <div class="total">
                     {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
                 </div>
+                {% else %}
+                <h3>Hotel rooms are currently sold out</h3>
+                {% endif %}
             </fieldset>
             <fieldset class="tickets hotel-reservations">
+                {% fares_available "hotel-room" as fares %}
+                {% if fares %}
                 <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
                 <p>Book a room in the conference hotel, including wifi and breakfast. See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
@@ -121,8 +129,13 @@
                 <div class="total"> 
                     {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b> 
                 </div> 
+                {% else %}
+                <h3>Hotel rooms are currently sold out</h3>
+                {% endif %}
             </fieldset>
 
+            {% fares_available "other" as fares %}
+            {% if fares %}
             <fieldset class="tickets other-goodies">
                 <legend>{% trans "Other Goodies" %}</legend>
                 {% comment %} <p>{% trans "Other Goodies intro" %}</p> {% endcomment %}
@@ -144,7 +157,10 @@
                     {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b>
                 </div>
             </fieldset>
+            {% endif %}
 
+            {% fares_available "partner" as fares %}
+            {% if fares %}
             <fieldset class="tickets partner-program">
                 <legend>{% trans "Partner Program" %}</legend>
                 <p>{% trans "Partner Program intro" %}</p>
@@ -167,6 +183,7 @@
                     {% trans "Partner Program total (VAT inc.)" %}: <b>€ 0</b> 
                 </div> 
             </fieldset>
+            {% endif %}
 
             <fieldset class="tickets coupon">
                 <legend>{% trans "Coupon code" %}</legend>

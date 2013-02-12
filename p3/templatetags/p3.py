@@ -200,6 +200,27 @@ def render_ticket(context, ticket):
     })
     return ctx
 
+@register.assignment_tag
+def fares_available(fare_type):
+    """
+    Restituisce l'elenco delle tariffe attive in questo momento per la
+    tipologia specificata.
+    """
+    assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
+
+    fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
+    if fare_type == 'conference':
+        fares = [ f for f in fares_list if f['code'][0] == 'T' ]
+    elif fare_type == 'hotel-room-sharing':
+        fares = [ f for f in fares_list if f['code'].startswith('HB') ]
+    elif fare_type == 'hotel-room':
+        fares = [ f for f in fares_list if f['code'].startswith('HR') ]
+    elif fare_type == 'other':
+        fares = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
+    elif fare_type == 'partner':
+        fares = [ f for f in fares_list if f['ticket_type'] in 'partner' ]
+    return fares
+
 @fancy_tag(register, takes_context=True)
 def render_cart_rows(context, fare_type, form):
     assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
