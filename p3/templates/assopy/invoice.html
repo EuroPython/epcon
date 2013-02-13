@@ -1,0 +1,32 @@
+{% extends 'assopy/base_invoice.html' %}
+
+{% block EXTRA_HEAD %}
+    <style>
+        body {
+            margin: 0 10px;
+        }
+
+        .companyinfo {
+            line-height: 16px;
+        }
+    </style>
+{% endblock %}
+{% block HEADER %}
+    <div class="companylogo">
+        <img src="{{ STATIC_URL }}p5/i/pyconitalia.jpg" />
+    </div>
+    <div class="companyinfo">
+        PYTHON ITALIA Associazione di Promozione Sociale<br />
+        Via Mugellese, 1 - 50013 Campi Bisenzio (FI)<br />
+        Partita IVA/V.A.T. 05753460483<br />
+        Codice Fiscale: 94144670489<br />
+        Tel/Phone 055.8969650<br />
+        Email: amministrazione@pycon.it<br />
+    </div>
+    <div class="clear"></div>
+{% endblock %}
+
+{% block BANK %}
+IW BANK S.p.A. - Swift/BIC: IWBKITMM<br />
+IBAN: IT11M0316501600000011516774
+{% endblock %}
