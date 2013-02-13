@@ -1095,3 +1095,25 @@ def live_events(request):
             'next': next,
         }
     return output
+
+def genro_invoice_pdf(request, assopy_id):
+    import urllib
+    from assopy.clients import genro
+    from assopy.models import OrderItem
+
+    data = genro.invoice(assopy_id)
+
+    try:
+        item = OrderItem.objects\
+            .filter(order__assopy_id=data['order_id'])\
+            .select_related('ticket__fare')[0]
+    except IndexError:
+        raise http.Http404()
+
+    conference = item.ticket.fare.conference
+
+    fname = '[%s] invoice.pdf' % (conference,)
+    f = urllib.urlopen(genro.invoice_url(assopy_id))
+    response = http.HttpResponse(f, mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+    return response

@@ -107,7 +107,7 @@
                                 {% else %}
                                     {% for i in invoices %}
                                         {% if i.assopy_id %}
-                                            {% comment %}TODO{% endcomment %}
+                                            <a href="{% url genro-legacy-invoice assopy_id=i.assopy_id %}">{{ i.code }}</a>
                                         {% else %}
                                             <a href="{% url assopy-invoice-pdf order_code=o.code code=i.code %}">{{ i.code }}</a>
                                             {% comment %}
