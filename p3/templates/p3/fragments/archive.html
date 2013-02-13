@@ -26,7 +26,8 @@
             {% for spk in talk.speakers %}
             {% p3_profile_data spk.id as pdata %}
             <div class="speaker">
-                <a href="{% url conference-profile slug=spk.slug %}"><img src="{{ pdata.image }}" height="85" alt="{{ spk.name }}"></a>
+                <a href="{% url conference-profile slug=spk.slug %}"><img src="{{ pdata.image }}" width="85" alt=""></a>
+                <span>{{ spk.name }}</span>
             </div>
             {% endfor %}
         </div>

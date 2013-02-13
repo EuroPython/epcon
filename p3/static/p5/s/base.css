@@ -1929,10 +1929,15 @@ section.countdown {
 .archive .speaker {
     float: left;
     margin-right: 5px;
+    max-width: 85px;
 }
 
 .archive .speaker a {
     border: 0;
+}
+.archive .speaker span {
+    display: block;
+    font-size: 85%;
 }
 
 .archive .dates {
