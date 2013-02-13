@@ -16,11 +16,13 @@ if hasattr(settings, 'GENRO_BACKEND'):
 else:
     GENRO_BACKEND = True
 
-if GENRO_BACKEND:
-    try:
-        BACKEND = settings.ASSOPY_BACKEND
-    except AttributeError:
+try:
+    BACKEND = settings.ASSOPY_BACKEND
+except AttributeError:
+    if GENRO_BACKEND:
         raise ImproperlyConfigured('Assopy Backend not set')
+    else:
+        BACKEND = None
 
 CHECK_DB_SCHEMA = getattr(settings, 'ASSOPY_CHECK_DB_SCHEMA', True)
 
