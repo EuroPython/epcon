@@ -31,7 +31,7 @@ from taggit.managers import TaggableManager
 
 # ConferenceTag e ConferenceTaggedItem servono per creare un "namespace" per i
 # tag relativi a conference. In questo modo non devo preocuparmi di altri
-# utilizzi di taggit fattio da altre app.
+# utilizzi di taggit fatti da altre app.
 class ConferenceTagManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
@@ -50,6 +50,19 @@ class ConferenceTagManager(models.Manager):
 class ConferenceTag(TagBase):
     objects = ConferenceTagManager()
     category = models.CharField(max_length=50, default='', blank=True)
+
+    def save(self, **kw):
+        if not self.pk:
+            # prima di salvare questo tag mi assicuro che non ne esista un
+            # altro diverso solo per maiuscole/minuscole
+            try:
+                c = ConferenceTag.objects.get(name__iexact=self.name)
+            except ConferenceTag.DoesNotExist:
+                pass
+            else:
+                self.pk = c.pk
+                return
+        return super(ConferenceTag, self).save(**kw)
 
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
     tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
