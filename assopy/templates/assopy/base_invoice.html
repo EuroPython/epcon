@@ -45,7 +45,7 @@
                 border-collapse: collapse;
                 border-spacing: 0;
             }
-            
+
             /*
              *  Layout
              */
@@ -345,7 +345,14 @@
                                     IVA <span class="alt-language">VAT</span>
                                 </div>
                                 <div class="cell-content">
-                                     <div class="currency">{{ invoice.vat_value|floatformat:2 }}</div>
+                                    {% if invoice.vat_value %}
+                                        <div class="currency">{{ invoice.vat_value|floatformat:2 }}</div>
+                                    {% endif %}
+                                    {% if invoice.vat.invoice_notice %}
+                                        <div class="invoices-vat-notes">
+                                            {{ invoice.vat.invoice_notice }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </td>
                             <td>
@@ -361,10 +368,7 @@
                 </table>
             </div>
             <div class="clear"></div>
-            
-            <div class="invoices-vat-notes">
-                {{ invoice.vat.invoice_notice|default:'' }}
-            </div>
+
         </div>
     </body>
 </html>
