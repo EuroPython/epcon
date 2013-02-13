@@ -1103,14 +1103,15 @@ def genro_invoice_pdf(request, assopy_id):
 
     data = genro.invoice(assopy_id)
 
+    conferences = OrderItem.objects\
+        .filter(order__assopy_id=data['order_id'])\
+        .values_list('ticket__fare__conference', flat=True)\
+        .distinct()
+
     try:
-        item = OrderItem.objects\
-            .filter(order__assopy_id=data['order_id'])\
-            .select_related('ticket__fare')[0]
+        conference = filter(None, conferences)[0]
     except IndexError:
         raise http.Http404()
-
-    conference = item.ticket.fare.conference
 
     fname = '[%s] invoice.pdf' % (conference,)
     f = urllib.urlopen(genro.invoice_url(assopy_id))

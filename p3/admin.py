@@ -4,6 +4,9 @@ from django import http
 from django.conf import settings
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
+from django.core import urlresolvers
+from assopy import admin as aadmin
+from assopy import models as amodels
 from conference import admin as cadmin
 from conference import models as cmodels
 from p3 import models
@@ -239,3 +242,20 @@ class TicketRoomAdmin(admin.ModelAdmin):
 
 admin.site.register(models.TicketRoom, TicketRoomAdmin)
 
+class InvoiceAdmin(aadmin.InvoiceAdmin):
+    """
+    Specializzazione per gestire il download delle fatture generate con genro
+    """
+
+    def _invoice(self, i):
+        if i.assopy_id:
+            fake = not i.payment_date
+            view = urlresolvers.reverse('genro-legacy-invoice', kwargs={'assopy_id': i.assopy_id})
+            return '<a href="%s">View</a> %s' % (view, '[Not payed]' if fake else '')
+        else:
+            return super(InvoiceAdmin, self)._invoice(i)
+    _invoice.allow_tags = True
+    _invoice.short_description = 'Download'
+
+admin.site.unregister(amodels.Invoice)
+admin.site.register(amodels.Invoice, InvoiceAdmin)
