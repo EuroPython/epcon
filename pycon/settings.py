@@ -178,6 +178,14 @@ INSTALLED_APPS = (
     'recaptcha_works',
 )
 
+RECAPTCHA_OPTIONS = {
+    'theme': 'clean',
+    'lang': 'en',
+    'tabindex': 0,
+    #'custom_translations': {},
+    #'custom_theme_widget': None
+}
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
