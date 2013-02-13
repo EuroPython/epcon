@@ -100,19 +100,13 @@
                     </section>
                     {% endif %}
                 {% endfor %}
-                {% comment %}
-                {% with events|main_event as e %}
-                {% if e.schedule.conference %}
-                    {% embed_video talk args="width=500,height=400" as h %}
-                    {% if h %}
-                    <section class="talk video">
-                        <h2>{% trans "Video" %}</h2>
-                        {{ h }}
-                    </section>
-                    {% endif %}
+                {% embed_video talk args="width=500,height=400" as h %}
+                {% if h %}
+                <section class="talk video">
+                    <h2>{% trans "Video" %}</h2>
+                    {{ h }}
+                </section>
                 {% endif %}
-                {% endwith %}
-                {% endcomment %}
             {% endif %}
         </div>
         {% endwith %}
