@@ -174,6 +174,8 @@ INSTALLED_APPS = (
     'email_template',
     'develer_tools',
     'paypal.standard.ipn',
+
+    'recaptcha_works',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -529,6 +531,9 @@ TEMPLATESADMIN_EDITHOOKS = (
 
 HAYSTACK_SITECONF = 'web_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
+
+def HCOMMENTS_RECAPTCHA(request):
+    return not request.user.is_authenticated()
 
 def HCOMMENTS_THREAD_OWNERS(o):
     from conference.models import Talk

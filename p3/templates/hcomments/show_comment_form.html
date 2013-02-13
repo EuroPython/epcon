@@ -36,7 +36,7 @@
                 <div class="column" style="float: left; width: 180px;">
                     <fieldset>
                         {% for field in form %}
-                            {% ifnotequal field.name "comment" %}
+                            {% if field.name != "comment" and field.name != "captcha" %}
                             {% if field.is_hidden %}
                                 {{ field }}
                             {% else %}
@@ -45,11 +45,25 @@
                                     {{ field.label_tag }} {{ field }}
                                 </div>
                             {% endif %}
-                            {% endifnotequal %}
+                            {% endif %}
                         {% endfor %}
                     </fieldset>
                 </div>
                 {% endif %}
+                {% for field in form %}
+                    {% if field.name == "captcha" %}
+                        <div class="column" style="float: left; width: 490px; margin: 0 10px 0 0">
+                            <fieldset>
+                                {% with form.captcha as field %}
+                                <div class="field {% if field.errors %}error{% endif %}">
+                                    {% if field.errors %}{{ field.errors }}{% endif %}
+                                    {{ field.label_tag }} {{ field }}
+                                </div>
+                                {% endwith %}
+                            </fieldset>
+                        </div>
+                    {% endif %}
+                {% endfor %}
             </div>
             <fieldset class="border">
                 <button type="submit" class="ok">{% trans "Post comment" %}</button>

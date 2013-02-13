@@ -23,6 +23,14 @@
             }, 10000);
             $('.form-box form').get(0).reset();
         }
+        hcomments.onCaptchaFailed = function(comment) {
+            var e = comment ? comment : $('.form-box');
+            var msg = $('<div class="comment-moderated">{% trans "Per favore verifica il captcha." %}</div>');
+            e.prepend(msg)
+            setTimeout(function() {
+                $('.comment-moderated', e).remove();
+            }, 10000);
+        }
     });
 //]]>
     </script>
