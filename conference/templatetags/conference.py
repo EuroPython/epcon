@@ -869,44 +869,39 @@ def embed_video(context, value, args=""):
     source = None
     video_url = None
     video_path = None
+
     if isinstance(value, models.Talk):
-        if not settings.TALK_VIDEO_ACCESS(context['request'], value):
+        talk = value
+
+        # L'accesso ai video può essere limitato (di default sono sempre
+        # accessibili)
+        if not settings.TALK_VIDEO_ACCESS(context['request'], talk):
             return ''
-        if not value.video_type or value.video_type == 'download':
-            video_url = reverse('conference-talk-video-mp4', kwargs={'slug': value.slug })
-            if value.video_file:
+
+        if not talk.video_type or talk.video_type == 'download':
+            video_url = reverse('conference-talk-video-mp4', kwargs={'slug': talk.slug })
+            # Il video è in hosting presso di noi, se `talk.video_file` è None
+            # probabilmente è perché non è stato fatto l'upload (per praticità,
+            # a volta torna comodo avere i file in una directory senza dover
+            # passare dall'admin e fare l'upload uno per uno).
+            if talk.video_file:
                 video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
             elif settings.VIDEO_DOWNLOAD_FALLBACK:
                 for ext in ('.avi', '.mp4'):
-                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', value.slug + ext)
+                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', talk.slug + ext)
                     if os.path.exists(fpath):
                         video_path = fpath
-                        break
-                    else:
-                        return ''
             source = 'download'
         else:
             video_url = value.video_url
-#        if not value.video_type or value.video_type == 'download':
-#            if value.video_file:
-#                video_url = dsettings.MEDIA_URL + 'conference/videos/' + video_url.name
-#                video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
-#            elif settings.VIDEO_DOWNLOAD_FALLBACK:
-#                for ext in ('.avi', '.mp4'):
-#                    fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', value.slug + ext)
-#                    if os.path.exists(fpath):
-#                        video_url = dsettings.MEDIA_URL + 'conference/videos/' + value.slug + ext
-#                        video_path = fpath
-#                        break
-#            source = 'download'
-#        else:
-#            video_url = value.video_url
     else:
         video_url = value
-    if not video_url:
+
+    if not any((video_url, video_path)):
         return ''
 
     if source is None:
+        assert video_url
         try:
             source = args['source']
         except KeyError:
@@ -959,6 +954,7 @@ def embed_video(context, value, args=""):
         #    html = re.sub('width=\W*"\d+"', 'width="%s"' % w, html)
         #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
     else:
+        assert video_path
         try:
             stat = os.stat(video_path)
         except (TypeError, AttributeError, OSError), e:
@@ -983,14 +979,6 @@ def embed_video(context, value, args=""):
         }
 
         data['attrs'] += ' src="%s"' % data['href']
-        html = """
-            <div>
-                <video %(attrs)s>
-                    <_source src="%(href)s" />
-                </video>
-                <a href="%(href)s">download video%(info)s</a>
-            </div>
-            """ % data
         html = """
             <div>
                 <a href="%(href)s">download video%(info)s via BitTorrent</a>
