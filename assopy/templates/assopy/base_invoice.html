@@ -62,7 +62,7 @@
                 line-height: 10.2pt;
             }
 
-            .conteier {
+            .container {
                 width: 18cm
             }
 
@@ -186,13 +186,12 @@
             
         -->
     </style>
+    {% block EXTRA_HEAD  %}{% endblock %}
     </head>
     <body>
-        <div class="conteier">
+        <div class="container">
             <div>
-                {% block HEADER %}
-                
-                {% endblock %}
+                {% block HEADER %}{% endblock %}
             </div>
             <div class="section invoice-detail">
                 <table class="table">
