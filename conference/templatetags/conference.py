@@ -891,6 +891,8 @@ def embed_video(context, value, args=""):
                     fpath = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', talk.slug + ext)
                     if os.path.exists(fpath):
                         video_path = fpath
+            if not video_path:
+                return ''
             source = 'download'
         else:
             video_url = value.video_url
