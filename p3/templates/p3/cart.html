@@ -4,6 +4,12 @@
 {% block BODY_CLASS %}wizard{% endblock %}
 
 {% block ASSOPY_MAIN_CONTENT %}
+    {% fares_available "conference" as conference_fares %}
+    {% fares_available "hotel-room-sharing" as room_sharing_fares %}
+    {% fares_available "hotel-room" as room_fares %}
+    {% fares_available "other" as other_fares %}
+    {% fares_available "partner" as partner_fares %}
+    {% if conference_fares or room_sharing_fares or room_fares or other_fares or partner_fares %}
     <h1>{% trans "Buy tickets (1 of 2)" %}</h1>
 
     <div class="page-summary">
@@ -28,8 +34,7 @@
             </fieldset>
             {% if COUNTDOWN.conference > 0 %}
             <fieldset class="tickets conference-tickets">
-                {% fares_available "conference" as fares %}
-                {% if fares %}
+                {% if conference_fares %}
                 <legend>{% trans "Conference tickets" %}</legend>
                 <p class="vat-info">{% trans "All prices are 21% VAT included." %}</p>
                 <div class="cms">    
@@ -76,8 +81,7 @@
             </fieldset>
             {% endif %}
             <fieldset class="tickets hotel-reservations">
-                {% fares_available "hotel-room-sharing" as fares %}
-                {% if fares %}
+                {% if room_sharing_fares %}
                 <legend>Room sharing at Grand Hotel Mediterraneo</legend>
                 <p>Book single beds in shared rooms, save money and get to meet other Pythoners! See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
@@ -105,8 +109,7 @@
                 {% endif %}
             </fieldset>
             <fieldset class="tickets hotel-reservations">
-                {% fares_available "hotel-room" as fares %}
-                {% if fares %}
+                {% if room_fares %}
                 <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
                 <p>Book a room in the conference hotel, including wifi and breakfast. See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
                 <p><b>Minimum stay: 3 nights</b></p>
@@ -134,8 +137,7 @@
                 {% endif %}
             </fieldset>
 
-            {% fares_available "other" as fares %}
-            {% if fares %}
+            {% if other_fares %}
             <fieldset class="tickets other-goodies">
                 <legend>{% trans "Other Goodies" %}</legend>
                 {% comment %} <p>{% trans "Other Goodies intro" %}</p> {% endcomment %}
@@ -159,8 +161,7 @@
             </fieldset>
             {% endif %}
 
-            {% fares_available "partner" as fares %}
-            {% if fares %}
+            {% if partner_fares %}
             <fieldset class="tickets partner-program">
                 <legend>{% trans "Partner Program" %}</legend>
                 <p>{% trans "Partner Program intro" %}</p>
@@ -214,4 +215,7 @@
         </script>
         <script src="{{ STATIC_URL }}p5/j/cart.js"></script>
     </div>
+    {% else %}
+    <h1>Sorry no tickets available</h1>
+    {% endif %}
 {% endblock %}
