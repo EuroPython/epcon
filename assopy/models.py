@@ -557,7 +557,7 @@ class Vat(models.Model):
     invoice_notice = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s - %s" % (self.value , self.description or "")
+        return u"%s%% - %s" % (self.value , self.description or "")
 
 class VatFare(models.Model):
     fare = models.ForeignKey('conference.fare')
