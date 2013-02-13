@@ -653,7 +653,8 @@ if not settings.GENRO_BACKEND:
             }
 
     class InvoiceAdmin(admin.ModelAdmin):
-        list_display = ('__unicode__','_user','_order', 'vat','payment_date','price','_invoice')
+        list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
+        date_hierarchy = 'payment_date'
         form = InvoiceAdminForm
 
         def _order(self, o):
@@ -665,21 +666,24 @@ if not settings.GENRO_BACKEND:
 
         def _user(self, o):
             u = o.order.user.user
-            links = [
-                '%s %s <br/>' % (u.first_name, u.last_name),
-                '<a href="%s" title="user page">U</a>' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
-                '<a href="%s" title="doppelganger" target="_blank">D</a>' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
-            ]
-            return ' '.join(links)
+            name = '%s %s' % (u.first_name, u.last_name)
+            admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
+            dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
+            return '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
         _user.allow_tags = True
         _user.admin_order_field = 'order__user__user__first_name'
 
         def _invoice(self, i):
-                if settings.GENRO_BACKEND:
-                    return '<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else '')
-                else:
-                    return '<a href="%s">%s%s</a>' % (urlresolvers.reverse('admin:assopy-view-invoices', kwargs={'id': i.pk }), i, ' *' if not i.payment_date else '')
+            fake = not i.payment_date
+            if settings.GENRO_BACKEND:
+                view = genro.invoice_url(i.assopy_id)
+                download = view
+            else:
+                view = urlresolvers.reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
+                download = urlresolvers.reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
+            return '<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else '')
         _invoice.allow_tags = True
+        _invoice.short_description = 'Download'
 
         def has_delete_permission(self, request, obj=None):
             if obj and obj.payment_date != None:
@@ -691,7 +695,7 @@ if not settings.GENRO_BACKEND:
     admin.site.register(models.Invoice,InvoiceAdmin)
 
     admin.site.register(models.Vat)
-    
+
     class InvoiceLogAdmin(admin.ModelAdmin):
         list_display = (
             'code', 'order', 'invoice','date'
