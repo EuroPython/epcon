@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.translation import ugettext as _
 
 try:
     CONFERENCE = settings.CONFERENCE_CONFERENCE
@@ -106,6 +107,27 @@ ADMIN_ATTENDEE_STATS = getattr(settings, 'CONFERENCE_ADMIN_ATTENDEE_STATS', ())
 X_SENDFILE = getattr(settings, 'CONFERENCE_X_SENDFILE', None)
 
 TALK_VIDEO_ACCESS = getattr(settings, 'CONFERENCE_TALK_VIDEO_ACCESS', lambda r, t: True)
+
+TALK_DURATION = getattr(
+    settings,
+    'CONFERENCE_TALK_DURATION',
+    (
+        (5,   _('5 minutes')),
+        (10,  _('10 minutes')),
+        (15,  _('15 minutes')),
+        (25,  _('25 minutes')),
+        (30,  _('30 minutes')),
+        (40,  _('40 minutes')),
+        (45,  _('45 minutes')),
+        (55,  _('55 minutes')),
+        (60,  _('60 minutes')),
+        (75,  _('75 minutes')),
+        (90,  _('90 minutes')),
+        (120, _('120 minutes')),
+        (240, _('240 minutes')),
+        (480, _('480 minutes')),
+    )
+)
 
 # absolute path of a file used to log the email sent from the admin (tickets
 # stats section); the log file is also used to show a list of "last recently
