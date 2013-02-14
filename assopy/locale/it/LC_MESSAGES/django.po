@@ -2,27 +2,27 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-28 14:02+0200\n"
-"PO-Revision-Date: 2012-05-16 14:06\n"
+"POT-Creation-Date: 2012-06-19 11:46+0200\n"
+"PO-Revision-Date: 2012-05-08 21:23\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.6.6\n"
 
-#: forms.py:84
+#: forms.py:86
 msgid "First Name"
 msgstr "Nome"
 
-#: forms.py:85
+#: forms.py:87
 msgid ""
 "Please do not enter a company name here.<br />You will be able to specify "
 "billing details during the checkout."
@@ -30,51 +30,51 @@ msgstr ""
 "Inserisci il tuo nome, non quello dell'azienda. Potrai specificare "
 "successivamente i dati di fatturazione."
 
-#: forms.py:88
+#: forms.py:90
 msgid "Last Name"
 msgstr "Cognome"
 
-#: models.py:66
+#: models.py:69
 msgid "ISO alpha-2"
 msgstr ""
 
-#: models.py:71
+#: models.py:74
 msgid "ISO alpha-3"
 msgstr ""
 
-#: models.py:72
+#: models.py:75
 msgid "ISO numeric"
 msgstr ""
 
-#: models.py:73
+#: models.py:76
 msgid "Country name"
 msgstr "Nazione"
 
-#: models.py:176
+#: models.py:192
 msgid "Photo"
 msgstr "Foto / Avatar"
 
-#: models.py:177
+#: models.py:193
 msgid "Twitter"
 msgstr "twitter.com/ ... "
 
-#: models.py:178
+#: models.py:194
 msgid "Skype"
 msgstr "Skype ID"
 
-#: models.py:179
+#: models.py:195
 msgid "Jabber"
 msgstr "Account GTalk"
 
-#: models.py:180
+#: models.py:196
 msgid "Www"
 msgstr "Www"
 
-#: models.py:182
+#: models.py:198
 msgid "Phone"
 msgstr "Telefono"
 
-#: models.py:184
+#: models.py:200
 msgid ""
 "Enter a phone number where we can contact you in case of administrative "
 "issues.<br />Use the international format, eg: +39-055-123456"
@@ -82,39 +82,39 @@ msgstr ""
 "Inserisci un numero al quale poterti contattare per comunicazioni urgenti. "
 "Il numero non sarà pubblicato. Usa il formato: <i>3331122444</i>"
 
-#: models.py:186
+#: models.py:202
 msgid "Birthday"
 msgstr "Data di nascita"
 
-#: models.py:187 models.py:498
+#: models.py:203 models.py:601
 msgid "Card name"
 msgstr "Azienda"
 
-#: models.py:188
+#: models.py:204
 msgid "Account type"
 msgstr "Tipologia"
 
-#: models.py:189 models.py:499
+#: models.py:205 models.py:602
 msgid "Vat Number"
 msgstr "Partita IVA"
 
-#: models.py:190 models.py:500
+#: models.py:206 models.py:603
 msgid "Tax Identification Number"
 msgstr ""
 
-#: models.py:191 models.py:503
+#: models.py:207 models.py:606
 msgid "Country"
 msgstr "Nazione"
 
-#: models.py:192 models.py:504
+#: models.py:208 models.py:607
 msgid "Zip Code"
 msgstr "CAP"
 
-#: models.py:194
+#: models.py:210
 msgid "Address and City"
 msgstr "Indirizzo di residenza / Sede Legale"
 
-#: models.py:197
+#: models.py:213
 msgid ""
 "Insert the full address, including city and zip code. We will help you "
 "through google."
@@ -122,43 +122,58 @@ msgstr ""
 "Inserisci l'indirizzo completo, includendo città e CAP. Verrai aiutato da "
 "Google premendo TAB."
 
-#: models.py:198 models.py:506
+#: models.py:214 models.py:609
 msgid "City"
 msgstr "Città"
 
-#: models.py:199 models.py:507
+#: models.py:215 models.py:610
 msgid "State"
 msgstr "Stato"
 
-#: models.py:228
+#: models.py:244
 msgid "According to VIES, this is not a valid vat number"
 msgstr "Secondo il VIES questo non è un numero valido di Partita IVA."
 
-#: models.py:505
+#: models.py:608
 msgid "Address"
 msgstr "Indirizzo di residenza"
+
+#: templates/admin/assopy/order/change_list.html:8
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
 
 #: templates/assopy/bank_feedback_ok.html:4
 msgid "Order completed"
 msgstr "Ordine completato"
 
 #: templates/assopy/bank_feedback_ok.html:9
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "\n"
-"            <p>Thank you for your order. You will receieve an email with all the details for the wire transfer.</p>\n"
-"            <p>If you don't receive this email please check yout spam folder and <a href=\"mailto:info@pycon.it\">write to us</a> specifying your order number: <b>%(ocode)s</b></p>\n"
+"            <p>Thank you for your order. You will receieve an email with all "
+"the details for the wire transfer.</p>\n"
+"            <p>If you don't receive this email please check yout spam folder "
+"and <a href=\"mailto:info@pycon.it\">write to us</a> specifying your order "
+"number: <b>%(ocode)s</b></p>\n"
 "            \n"
 "            <h2>What to do next</h2>\n"
-"            <p>Meanwhile you can <a href=\"%(u)s\">manage your tickets</a> directly from your profile.</p>\n"
+"            <p>Meanwhile you can edit your tickets directly from your "
+"profile.</p>\n"
+"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit "
+"your tickets &rarr;</a></h5></div>\n"
 "            "
 msgstr ""
 "\n"
-"<p>Grazie per il tuo ordine. Riceverai una mail con tutti i dettagli per il bonifico bancario.</p>\n"
-"<p>Se non ricevi la mail nel giro di qualche minuto per favore controlla la tua cartella spam o <a href=\"mailto:info@betterembedded.it\">scrivici</a> specificando il numero d'ordine seguente: <b>%(ocode)s</b></p>\n"
+"<p>Grazie per il tuo ordine. Riceverai una mail con tutti i dettagli per il "
+"bonifico bancario.</p>\n"
+"<p>Se non ricevi la mail nel giro di qualche minuto per favore controlla la "
+"tua cartella spam o <a href=\"mailto:info@bettersoftware.it\">scrivici</a> "
+"specificando il numero d'ordine seguente: <b>%(ocode)s</b></p>\n"
 "\n"
 "<h2>Cosa fare adesso?</h2>\n"
-"<p>Nel frattempo puoi <a href=\"/bs/tickets/\">gestire i tuoi biglietti</a> direttamente dal tuo profilo utente.</p>"
+"<p>Nel frattempo puoi <a href=\"%(u)s\">gestire i tuoi biglietti</a> "
+"direttamente dal tuo profilo utente.</p>"
 
 #: templates/assopy/new_account_feedback.html:4
 msgid "Activation required"
@@ -172,6 +187,18 @@ msgstr ""
 "Il tuo account è stato creato, devi attivarlo seguendo le istruzioni che ti "
 "abbiamo inviato via mail su "
 
+#: templates/assopy/paypal_cancel.html:4
+msgid "You have canceled the order from paypal"
+msgstr ""
+
+#: templates/assopy/paypal_cancel.html:9
+msgid "back to paypal"
+msgstr ""
+
+#: templates/assopy/paypal_cancel.html:12
+msgid "back to home page"
+msgstr ""
+
 #: templates/assopy/paypal_feedback_ok.html:12
 msgid "Waiting for Paypal response..."
 msgstr "Stiamo aspettando risposta da Paypal ..."
@@ -180,65 +207,94 @@ msgstr "Stiamo aspettando risposta da Paypal ..."
 #, python-format
 msgid ""
 "\n"
-"            <p>Are you waiting for too long? <a href=\"mailto:info@pycon.it\">Write to us</a> specifying your order number %(ocode)s</p>\n"
+"            <p>Are you waiting for too long? <a href=\"mailto:info@pycon.it"
+"\">Write to us</a> specifying your order number %(ocode)s</p>\n"
 "            "
 msgstr ""
 "\n"
-"<p>Stai attendendo da troppo tempo?? <a href=\"mailto:info@betterembedded.it\">Scrivici</a> specificando il tuo numero ordine: %(ocode)s</p>"
+"<p>Stai attendendo da troppo tempo?? <a href=\"mailto:info@bettersoftware.it"
+"\">Scrivici</a> specificando il tuo numero ordine: %(ocode)s</p>"
 
 #: templates/assopy/paypal_feedback_ok.html:23
 msgid "Purchase completed"
 msgstr "Acquisto terminato"
 
 #: templates/assopy/paypal_feedback_ok.html:27
-#, python-format
+#, fuzzy
 msgid ""
 "\n"
-"            <p>Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address.</p>\n"
-"            <p>Now you can manage <a href=\"%(u)s\">your tickets</a> directly from your profile.</p>\n"
+"            <p>Thank you for the purchase. The transaction was completed and "
+"a receipt from paypal will be sent to your email address.</p>\n"
+"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit "
+"your tickets &rarr;</a></h5></div>\n"
 "            "
 msgstr ""
 "\n"
-"<p>Grazie dell'acquisto. La transazione è stata completata e Paypal ha inviato ricevuta dell'acquisto direttamente al tuo indirizzo email.</p>\n"
-"<p>Adesso puoi inserire i dati dei <a href=\"%(u)s\">tuoi biglietti</a> direttamente dal tuo profilo utente.</p>"
+"<p>Grazie dell'acquisto. La transazione è stata completata e Paypal ha "
+"inviato ricevuta dell'acquisto direttamente al tuo indirizzo email.</p>\n"
+"<p>Adesso puoi inserire i dati dei <a href=\"%(u)s\">tuoi biglietti</a> "
+"direttamente dal tuo profilo utente.</p>"
 
-#: templates/assopy/profile.html:19
+#: templates/assopy/paypal_pro.html:6
+msgid "Payd by credic card"
+msgstr ""
+
+#: templates/assopy/paypal_pro.html:11
+msgid "confirm"
+msgstr ""
+
+#: templates/assopy/profile.html:27
 msgid "Your profile"
 msgstr "Il tuo profilo"
 
-#: templates/assopy/profile.html:27
+#: templates/assopy/profile.html:35
 msgid "Save Changes"
 msgstr "Salva"
 
-#: templates/assopy/profile.html:44
+#: templates/assopy/profile.html:54
 msgid "Web accounts for login"
 msgstr "Account collegati:"
 
-#: templates/assopy/profile.html:47
+#: templates/assopy/profile.html:57
 msgid "Delete account"
 msgstr "Cancella account"
 
-#: templates/assopy/profile.html:58
+#: templates/assopy/profile.html:74
+msgid "Web access removed"
+msgstr "Accesso rimosso"
+
+#: templates/assopy/profile.html:78
+msgid ""
+"Cannot remove the requested item, please contact info@pycon.it for assistance"
+msgstr ""
+"Non posso cancellare l'oggetto richiesto, contattate <b>info@bettersoftware."
+"it</b> per assistenza"
+
+#: templates/assopy/profile.html:91
 msgid "Speaker profile"
 msgstr "Profilo relatore"
 
-#: templates/assopy/profile.html:60
+#: templates/assopy/profile.html:93
 msgid "Your public page"
 msgstr "Il tuo profilo pubblico"
 
-#: templates/assopy/profile.html:66
+#: templates/assopy/profile.html:101
+msgid "Your Coupons"
+msgstr ""
+
+#: templates/assopy/profile.html:115
 msgid "Utilities"
 msgstr "Utilità"
 
-#: templates/assopy/profile.html:68
+#: templates/assopy/profile.html:116
 msgid "Your tickets"
 msgstr "I tuoi biglietti"
 
-#: templates/assopy/profile.html:71
+#: templates/assopy/profile.html:124
 msgid "Your invoices"
 msgstr "Le tue fatture"
 
-#: templates/assopy/profile.html:76
+#: templates/assopy/profile.html:129
 #, python-format
 msgid "Order: %(ocode)s of %(odate)s"
 msgstr "Ordine: %(ocode)s del %(odate)s"
@@ -247,17 +303,29 @@ msgstr "Ordine: %(ocode)s del %(odate)s"
 msgid "Web access removed"
 msgstr "Accesso rimosso"
 
-#: templates/assopy/profile.html:102
-msgid ""
-"Cannot remove the requested item, please contact info@pycon.it for "
-"assistance"
-msgstr ""
-"Non posso cancellare l'oggetto richiesto, contattate "
-"<b>info@betterembedded.it</b> per assistenza"
-
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"
 msgstr "Aggiungi un account"
+
+#: templates/assopy/voucher.html:10
+msgid "Voucher code"
+msgstr ""
+
+#: templates/assopy/voucher.html:11
+msgid "Buyer"
+msgstr ""
+
+#: templates/assopy/voucher.html:12
+msgid "Assigned to"
+msgstr ""
+
+#: templates/assopy/voucher.html:13
+msgid "Value"
+msgstr ""
+
+#: templates/assopy/voucher.html:25
+msgid "Bring this voucher with you to hain access to"
+msgstr ""
 
 #: templates/registration/login.html:52
 msgid ""
@@ -282,30 +350,30 @@ msgstr "Credenziali non valide per l'accesso"
 msgid "Don&#8217;t you have an account?"
 msgstr "Non hai un account?"
 
-#: templates/registration/password_reset_email.html:2
+#: templates/registration/password_reset_email.html:3
 msgid "You're receiving this e-mail because you requested a password reset"
 msgstr ""
 "Stai ricevendo questa mail perchè hai richiesto un reset della tua password"
 
-#: templates/registration/password_reset_email.html:3
+#: templates/registration/password_reset_email.html:4
 #, python-format
 msgid "for your user account at %(site_name)s"
 msgstr "per il tuo account %(site_name)s"
 
-#: templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
 msgstr "Vai alla pagina seguente e scegli una nuova password:"
 
-#: templates/registration/password_reset_email.html:10
+#: templates/registration/password_reset_email.html:11
 msgid "Thanks for using our site!"
 msgstr "Grazie per aver utilizzato il sito!"
 
-#: templates/registration/password_reset_email.html:12
+#: templates/registration/password_reset_email.html:13
 #, python-format
 msgid "The %(site_name)s team"
 msgstr " %(site_name)s team"
 
-#: templatetags/assopy_tags.py:33
+#: templatetags/assopy_tags.py:95
 msgid "(required)"
 msgstr "(obbligatorio)"
 

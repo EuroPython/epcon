@@ -1,12 +1,14 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.contrib import auth
+from django.conf import settings as dsettings
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
 from assopy import models
 from assopy import settings
-from assopy.clients import genro
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 from conference import models as cmodels
 
 import logging
@@ -51,6 +53,9 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
         try:
             return super(PasswordResetForm, self).clean_email()
         except forms.ValidationError:
+            if not settings.GENRO_BACKEND:
+                raise
+
             # v. assopy.auth_backends.EmailBackend
             if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
                 raise
@@ -212,3 +217,66 @@ class FormTickets(forms.Form):
 
         data['tickets'] = o
         return data
+
+
+if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
+
+    from paypal.standard.forms import PayPalPaymentsForm
+    from paypal.standard.widgets import ValueHiddenInput
+    from paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
+
+    class PayPalForm(PayPalPaymentsForm):
+        #Do not prompt buyers for a shipping address.
+        #Allowable values are:
+        #
+        #0 – prompt for an address, but do not require one
+        #1 – do not prompt for an address
+        #2 – prompt for an address, and require one
+        no_shipping = forms.IntegerField(initial=1)
+
+        def __init__(self, order, *args, **kwargs):
+            from django.db import models
+            initial = settings.PAYPAL_DEFAULT_FORM_CONTEXT(order)
+            initial.update({'cmd':self.CMD_CHOICES[1][0]})
+            kwargs['initial'] = initial
+            super(PayPalForm, self).__init__(*args, **kwargs)
+
+            items = list(order.orderitem_set \
+                              .filter(price__gte=0).values('code','description','price') \
+                              .annotate(count=models.Count('price')) \
+                              .order_by('-price'))
+
+            discount =  order.total(apply_discounts=False) - order.total()
+
+            if discount > 0:
+                self.fields['discount_amount_cart'] = forms.IntegerField(
+                                            widget=ValueHiddenInput(),
+                                            initial= discount
+                                        )
+            self.fields['upload'] = forms.IntegerField(
+                                        widget=ValueHiddenInput(),
+                                        initial=1
+                                    )
+            for n, item in enumerate(items, start=1):
+                self.fields['item_name_%d' % n ] = forms.CharField(
+                                                        widget=ValueHiddenInput(),
+                                                        initial=settings.PAYPAL_ITEM_NAME(item)
+                                                    )
+                self.fields['quantity_%d' % n ] = forms.CharField(
+                                                        widget=ValueHiddenInput(),
+                                                        initial=item['count']
+                                                    )
+                self.fields['amount_%d' % n ] = forms.CharField(
+                                        widget=ValueHiddenInput(),
+                                        initial=item['price']
+                                    )
+        def paypal_url(self):
+            return SANDBOX_POSTBACK_ENDPOINT if dsettings.PAYPAL_TEST else POSTBACK_ENDPOINT
+
+        def as_url_args(self):
+            import urllib
+            data = dict(
+                        [(f.field.widget.attrs.get('name', f.html_name), f.value())
+                         for f in self if f.value()]
+                        )
+            return urllib.urlencode(data)

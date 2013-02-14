@@ -2,7 +2,8 @@
 from assopy import django_urls
 from assopy import janrain
 from assopy import settings
-from assopy.clients import genro, vies
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro, vies
 from assopy.utils import check_database_schema, send_email
 from conference.models import Fare, Ticket
 from email_template import utils
@@ -12,9 +13,10 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.db import models, IntegrityError
 from django.db import transaction
 from django.db.models.query import QuerySet
+from django.db.models.signals import pre_delete, pre_save
 from django.utils.translation import ugettext_lazy as _
 
 import re
@@ -24,6 +26,7 @@ import logging
 from uuid import uuid4
 from datetime import date, datetime
 from decimal import Decimal
+from collections import defaultdict
 
 log = logging.getLogger('assopy.models')
 
@@ -55,7 +58,7 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
         'size': size,
         'rating': rating,
     })
-    
+
     return gravatar_url
 
 COUNTRY_VAT_COMPANY_VERIFY = (
@@ -64,7 +67,7 @@ COUNTRY_VAT_COMPANY_VERIFY = (
 )
 class Country(models.Model):
     iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
-    name = models.CharField(max_length=100) 
+    name = models.CharField(max_length=100)
     vat_company = models.BooleanField('VAT for company', default=False)
     vat_company_verify = models.CharField(max_length=1, choices=COUNTRY_VAT_COMPANY_VERIFY, default='-')
     vat_person = models.BooleanField('VAT for person', default=False)
@@ -148,7 +151,7 @@ class UserManager(models.Manager):
             'new local user "%s" created; for "%s %s" (%s)',
             duser.username, first_name, last_name, email,
         )
-        if assopy_id is not None:
+        if assopy_id is not None and settings.GENRO_BACKEND:
             genro.user_remote2local(user)
         if send_mail:
             utils.email(
@@ -192,7 +195,7 @@ class User(models.Model):
     jabber = models.EmailField(_('Jabber'), blank=True)
     www = models.URLField(_('Www'), verify_exists=False, blank=True)
     phone = models.CharField(
-        _('Phone'), 
+        _('Phone'),
         max_length=30, blank=True,
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
@@ -239,10 +242,10 @@ class User(models.Model):
             if self.country.vat_company_verify == 'v':
                 if not vies.check_vat(self.country.pk, self.vat_number):
                     raise ValidationError({'vat_number': [_('According to VIES, this is not a valid vat number')]})
-            
+
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
-        if self.assopy_id:
+        if self.assopy_id and settings.GENRO_BACKEND:
             genro.user_local2remote(self)
 
     def tickets(self):
@@ -359,14 +362,14 @@ class Coupon(models.Model):
 
         return True
 
-    def applyToOrder(self, order):
+    def applyToOrder(self, order, vat=None):
         if not self.valid(order.user):
             raise ValueError('coupon not valid')
 
         fares = self.fares.all()
-        apply_to = order.rows(include_discounts=False)
+        apply_to = order.rows(include_discounts=False, vat=vat)
         if fares:
-            apply_to = apply_to.filter(ticket__fare__in=fares) 
+            apply_to = apply_to.filter(ticket__fare__in=fares)
         if self.items_per_usage:
             apply_to = apply_to.order_by('-ticket__fare__price')[:self.items_per_usage]
 
@@ -374,7 +377,7 @@ class Coupon(models.Model):
         discount = self._applyToTotal(total, order.total())
         if not discount:
             return None
-        item = OrderItem(order=order, ticket=None)
+        item = OrderItem(order=order, ticket=None, vat=vat)
         item.code = self.code
         item.description = self.description
         item.price = discount
@@ -416,7 +419,7 @@ class Coupon(models.Model):
         if self.type() == 'val':
             discount = Decimal(self.value)
         else:
-            discount = total / 100 * Decimal(self.value[:-1]) 
+            discount = total / 100 * Decimal(self.value[:-1])
         if discount > total:
             discount = total
         if discount > guard:
@@ -464,6 +467,12 @@ class OrderManager(models.Manager):
                     raise ValueError(c)
 
         log.info('new order for "%s" via "%s": %d items', user.name(), payment, sum(x[1]['qty'] for x in items))
+        # Genero un save point almeno isolo la transazione
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute(
+            'savepoint pregenerateorder;'
+        )
         o = Order()
         o.code = None
         o.method = payment
@@ -481,7 +490,18 @@ class OrderManager(models.Manager):
         o.state = user.state
 
         o.save()
+        vat_list = []
         for f, params in items:
+            try:
+                vat = f.vat_set.all()[0]
+            except IndexError:
+                if settings.GENRO_BACKEND:
+                    vat = None
+                else :
+                    # se non è il BACKEND genro deve avere l'orderitems deve
+                    # avere associato un regime iva
+                    raise
+            vat_list.append(vat)
             cp = dict(params)
             del cp['qty']
             for _ in range(params['qty']):
@@ -489,7 +509,7 @@ class OrderManager(models.Manager):
                 price = Decimal('%.3f' % f.calculated_price(qty=1, **cp))
                 row_price = price / len(tickets)
                 for ix, t in enumerate(tickets):
-                    item = OrderItem(order=o, ticket=t)
+                    item = OrderItem(order=o, ticket=t, vat=vat)
                     item.code = f.code
                     item.description = f.name
                     if len(tickets) > 1:
@@ -505,25 +525,46 @@ class OrderManager(models.Manager):
             #
             # queste regole servono a preparare un ordine (e una fattura) che
             # risulti il più capibile possibile per l'utente.
-            for t in ('perc', 'val'):
-                for c in coupons:
-                    if c.type() == t:
-                        item = c.applyToOrder(o)
-                        if item:
-                            item.save()
-                            log.debug('coupon "%s" applied, discount=%s', item.code, item.price)
+            for v in set(vat_list):
+                for t in ('perc', 'val'):
+                    for c in coupons:
+                        if c.type() == t:
+                            item = c.applyToOrder(o,v)
+                            if item:
+                                item.save()
+                                log.debug('coupon "%s" applied, discount=%s, vat=%s', item.code, item.price, item.vat)
         log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
-        if remote:
+        if remote and settings.GENRO_BACKEND:
             genro.create_order(
                 o,
                 return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok', kwargs={'code': '%(code)s'})
             )
             log.info('order "%s" created remotly -> #%s', o.id, o.code)
+        else:
+            o.code = settings.NEXT_ORDER_CODE(o)
+            o.save()
         if o.total() == 0:
             o._complete = True
             o.save()
         order_created.send(sender=o, raw_items=items)
         return o
+
+
+class Vat(models.Model):
+    fares = models.ManyToManyField('conference.fare', null=True, blank=True, through='VatFare')
+    value = models.DecimalField(max_digits=2, decimal_places=0)
+    description = models.CharField(null=True, blank=True, max_length = 125)
+    invoice_notice = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return u"%s%% - %s" % (self.value , self.description or "")
+
+class VatFare(models.Model):
+    fare = models.ForeignKey('conference.fare')
+    vat = models.ForeignKey(Vat)
+
+    class Meta:
+        unique_together =('fare', 'vat')
 
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
 # in locale e sul backend. `raw_items` è la lista degli item utilizzata per
@@ -545,7 +586,7 @@ ORDER_PAYMENT = (
 )
 class Order(models.Model):
     code = models.CharField(max_length=9, null=True)
-    assopy_id = models.CharField(max_length=22, null=True, unique=True)
+    assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
     user = models.ForeignKey(User, related_name='orders')
     created = models.DateTimeField(auto_now_add=True)
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
@@ -579,7 +620,7 @@ class Order(models.Model):
     def __unicode__(self):
         msg = 'Order %d' % self.id
         if self.code:
-            msg += ' #' + self.code
+            msg += ' #%s' % self.code
         return msg
 
     def billable(self):
@@ -602,7 +643,7 @@ class Order(models.Model):
                 raise RuntimeError('unknown verification method')
         else:
             return bool(self.vat_number)
-    
+
     def vat_rate(self):
         """
         Regola per determinare l'aliquota iva:
@@ -621,16 +662,32 @@ class Order(models.Model):
         #else:
         #    return 20.0
 
+    def vat_list(self):
+        """
+        Ritorna una lista di dizionari con import iva e import
+        e numero di orderitems prezzi
+        """
+        vat_list = defaultdict(lambda:{'vat':None, 'orderItems':[], 'price':0})
+        for i in self.orderitem_set.all():
+            vat_list[i.vat]['vat'] = i.vat
+            vat_list[i.vat]['orderItems'].append(i)
+            vat_list[i.vat]['price'] += i.price
+        return vat_list.values()
+
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
             return True
-        if not self.assopy_id:
-            # non ha senso chiamare .complete su un ordine non associato al
-            # backend
-            return False
+
+        if settings.GENRO_BACKEND:
+            if not self.assopy_id:
+                # non ha senso chiamare .complete su un ordine non associato al
+                # backend
+                return False
+            invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
+        else:
+            invoices = [ i.payment_date for i in self.invoices.all()]
         # un ordine risulta pagato se tutte le sue fatture riportano la data
         # del pagamento
-        invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
         r = len(invoices) > 0 and all(invoices)
         if r and not self._complete:
             log.info('purchase of order "%s" completed', self.code)
@@ -639,6 +696,11 @@ class Order(models.Model):
             self._complete = r
             self.save()
         return r
+
+    def confirm_order(self, payment_date):
+        # metodo per confermare un ordine simile a genro.confirm_order
+        # una volta confermato un ordine si crea una fattura con data
+        Invoice.objects.creates_from_order(self,payment_date=payment_date)
 
     def deductible(self):
         """
@@ -663,11 +725,14 @@ class Order(models.Model):
             t = self.orderitem_set.filter(price__gt=0).aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
-    def rows(self, include_discounts=True):
+    def rows(self, include_discounts=True, vat=None):
+        qs = self.orderitem_set
+        if vat:
+            qs = qs.filter(vat=vat)
         if include_discounts:
-            return self.orderitem_set.all()
+            return qs
         else:
-            return self.orderitem_set.exclude(ticket=None)
+            return qs.exclude(ticket=None)
 
     @classmethod
     def calculator(self, items, coupons=None, user=None):
@@ -710,6 +775,9 @@ class OrderItem(models.Model):
     code = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.CharField(max_length=100, blank=True)
+    # aggiungo un campo per iva... poi potra essere un fk ad un altra tabella
+    # o venire copiato da conference
+    vat = models.ForeignKey(Vat)
 
     def delete(self, **kwargs):
         if self.ticket:
@@ -738,54 +806,178 @@ def _order_feedback(sender, **kwargs):
 
 order_created.connect(_order_feedback)
 
+class InvoiceLog(models.Model):
+    code =  models.CharField(max_length=9, unique=True)
+    order = models.ForeignKey(Order, null=True)
+    invoice = models.ForeignKey('Invoice', null=True)
+    date = models.DateTimeField(auto_now_add=True)
+
 class InvoiceManager(models.Manager):
     @transaction.commit_on_success
-    def creates_from_order(self, order, update=True):
-        if not order.assopy_id:
-            return
-        remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
+    def creates_from_order(self, order, update=False, payment_date=None):
+        if settings.GENRO_BACKEND:
+            if not order.assopy_id:
+                return
 
-        def _copy(invoice, data):
-            invoice.code = data['number']
-            invoice.assopy_id = data['id']
-            invoice.emit_date = data['invoice_date']
-            invoice.payment_date = data['payment_date']
-            invoice.price = str(data['gross_price'])
-            return invoice
+            remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
 
-        invoices = []
-        if update:
-            for i in order.invoices.all():
-                try:
-                    data = remote.pop(i.code)
-                except KeyError:
-                    i.delete()
-                else:
-                    _copy(i, data)
-                    i.save()
-                    invoices.append(i)
+            def _copy(invoice, data):
+                invoice.code = data['number']
+                invoice.assopy_id = data['id']
+                invoice.emit_date = data['invoice_date']
+                invoice.payment_date = data['payment_date']
+                invoice.price = str(data['gross_price'])
+                return invoice
 
-        for data in remote.values():
-            i = Invoice(order=order)
-            _copy(i, data)
-            i.save()
-            invoices.append(i)
-        return invoices
+            invoices = []
+            if update:
+                for i in order.invoices.all():
+                    try:
+                        data = remote.pop(i.code)
+                    except KeyError:
+                        i.delete()
+                    else:
+                        _copy(i, data)
+                        i.save()
+                        invoices.append(i)
+
+            for data in remote.values():
+                i = Invoice(order=order)
+                _copy(i, data)
+                i.save()
+                invoices.append(i)
+            return invoices
+        else:
+            assert update is False
+
+            if order.total() == 0:
+                return
+
+            def invoices_code(o, fake=False):
+                output = []
+
+                def icode(buff=[None]):
+
+                    if fake is False:
+                        last = settings.LAST_INVOICE_CODE
+                        next = settings.NEXT_INVOICE_CODE
+                    else:
+                        last = settings.LAST_FAKE_INVOICE_CODE
+                        next = settings.NEXT_FAKE_INVOICE_CODE
+
+                    if buff[0] is None:
+                        buff[0] = last(o)
+                    buff[0] = next(buff[0],o)
+                    return buff[0]
+
+                for item in o.vat_list():
+                    item.update({
+                        'code': icode(),
+                    })
+                    output.append(item)
+                return output
+
+            # Genero un save point almeno isolo la transazione
+            from django.db import connection
+            cursor = connection.cursor()
+            cursor.execute(
+                'savepoint pregenerateinvoice;'
+            )
+            # salvo almeno sono sicuro di aver effettuato
+            # un operazione di insert nella transazione
+            # in modo da crere un lock su db che gestisce la concorrenza
+            # nella creazione di un indice univoco nella fattura
+            # questo è valido solo per db SQLITE
+            order.save()
+
+            invoices = []
+            vat_list = invoices_code(order, fake=payment_date is None)
+
+            for vat_item in vat_list:
+                i, created = Invoice.objects.get_or_create( 
+                    order=order,
+                    vat=vat_item['vat'],
+                    price=vat_item['price'],
+                    defaults={
+                        'code' : vat_item['code'],
+                        'payment_date' : payment_date,
+                        'emit_date' : payment_date
+                    }
+                )
+                if not created:
+                    if not payment_date or i.payment_date:
+                        raise RuntimeError('Mi incazzo')
+                    else:
+                        i.payment_date = payment_date
+                        i.emit_date = payment_date
+                        i.code = vat_item['code']
+                        i.save()
+
+                invoices.append(i)
+            return invoices
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
-    code = models.CharField(max_length=9, unique=True)
-    assopy_id = models.CharField(max_length=22, unique=True)
+    code = models.CharField(max_length=9, null=True, unique=True)
+    assopy_id = models.CharField(max_length=22, unique=True, null=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
+    # indica il tipo di regime iva associato alla fattura perche vengono
+    # generate più fatture per ogni ordine contente orderitems con diverso
+    # regime fiscale
+    vat = models.ForeignKey(Vat)
+
     objects = InvoiceManager()
+
+    def save(self, *args, **kwargs):
+        super(Invoice,self).save(*args, **kwargs)
+        if not settings.GENRO_BACKEND:
+            log, create = InvoiceLog.objects.get_or_create(
+                                order = self.order,
+                                code = self.code,
+                                invoice = self
+                          )
+            if create and settings.IS_REAL_INVOICE(self.code):
+                self.order.complete(ignore_cache=True)
+
+    @models.permalink
+    def get_absolute_url(self):
+        from django.contrib.admin.util import quote
+        return ('assopy-invoice-pdf' , [quote(self.order.code), quote(self.code),])
+
+    def __unicode__(self):
+        if self.code:
+            return ' #%s' % self.code
+        else:
+            return 'Invoice id:%d' % self.id
+
+    def invoice_items(self):
+        return self.order.orderitem_set.filter(vat=self.vat) \
+                                  .values('code','description') \
+                                  .annotate(price=models.Sum('price'), count=models.Count('price')) \
+                                  .order_by('-price')
+
+    def vat_value(self):
+        return self.price - self.net_price()
+
+    def net_price(self):
+        return self.price / (1 + self.vat.value / 100)
+
+if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
+    from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
+    def confirm_order(sender, **kwargs):
+        ipn_obj = sender
+        o = Order.objects.get(code=ipn_obj.custom)
+        o.confirm_order(ipn_obj.payment_date)
+
+    paypal_payment_was_successful.connect(confirm_order)
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
     code = models.CharField(max_length=9, unique=True)
-    assopy_id =  models.CharField(max_length=22, unique=True)
+    assopy_id =  models.CharField(max_length=22, unique=True, null=True)
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-28 14:02+0200\n"
+"POT-Creation-Date: 2012-06-19 11:46+0200\n"
 "PO-Revision-Date: 2011-04-07 17:18\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,118 +17,123 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.5.3\n"
 
-#: forms.py:84
+#: forms.py:86
 msgid "First Name"
 msgstr ""
 
-#: forms.py:85
+#: forms.py:87
 msgid ""
 "Please do not enter a company name here.<br />You will be able to specify "
 "billing details during the checkout."
 msgstr ""
 
-#: forms.py:88
+#: forms.py:90
 msgid "Last Name"
 msgstr ""
 
-#: models.py:66
+#: models.py:69
 msgid "ISO alpha-2"
 msgstr ""
 
-#: models.py:71
+#: models.py:74
 msgid "ISO alpha-3"
 msgstr ""
 
-#: models.py:72
+#: models.py:75
 msgid "ISO numeric"
 msgstr ""
 
-#: models.py:73
+#: models.py:76
 msgid "Country name"
 msgstr ""
 
-#: models.py:176
+#: models.py:192
 msgid "Photo"
 msgstr ""
 
-#: models.py:177
+#: models.py:193
 msgid "Twitter"
 msgstr ""
 
-#: models.py:178
+#: models.py:194
 msgid "Skype"
 msgstr ""
 
-#: models.py:179
+#: models.py:195
 msgid "Jabber"
 msgstr ""
 
-#: models.py:180
+#: models.py:196
 msgid "Www"
 msgstr ""
 
-#: models.py:182
+#: models.py:198
 msgid "Phone"
 msgstr ""
 
-#: models.py:184
+#: models.py:200
 msgid ""
 "Enter a phone number where we can contact you in case of administrative "
 "issues.<br />Use the international format, eg: +39-055-123456"
 msgstr ""
 
-#: models.py:186
+#: models.py:202
 msgid "Birthday"
 msgstr ""
 
-#: models.py:187 models.py:498
+#: models.py:203 models.py:601
 msgid "Card name"
 msgstr ""
 
-#: models.py:188
+#: models.py:204
 msgid "Account type"
 msgstr ""
 
-#: models.py:189 models.py:499
+#: models.py:205 models.py:602
 msgid "Vat Number"
 msgstr ""
 
-#: models.py:190 models.py:500
+#: models.py:206 models.py:603
 msgid "Tax Identification Number"
 msgstr ""
 
-#: models.py:191 models.py:503
+#: models.py:207 models.py:606
 msgid "Country"
 msgstr ""
 
-#: models.py:192 models.py:504
+#: models.py:208 models.py:607
 msgid "Zip Code"
 msgstr ""
 
-#: models.py:194
+#: models.py:210
 msgid "Address and City"
 msgstr ""
 
-#: models.py:197
+#: models.py:213
 msgid ""
 "Insert the full address, including city and zip code. We will help you "
 "through google."
 msgstr ""
 
-#: models.py:198 models.py:506
+#: models.py:214 models.py:609
 msgid "City"
 msgstr ""
 
-#: models.py:199 models.py:507
+#: models.py:215 models.py:610
 msgid "State"
 msgstr ""
 
-#: models.py:228
+#: models.py:244
 msgid "According to VIES, this is not a valid vat number"
 msgstr ""
 
-#: models.py:505
+#: models.py:608
 msgid "Address"
+msgstr ""
+
+#: templates/admin/assopy/order/change_list.html:8
+#, python-format
+msgid "Add %(name)s"
 msgstr ""
 
 #: templates/assopy/bank_feedback_ok.html:4
@@ -146,8 +151,10 @@ msgid ""
 "number: <b>%(ocode)s</b></p>\n"
 "            \n"
 "            <h2>What to do next</h2>\n"
-"            <p>Meanwhile you can <a href=\"%(u)s\">manage your tickets</a> "
-"directly from your profile.</p>\n"
+"            <p>Meanwhile you can edit your tickets directly from your "
+"profile.</p>\n"
+"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit "
+"your tickets &rarr;</a></h5></div>\n"
 "            "
 msgstr ""
 
@@ -159,6 +166,18 @@ msgstr ""
 msgid ""
 "your account is created, you need to activate it following the instruction "
 "sent to you by email at"
+msgstr ""
+
+#: templates/assopy/paypal_cancel.html:4
+msgid "You have canceled the order from paypal"
+msgstr ""
+
+#: templates/assopy/paypal_cancel.html:9
+msgid "back to paypal"
+msgstr ""
+
+#: templates/assopy/paypal_cancel.html:12
+msgid "back to home page"
 msgstr ""
 
 #: templates/assopy/paypal_feedback_ok.html:12
@@ -179,68 +198,99 @@ msgid "Purchase completed"
 msgstr ""
 
 #: templates/assopy/paypal_feedback_ok.html:27
-#, python-format
 msgid ""
 "\n"
 "            <p>Thank you for the purchase. The transaction was completed and "
 "a receipt from paypal will be sent to your email address.</p>\n"
-"            <p>Now you can manage <a href=\"%(u)s\">your tickets</a> "
-"directly from your profile.</p>\n"
+"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit "
+"your tickets &rarr;</a></h5></div>\n"
 "            "
 msgstr ""
 
-#: templates/assopy/profile.html:19
-msgid "Your profile"
+#: templates/assopy/paypal_pro.html:6
+msgid "Payd by credic card"
+msgstr ""
+
+#: templates/assopy/paypal_pro.html:11
+msgid "confirm"
 msgstr ""
 
 #: templates/assopy/profile.html:27
+msgid "Your profile"
+msgstr ""
+
+#: templates/assopy/profile.html:35
 msgid "Save Changes"
 msgstr ""
 
-#: templates/assopy/profile.html:44
+#: templates/assopy/profile.html:54
 msgid "Web accounts for login"
 msgstr ""
 
-#: templates/assopy/profile.html:47
+#: templates/assopy/profile.html:57
 msgid "Delete account"
 msgstr ""
 
-#: templates/assopy/profile.html:58
-msgid "Speaker profile"
-msgstr ""
-
-#: templates/assopy/profile.html:60
-msgid "Your public page"
-msgstr ""
-
-#: templates/assopy/profile.html:66
-msgid "Utilities"
-msgstr ""
-
-#: templates/assopy/profile.html:68
-msgid "Your tickets"
-msgstr ""
-
-#: templates/assopy/profile.html:71
-msgid "Your invoices"
-msgstr ""
-
-#: templates/assopy/profile.html:76
-#, python-format
-msgid "Order: %(ocode)s of %(odate)s"
-msgstr ""
-
-#: templates/assopy/profile.html:98
+#: templates/assopy/profile.html:74
 msgid "Web access removed"
 msgstr ""
 
-#: templates/assopy/profile.html:102
+#: templates/assopy/profile.html:78
 msgid ""
 "Cannot remove the requested item, please contact info@pycon.it for assistance"
 msgstr ""
 
+#: templates/assopy/profile.html:91
+msgid "Speaker profile"
+msgstr ""
+
+#: templates/assopy/profile.html:93
+msgid "Your public page"
+msgstr ""
+
+#: templates/assopy/profile.html:101
+msgid "Your Coupons"
+msgstr ""
+
+#: templates/assopy/profile.html:115
+msgid "Utilities"
+msgstr ""
+
+#: templates/assopy/profile.html:116
+msgid "Your tickets"
+msgstr ""
+
+#: templates/assopy/profile.html:124
+msgid "Your invoices"
+msgstr ""
+
+#: templates/assopy/profile.html:129
+#, python-format
+msgid "Order: %(ocode)s of %(odate)s"
+msgstr ""
+
 #: templates/assopy/render_janrain_box.html:4
 msgid "Add another account"
+msgstr ""
+
+#: templates/assopy/voucher.html:10
+msgid "Voucher code"
+msgstr ""
+
+#: templates/assopy/voucher.html:11
+msgid "Buyer"
+msgstr ""
+
+#: templates/assopy/voucher.html:12
+msgid "Assigned to"
+msgstr ""
+
+#: templates/assopy/voucher.html:13
+msgid "Value"
+msgstr ""
+
+#: templates/assopy/voucher.html:25
+msgid "Bring this voucher with you to hain access to"
 msgstr ""
 
 #: templates/registration/login.html:52
@@ -258,29 +308,29 @@ msgstr ""
 msgid "Don&#8217;t you have an account?"
 msgstr ""
 
-#: templates/registration/password_reset_email.html:2
+#: templates/registration/password_reset_email.html:3
 msgid "You're receiving this e-mail because you requested a password reset"
 msgstr ""
 
-#: templates/registration/password_reset_email.html:3
+#: templates/registration/password_reset_email.html:4
 #, python-format
 msgid "for your user account at %(site_name)s"
 msgstr ""
 
-#: templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
 msgstr ""
 
-#: templates/registration/password_reset_email.html:10
+#: templates/registration/password_reset_email.html:11
 msgid "Thanks for using our site!"
 msgstr ""
 
-#: templates/registration/password_reset_email.html:12
+#: templates/registration/password_reset_email.html:13
 #, python-format
 msgid "The %(site_name)s team"
 msgstr ""
 
-#: templatetags/assopy_tags.py:33
+#: templatetags/assopy_tags.py:95
 msgid "(required)"
 msgstr ""
 

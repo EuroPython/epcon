@@ -5,6 +5,7 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.util import unquote
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
@@ -15,12 +16,14 @@ from assopy import forms as aforms
 from assopy import janrain
 from assopy import models
 from assopy import settings
-from assopy.clients import genro
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 from email_template import utils
 
 import json
 import logging
 import urllib
+from datetime import datetime
 
 log = logging.getLogger('assopy.views')
 
@@ -130,7 +133,7 @@ def profile_identities(request):
 
 @login_required
 @render_to('assopy/billing.html')
-def billing(request):
+def billing(request, order_id=None):
     user = request.user.assopy_user
     if request.method == 'POST':
         form = aforms.BillingData(data=request.POST, files=request.FILES, instance=user)
@@ -389,6 +392,50 @@ def geocode(request):
     from assopy.utils import geocode as g
     return g(address, region=region)
 
+def paypal_billing(request, code):
+    # questa vista serve a eseguire il redirect su paypol
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    if o.total() == 0:
+        o.confirm_order(datetime.now())
+        return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
+    form = aforms.PayPalForm(o)
+    return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
+
+def paypal_cc_billing(request, code):
+    # questa vista serve a eseguire il redirect su paypal e aggiungere le info
+    # per billing con cc
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    if o.total() == 0:
+        o.confirm_order(datetime.now())
+        return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
+    form = aforms.PayPalForm(o)
+    cc_data = {
+        "address_override" : 1,
+        "no_shipping" : 1,
+        "email": o.user.user.email,
+        "first_name" : o.card_name,
+        "last_name": "",
+        "address1": o.address,
+        "zip": o.zip_code,
+        "state": o.state,
+        "country": o.country,
+        "address_name":o.card_name,
+    }
+    qparms = urllib.urlencode([ (k,x.encode('utf-8') if isinstance(x, unicode) else x) for k,x in cc_data.items() ])
+    return HttpResponseRedirectSeeOther(
+        "%s?%s&%s" % (
+            form.paypal_url(),
+            form.as_url_args(),
+            qparms
+        )
+    )
+
+@render_to('assopy/paypal_cancel.html')
+def paypal_cancel(request, code):
+    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
+    form = aforms.PayPalForm(o)
+    return {'form': form }
+
 # sembra che a volte la redirezione di paypal si concluda con una POST da parte
 # del browser (qualcuno ha detto HttpResponseRedirectSeeOther?), dato che non
 # eseguo niente di pericoloso evito di controllare il csrf
@@ -415,23 +462,76 @@ def bank_feedback_ok(request, code):
         'order': o,
     }
 
-def invoice_pdf(request, assopy_id):
-    data = genro.invoice(assopy_id)
-    if data.get('credit_note'):
-        order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
+@login_required
+def invoice(request, order_code, code, mode='html'):
+    if not request.user.is_staff:
+        userfilter = {
+            'order__user__user': request.user,
+        }
     else:
-        order = get_object_or_404(models.Order, assopy_id=data['order_id'])
+        userfilter = {}
+    invoice = get_object_or_404(
+        models.Invoice,
+        code=unquote(code),
+        order__code=unquote(order_code),
+        **userfilter
+    )
+    if mode == 'html':
+        ctx = {
+            'invoice': invoice,
+            'real': settings.IS_REAL_INVOICE(invoice.code),
+        }
+        return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
+    else:
+        if settings.GENRO_BACKEND:
+            assopy_id = invoice.assopy_id
+            data = genro.invoice(assopy_id)
+            if data.get('credit_note'):
+                order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
+                itype = 'credit'
+            else:
+                order = get_object_or_404(models.Order, assopy_id=data['order_id'])
+                itype = 'invoice'
+            raw = urllib.urlopen(genro.invoice_url(assopy_id))
+        else:
+            if not settings.WKHTMLTOPDF_PATH:
+                return HttpResponseRedirectSeeOther(
+                    reverse('assopy-invoice-html', args=(order_code, code))
+                )
+            import subprocess
+            command_args = [
+                settings.WKHTMLTOPDF_PATH,
+                '--cookie',
+                dsettings.SESSION_COOKIE_NAME,
+                request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
+                '--zoom',
+                '1.3',
+                "%s%s" % (dsettings.DEFAULT_URL_PREFIX ,reverse('assopy-invoice-html', args=(order_code, code))),
+                '-'
+            ]
 
-    from conference import models as cmodels
-    try:
-        conf = cmodels.Conference.objects.get(conference_start__year=order.created.year).code
-    except cmodels.Conference.DoesNotExist:
-        conf = order.created.year
-    fname = '[%s] credit note.pdf' % conf
-    f = urllib.urlopen(genro.invoice_url(assopy_id))
-    response = http.HttpResponse(f, mimetype='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-    return response
+            popen = subprocess.Popen(
+                command_args,
+                bufsize=4096,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+
+            raw, _ = popen.communicate()
+            itype = 'invoice'
+            order = invoice.order
+
+        from conference.models import Conference
+        try:
+            conf = Conference.objects\
+                .get(conference_start__year=order.created.year).code
+        except Conference.DoesNotExist:
+            conf = order.created.year
+        fname = '[%s] %s.pdf' % (conf, 'invoice' if itype == 'invoice' else 'credit note')
+
+        response = http.HttpResponse(raw, mimetype='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+        return response
 
 @login_required
 @render_to('assopy/voucher.html')

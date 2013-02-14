@@ -9,8 +9,10 @@ from django.core import urlresolvers
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render_to_response
-from assopy import models
-from assopy.clients import genro
+from django.utils.safestring import mark_safe
+from assopy import models, settings
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 from collections import defaultdict
 from datetime import datetime
 
@@ -21,6 +23,18 @@ class CountryAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Country, CountryAdmin)
 
+class ReadOnlyWidget(forms.widgets.HiddenInput):
+
+    def __init__(self, display=None, *args, **kwargs):
+        self.display = display
+        super(ReadOnlyWidget, self).__init__(*args, **kwargs)
+
+    def render(self, name, value, attrs=None):
+        output = []
+        output.append(u'<span>%s</span>' % (self.display or value))
+        output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
+        return mark_safe(u''.join(output))
+
 class OrderItemAdminForm(forms.ModelForm):
     class Meta:
         model = models.OrderItem
@@ -29,10 +43,25 @@ class OrderItemAdminForm(forms.ModelForm):
         super(OrderItemAdminForm, self).__init__(*args, **kwargs)
         from conference.models import Ticket
         self.fields['ticket'].queryset = Ticket.objects.all().select_related('fare')
+        instance = kwargs.get('instance',None)
+        if instance and instance.order.invoices.exclude(payment_date=None).exists():
+            # se ho emesso un invoice impedisco di variare alcuni campi degli gli order items
+            for f in ('ticket', 'price', 'vat', 'code'):
+                self.fields[f].widget = ReadOnlyWidget(display = getattr(self.instance, f))
 
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
     form = OrderItemAdminForm
+
+    def get_formset(self, request, obj=None, **kwargs):
+        # se ho emesso un invoice impedisco di variare gli order items
+        if obj and obj.invoices.exclude(payment_date=None).exists():
+            self.can_delete = False
+            self.max_num = obj.invoices.exclude(payment_date=None).count()
+        else:
+            self.can_delete = True
+            self.max_num = None
+        return super(OrderItemInlineAdmin, self).get_formset(request, obj, **kwargs)
 
 class OrderAdminForm(forms.ModelForm):
     method = forms.ChoiceField(choices=(
@@ -50,6 +79,12 @@ class OrderAdminForm(forms.ModelForm):
         self.fields['user'].queryset = models.User.objects.all().select_related('user')
         if self.initial:
             self.fields['method'].initial = self.instance.method
+
+    def clean_assopy_id(self):
+        aid = self.cleaned_data.get('assopy_id')
+        if aid == '':
+            aid = None
+        return aid
 
     def save(self, *args, **kwargs):
         self.instance.method = self.cleaned_data['method']
@@ -78,6 +113,13 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = (
         OrderItemInlineAdmin,
     )
+
+    def has_delete_permission(self, request, obj=None):
+        # se ho emesso un invoice impedisco di cancellare l'ordine
+        if obj and obj.invoices.exclude(payment_date=None).exists():
+            return False
+        else:
+            return super(OrderAdmin, self).has_delete_permission(request, obj)
 
     def get_actions(self, request):
         # elimino l'action delete per costringere l'utente ad usare il pulsante
@@ -118,9 +160,23 @@ class OrderAdmin(admin.ModelAdmin):
     _total_payed.short_description = 'Payed'
 
     def _invoice(self, o):
+        from django.contrib.admin.util import quote
         output = []
+        if dsettings.DEBUG:
+            vname = 'assopy-invoice-html'
+        else:
+            vname = 'assopy-invoice-pdf'
         for i in o.invoices.all():
-            output.append('<a href="%s">%s%s</a>' % (genro.invoice_url(i.assopy_id), i.code, ' *' if not i.payment_date else ''))
+            url = urlresolvers.reverse(
+                vname, kwargs={
+                    'order_code': quote(o.code),
+                    'code': quote(i.code),
+                }
+            )
+            output.append(
+                '<a href="%s">%s%s</a>' % (
+                    url, i.code, ' *' if not i.payment_date else '')
+            )
         return ' '.join(output)
     _invoice.allow_tags = True
 
@@ -183,7 +239,10 @@ class OrderAdmin(admin.ModelAdmin):
             if form.is_valid():
                 d = form.cleaned_data['date']
                 for o in orders:
-                    genro.confirm_order(o.assopy_id, o.total(), d)
+                    if settings.GENRO_BACKEND:
+                        genro.confirm_order(o.assopy_id, o.total(), d)
+                    else:
+                        o.confirm_order(d)
                     o.complete()
                 return redirect('admin:assopy_order_changelist')
         else:
@@ -404,11 +463,11 @@ class AuthUserAdmin(aUserAdmin):
     _doppelganger.allow_tags = True
     _doppelganger.short_description = 'Doppelganger'
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         from assopy import dataaccess
         ctx = extra_context or {}
         ctx['user_data'] = dataaccess.all_user_data(object_id)
-        return super(AuthUserAdmin, self).change_view(request, object_id, ctx)
+        return super(AuthUserAdmin, self).change_view(request, object_id, form_url, ctx)
 
 admin.site.register(aUser, AuthUserAdmin)
 
@@ -580,3 +639,111 @@ class RefundAdmin(admin.ModelAdmin):
         models.refund_event.send(sender=refund, old=refund.old_status, tickets=refund.old_tickets)
 
 admin.site.register(models.Refund, RefundAdmin)
+
+if not settings.GENRO_BACKEND:
+
+    class InvoiceAdminForm(forms.ModelForm):
+        class Meta:
+            model = models.Invoice
+            exclude = "assopy_id"
+            widgets = {
+                'price':ReadOnlyWidget,
+                'vat' : ReadOnlyWidget,
+                'order' : ReadOnlyWidget
+            }
+
+    class InvoiceAdmin(admin.ModelAdmin):
+        list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
+        date_hierarchy = 'payment_date'
+        form = InvoiceAdminForm
+
+        def _order(self, o):
+            order = o.order
+            url = urlresolvers.reverse('admin:assopy_order_change', args=(order.id,))
+            return '<a href="%s">%s</a>' % (url, order.code)
+        _order.allow_tags = True
+        _order.admin_order_field = 'order'
+
+        def _user(self, o):
+            u = o.order.user.user
+            name = '%s %s' % (u.first_name, u.last_name)
+            admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
+            dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
+            return '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
+        _user.allow_tags = True
+        _user.admin_order_field = 'order__user__user__first_name'
+
+        def _invoice(self, i):
+            fake = not i.payment_date
+            if settings.GENRO_BACKEND:
+                view = genro.invoice_url(i.assopy_id)
+                download = view
+            else:
+                view = urlresolvers.reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
+                download = urlresolvers.reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
+            return '<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else '')
+        _invoice.allow_tags = True
+        _invoice.short_description = 'Download'
+
+        def has_delete_permission(self, request, obj=None):
+            if obj and obj.payment_date != None:
+                return False
+            else:
+                return super(InvoiceAdmin, self).has_delete_permission(request, obj)
+
+
+    admin.site.register(models.Invoice,InvoiceAdmin)
+
+    admin.site.register(models.Vat)
+
+    class InvoiceLogAdmin(admin.ModelAdmin):
+        list_display = (
+            'code', 'order', 'invoice','date'
+        )
+
+    admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
+
+    from conference import admin as cadmin
+
+    class AssopyFareForm(forms.ModelForm):
+        vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
+
+        class Meta:
+            model = cadmin.models.Fare
+
+        def __init__(self, *args, **kwargs):
+            instance = kwargs.get('instance',None)
+            if instance:
+                try:
+                    vat = instance.vat_set.all()[0]
+                    initial = kwargs.get('initial',{})
+                    initial.update({'vat' : vat })
+                    kwargs['initial'] = initial
+                except  IndexError:
+                    pass
+            super(AssopyFareForm, self).__init__(*args, **kwargs)
+
+    class AssopyFareAdmin(cadmin.FareAdmin):
+        form = AssopyFareForm
+        list_display = cadmin.FareAdmin.list_display + ('_vat',)
+
+        def _vat(self,obj):
+            try:
+                return obj.vat_set.all()[0]
+            except IndexError:
+                return None
+        _vat.short_description = 'VAT'
+
+        def save_model(self, request, obj, form, change):
+            super(AssopyFareAdmin, self).save_model(request, obj, form, change)
+            if 'vat' in form.cleaned_data:
+                # se la tariffa viene modificata dalla list_view 'vat' potrebbe
+                # non esserci
+                vat_fare, created = models.VatFare.objects.get_or_create(
+                    fare=obj, defaults={'vat': form.cleaned_data['vat']})
+                if not created and vat_fare.vat != form.cleaned_data['vat']:
+                    vat_fare.vat = form.cleaned_data['vat']
+                    vat_fare.save()
+
+    admin.site.unregister(cadmin.models.Fare)
+    admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
