@@ -736,10 +736,14 @@ if not settings.GENRO_BACKEND:
 
         def save_model(self, request, obj, form, change):
             super(AssopyFareAdmin, self).save_model(request, obj, form, change)
-            vat_fare, created = models.VatFare.objects.get_or_create(fare=obj, defaults={'vat':form.cleaned_data['vat']})
-            if not created and vat_fare.vat != form.cleaned_data['vat']:
-                vat_fare.vat = form.cleaned_data['vat']
-                vat_fare.save()
+            if 'vat' in form.cleaned_data:
+                # se la tariffa viene modificata dalla list_view 'vat' potrebbe
+                # non esserci
+                vat_fare, created = models.VatFare.objects.get_or_create(
+                    fare=obj, defaults={'vat': form.cleaned_data['vat']})
+                if not created and vat_fare.vat != form.cleaned_data['vat']:
+                    vat_fare.vat = form.cleaned_data['vat']
+                    vat_fare.save()
 
     admin.site.unregister(cadmin.models.Fare)
     admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
