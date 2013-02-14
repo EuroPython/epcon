@@ -889,9 +889,10 @@ def whos_coming(request, conference=None):
     # nel secondo caso li possono vedere solo chi ha un biglietto.
     access = ('p',)
     if request.user.is_authenticated():
-        tickets = [ tid for tid, _, _, complete in dataaccess.all_user_tickets(request.user.id, conference) if complete ]
-        if len(tickets):
+        t = dataaccess.all_user_tickets(request.user.id, conference)
+        if any(tid for tid, _, _, complete in t if complete):
             access = ('m', 'p')
+
     countries = [('', 'All')] + list(amodels.Country.objects\
         .filter(iso__in=models.P3Profile.objects\
             .filter(profile__visibility__in=access)\
@@ -901,6 +902,7 @@ def whos_coming(request, conference=None):
         .values_list('iso', 'name')\
         .distinct()
     )
+
     class FormWhosFilter(forms.Form):
         country = forms.ChoiceField(choices=countries, required=False)
         speaker = forms.BooleanField(label="Only speakers", required=False)
@@ -909,14 +911,13 @@ def whos_coming(request, conference=None):
             widget=cforms.ReadonlyTagWidget(),
         )
 
-
     qs = cmodels.AttendeeProfile.objects\
         .filter(visibility__in=('m', 'p'))\
         .filter(user__in=dataaccess.conference_users(conference))\
         .values('visibility')\
         .annotate(total=Count('visibility'))
     profiles = {
-        'all': qs[0]['total'] + qs[1]['total'],
+        'all': sum([ row['total'] for row in qs ]),
         'visible': 0,
     }
     for row in qs:
