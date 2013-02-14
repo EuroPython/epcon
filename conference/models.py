@@ -477,7 +477,7 @@ TALK_STATUS = (
 )
 
 VIDEO_TYPE = (
-    ('viddler_oembed', 'Viddler (oEmbed)'),
+    ('viddler_oembed', 'oEmbed (Youtube, Vimeo, ...)'),
     ('download', 'Download'),
 )
 
