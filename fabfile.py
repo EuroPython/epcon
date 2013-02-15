@@ -1,4 +1,4 @@
-from fabric.api import env, task, get
+from fabric.api import env, task, get, lcd, local
 from fabric.contrib import django
 
 import sys
@@ -27,3 +27,22 @@ def sync_media():
     remote_path = '/srv/europython/data/media_public'
     local_path = parent_(settings.MEDIA_ROOT)
     get(remote_path, local_path)
+
+@task
+def update():
+    venv = os.environ['VIRTUAL_ENV']
+    src = os.path.join(venv, 'src')
+    with lcd(src):
+        for f in os.listdir(src):
+            fpath = os.path.join(src, f)
+            if not os.path.isdir(fpath):
+                continue
+            with lcd(fpath):
+                print '--> git', fpath
+                local('git pull')
+    print '--> git .'
+    local('git pull')
+    print '--> syncdb + migrate'
+    local('./manage.py syncdb')
+    local('./manage.py migrate')
+
