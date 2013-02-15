@@ -149,11 +149,15 @@ def ticket(request, tid):
             t = cmodels.Ticket.objects.get(id=t.id)
         elif t.fare.ticket_type == 'conference':
             data = request.POST.copy()
+            # vogliamo massimizzare il numero dei biglietti assegnati, e per
+            # farlo scoraggiamo le persone nel compilare i biglietti di altri.
+            # Se il biglietto non è assegnato lo forzo ad avere lo stesso nome
+            # del profilo.
+            #
+            # Se l'utente è quello che ha comprato il biglietto e non lo sta
+            # assegnando allora per questa POST utilizzo il nome dell'utente
+            # corrente
             if t.user == request.user and not data.get('assigned_to'):
-                # vogliamo massimizzare il numero dei biglietti assegnati, e
-                # per farlo scoraggiamo le persone nel compilare i biglietti di
-                # altri. Se il biglietto non è assegnato lo forzo ad avere lo
-                # stesso nome del profilo.
                 data['t%d-ticket_name' % t.id] = '%s %s' % (t.user.first_name, t.user.last_name)
             form = p3forms.FormTicket(
                 instance=p3c,
@@ -176,13 +180,16 @@ def ticket(request, tid):
                 x.assigned_to = assigned_to
             x.save()
 
-            if t.user == request.user and assigned_to != x.assigned_to:
-                if x.assigned_to:
-                    log.info('ticket assigned to "%s"', x.assigned_to)
-                    _assign_ticket(t, x.assigned_to)
-                else:
-                    log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
-                    _reset_ticket(t)
+            if t.user == request.user:
+                old = assigned_to or ''
+                new = x.assigned_to or ''
+                if old != new:
+                    if x.assigned_to:
+                        log.info('ticket assigned to "%s"', x.assigned_to)
+                        _assign_ticket(t, x.assigned_to)
+                    else:
+                        log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
+                        _reset_ticket(t)
 
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
                 # l'utente non ha, nel suo profilo, né il nome né il cognome (e
