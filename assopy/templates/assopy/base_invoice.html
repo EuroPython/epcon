@@ -106,29 +106,32 @@
             .table tr th:last-child {
                 border-right: 0;
             }
-            
+
             td.customer {
                 width: 6cm;
             }
-            
+
             .cell-legend {
                 font-size: 70%;
                 color: #333;
                 margin: 0.1cm;
             }
-            
+
             .alt-language{
                 font-style: italic;
             }
-            
+
             .cell-content {
                 margin: 0.1cm;
             }
-            
+
             .number {
                 text-align: center;
             }
 
+            .vat_value {
+                float: left;
+            }
             .currency {
                 text-align: right;
                 width: 1.7cm;
@@ -138,52 +141,60 @@
                 content: "€";
                 float: left;
             }
-            
+
             .invoice-items {
                 min-height: 17cm;
+                position: relative;
             }
-            
+
             .invoice-items TD {
                 padding: 0.1cm;
                 border-bottom: 1px dotted #000!important;
                 border-top:none;
             }
-            
+
             .invoice-items-w0 {
                 width: 2cm;
             }
-            
+
             .invoice-items-w1 {
                 width: 2.4cm;
             }
-            
+
             .invoice-items TH DIV {
             }
-            
+
             .invoice-detail TD {
             }
-            
+
             .invoice-amount {
                 display: inline-block;
                 float: right;
             }
-            
+
             .invoice-amount TD {
                 height: 1cm;
                 width: 6cm;
             }
-            
+
             .invoice-amount TABLE {
                 width: 15cm;
             }
-            
+
             .invoices-vat-notes {
                 text-align: right;
                 margin-top: 0.2cm;
                 font-size: small;
                 font-style: italic;
             }
-            
+            .invoice_note {
+                position: absolute;
+                bottom: 0;
+                font-size: 140%;
+                line-height: 140%;
+                color: gray;
+            }
+
         -->
     </style>
     {% block EXTRA_HEAD  %}{% endblock %}
@@ -274,7 +285,7 @@
                         <tr>
                             <th class="invoice-items-w1">
                                 <div class="cell-legend">
-                                    Codice 
+                                    Codice
                                 </div>
                                 <div class="cell-legend alt-language">
                                     Code
@@ -282,7 +293,7 @@
                             </th>
                             <th>
                                 <div class="cell-legend">
-                                    Descrizione 
+                                    Descrizione
                                 </div>
                                 <div class="cell-legend alt-language">
                                     Description
@@ -327,6 +338,9 @@
                          {% endfor %}
                      </tbody>
                 </table>
+                {% if invoice.note %}
+                <h3 class="invoice_note">{{ invoice.note }}</h3>
+                {% endif %}
             </div>
             <div class="section invoice-amount">
                 <table class="table">
@@ -346,6 +360,7 @@
                                 </div>
                                 <div class="cell-content">
                                     {% if invoice.vat_value %}
+                                        <div class="vat_value">{{ invoice.vat.value }}% </div>
                                         <div class="currency">{{ invoice.vat_value|floatformat:2 }}</div>
                                     {% endif %}
                                     {% if invoice.vat.invoice_notice %}

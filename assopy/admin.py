@@ -486,9 +486,9 @@ admin.site.register(aUser, AuthUserAdmin)
 # RefundCreditNote espongono e manipolano i dati di una CreditNote e gestisco
 # questa cosa nella save_formset di RefundAdmin
 class RefundCreditNoteInlineAdminForm(forms.ModelForm):
-    code = forms.CharField(label='code', max_length=9)
+    code = forms.CharField(label='code', max_length=20)
     assopy_id = forms.CharField(label='assopy id', max_length=22)
-    invoice = forms.CharField(label='invoice code', max_length=9)
+    invoice = forms.CharField(label='invoice code', max_length=20)
 
     class Meta:
         model = models.RefundCreditNote

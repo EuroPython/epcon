@@ -585,7 +585,7 @@ ORDER_PAYMENT = (
     ('bank', 'Bank'),
 )
 class Order(models.Model):
-    code = models.CharField(max_length=9, null=True)
+    code = models.CharField(max_length=20, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
     user = models.ForeignKey(User, related_name='orders')
     created = models.DateTimeField(auto_now_add=True)
@@ -807,7 +807,7 @@ def _order_feedback(sender, **kwargs):
 order_created.connect(_order_feedback)
 
 class InvoiceLog(models.Model):
-    code =  models.CharField(max_length=9, unique=True)
+    code =  models.CharField(max_length=20, unique=True)
     order = models.ForeignKey(Order, null=True)
     invoice = models.ForeignKey('Invoice', null=True)
     date = models.DateTimeField(auto_now_add=True)
@@ -918,8 +918,8 @@ class InvoiceManager(models.Manager):
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
-    code = models.CharField(max_length=9, null=True, unique=True)
-    assopy_id = models.CharField(max_length=22, unique=True, null=True)
+    code = models.CharField(max_length=20, null=True, unique=True)
+    assopy_id = models.CharField(max_length=22, unique=True, null=True, blank=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -928,6 +928,8 @@ class Invoice(models.Model):
     # generate più fatture per ogni ordine contente orderitems con diverso
     # regime fiscale
     vat = models.ForeignKey(Vat)
+
+    note = models.TextField(blank=True, help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
 
     objects = InvoiceManager()
 
@@ -976,7 +978,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
-    code = models.CharField(max_length=9, unique=True)
+    code = models.CharField(max_length=20, unique=True)
     assopy_id =  models.CharField(max_length=22, unique=True, null=True)
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
