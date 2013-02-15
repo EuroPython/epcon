@@ -143,7 +143,7 @@ class HotelRoom(models.Model):
     conference = models.ForeignKey('conference.Conference')
     room_type = models.CharField(max_length=2, choices=HOTELROOM_ROOM_TYPE)
     quantity = models.PositiveIntegerField()
-    amount = models.CharField(max_length=50, help_text='''
+    amount = models.CharField(max_length=100, help_text='''
         Costo della camera per notte.
         <ul>
             <li>10x1,8x2,7x3 significa: 10 € per una notte, 8 a notte per due notti, 7 a notte per 3 notti.</li>
