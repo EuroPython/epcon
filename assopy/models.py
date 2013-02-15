@@ -514,9 +514,12 @@ class OrderManager(models.Manager):
                 for ix, t in enumerate(tickets):
                     item = OrderItem(order=o, ticket=t, vat=vat)
                     item.code = f.code
-                    item.description = f.name
-                    if len(tickets) > 1:
-                        item.description += ' [%s/%s]' % (ix+1, len(tickets))
+                    if hasattr(t, 'fare_description'):
+                        item.description = t.fare_description
+                    else:
+                        item.description = f.name
+                        if len(tickets) > 1:
+                            item.description += ' [%s/%s]' % (ix+1, len(tickets))
                     item.price = row_price
                     item.save()
         tickets_total = o.total()
