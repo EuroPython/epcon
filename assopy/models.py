@@ -13,10 +13,9 @@ from django.conf import settings as dsettings
 from django.contrib import auth
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db import models, IntegrityError
+from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
-from django.db.models.signals import pre_delete, pre_save
 from django.utils.translation import ugettext_lazy as _
 
 import re
@@ -189,6 +188,16 @@ class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
+
+    vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
+    address = models.CharField(
+        _('Address and City'),
+        max_length=150,
+        blank=True,
+        help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
+
+    # XXX da cancellare
     photo = models.ImageField(_('Photo'), null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
     twitter = models.CharField(_('Twitter'), max_length=20, blank=True)
     skype = models.CharField(_('Skype'), max_length=20, blank=True)
@@ -202,17 +211,11 @@ class User(models.Model):
     birthday = models.DateField(_('Birthday'), null=True, blank=True)
     card_name = models.CharField(_('Card name'), max_length=200, blank=True)
     account_type = models.CharField(_('Account type'), max_length=1, choices=USER_ACCOUNT_TYPE, default='p')
-    vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
     tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
-    address = models.CharField(
-        _('Address and City'),
-        max_length=150,
-        blank=True,
-        help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
     city = models.CharField(_('City'), max_length=40, blank=True)
     state = models.CharField(_('State'), max_length=2, blank=True)
+
 
     objects = UserManager()
 
