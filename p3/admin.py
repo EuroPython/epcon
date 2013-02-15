@@ -224,7 +224,7 @@ class HotelRoomAdmin(admin.ModelAdmin):
 admin.site.register(models.HotelRoom, HotelRoomAdmin)
 
 class TicketRoomAdmin(admin.ModelAdmin):
-    list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_date', '_order_confirmed')
+    list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
     list_select_related = True
 
     def _user(self, o):
@@ -232,6 +232,9 @@ class TicketRoomAdmin(admin.ModelAdmin):
 
     def _room_type(self, o):
         return o.room_type.get_room_type_display()
+
+    def _order_code(self, o):
+        return o.ticket.orderitem.order.code
 
     def _order_date(self, o):
         return o.ticket.orderitem.order.created
