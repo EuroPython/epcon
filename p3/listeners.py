@@ -30,7 +30,13 @@ def on_order_created(sender, **kwargs):
         # relativi ticket adesso, perchè le informazioni sul periodo le ho solo
         # tramite ritems
         if fare.code[0] == 'H':
-            log.info('The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".', sender.code, params['qty'], fare.code, params['period'][0], params['period'][1])
+            log.info(
+                'The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".',
+                sender.code,
+                params['qty'],
+                fare.code,
+                params['period'][0],
+                params['period'][1])
             loop = params['qty']
             if fare.code[1] == 'R':
                 loop *= int(fare.code[2])
@@ -112,8 +118,10 @@ def create_hotel_tickets(sender, **kw):
     # solo per le prenotazioni di intere camere devo creare più biglietti, per
     # tutti gli altri casi mi va bene il comportamento standard
     if sender.code[:2] == 'HR':
-        for _ in range(int(sender.code[2])):
+        room_size = int(sender.code[2])
+        for ix in range(room_size):
             t = Ticket(user=kw['params']['user'], fare=sender)
+            t.fare_description = sender.name + (' (Bed %s/%s)' % (ix+1, room_size))
             t.save()
             kw['params']['tickets'].append(t)
 
