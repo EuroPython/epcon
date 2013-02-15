@@ -182,11 +182,11 @@
         {% endblock %}
         </div>
         <div class="span-3">
-            {% conference_fares as fares %}
+            {% fares_available "conference" sort="price" as fares %}
             {% if fares %}
             <div class="buy badge">
                 <h5><a href="/registration/">Buy Tickets</a></h5>
-                Starting from <b>350€</b>
+                Starting from <b>{{ fares.0.price }}€</b>
             </div>
             {% else %}
             &nbsp;
@@ -210,7 +210,7 @@
 {% block TEASER %}{% endblock %}
 
 <div class="page {% block BODY_CLASS %}{% endblock %}">
-    <div class="container clearfix">        
+    <div class="container clearfix">
         {% block MAIN_CONTENT %}{% endblock %}
     </div>
 </div>
@@ -232,7 +232,6 @@
 
 {% endblock %}
 
-    
 {% block FOOTER_BLOCK %}
 <footer>
     <div class="container clearfix">
@@ -247,7 +246,7 @@
                         <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
                         {% endfor %}
                         {% endblock %}
-                        
+
                         <li class="sep"><img src="{{ STATIC_URL }}p5/i/facebook-16x16.png" alt="" width="16" height="16" />&nbsp;<a href="http://www.facebook.com/pages/EuroPython/196457473701266">EuroPython on Facebook</a></li>
                     </ul>
                 </nav>
@@ -330,7 +329,7 @@
         $('#habla_available_div').show();
         $('#habla_unavailable_div').hide();
     });
-    </script> 
+    </script>
     {% comment %}Twitter library used by the follow button{% endcomment %}
     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
     <script type="text/javascript">

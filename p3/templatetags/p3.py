@@ -201,7 +201,7 @@ def render_ticket(context, ticket):
     return ctx
 
 @register.assignment_tag
-def fares_available(fare_type):
+def fares_available(fare_type, sort=None):
     """
     Restituisce l'elenco delle tariffe attive in questo momento per la
     tipologia specificata.
@@ -219,6 +219,8 @@ def fares_available(fare_type):
         fares = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
     elif fare_type == 'partner':
         fares = [ f for f in fares_list if f['ticket_type'] in 'partner' ]
+    if sort == "price":
+        fares.sort(key=lambda x: x['price'])
     return fares
 
 @fancy_tag(register, takes_context=True)
