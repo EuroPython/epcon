@@ -146,3 +146,24 @@ def _VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False):
     return None
 
 VIDEO_COVER_IMAGE = getattr(settings, 'CONFERENCE_VIDEO_COVER_IMAGE', _VIDEO_COVER_IMAGE)
+
+_OEMBED_PROVIDERS = (
+    ('https://www.youtube.com/oembed',
+        ('https://www.youtube.com/*', 'http://www.youtube.com/*')),
+    ('http://vimeo.com/api/oembed.json',
+        ('http://vimeo.com/*', 'https://vimeo.com/*',
+        'http://vimeo.com/groups/*/videos/*', 'https://vimeo.com/groups/*/videos/*')),
+    ('http://lab.viddler.com/services/oembed/',
+        ('http://*.viddler.com/*',))
+)
+OEMBED_PROVIDERS = getattr(settings, 'CONFERENCE_OEMBED_PROVIDERS', _OEMBED_PROVIDERS)
+
+import oembed
+OEMBED_CONSUMER = oembed.OEmbedConsumer()
+for p, urls in OEMBED_PROVIDERS:
+    endpoint = oembed.OEmbedEndpoint(p, urls)
+    OEMBED_CONSUMER.addEndpoint(endpoint)
+
+OEMBED_URL_FIX = (
+    (r'https?://vimeopro.com.*/(\d+)$', r'https://vimeo.com/\1'),
+)

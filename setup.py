@@ -36,5 +36,6 @@ setup(name='conference',
         'django-taggit',
         'markdown2',
         'Pygments',
+        'python-oembed',
     ],
 )

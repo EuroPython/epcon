@@ -830,3 +830,7 @@ def conference2ical(conf, altf=lambda d, comp: d):
     tts = map(TimeTable2.fromSchedule, sids)
     return timetables2ical(tts, altf=altf)
 
+def oembed(url, **kw):
+    for pattern, sub in settings.OEMBED_URL_FIX:
+        url = re.sub(pattern, sub, url)
+    return settings.OEMBED_CONSUMER.embed(url, **kw).getData()

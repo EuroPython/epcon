@@ -861,14 +861,7 @@ def embed_video(context, value, args=""):
     {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
     """
     args = dict( map(lambda _: _.strip(), x.split('=')) for x in args.split(',') if '=' in x )
-    providers = {
-        'viddler': ('oEmbed', 'http://lab.viddler.com/services/oembed/'),
-        'youtube': ('oEmbed', 'https://www.youtube.com/oembed'),
-        'download': ('download', None),
-    }
-    source = None
-    video_url = None
-    video_path = None
+    video_url = video_path = None
 
     if isinstance(value, models.Talk):
         talk = value
@@ -892,34 +885,14 @@ def embed_video(context, value, args=""):
                     if os.path.exists(fpath):
                         video_path = fpath
             if not video_path:
-                return ''
-            source = 'download'
+                return None
         else:
             video_url = value.video_url
     else:
         video_url = value
 
     if not any((video_url, video_path)):
-        return ''
-
-    if source is None:
-        assert video_url
-        try:
-            source = args['source']
-        except KeyError:
-            if 'viddler' in video_url:
-                source = 'viddler'
-            elif 'youtube' in video_url:
-                source = 'youtube'
-            else:
-                source = 'download'
-    try:
-        vtype = providers[source]
-    except KeyError:
-        if source.startswith('http'):
-            vtype = ('oEmbed', source)
-        else:
-            raise
+        return None
 
     w = h = None
     if 'width' in args:
@@ -927,66 +900,38 @@ def embed_video(context, value, args=""):
     if 'height' in args:
         h = int(args['height'])
 
-    if vtype[0] == 'oEmbed':
-        http = httplib2.Http()
-        url = vtype[1] + '?url=' + video_url + '&format=json'
-        if w and h:
-            url += '&width=%s&height=%s&maxwidth=%s&maxheight=%s' % (w, h, w, h)
-        # rasky: youtube supports this but there's no standard way for querying the SSL
-        # embed. We can assume that others will ignore the extra query argument.
-        url += '&scheme=https'
-        try:
-            response, content = http.request(url)
-            data = simplejson.loads(content)
-        except:
-            # Qualsiasi cosa succeda, che non riesca a connettermi a vtype[1] o che
-            # non possa decodificare content preferisco non mostrare il video
-            # che causare un error 500.
-            # Per la cronaca .loads solleva TypeError se content non è né un
-            # stringa né un buffer e ValueError se content non è un json
-            # valido.
-            return ""
+    output = None
 
-        html = data['html']
-        # Se voglio forzare la larghezza e l'altezza a w e h posso usare queste
-        # regexp; viddler ad esempio utilizza i valori richiesti via url come
-        # hint (ne onora uno ma l'altro viene modificato per non deformare il
-        # video).
-        #if w and h:
-        #    html = re.sub('width=\W*"\d+"', 'width="%s"' % w, html)
-        #    html = re.sub('height=\W*"\d+"', 'height="%s"' % h, html)
+    if not video_path:
+        # il video deve essere embeddato
+        opts = {}
+        if w:
+            opts['maxwidth'] = w
+        if h:
+            opts['maxheight'] = h
+        # SSL embed, youtube (at least) supports this
+        opts['scheme'] = 'https'
+        try:
+            output = utils.oembed(video_url, **opts)
+        except:
+            output = None
     else:
-        assert video_path
         try:
             stat = os.stat(video_path)
-        except (TypeError, AttributeError, OSError), e:
+        except:
             finfo = ''
         else:
             fsize = stat.st_size
             ftype = mimetypes.guess_type(video_path)[0]
             finfo = ' (%s %s)' % (ftype, defaultfilters.filesizeformat(fsize))
 
-        opts = {
-            'controls': 'controls',
-            'class': 'projekktor',
-        }
-        if w and h:
-            opts['width'] = w
-            opts['height'] = h
-
-        data = {
-            'attrs': ' '.join('%s="%s"' % x for x in opts.items()),
-            'href': video_url,
-            'info': finfo,
-        }
-
-        data['attrs'] += ' src="%s"' % data['href']
-        html = """
+        html = '''
             <div>
-                <a href="%(href)s">download video%(info)s via BitTorrent</a>
+                <a href="%s">Download video%s</a>
             </div>
-        """ % data
-    return mark_safe(html)
+        ''' % (video_url, finfo)
+        output = {'html': html}
+    return output
 
 @register.tag
 def conference_quotes(parser, token):
