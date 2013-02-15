@@ -290,7 +290,7 @@ CONFERENCE_GOOGLE_MAPS = {
 
 CONFERENCE_CONFERENCE = 'ep2013'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2012.europython.eu/voting-disallowed'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2013.europython.eu/voting-disallowed'
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -522,15 +522,15 @@ COMMENTS_APP = 'hcomments'
 from datetime import date
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 P3_HOTEL_RESERVATION = {
-    'period': (date(2012, 6, 29), date(2012, 7, 10)),
-    'default': (date(2012, 7, 2), date(2012, 7, 6)),
+    'period': (date(2013, 6, 28), date(2013, 7, 9)),
+    'default': (date(2013, 7, 2), date(2013, 7, 6)),
 }
 P3_USER_MESSAGE_FOOTER = '''
 
 This message was sent from a participant at the conference EuroPython.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2012.europython.eu/accounts/profile/
+https://ep2013.europython.eu/accounts/profile/
 '''
 
 TEMPLATESADMIN_EDITHOOKS = (
