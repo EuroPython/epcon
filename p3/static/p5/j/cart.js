@@ -30,13 +30,16 @@
             if(!values) {
                 values = e.slider('values');
             }
-            var txt = "from ";
-            var d = new Date(period_start);
-            d.setDate(d.getDate() + values[0]);
-            txt += format_date(d) + " to ";
-            d.setDate(d.getDate() + (values[1]-values[0]));
-            txt += format_date(d);
-            label.text(txt);
+            var checkin = new Date(period_start);
+            checkin.setDate(checkin.getDate() + values[0]);
+
+            var checkout = new Date(period_start);
+            checkout.setDate(checkout.getDate() + values[1]);
+
+            var txt = "checkin <b>" + format_date(checkin) + "</b>, ";
+            txt += "checkout <b>" + format_date(checkout) + "</b> morning ";
+            txt += "(<b>" + ((checkout-checkin) / (60000 * 60 * 24)) + " nights</b>)";
+            label.html(txt);
         }
         /*
          * questi sono gli input da mantenere sincronizzati con i valore dello
