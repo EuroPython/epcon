@@ -700,6 +700,16 @@ class Fare(models.Model):
         return calc['total']
 
     def create_tickets(self, user):
+        """
+        Crea e ritorna i biglietti associati a questa tariffa.
+        Normalmente ogni tariffa comporta un solo biglietto, ma questo
+        comportamento è modificabile da un listener collegato al segnale
+        fare_tickets.
+
+        Le istanze ritornate da questo metodo hanno un attributo aggiuntivo
+        `fare_description` (volatile) che riporta una descrizione della tariffa
+        specifica per il singolo biglietto.
+        """
         from conference.listeners import fare_tickets
         params = {
             'user': user,
@@ -708,6 +718,7 @@ class Fare(models.Model):
         fare_tickets.send(sender=self, params=params)
         if not params['tickets']:
             t = Ticket(user=user, fare=self)
+            t.fare_description = self.name
             t.save()
             params['tickets'].append(t)
         return params['tickets']
