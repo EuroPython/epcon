@@ -121,14 +121,14 @@
         {% if ticket.fare.code == 'SIM01' %}
             {% with form.document|field_value as doc %}
             {% if doc %}
-                <p>Uploaded <a href="{{ doc.url }}">ID Document</a></p>
+                <p>Uploaded <a href="{{ doc.url }}">Photo ID</a></p>
             {% endif %}
             {% endwith %}
         {% endif %}
         {% if ticket.fare.code|slice:":1" == 'H' %}
             {% with form.document|field_value as doc %}
             {% if doc %}
-                <p>Uploaded <a href="{{ doc.url }}">ID Document</a></p>
+                <p>Uploaded <a href="{{ doc.url }}">Photo ID</a></p>
             {% endif %}
             {% endwith %}
         {% endif %}
