@@ -176,6 +176,7 @@ INSTALLED_APPS = (
     'paypal.standard.ipn',
 
     'recaptcha_works',
+    'django_crontab',
 )
 
 RECAPTCHA_OPTIONS = {
@@ -696,6 +697,24 @@ def P3_LIVE_EMBED(request, track=None, event=None):
             return None
         cache.set('p3_live_embed_%s' % track, data['html'], 3600)
         return data['html']
+
+# cronjob
+
+def cron_latest_tweets():
+    from conference.management.commands import latest_tweets
+    cmd = latest_tweets.Command()
+    cmd.handle('europython', count=5, output=CONFERENCE_LATEST_TWEETS_FILE)
+
+def cron_cleanup():
+    from django.core.management.commands import cleanup
+    cmd = cleanup.Command()
+    cmd.handle()
+
+CRONTAB_COMMAND_PREFIX = 'DATA_DIR=%s OTHER_STUFF=%s' % (DATA_DIR, OTHER_STUFF)
+CRONJOBS = [
+    ('*/10 * * * *', 'pycon.settings.cron_latest_tweets'),
+    ('@weekly', 'pycon.settings.cron_cleanup')
+]
 
 from settings_locale import *
 
