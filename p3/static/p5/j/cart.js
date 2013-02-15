@@ -137,14 +137,18 @@
 
     function calcTotal() {
 
+        function _clearTotals() {
+            $('fieldset .total', form)
+                .data('total', 0)
+                .children('b')
+                .html('€ 0');
+        }
+
         form.ajaxSubmit({
             url: '/p3/cart/calculator/',
             dataType: 'json',
             success: function(data, text, jqHXR) {
-                $('fieldset .total', form)
-                    .data('total', 0)
-                    .children('b')
-                    .html('€ 0');
+                _clearTotals()
 
                 /*
                  * data contiene il totale generale, lo sconto ottenuto tramite
@@ -158,51 +162,6 @@
                 $('.hotel-reservations tr').removeClass('error');
                 $('.hotel-reservations tr .errors').html('');
 
-                if(typeof(data.total) == "undefined") {
-                    /* la validazione della form passata ha ritornato un errore,
-                     * devo mostrare i messaggi accanto ai campi corrispondenti
-                     */
-
-                    /* XXX: in teoria qualunque campo della form potrebbe avere
-                     * problemi di validazione, in pratica solo quelli relativi
-                     * alle prenotazioni alberghiere.
-                     */
-
-                    function hotel_row_error(type, ix, msg) {
-                        var row = $('tr[data-reservation-type=' + type + ']', form)
-                            .eq(ix)
-                            .addClass('error');
-                        var fare_cell = $('td[data-fare]', row);
-                        var feedback = $('.errors', fare_cell);
-                        if(feedback.length) {
-                            feedback.html(msg);
-                        }
-                        else {
-                            $('<div class="errors"></div>')
-                                .appendTo(fare_cell)
-                                .html(msg);
-                        }
-                    }
-                    for(var fname in data) {
-                        switch(fname) {
-                            case 'bed_reservations':
-                            case 'room_reservations':
-                                var type = fname.split('_')[0];
-                                for(var ix=0; ix<data[fname].length; ix++) {
-                                    var p = data[fname][ix].split(':');
-                                    hotel_row_error(type, p[0], p[1]);
-                                }
-                                break;
-                            case '__all__':
-                                break;
-                            default:
-                                // ops qualcosa di inatteso
-                                throw("invalid field");
-                                break;
-                        }
-                    }
-                    return;
-                }
                 /*
                  * ...il problema con i costi dei singoli biglietti è quello di
                  * mostrare per ogni prenotazione alberghiera il prezzo
@@ -284,6 +243,66 @@
                             break;
                     }
                 });
+            },
+            error: function(response) {
+                var err = null;
+                if(response.status == 400) {
+                    try {
+                        err = JSON.parse(response.responseText);
+                    }
+                    catch(_) {
+                    }
+                }
+
+                _clearTotals();
+                if(err == null) {
+                    alert(response.responseText);
+                    return;
+                }
+
+                /* la validazione della form passata ha ritornato un errore,
+                 * devo mostrare i messaggi accanto ai campi corrispondenti
+                 */
+
+                /* XXX: in teoria qualunque campo della form potrebbe avere
+                 * problemi di validazione, in pratica solo quelli relativi
+                 * alle prenotazioni alberghiere.
+                 */
+
+                function hotel_row_error(type, ix, msg) {
+                    var row = $('tr[data-reservation-type=' + type + ']', form)
+                        .eq(ix)
+                        .addClass('error');
+                    var fare_cell = $('td[data-fare]', row);
+                    var feedback = $('.errors', fare_cell);
+                    if(feedback.length) {
+                        feedback.html(msg);
+                    }
+                    else {
+                        $('<div class="errors"></div>')
+                            .appendTo(fare_cell)
+                            .html(msg);
+                    }
+                }
+                for(var fname in err) {
+                    switch(fname) {
+                        case 'bed_reservations':
+                        case 'room_reservations':
+                            var type = fname.split('_')[0];
+                            for(var ix=0; ix<err[fname].length; ix++) {
+                                var p = err[fname][ix].split(':');
+                                hotel_row_error(type, p[0], p[1]);
+                            }
+                            break;
+                        case '__all__':
+                            break;
+                        default:
+                            // ops qualcosa di inatteso
+                            throw("invalid field");
+                            break;
+                    }
+                }
+                return;
             }
         });
     }
