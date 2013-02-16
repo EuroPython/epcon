@@ -177,7 +177,11 @@
         <div class="span-6">
         {% block LOGO %}
             <div class="logo">
-                <a title="EuroPython home" href="/"><img src="{{ STATIC_URL }}p5/i/europython-logo.png" alt="EuroPython 2012" title="" width="330" height="110" /></a>
+{% if 0 %}
+                <a title="EuroPython home" href="/"><img src="{{ STATIC_URL }}p5/i/europython-logo.png" alt="EuroPython 2013" title="" width="330" height="110" /></a>
+{% else %}
+                <a title="EuroPython home" href="/"><img src="/media/uploads/ep_logodate2_big.png" alt="EuroPython 2013" title="" width="330" height="110" /></a>
+{% endif %}
             </div>
         {% endblock %}
         </div>
