@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^geocode/$', 'assopy.views.geocode', name='assopy-geocode'),
 
     url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$', 'assopy.views.voucher', name='assopy-orderitem-voucher'),
+    url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/refund$', 'assopy.views.refund', name='assopy-orderitem-refund'),
     url(r'orders/(?P<assopy_id>.+)/completed$', 'assopy.views.order_complete', name='assopy-order-complete'),
     url(r'^paypal/redirect/(?P<code>.+)/$','assopy.views.paypal_billing', name='assopy-paypal-redirect'),
     url(r'^paypal/cc/redirect/(?P<code>.+)/$','assopy.views.paypal_cc_billing', name='assopy-cc-paypal-redirect'),

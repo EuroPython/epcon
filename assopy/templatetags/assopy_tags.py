@@ -286,3 +286,7 @@ def render_voucher(context, item):
     return {
         'item': item,
     }
+
+@register.assignment_tag(takes_context=True)
+def orderitem_can_be_refunded(context, item):
+    return settings.ORDERITEM_CAN_BE_REFUNDED(context['user'], item)

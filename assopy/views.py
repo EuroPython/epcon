@@ -551,3 +551,20 @@ def order_complete(request, assopy_id):
     r = order.complete()
     log.info('remote notice! order "%s" (%s) complete! result=%s', order.code, order.assopy_id, r)
     return http.HttpResponse('')
+
+@login_required
+@render_to_json
+def refund(request, order_id, item_id):
+    try:
+        item = models.OrderItem.objects\
+            .select_related('order')\
+            .get(order=order_id, id=item_id)
+    except models.OrderItem.DoesNotExist:
+        raise http.Http404()
+
+
+    if request.method == 'POST':
+        if not settings.ORDERITEM_CAN_BE_REFUNDED(request.user, item):
+            return http.HttpResponseBadRequest()
+        return ''
+    return ''

@@ -152,3 +152,8 @@ if 'paypal.standard.ipn' in settings.INSTALLED_APPS:
     PAYPAL_ITEM_NAME = getattr(settings, 'PAYPAL_ITEM_NAME', _PAYPAL_ITEM_NAME)
 
 WKHTMLTOPDF_PATH = getattr(settings,'ASSOPY_WKHTMLTOPDF_PATH', None)
+
+def _ORDERITEM_CAN_BE_REFUNDED(user, item):
+    return False
+
+ORDERITEM_CAN_BE_REFUNDED = getattr(settings, 'ASSOPY_ORDERITEM_CAN_BE_REFUNDED', _ORDERITEM_CAN_BE_REFUNDED)

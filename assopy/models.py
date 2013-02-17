@@ -23,7 +23,7 @@ import os
 import os.path
 import logging
 from uuid import uuid4
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
 
@@ -790,6 +790,20 @@ class OrderItem(models.Model):
             self.ticket.delete()
         else:
             super(OrderItem, self).delete(**kwargs)
+
+    def refund_type(self):
+        """
+            Restituisce il tipo di rimborso applicabile:
+
+            - direct, rimbordo diretto
+                Per i pagamenti fatti con paypal non più di 60gg fa
+            - payment, rimborso con un nuovo pagamento
+                Per tutti gli altri pagamenti
+        """
+        order = self.order
+        if order.method in ('paypal', 'cc') and order.created > datetime.now() - timedelta(days=60):
+            return 'direct'
+        return 'payment'
 
 def _order_feedback(sender, **kwargs):
     rows = [
