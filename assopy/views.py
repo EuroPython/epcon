@@ -566,5 +566,19 @@ def refund(request, order_id, item_id):
     if request.method == 'POST':
         if not settings.ORDERITEM_CAN_BE_REFUNDED(request.user, item):
             return http.HttpResponseBadRequest()
+        form = aforms.RefundItemForm(item, data=request.POST)
+        if not form.is_valid():
+            return form.errors
+
+        data = form.cleaned_data
+        note = ''
+        if data['paypal'] or data['iban']:
+            if data['paypal']:
+                note += 'paypal: %s\n' % data['paypal']
+            if data['iban']:
+                note += 'bank account: %s\n' % data['iban']
+            note += '----------------------------------------\n'
+        models.Refund.objects.create_from_orderitem(
+            item, reason=data['reason'], internal_note=note)
         return ''
     return ''

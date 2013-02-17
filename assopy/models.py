@@ -1028,7 +1028,7 @@ class RefundCreditNote(models.Model):
     refund = models.ForeignKey('assopy.Refund')
 
 class RefundManager(models.Manager):
-    def create_from_orderitem(self, orderitem, reason=''):
+    def create_from_orderitem(self, orderitem, reason='', internal_note=''):
         # Il primo passo è capire se l'utente ha già una richiesta di rimborso
         # a cui posso agganciare l'orderitem passato.  Gli item di un Refund
         # devono appartenere tutti alla stessa Invoice, purtroppo non ho il
@@ -1043,7 +1043,7 @@ class RefundManager(models.Manager):
         try:
             r = qs[0]
         except IndexError:
-            r = Refund(reason=reason)
+            r = Refund(reason=reason, internal_note=internal_note)
             r.save()
         RefundOrderItem(refund=r, orderitem=orderitem).save()
 
