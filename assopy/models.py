@@ -17,6 +17,7 @@ from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 import re
 import os
@@ -801,7 +802,7 @@ class OrderItem(models.Model):
                 Per tutti gli altri pagamenti
         """
         order = self.order
-        if order.method in ('paypal', 'cc') and order.created > datetime.now() - timedelta(days=60):
+        if order.method in ('paypal', 'cc') and order.created > now() - timedelta(days=60):
             return 'direct'
         return 'payment'
 
