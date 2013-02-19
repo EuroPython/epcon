@@ -931,6 +931,8 @@ def embed_video(context, value, args=""):
             </div>
         ''' % (video_url, finfo)
         output = {'html': html}
+    if output:
+        output['html'] = mark_safe(output['html'])
     return output
 
 @register.tag
