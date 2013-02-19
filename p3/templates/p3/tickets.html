@@ -16,19 +16,38 @@
         </div>
         {% cycle '' '<hr />' %}    
     {% endfor %}
+    <style>
+        #id_reason {
+            height: 80px;
+        }
+        #id_bank {
+            height: 80px;
+        }
+    </style>
     <div id="refund-form" class="overlay">
-        <form  action="" method="POST">
-            {% for f in refund_form %}
-                {{ f|field }}
-            {% endfor %}
-            <button type="submit">Refund</button>
+        <h1>Refund details</h1>
+        <form action="" method="POST">
+            <h3>You are eligible for commission-free refund through paypal</h3>
+            {{ refund_form.reason|field }}
+            <div class="refund-method">
+                <h2>Choose the refund method</h2>
+                <label><input type="radio" name="rmethod" value="paypal">Through PayPal</label>
+                <label><input type="radio" name="rmethod" value="bank" checked>Through bank transfer</label>
+                <div class="hidden paypal">
+                {{ refund_form.paypal|field }}
+                </div>
+                <div class="bank">
+                {{ refund_form.bank|field }}
+                </div>
+                <p><b>Please note:</b> you are responsible for the commission fees, if any.</p>
+            </div>
+            <button type="submit">Ask for refund</button>
         </form>
     </div>
     <script type="text/javascript">//<![CDATA[
     (function() {
         $('#refund-form form').ajaxForm({
             success: function(response, status, xhr, form) {
-                console.log('x', form);
                 var trigger = form.data('trigger');
                 if(trigger) {
                     trigger.overlay().close();
@@ -141,22 +160,55 @@
                 });
             }
         });
-        $('div.ticket .refund-button').live('click', function(e) {
-            e.preventDefault();
-            var trigger = $(e.target);
-            var ticket = trigger.parents('.ticket');
+        function setup_refund_form(ticket) {
+            var trigger = $('.refund-button', ticket);
             var refund_type = trigger.data('refund-type');
             var order = ticket.data('order');
             var item = ticket.data('orderitem');
 
             var form = $('#refund-form form');
+            if(!form.data('init')) {
+                form.data('init', 1);
+                form
+                    .find('input[name=rmethod]')
+                    .click(function(e) {
+                        var p = form.find('.refund-method .paypal');
+                        var b = form.find('.refund-method .bank');
+                        if(e.target.value == 'paypal') {
+                            p.show();
+                            b.hide();
+                        }
+                        else {
+                            p.hide();
+                            b.show();
+                        }
+                    });
+            }
             form.data('trigger', trigger);
             form.get(0).action = '/accounts/orders/' + order + '/' + item + '/refund';
 
-            var method = (refund_type == 'payment') ? 'show' : 'hide';
-            $('#id_paypal', form).parent()[method]();
-            $('#id_iban', form).parent()[method]();
+            if(refund_type == 'payment') {
+                form
+                    .children('h3')
+                        .hide()
+                        .end()
+                    .children('.refund-method')
+                        .show();
+            }
+            else {
+                form
+                    .children('h3')
+                        .show()
+                        .end()
+                    .children('.refund-method')
+                        .hide();
+            }
             form.get(0).reset();
+        }
+        $('div.ticket .refund-button').live('click', function(e) {
+            e.preventDefault();
+            var ticket = $(e.target).parents('.ticket');
+            setup_refund_form(ticket)
         });
     })();
     //]]>
