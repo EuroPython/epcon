@@ -227,11 +227,11 @@ class RefundItemForm(forms.Form):
     paypal = forms.EmailField(
         label="Your paypal address",
         help_text="""If you prefer to receive payment via paypal""",
-        request=False)
+        required=False)
     iban = forms.CharField(
         label="bank account",
         help_text="""If you prefer to receive payment by bank""",
-        request=False)
+        required=False)
 
     def __init__(self, item, *args, **kw):
         super(RefundItemForm, self).__init__(*args, **kw)

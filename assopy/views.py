@@ -562,7 +562,6 @@ def refund(request, order_id, item_id):
     except models.OrderItem.DoesNotExist:
         raise http.Http404()
 
-
     if request.method == 'POST':
         if not settings.ORDERITEM_CAN_BE_REFUNDED(request.user, item):
             return http.HttpResponseBadRequest()
