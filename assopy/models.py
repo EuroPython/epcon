@@ -1002,7 +1002,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
     code = models.CharField(max_length=20, unique=True)
-    assopy_id =  models.CharField(max_length=22, unique=True, null=True)
+    assopy_id =  models.CharField(max_length=22, null=True)
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
