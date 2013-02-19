@@ -562,7 +562,14 @@ def refund(request, order_id, item_id):
     except models.OrderItem.DoesNotExist:
         raise http.Http404()
 
+    try:
+        r = models.RefundOrderItem.objects.get(orderitem=item_id)
+    except models.RefundOrderItem.DoesNotExist:
+        r = None
+
     if request.method == 'POST':
+        if r:
+            return http.HttpResponseBadRequest()
         if not settings.ORDERITEM_CAN_BE_REFUNDED(request.user, item):
             return http.HttpResponseBadRequest()
         form = aforms.RefundItemForm(item, data=request.POST)
@@ -572,13 +579,15 @@ def refund(request, order_id, item_id):
         data = form.cleaned_data
         note = ''
         if data['paypal'] or data['bank']:
-        if data['paypal'] or data['iban']:
             if data['paypal']:
                 note += 'paypal: %s\n' % data['paypal']
             if data['bank']:
                 note += 'bank routing: %s\n' % data['bank']
             note += '----------------------------------------\n'
-        models.Refund.objects.create_from_orderitem(
+        r = models.Refund.objects.create_from_orderitem(
             item, reason=data['reason'], internal_note=note)
-        return ''
-    return ''
+    if not r:
+        return None
+    return {
+        'status': r.status,
+    }
