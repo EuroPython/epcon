@@ -271,7 +271,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
                                         initial=item['price']
                                     )
         def paypal_url(self):
-            return SANDBOX_POSTBACK_ENDPOINT if dsettings.PAYPAL_TEST else POSTBACK_ENDPOINT
+            return SANDBOX_POSTBACK_ENDPOINT if getattr(dsettings, 'PAYPAL_TEST') else POSTBACK_ENDPOINT
 
         def as_url_args(self):
             import urllib
