@@ -228,10 +228,11 @@ class RefundItemForm(forms.Form):
         label="Your paypal address",
         help_text="""If you prefer to receive payment via paypal""",
         required=False)
-    iban = forms.CharField(
-        label="bank account",
-        help_text="""If you prefer to receive payment by bank""",
-        required=False)
+    bank = forms.CharField(
+        label="Bank routing information",
+        help_text="""Please specify IBAN, BIC and bank address (if in Europe) or any needed information for a worldwide transfer""",
+        required=False,
+        widget=forms.Textarea)
 
     def __init__(self, item, *args, **kw):
         super(RefundItemForm, self).__init__(*args, **kw)

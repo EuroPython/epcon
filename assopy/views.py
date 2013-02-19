@@ -571,11 +571,12 @@ def refund(request, order_id, item_id):
 
         data = form.cleaned_data
         note = ''
+        if data['paypal'] or data['bank']:
         if data['paypal'] or data['iban']:
             if data['paypal']:
                 note += 'paypal: %s\n' % data['paypal']
-            if data['iban']:
-                note += 'bank account: %s\n' % data['iban']
+            if data['bank']:
+                note += 'bank routing: %s\n' % data['bank']
             note += '----------------------------------------\n'
         models.Refund.objects.create_from_orderitem(
             item, reason=data['reason'], internal_note=note)
