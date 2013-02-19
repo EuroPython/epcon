@@ -117,7 +117,7 @@ class Token(models.Model, django_urls.UrlMixin):
     objects = TokenManager()
 
     def get_url_path(self):
-        return reverse('assopy-otc-token', kwargs={'token': self.token})       
+        return reverse('assopy-otc-token', kwargs={'token': self.token})
 
 # Segnale emesso quando un nuovo utente viene creato. Il sender è il nuovo
 # utente mentre profile_complete indica se tutti i dati su l'utente sono già
@@ -950,7 +950,9 @@ class Invoice(models.Model):
     # regime fiscale
     vat = models.ForeignKey(Vat)
 
-    note = models.TextField(blank=True, help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
+    note = models.TextField(
+        blank=True,
+        help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
 
     objects = InvoiceManager()
 
