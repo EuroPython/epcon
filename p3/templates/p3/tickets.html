@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load i18n p3 %}
+{% load i18n p3 assopy_tags %}
 {% block MAIN_CONTENT %}
     <h1>{% trans "Your tickets" %}</h1>
     
@@ -16,8 +16,31 @@
         </div>
         {% cycle '' '<hr />' %}    
     {% endfor %}
+    <div id="refund-form" class="overlay">
+        <form  action="" method="POST">
+            {% for f in refund_form %}
+                {{ f|field }}
+            {% endfor %}
+            <button type="submit">Refund</button>
+        </form>
+    </div>
     <script type="text/javascript">//<![CDATA[
     (function() {
+        $('#refund-form form').ajaxForm({
+            success: function(response, status, xhr, form) {
+                console.log('x', form);
+                var trigger = form.data('trigger');
+                if(trigger) {
+                    trigger.overlay().close();
+                }
+            },
+            error: function(xhr, textStarus, error) {
+                if(xhr.responseText) {
+                    var errors = JSON.parse(xhr.responseText);
+                    form_errors($('#refund-form form'), errors);
+                }
+            }
+        });
         function _error() {
             alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
         }
@@ -35,7 +58,9 @@
                 else {
                     if(!container)
                         container = form.parents('div.ticket');
+                    var p = container.parent();
                     container.replaceWith(response)
+                    setup_fragment(p);
                     feedback(message);
                 }
             }
@@ -118,20 +143,20 @@
         });
         $('div.ticket .refund-button').live('click', function(e) {
             e.preventDefault();
-            var txt = '{% trans "Please enter the reason of your refund request:" %}';
-            var reason = $.trim(prompt(txt, ''));
-            if(!reason) {
-                return;
-            }
-            var ticket = $(e.target).parents('.ticket');
-            var form = $('form', ticket);
-            var h = $('<input type="hidden" name="refund" />');
-            h.val(reason);
-            form.append(h);
-            form.ajaxSubmit({
-                replaceTarget: true,
-                success: _success('{% trans "Refund requested" %}')
-            });
+            var trigger = $(e.target);
+            var ticket = trigger.parents('.ticket');
+            var refund_type = trigger.data('refund-type');
+            var order = ticket.data('order');
+            var item = ticket.data('orderitem');
+
+            var form = $('#refund-form form');
+            form.data('trigger', trigger);
+            form.get(0).action = '/accounts/orders/' + order + '/' + item + '/refund';
+
+            var method = (refund_type == 'payment') ? 'show' : 'hide';
+            $('#id_paypal', form).parent()[method]();
+            $('#id_iban', form).parent()[method]();
+            form.get(0).reset();
         });
     })();
     //]]>
