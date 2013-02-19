@@ -1088,6 +1088,40 @@ class Refund(models.Model):
                     from django.core.exceptions import ValidationError
                     raise ValidationError('Cannot reject a previusly refunded request')
 
+    def invoice(self):
+        """
+        Ritorna le fatture associate con gli `item` di questo rimborso.
+        """
+        items = self.items.all()
+        vats = set([x.vat_id for x in items])
+        assert len(vats) == 1
+        return Invoice.objects\
+            .get(order=items[0].order_id, vat=vats.pop())
+
+    def price(self):
+        # XXX: questo codice non va bene, non tiene conto di eventuali coupon
+        # che possono aver ridotto il prezzo del biglietto
+        return sum(self.items.all().values_list('price', flat=True))
+
+    def emit_credit_note(self, price=None, emit_date=None):
+        """
+        Emette la nota di credito per questo rimborso
+        """
+        if emit_date is None:
+            emit_date = now()
+        if price is None:
+            price = self.price()
+        log.info(
+            'emit credit note for refund "%s"', self.id)
+        c = CreditNote(
+                invoice=self.invoice(),
+                emit_date=emit_date,
+                price=price)
+        c.code = settings.NEXT_CREDIT_CODE(c)
+        c.save()
+        credit_note_emitted.send(sender=c, refund=self)
+        return c
+
     def save(self, *args, **kwargs):
         old = None
         if self.id:
@@ -1127,6 +1161,23 @@ class Refund(models.Model):
 
 
 refund_event = dispatch.Signal(providing_args=['old', 'tickets'])
+credit_note_emitted = dispatch.Signal(providing_args=['refund'])
+
+def on_credit_note_emitted(sender, **kw):
+    refund = kw['refund']
+    tpl = 'refund-credit-note'
+
+    items = list(refund.items.all().select_related('order__user__user'))
+    ctx = {
+        'items': items,
+        'name': items[0].order.user.name(),
+        'refund': refund,
+        'tickets': [ x.ticket for x in refund.items.all() ],
+        'credit_note': sender,
+    }
+    utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
+
+credit_note_emitted.connect(on_credit_note_emitted)
 
 def on_refund_changed(sender, **kw):
     if sender.status == kw['old']:
@@ -1134,7 +1185,7 @@ def on_refund_changed(sender, **kw):
     if not kw['tickets']:
         return
     cnotes = sender.credit_notes.all()
-    if sender.status == 'refunded' and cnotes: 
+    if sender.status == 'refunded' and cnotes:
         tpl = 'refund-credit-note'
     else:
         tpl = 'refund-' + sender.status
@@ -1163,6 +1214,9 @@ Order: %s
 Items:
 %s
 
+Internal Notes:
+%s
+
 Manage link: %s
         ''' % (
             ctx['name'],
@@ -1170,6 +1224,7 @@ Manage link: %s
             sender.reason,
             order.code,
             mail_items,
+            sender.internal_note,
             dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
         )
         send_email(
@@ -1201,7 +1256,8 @@ Manage link: %s
             recipient_list=emails.get(order.method, emails[None]),
         )
     elif sender.status == 'refunded':
-        message = '''
+        if settings.GENRO_BACKEND:
+            message = '''
 User: %s (%s)
 Order: %s assopy id: %s
 Items:
@@ -1209,19 +1265,20 @@ Items:
 Payment method: %s
 
 Manage link: %s
-        ''' % (
-            ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
-            order.code,
-            order.assopy_id,
-            mail_items,
-            order.method,
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
-        )
-        send_email(
-            subject='Refund for %s done, credit note needed' % ctx['name'],
-            message=message,
-            recipient_list=settings.REFUND_EMAIL_ADDRESS['credit-note'],
-        )
-
+            ''' % (
+                ctx['name'],
+                dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
+                order.code,
+                order.assopy_id,
+                mail_items,
+                order.method,
+                dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
+            )
+            send_email(
+                subject='Refund for %s done, credit note needed' % ctx['name'],
+                message=message,
+                recipient_list=settings.REFUND_EMAIL_ADDRESS['credit-note'],
+            )
+        else:
+            sender.emit_credit_note()
 refund_event.connect(on_refund_changed)

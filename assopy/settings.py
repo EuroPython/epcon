@@ -59,11 +59,30 @@ def _ASSOPY_NEXT_ORDER_CODE(order):
                       .values_list('code',flat=True)[0]
         last_number = int(last_code[5:])
     except IndexError:
-        last_number = 1
+        last_number = 0
 
     return "O/%s.%s" % (str(datetime.date.today().year)[2:], str(last_number + 1).zfill(4))
 
 NEXT_ORDER_CODE = getattr(settings, 'ASSOPY_NEXT_ORDER_CODE', _ASSOPY_NEXT_ORDER_CODE)
+
+def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
+    """
+    Ritorna Il prossimo codice per una nota di credito
+    """
+    import datetime
+    import models
+    try:
+        last_code = models.CreditNote.objects \
+                      .filter(code__startswith='C/%s.' % str(datetime.date.today().year)[2:]) \
+                      .order_by('-code') \
+                      .values_list('code',flat=True)[0]
+        last_number = int(last_code[5:])
+    except IndexError:
+        last_number = 1
+
+    return "C/%s.%s" % (str(datetime.date.today().year)[2:], str(last_number + 1).zfill(4))
+
+NEXT_CREDIT_CODE = getattr(settings, 'ASSOPY_NEXT_CREDIT_CODE', _ASSOPY_NEXT_CREDIT_CODE)
 
 def _ASSOPY_LAST_INVOICE_CODE(order):
     """
