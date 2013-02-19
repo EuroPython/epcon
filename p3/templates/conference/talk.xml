@@ -23,11 +23,14 @@
     {% if t.teaser_video %}
     <teaser_video>
         <url>{{ t.teaser_video }}</url>
+        {% embed_video t.teaser_video as h %}
+        {% if h %}
         <html xmlns="http://www.w3.org/1999/xhtml">
         <![CDATA[
-        {% embed_video t.teaser_video %}
+            {{ h.html }}
         ]]>
         </html>
+        {% endif %}
     </teaser_video>
     {% endif %}
 </talk>

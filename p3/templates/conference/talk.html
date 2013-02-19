@@ -86,8 +86,11 @@
                 <p>{{ talk_data.abstract|markdown2:"smarty-pants,code-color" }}</p>
             </div>
             {% if talk_data.teaser_video %}
-            <h3>There is also a teaser video!</h3>
-            {% embed_video talk_data.teaser_video %}
+                {% embed_video talk_data.teaser_video as h %}
+                {% if h %}
+                <h3>There is also a teaser video!</h3>
+                {{ h.html }}
+                {% endif %}
             {% endif %}
             {% if talk.status == "accepted" %}
                 {% for e in events %}
@@ -112,7 +115,7 @@
                 {% if h %}
                 <section class="talk video">
                     <h2>{% trans "Video" %}</h2>
-                    {{ h }}
+                    {{ h.html }}
                 </section>
                 {% endif %}
             {% endif %}
