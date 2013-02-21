@@ -494,30 +494,10 @@ def invoice(request, order_code, code, mode='html'):
                 itype = 'invoice'
             raw = urllib.urlopen(genro.invoice_url(assopy_id))
         else:
+            hurl = reverse('assopy-invoice-html', args=(order_code, code))
             if not settings.WKHTMLTOPDF_PATH:
-                return HttpResponseRedirectSeeOther(
-                    reverse('assopy-invoice-html', args=(order_code, code))
-                )
-            import subprocess
-            command_args = [
-                settings.WKHTMLTOPDF_PATH,
-                '--cookie',
-                dsettings.SESSION_COOKIE_NAME,
-                request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
-                '--zoom',
-                '1.3',
-                "%s%s" % (dsettings.DEFAULT_URL_PREFIX ,reverse('assopy-invoice-html', args=(order_code, code))),
-                '-'
-            ]
-
-            popen = subprocess.Popen(
-                command_args,
-                bufsize=4096,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-
-            raw, _ = popen.communicate()
+                return HttpResponseRedirectSeeOther(hurl)
+            raw = _pdf(request, hurl)
             itype = 'invoice'
             order = invoice.order
 
@@ -532,6 +512,29 @@ def invoice(request, order_code, code, mode='html'):
         response = http.HttpResponse(raw, mimetype='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="%s"' % fname
         return response
+
+def _pdf(request, url):
+    import subprocess
+    command_args = [
+        settings.WKHTMLTOPDF_PATH,
+        '--cookie',
+        dsettings.SESSION_COOKIE_NAME,
+        request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
+        '--zoom',
+        '1.3',
+        "%s%s" % (dsettings.DEFAULT_URL_PREFIX, url),
+        '-'
+    ]
+
+    popen = subprocess.Popen(
+        command_args,
+        bufsize=4096,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    raw, _ = popen.communicate()
+    return raw
 
 @login_required
 @render_to('assopy/voucher.html')
