@@ -563,7 +563,9 @@ def refund(request, order_id, item_id):
         raise http.Http404()
 
     try:
-        r = models.RefundOrderItem.objects.get(orderitem=item_id)
+        r = models.RefundOrderItem.objects.select_related('refund').get(orderitem=item_id)
+        if r.refund.status == 'rejected':
+            r = None
     except models.RefundOrderItem.DoesNotExist:
         r = None
 
