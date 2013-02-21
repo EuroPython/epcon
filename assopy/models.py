@@ -1006,6 +1006,21 @@ class CreditNote(models.Model):
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
+    def __unicode__(self):
+        return ' #%s' % self.code
+
+    def note_items(self):
+        return self.order.orderitem_set.filter(vat=self.vat) \
+                                  .values('code','description') \
+                                  .annotate(price=models.Sum('price'), count=models.Count('price')) \
+                                  .order_by('-price')
+
+    def vat_value(self):
+        return self.price - self.net_price()
+
+    def net_price(self):
+        return self.price / (1 + self.vat.value / 100)
+
 class RefundOrderItem(models.Model):
     orderitem = models.ForeignKey('assopy.OrderItem')
     refund = models.ForeignKey('assopy.Refund')

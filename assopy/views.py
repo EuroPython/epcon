@@ -477,8 +477,28 @@ def invoice(request, order_code, code, mode='html'):
         **userfilter
     )
     if mode == 'html':
+        order = invoice.order
+        address = '%s, %s<br />' % (order.address, order.zip_code)
+        if order.city:
+            address += '%s, ' % order.city
+        address += unicode(order.country)
         ctx = {
-            'invoice': invoice,
+            'title': unicode(invoice),
+            'code': invoice.code,
+            'emit_date': invoice.emit_date,
+            'order': {
+                'card_name': order.card_name,
+                'address': address,
+                'billing_notes': order.billing_notes,
+            },
+            'items': invoice.invoice_items(),
+            'note': invoice.note,
+            'price': {
+                'net': invoice.net_price(),
+                'vat': invoice.vat_value(),
+                'total': invoice.price,
+            },
+            'vat': invoice.vat,
             'real': settings.IS_REAL_INVOICE(invoice.code),
         }
         return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
@@ -535,6 +555,63 @@ def _pdf(request, url):
 
     raw, _ = popen.communicate()
     return raw
+
+@login_required
+def credit_note(request, order_code, code, mode='html'):
+    if not request.user.is_staff:
+        userfilter = { 'invoice__order__user__user': request.user, }
+    else:
+        userfilter = {}
+    try:
+        cnote = models.CreditNote.objects\
+            .select_related('invoice__order')\
+            .get(code=unquote(code), invoice__order__code=unquote(order_code), **userfilter)
+    except models.CreditNote.DoesNotExist:
+        raise http.Http404()
+
+    order = cnote.invoice.order
+    if mode == 'html':
+        address = '%s, %s<br />' % (order.address, order.zip_code)
+        if order.city:
+            address += '%s, ' % order.city
+        address += unicode(order.country)
+        ctx = {
+            'title': unicode(cnote),
+            'code': cnote.code,
+            'emit_date': cnote.emit_date,
+            'order': {
+                'card_name': order.card_name,
+                'address': address,
+                'billing_notes': order.billing_notes,
+            },
+            'items': invoice.note_items(),
+            'note': '',
+            'price': {
+                'net': invoice.net_price(),
+                'vat': invoice.vat_value(),
+                'total': invoice.price,
+            },
+            'vat': invoice.vat,
+            'real': True,
+        }
+        return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
+    else:
+        hurl = reverse('assopy-credit_note-html', args=(order_code, code))
+        if not settings.WKHTMLTOPDF_PATH:
+            return HttpResponseRedirectSeeOther(hurl)
+        raw = _pdf(request, hurl)
+
+    from conference.models import Conference
+    try:
+        conf = Conference.objects\
+            .get(conference_start__year=order.created.year).code
+    except Conference.DoesNotExist:
+        conf = order.created.year
+    fname = '[%s] credit note %s.pdf' % (conf, cnote.code)
+
+    response = http.HttpResponse(raw, mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+    return response
 
 @login_required
 @render_to('assopy/voucher.html')

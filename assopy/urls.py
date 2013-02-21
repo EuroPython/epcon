@@ -49,6 +49,19 @@ urlpatterns = patterns('',
         name='assopy-invoice-pdf',
         kwargs={'mode': 'pdf'},
     ),
+
+    url(
+        r'orders/(?P<order_code>.+)/credit-note/(?P<code>.+).html$',
+        'assopy.views.credit_note',
+        name='assopy-credit_note-html',
+        kwargs={'mode': 'html'},
+    ),
+    url(
+        r'orders/(?P<order_code>.+)/credit-note/(?P<code>.+).pdf$',
+        'assopy.views.credit_note',
+        name='assopy-credit_note-pdf',
+        kwargs={'mode': 'pdf'},
+    ),
 )
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
