@@ -477,7 +477,7 @@ class RefundAdminForm(forms.ModelForm):
         exclude = ('done',)
 
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('_user', 'reason', '_order', '_invoice', '_items', '_total', 'created', '_status', 'done')
+    list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_cnote', '_items', '_total', 'created', 'done')
     form = RefundAdminForm
 
     def queryset(self, request):
@@ -491,6 +491,7 @@ class RefundAdmin(admin.ModelAdmin):
             orderitems[row.refund_id].append(row.orderitem)
         self.orderitems = orderitems
 
+        qs = qs.select_related('invoice', 'credit_note')
         return qs
 
     def _user(self, o):
@@ -518,10 +519,17 @@ class RefundAdmin(admin.ModelAdmin):
     _order.allow_tags = True
     
     def _invoice(self, o):
-        i = o.invoice()
+        i = o.invoice
+        if not i:
+            return ''
         url = urlresolvers.reverse('admin:assopy_invoice_change', args=(i.id,))
         return '<a href="%s">%s</a>' % (url, i)
     _invoice.allow_tags = True
+
+    def _cnote(self, o):
+        c = o.credit_note
+        return c or ''
+    _cnote.allow_tags = True
 
     def _items(self, o):
         data = self.orderitems[o.id]

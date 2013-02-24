@@ -1075,6 +1075,7 @@ REFUND_STATUS = (
     ('refunded', 'Refunded'),
 )
 class Refund(models.Model):
+    invoice = models.ForeignKey(Invoice, null=True)
     items = models.ManyToManyField(OrderItem, through=RefundOrderItem)
     created = models.DateTimeField(auto_now_add=True)
     done = models.DateTimeField(null=True)
@@ -1099,30 +1100,6 @@ class Refund(models.Model):
                     from django.core.exceptions import ValidationError
                     raise ValidationError('Cannot reject a previusly refunded request')
 
-    def invoice(self):
-        """
-        Ritorna le fatture associate con gli `item` di questo rimborso.
-        """
-        items = self.items.all()
-        vats = set([x.vat_id for x in items])
-        if not vats:
-            return None
-        assert len(vats) == 1
-        qs = Invoice.objects\
-            .filter(order=items[0].order_id, vat=list(vats)[0])
-        # nel 2013 ci siamo staccati dal backend genro e alcuni dati non sono
-        # stati migrati correttamente.  ad esempio bisognerebbe creare una
-        # tipologia iva corretta da associare ai vecchi ordini in modo tale che
-        # se esistano più fatture per lo stesso ordine sono associate a
-        # tipologie di iva diverse).
-        if len(qs) > 1:
-            assert self.created.year < 2013
-            return None
-        if not qs:
-            assert self.created.year < 2013
-            return None
-        return qs[0]
-
     def price(self):
         # XXX: questo codice non va bene, non tiene conto di eventuali coupon
         # che possono aver ridotto il prezzo del biglietto
@@ -1139,9 +1116,9 @@ class Refund(models.Model):
         log.info(
             'emit credit note for refund "%s"', self.id)
         c = CreditNote(
-                invoice=self.invoice(),
-                emit_date=emit_date,
-                price=price)
+            invoice=self.invoice,
+            emit_date=emit_date,
+            price=price)
         c.code = settings.NEXT_CREDIT_CODE(c)
         c.save()
         self.credit_note = c
