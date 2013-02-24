@@ -1041,10 +1041,6 @@ class RefundOrderItem(models.Model):
         self.orderitem.ticket.save()
         return out
 
-class RefundCreditNote(models.Model):
-    credit_note = models.OneToOneField('assopy.CreditNote')
-    refund = models.ForeignKey('assopy.Refund')
-
 class RefundManager(models.Manager):
     def create_from_orderitem(self, orderitem, reason='', internal_note=''):
         # Il primo passo è capire se l'utente ha già una richiesta di rimborso
@@ -1082,7 +1078,7 @@ class Refund(models.Model):
     items = models.ManyToManyField(OrderItem, through=RefundOrderItem)
     created = models.DateTimeField(auto_now_add=True)
     done = models.DateTimeField(null=True)
-    credit_notes = models.ManyToManyField(CreditNote, through=RefundCreditNote)
+    credit_note = models.OneToOneField(CreditNote, null=True, blank=True)
     status = models.CharField(max_length=8, choices=REFUND_STATUS, default='pending')
     reason = models.CharField(max_length=200, blank=True)
     internal_note = models.TextField(
@@ -1109,9 +1105,23 @@ class Refund(models.Model):
         """
         items = self.items.all()
         vats = set([x.vat_id for x in items])
+        if not vats:
+            return None
         assert len(vats) == 1
-        return Invoice.objects\
-            .get(order=items[0].order_id, vat=vats.pop())
+        qs = Invoice.objects\
+            .filter(order=items[0].order_id, vat=list(vats)[0])
+        # nel 2013 ci siamo staccati dal backend genro e alcuni dati non sono
+        # stati migrati correttamente.  ad esempio bisognerebbe creare una
+        # tipologia iva corretta da associare ai vecchi ordini in modo tale che
+        # se esistano più fatture per lo stesso ordine sono associate a
+        # tipologie di iva diverse).
+        if len(qs) > 1:
+            assert self.created.year < 2013
+            return None
+        if not qs:
+            assert self.created.year < 2013
+            return None
+        return qs[0]
 
     def price(self):
         # XXX: questo codice non va bene, non tiene conto di eventuali coupon
@@ -1134,6 +1144,8 @@ class Refund(models.Model):
                 price=price)
         c.code = settings.NEXT_CREDIT_CODE(c)
         c.save()
+        self.credit_note = c
+        self.save()
         credit_note_emitted.send(sender=c, refund=self)
         return c
 
@@ -1141,7 +1153,7 @@ class Refund(models.Model):
         old = None
         if self.id:
             try:
-                old = Refund.objects.values('status').get(id=self.id)
+                old = Refund.objects.values('status').get(id=self.id)['status']
             except Refund.DoesNotExist:
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
@@ -1149,30 +1161,34 @@ class Refund(models.Model):
         if old and self.status != old:
             o = self.items.all()[0].order
             log.info(
-                'Status change of the refund request "%d" issued by "%s" for the order "%s" from "%s" to "%s"',
+                'Refund #%d, order "%s", "%s": status changed from "%s" to "%s"',
                 self.id,
-                o.user.name(),
                 o.code,
-                self.status,
-                old)
+                o.user.name(),
+                old,
+                self.status)
         try:
             return super(Refund, self).save(*args, **kwargs)
         finally:
+            tickets = []
             for item in self.items.all():
                 t = item.ticket
-                if t:
-                    if self.status == 'refunded':
-                        log.info('Delete the ticket "%d" because it as been refuneded', t.id)
-                        item.ticket = None
-                        item.save()
-                        t.delete()
-                    elif self.status == 'rejected':
-                        log.info('Unfroze the ticket "%d" because the refund as been rejected', t.id)
-                        t.frozen = False
-                        t.save()
-                    else:
-                        t.frozen = True
-                        t.save()
+                if not t:
+                    continue
+                tickets.append(t)
+                if self.status == 'refunded':
+                    log.info('Delete the ticket "%d" because it as been refuneded', t.id)
+                    item.ticket = None
+                    item.save()
+                    t.delete()
+                elif self.status == 'rejected':
+                    log.info('Unfroze the ticket "%d" because the refund as been rejected', t.id)
+                    t.frozen = False
+                    t.save()
+                else:
+                    t.frozen = True
+                    t.save()
+            refund_event.send(sender=self, old=old, tickets=tickets)
 
 
 refund_event = dispatch.Signal(providing_args=['old', 'tickets'])
@@ -1199,11 +1215,7 @@ def on_refund_changed(sender, **kw):
         return
     if not kw['tickets']:
         return
-    cnotes = sender.credit_notes.all()
-    if sender.status == 'refunded' and cnotes:
-        tpl = 'refund-credit-note'
-    else:
-        tpl = 'refund-' + sender.status
+    tpl = 'refund-' + sender.status
 
     from django.http import Http404
     items = list(sender.items.all().select_related('order__user__user'))
@@ -1212,7 +1224,7 @@ def on_refund_changed(sender, **kw):
         'name': items[0].order.user.name(),
         'refund': sender,
         'tickets': kw['tickets'],
-        'credit_notes': cnotes,
+        'credit_note': sender.credit_note,
     }
     try:
         utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()

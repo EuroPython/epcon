@@ -471,82 +471,38 @@ class AuthUserAdmin(aUserAdmin):
 
 admin.site.register(aUser, AuthUserAdmin)
 
-# Refund Admin
-# ------------
-# La form dei rimborsi permette di specificare le note di credito associate al
-# rimborso; le note di credito sono collegate tramite una tabella intermedia
-# per motivi di performance ma non voglio esporre questo dettaglio all'utente.
-# Tutto quello di cui ho bisogno sono tre campi:
-#
-# - assopy_id
-# - codice nota di credito
-# - fattura collegata
-#
-# Qui faccio una cosa un po' arzigogolata, il ModelAdmin e la ModelForm della
-# RefundCreditNote espongono e manipolano i dati di una CreditNote e gestisco
-# questa cosa nella save_formset di RefundAdmin
-class RefundCreditNoteInlineAdminForm(forms.ModelForm):
-    code = forms.CharField(label='code', max_length=20)
-    assopy_id = forms.CharField(label='assopy id', max_length=22)
-    invoice = forms.CharField(label='invoice code', max_length=20)
-
-    class Meta:
-        model = models.RefundCreditNote
-        fields = ()
-
-    def clean_invoice(self):
-        data = self.cleaned_data['invoice']
-        try:
-            i = models.Invoice.objects.get(code=data)
-        except models.Invoice.DoesNotExist:
-            raise forms.ValidationError('Invoice does not exist')
-        return i
-
-    def __init__(self, *args, **kwargs):
-        super(RefundCreditNoteInlineAdminForm, self).__init__(*args, **kwargs)
-        if self.instance.credit_note_id:
-            self.fields['code'].initial = self.instance.credit_note.code
-            self.fields['assopy_id'].initial = self.instance.credit_note.assopy_id
-            self.fields['invoice'].initial = self.instance.credit_note.invoice.code
-
-class RefundCreditNoteInlineAdmin(admin.TabularInline):
-    model = models.RefundCreditNote
-    form = RefundCreditNoteInlineAdminForm
-    extra = 1
-
 class RefundAdminForm(forms.ModelForm):
     class Meta:
         model = models.Refund
         exclude = ('done',)
 
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('_user', 'reason', '_order', '_items', '_total', 'created', '_status', 'done')
+    list_display = ('_user', 'reason', '_order', '_invoice', '_items', '_total', 'created', '_status', 'done')
     form = RefundAdminForm
-
-    inlines = (RefundCreditNoteInlineAdmin,)
 
     def queryset(self, request):
         qs = super(RefundAdmin, self).queryset(request)
-        qs = qs.select_related('orderitem__order__user__user')
+
         orderitems = defaultdict(list)
         items = models.RefundOrderItem.objects\
             .filter(refund__in=qs)\
-            .select_related('orderitem__order')
+            .select_related('orderitem__order__user__user')
         for row in items:
             orderitems[row.refund_id].append(row.orderitem)
         self.orderitems = orderitems
+
         return qs
 
     def _user(self, o):
         data = self.orderitems[o.id]
         if not data:
-            return "ERROR, no items"
+            return "[[ ERROR, no items ]]"
         else:
             u = data[0].order.user.user
             links = [
-                '%s %s <br/>' % (u.first_name, u.last_name),
-                '<a href="%s" title="user page">U</a>' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
-                '<a href="%s" title="doppelganger" target="_blank">D</a>' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
+                '%s %s</a> (' % (u.first_name, u.last_name),
+                '<a href="%s" title="user page">U</a>, ' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
+                '<a href="%s" title="doppelganger" target="_blank">D</a>)' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
             ]
             return ' '.join(links)
     _user.allow_tags = True
@@ -560,6 +516,12 @@ class RefundAdmin(admin.ModelAdmin):
         else:
             return ''
     _order.allow_tags = True
+    
+    def _invoice(self, o):
+        i = o.invoice()
+        url = urlresolvers.reverse('admin:assopy_invoice_change', args=(i.id,))
+        return '<a href="%s">%s</a>' % (url, i)
+    _invoice.allow_tags = True
 
     def _items(self, o):
         data = self.orderitems[o.id]
