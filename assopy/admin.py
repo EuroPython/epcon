@@ -93,7 +93,7 @@ class OrderAdminForm(forms.ModelForm):
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'code', '_user', '_email',
-        'card_name', '_created', 'method',
+        '_created', 'method',
         '_items', '_complete', '_invoice',
         '_total_nodiscount', '_discount', '_total_payed',
     )
@@ -131,7 +131,11 @@ class OrderAdmin(admin.ModelAdmin):
 
     def _user(self, o):
         url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.user_id,))
-        return '<a href="%s">%s</a>' % (url, o.user.name())
+        name = '%s %s' % (o.user.user.first_name, o.user.user.last_name)
+        html = '<a href="%s">%s</a>' % (url, name)
+        if name != o.card_name:
+            html += ' - ' + o.card_name
+        return html
     _user.short_description = 'buyer'
     _user.allow_tags = True
 
@@ -632,6 +636,10 @@ if not settings.GENRO_BACKEND:
     class InvoiceAdmin(admin.ModelAdmin):
         list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
         date_hierarchy = 'payment_date'
+        search_fields = (
+            'code', 'order__code', 'order__card_name'
+            'order__user__user__first_name', 'order__user__user__last_name', 'order__user__user__email',
+            'order__billing_notes',)
         form = InvoiceAdminForm
 
         def _order(self, o):
@@ -646,7 +654,10 @@ if not settings.GENRO_BACKEND:
             name = '%s %s' % (u.first_name, u.last_name)
             admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
             dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
-            return '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
+            html = '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
+            if o.order.card_name != name:
+                html += ' - ' + o.order.card_name
+            return html
         _user.allow_tags = True
         _user.admin_order_field = 'order__user__user__first_name'
 
