@@ -786,6 +786,17 @@ class OrderItem(models.Model):
     # o venire copiato da conference
     vat = models.ForeignKey(Vat)
 
+    def invoice(self):
+        """
+        Ritorna, se esiste, la fattura collegata all'order_item
+        """
+        # Non gestisco il caso in cui `.get()` ritorni più di un elemento
+        # perché lo considero un errore
+        try:
+            return Invoice.objects.get(order=self.order_id, vat=self.vat_id)
+        except Invoice.DoesNotExist:
+            return None
+
     def delete(self, **kwargs):
         if self.ticket:
             self.ticket.delete()
@@ -1010,16 +1021,16 @@ class CreditNote(models.Model):
         return ' #%s' % self.code
 
     def note_items(self):
-        return self.order.orderitem_set.filter(vat=self.vat) \
-                                  .values('code','description') \
-                                  .annotate(price=models.Sum('price'), count=models.Count('price')) \
-                                  .order_by('-price')
+        return self.refund.items.all()\
+            .values('code','description') \
+            .annotate(price=models.Sum('price'), count=models.Count('price')) \
+            .order_by('-price')
 
     def vat_value(self):
         return self.price - self.net_price()
 
     def net_price(self):
-        return self.price / (1 + self.vat.value / 100)
+        return self.price / (1 + self.invoice.vat.value / 100)
 
 class RefundOrderItem(models.Model):
     orderitem = models.ForeignKey('assopy.OrderItem')
@@ -1043,23 +1054,17 @@ class RefundOrderItem(models.Model):
 
 class RefundManager(models.Manager):
     def create_from_orderitem(self, orderitem, reason='', internal_note=''):
-        # Il primo passo è capire se l'utente ha già una richiesta di rimborso
-        # a cui posso agganciare l'orderitem passato.  Gli item di un Refund
-        # devono appartenere tutti alla stessa Invoice, purtroppo non ho il
-        # collegamento tra Invoice e OrderItem e quindi non posso individuare
-        # con certezza una Refund compatibile senza passare da assopy
-        # Uso un'euristica conservativa che mi porta ad avere più Refund di
-        # quanto dovrei
-        fare = orderitem.ticket.fare
+        invoice = orderitem.invoice()
+        assert invoice
+        assert invoice.payment_date
         qs = Refund.objects\
-            .filter(status='pending', refundorderitem__orderitem__order=orderitem.order)\
-            .filter(refundorderitem__orderitem__ticket__fare__ticket_type=fare.ticket_type)
+            .filter(stats='pending', invoice=invoice)
         try:
             r = qs[0]
         except IndexError:
-            r = Refund(reason=reason, internal_note=internal_note)
-            r.save()
-        RefundOrderItem(refund=r, orderitem=orderitem).save()
+            r = Refund.objects.create(
+                invoice=invoice, reason=reason, internal_note=internal_note)
+        RefundOrderItem.objects.create(refund=r, orderitem=orderitem)
 
         items = RefundOrderItem.objects\
             .filter(refund=r)\

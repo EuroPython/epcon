@@ -584,14 +584,14 @@ def credit_note(request, order_code, code, mode='html'):
                 'address': address,
                 'billing_notes': order.billing_notes,
             },
-            'items': invoice.note_items(),
+            'items': cnote.note_items(),
             'note': '',
             'price': {
-                'net': invoice.net_price(),
-                'vat': invoice.vat_value(),
-                'total': invoice.price,
+                'net': cnote.net_price(),
+                'vat': cnote.vat_value(),
+                'total': cnote.price,
             },
-            'vat': invoice.vat,
+            'vat': cnote.invoice.vat,
             'real': True,
         }
         return render_to_response('assopy/invoice.html', ctx, RequestContext(request))

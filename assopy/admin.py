@@ -491,7 +491,7 @@ class RefundAdmin(admin.ModelAdmin):
             orderitems[row.refund_id].append(row.orderitem)
         self.orderitems = orderitems
 
-        qs = qs.select_related('invoice', 'credit_note')
+        qs = qs.select_related('invoice__order', 'credit_note')
         return qs
 
     def _user(self, o):
@@ -522,13 +522,20 @@ class RefundAdmin(admin.ModelAdmin):
         i = o.invoice
         if not i:
             return ''
-        url = urlresolvers.reverse('admin:assopy_invoice_change', args=(i.id,))
-        return '<a href="%s">%s</a>' % (url, i)
+        rev = urlresolvers.reverse
+        url = rev('admin:assopy_invoice_change', args=(i.id,))
+        download = rev('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
+        return '<a href="%s">%s</a> (<a href="%s">pdf</a>)' % (url, i, download)
+
     _invoice.allow_tags = True
 
     def _cnote(self, o):
         c = o.credit_note
-        return c or ''
+        if not c:
+            return ''
+        rev = urlresolvers.reverse
+        download = rev('assopy-credit_note-pdf', kwargs={'order_code': o.invoice.order.code, 'code': c.code})
+        return '%s (<a href="%s">pdf</a>)' % (c, download)
     _cnote.allow_tags = True
 
     def _items(self, o):
