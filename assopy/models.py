@@ -1058,7 +1058,7 @@ class RefundManager(models.Manager):
         assert invoice
         assert invoice.payment_date
         qs = Refund.objects\
-            .filter(stats='pending', invoice=invoice)
+            .filter(status='pending', invoice=invoice)
         try:
             r = qs[0]
         except IndexError:
