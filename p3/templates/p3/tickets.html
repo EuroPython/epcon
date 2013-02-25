@@ -46,10 +46,19 @@
     </div>
     <script type="text/javascript">//<![CDATA[
     (function() {
+        function reload_ticket(ticket) {
+            var id = ticket.attr('data-ticket');
+            var url = '/p3/tickets/' + id + '/';
+            $.get(url, function(data) {
+                ticket.replaceWith(data);
+                setup_fragment($('div.ticket[data-ticket=' + id + ']'));
+            })
+        }
         $('#refund-form form').ajaxForm({
             success: function(response, status, xhr, form) {
                 var trigger = form.data('trigger');
                 if(trigger) {
+                    reload_ticket(trigger.parents('div.ticket'));
                     trigger.overlay().close();
                 }
             },
