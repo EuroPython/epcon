@@ -474,7 +474,7 @@ admin.site.register(aUser, AuthUserAdmin)
 class RefundAdminForm(forms.ModelForm):
     class Meta:
         model = models.Refund
-        exclude = ('done',)
+        exclude = ('done', 'invoice', 'credit_note')
 
 class RefundAdmin(admin.ModelAdmin):
     list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_cnote', '_items', '_total', 'created', 'done')
