@@ -97,7 +97,7 @@
             </p>
             {% orderitem_can_be_refunded ticket.orderitem as r %}
             {% if r %}
-            <p class="refund"><a href="#" class="refund-button" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a></p>
+            <p class="refund"><a href="#" class="refund-button trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a></p>
             {% endif %}
         </div>
         {% endif %}
