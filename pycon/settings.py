@@ -497,6 +497,16 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
             .filter(orderitem__order___complete=True, fare__ticket_type='conference')
     return qs.exists()
 
+def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
+    if not item.ticket:
+        return False
+    ticket = item.ticket
+    if ticket.user != user:
+        return False
+    if ticket.fare.conference != CONFERENCE_CONFERENCE:
+        return False
+    return item.order._complete
+
 GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'

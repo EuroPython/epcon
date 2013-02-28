@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load i18n p3 %}
+{% load i18n p3 assopy_tags %}
 {% block MAIN_CONTENT %}
     <h1>{% trans "Your tickets" %}</h1>
     
@@ -16,8 +16,59 @@
         </div>
         {% cycle '' '<hr />' %}    
     {% endfor %}
+    <style>
+        #id_reason {
+            height: 80px;
+        }
+        #id_bank {
+            height: 80px;
+        }
+    </style>
+    <div id="refund-form" class="overlay">
+        <h1>Refund details</h1>
+        <form action="" method="POST">
+            <h3>You are eligible for commission-free refund through paypal</h3>
+            {{ refund_form.reason|field }}
+            <div class="refund-method">
+                <h2>Choose the refund method</h2>
+                <label><input type="radio" name="rmethod" value="paypal">Through PayPal</label>
+                <label><input type="radio" name="rmethod" value="bank" checked>Through bank transfer</label>
+                <div class="hidden paypal">
+                {{ refund_form.paypal|field }}
+                </div>
+                <div class="bank">
+                {{ refund_form.bank|field }}
+                </div>
+                <p><b>Please note:</b> you are responsible for the commission fees, if any.</p>
+            </div>
+            <button type="submit">Ask for refund</button>
+        </form>
+    </div>
     <script type="text/javascript">//<![CDATA[
     (function() {
+        function reload_ticket(ticket) {
+            var id = ticket.attr('data-ticket');
+            var url = '/p3/tickets/' + id + '/';
+            $.get(url, function(data) {
+                ticket.replaceWith(data);
+                setup_fragment($('div.ticket[data-ticket=' + id + ']'));
+            })
+        }
+        $('#refund-form form').ajaxForm({
+            success: function(response, status, xhr, form) {
+                var trigger = form.data('trigger');
+                if(trigger) {
+                    reload_ticket(trigger.parents('div.ticket'));
+                    trigger.overlay().close();
+                }
+            },
+            error: function(xhr, textStarus, error) {
+                if(xhr.responseText) {
+                    var errors = JSON.parse(xhr.responseText);
+                    form_errors($('#refund-form form'), errors);
+                }
+            }
+        });
         function _error() {
             alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
         }
@@ -35,7 +86,9 @@
                 else {
                     if(!container)
                         container = form.parents('div.ticket');
+                    var p = container.parent();
                     container.replaceWith(response)
+                    setup_fragment(p);
                     feedback(message);
                 }
             }
@@ -116,22 +169,55 @@
                 });
             }
         });
+        function setup_refund_form(ticket) {
+            var trigger = $('.refund-button', ticket);
+            var refund_type = trigger.data('refund-type');
+            var order = ticket.data('order');
+            var item = ticket.data('orderitem');
+
+            var form = $('#refund-form form');
+            if(!form.data('init')) {
+                form.data('init', 1);
+                form
+                    .find('input[name=rmethod]')
+                    .click(function(e) {
+                        var p = form.find('.refund-method .paypal');
+                        var b = form.find('.refund-method .bank');
+                        if(e.target.value == 'paypal') {
+                            p.show();
+                            b.hide();
+                        }
+                        else {
+                            p.hide();
+                            b.show();
+                        }
+                    });
+            }
+            form.data('trigger', trigger);
+            form.get(0).action = '/accounts/orders/' + order + '/' + item + '/refund';
+
+            if(refund_type == 'payment') {
+                form
+                    .children('h3')
+                        .hide()
+                        .end()
+                    .children('.refund-method')
+                        .show();
+            }
+            else {
+                form
+                    .children('h3')
+                        .show()
+                        .end()
+                    .children('.refund-method')
+                        .hide();
+            }
+            form.get(0).reset();
+        }
         $('div.ticket .refund-button').live('click', function(e) {
             e.preventDefault();
-            var txt = '{% trans "Please enter the reason of your refund request:" %}';
-            var reason = $.trim(prompt(txt, ''));
-            if(!reason) {
-                return;
-            }
             var ticket = $(e.target).parents('.ticket');
-            var form = $('form', ticket);
-            var h = $('<input type="hidden" name="refund" />');
-            h.val(reason);
-            form.append(h);
-            form.ajaxSubmit({
-                replaceTarget: true,
-                success: _success('{% trans "Refund requested" %}')
-            });
+            setup_refund_form(ticket)
         });
     })();
     //]]>

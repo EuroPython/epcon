@@ -16,7 +16,7 @@ import p3
 from p3 import dataaccess
 from p3 import models
 import assopy.models as amodels
-from assopy.forms import BillingData
+from assopy.forms import BillingData, RefundItemForm
 from assopy.views import render_to, render_to_json, HttpResponseRedirectSeeOther
 from conference import forms as cforms
 from conference import models as cmodels
@@ -43,6 +43,7 @@ def tickets(request):
     tickets = dataaccess.user_tickets(request.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
     return {
         'tickets': tickets,
+        'refund_form': RefundItemForm(None),
     }
 
 def _reset_ticket(ticket):

@@ -1,5 +1,5 @@
 {% load assopy_tags conference i18n p3 %}
-<div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}">
+<div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}" data-order="{{ ticket.orderitem.order.id }}" data-orderitem="{{ ticket.orderitem.id }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ticket.frozen %}
         <div class="ticket-status inactive">
@@ -62,8 +62,9 @@
                     | <a href="#" class="button mini assign-button">{% trans "for someone else" %}</a>
                     {% endif %}
                 </p>
-                {% if user == ticket.user and ticket.orderitem.order|attrib_:"_complete" %}
-                <p class="refund"><a href="#" class="refund-button" >Refund this ticket</a></p>
+                {% orderitem_can_be_refunded ticket.orderitem as r %}
+                {% if r %}
+                <p class="refund"><a href="#" class="refund-button trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a></p>
                 {% endif %}
             </div>
             {% endif %}
@@ -94,8 +95,9 @@
             <p>
                 <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "Edit information" %}</a>
             </p>
-            {% if user == ticket.user %}
-            <p class="refund"><a href="#" class="refund-button" >Refund this ticket</a></p>
+            {% orderitem_can_be_refunded ticket.orderitem as r %}
+            {% if r %}
+            <p class="refund"><a href="#" class="refund-button trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a></p>
             {% endif %}
         </div>
         {% endif %}

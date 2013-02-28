@@ -551,6 +551,35 @@ function setup_profile_picture_form(ctx) {
     $(':checked', form).change();
 }
 
+function form_errors(form, errors) {
+    form = $(form);
+    $('.field', form)
+        .removeClass('error')
+        .children('.errorlist')
+        .remove();
+    form.children('.error-notice').remove();
+    for(var key in errors) {
+        var error = errors[key];
+        if(key != '__all__') {
+            var elist = $('<ul class="errorlist"></ul>');
+            for(var ix=0; ix<error.length; ix++) {
+                elist.append('<li>' + error[ix]);
+            }
+            $('#id_' + key, form)
+                .parent()
+                .addClass('error')
+                .append(elist);
+        }
+        else {
+            var enotice = $('<div class="error-notice"></div>');
+            for(var ix=0; ix<error.length; ix++) {
+                enotice.append('<div>↓ ' + error[ix] + '</div>');
+            }
+            form.prepend(enotice);
+        }
+    }
+}
+
 (function($) {
     var _tm_helper = null;
     var _tt_helper = null;
