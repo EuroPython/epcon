@@ -17,13 +17,14 @@ from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 import re
 import os
 import os.path
 import logging
 from uuid import uuid4
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
 
@@ -116,7 +117,7 @@ class Token(models.Model, django_urls.UrlMixin):
     objects = TokenManager()
 
     def get_url_path(self):
-        return reverse('assopy-otc-token', kwargs={'token': self.token})       
+        return reverse('assopy-otc-token', kwargs={'token': self.token})
 
 # Segnale emesso quando un nuovo utente viene creato. Il sender è il nuovo
 # utente mentre profile_complete indica se tutti i dati su l'utente sono già
@@ -785,11 +786,36 @@ class OrderItem(models.Model):
     # o venire copiato da conference
     vat = models.ForeignKey(Vat)
 
+    def invoice(self):
+        """
+        Ritorna, se esiste, la fattura collegata all'order_item
+        """
+        # Non gestisco il caso in cui `.get()` ritorni più di un elemento
+        # perché lo considero un errore
+        try:
+            return Invoice.objects.get(order=self.order_id, vat=self.vat_id)
+        except Invoice.DoesNotExist:
+            return None
+
     def delete(self, **kwargs):
         if self.ticket:
             self.ticket.delete()
         else:
             super(OrderItem, self).delete(**kwargs)
+
+    def refund_type(self):
+        """
+            Restituisce il tipo di rimborso applicabile:
+
+            - direct, rimbordo diretto
+                Per i pagamenti fatti con paypal non più di 60gg fa
+            - payment, rimborso con un nuovo pagamento
+                Per tutti gli altri pagamenti
+        """
+        order = self.order
+        if order.method in ('paypal', 'cc') and order.created > now() - timedelta(days=60):
+            return 'direct'
+        return 'payment'
 
 def _order_feedback(sender, **kwargs):
     rows = [
@@ -935,7 +961,9 @@ class Invoice(models.Model):
     # regime fiscale
     vat = models.ForeignKey(Vat)
 
-    note = models.TextField(blank=True, help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
+    note = models.TextField(
+        blank=True,
+        help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
 
     objects = InvoiceManager()
 
@@ -985,9 +1013,24 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
     code = models.CharField(max_length=20, unique=True)
-    assopy_id =  models.CharField(max_length=22, unique=True, null=True)
+    assopy_id =  models.CharField(max_length=22, null=True)
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __unicode__(self):
+        return ' #%s' % self.code
+
+    def note_items(self):
+        return self.refund.items.all()\
+            .values('code','description') \
+            .annotate(price=models.Sum('price'), count=models.Count('price')) \
+            .order_by('-price')
+
+    def vat_value(self):
+        return self.price - self.net_price()
+
+    def net_price(self):
+        return self.price / (1 + self.invoice.vat.value / 100)
 
 class RefundOrderItem(models.Model):
     orderitem = models.ForeignKey('assopy.OrderItem')
@@ -1009,29 +1052,19 @@ class RefundOrderItem(models.Model):
         self.orderitem.ticket.save()
         return out
 
-class RefundCreditNote(models.Model):
-    credit_note = models.OneToOneField('assopy.CreditNote')
-    refund = models.ForeignKey('assopy.Refund')
-
 class RefundManager(models.Manager):
-    def create_from_orderitem(self, orderitem, reason=''):
-        # Il primo passo è capire se l'utente ha già una richiesta di rimborso
-        # a cui posso agganciare l'orderitem passato.  Gli item di un Refund
-        # devono appartenere tutti alla stessa Invoice, purtroppo non ho il
-        # collegamento tra Invoice e OrderItem e quindi non posso individuare
-        # con certezza una Refund compatibile senza passare da assopy
-        # Uso un'euristica conservativa che mi porta ad avere più Refund di
-        # quanto dovrei
-        fare = orderitem.ticket.fare
+    def create_from_orderitem(self, orderitem, reason='', internal_note=''):
+        invoice = orderitem.invoice()
+        assert invoice
+        assert invoice.payment_date
         qs = Refund.objects\
-            .filter(status='pending', refundorderitem__orderitem__order=orderitem.order)\
-            .filter(refundorderitem__orderitem__ticket__fare__ticket_type=fare.ticket_type)
+            .filter(status='pending', invoice=invoice)
         try:
             r = qs[0]
         except IndexError:
-            r = Refund(reason=reason)
-            r.save()
-        RefundOrderItem(refund=r, orderitem=orderitem).save()
+            r = Refund.objects.create(
+                invoice=invoice, reason=reason, internal_note=internal_note)
+        RefundOrderItem.objects.create(refund=r, orderitem=orderitem)
 
         items = RefundOrderItem.objects\
             .filter(refund=r)\
@@ -1047,10 +1080,11 @@ REFUND_STATUS = (
     ('refunded', 'Refunded'),
 )
 class Refund(models.Model):
+    invoice = models.ForeignKey(Invoice, null=True)
     items = models.ManyToManyField(OrderItem, through=RefundOrderItem)
     created = models.DateTimeField(auto_now_add=True)
     done = models.DateTimeField(null=True)
-    credit_notes = models.ManyToManyField(CreditNote, through=RefundCreditNote)
+    credit_note = models.OneToOneField(CreditNote, null=True, blank=True)
     status = models.CharField(max_length=8, choices=REFUND_STATUS, default='pending')
     reason = models.CharField(max_length=200, blank=True)
     internal_note = models.TextField(
@@ -1071,11 +1105,37 @@ class Refund(models.Model):
                     from django.core.exceptions import ValidationError
                     raise ValidationError('Cannot reject a previusly refunded request')
 
+    def price(self):
+        # XXX: questo codice non va bene, non tiene conto di eventuali coupon
+        # che possono aver ridotto il prezzo del biglietto
+        return sum(self.items.all().values_list('price', flat=True))
+
+    def emit_credit_note(self, price=None, emit_date=None):
+        """
+        Emette la nota di credito per questo rimborso
+        """
+        if emit_date is None:
+            emit_date = now()
+        if price is None:
+            price = self.price()
+        log.info(
+            'emit credit note for refund "%s"', self.id)
+        c = CreditNote(
+            invoice=self.invoice,
+            emit_date=emit_date,
+            price=price)
+        c.code = settings.NEXT_CREDIT_CODE(c)
+        c.save()
+        self.credit_note = c
+        self.save()
+        credit_note_emitted.send(sender=c, refund=self)
+        return c
+
     def save(self, *args, **kwargs):
         old = None
         if self.id:
             try:
-                old = Refund.objects.values('status').get(id=self.id)
+                old = Refund.objects.values('status').get(id=self.id)['status']
             except Refund.DoesNotExist:
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
@@ -1083,44 +1143,61 @@ class Refund(models.Model):
         if old and self.status != old:
             o = self.items.all()[0].order
             log.info(
-                'Status change of the refund request "%d" issued by "%s" for the order "%s" from "%s" to "%s"',
+                'Refund #%d, order "%s", "%s": status changed from "%s" to "%s"',
                 self.id,
-                o.user.name(),
                 o.code,
-                self.status,
-                old)
+                o.user.name(),
+                old,
+                self.status)
         try:
             return super(Refund, self).save(*args, **kwargs)
         finally:
+            tickets = []
             for item in self.items.all():
                 t = item.ticket
-                if t:
-                    if self.status == 'refunded':
-                        log.info('Delete the ticket "%d" because it as been refuneded', t.id)
-                        item.ticket = None
-                        item.save()
-                        t.delete()
-                    elif self.status == 'rejected':
-                        log.info('Unfroze the ticket "%d" because the refund as been rejected', t.id)
-                        t.frozen = False
-                        t.save()
-                    else:
-                        t.frozen = True
-                        t.save()
+                if not t:
+                    continue
+                tickets.append(t)
+                if self.status == 'refunded':
+                    log.info('Delete the ticket "%d" because it as been refuneded', t.id)
+                    item.ticket = None
+                    item.save()
+                    t.delete()
+                elif self.status == 'rejected':
+                    log.info('Unfroze the ticket "%d" because the refund as been rejected', t.id)
+                    t.frozen = False
+                    t.save()
+                else:
+                    t.frozen = True
+                    t.save()
+            refund_event.send(sender=self, old=old, tickets=tickets)
 
 
 refund_event = dispatch.Signal(providing_args=['old', 'tickets'])
+credit_note_emitted = dispatch.Signal(providing_args=['refund'])
+
+def on_credit_note_emitted(sender, **kw):
+    refund = kw['refund']
+    tpl = 'refund-credit-note'
+
+    items = list(refund.items.all().select_related('order__user__user'))
+    ctx = {
+        'items': items,
+        'name': items[0].order.user.name(),
+        'refund': refund,
+        'tickets': [ x.ticket for x in refund.items.all() ],
+        'credit_note': sender,
+    }
+    utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
+
+credit_note_emitted.connect(on_credit_note_emitted)
 
 def on_refund_changed(sender, **kw):
     if sender.status == kw['old']:
         return
     if not kw['tickets']:
         return
-    cnotes = sender.credit_notes.all()
-    if sender.status == 'refunded' and cnotes: 
-        tpl = 'refund-credit-note'
-    else:
-        tpl = 'refund-' + sender.status
+    tpl = 'refund-' + sender.status
 
     from django.http import Http404
     items = list(sender.items.all().select_related('order__user__user'))
@@ -1129,7 +1206,7 @@ def on_refund_changed(sender, **kw):
         'name': items[0].order.user.name(),
         'refund': sender,
         'tickets': kw['tickets'],
-        'credit_notes': cnotes,
+        'credit_note': sender.credit_note,
     }
     try:
         utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
@@ -1146,6 +1223,9 @@ Order: %s
 Items:
 %s
 
+Internal Notes:
+%s
+
 Manage link: %s
         ''' % (
             ctx['name'],
@@ -1153,6 +1233,7 @@ Manage link: %s
             sender.reason,
             order.code,
             mail_items,
+            sender.internal_note,
             dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
         )
         send_email(
@@ -1184,7 +1265,8 @@ Manage link: %s
             recipient_list=emails.get(order.method, emails[None]),
         )
     elif sender.status == 'refunded':
-        message = '''
+        if settings.GENRO_BACKEND:
+            message = '''
 User: %s (%s)
 Order: %s assopy id: %s
 Items:
@@ -1192,19 +1274,20 @@ Items:
 Payment method: %s
 
 Manage link: %s
-        ''' % (
-            ctx['name'],
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
-            order.code,
-            order.assopy_id,
-            mail_items,
-            order.method,
-            dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
-        )
-        send_email(
-            subject='Refund for %s done, credit note needed' % ctx['name'],
-            message=message,
-            recipient_list=settings.REFUND_EMAIL_ADDRESS['credit-note'],
-        )
-
+            ''' % (
+                ctx['name'],
+                dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
+                order.code,
+                order.assopy_id,
+                mail_items,
+                order.method,
+                dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
+            )
+            send_email(
+                subject='Refund for %s done, credit note needed' % ctx['name'],
+                message=message,
+                recipient_list=settings.REFUND_EMAIL_ADDRESS['credit-note'],
+            )
+        else:
+            sender.emit_credit_note()
 refund_event.connect(on_refund_changed)

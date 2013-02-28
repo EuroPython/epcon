@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>{{ invoice }}</title>
+        <title>{{ title }}</title>
         <meta name="description" content="" />
     <style>
         <!--
@@ -214,7 +214,7 @@
                                     Fattura N. <span class="alt-language">Invoice N.</span>
                                 </div>
                                 <div class="cell-content">
-                                    {{ invoice.code|default:'' }}
+                                    {{ code|default:'' }}
                                 </div>
                             </td>
                             <td>
@@ -222,7 +222,7 @@
                                     Data <span class="alt-language">Date</span>
                                 </div>
                                 <div class="cell-content">
-                                    {{ invoice.emit_date|default:'' }}
+                                    {{ emit_date|default:'' }}
                                 </div>
                             </td>
                             {% else %}
@@ -231,7 +231,7 @@
                                     Proforma N. <span class="alt-language"></span>
                                 </div>
                                 <div class="cell-content">
-                                    {{ invoice.code|default:'' }}
+                                    {{ code|default:'' }}
                                 </div>
                             </td>
                             <td>
@@ -256,11 +256,9 @@
                                     Cliente <span class="alt-language">Customer</span>
                                 </div>
                                 <div class="cell-content">
-                                    {{ invoice.order.card_name }} <br/>
-                                    {{ invoice.order.address }}, {{ invoice.order.zip_code }} <br/>
-                                    {% if invoice.order.city %}{{ invoice.order.city }},{% endif %}{{ invoice.order.country }}<br/>
-                                    {{ invoice.order.billing_notes|linebreaks }}<br/>
-                                     <br/>
+                                    {{ order.card_name }} <br/>
+                                    {{ order.address|safe }}<br/>
+                                    {{ order.billing_notes|linebreaks }}<br/>
                                 </div>
                             </td>
                         </tr>
@@ -318,7 +316,7 @@
                          </tr>
                      </thead>
                      <tbody>
-                        {% for item in invoice.invoice_items %}
+                        {% for item in items %}
                         <tr>
                             <td class="invoice-items-w1">
                                 {% if not item.code.0 == '_' %}
@@ -338,8 +336,8 @@
                          {% endfor %}
                      </tbody>
                 </table>
-                {% if invoice.note %}
-                <h3 class="invoice_note">{{ invoice.note }}</h3>
+                {% if note %}
+                <h3 class="invoice_note">{{ note }}</h3>
                 {% endif %}
             </div>
             <div class="section invoice-amount">
@@ -351,7 +349,7 @@
                                     Imponibile <span class="alt-language">Net price</span>
                                 </div>
                                 <div class="cell-content">
-                                    <div class="currency">{{ invoice.net_price|floatformat:2 }}</div>
+                                    <div class="currency">{{ price.net|floatformat:2 }}</div>
                                 </div>
                             </td>
                             <td>
@@ -359,13 +357,13 @@
                                     IVA <span class="alt-language">VAT</span>
                                 </div>
                                 <div class="cell-content">
-                                    {% if invoice.vat_value %}
-                                        <div class="vat_value">{{ invoice.vat.value }}% </div>
-                                        <div class="currency">{{ invoice.vat_value|floatformat:2 }}</div>
+                                    {% if price.vat %}
+                                        <div class="vat_value">{{ vat.value }}% </div>
+                                        <div class="currency">{{ price.vat|floatformat:2 }}</div>
                                     {% endif %}
-                                    {% if invoice.vat.invoice_notice %}
+                                    {% if vat.invoice_notice %}
                                         <div class="invoices-vat-notes">
-                                            {{ invoice.vat.invoice_notice }}
+                                            {{ vat.invoice_notice }}
                                         </div>
                                     {% endif %}
                                 </div>
@@ -375,7 +373,7 @@
                                     Totale <span class="alt-language">Total</span>
                                 </div>
                                 <div class="cell-content">
-                                    <div class="currency">{{ invoice.price|floatformat:2 }}</div>
+                                    <div class="currency">{{ price.total|floatformat:2 }}</div>
                                 </div>
                             </td>
                         </tr>

@@ -218,6 +218,32 @@ class FormTickets(forms.Form):
         data['tickets'] = o
         return data
 
+class RefundItemForm(forms.Form):
+    reason = forms.CharField(
+        label="Reason",
+        max_length=200,
+        help_text="""Please enter the reason of your refund request""",
+        widget=forms.Textarea)
+    paypal = forms.EmailField(
+        label="Your paypal address",
+        help_text="""If you prefer to receive payment via paypal""",
+        required=False)
+    bank = forms.CharField(
+        label="Bank routing information",
+        help_text="""Please specify IBAN, BIC and bank address (if in Europe) or any needed information for a worldwide transfer""",
+        required=False,
+        widget=forms.Textarea)
+
+    def __init__(self, item, *args, **kw):
+        super(RefundItemForm, self).__init__(*args, **kw)
+        self.item = item
+
+    def clean(self):
+        data = self.cleaned_data
+        if self.item.refund_type() == 'payment':
+            if not data.get('paypal') and not data.get('bank'):
+                raise forms.ValidationError('Please specify at least one of the paypal account or the bank details')
+        return data
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 

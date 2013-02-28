@@ -93,7 +93,7 @@ class OrderAdminForm(forms.ModelForm):
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'code', '_user', '_email',
-        'card_name', '_created', 'method',
+        '_created', 'method',
         '_items', '_complete', '_invoice',
         '_total_nodiscount', '_discount', '_total_payed',
     )
@@ -131,7 +131,11 @@ class OrderAdmin(admin.ModelAdmin):
 
     def _user(self, o):
         url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.user_id,))
-        return '<a href="%s">%s</a>' % (url, o.user.name())
+        name = '%s %s' % (o.user.user.first_name, o.user.user.last_name)
+        html = '<a href="%s">%s</a>' % (url, name)
+        if name != o.card_name:
+            html += ' - ' + o.card_name
+        return html
     _user.short_description = 'buyer'
     _user.allow_tags = True
 
@@ -474,82 +478,39 @@ class AuthUserAdmin(aUserAdmin):
 
 admin.site.register(aUser, AuthUserAdmin)
 
-# Refund Admin
-# ------------
-# La form dei rimborsi permette di specificare le note di credito associate al
-# rimborso; le note di credito sono collegate tramite una tabella intermedia
-# per motivi di performance ma non voglio esporre questo dettaglio all'utente.
-# Tutto quello di cui ho bisogno sono tre campi:
-#
-# - assopy_id
-# - codice nota di credito
-# - fattura collegata
-#
-# Qui faccio una cosa un po' arzigogolata, il ModelAdmin e la ModelForm della
-# RefundCreditNote espongono e manipolano i dati di una CreditNote e gestisco
-# questa cosa nella save_formset di RefundAdmin
-class RefundCreditNoteInlineAdminForm(forms.ModelForm):
-    code = forms.CharField(label='code', max_length=20)
-    assopy_id = forms.CharField(label='assopy id', max_length=22)
-    invoice = forms.CharField(label='invoice code', max_length=20)
-
-    class Meta:
-        model = models.RefundCreditNote
-        fields = ()
-
-    def clean_invoice(self):
-        data = self.cleaned_data['invoice']
-        try:
-            i = models.Invoice.objects.get(code=data)
-        except models.Invoice.DoesNotExist:
-            raise forms.ValidationError('Invoice does not exist')
-        return i
-
-    def __init__(self, *args, **kwargs):
-        super(RefundCreditNoteInlineAdminForm, self).__init__(*args, **kwargs)
-        if self.instance.credit_note_id:
-            self.fields['code'].initial = self.instance.credit_note.code
-            self.fields['assopy_id'].initial = self.instance.credit_note.assopy_id
-            self.fields['invoice'].initial = self.instance.credit_note.invoice.code
-
-class RefundCreditNoteInlineAdmin(admin.TabularInline):
-    model = models.RefundCreditNote
-    form = RefundCreditNoteInlineAdminForm
-    extra = 1
-
 class RefundAdminForm(forms.ModelForm):
     class Meta:
         model = models.Refund
-        exclude = ('done',)
+        exclude = ('done', 'invoice', 'credit_note')
 
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('_user', 'reason', '_order', '_items', '_total', 'created', '_status', 'done')
+    list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_cnote', '_items', '_total', 'created', 'done')
     form = RefundAdminForm
-
-    inlines = (RefundCreditNoteInlineAdmin,)
 
     def queryset(self, request):
         qs = super(RefundAdmin, self).queryset(request)
-        qs = qs.select_related('orderitem__order__user__user')
+
         orderitems = defaultdict(list)
         items = models.RefundOrderItem.objects\
             .filter(refund__in=qs)\
-            .select_related('orderitem__order')
+            .select_related('orderitem__order__user__user')
         for row in items:
             orderitems[row.refund_id].append(row.orderitem)
         self.orderitems = orderitems
+
+        qs = qs.select_related('invoice__order', 'credit_note')
         return qs
 
     def _user(self, o):
         data = self.orderitems[o.id]
         if not data:
-            return "ERROR, no items"
+            return "[[ ERROR, no items ]]"
         else:
             u = data[0].order.user.user
             links = [
-                '%s %s <br/>' % (u.first_name, u.last_name),
-                '<a href="%s" title="user page">U</a>' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
-                '<a href="%s" title="doppelganger" target="_blank">D</a>' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
+                '%s %s</a> (' % (u.first_name, u.last_name),
+                '<a href="%s" title="user page">U</a>, ' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
+                '<a href="%s" title="doppelganger" target="_blank">D</a>)' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
             ]
             return ' '.join(links)
     _user.allow_tags = True
@@ -563,6 +524,26 @@ class RefundAdmin(admin.ModelAdmin):
         else:
             return ''
     _order.allow_tags = True
+    
+    def _invoice(self, o):
+        i = o.invoice
+        if not i:
+            return ''
+        rev = urlresolvers.reverse
+        url = rev('admin:assopy_invoice_change', args=(i.id,))
+        download = rev('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
+        return '<a href="%s">%s</a> (<a href="%s">pdf</a>)' % (url, i, download)
+
+    _invoice.allow_tags = True
+
+    def _cnote(self, o):
+        c = o.credit_note
+        if not c:
+            return ''
+        rev = urlresolvers.reverse
+        download = rev('assopy-credit_note-pdf', kwargs={'order_code': o.invoice.order.code, 'code': c.code})
+        return '%s (<a href="%s">pdf</a>)' % (c, download)
+    _cnote.allow_tags = True
 
     def _items(self, o):
         data = self.orderitems[o.id]
@@ -658,6 +639,10 @@ if not settings.GENRO_BACKEND:
     class InvoiceAdmin(admin.ModelAdmin):
         list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
         date_hierarchy = 'payment_date'
+        search_fields = (
+            'code', 'order__code', 'order__card_name'
+            'order__user__user__first_name', 'order__user__user__last_name', 'order__user__user__email',
+            'order__billing_notes',)
         form = InvoiceAdminForm
 
         def _order(self, o):
@@ -672,7 +657,10 @@ if not settings.GENRO_BACKEND:
             name = '%s %s' % (u.first_name, u.last_name)
             admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
             dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
-            return '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
+            html = '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
+            if o.order.card_name != name:
+                html += ' - ' + o.order.card_name
+            return html
         _user.allow_tags = True
         _user.admin_order_field = 'order__user__user__first_name'
 
