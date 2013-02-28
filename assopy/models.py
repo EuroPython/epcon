@@ -1103,7 +1103,7 @@ class Refund(models.Model):
             for item in self.items.all():
                 if item.ticket is None:
                     from django.core.exceptions import ValidationError
-                    raise ValidationError('Cannot reject a previusly refunded request')
+                    raise ValidationError('Cannot reject a previously refunded request')
 
     def price(self):
         # XXX: questo codice non va bene, non tiene conto di eventuali coupon
