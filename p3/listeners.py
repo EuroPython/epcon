@@ -121,7 +121,7 @@ def create_hotel_tickets(sender, **kw):
         room_size = int(sender.code[2])
         for ix in range(room_size):
             t = Ticket(user=kw['params']['user'], fare=sender)
-            t.fare_description = sender.name + (' (Bed %s/%s)' % (ix+1, room_size))
+            t.fare_description = sender.name + (' (Occupant %s/%s)' % (ix+1, room_size))
             t.save()
             kw['params']['tickets'].append(t)
 
