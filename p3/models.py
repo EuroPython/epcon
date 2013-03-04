@@ -106,6 +106,7 @@ def _ticket_sim_upload_to(instance, filename):
 TICKET_SIM_TYPE = (
     ('std', 'Standard SIM (USIM)'),
     ('micro', 'Micro SIM'),
+    ('nano', 'Nano SIM'),
 )
 TICKET_SIM_PLAN_TYPE = (
     ('std', 'Standard Plan'),
@@ -124,7 +125,7 @@ class TicketSIM(models.Model):
         max_length=5,
         choices=TICKET_SIM_TYPE,
         default='std',
-        help_text='Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4.',
+        help_text='Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4; Nano SIM is used for the last generation smartphone like the iPhone 5',
     )
     plan_type = models.CharField(
         max_length=3,
