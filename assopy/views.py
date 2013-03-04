@@ -508,17 +508,14 @@ def invoice(request, order_code, code, mode='html'):
             data = genro.invoice(assopy_id)
             if data.get('credit_note'):
                 order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
-                itype = 'credit'
             else:
                 order = get_object_or_404(models.Order, assopy_id=data['order_id'])
-                itype = 'invoice'
             raw = urllib.urlopen(genro.invoice_url(assopy_id))
         else:
             hurl = reverse('assopy-invoice-html', args=(order_code, code))
             if not settings.WKHTMLTOPDF_PATH:
                 return HttpResponseRedirectSeeOther(hurl)
             raw = _pdf(request, hurl)
-            itype = 'invoice'
             order = invoice.order
 
         from conference.models import Conference
@@ -527,7 +524,7 @@ def invoice(request, order_code, code, mode='html'):
                 .get(conference_start__year=order.created.year).code
         except Conference.DoesNotExist:
             conf = order.created.year
-        fname = '[%s] %s.pdf' % (conf, 'invoice' if itype == 'invoice' else 'credit note')
+        fname = '[%s invoice] %s.pdf' % (conf, invoice.code.replace('/', '-'))
 
         response = http.HttpResponse(raw, mimetype='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="%s"' % fname
@@ -607,7 +604,7 @@ def credit_note(request, order_code, code, mode='html'):
             .get(conference_start__year=order.created.year).code
     except Conference.DoesNotExist:
         conf = order.created.year
-    fname = '[%s] credit note %s.pdf' % (conf, cnote.code)
+    fname = '[%s credit note] %s.pdf' % (conf, cnote.code.replace('/', '-'))
 
     response = http.HttpResponse(raw, mimetype='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="%s"' % fname
