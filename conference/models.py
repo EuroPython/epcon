@@ -205,7 +205,7 @@ from django.contrib.contenttypes import generic
 class MultilingualContentManager(models.Manager):
     def setContent(self, object, content, language, body):
         if language is None:
-            language = dsettings.LANGUAGE_CODE
+            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         try:
             mc = self.get(content_type=object_type, object_id=object.pk, content=content, language=language)
@@ -218,7 +218,7 @@ class MultilingualContentManager(models.Manager):
 
     def getContent(self, object, content, language):
         if language is None:
-            language = dsettings.LANGUAGE_CODE
+            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         records = dict(
             (x.language, x)
