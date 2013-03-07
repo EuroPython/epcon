@@ -206,29 +206,12 @@ class User(models.Model):
     def __unicode__(self):
         return 'Assopy user: %s' % self.name()
 
-    def photo_url(self):
-        if self.photo:
-            return dsettings.DEFAULT_URL_PREFIX + self.photo.url
-        try:
-            return self.identities.exclude(photo='')[0].photo
-        except IndexError:
-            return _gravatar(self.user.email)
-
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
         if not name.strip():
             return self.user.email
         else:
             return name
-
-    def clean_fields(self, *args, **kwargs):
-        super(User, self).clean_fields(*args, **kwargs)
-        # check del vat_number. Al posso verificare solo i codici europei
-        # tramite vies
-        if self.account_type == 'c' and self.vat_number:
-            if self.country.vat_company_verify == 'v':
-                if not vies.check_vat(self.country.pk, self.vat_number):
-                    raise ValidationError({'vat_number': [_('According to VIES, this is not a valid vat number')]})
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
