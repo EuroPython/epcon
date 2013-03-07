@@ -189,8 +189,12 @@ class User(models.Model):
     card_name = models.CharField(
         _('Card name'), max_length=200, blank=True,
         help_text=_('The name used for orders and invoices'))
-    vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
-    cf_code = models.CharField('Codice Fiscale', max_length=16, blank=True)
+    vat_number = models.CharField(
+            _('Vat Number'), max_length=22, blank=True,
+            help_text=_('Your VAT number if applicable'))
+    cf_code = models.CharField(
+        'Codice Fiscale', max_length=16, blank=True,
+        help_text=_('Needed only for Italian customers'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     address = models.CharField(
         _('Address and City'),
@@ -434,7 +438,7 @@ class OrderManager(models.Manager):
             return t if t is not None else 0
 
     @transaction.commit_on_success
-    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
+    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
         if coupons:
             for c in coupons:
                 if not c.valid(user):
@@ -456,8 +460,8 @@ class OrderManager(models.Manager):
         o.billing_notes = billing_notes
 
         o.card_name = user.card_name or user.name()
-        o.vat_number = user.vat_number
-        o.cf_code = user.cf_code
+        o.vat_number = vat_number
+        o.cf_code = cf_code
         o.country = country if country else user.country
         o.address = address if address else user.address
 
