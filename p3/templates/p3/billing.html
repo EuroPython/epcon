@@ -10,7 +10,7 @@
     <div class="page-summary">
         <p>{% trans "Review order and fill billing information." %}</p>
     </div>
-    
+
     <div class="span-9 last">
         <form action="{% url p3-billing %}" method="post">{% csrf_token %}
             {{ form|form_errors }}
@@ -21,12 +21,12 @@
                         <col />
                         <col />
                         <col />
-                        <thead> 
-                            <tr> 
-                                <th></th> 
-                                <th>{% trans "Q,ty" %}</th> 
-                                <th>{% trans "Price" %}</th> 
-                            </tr> 
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>{% trans "Q,ty" %}</th>
+                                <th>{% trans "Price" %}</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for fare, params, price in totals.tickets %}
@@ -42,9 +42,9 @@
                                 <td>€ {{ price|floatformat:"2" }}</td>
                             </tr>
                             {% endfor %}
-                            <tr class="subtotal"> 
+                            <tr class="subtotal">
                                 <td colspan="2" style="text-align: right">{% trans "Total" %}</td>
-                                <td>€ {{ totals.total|floatformat:"2" }}</td> 
+                                <td>€ {{ totals.total|floatformat:"2" }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -99,7 +99,7 @@
                 })
             </script>
         </form>
-        
+
         <script type="text/javascript">
             function _geoCode() {
                 var address = $('#id_address').val();
@@ -145,5 +145,3 @@
         </script>
     </div>
 {% endblock %}
-
-
