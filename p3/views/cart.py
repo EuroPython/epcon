@@ -30,7 +30,7 @@ class P3BillingDataCompany(P3BillingData):
 
     billing_notes = forms.CharField(
         label='Additional billing information',
-        help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. VAT number, PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
+        help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
         required=False,
         widget=forms.Textarea(attrs={'rows': 3}),
     )
@@ -44,22 +44,22 @@ class P3BillingDataCompany(P3BillingData):
         self.fields['card_name'].label = 'Company Name'
         self.fields['address'].required = True
 
-    def clean_vat_number(self):
-        # Posso verificare solo i codici europei tramite vies
-        vat = self.cleaned_data['vat_number']
-        country = self.instance.country
-        if vat and country and country.vat_company_verify == 'v':
-            from assopy.clients import vies
-            try:
-                check = vies.check_vat(country.pk, vat)
-            except Exception:
-                # il servizio VIES può fallire per motivi suoi, non voglio
-                # perdermi un ordine a causa loro
-                pass
-            else:
-                if not check:
-                    raise forms.ValidationError('According to VIES, this is not a valid vat number')
-        return vat
+#    def clean_vat_number(self):
+#        # Posso verificare solo i codici europei tramite vies
+#        vat = self.cleaned_data['vat_number']
+#        country = self.instance.country
+#        if vat and country and country.vat_company_verify == 'v':
+#            from assopy.clients import vies
+#            try:
+#                check = vies.check_vat(country.pk, vat)
+#            except Exception:
+#                # il servizio VIES può fallire per motivi suoi, non voglio
+#                # perdermi un ordine a causa loro
+#                pass
+#            else:
+#                if not check:
+#                    raise forms.ValidationError('According to VIES, this is not a valid vat number')
+#        return vat
 
 def cart(request):
     if request.user.is_authenticated():
@@ -117,7 +117,8 @@ def calculator(request):
             coupons = []
             if data['coupon']:
                 coupons.append(data['coupon'])
-            totals = amodels.Order.calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
+            totals = amodels.Order\
+                .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
             def _fmt(x):
                 if x == 0:
                     # x è un Decimal e ottengo una rappresentazione diversa tra 0 e -0
@@ -210,12 +211,19 @@ def billing(request):
 
         if order_data:
             coupon = request.session['user-cart']['coupon']
-            o = amodels.Order.objects.create(
-                user=auser, payment=order_data['payment'],
+            kw = dict(
+                user=auser,
+                payment=order_data['payment'],
                 billing_notes=order_data.get('billing_notes', ''),
                 items=request.session['user-cart']['tickets'],
                 coupons=[coupon] if coupon else None,
             )
+            if recipient == 'p':
+                kw['cf_code'] = auser.cf_code
+            else:
+                kw['vat_number'] = auser.vat_number
+
+            o = amodels.Order.objects.create(**kw)
             if totals['total'] == 0:
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
 
