@@ -32,9 +32,9 @@
             </div>
             {% endwith %}
             <form action="{% url conference-voting %}" method="post">{% csrf_token %}
-                <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ row.user_vote.vote|default:"0" }}" step="0.5" />
+                <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ row.user_vote.vote|default:"0" }}" step="0.5" style="display: none; width: 0;"/>
                 <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
-                <span class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></span>
+                <div class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></div>
             </form>
             {% if voting_allowed %}
             <dl>
@@ -86,12 +86,12 @@
                 var tweet = 'Just voted ' + vote + '/10 "' + title + '" by ' + speaker + ' #europython';
                 RPXNOW.loadAndRun(['Social'], function () {
                     var activity = new RPXNOW.Social.Activity('Share your vote', tweet, url);
-                    activity.setTitle('Europython 2012 - Community voting');
+                    activity.setTitle('Europython 2013 - Community voting');
                     activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
                     {% url conference-voting as u %}
                     activity.addActionLink('Vote a talk', '{{ u|full_url }}');
                     var media = new RPXNOW.Social.ImageMediaCollection();
-                    media.addImage('https://ep2012.europython.eu/media/uploads/twitter-avatar.png', url);
+                    media.addImage('https://ep2013.europython.eu/media/uploads/twitter-avatar.png', url);
                     activity.setMediaItem(media);
                     RPXNOW.Social.publishActivity(activity);
                 });
