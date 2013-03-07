@@ -259,7 +259,7 @@
 
                 _clearTotals();
                 if(err == null) {
-                    alert(response.responseText);
+                    //alert(response.responseText);
                     return;
                 }
 
