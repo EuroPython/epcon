@@ -925,23 +925,25 @@ class InvoiceManager(models.Manager):
             invoices = []
             vat_list = invoices_code(order, fake=payment_date is None)
 
+            emit_date = payment_date or datetime.now()
+
             for vat_item in vat_list:
-                i, created = Invoice.objects.get_or_create( 
+                i, created = Invoice.objects.get_or_create(
                     order=order,
                     vat=vat_item['vat'],
                     price=vat_item['price'],
                     defaults={
                         'code' : vat_item['code'],
                         'payment_date' : payment_date,
-                        'emit_date' : payment_date
+                        'emit_date' : emit_date,
                     }
                 )
                 if not created:
                     if not payment_date or i.payment_date:
-                        raise RuntimeError('Mi incazzo')
+                        raise RuntimeError('Payment date mismatch')
                     else:
                         i.payment_date = payment_date
-                        i.emit_date = payment_date
+                        i.emit_date = emit_date
                         i.code = vat_item['code']
                         i.save()
 
