@@ -703,8 +703,7 @@ class P3FormTickets(aforms.FormTickets):
     def clean(self):
         data = super(P3FormTickets, self).clean()
 
-        order_type = data['order_type']
-        company = order_type == 'deductible'
+        company = data.get('order_type') == 'deductible'
         for ix, row in list(enumerate(data['tickets']))[::-1]:
             fare = row[0]
             if fare.ticket_type != 'company':

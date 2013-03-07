@@ -508,7 +508,7 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
     return item.order._complete
 
 GENRO_BACKEND = False
-ASSOPY_VIES_WSDL_URL = None
+#ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'

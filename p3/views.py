@@ -261,12 +261,11 @@ def user(request, token):
 
 @render_to('p3/cart.html')
 def cart(request):
-    try:
-        u = request.user.assopy_user
-        at = u.account_type
-    except AttributeError:
+    if request.user.is_authenticated():
+        u = request.user
+    else:
         u = None
-        at = None
+    at = 'p'
 
     # user-cart serve alla pagina di conferma con i dati di fatturazione,
     # voglio essere sicuro che l'unico modo per impostarlo sia quando viene
@@ -293,6 +292,51 @@ def cart(request):
         'account_type': at,
     }
 
+class P3BillingData(BillingData):
+    card_name = forms.CharField(
+        label='Your Name',
+        max_length=200,
+    )
+    payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='paypal')
+    code_conduct = forms.BooleanField(label='I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
+
+    def __init__(self, *args, **kwargs):
+        super(P3BillingData, self).__init__(*args, **kwargs)
+        self.fields['country'].required = True
+        self.fields['address'].required = True
+
+    class Meta(BillingData.Meta):
+        exclude = ('vat_number',)
+
+class P3BillingDataCompany(P3BillingData):
+    vat_number = forms.CharField(max_length=22, required=False)
+
+    billing_notes = forms.CharField(
+        label='Additional billing information',
+        help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. VAT number, PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3}),
+    )
+
+    # la derivazione non è un errore, voglio riappropriarmi del vat_number
+    class Meta(BillingData.Meta):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        super(P3BillingDataCompany, self).__init__(*args, **kwargs)
+        self.fields['card_name'].label = 'Company Name'
+        self.fields['address'].required = True
+
+    def clean_vat_number(self):
+        # Posso verificare solo i codici europei tramite vies
+        vat = self.cleaned_data['vat_number']
+        country = self.instance.country
+        if vat and country and country.vat_company_verify == 'v':
+            from assopy.clients import vies
+            if not vies.check_vat(country.pk, vat):
+                raise forms.ValidationError('According to VIES, this is not a valid vat number')
+        return vat
+
 @login_required
 @render_to('p3/billing.html')
 def billing(request):
@@ -318,37 +362,18 @@ def billing(request):
     except:
         recipient = 'p'
 
-    class P3BillingData(BillingData):
-        card_name = forms.CharField(
-            label='Your Name' if recipient != 'c' else 'Company Name',
-            max_length=200,
-        )
-        payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='paypal')
-        code_conduct = forms.BooleanField(label='I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
-
-        def __init__(self, *args, **kwargs):
-            super(P3BillingData, self).__init__(*args, **kwargs)
-            for f in self.fields.values():
-                f.required = True
-            if recipient == 'c':
-                self.fields['billing_notes'] = forms.CharField(
-                    label='Additional billing information',
-                    help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. VAT number, PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
-                    required=False,
-                    widget=forms.Textarea(attrs={'rows': 3}),
-                )
-        class Meta(BillingData.Meta):
-            exclude = ('city', 'zip_code', 'state', 'vat_number', 'tin_number')
+    if recipient == 'p':
+        cform = P3BillingData
+    else:
+        cform = P3BillingDataCompany
 
     coupon = request.session['user-cart']['coupon']
-    totals = amodels.Order.calculator(items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
+    totals = amodels.Order.calculator(
+        items=tickets, coupons=[coupon] if coupon else None, user=request.user.assopy_user)
 
     if request.method == 'POST':
-        # non voglio che attraverso questa view sia possibile cambiare il tipo
-        # di account company/private
         auser = request.user.assopy_user
         post_data = request.POST.copy()
-        post_data['account_type'] = auser.account_type
 
         order_data = None
         if totals['total'] == 0:
@@ -361,10 +386,10 @@ def billing(request):
             else:
                 # se non lo ha accettato, preparo la form, e l'utente si
                 # troverà la checkbox colorata in rosso
-                form = P3BillingData(instance=auser, data=post_data)
+                form = cform(instance=auser, data=post_data)
                 form.is_valid()
         else:
-            form = P3BillingData(instance=auser, data=post_data)
+            form = cform(instance=auser, data=post_data)
             if form.is_valid():
                 order_data = form.cleaned_data
                 form.save()
@@ -392,13 +417,12 @@ def billing(request):
                 return HttpResponseRedirectSeeOther(
                     reverse(
                         'assopy-bank-feedback-ok',
-                        kwargs={'code': o.code.replace('/', '-')}
-                    )
-                )
+                        kwargs={'code': o.code.replace('/', '-')}))
     else:
-        if not request.user.assopy_user.card_name:
-            request.user.assopy_user.card_name = request.user.assopy_user.name()
-        form = P3BillingData(instance=request.user.assopy_user)
+        auser = request.user.assopy_user
+        if not auser.card_name:
+            auser.card_name = '%s %s' % (request.user.first_name, request.user.last_name)
+        form = cform(instance=auser)
 
     return {
         'totals': totals,

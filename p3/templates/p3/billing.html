@@ -74,6 +74,9 @@
                             <ul></ul>
                         </div>
                     </div>
+                    {% if form.vat_number %}
+                    <div class="span-6">{{ form.vat_number|field }}</div>
+                    {% endif %}
                     {% if form.billing_notes %}
                     <div class="span-6">{{ form.billing_notes|field }}</div>
                     {% endif %}
