@@ -77,7 +77,7 @@
                     {% if form.vat_number %}
                     <div class="span-6">{{ form.vat_number|field }}</div>
                     {% endif %}
-                    <div class="span-6">{{ form.cf_code|field }}</div>
+                    <div class="span-6" style="display: none;">{{ form.cf_code|field }}</div>
                     {% if form.billing_notes %}
                     <div class="span-6">{{ form.billing_notes|field }}</div>
                     {% endif %}
@@ -144,8 +144,21 @@
                     }
                 );
             }
-            $('#id_country').change(_geoCode);
+            function _cfCode() {
+                var country = $('#id_country').val().toLowerCase();
+                var div = $('#id_cf_code').parents('div').eq(1);
+                if(country == 'it') {
+                    div.show();
+                }
+                else {
+                    div.hide();
+                }
+            }
+            $('#id_country')
+                .change(_geoCode)
+                .change(_cfCode);
             $('#id_address').change(_geoCode);
+            _cfCode();
         </script>
     </div>
 {% endblock %}
