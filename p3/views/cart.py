@@ -23,7 +23,7 @@ class P3BillingData(aforms.BillingData):
         self.fields['address'].required = True
 
     class Meta(aforms.BillingData.Meta):
-        exclude = ('vat_number',)
+        exclude = aforms.BillingData.Meta.exclude + ('vat_number',)
 
 class P3BillingDataCompany(P3BillingData):
     vat_number = forms.CharField(max_length=22, required=False)
