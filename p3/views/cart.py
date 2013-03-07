@@ -50,8 +50,15 @@ class P3BillingDataCompany(P3BillingData):
         country = self.instance.country
         if vat and country and country.vat_company_verify == 'v':
             from assopy.clients import vies
-            if not vies.check_vat(country.pk, vat):
-                raise forms.ValidationError('According to VIES, this is not a valid vat number')
+            try:
+                check = vies.check_vat(country.pk, vat)
+            except Exception:
+                # il servizio VIES può fallire per motivi suoi, non voglio
+                # perdermi un ordine a causa loro
+                pass
+            else:
+                if not check:
+                    raise forms.ValidationError('According to VIES, this is not a valid vat number')
         return vat
 
 def cart(request):
