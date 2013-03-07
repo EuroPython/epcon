@@ -190,6 +190,9 @@ class User(models.Model):
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
 
+    card_name = models.CharField(
+        _('Card name'), max_length=200, blank=True,
+        help_text=_('The name used for orders and invoices'))
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     address = models.CharField(
@@ -197,26 +200,6 @@ class User(models.Model):
         max_length=150,
         blank=True,
         help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
-
-    # XXX da cancellare
-    photo = models.ImageField(_('Photo'), null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
-    twitter = models.CharField(_('Twitter'), max_length=20, blank=True)
-    skype = models.CharField(_('Skype'), max_length=20, blank=True)
-    jabber = models.EmailField(_('Jabber'), blank=True)
-    www = models.URLField(_('Www'), verify_exists=False, blank=True)
-    phone = models.CharField(
-        _('Phone'),
-        max_length=30, blank=True,
-        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
-    )
-    birthday = models.DateField(_('Birthday'), null=True, blank=True)
-    card_name = models.CharField(_('Card name'), max_length=200, blank=True)
-    account_type = models.CharField(_('Account type'), max_length=1, choices=USER_ACCOUNT_TYPE, default='p')
-    tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
-    zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
-    city = models.CharField(_('City'), max_length=40, blank=True)
-    state = models.CharField(_('State'), max_length=2, blank=True)
-
 
     objects = UserManager()
 
@@ -486,12 +469,8 @@ class OrderManager(models.Manager):
 
         o.card_name = user.card_name or user.name()
         o.vat_number = user.vat_number
-        o.tin_number = user.tin_number
         o.country = country if country else user.country
-        o.zip_code = user.zip_code
         o.address = address if address else user.address
-        o.city = user.city
-        o.state = user.state
 
         o.save()
         vat_list = []
@@ -613,14 +592,10 @@ class Order(models.Model):
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
-    tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
     # la country deve essere null perché un ordine può essere creato via admin
     # e in quel caso non è detto che si conosca
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
-    zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
-    city = models.CharField(_('City'), max_length=40, blank=True)
-    state = models.CharField(_('State'), max_length=2, blank=True)
 
     objects = OrderManager()
 
@@ -629,45 +604,6 @@ class Order(models.Model):
         if self.code:
             msg += ' #%s' % self.code
         return msg
-
-    def billable(self):
-        """
-        Regola per verificare se un ordine è fatturabile:
-
-        Se la nazione è l'ITALIA serve VAT e TIN
-        Se la nazione sono gli USA serve VAT e TIN
-        Se la nazione è EUROPEA basta il VAT ma deve passare il controllo VIES
-        Altrimenti basta il VAT
-        """
-        if self.country_id == 'IT':
-            return self.vat_number and self.tin_number
-        elif self.country_id == 'US':
-            return self.vat_number and self.tin_number
-        elif self.country.vat_company_verify:
-            if self.country.vat_company_verify == 'v':
-                return vies.check_vat(self.country_id, self.vat_number)
-            else:
-                raise RuntimeError('unknown verification method')
-        else:
-            return bool(self.vat_number)
-
-    def vat_rate(self):
-        """
-        Regola per determinare l'aliquota iva:
-
-        Se la nazione è l'ITALIA l'aliquota è il 20%
-        Se l'ordine è fatturabile l'aliquota è lo 0%
-        Altrimenti l'aliquota è il 20%
-        """
-        # contr'ordine, per quest'anno (2011) l'IVA (per le conferenze) è
-        # sempre il 20% indipendentemente da tutto
-        return 20.0
-        #if self.country_id == 'IT':
-        #    return 20.0
-        #elif self.billable():
-        #    return 0.0
-        #else:
-        #    return 20.0
 
     def vat_list(self):
         """
@@ -708,22 +644,6 @@ class Order(models.Model):
         # metodo per confermare un ordine simile a genro.confirm_order
         # una volta confermato un ordine si crea una fattura con data
         Invoice.objects.creates_from_order(self,payment_date=payment_date)
-
-    def deductible(self):
-        """
-        Ritorna True/False a seconda che l'ordine sia deducibile o meno
-        """
-        # considero non deducibile un ordine che contiene almeno un biglietto
-        # per la conferenza destinato a privati/studenti
-        qs = Fare.objects\
-            .filter(id__in=self.orderitem_set.exclude(ticket=None).values('ticket__fare'))\
-            .values_list('recipient_type', 'ticket_type')
-        deductible = True
-        for r, t in qs:
-            if t == 'conference' and r != 'c':
-                deductible = False
-                break
-        return deductible
 
     def total(self, apply_discounts=True):
         if apply_discounts:

@@ -94,7 +94,7 @@ class Profile(forms.ModelForm):
         max_length=32,)
     class Meta:
         model = models.User
-        fields = ('first_name', 'last_name', 'phone', 'www', 'twitter', 'photo')
+        fields = ('first_name', 'last_name')
 
     def __init__(self, *args, **kwargs):
         o = kwargs.get('instance')
@@ -106,10 +106,6 @@ class Profile(forms.ModelForm):
                 initial['last_name'] = o.user.last_name
             kwargs['initial'] = initial
         super(Profile, self).__init__(*args, **kwargs)
-
-    def clean_twitter(self):
-        data = self.cleaned_data.get('twitter', '')
-        return data.lstrip('@')
 
     @transaction.commit_on_success
     def save(self, commit=True):
@@ -127,9 +123,8 @@ class BillingData(forms.ModelForm):
     class Meta:
         model = models.User
         fields = (
-            'card_name', 'account_type', 'country',
-            'address', 'city', 'zip_code', 'state',
-            'vat_number', 'tin_number',
+            'card_name', 'country',
+            'address', 'vat_number',
         )
 
     def _required(self, name):
@@ -144,8 +139,6 @@ class BillingData(forms.ModelForm):
 
     clean_country = lambda self: self._required('country')
     clean_address = lambda self: self._required('address')
-    clean_city = lambda self: self._required('city')
-    clean_zip_code = lambda self: self._required('zip_code')
 
     def clean_card_name(self):
         data = self.cleaned_data.get('card_name', '')
