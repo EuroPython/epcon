@@ -11,7 +11,7 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render_to_response, render
 from django.template import RequestContext, Template
 
-import forms as p3forms
+import p3.forms as p3forms
 import p3
 from p3 import dataaccess
 from p3 import models
