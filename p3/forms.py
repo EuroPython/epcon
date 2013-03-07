@@ -128,6 +128,11 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
 
+    def __init__(self, *args, **kwargs):
+        super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['duration'].initial = self.instance.duration
+
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
         talk.duration = self.cleaned_data['duration']
@@ -142,6 +147,11 @@ class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
+
+    def __init__(self, *args, **kwargs):
+        super(P3TalkForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['duration'].initial = self.instance.duration
 
     def save(self, *args, **kwargs):
         talk = super(P3TalkForm, self).save(*args, **kwargs)
