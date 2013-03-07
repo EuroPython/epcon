@@ -702,3 +702,26 @@ function form_errors(form, errors) {
         }
     });
 })(jQuery);
+
+// based on http://javascript.crockford.com/remedial.html
+// modified to support object path: "{o.attr}".format({o: {attr: 'foo'}});
+if(!String.prototype.supplant) {
+    String.prototype.supplant = function (o) {
+        return this.replace(
+            /\{([^{}]*)\}/g,
+            function (a, b) {
+                var r = o[b];
+                if(typeof r === 'undefined' && typeof o === 'object' && b.indexOf('.') != -1) {
+                    var path = b.split('.');
+                    var ctx = o;
+                    for(var ix=0; ix<path.length; ix++) {
+                        r = ctx = ctx[path[ix]];
+                        if(typeof r === 'undefined')
+                            break;
+                    }
+                }
+                return typeof r === 'string' || typeof r === 'number' ? r : a;
+            }
+        );
+    };
+}
