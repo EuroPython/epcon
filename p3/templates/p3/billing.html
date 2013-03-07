@@ -77,7 +77,9 @@
                     {% if form.vat_number %}
                     <div class="span-6">{{ form.vat_number|field }}</div>
                     {% endif %}
+                    {% if form.cf_code %}
                     <div class="span-6" style="display: none;">{{ form.cf_code|field }}</div>
+                    {% endif %}
                     {% if form.billing_notes %}
                     <div class="span-6">{{ form.billing_notes|field }}</div>
                     {% endif %}

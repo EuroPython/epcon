@@ -37,7 +37,7 @@ class P3BillingDataCompany(P3BillingData):
 
     # la derivazione non è un errore, voglio riappropriarmi del vat_number
     class Meta(aforms.BillingData.Meta):
-        pass
+        exclude = aforms.BillingData.Meta.exclude + ('cf_code',)
 
     def __init__(self, *args, **kwargs):
         super(P3BillingDataCompany, self).__init__(*args, **kwargs)
