@@ -5,7 +5,7 @@ from assopy import settings
 if settings.GENRO_BACKEND:
     from assopy.clients import genro, vies
 from assopy.utils import check_database_schema, send_email
-from conference.models import Fare, Ticket
+from conference.models import Ticket
 from email_template import utils
 
 from django import dispatch
@@ -181,10 +181,6 @@ def _fs_upload_to(subdir, attr=None):
 # query guardando i Conference.Ticket
 ticket_for_user = dispatch.Signal(providing_args=['tickets'])
 
-USER_ACCOUNT_TYPE = (
-    ('p', 'Private'),
-    ('c', 'Company'),
-)
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
@@ -194,6 +190,7 @@ class User(models.Model):
         _('Card name'), max_length=200, blank=True,
         help_text=_('The name used for orders and invoices'))
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
+    cf_code = models.CharField('Codice Fiscale', max_length=16, blank=True)
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     address = models.CharField(
         _('Address and City'),
@@ -204,7 +201,15 @@ class User(models.Model):
     objects = UserManager()
 
     def __unicode__(self):
-        return 'Assopy user: %s' % self.name()
+        return 'Assopy user: %s - %s' % (self.id, self.card_name)
+
+    def clean_fields(self, *args, **kw):
+        super(User, self).clean_fields(*args, **kw)
+        if self.country and self.country.pk == 'IT':
+            if len(self.cf_code) != 16:
+                raise ValidationError({'cf_code': ['"Codice Fiscale" is needed for Italian customers']})
+            else:
+                self.cf_code = self.cf_code.upper()
 
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
@@ -452,6 +457,7 @@ class OrderManager(models.Manager):
 
         o.card_name = user.card_name or user.name()
         o.vat_number = user.vat_number
+        o.cf_code = user.cf_code
         o.country = country if country else user.country
         o.address = address if address else user.address
 
@@ -575,6 +581,7 @@ class Order(models.Model):
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
+    cf_code = models.CharField('Codice Fiscale', max_length=16, blank=True)
     # la country deve essere null perché un ordine può essere creato via admin
     # e in quel caso non è detto che si conosca
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)

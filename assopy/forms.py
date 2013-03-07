@@ -122,10 +122,7 @@ Profile = autostrip(Profile)
 class BillingData(forms.ModelForm):
     class Meta:
         model = models.User
-        fields = (
-            'card_name', 'country',
-            'address', 'vat_number',
-        )
+        exclude = ('user', 'token', 'assopy_id')
 
     def _required(self, name):
         data = self.cleaned_data.get(name, '')
