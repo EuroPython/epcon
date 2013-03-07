@@ -405,10 +405,10 @@ def paypal_cc_billing(request, code):
         "first_name" : o.card_name,
         "last_name": "",
         "address1": o.address,
-        "zip": o.zip_code,
-        "state": o.state,
+        #"zip": o.zip_code,
+        #"state": o.state,
         "country": o.country,
-        "address_name":o.card_name,
+        "address_name": o.card_name,
     }
     qparms = urllib.urlencode([ (k,x.encode('utf-8') if isinstance(x, unicode) else x) for k,x in cc_data.items() ])
     return HttpResponseRedirectSeeOther(
@@ -467,10 +467,7 @@ def invoice(request, order_code, code, mode='html'):
     )
     if mode == 'html':
         order = invoice.order
-        address = '%s, %s<br />' % (order.address, order.zip_code)
-        if order.city:
-            address += '%s, ' % order.city
-        address += unicode(order.country)
+        address = '%s, %s' % (order.address, unicode(order.country))
         ctx = {
             'title': unicode(invoice),
             'code': invoice.code,
@@ -479,6 +476,8 @@ def invoice(request, order_code, code, mode='html'):
                 'card_name': order.card_name,
                 'address': address,
                 'billing_notes': order.billing_notes,
+                'cf_code': order.cf_code,
+                'vat_number': order.vat_number,
             },
             'items': invoice.invoice_items(),
             'note': invoice.note,
@@ -557,10 +556,7 @@ def credit_note(request, order_code, code, mode='html'):
 
     order = cnote.invoice.order
     if mode == 'html':
-        address = '%s, %s<br />' % (order.address, order.zip_code)
-        if order.city:
-            address += '%s, ' % order.city
-        address += unicode(order.country)
+        address = '%s, %s' % (order.address, unicode(order.country))
         ctx = {
             'title': unicode(cnote),
             'code': cnote.code,
@@ -569,6 +565,8 @@ def credit_note(request, order_code, code, mode='html'):
                 'card_name': order.card_name,
                 'address': address,
                 'billing_notes': order.billing_notes,
+                'cf_code': order.cf_code,
+                'vat_number': order.vat_number,
             },
             'items': cnote.note_items(),
             'note': '',
