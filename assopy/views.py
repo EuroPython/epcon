@@ -95,17 +95,6 @@ def profile(request):
             form.save()
             messages.info(request, 'Profile updated')
             return HttpResponseRedirectSeeOther('.')
-            
-            data = form.cleaned_data
-            if data['photo']:
-                user.photo = data['photo']
-            user.www = data['www']
-            user.twitter = data['twitter']
-            user.phone = data['phone']
-            user.save()
-            user.setBilling(firstname=data['firstname'], lastname=data['lastname'])
-            messages.info(request, 'Profile updated')
-            return HttpResponseRedirectSeeOther('.')
     else:
         form = aforms.Profile(instance=user)
     return {

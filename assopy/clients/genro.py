@@ -149,7 +149,7 @@ def create_order(order, return_url=None):
     # Aggiornamento, il flag personal non viene più usato dal backend
     b['personal'] = False
     b['billing_notes'] = order.billing_notes
-    b['vat_rate'] = order.vat_rate()
+    b['vat_rate'] = 20.0
     if return_url:
         b['return_url'] = return_url
 

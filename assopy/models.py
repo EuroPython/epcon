@@ -5,7 +5,7 @@ from assopy import settings
 if settings.GENRO_BACKEND:
     from assopy.clients import genro, vies
 from assopy.utils import check_database_schema, send_email
-from conference.models import Fare, Ticket
+from conference.models import Ticket
 from email_template import utils
 
 from django import dispatch
@@ -181,16 +181,20 @@ def _fs_upload_to(subdir, attr=None):
 # query guardando i Conference.Ticket
 ticket_for_user = dispatch.Signal(providing_args=['tickets'])
 
-USER_ACCOUNT_TYPE = (
-    ('p', 'Private'),
-    ('c', 'Company'),
-)
 class User(models.Model):
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
 
-    vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
+    card_name = models.CharField(
+        _('Card name'), max_length=200, blank=True,
+        help_text=_('The name used for orders and invoices'))
+    vat_number = models.CharField(
+            _('Vat Number'), max_length=22, blank=True,
+            help_text=_('Your VAT number if applicable'))
+    cf_code = models.CharField(
+        'Codice Fiscale', max_length=16, blank=True,
+        help_text=_('Needed only for Italian customers'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     address = models.CharField(
         _('Address and City'),
@@ -198,38 +202,18 @@ class User(models.Model):
         blank=True,
         help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
 
-    # XXX da cancellare
-    photo = models.ImageField(_('Photo'), null=True, blank=True, upload_to=_fs_upload_to('users', attr=lambda i: i.user.username))
-    twitter = models.CharField(_('Twitter'), max_length=20, blank=True)
-    skype = models.CharField(_('Skype'), max_length=20, blank=True)
-    jabber = models.EmailField(_('Jabber'), blank=True)
-    www = models.URLField(_('Www'), verify_exists=False, blank=True)
-    phone = models.CharField(
-        _('Phone'),
-        max_length=30, blank=True,
-        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
-    )
-    birthday = models.DateField(_('Birthday'), null=True, blank=True)
-    card_name = models.CharField(_('Card name'), max_length=200, blank=True)
-    account_type = models.CharField(_('Account type'), max_length=1, choices=USER_ACCOUNT_TYPE, default='p')
-    tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
-    zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
-    city = models.CharField(_('City'), max_length=40, blank=True)
-    state = models.CharField(_('State'), max_length=2, blank=True)
-
-
     objects = UserManager()
 
     def __unicode__(self):
-        return 'Assopy user: %s' % self.name()
+        return 'Assopy user: %s - %s' % (self.id, self.card_name)
 
-    def photo_url(self):
-        if self.photo:
-            return dsettings.DEFAULT_URL_PREFIX + self.photo.url
-        try:
-            return self.identities.exclude(photo='')[0].photo
-        except IndexError:
-            return _gravatar(self.user.email)
+    def clean_fields(self, *args, **kw):
+        super(User, self).clean_fields(*args, **kw)
+        if self.country and self.country.pk == 'IT':
+            if len(self.cf_code) != 16:
+                raise ValidationError({'cf_code': ['"Codice Fiscale" is needed for Italian customers']})
+            else:
+                self.cf_code = self.cf_code.upper()
 
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
@@ -237,15 +221,6 @@ class User(models.Model):
             return self.user.email
         else:
             return name
-
-    def clean_fields(self, *args, **kwargs):
-        super(User, self).clean_fields(*args, **kwargs)
-        # check del vat_number. Al posso verificare solo i codici europei
-        # tramite vies
-        if self.account_type == 'c' and self.vat_number:
-            if self.country.vat_company_verify == 'v':
-                if not vies.check_vat(self.country.pk, self.vat_number):
-                    raise ValidationError({'vat_number': [_('According to VIES, this is not a valid vat number')]})
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
@@ -463,7 +438,7 @@ class OrderManager(models.Manager):
             return t if t is not None else 0
 
     @transaction.commit_on_success
-    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, remote=True):
+    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
         if coupons:
             for c in coupons:
                 if not c.valid(user):
@@ -485,13 +460,10 @@ class OrderManager(models.Manager):
         o.billing_notes = billing_notes
 
         o.card_name = user.card_name or user.name()
-        o.vat_number = user.vat_number
-        o.tin_number = user.tin_number
+        o.vat_number = vat_number
+        o.cf_code = cf_code
         o.country = country if country else user.country
-        o.zip_code = user.zip_code
         o.address = address if address else user.address
-        o.city = user.city
-        o.state = user.state
 
         o.save()
         vat_list = []
@@ -613,14 +585,11 @@ class Order(models.Model):
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
-    tin_number = models.CharField(_('Tax Identification Number'), max_length=16, blank=True)
+    cf_code = models.CharField('Codice Fiscale', max_length=16, blank=True)
     # la country deve essere null perché un ordine può essere creato via admin
     # e in quel caso non è detto che si conosca
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
-    zip_code = models.CharField(_('Zip Code'), max_length=5, blank=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
-    city = models.CharField(_('City'), max_length=40, blank=True)
-    state = models.CharField(_('State'), max_length=2, blank=True)
 
     objects = OrderManager()
 
@@ -629,45 +598,6 @@ class Order(models.Model):
         if self.code:
             msg += ' #%s' % self.code
         return msg
-
-    def billable(self):
-        """
-        Regola per verificare se un ordine è fatturabile:
-
-        Se la nazione è l'ITALIA serve VAT e TIN
-        Se la nazione sono gli USA serve VAT e TIN
-        Se la nazione è EUROPEA basta il VAT ma deve passare il controllo VIES
-        Altrimenti basta il VAT
-        """
-        if self.country_id == 'IT':
-            return self.vat_number and self.tin_number
-        elif self.country_id == 'US':
-            return self.vat_number and self.tin_number
-        elif self.country.vat_company_verify:
-            if self.country.vat_company_verify == 'v':
-                return vies.check_vat(self.country_id, self.vat_number)
-            else:
-                raise RuntimeError('unknown verification method')
-        else:
-            return bool(self.vat_number)
-
-    def vat_rate(self):
-        """
-        Regola per determinare l'aliquota iva:
-
-        Se la nazione è l'ITALIA l'aliquota è il 20%
-        Se l'ordine è fatturabile l'aliquota è lo 0%
-        Altrimenti l'aliquota è il 20%
-        """
-        # contr'ordine, per quest'anno (2011) l'IVA (per le conferenze) è
-        # sempre il 20% indipendentemente da tutto
-        return 20.0
-        #if self.country_id == 'IT':
-        #    return 20.0
-        #elif self.billable():
-        #    return 0.0
-        #else:
-        #    return 20.0
 
     def vat_list(self):
         """
@@ -708,22 +638,6 @@ class Order(models.Model):
         # metodo per confermare un ordine simile a genro.confirm_order
         # una volta confermato un ordine si crea una fattura con data
         Invoice.objects.creates_from_order(self,payment_date=payment_date)
-
-    def deductible(self):
-        """
-        Ritorna True/False a seconda che l'ordine sia deducibile o meno
-        """
-        # considero non deducibile un ordine che contiene almeno un biglietto
-        # per la conferenza destinato a privati/studenti
-        qs = Fare.objects\
-            .filter(id__in=self.orderitem_set.exclude(ticket=None).values('ticket__fare'))\
-            .values_list('recipient_type', 'ticket_type')
-        deductible = True
-        for r, t in qs:
-            if t == 'conference' and r != 'c':
-                deductible = False
-                break
-        return deductible
 
     def total(self, apply_discounts=True):
         if apply_discounts:
