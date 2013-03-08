@@ -1531,6 +1531,15 @@ def assign_(context, varname, value):
     context[varname] = value
     return ""
 
+@register.simple_tag(takes_context=True)
+def sum_(context, varname, *args):
+    if not args:
+        r = None
+    else:
+        r = sum(args[1:], args[0])
+    context[varname] = r
+    return ""
+
 @register.filter
 def as_datetime(value, format="%Y/%m/%d"):
     return datetime.strptime(value, format)
