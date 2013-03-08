@@ -1536,7 +1536,11 @@ def sum_(context, varname, *args):
     if not args:
         r = None
     else:
-        r = sum(args[1:], args[0])
+        args = filter(None, args)
+        try:
+            r = sum(args[1:], args[0])
+        except Exception:
+            r = None
     context[varname] = r
     return ""
 
