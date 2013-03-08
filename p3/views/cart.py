@@ -26,8 +26,6 @@ class P3BillingData(aforms.BillingData):
         exclude = aforms.BillingData.Meta.exclude + ('vat_number',)
 
 class P3BillingDataCompany(P3BillingData):
-    vat_number = forms.CharField(max_length=22, required=False)
-
     billing_notes = forms.CharField(
         label='Additional billing information',
         help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
