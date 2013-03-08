@@ -190,9 +190,16 @@
             .invoice_note {
                 position: absolute;
                 bottom: 0;
-                font-size: 140%;
-                line-height: 140%;
-                color: gray;
+                right: 0;
+                padding: 0 5mm;
+                font-size: 150%;
+                line-height: 150%;
+                color: #777;
+            }
+            .invoice_note b {
+                color: #555;
+                text-decoration: underline;
+                margin: 0 2mm;
             }
 
         -->
@@ -211,7 +218,7 @@
                             {% if real %}
                             <td>
                                 <div class="cell-legend">
-                                    Fattura N. <span class="alt-language">Invoice N.</span>
+                                    {{ document.0 }} <span class="alt-language">{{ document.1 }}</span>
                                 </div>
                                 <div class="cell-content">
                                     {{ code|default:'' }}
@@ -339,7 +346,7 @@
                      </tbody>
                 </table>
                 {% if note %}
-                <h3 class="invoice_note">{{ note }}</h3>
+                <h3 class="invoice_note">{{ note|safe }}</h3>
                 {% endif %}
             </div>
             <div class="section invoice-amount">

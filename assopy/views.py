@@ -469,6 +469,7 @@ def invoice(request, order_code, code, mode='html'):
         order = invoice.order
         address = '%s, %s' % (order.address, unicode(order.country))
         ctx = {
+            'document': ('Fattura N.', 'Invoice N.'),
             'title': unicode(invoice),
             'code': invoice.code,
             'emit_date': invoice.emit_date,
@@ -557,7 +558,17 @@ def credit_note(request, order_code, code, mode='html'):
     order = cnote.invoice.order
     if mode == 'html':
         address = '%s, %s' % (order.address, unicode(order.country))
+        items = cnote.note_items()
+        for x in items:
+            x['price'] = x['price'] * -1
+
+        invoice = cnote.invoice
+        rif = invoice.code
+        if invoice.payment_date:
+            rif = '%s - %s' % (rif, invoice.payment_date.strftime('%d %b %Y'))
+        note = 'Nota di credito / Credit Note <b>Rif: %s</b>' % rif
         ctx = {
+            'document': ('Nota di credito', 'Credit note'),
             'title': unicode(cnote),
             'code': cnote.code,
             'emit_date': cnote.emit_date,
@@ -568,12 +579,12 @@ def credit_note(request, order_code, code, mode='html'):
                 'cf_code': order.cf_code,
                 'vat_number': order.vat_number,
             },
-            'items': cnote.note_items(),
-            'note': '',
+            'items': items,
+            'note': note,
             'price': {
-                'net': cnote.net_price(),
-                'vat': cnote.vat_value(),
-                'total': cnote.price,
+                'net': cnote.net_price() * -1,
+                'vat': cnote.vat_value() * -1,
+                'total': cnote.price * -1,
             },
             'vat': cnote.invoice.vat,
             'real': True,
