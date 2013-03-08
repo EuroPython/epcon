@@ -65,8 +65,10 @@
     {% endif %}
     {% block EXTRA_HEAD %}{% endblock %}
 
+    {% block OPENGRAPH %}
     <meta property="og:image" content="{{ DEFAULT_URL_PREFIX }}{{ STATIC_URL }}p5/i/europython-logo-quad.jpg" />
     <meta property="fb:admins" content="789244177" />
+    {% endblock %}
 </head>
 <body id="{% block BODY_ID %}{% endblock %}"{% if current_page.status == 0 or current_page.status == 2 or current_page.status == 3 %} class="draft"{% endif %}>
 
