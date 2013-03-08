@@ -18,7 +18,6 @@ from django.template import Context
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
 
 from conference import dataaccess as cdataaccess
 from conference import models as ConferenceModels

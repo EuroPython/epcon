@@ -342,18 +342,29 @@ class P3Profile(models.Model):
 
     objects = P3ProfileManager()
 
-    def profile_image_url(self, anonymous=True):
+    def profile_image_url(self):
+        """
+        Restituisce l'url dell'immagine che l'utente ha associato al proprio
+        profilo.
+        """
         from p3 import utils
+        if self.image_gravatar:
+            return utils.gravatar(self.profile.user.email)
+        elif self.image_url:
+            return self.image_url
+        elif self.profile.image:
+            return self.profile.image.url
+        return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
+
+    def public_profile_image_url(self):
+        """
+        Come `profile_image_url` ma tiene conto delle regole di visibilità del
+        profilo.
+        """
         if self.profile.visibility != 'x':
-            if self.image_gravatar:
-                return utils.gravatar(self.profile.user.email)
-            elif self.image_url:
-                if anonymous:
-                    return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
-                else:
-                    return self.image_url
-            elif self.profile.image:
-                return self.profile.image.url
+            url = self.profile_image_url()
+            if url == self.image_url:
+                return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
         return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
 
     def send_user_message(self, from_, subject, message):

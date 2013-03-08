@@ -5,9 +5,11 @@
         <input type="hidden" name="section" value="picture" />
 
         <div class="profile-user-picture">
-            <img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="98" />
             {% if full_access %}
+                <img class="block" src="{{ profile.p3_profile.profile_image_url }}" alt="{{ profile_data.name }}" width="98" />
                 <div class="button mini"><a href="#" class="trigger-overlay" rel="#profile-picture-form">Change</a></div>
+            {% else %}
+                <img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="98" />
             {% endif %}
         </div>
         {% if full_access %}
