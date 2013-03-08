@@ -72,7 +72,7 @@ def box_download(context, fname, label=None):
     else:
         fsize = stat.st_size
         ftype = mimetypes.guess_type(fpath)[0]
-        
+
     return {
         'url': context['STUFF_URL'] + fname,
         'label': label,
