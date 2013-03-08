@@ -11,7 +11,7 @@ from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
-from tagging.models import TaggedItem
+from taggit.models import TaggedItem
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 
@@ -32,11 +32,6 @@ def _dump_fields(o):
     return output
 
 def navigation(lang, page_type):
-    if '-' not in lang:
-        for code, _ in settings.PAGE_LANGUAGES:
-            if code.startswith(lang):
-                lang = code
-                break
     pages = []
     qs = Page.objects\
         .published()\
@@ -55,7 +50,6 @@ def navigation(lang, page_type):
 def _i_navigation(sender, **kw):
     if sender is Page:
         page = kw['instance']
-        
     elif sender is TaggedItem:
         item = kw['instance']
         if not isinstance(item.content_object, Page):
@@ -111,6 +105,7 @@ def sponsor(conf):
         .order_by('-income', 'sponsor__sponsor')
     output = []
     tags = defaultdict(set)
+    from tagging.models import TaggedItem
     for r in TaggedItem.objects\
                 .filter(
                     content_type=ContentType.objects.get_for_model(models.SponsorIncome),
