@@ -34,7 +34,7 @@
     <div class="span-4 last">
         {% current_conference as conf %}
         {% if conf.voting %}
-            {% assign_ "talks" profile_data.talks.all|attrib_:conf.code %}
+            {% sum_ "talks" profile_data.talks.by_conf|attrib_:conf.code profile_data.talks.accepted.all %}
         {% else %}
             {% if full_access %}
                 {% assign_ "talks" profile_data.talks.by_conf.all %}
