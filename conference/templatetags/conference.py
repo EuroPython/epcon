@@ -1526,7 +1526,7 @@ def remove_duplicates(val, attr=None):
             check.add(k)
     return output
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def assign_(context, varname, value):
     context[varname] = value
     return ""
