@@ -190,8 +190,8 @@ class User(models.Model):
         _('Card name'), max_length=200, blank=True,
         help_text=_('The name used for orders and invoices'))
     vat_number = models.CharField(
-            _('Vat Number'), max_length=22, blank=True,
-            help_text=_('Your VAT number if applicable'))
+        _('Vat Number'), max_length=22, blank=True,
+        help_text=_('Your VAT number if applicable'))
     cf_code = models.CharField(
         'Codice Fiscale', max_length=16, blank=True,
         help_text=_('Needed only for Italian customers'))
