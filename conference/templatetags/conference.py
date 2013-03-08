@@ -38,11 +38,13 @@ mimetypes.init()
 
 register = template.Library()
 
-def _lang(ctx):
+def _lang(ctx, full=False):
     try:
         l = ctx['LANGUAGE_CODE']
     except KeyError:
         l = PAGE_DEFAULT_LANGUAGE
+    if full:
+        return l
     return l.split('-', 1)[0]
 
 def _request_cache(request, key):
@@ -74,7 +76,7 @@ def get_deadlines(context, year=None, limit=None, not_expired=True):
 
 @fancy_tag(register, takes_context=True)
 def navigation(context, page_type):
-    return dataaccess.navigation(_lang(context), page_type)
+    return dataaccess.navigation(_lang(context, full=True), page_type)
 
 @register.tag
 def stuff_info(parser, token):
