@@ -61,6 +61,8 @@ def p3_profile_avatar(request, slug):
     try:
         img = urlopen(p.profile_image_url())
     except Exception:
+        import p3
+        from django.conf import settings
         path = os.path.join(os.path.dirname(p3.__file__), 'static', settings.P3_ANONYMOUS_AVATAR)
         img = file(path)
         ct = 'image/jpg'
