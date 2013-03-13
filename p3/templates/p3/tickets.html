@@ -2,7 +2,7 @@
 {% load i18n p3 assopy_tags %}
 {% block MAIN_CONTENT %}
     <h1>{% trans "Your tickets" %}</h1>
-    
+
     {% if not tickets %}
     <section class="notice">
         {% url p3-cart as u %}
@@ -14,7 +14,7 @@
         <div class="span-6 {% cycle '' 'last' %}">
             {% render_ticket t %}
         </div>
-        {% cycle '' '<hr />' %}    
+        {% cycle '' '<hr />' %}
     {% endfor %}
     <style>
         #id_reason {
