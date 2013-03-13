@@ -3,6 +3,12 @@
 
 {% block PAGE_TITLE %}{{ talk.title }} &mdash; {% endblock %}
 
+{% block OPENGRAPH %}
+{{ block.super }}
+    {% talk_data talk.id as talk_data %}
+    <meta property="og:title" content="{{ talk.title }}" />
+{% endblock %}
+
 {% block EXTRA_HEAD %}
 {{ block.super }}
 {{ form.media }}
