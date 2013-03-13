@@ -858,7 +858,6 @@
         var toolbar = $(textarea).parent().children().filter('.markedit-toolbar').eq(0);
         var previewPane = $(textarea).parent().children().filter('div.markedit-preview').eq(0);
 
-        console.log(toolbar, toolbar.markeditEnableToolbar, $(textarea).attr('rel'), $(textarea).attr('rel') === 'hidden');
         if ($(textarea).attr('rel') === 'hidden') {
             $(textarea).attr('rel', 'visible');
             $(textarea).show();
