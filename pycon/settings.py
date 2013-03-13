@@ -505,6 +505,8 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
         return False
     if ticket.fare.conference != CONFERENCE_CONFERENCE:
         return False
+    if item.order.total() == 0:
+        return False
     return item.order._complete
 
 GENRO_BACKEND = False
