@@ -83,7 +83,7 @@ function setup_tooltip(ctx) {
          * tooltip che di solito cercano il testo da mostrare nell'elemento
          * successivo al trigger, ma...
          */
-        setup($('.help-text', this).prev(':input'));
+        setup($('.help-text', this).prev(':input').not('.markedit-widget'));
         /*
          * i radio vengono renderizzati in maniera diversa, qui l'help-text è
          * posto dopo un ul che contiene tutti gli input
