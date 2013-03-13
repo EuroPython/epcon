@@ -207,14 +207,6 @@ class User(models.Model):
     def __unicode__(self):
         return 'Assopy user: %s - %s' % (self.id, self.card_name)
 
-    def clean_fields(self, *args, **kw):
-        super(User, self).clean_fields(*args, **kw)
-        if self.country and self.country.pk == 'IT':
-            if len(self.cf_code) != 16:
-                raise ValidationError({'cf_code': ['"Codice Fiscale" is needed for Italian customers']})
-            else:
-                self.cf_code = self.cf_code.upper()
-
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
         if not name.strip():
