@@ -60,10 +60,12 @@ class P3BillingDataCompany(P3BillingData):
 #        return vat
 
 def cart(request):
+    u = None
     if request.user.is_authenticated():
-        u = request.user
-    else:
-        u = None
+        try:
+            u = request.user.assopy_user
+        except AttributeError:
+            pass
     at = 'p'
 
     # user-cart serve alla pagina di conferma con i dati di fatturazione,
