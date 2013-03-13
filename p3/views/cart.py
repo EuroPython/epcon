@@ -25,6 +25,18 @@ class P3BillingData(aforms.BillingData):
     class Meta(aforms.BillingData.Meta):
         exclude = aforms.BillingData.Meta.exclude + ('vat_number',)
 
+    def clean(self):
+        data = self.cleaned_data
+        cf_code = self.cleaned_data['cf_code']
+        country = self.cleaned_data['country']
+        if country and country.pk == 'IT':
+           if not cf_code or len(cf_code) != 16:
+               # hack per associare l'errore al campo cf_code
+               e = forms.ValidationError('"Codice Fiscale" is required for Italian customers')
+               self._errors['cf_code'] = self.error_class(e.messages)
+               del self.cleaned_data['cf_code']
+        return data
+
 class P3BillingDataCompany(P3BillingData):
     billing_notes = forms.CharField(
         label='Additional billing information',
