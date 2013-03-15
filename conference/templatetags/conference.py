@@ -43,6 +43,8 @@ def _lang(ctx, full=False):
         l = ctx['LANGUAGE_CODE']
     except KeyError:
         l = PAGE_DEFAULT_LANGUAGE
+    if hasattr(dsettings, 'PAGE_LANGUAGE_MAPPING'):
+        l = dsettings.PAGE_LANGUAGE_MAPPING(l)
     if full:
         return l
     return l.split('-', 1)[0]
