@@ -86,6 +86,8 @@ def cart(request):
     # fatta una POST valida
     request.session.pop('user-cart', None)
     if request.method == 'POST':
+        if not request.user.is_authenticated():
+            return HttpResponseRedirectSeeOther(reverse('p3-cart'))
         form = p3forms.P3FormTickets(data=request.POST, user=u)
         if form.is_valid():
             request.session['user-cart'] = form.cleaned_data
