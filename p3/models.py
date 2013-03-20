@@ -365,6 +365,7 @@ class P3Profile(models.Model):
             url = self.profile_image_url()
             if url == self.image_url:
                 return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
+            return url
         return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
 
     def send_user_message(self, from_, subject, message):
