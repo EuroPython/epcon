@@ -19,9 +19,8 @@ This module provides all the different election methods.
 from votelib import *
 
 from string import *
-import Numeric
 import re
-from Numeric import *
+from numpy import *
 import sys
 from sys import maxint
 
@@ -34,7 +33,7 @@ def borda(o):
 		borda=(row_sum[i]+(n-1)*o.n_votes)*.5
 		print ljust(o.cand_l[i],4), rjust(`borda`,9)
 
-	winmat=zeros((n,n),Int0)
+	winmat=zeros((n,n),int_)
 	for i in xrange(n):
 		for j in xrange(n):
 			if i!=j and row_sum[i]>row_sum[j]: winmat[i,j]=1
@@ -45,7 +44,7 @@ def borda(o):
 def borda_elim(o):
 	n=len(o.cand_l)
 	row_sum=sum(o.pw_tbl,1)
-	act=ones((n),Int0) #active candidates
+	act=ones((n),int_) #active candidates
 	n_act=n
 
 	print 'Borda-elimination'
@@ -181,7 +180,7 @@ def copeland(o):
 	for i in xrange(n):
 		print ljust(o.cand_l[i],4), rjust(`0.5*(sc[i]-1)`,9)
 	#since a candidate ties itself, I have to subtract that tie
-	winmat=zeros((n,n),Int0)
+	winmat=zeros((n,n),int_)
 	for i in xrange(n):
 		for j in xrange(n):
 			if i!=j and sc[i]>sc[j]: winmat[i,j]=1
@@ -233,7 +232,7 @@ def minmax(o):
 	print "Cand  Max Loss"
 	for x in xrange(n):
 		print ljust(o.cand_l[x],4), rjust(`sc[x]`,9)
-	winmat=zeros((n,n),Int0)
+	winmat=zeros((n,n),int_)
 	for i in xrange(n):
 		for j in xrange(n):
 			if i!=j and sc[i]<sc[j]: winmat[i,j]=1
@@ -245,7 +244,7 @@ def nanson(o):
 	n=len(o.cand_l)
 
 	row_sum=sum(o.pw_tbl,1)
-	act=ones((n),Int0) #active candidates
+	act=ones((n),int_) #active candidates
 	n_act=n
 
 	print 'Nanson (original)'
@@ -383,7 +382,7 @@ def s_minmax(o):
 			sc[i]=maximum.reduce(compress(smith,o.pw_tbl[:,i]))
 		else:
 			sc[i]=sys.maxint
-	winmat=zeros((n,n),Int0)
+	winmat=zeros((n,n),int_)
 	for i in xrange(n):
 		for j in xrange(n):
 			if i!=j and sc[i]<sc[j]: winmat[i,j]=1
@@ -399,7 +398,7 @@ def schulze(o):
 
 	print 'Path matrix'
 	print_scores(o.pw_tbl, o.cand_l)
-	winmat=zeros((n,n),Int0)
+	winmat=zeros((n,n),int_)
 	for i in xrange(n):
 		for j in xrange(n):
 			if i!=j and o.pw_tbl[i,j]>o.pw_tbl[j,i]: winmat[i,j]=1

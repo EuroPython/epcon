@@ -18,7 +18,7 @@ This module is for the procedures that don't do I/O or anything like that.
 
 from string import *
 import re
-import Numeric
+import numpy
 import sys
 
 
@@ -77,7 +77,7 @@ def cmpTie(x,y,tiebreaker):
 def break_ties(winmat,tiebreaker):
 	if tiebreaker==None: return
 	n=winmat.shape[0]
-	done=Numeric.zeros((n),Numeric.Int0) # record of which 
+	done=numpy.zeros((n),numpy.int_) # record of which 
 	                                    #candidates are already processed
 	while 1:
 		for i in tiebreaker:
@@ -97,7 +97,7 @@ def break_ties(winmat,tiebreaker):
 def print_ranks(winmat,candlist):
 	n=winmat.shape[0];
 
-	wins=Numeric.zeros((n),Numeric.Int32)
+	wins=numpy.zeros((n),numpy.int32)
 
 	for i in xrange(n):
 		for j in xrange(n):

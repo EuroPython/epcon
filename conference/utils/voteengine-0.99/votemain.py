@@ -18,7 +18,7 @@ This module contains the heart of the program.
 
 from string import *
 import re
-import Numeric
+import numpy
 import sys
 from sys import maxint
 from votelib import *
@@ -104,7 +104,7 @@ def get_options(list,o): # gets command line options
 					o.cand_l=o.cand_l + candRange(range[0],range[1])
 			n=len(o.cand_l)
 			if o.record_pw:
-				o.pw_tbl=Numeric.zeros((n,n),Numeric.Int32) # pairwise table
+				o.pw_tbl=numpy.zeros((n,n),numpy.int32) # pairwise table
 			if o.record_ballots:
 				 o.ballot_tbl=[] # storage for ballots	
 			
@@ -260,7 +260,7 @@ def vote_main():
 			line=re.split(r'[\s>]+',rawline) # '>' and/or any remaing whitespace means '>'
 	
 			#give each candidate a score based on where it appears on the ballot. n is best, 0 worst
-			working=Numeric.zeros((n),Numeric.Int32)
+			working=numpy.zeros((n),numpy.int32)
 			level=n
 	
 			for eqcands in line:
