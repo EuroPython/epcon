@@ -797,6 +797,15 @@ footer nav li img {
 }
 
 /*
+ * Nei nomi dei partecipanti ci sono un sacco di lettere non comprese nel font
+ * standard
+ */
+.person-card .person-card-profile > h2 {
+    font-family: "Arial Narrow";
+    font-size: 18px;
+}
+
+/*
  * i link verso le homepage possono essere molto lunghi
  */
 .person-card .person-card-profile a {
