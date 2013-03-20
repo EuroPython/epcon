@@ -153,7 +153,7 @@ def render_ticket(context, ticket):
         form = forms.FormTicket(
             instance=inst,
             initial={
-                'ticket_name': ticket.name, 
+                'ticket_name': ticket.name,
             },
             prefix='t%d' % (ticket.id,),
             single_day=ticket.fare.code[2] == 'D',
@@ -182,7 +182,7 @@ def render_ticket(context, ticket):
         form = forms.FormTicketRoom(
             instance=inst,
             initial={
-                'ticket_name': ticket.name, 
+                'ticket_name': ticket.name,
             },
             prefix='t%d' % (ticket.id,),
         )
