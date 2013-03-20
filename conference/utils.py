@@ -104,6 +104,8 @@ def ranking_of_talks(talks, missing_vote=5):
         close_fds=True
     )
     out, err = pipe.communicate(in_)
+    if pipe.returncode != 0:
+        raise RuntimeError("voteengine.py exits with code: %s; %s" % (pipe.returncode, err))
 
     return [ talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2]) ]
 
