@@ -2,6 +2,9 @@
 {% load conference %}
 {% block extrahead %}
 {{ block.super }}
+<link type="text/css" href="{{ STATIC_URL }}conference/jquery-ui/css/flick/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-ui-1.8.17.custom.min.js"></script>
 {% load i18n %}
 <style type="text/css">
 /*
