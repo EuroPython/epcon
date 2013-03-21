@@ -359,6 +359,50 @@ def speaker_status(conf, code=None):
     return output
 speaker_status.short_description = 'Statistiche speaker'
 
+def conference_speakers(conf, code=None):
+    all_spks = Speaker.objects.byConference(conf, only_accepted=False)
+    accepted_spks = Speaker.objects.byConference(conf)
+    if code is None:
+        return [
+            {
+                'id': 'all_speakers',
+                'title': 'Tutti gli speaker (accettati e non)',
+                'total': all_spks.count()
+            },
+            {
+                'id': 'accepted_speakers',
+                'title': 'Tutti gli speaker accettati',
+                'total': accepted_spks.count()
+            },
+        ]
+    else:
+        if code == 'all_speakers':
+            qs = all_spks
+        elif code == 'accepted_speakers':
+            qs = accepted_spks
+        output = {
+            'columns': (
+                ('name', 'Name'),
+                ('email', 'Email'),
+            ),
+            'data': [],
+        }
+        data = output['data']
+        qs = qs\
+            .select_related('user')\
+            .order_by('user__first_name', 'user__last_name')
+        for x in qs:
+            data.append({
+                'name': '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.user_id,)),
+                    x.user.first_name,
+                    x.user.last_name),
+                'email': x.user.email,
+                'uid': x.user_id,
+            })
+    return output
+conference_speakers.short_description = 'Speaker conferenza'
+
 def hotel_tickets(conf, code=None):
     qs = {}
     for x in ('1', '2', '3', '4'):
