@@ -195,7 +195,7 @@ select[name=tracks] {
 <div id="talks">
     <ol>
         {% for t in talks %}
-        <li id="talk-{{ t.id }}" class="talk" draggable="true" data-id="{{ t.id }}" data-duration="{{ t.duration }}" data-type="{{ t.type|field_label:"Talk.type" }}">{{ t.title }}</li>
+        <li id="talk-{{ t.id }}" class="talk" draggable="true" data-id="{{ t.id }}" data-duration="{{ t.duration }}" data-type="{{ t.type|field_label:"Talk.type" }}">{{ t.title }} ({{ t.duration }})</li>
         {% endfor %}
     </ol>
 </div>
