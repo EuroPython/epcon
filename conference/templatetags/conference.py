@@ -427,7 +427,6 @@ def timetable_slice(context, timetable, start=None, end=None):
 
     return timetable.slice(start=start, end=end)
 
-# XXX - remove
 @register.filter
 def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))
