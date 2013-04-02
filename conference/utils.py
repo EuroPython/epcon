@@ -196,6 +196,9 @@ class TimeTable2(object):
             .order_by('order')\
             .values_list('track', flat=True))
 
+    def __str__(self):
+        return 'TimeTable2: %s - %s' % (self.sid, ', '.join(self._tracks))
+
     def addEvents(self, events):
         from conference import dataaccess
         for e in events:

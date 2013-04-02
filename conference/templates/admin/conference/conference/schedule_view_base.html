@@ -417,7 +417,7 @@ select[name=tracks] {
                 .load('/admin/conference/conference/{{ conference.code }}/schedule/' + sid + '/' + tid + '/', function() {
                     var ruler = new Ruler(track);
                     ruler.configure();
-                    $('<a href="#">&#x1F511;</a>')
+                    $('<a href="#">&#x2692;</a>')
                         .click(function() {
                             var eid = $(this).parents('.event').attr('data-id');
                             var sid = $(this).parents('.schedule').attr('data-id');
