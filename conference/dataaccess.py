@@ -548,7 +548,8 @@ def events(eids=None, conf=None):
         .select_related('sponsor')
     tracks = models.EventTrack.objects\
         .filter(event__in=events)\
-        .values('event', 'track__track')
+        .values('event', 'track__track')\
+        .order_by('track__order')
     for e in events:
         preload[e.id] = {'event': e, 'tracks': []}
 
