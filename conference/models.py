@@ -549,7 +549,7 @@ TALK_TYPE = (
 )
 class Talk(models.Model, UrlMixin):
     title = models.CharField(_('Talk title'), max_length=100)
-    slug = models.SlugField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
     # durata totale del talk (include la sessione di Q&A)
