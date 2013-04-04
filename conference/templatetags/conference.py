@@ -983,7 +983,7 @@ def fare_blob(fare, field):
     except AttributeError:
         blob = fare['blob']
 
-    match = re.search(r'%s\s*=\s*(.*)$' % field, blob, re.M)
+    match = re.search(r'%s\s*=\s*(.*)$' % field, blob, re.M + re.I)
     if match:
         return match.group(1).strip()
     return ''
