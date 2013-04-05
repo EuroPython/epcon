@@ -17,7 +17,7 @@
     </div>
 
     <div>
-        {% if not account_type %}
+        {% if not user.is_authenticated %}
         <section class="notice">
             {% url p3-cart as u %}
             <p>{% blocktrans %}In order to buy the tickets you have to <a href="/accounts/login/?next={{ u }}">log in</a></p>{% endblocktrans %}
@@ -25,7 +25,7 @@
         {% endif %}
 
         {{ form|form_errors }}
-        <form id="form-cart" action="{% url p3-cart %}" method="post"{% if not account_type %} class="disabled"{% endif%}>{% csrf_token %}
+        <form id="form-cart" action="{% url p3-cart %}" method="post"{% if not user.is_authenticated %} class="disabled"{% endif%}>{% csrf_token %}
             <fieldset class="order-type">
                 <legend>{% trans "Select billing type" %}</legend>
                 <p>{% trans "Please, select the entity you are purchasing tickets for:" %}</p>
@@ -208,7 +208,7 @@
             </fieldset>
         </form>
         <script type="text/javascript">
-            {% if not account_type %}
+            {% if not user.is_authenticated %}
                 $('#form-cart input').attr('disabled', true);
                 $('#form-cart select').attr('disabled', true);
             {% endif %}
