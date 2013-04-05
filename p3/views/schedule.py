@@ -95,6 +95,12 @@ def my_schedule(request, conference):
     for x in qs:
         events[x['schedule']].append(x['id'])
 
+    qs = cmodels.EventBooking.objects\
+        .filter(user=request.user, event__schedule__conference=conference)\
+        .values('event', 'event__schedule')
+    for x in qs:
+        events[x['event__schedule']].append(x['event'])
+
     sids = sorted(events.keys())
     timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
     ctx = {
