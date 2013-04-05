@@ -274,8 +274,12 @@ def _conference_timetables(conference):
     from conference.dataaccess import fares
     partner = defaultdict(list)
     for f in [ f for f in fares(conference) if f['ticket_type'] == 'partner' ]:
-        d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
-        t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
+        try:
+            d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
+            t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
+            dt = int(fare_blob(f, 'duration'))
+        except Exception, e:
+            continue
         partner[d].append({
             'duration': int(fare_blob(f, 'duration')),
             'name': f['name'],
