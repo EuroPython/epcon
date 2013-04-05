@@ -291,7 +291,15 @@ def render_cart_rows(context, fare_type, form):
         ctx['field'].field.widget._errors = ctx['field'].errors
     elif fare_type == 'other':
         tpl = 'p3/fragments/render_cart_og_ticket_row.html'
-        ctx['fares'] = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
+        fares = defaultdict(dict)
+        order = ('p', 'c')
+        columns = set()
+        for f in fares_list:
+            if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H':
+                columns.add(f['recipient_type'])
+                fares[f['name']][f['recipient_type']] = f
+        ctx['fares'] = fares.values()
+        ctx['recipient_types'] = sorted(columns, key=lambda v: order.index(v))
     elif fare_type == 'partner':
         tpl = 'p3/fragments/render_cart_partner_ticket_row.html'
         ctx['fares'] = [ f for f in fares_list if f['ticket_type'] in 'partner' ]

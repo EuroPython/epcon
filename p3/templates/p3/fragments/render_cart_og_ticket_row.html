@@ -1,11 +1,46 @@
-{% load conference %}
-{% for f in fares %}
+{% load conference i18n %}
+<table>
+    <thead>
+        {% if recipient_types|length > 1 %}
+        <tr>
+            <th></th>
+            {% for t in recipient_types %}
+            <th colspan="2">{% if t == "p" %}Personal{% else %}Business{% endif %}</th>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        <tr>
+            <th>{% trans "Goodies name" %}</th>
+            {% for t in recipient_types %}
+            <th>{% trans "Price" %}</th>
+            <th>{% trans "Q.ty" %}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+{% for recipients in fares %}
+    {% with recipients.values.0 as f0 %}
     <tr>
         <td>
-            {{ f.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]">(details)</a>
-            <div class="overlay" data-fare="{{ f.code }}"><h1>{{ f.name }}</h1>{{ f.description|safe }}</div>
+            {{ f0.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f0.code }}]">(details)</a>
+            <div class="overlay" data-fare="{{ f0.code }}"><h1>{{ f0.name }}</h1>{{ f0.description|safe }}</div>
         </td>
-        <td><label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span></td>
-        <td data-fare="{{ f.code }}"><input type="text" name="{{ f.code }}" size="2" /></td>
+        {% for t in recipient_types %}
+        {% with recipients|attrib_:t as f %}
+        <td class="fare" data-fare="{{ f.code }}"{% if recipients|length > 1 %} data-recipient="{{ t }}"{% endif %}>
+            {% if f %}
+            <label id="fare-{{ f.code }}" data-amount="{{ f.price }}">€ <span class="fare">{{ f.price }}</span>
+            {% endif %}
+        </td>
+        <td class="fare" data-fare="{{ f.code }}"{% if recipients|length > 1 %} data-recipient="{{ t }}"{% endif %}>
+            {% if f %}
+            <input type="text" name="{{ f.code }}" size="2" />
+            {% endif %}
+        </td>
+        {% endwith %}
+        {% endfor %}
     </tr>
+    {% endwith %}
 {% endfor %}
+    </tbody>
+</table>

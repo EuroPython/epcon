@@ -142,18 +142,7 @@
                 <legend>{% trans "Other Goodies" %}</legend>
                 {% comment %} <p>{% trans "Other Goodies intro" %}</p> {% endcomment %}
                 <div class="cms">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>{% trans "Goodies name" %}</th>
-                                <th>{% trans "Price" %}</th>
-                                <th>{% trans "Q.ty" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% render_cart_rows "other" form %}
-                        </tbody>
-                    </table>
+                    {% render_cart_rows "other" form %}
                 </div>
                 <div class="total">
                     {% trans "Other Goodies total (VAT inc.)" %}: <b>€ 0</b>

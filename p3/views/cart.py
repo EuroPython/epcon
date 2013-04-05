@@ -177,20 +177,17 @@ def billing(request):
         # errore 500 rimando l'utente sul carrello
         return redirect('p3-cart')
 
-    # non si possono comprare biglietti destinati ad entità diverse
-    # (persone/ditte)
-    recipients = set()
+    recipient = 'p'
+    conference_recipients = set()
     for fare, foo in tickets:
-        if fare.ticket_type != 'conference':
-            continue
-        recipients.add('c' if fare.recipient_type == 'c' else 'p')
-    if len(recipients) > 1:
+        if fare.recipient_type == 'c':
+            recipient = 'c'
+        if fare.ticket_type == 'conference':
+            # non si possono comprare biglietti destinati ad entità diverse
+            # (persone/ditte)
+            conference_recipients.add(fare.recipient_type)
+    if len(conference_recipients) > 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
-
-    try:
-        recipient = recipients.pop()
-    except:
-        recipient = 'p'
 
     if recipient == 'p':
         cform = P3BillingData

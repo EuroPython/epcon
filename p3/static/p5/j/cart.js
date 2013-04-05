@@ -336,6 +336,20 @@
                 inputs.attr('disabled', true);
             }
         });
+        $('td.fare[data-recipient]', form).each(function() {
+            var td = $(this);
+            var recipient = td.attr('data-recipient');
+            var e = ((recipient == "p") && personal) || ((recipient == "c") && !personal);
+            var inputs = $('input', td);
+            if(e) {
+                td.removeClass('disabled');
+                inputs.attr('disabled', false);
+            }
+            else {
+                td.addClass('disabled');
+                inputs.attr('disabled', true);
+            }
+        });
     }
     $('#id_order_type').change(function() {
         _enableFares($(this).val() != 'deductible');
