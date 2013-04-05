@@ -615,6 +615,11 @@ class Order(models.Model):
             invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
         else:
             invoices = [ i.payment_date for i in self.invoices.all()]
+            # un ordine per essere completo deve avere una fattura per ogni
+            # iva; questa martellata mette una pezza al comportamento della
+            # Invoice.objects.creates_from_order
+            if len(invoices) < len(self.vat_list()):
+                invoices.append(None)
         # un ordine risulta pagato se tutte le sue fatture riportano la data
         # del pagamento
         r = len(invoices) > 0 and all(invoices)
