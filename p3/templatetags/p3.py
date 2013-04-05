@@ -578,3 +578,20 @@ def render_archive(context, conference):
         'talks': sorted(talks.values(), key=lambda x: x['title']),
     })
     return ctx
+
+@register.filter
+def timetable_remove_first(timetable, tag):
+    if not tag:
+        return timetable
+    start = None
+    for time, events in timetable.iterOnTimes():
+        stop = False
+        for e in events:
+            if tag not in e['tags']:
+                stop = True
+                break
+        start = time.time()
+        if stop:
+            break
+
+    return timetable.slice(start=start)

@@ -158,7 +158,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
     <div class="conference-schedules timetable vertical-narrow"  data-conference="{{ conference }}">
     {% for sid, timet in timetables %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
-        {% timetable_slice timet start="09:00" as tt %}
+        {% with timet|timetable_remove_first:"break" as tt %}
         <div id="{{ sdata.slug }}" class="schedule">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
@@ -254,6 +254,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
             </div>
             {% endfor %}
         </div>
+        {% endwith %}
         {% endwith %}
     {% endfor %}
     </div>
