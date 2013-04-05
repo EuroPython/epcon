@@ -300,11 +300,10 @@ def render_cart_rows(context, fare_type, form):
 
 @register.inclusion_tag('p3/box_image_gallery.html', takes_context=True)
 def box_image_gallery(context):
-    request = context['request']
     images = []
     for f in os.listdir(STUFF_DIR):
         images.append('%s%s' % (STUFF_URL, f))
-   
+
     context.update({
         'images': images,
     })
