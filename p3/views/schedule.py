@@ -9,6 +9,55 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
+def _partner_as_event(fares):
+    from conference.templatetags.conference import fare_blob
+    partner = defaultdict(list)
+    for f in fares:
+        try:
+            d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
+            t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
+            dt = int(fare_blob(f, 'duration'))
+        except Exception, e:
+            continue
+        partner[d].append({
+            'duration': dt,
+            'name': f['name'],
+            'id': f['id'] * -1,
+            'abstract': f['description'],
+            'fare': f['code'],
+            'schedule_id': None,
+            'tags': set(['partner-program']),
+            'time': datetime.datetime.combine(d, t),
+            'tracks': ['partner0'],
+        })
+    return dict(partner)
+
+def _build_timetables(schedules, events=None, partner=None):
+    tts = []
+    if schedules and not events:
+        for row in schedules:
+            tt = TimeTable2.fromSchedule(row['id'])
+            tts.append((row['id'], tt))
+    else:
+        for row in schedules:
+            tt = TimeTable2.fromEvents(row['id'], events[row['id']])
+            tts.append((row['id'], tt))
+
+    if partner:
+        for date, evts in partner.items():
+            for ix, row in enumerate(schedules):
+                if row['date'] == 'date':
+                    sid, tt = tts[ix]
+                    break
+            else:
+                sid = cmodels.Schedule.objects.get(date=date).id
+                tt = TimeTable2.fromEvents(sid, [])
+                tts.append((sid, tt))
+            for e in evts:
+                e['schedule_id'] = sid
+                tt.addEvents([e])
+    return tts
+
 def _conference_timetables(conference):
     """
     Restituisce le TimeTable relative alla conferenza.
@@ -101,12 +150,21 @@ def my_schedule(request, conference):
     for x in qs:
         events[x['event__schedule']].append(x['event'])
 
-    sids = sorted(events.keys())
-    timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
+    qs = cmodels.Ticket.objects\
+        .filter(user=request.user)\
+        .filter(fare__conference=conference, fare__ticket_type='partner')\
+       .values_list('fare', flat=True)
+
+    from conference.dataaccess import fares, schedules_data
+    pfares = [ f for f in fares(conference) if f['id'] in qs ]
+    partner = _partner_as_event(pfares)
+
+    schedules = schedules_data(events.keys())
+    tts = _build_timetables(schedules, events=events, partner=partner)
     ctx = {
         'conference': conference,
-        'sids': sids,
-        'timetables': zip(sids, timetables),
+        'sids': [ x[0] for x in tts ],
+        'timetables': tts,
     }
     return render(request, 'p3/my_schedule.html', ctx)
 
