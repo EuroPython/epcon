@@ -689,6 +689,8 @@ body#schedule > .page > .container {
     height: 480px; }
   .conference-schedules.timetable.vertical-narrow .duration-270 {
     height: 525px; }
+  .conference-schedules.timetable.vertical-narrow .duration-420 {
+    height: 900px; }
   .conference-schedules.timetable.vertical-narrow .duration-480 {
     height: 960px; }
   .conference-schedules.timetable.vertical-narrow .duration-630 {
