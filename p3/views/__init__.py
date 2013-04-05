@@ -257,110 +257,6 @@ def user(request, token):
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
-
-
-def _conference_timetables(conference):
-    """
-    Restituisce le TimeTable relative alla conferenza.
-    """
-    # Le timetable devono contenere sia gli eventi presenti nel db sia degli
-    # eventi "artificiali" del partner program
-
-    sids = cmodels.Schedule.objects\
-        .filter(conference=conference)\
-        .values('id', 'date')
-
-    from conference.templatetags.conference import fare_blob
-    from conference.dataaccess import fares
-    partner = defaultdict(list)
-    for f in [ f for f in fares(conference) if f['ticket_type'] == 'partner' ]:
-        try:
-            d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
-            t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
-            dt = int(fare_blob(f, 'duration'))
-        except Exception, e:
-            continue
-        partner[d].append({
-            'duration': int(fare_blob(f, 'duration')),
-            'name': f['name'],
-            'id': f['id'] * -1,
-            'abstract': f['description'],
-            'fare': f['code'],
-            'schedule_id': None,
-            'tags': set(['partner-program']),
-            'time': datetime.datetime.combine(d, t),
-            'tracks': ['partner0'],
-        })
-    tts = []
-    for row in sids:
-        tt = TimeTable2.fromSchedule(row['id'])
-        for e in partner[row['date']]:
-            e['schedule_id'] = row['id']
-            tt.addEvents([e])
-        tts.append((row['id'], tt))
-    return tts
-
-@render_to('p3/schedule.html')
-def schedule(request, conference):
-    tts = _conference_timetables(conference)
-    return {
-        'conference': conference,
-        'sids': [ x[0] for x in tts ],
-        'timetables': tts,
-    }
-
-def schedule_ics(request, conference, mode='conference'):
-    if mode == 'my-schedule':
-        if not request.user.is_authenticated():
-            raise http.Http404()
-        uid = request.user.id
-    else:
-        uid = None
-    from p3.utils import conference2ical
-    cal = conference2ical(conference, user=uid, abstract='abstract' in request.GET)
-    return http.HttpResponse(list(cal.encode()), content_type='text/calendar')
-
-@render_to('p3/schedule_list.html')
-def schedule_list(request, conference):
-    sids = cmodels.Schedule.objects\
-        .filter(conference=conference)\
-        .values_list('id', flat=True)
-    return {
-        'conference': conference,
-        'sids': sids,
-        'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
-    }
-
-@login_required
-def jump_to_my_schedule(request):
-    return redirect('p3-schedule-my-schedule', conference=settings.CONFERENCE_CONFERENCE)
-
-@login_required
-@render_to('p3/my_schedule.html')
-def my_schedule(request, conference):
-    qs = cmodels.Event.objects\
-        .filter(eventinterest__user=request.user, eventinterest__interest__gt=0)\
-        .filter(schedule__conference=conference)\
-        .values('id', 'schedule')
-
-    events = defaultdict(list)
-    for x in qs:
-        events[x['schedule']].append(x['id'])
-
-    sids = sorted(events.keys())
-    timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
-    return {
-        'conference': conference,
-        'sids': sids,
-        'timetables': zip(sids, timetables),
-    }
-
-@render_to_json
-def schedule_search(request, conference):
-    from haystack.query import SearchQuerySet
-    sqs = SearchQuerySet().models(cmodels.Event).auto_query(request.GET.get('q')).filter(conference=conference)
-    return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]
-
 def secure_media(request, path):
     if not (request.user.is_superuser or request.user.groups.filter(name__in=('sim_report', 'hotel_report')).exists()):
         fname = os.path.splitext(os.path.basename(path))[0]
@@ -793,3 +689,4 @@ def genro_invoice_pdf(request, assopy_id):
 
 from p3.views.cart import *
 from p3.views.profile import *
+from p3.views.schedule import *
