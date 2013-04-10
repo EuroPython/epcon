@@ -333,12 +333,12 @@ class Coupon(models.Model):
 
         return True
 
-    def applyToOrder(self, order, vat=None):
+    def applyToOrder(self, order):
         if not self.valid(order.user):
             raise ValueError('coupon not valid')
 
         fares = self.fares.all()
-        apply_to = order.rows(include_discounts=False, vat=vat)
+        apply_to = order.rows(include_discounts=False)
         if fares:
             apply_to = apply_to.filter(ticket__fare__in=fares)
         if self.items_per_usage:
@@ -348,7 +348,7 @@ class Coupon(models.Model):
         discount = self._applyToTotal(total, order.total())
         if not discount:
             return None
-        item = OrderItem(order=order, ticket=None, vat=vat)
+        item = OrderItem(order=order, ticket=None, vat=apply_to[0].vat)
         item.code = self.code
         item.description = self.description
         item.price = discount
@@ -496,14 +496,13 @@ class OrderManager(models.Manager):
             #
             # queste regole servono a preparare un ordine (e una fattura) che
             # risulti il più capibile possibile per l'utente.
-            for v in set(vat_list):
-                for t in ('perc', 'val'):
-                    for c in coupons:
-                        if c.type() == t:
-                            item = c.applyToOrder(o,v)
-                            if item:
-                                item.save()
-                                log.debug('coupon "%s" applied, discount=%s, vat=%s', item.code, item.price, item.vat)
+            for t in ('perc', 'val'):
+                for c in coupons:
+                    if c.type() == t:
+                        item = c.applyToOrder(o)
+                        if item:
+                            item.save()
+                            log.debug('coupon "%s" applied, discount=%s, vat=%s', item.code, item.price, item.vat)
         log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
         if remote and settings.GENRO_BACKEND:
             genro.create_order(
