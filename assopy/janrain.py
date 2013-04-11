@@ -81,4 +81,4 @@ def suggest_username(profile):
     if uname is not None and _valid_username(uname):
         return uname
 
-    return suggest_username_from_email(profile['email'])
+    return suggest_username_from_email(profile.get('email', 'nomail@example.com'))
