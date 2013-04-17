@@ -185,7 +185,7 @@ def billing(request):
         if fare.ticket_type == 'conference':
             # non si possono comprare biglietti destinati ad entità diverse
             # (persone/ditte)
-            conference_recipients.add(fare.recipient_type)
+            conference_recipients.add('c' if fare.recipient_type == 'c' else 'p')
     if len(conference_recipients) > 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
 
