@@ -63,7 +63,7 @@ def _reset_ticket(ticket):
 
 def _assign_ticket(ticket, email):
     try:
-        recipient = auth.models.User.objects.get(email=email)
+        recipient = auth.models.User.objects.get(email__iexact=email)
     except auth.models.User.DoesNotExist:
         try:
             # qui uso filter + [0] invece che .get perchè potrebbe accadere,
@@ -74,7 +74,7 @@ def _assign_ticket(ticket, email):
             # (nota che il backend di autenticazione già verifica che la stessa
             # email non venga usata due volte per creare utenti django) perché
             # in ogni caso si tratta di email verificate da servizi esterni.
-            recipient = amodels.UserIdentity.objects.filter(email=email)[0].user.user
+            recipient = amodels.UserIdentity.objects.filter(email__iexact=email)[0].user.user
         except IndexError:
             recipient = None
     if recipient is None:
