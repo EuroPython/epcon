@@ -27,8 +27,8 @@
     <div class="preview">
     {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
-        <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
         {% if ticket.p3_conference %}
+        <div class="ticket-name">{{ form.ticket_name|field_value|default:"No name specified!" }}</div>
         <div class="ticket-tagline">{{ form.tagline|field_value|default:"something about me" }}</div>
         <div class="ticket-python-experience">
             Python power
@@ -42,6 +42,8 @@
             <img src="{{ pdata.image }}" alt="" height="105" />
         </div>
         {% endif %}
+        {% else %}
+        <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
         {% endif %}
 
         {% if not ticket.frozen %}
@@ -159,7 +161,11 @@
                 <div class="span-6">
                     {% if user == ticket.user %}
                     <div class="field">
+                        {% if user.first_name or user.last_name %}
                         <h2>Ticket name: {{ user.first_name }} {{ user.last_name }}</h2>
+                        {% else %}
+                        <h2>Ticket name: NO NAME SPECIFIED!</h2>
+                        {% endif %}
                         {% if user.attendeeprofile %}
                         <p>want to change name? edit your <a href="/accounts/profile/">account</a>.</p>
                         {% endif %}
