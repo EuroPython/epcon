@@ -250,6 +250,8 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
         #2 – prompt for an address, and require one
         no_shipping = forms.IntegerField(initial=1)
 
+        address_override = forms.IntegerField(initial=0)
+
         def __init__(self, order, *args, **kwargs):
             from django.db import models
             initial = settings.PAYPAL_DEFAULT_FORM_CONTEXT(order)
