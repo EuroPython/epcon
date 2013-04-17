@@ -148,8 +148,8 @@
         </section>
     </div>
 
+    {% all_user_tickets fare_type="all" as tickets %}
     <div class="span-6 last">
-        {% with request.user.assopy_user.tickets as tickets %}
          {% if tickets|length %}
              <section>
                 <div class="button">
@@ -161,12 +161,10 @@
                 </div>
               </section>
          {% endif %}
-        {% endwith %}
     </div>
 
     <hr/>
 
-    {% with request.user.assopy_user.tickets as tickets %}
         {% if tickets|length %}
     <div class="span-6">
         <section>
@@ -188,7 +186,6 @@
         </section>
     </div>
         {% endif %}
-    {% endwith %}
 
 </div>
 {% endblock %}
