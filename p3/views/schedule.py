@@ -67,7 +67,7 @@ def _build_timetables(schedules, events=None, partner=None):
     if partner:
         for date, evts in partner.items():
             for ix, row in enumerate(schedules):
-                if row['date'] == 'date':
+                if row['date'] == date:
                     sid, tt = tts[ix]
                     break
             else:
@@ -77,6 +77,13 @@ def _build_timetables(schedules, events=None, partner=None):
             for e in evts:
                 e['schedule_id'] = sid
                 tt.addEvents([e])
+    def key(o):
+        # la timetable ha un riferimento indiretto al giorno, devo andare a
+        # prenderlo da uno degli eventi
+        tt = o[1]
+        ev0 = tt.events.values()[0][0]
+        return ev0['time']
+    tts.sort(key=key)
     return tts
 
 def _conference_timetables(conference):
@@ -87,36 +94,14 @@ def _conference_timetables(conference):
     # eventi "artificiali" del partner program
     sids = cmodels.Schedule.objects\
         .filter(conference=conference)\
-        .values('id', 'date')
+        .values_list('id', flat=True)
 
-    from conference.templatetags.conference import fare_blob
-    from conference.dataaccess import fares
-    partner = defaultdict(list)
-    for f in [ f for f in fares(conference) if f['ticket_type'] == 'partner' ]:
-        try:
-            d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
-            t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
-            dt = int(fare_blob(f, 'duration'))
-        except Exception, e:
-            continue
-        partner[d].append({
-            'duration': dt,
-            'name': f['name'],
-            'id': f['id'] * -1,
-            'abstract': f['description'],
-            'fare': f['code'],
-            'schedule_id': None,
-            'tags': set(['partner-program']),
-            'time': datetime.datetime.combine(d, t),
-            'tracks': ['partner0'],
-        })
-    tts = []
-    for row in sids:
-        tt = TimeTable2.fromSchedule(row['id'])
-        for e in partner[row['date']]:
-            e['schedule_id'] = row['id']
-            tt.addEvents([e])
-        tts.append((row['id'], tt))
+    from conference.dataaccess import fares, schedules_data
+    pfares = [ f for f in fares(conference) if f['ticket_type'] == 'partner' ]
+    partner = _partner_as_event(pfares)
+
+    schedules = schedules_data(sids)
+    tts = _build_timetables(schedules, partner=partner)
     return tts
 
 def schedule(request, conference):
