@@ -33,6 +33,27 @@ def _partner_as_event(fares):
     return dict(partner)
 
 def _build_timetables(schedules, events=None, partner=None):
+    """
+    Dati un elenco di schedule ids/eventi e partner program ritorna una lista
+    di TimeTable relative ai dati passati.
+
+    _build_timetables([1,2])
+
+        Restituisce due TimeTable relative agli schedule 1 e 2 (gli eventi
+        vengono recuperati dal db)
+
+    _build_timetables([1,2], events=...)
+
+        Restituisce due TimeTable relative agli schedule 1 e 2 usando solo gli
+        eventi specificati (in questo caso events deve essere un dict che mappa
+        all'id dello schedule una lista con gli id degli eventi).
+
+    _build_timetables([1,2], partner=...)
+
+        Restituisce almeno due TimeTable (altre potrebbero essere aggiunte a
+        causa di partner program non coperti dagli schedule elencati).
+        `partner` deve essere compatibile con l'output di `_partner_as_event`.
+    """
     tts = []
     if schedules and not events:
         for row in schedules:
