@@ -3,49 +3,41 @@
 
 {% block EXTRA_HEAD %}
 <style type="text/css">
-
 .or {
-    text-align:center;     
+    text-align:center;
     margin: 0 0 40px 0;
-    
     background: transparent url({{ STATIC_URL }}p5/i/sep.png) center left repeat-x;
 }
 
-
 .or span {
-	font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;	
-	text-transform: uppercase;    
-    
-    color: #4895a3;	
-    
+	font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;
+	text-transform: uppercase;
+    color: #4895a3;
     letter-spacing: 2px;
     padding: 0 10px;
-    
     background: #fcfad9;
 }
 
 h2 {
-    margin: 0 0 10px 0;    
+    margin: 0 0 10px 0;
     color: #635443;
     text-align: center;
 }
 
 .create-account {
     background: #E1DBC5;
-    
     padding: 15px 10px;
-	border: 1px solid #aba18f;    
+	border: 1px solid #aba18f;
 }
 
-.login-method p {    
+.login-method p {
     font-size: 16px;
-    line-height: 30px;   
-    margin-bottom: 10px;             
+    line-height: 30px;
+    margin-bottom: 10px;
 }
-
 </style>
 {% endblock %}
-    
+
 {% block ASSOPY_MAIN_CONTENT %}
 
     <h1>Log into EuroPython</h1>
@@ -63,7 +55,7 @@ h2 {
             {% render_janrain_box next "embed" %}
         </div>
     </div>
-    
+
     <hr />
 
     <div class="or"><span>OR</span></div>
@@ -79,11 +71,11 @@ h2 {
                 <div class="span-7 append-1">
                     <div class="form-box">
                         <h2>Your EuroPython account</h2>
-                        
+
                         {% if form.errors %}
                             <div class="error-notice">{% trans "Invalid credentials" %}</div>
                         {% endif %}
-                
+
                         <form action="" method="post">{% csrf_token %}
                             <fieldset>
                                 {{ form.email|field }}
@@ -114,4 +106,3 @@ h2 {
         </div>
     </div>
 {% endblock %}
-
