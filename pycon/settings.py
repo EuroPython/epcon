@@ -144,6 +144,10 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'filebrowser',
+    # attenzione l'ordine tra p3/assopy/admin è importante per risolvere
+    # correttamente i templates
+    'p3',
+    'assopy',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -161,8 +165,6 @@ INSTALLED_APPS = (
     'authority',
     'pages',
     'mptt',
-    'p3',
-    'assopy',
     'conference',
     'microblog',
     'hcomments',
