@@ -20,7 +20,6 @@ from django_urls import UrlMixin
 
 import tagging
 from tagging.fields import TagField
-from tagging.utils import parse_tag_input
 
 import conference
 import conference.gmap
