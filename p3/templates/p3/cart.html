@@ -32,7 +32,6 @@
                 {{ form.order_type|field }}
                 <p>{% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}</p>
             </fieldset>
-            {% if COUNTDOWN.conference > 0 %}
             <fieldset class="tickets conference-tickets">
                 {% if conference_fares %}
                 <legend>{% trans "Conference tickets" %}</legend>
@@ -79,7 +78,6 @@
                 <h3>{% trans "Conference tickets - SOLD OUT" %}</h3>
                 {% endif %}
             </fieldset>
-            {% endif %}
             <fieldset class="tickets hotel-reservations">
                 {% if room_sharing_fares %}
                 <legend>Room sharing at Grand Hotel Mediterraneo</legend>
