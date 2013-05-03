@@ -496,7 +496,26 @@ def pending_email_change(user):
 @fancy_tag(register)
 def admin_ticketroom_overall_status():
     status = models.TicketRoom.objects.overall_status()
-    return sorted(status.items())
+
+    labels = dict(models.HOTELROOM_ROOM_TYPE)
+    days = sorted(status.keys())
+    rooms = {}
+    for day in days:
+        dst = status[day]
+        for room_type, dst in status[day].items():
+            try:
+                r = rooms[room_type]
+            except KeyError:
+                r = rooms[room_type] = {
+                    'type': room_type,
+                    'label': labels.get(room_type, room_type),
+                    'days': [],
+                }
+            r['days'].append(dst)
+    return {
+        'days': days,
+        'rooms': rooms.values(),
+    }
 
 @fancy_tag(register)
 def warmup_conference_cache(conference=None):

@@ -2,30 +2,44 @@
 {% load p3 conference %}
 {% block content %}
 {{ block.super }}
-<div>
-    <h1>Stato Prenotazioni</h1>
+<style>
+.room_status th, .room_status td {
+    font-size: 140%;
+    line-height: 140%;
+}
+.room_status td.danger {
+    background: red;
+    color: yellow;
+}
+.room_status td.full {
+    background: #FF4B4B;
+}
+.room_status td.almost {
+    background: #FFBC2F;
+}
+.room_status td.empty {
+    background: #8CFF70;
+}
+</style>
+<div class="room_status">
+    <h1>Stato Prenotazioni (posti letto)</h1>
     {% admin_ticketroom_overall_status as hstatus %}
     <table>
         <tr>
-            <th colspan="2">Periodo</th>
-            <th>Tipo camera</th>
-            <th>Disponibili</th>
-            <th>Prenotate</th>
-            <th>Libere</th>
-        </tr>
-        {% for period, status in hstatus %}
-        <tr>
-            <th rowspan="{{ status|length|add_number:"1" }}">{{ period.0|date:"d M Y" }}</th>
-            <th rowspan="{{ status|length|add_number:"1" }}">{{ period.1|date:"d M Y" }}</th>
-        </tr>
-            {% for room_type, data in status.items %}
-            <tr>
-                <td>{{ room_type }}</td>
-                <td>{{ data.available }}</td>
-                <td>{{ data.reserved }}</td>
-                <td>{{ data.free }}</td>
-            </tr>
+            <td></td>
+            {% for d in hstatus.days %}
+            <th>{{ d|date:"d b Y" }}</th>
             {% endfor %}
+        </tr>
+        {% for dstatus in hstatus.rooms|dictsort:"type" %}
+        <tr>
+            <th>{{ dstatus.label }}</th>
+            {% for s in dstatus.days %}
+            <td class="{% if s.free < 0 %}danger{% elif s.free < 5 %}full{% elif s.free < 15 %}almost{% else %}empty{% endif %}">
+                <span title="{{ s.reserved }}/{{ s.available }}">{{ s.free }}</span>
+            </td>
+            {% endfor %}
+        </tr>
         {% endfor %}
     </table>
 </div>

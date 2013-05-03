@@ -206,17 +206,39 @@ class TicketRoomManager(models.Manager):
             .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
             .filter(
                 Q(ticket__orderitem__order___complete=True)
-                | Q(ticket__orderitem__order__method='bank', ticket__orderitem__order__created__gte=incomplete_limit)
-            )
+                | Q(
+                    ticket__orderitem__order__method='bank',
+                    ticket__orderitem__order__created__gte=incomplete_limit))
 
     def overall_status(self):
-        periods = self.valid_tickets()\
-            .values_list('checkin', 'checkout')\
-            .distinct()
-        output = {}
-        for p in periods:
-            output[tuple(p)] = self.beds_status(p)
-        return output
+        qs = self.valid_tickets()\
+            .values('checkin', 'checkout', 'room_type__room_type')
+        inc = datetime.timedelta(days=1)
+
+        rooms = HotelRoom.objects\
+            .filter(conference=dsettings.CONFERENCE_CONFERENCE)
+
+        period = {}
+        for t in qs:
+            rt = t['room_type__room_type']
+            start = t['checkin']
+            while start <= t['checkout']:
+                if start not in period:
+                    period[start] = s = {}
+                    for hr in rooms:
+                        s[hr.room_type] = {
+                            'available': hr.quantity * hr.beds(),
+                            'reserved': 0,
+                            'free': 0,
+                        }
+                period[start][rt]['reserved'] += 1
+                start += inc
+
+        for dstatus in period.values():
+            for hr in rooms:
+                s = dstatus[hr.room_type]
+                s['free'] = s['available'] - s['reserved']
+        return period
 
     def beds_status(self, period):
         """
