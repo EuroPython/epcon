@@ -1076,7 +1076,6 @@ class Event(models.Model):
             original = self.talk.duration
         else:
             original = self.duration
-        print 'x', time, original
         if time >= original:
             return 0
 
