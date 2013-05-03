@@ -255,10 +255,11 @@ select[name=tracks] {
     function loadLocalState(key) {
         key = key || 'admin:schedule_view:_storage';
         var str = localStorage.getItem(key);
-        return $.extend({
-            track_visibility: {},
-            zoom: [ [1, 1], [1.8, 1.8] ]
+        var state = $.extend({
+            track_visibility: {}
         }, str ? JSON.parse(str) : {});
+        state.zoom = [ [1, 1], [1.6, 1.6] ];
+        return state;
     }
     function saveLocalState(data, key) {
         key = key || 'admin:schedule_view:_storage';
