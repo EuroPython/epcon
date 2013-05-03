@@ -3,6 +3,13 @@
 {% block content %}
 {{ block.super }}
 <style>
+.room_status a {
+    color: black;
+    text-decoration: underline;
+}
+.room_status td.danger a {
+    color: yellow;
+}
 .room_status th, .room_status td {
     font-size: 140%;
     line-height: 140%;
@@ -20,6 +27,9 @@
 .room_status td.empty {
     background: #8CFF70;
 }
+.tickets_detail {
+    margin: 20px 0;
+}
 </style>
 <div class="room_status">
     <h1>Stato Prenotazioni (posti letto)</h1>
@@ -36,11 +46,42 @@
             <th>{{ dstatus.label }}</th>
             {% for s in dstatus.days %}
             <td class="{% if s.free < 0 %}danger{% elif s.free < 5 %}full{% elif s.free < 15 %}almost{% else %}empty{% endif %}">
-                <span title="{{ s.reserved }}/{{ s.available }}">{{ s.free }}</span>
+                <a href="{% url admin:p3-hotelrooms-tickets-data %}?day={{ forloop.counter0 }}&amp;type={{ dstatus.type }}" title="{{ s.reserved }}/{{ s.available }}">{{ s.free }}</a>
             </td>
             {% endfor %}
         </tr>
         {% endfor %}
     </table>
 </div>
+<div class="tickets_detail"></div>
+<script>
+    (function() {
+        $('.room_status td a').click(function(e) {
+            e.preventDefault();
+
+            var details = $('.tickets_detail');
+            details.html('loading...');
+
+            var url = e.target.href;
+            var p = $.getJSON(url);
+            p.then(function(data) {
+                details.html('');
+                var table = $('<table><tr><th>User<th>Order<th>Checkin<th>Checkout</table>');
+                for(var ix=0; ix<data.length; ix++) {
+                    var t = data[ix];
+                    var row = $(
+                        '<tr>' +
+                        '<td><a href="/admin/auth/user/' + t.user.id + '/">' + t.user.name + '</a></td>' +
+                        '<td><a href="/admin/assopy/order/' + t.order.id + '/">' + t.order.code + '</a></td>' +
+                        '<td>' + t.period[0] + '</td>' +
+                        '<td>' + t.period[1] + '</td>' +
+                        '</tr>');
+                    table.append(row);
+                }
+                details.append(table);
+            });
+            return false;
+        });
+    })();
+</script>
 {% endblock %}

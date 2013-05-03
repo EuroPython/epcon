@@ -210,6 +210,19 @@ class TicketRoomManager(models.Manager):
                     ticket__orderitem__order__method='bank',
                     ticket__orderitem__order__created__gte=incomplete_limit))
 
+    def reserved_days(self):
+        qs = self.valid_tickets()\
+            .values('checkin', 'checkout')\
+            .distinct()
+        days = set()
+        inc = datetime.timedelta(days=1)
+        for t in qs:
+            start = t['checkin']
+            while start <= t['checkout']:
+                days.add(start)
+                start += inc
+        return sorted(days)
+
     def overall_status(self):
         qs = self.valid_tickets()\
             .values('checkin', 'checkout', 'room_type__room_type')

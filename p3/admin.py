@@ -221,6 +221,45 @@ class HotelRoomAdmin(admin.ModelAdmin):
     list_editable = ('quantity', 'amount',)
     list_filter = ('conference',)
 
+    def get_urls(self):
+        urls = super(HotelRoomAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'^tickets/$', self.admin_site.admin_view(self.ticket_list), name='p3-hotelrooms-tickets-data'),
+        )
+        return my_urls + urls
+
+    def ticket_list(self, request):
+        from conference.views import json_dumps
+        day_ix = int(request.GET['day'])
+        room_type = request.GET['type']
+        rdays = models.TicketRoom.objects.reserved_days()
+        day = rdays[day_ix]
+
+        qs = models.TicketRoom.objects\
+            .filter(room_type__room_type=room_type, checkin__lte=day, checkout__gte=day)\
+            .select_related('ticket__user', 'ticket__orderitem__order')\
+            .order_by('ticket__orderitem__order__created')
+
+        output = []
+        for row in qs:
+            user = row.ticket.user
+            order = row.ticket.orderitem.order
+            name = u'{0} {1}'.format(user.first_name, user.last_name)
+            if row.ticket.name and row.ticket.name != name:
+                name = u'{0} ({1})'.format(row.ticket.name, name)
+            output.append({
+                'user': {
+                    'id': user.id,
+                    'name': name,
+                },
+                'order': {
+                    'id': order.id,
+                    'code': order.code,
+                },
+                'period': (row.checkin, row.checkout),
+            })
+        return http.HttpResponse(json_dumps(output), 'text/javascript')
+
 admin.site.register(models.HotelRoom, HotelRoomAdmin)
 
 class TicketRoomAdmin(admin.ModelAdmin):
