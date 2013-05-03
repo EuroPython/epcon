@@ -556,6 +556,21 @@ select[name=tracks] {
         $('.body', dlg)
             .html('loading...')
             .load(base, function() {
+                var submit_row = $('.body .submit-row')
+                $('<input type="submit" name="split" value="split" />')
+                    .appendTo(submit_row)
+                    .click(function(e) {
+                        var s = prompt("Select duration", 30);
+                        var t = parseInt(s);
+                        if(isNaN(t)) {
+                            alert("invalid duration");
+                            e.preventDefault();
+                            return false;
+                        }
+                        $('input[name=split_time]', submit_row).remove();
+                        $('<input type="hidden" name="split_time" value="' + t + '" />')
+                            .appendTo(submit_row);
+                    });
                 $('.body form', dlg).ajaxForm({
                     dataType: 'json',
                     beforeSubmit: function(arr, form, options) { 

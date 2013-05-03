@@ -729,6 +729,9 @@ class ScheduleAdmin(admin.ModelAdmin):
             start_time = forms.TimeField()
             track = forms.ModelChoiceField(queryset=models.Track.objects.all(), required=False)
 
+        class SplitEventForm(forms.Form):
+            split_time = forms.IntegerField(min_value=1)
+
         if request.method == 'POST':
             if 'delete' in request.POST:
                 ev.delete()
@@ -797,6 +800,13 @@ class ScheduleAdmin(admin.ModelAdmin):
                     if data.get('track'):
                         models.EventTrack.objects.filter(event=ev).delete()
                         models.EventTrack(event=ev, track=data['track']).save()
+            elif 'split' in request.POST:
+                form = SplitEventForm(data=request.POST)
+                if form.is_valid():
+                    data = form.cleaned_data
+                    ev.split(time=data['split_time'])
+            else:
+                raise ValueError()
             return http.HttpResponse(content=views.json_dumps({}), content_type="text/javascript")
         else:
             if ev.talk_id != None:
