@@ -824,8 +824,8 @@ class ScheduleAdmin(admin.ModelAdmin):
                 <div class="submit-row">
                     <input type="submit" name="save" value="save"/>
                     <input type="submit" name="delete" value="delete"/>
-                    <input type="submit" name="copy" value="save and copy in all schedules"/>
-                    <input type="submit" name="update" value="save and update same track same title"/>
+                    <input type="submit" name="copy" title="repeat in all schedules/days" value="save and repeat"/>
+                    <input type="submit" name="update" title="updates events with the same title in the tracks with the same name" value="save and update"/>
                 </div>
             </form>
             ''')
