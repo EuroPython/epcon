@@ -442,7 +442,7 @@ def event_data(eid, preload=None):
     if event.talk_id:
         talk = talk_data(event.talk_id)
         name = talk['title']
-        duration = talk['duration']
+        duration = event.duration or talk['duration']
     else:
         talk = None
         name = event.custom
