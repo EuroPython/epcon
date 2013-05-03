@@ -71,7 +71,11 @@ def _build_timetables(schedules, events=None, partner=None):
                     sid, tt = tts[ix]
                     break
             else:
-                sid = cmodels.Schedule.objects.get(date=date).id
+                try:
+                    sid = cmodels.Schedule.objects.get(date=date).id
+                except cmodels.Schedule.DoesNotExist:
+                    # sarebbe meglio riuscire a mostrarlo lo stesso
+                    continue
                 tt = TimeTable2.fromEvents(sid, [])
                 tts.append((sid, tt))
             for e in evts:
