@@ -442,7 +442,7 @@ select[name=tracks] {
                             event_details_dialog(sid, eid);
                             return false;
                         })
-                        .appendTo($('.event .title', track));
+                        .prependTo($('.event .title', track));
 
                     if(track.hasClass('expose')) {
                         bindEventList(track);
