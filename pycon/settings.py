@@ -114,7 +114,7 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'conference.context_processors.current_url',
     'conference.context_processors.stuff',
     'pages.context_processors.media',
-    'p3.context_processors.countdown',
+    #'p3.context_processors.countdown',
 )
 
 MIDDLEWARE_CLASSES = (
