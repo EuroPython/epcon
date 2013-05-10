@@ -384,22 +384,25 @@ class AdminSendMailForm(forms.Form):
     def load_emails(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
             return []
+        try:
+            f = file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG)
+        except:
+            return []
         output = []
-        with file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG) as f:
-            while True:
-                try:
-                    msg = {
-                        'from_': eval(f.readline()).strip(),
-                        'subject': eval(f.readline()).strip(),
-                        'body': eval(f.readline()).strip(),
-                    }
-                except:
-                    break
-                f.readline()
-                if msg['from_']:
-                    output.append(msg)
-                else:
-                    break
+        while True:
+            try:
+                msg = {
+                    'from_': eval(f.readline()).strip(),
+                    'subject': eval(f.readline()).strip(),
+                    'body': eval(f.readline()).strip(),
+                }
+            except:
+                break
+            f.readline()
+            if msg['from_']:
+                output.append(msg)
+            else:
+                break
         return output
 
     def save_email(self):
