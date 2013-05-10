@@ -178,7 +178,9 @@ class ConferenceAdmin(admin.ModelAdmin):
                     preview = form.preview(pid or uids[0])[0]
                 else:
                     if form.cleaned_data['send_email']:
-                        form.send_emails(uids, request.user.email)
+                        from django.contrib import messages
+                        c = form.send_emails(uids, request.user.email)
+                        messages.add_message(request, messages.INFO, '{0} emails sent'.format(c))
                         form.save_email()
         else:
             form = AdminSendMailForm()

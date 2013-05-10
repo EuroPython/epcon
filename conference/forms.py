@@ -454,7 +454,7 @@ class AdminSendMailForm(forms.Form):
         ctx = dict(data)
         ctx['addresses'] = '\n'.join(addresses)
         mail.send_mail(
-            '[%s] feedback mass mailing (admin stats)',
+            '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE,
             '''
 message sent
 -------------------------------
@@ -469,6 +469,7 @@ sent to:
             dsettings.DEFAULT_FROM_EMAIL,
             recipient_list=[feedback_address],
         )
+        return len(messages)
 
 class AttendeeLinkDescriptionForm(forms.Form):
     message = forms.CharField(label='A note to yourself (when you met this persone, why you want to stay in touch)', widget=forms.Textarea)
