@@ -193,6 +193,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'stat_code': '%s.%s' % (sid, rowid),
                 'form': form,
                 'preview': preview,
+                'email_log': settings.ADMIN_TICKETS_STATS_EMAIL_LOG,
             },
             context_instance=template.RequestContext(request))
 
