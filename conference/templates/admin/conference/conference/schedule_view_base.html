@@ -75,18 +75,35 @@
 .event {
      margin: 0;
      border: 0;
+     border-top: 1px dotted black;
+     border-bottom: 1px dotted black;
      border-collapse: collapse;
-     background-color: #FFF9AD;
      cursor:move;
-     font-size: 120%;
+     font-size: 135%;
      width: 120px;
      overflow: hidden;
+}
+
+.event:nth-child(odd) {
+     background-color: #FFF9AD;
+}
+
+.event:nth-child(even) {
+     background-color: #E5DA67;
+ }
+
+.event .inner {
+     padding: 2px;
+}
+
+.event .time {
+    font-weight: bold;
+    font-style: normal;
 }
 
 .event.fake {
     background-color: #CDC8B1;
 }
-
 
 .track {
     width: 120px;
@@ -238,10 +255,11 @@ select[name=tracks] {
     function loadLocalState(key) {
         key = key || 'admin:schedule_view:_storage';
         var str = localStorage.getItem(key);
-        return $.extend({
-            track_visibility: {},
-            zoom: [ [1, 1], [1.8, 1.8] ]
+        var state = $.extend({
+            track_visibility: {}
         }, str ? JSON.parse(str) : {});
+        state.zoom = [ [1, 1], [1.6, 1.6] ];
+        return state;
     }
     function saveLocalState(data, key) {
         key = key || 'admin:schedule_view:_storage';
@@ -424,7 +442,7 @@ select[name=tracks] {
                             event_details_dialog(sid, eid);
                             return false;
                         })
-                        .appendTo($('.event .title', track));
+                        .prependTo($('.event .title', track));
 
                     if(track.hasClass('expose')) {
                         bindEventList(track);
@@ -538,6 +556,21 @@ select[name=tracks] {
         $('.body', dlg)
             .html('loading...')
             .load(base, function() {
+                var submit_row = $('.body .submit-row')
+                $('<input type="submit" name="split" value="split" />')
+                    .appendTo(submit_row)
+                    .click(function(e) {
+                        var s = prompt("Select duration", 30);
+                        var t = parseInt(s);
+                        if(isNaN(t)) {
+                            alert("invalid duration");
+                            e.preventDefault();
+                            return false;
+                        }
+                        $('input[name=split_time]', submit_row).remove();
+                        $('<input type="hidden" name="split_time" value="' + t + '" />')
+                            .appendTo(submit_row);
+                    });
                 $('.body form', dlg).ajaxForm({
                     dataType: 'json',
                     beforeSubmit: function(arr, form, options) { 

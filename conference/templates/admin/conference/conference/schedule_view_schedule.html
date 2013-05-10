@@ -21,7 +21,7 @@
         <div class="inner">
             <em class="time">{{ e.time|date:"H:i" }}</em>
             {% if e.id %}
-            <span class="title">{{ e.name|safe }}</span>
+            <span class="title" title="{{ e.name|striptags }}">{{ e.name|safe }}</span>
             {% endif %}
             {% if e.tracks|length > 1 %}
                 <div class="multi-track"></div>

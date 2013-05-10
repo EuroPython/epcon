@@ -733,6 +733,9 @@ class ScheduleAdmin(admin.ModelAdmin):
             start_time = forms.TimeField()
             track = forms.ModelChoiceField(queryset=models.Track.objects.all(), required=False)
 
+        class SplitEventForm(forms.Form):
+            split_time = forms.IntegerField(min_value=1)
+
         if request.method == 'POST':
             if 'delete' in request.POST:
                 ev.delete()
@@ -801,6 +804,13 @@ class ScheduleAdmin(admin.ModelAdmin):
                     if data.get('track'):
                         models.EventTrack.objects.filter(event=ev).delete()
                         models.EventTrack(event=ev, track=data['track']).save()
+            elif 'split' in request.POST:
+                form = SplitEventForm(data=request.POST)
+                if form.is_valid():
+                    data = form.cleaned_data
+                    ev.split(time=data['split_time'])
+            else:
+                raise ValueError()
             return http.HttpResponse(content=views.json_dumps({}), content_type="text/javascript")
         else:
             if ev.talk_id != None:
@@ -828,8 +838,8 @@ class ScheduleAdmin(admin.ModelAdmin):
                 <div class="submit-row">
                     <input type="submit" name="save" value="save"/>
                     <input type="submit" name="delete" value="delete"/>
-                    <input type="submit" name="copy" value="save and copy in all schedules"/>
-                    <input type="submit" name="update" value="save and update same track same title"/>
+                    <input type="submit" name="copy" title="repeat in all schedules/days" value="save and repeat"/>
+                    <input type="submit" name="update" title="updates events with the same title in the tracks with the same name" value="save and update"/>
                 </div>
             </form>
             ''')

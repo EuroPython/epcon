@@ -416,17 +416,6 @@ def render_schedule(context, schedule):
         'timetable': utils.TimeTable2.fromSchedule(sid),
     }
 
-# XXX - remove
-@fancy_tag(register, takes_context=True)
-def timetable_slice(context, timetable, start=None, end=None):
-    if start:
-        start = datetime.strptime(start, '%H:%M').time()
-
-    if end:
-        end = datetime.strptime(end, '%H:%M').time()
-
-    return timetable.slice(start=start, end=end)
-
 @register.filter
 def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))

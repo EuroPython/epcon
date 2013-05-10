@@ -20,7 +20,6 @@ from django_urls import UrlMixin
 
 import tagging
 from tagging.fields import TagField
-from tagging.utils import parse_tag_input
 
 import conference
 import conference.gmap
@@ -1068,6 +1067,41 @@ class Event(models.Model):
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:
                 return dbtracks[t.name]
+
+    def split(self, time):
+        """
+        Divide l'evento in più eventi della durata massima di `time` minuti.
+        """
+        if self.talk_id and self.duration == 0:
+            original = self.talk.duration
+        else:
+            original = self.duration
+        if time >= original:
+            return 0
+
+        myid = self.id
+        tracks = self.tracks.all()
+
+        self.duration = time
+        original -= time
+        self.save()
+        count = 1
+
+        while original > 0:
+            self.id = None
+            dt = datetime.datetime.combine(datetime.date.today(), self.start_time)
+            dt += datetime.timedelta(minutes=time)
+            self.start_time = dt.time()
+            self.save()
+
+            for t in tracks:
+                EventTrack.objects.create(track=t, event=self)
+
+            original -= time
+            count += 1
+
+        self.id = myid
+        return count
 
 class EventTrack(models.Model):
     track = models.ForeignKey(Track)
