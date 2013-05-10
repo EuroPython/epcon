@@ -375,6 +375,12 @@ class AdminSendMailForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea)
     send_email = forms.BooleanField(required=False)
 
+    def __init__(self, *args, **kw):
+        real = kw.pop('real_usage', True)
+        super(AdminSendMailForm, self).__init__(*args, **kw)
+        if real:
+            self.fields['send_email'].required = True
+
     def load_emails(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
             return []

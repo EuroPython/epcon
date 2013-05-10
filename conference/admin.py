@@ -165,7 +165,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         from conference.forms import AdminSendMailForm
         preview = None
         if request.method == 'POST':
-            form = AdminSendMailForm(data=request.POST)
+            form = AdminSendMailForm(data=request.POST, real_usage='preview' not in request.POST)
             if form.is_valid():
                 uids = [ x['uid'] for x in stat['get_data']()['data']]
                 try:
