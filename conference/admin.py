@@ -182,6 +182,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                         c = form.send_emails(uids, request.user.email)
                         messages.add_message(request, messages.INFO, '{0} emails sent'.format(c))
                         form.save_email()
+                        form = AdminSendMailForm()
         else:
             form = AdminSendMailForm()
         return render_to_response(
