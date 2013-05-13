@@ -265,6 +265,7 @@ admin.site.register(models.HotelRoom, HotelRoomAdmin)
 class TicketRoomAdmin(admin.ModelAdmin):
     list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
     list_select_related = True
+    search_fields = ('ticket__user__first_name', 'ticket__user__last_name', 'ticket__user__email', 'ticket__orderitem__order__code')
 
     def _user(self, o):
         return o.ticket.user
