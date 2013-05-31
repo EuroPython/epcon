@@ -41,10 +41,14 @@ def sim_report(request):
         t = tickets.get(id=request.POST['ticket'])
         t.frozen = not t.frozen
         t.save()
-    compiled = dict(std=0, micro=0)
+
+    compiled = dict([ (x[0], { 'label': x[1], 'total': 0, 'done': 0 }) for x in models.TICKET_SIM_TYPE ])
     for t in tickets:
         if t.p3_conference_sim and t.p3_conference_sim.document:
-            compiled[t.p3_conference_sim.sim_type] += 1
+            sim_type = t.p3_conference_sim.sim_type
+            compiled[sim_type]['total'] += 1
+            if t.frozen:
+                compiled[sim_type]['done'] += 1
     ctx = {
         'tickets': tickets,
         'compiled': compiled,

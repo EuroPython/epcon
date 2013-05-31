@@ -1,18 +1,27 @@
 {% extends "p3/base.html" %}
-{% load i18n assopy_tags %}
+{% load i18n assopy_tags conference %}
 {% block MAIN_CONTENT %}
 <div id="sim-report" class="cms">
     <h1>Ticket SIM</h1>
     <p>Ricarica iniziale per tutti: <b>€15</b>.<br/>Tariffe da attivare per tutti: <b>Internet No Stop</b> (o Blackberry No Stop), <b>Call your Country</b>.<br/>Credito residuo sulla SIM: <b>€6</b></p>
     <p>
         <h2>Totale SIM compilate</h2>
-        <dl style="font-size: 140%">
-            <dt>USIM</dt>
-            <dd>{{ compiled.std }}</dd>
-            <dt>Micro</dt>
-            <dd>{{ compiled.micro }}</dd>
-        </dl>
+        <table>
+            <tr>
+                <th>Tipo SIM</th>
+                <th>Totale richieste</th>
+                <th>SIM da preparare</th>
+            </tr>
+            {% for sim_type, data in compiled.items %}
+            <tr>
+                <td>{{ data.label }}</td>
+                <td>{{ data.total }}</td>
+                <td>{{ data|eval_:"x['total'] - x['done']" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </p>
+    <h2>Dettaglio SIM</h2>
     <table>
         <tr>
             <th>#</th>
@@ -37,10 +46,12 @@
                 {% endif %}
             </td>
             <td>
+                {% if t.p3_conference_sim.document %}
                 <form action="{% url p3-sim-report %}" method="POST">{% csrf_token %}
                     <input type="hidden" name="ticket" value="{{ t.id }}" />
                     <input type="submit" value="{% if t.frozen %}unfreeze{% else %}freeze{% endif %}" />
                 </form>
+                {% endif %}
             </td>
             {% else %}
             <td colspan="5"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
