@@ -62,6 +62,7 @@ def _reset_ticket(ticket):
     p3c.save()
 
 def _assign_ticket(ticket, email):
+    email = email.strip()
     try:
         recipient = auth.models.User.objects.get(email__iexact=email)
     except auth.models.User.DoesNotExist:
