@@ -517,7 +517,7 @@ ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
-ASSOPY_SEND_EMAIL_TO = CONFERENCE_SEND_EMAIL_TO
+ASSOPY_SEND_EMAIL_TO = ['log@pycon.it']
 ASSOPY_REFUND_EMAIL_ADDRESS = {
     'approve': ['info@pycon.it'],
     'execute': {
