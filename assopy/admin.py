@@ -637,6 +637,7 @@ if not settings.GENRO_BACKEND:
             }
 
     class InvoiceAdmin(admin.ModelAdmin):
+        actions = ('do_csv_invoices',)
         list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
         date_hierarchy = 'payment_date'
         search_fields = (
@@ -681,6 +682,51 @@ if not settings.GENRO_BACKEND:
                 return False
             else:
                 return super(InvoiceAdmin, self).has_delete_permission(request, obj)
+
+        def do_csv_invoices(self, request, queryset):
+            import csv
+            from cStringIO import StringIO
+            columns = (
+                    'numero', 'Card name',
+                    'Customer:tipo IVA', 'Customer:Customer Type',
+                    'Codice Fiscale', 'Partita IVA', 'Nazione',
+                    'prezzo netto', 'IVA', 'Gross Price',
+                    'Invoice Date', 'Payment date',
+                    'Deposit Invoice', 'SIM Invoice', 'Voucher Invoice',
+                    'Billing notes')
+
+            def e(d):
+                for k, v in d.items():
+                    d[k] = v.encode('utf-8')
+                return d
+
+            ofile = StringIO()
+            writer = csv.DictWriter(ofile, fieldnames=columns)
+            writer.writerow(dict(zip(columns, columns)))
+            for i in queryset.select_related('order', 'vat'):
+                writer.writerow(e({
+                    'numero': i.code,
+                    'Card name': i.order.card_name,
+                    'Customer:tipo IVA': i.vat.invoice_notice,
+                    'Customer:Customer Type': '',
+                    'Codice Fiscale': i.order.cf_code,
+                    'Partita IVA': i.order.vat_number,
+                    'Nazione': i.order.country_id,
+                    'prezzo netto': '%.2f' % i.net_price(),
+                    'IVA': '%.2f' % i.vat_value(),
+                    'Gross Price': '%.2f' % i.price,
+                    'Invoice Date': i.emit_date.strftime('%d-%m-%Y'),
+                    'Payment date': i.payment_date.strftime('%d-%m-%Y'),
+                    'Deposit Invoice': '',
+                    'SIM Invoice': '',
+                    'Voucher Invoice': '',
+                    'Billing notes': i.order.billing_notes,
+                }))
+
+            response = http.HttpResponse(ofile.getvalue(), content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=fatture.csv'
+            return response
+        do_csv_invoices.short_description = 'Download invoices as csv'
 
 
     admin.site.register(models.Invoice,InvoiceAdmin)
