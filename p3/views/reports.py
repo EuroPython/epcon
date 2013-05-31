@@ -32,11 +32,14 @@ def secure_media(request, path):
 def sim_report(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
         return http.HttpResponseForbidden()
-    tickets = cmodels.Ticket.objects.filter(
-        orderitem__order___complete=True,
-        fare__in=cmodels.Fare.objects.filter(
-            code__startswith='SIM', conference=settings.CONFERENCE_CONFERENCE),
-    ).order_by('orderitem__order').select_related('p3_conference_sim')
+
+    tickets = cmodels.Ticket.objects\
+        .filter(
+            orderitem__order___complete=True,
+            fare__in=cmodels.Fare.objects.filter(
+                code__startswith='SIM', conference=settings.CONFERENCE_CONFERENCE))\
+        .select_related('p3_conference_sim', 'orderitem__order__user__user')\
+        .order_by('orderitem__order')
     if request.method == 'POST':
         t = tickets.get(id=request.POST['ticket'])
         t.frozen = not t.frozen
