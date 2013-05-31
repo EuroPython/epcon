@@ -700,9 +700,11 @@ def fares(conference):
         output.append(r)
     return output
 
-fares = cache_me(
-    models=(models.Fare,),
-    key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
+# XXX: cache disabilitata, perché il campo 'valid' dipende dalla data di
+# scadenza della Fare e questo non funziona con la cache.
+#fares = cache_me(
+#    models=(models.Fare,),
+#    key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
 
 def user_votes(uid, conference):
     """
