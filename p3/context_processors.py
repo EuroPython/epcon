@@ -4,9 +4,9 @@ from django.core.cache import cache
 def countdown(request):
     from assopy.models import OrderItem
     from django.conf import settings
-    from django.db.models import Count
+    from django.db.models import Count, Q
 
-    sold = OrderItem.objects.filter(order___complete=True)\
+    sold = OrderItem.objects.filter(Q(order___complete=True) | Q(order__method__in=('bank', 'admin')))\
             .filter(ticket__fare__conference=settings.CONFERENCE_CONFERENCE)\
             .values('ticket__fare__code')\
             .annotate(c=Count('pk'))
