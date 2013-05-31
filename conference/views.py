@@ -374,10 +374,14 @@ def schedule_event_booking(request, conference, slug, eid):
         if form.is_valid():
             if form.cleaned_data['value']:
                 models.EventBooking.objects.book_event(evt.id, request.user.id)
-                status['booked'].append(request.user.id)
+                if request.user.id not in status['booked']:
+                    status['booked'].append(request.user.id)
             else:
                 models.EventBooking.objects.cancel_reservation(evt.id, request.user.id)
-                status['booked'].remove(request.user.id)
+                try:
+                    status['booked'].remove(request.user.id)
+                except ValueError:
+                    pass
         else:
             try:
                 msg = unicode(form.errors['value'][0])
