@@ -375,25 +375,34 @@ class AdminSendMailForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea)
     send_email = forms.BooleanField(required=False)
 
+    def __init__(self, *args, **kw):
+        real = kw.pop('real_usage', True)
+        super(AdminSendMailForm, self).__init__(*args, **kw)
+        if real:
+            self.fields['send_email'].required = True
+
     def load_emails(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
             return []
+        try:
+            f = file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG)
+        except:
+            return []
         output = []
-        with file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG) as f:
-            while True:
-                try:
-                    msg = {
-                        'from_': eval(f.readline()).strip(),
-                        'subject': eval(f.readline()).strip(),
-                        'body': eval(f.readline()).strip(),
-                    }
-                except:
-                    break
-                f.readline()
-                if msg['from_']:
-                    output.append(msg)
-                else:
-                    break
+        while True:
+            try:
+                msg = {
+                    'from_': eval(f.readline()).strip(),
+                    'subject': eval(f.readline()).strip(),
+                    'body': eval(f.readline()).strip(),
+                }
+            except:
+                break
+            f.readline()
+            if msg['from_']:
+                output.append(msg)
+            else:
+                break
         return output
 
     def save_email(self):
@@ -448,7 +457,7 @@ class AdminSendMailForm(forms.Form):
         ctx = dict(data)
         ctx['addresses'] = '\n'.join(addresses)
         mail.send_mail(
-            '[%s] feedback mass mailing (admin stats)',
+            '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE,
             '''
 message sent
 -------------------------------
@@ -463,6 +472,7 @@ sent to:
             dsettings.DEFAULT_FROM_EMAIL,
             recipient_list=[feedback_address],
         )
+        return len(messages)
 
 class AttendeeLinkDescriptionForm(forms.Form):
     message = forms.CharField(label='A note to yourself (when you met this persone, why you want to stay in touch)', widget=forms.Textarea)

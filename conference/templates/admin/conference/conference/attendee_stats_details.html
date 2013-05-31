@@ -106,7 +106,7 @@ table {
             </form>
         </div>
         <div class="history">
-            <h1>Log history</h1>
+            <h1>Previous mailings{% if not email_log %} (log disabled){% endif %}</h1>
             <dl>
             {% for record in form.load_emails %}
                 <dt onclick="django.jQuery(this).next().toggle()">{{ record.subject }} ({{ record.from_ }})</dt>

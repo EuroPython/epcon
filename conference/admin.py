@@ -165,7 +165,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         from conference.forms import AdminSendMailForm
         preview = None
         if request.method == 'POST':
-            form = AdminSendMailForm(data=request.POST)
+            form = AdminSendMailForm(data=request.POST, real_usage='preview' not in request.POST)
             if form.is_valid():
                 uids = [ x['uid'] for x in stat['get_data']()['data']]
                 try:
@@ -178,8 +178,11 @@ class ConferenceAdmin(admin.ModelAdmin):
                     preview = form.preview(pid or uids[0])[0]
                 else:
                     if form.cleaned_data['send_email']:
-                        form.send_emails(uids, request.user.email)
+                        from django.contrib import messages
+                        c = form.send_emails(uids, request.user.email)
+                        messages.add_message(request, messages.INFO, '{0} emails sent'.format(c))
                         form.save_email()
+                        form = AdminSendMailForm()
         else:
             form = AdminSendMailForm()
         return render_to_response(
@@ -190,6 +193,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'stat_code': '%s.%s' % (sid, rowid),
                 'form': form,
                 'preview': preview,
+                'email_log': settings.ADMIN_TICKETS_STATS_EMAIL_LOG,
             },
             context_instance=template.RequestContext(request))
 
