@@ -383,7 +383,7 @@ def _i_speaker_data(sender, **kw):
         sids = [ kw['instance'].id ]
 
     return [ 'speaker_data:%s' % x for x in sids ]
-        
+
 speaker_data = cache_me(
     models=(models.Speaker, models.Talk, models.TalkSpeaker, models.AttendeeProfile, User),
     key='speaker_data:%(sid)s')(speaker_data, _i_speaker_data)
