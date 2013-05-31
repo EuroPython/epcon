@@ -4,8 +4,8 @@ import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.listeners import fare_price, fare_tickets
-from conference.signals import attendees_connected
-from conference.models import AttendeeProfile, Ticket
+from conference.signals import attendees_connected, event_booked
+from conference.models import AttendeeProfile, Ticket, Talk
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -198,3 +198,32 @@ def _on_attendees_connected(sender, **kw):
         to=[scanned.email]
     ).send()
 attendees_connected.connect(_on_attendees_connected)
+
+def _on_event_booked(sender, **kw):
+    from conference.dataaccess import event_data
+    from hcomments.models import ThreadSubscription
+
+    try:
+        talk_id = event_data(kw['event_id'])['talk']['id']
+    except Exception:
+        return
+
+    talk = Talk.objects.get(id=talk_id)
+    user = User.objects.get(id=kw['user_id'])
+
+    booked = kw['booked']
+    if booked:
+        log.info(
+            "\"%s\" has booked the event \"%s\", automatically subscribed to the talk's comments",
+            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
+    else:
+        log.info(
+            "\"%s\" has cancelled the reservation for the event \"%s\", automatically unsubscribed to the talk's comments",
+            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
+
+    if booked:
+        ThreadSubscription.objects.subscribe(talk, user)
+    else:
+        ThreadSubscription.objects.unsubscribe(talk, user)
+
+event_booked.connect(_on_event_booked)
