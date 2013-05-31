@@ -101,7 +101,14 @@ def _ticket_sim_upload_to(instance, filename):
         if os.path.splitext(f)[0] == fname:
             os.unlink(os.path.join(fdir, f))
             break
-    return os.path.join(subdir, fname + os.path.splitext(filename)[1].lower())
+    fpath = os.path.join(subdir, fname + os.path.splitext(filename)[1].lower())
+    # c'è un qualche balletto strano tra django e python e se ritorno una
+    # stringa non unicode con caratteri non ascii ad un certo punto viene
+    # trasformata in unicode correttamente ma poi passata alla os.stat che ci
+    # applica una `str()`. Mi limito a tornare una stringa ascii.
+    if not isinstance(fpath, unicode):
+        fpath = unicode(fpath, 'utf-8')
+    return fpath.encode('ascii', 'ignore')
 
 TICKET_SIM_TYPE = (
     ('std', 'Standard SIM (USIM)'),
