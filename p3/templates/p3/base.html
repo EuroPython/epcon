@@ -131,17 +131,21 @@
         </div>
     </nav>
     {% endblock %}
-    {% comment %}
+
     <div class="container clearfix">
         <section class="notice countdown">
-            <strong>Join us in 2012: http://www.youtube.com/watch?v=BDiEbi0yCY8</strong>
-            <strong>Conference sold out</strong>
-            (<a href="http://ep2011.europython.eu/blog/2011/05/18/pyfiorentina-legendary-steak">PyFiorentina</a> seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!)
-            <strong>Hurry up!</strong> Conference tickets left: <strong>{{ COUNTDOWN.conference }}</strong>,
+            {% if COUNTDOWN.conference > 1 %}
+            <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} tickets left
+            {% elif COUNTDOWN.conference == 1 %}
+            <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} ticket left
+            {% else %}
+            <strong>Conference soldout!</strong>
+            {% endif %}
+            {% comment %}: ,
             <a href="http://ep2011.europython.eu/blog/2011/05/18/pyfiorentina-legendary-steak">PyFiorentina</a> seats left: <strong>sold out</strong>!
+            {% endcomment %}
         </section>
     </div>
-    {% endcomment %}
 
     <div class="container clearfix">
  <!--[if lt IE 8]>

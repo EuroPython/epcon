@@ -1820,10 +1820,10 @@ section.notice {
 }
 
 section.countdown {
-    height: 40px;
+    height: 30px;
     text-align: center;
     font-size: 1.2em;
-    line-height: 40px;
+    line-height: 30px;
     background: #FFCF08;
 }
 
