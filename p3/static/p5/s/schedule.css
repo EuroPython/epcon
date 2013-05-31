@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
  * Il programma di una conferenza può essere rappresentato in diversi modi:
  *  - timetable
@@ -113,7 +114,7 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .event.exposed {
       padding: 7px;
       z-index: 200 !important;
-      box-shadow: 0 3px 8px 0 #aaa;
+      box-shadow: 0 3px 8px 0 #aaaaaa;
       border: 4px solid white;
       width: 400px !important;
       height: 350px !important;
@@ -182,7 +183,7 @@ body#schedule > .page > .container {
     .conference-schedules.timetable .schedule .track .title {
       font-variant: small-caps;
       height: 40px;
-      border: 2px solid #fff;
+      border: 2px solid white;
       background-color: #e1dbc5;
       padding: 2px;
       line-height: 11px;
@@ -239,7 +240,7 @@ body#schedule > .page > .container {
     padding-top: 20px;
     /*
      * voglio togliere il bordo dai titoli dei talk, ma lasciarlo per gli
-     * altri eventi
+     * altri eventi.
      */ }
     .conference-schedules.timetable .event a {
       border: none; }
@@ -253,7 +254,7 @@ body#schedule > .page > .container {
       padding: 0;
       text-align: center; }
     .conference-schedules.timetable .event .name a {
-      border-bottom: 1px solid #0F2424; }
+      border-bottom: 1px solid #0f2424; }
     .conference-schedules.timetable .event[data-talk] .name a, .conference-schedules.timetable .event.partner-program .name a, .conference-schedules.timetable .track[data-track=sprint1] .event .name a, .conference-schedules.timetable .track[data-track=sprint2] .event .name a, .conference-schedules.timetable .track[data-track=sprint3] .event .name a {
       border: none; }
     .conference-schedules.timetable .event .hhmm {
@@ -266,8 +267,8 @@ body#schedule > .page > .container {
       line-height: 1.5em;
       overflow-y: auto;
       height: 200px;
-      border-top: 1px solid #B0AB63;
-      border-bottom: 1px solid #B0AB63;
+      border-top: 1px solid #b0ab63;
+      border-bottom: 1px solid #b0ab63;
       padding: 2px; }
     .conference-schedules.timetable .event .tag {
       cursor: pointer;
@@ -573,7 +574,7 @@ body#schedule > .page > .container {
   width: 330px;
   background: white;
   padding: 0;
-  border: 1px solid #7D6F60;
+  border: 1px solid #7d6f60;
   z-index: 2000;
   transform: translate(-145px, 0) rotate(-90deg);
   -moz-transform: translate(-145px, 0) rotate(-90deg);
@@ -602,7 +603,7 @@ body#schedule > .page > .container {
     #schedule-navigator > div > div {
       display: none;
       position: absolute;
-      border: 2px solid #7D6F60;
+      border: 2px solid #7d6f60;
       transform: rotate(90deg) translate(10px, -10px);
       -moz-transform: rotate(90deg) translate(10px, -10px);
       -o-transform: rotate(90deg) translate(10px, -10px);
@@ -641,7 +642,7 @@ body#schedule > .page > .container {
     top: 0;
     left: 160px;
     background: white;
-    border: 2px solid #7D6F60;
+    border: 2px solid #7d6f60;
     padding: 5px;
     line-height: 20px;
     width: 630px; }
@@ -688,9 +689,9 @@ body#schedule > .page > .container {
   .conference-schedules.timetable.vertical-narrow .duration-240 {
     height: 480px; }
   .conference-schedules.timetable.vertical-narrow .duration-270 {
-    height: 525px; }
+    height: 570px; }
   .conference-schedules.timetable.vertical-narrow .duration-420 {
-    height: 900px; }
+    height: 840px; }
   .conference-schedules.timetable.vertical-narrow .duration-480 {
     height: 960px; }
   .conference-schedules.timetable.vertical-narrow .duration-630 {
@@ -779,10 +780,26 @@ body#schedule > .page > .container {
     top: 1270px; }
   .conference-schedules.timetable.vertical-narrow .time-1930 {
     top: 1300px; }
+  .conference-schedules.timetable.vertical-narrow .time-1945 {
+    top: 1330px; }
   .conference-schedules.timetable.vertical-narrow .time-2000 {
     top: 1360px; }
+  .conference-schedules.timetable.vertical-narrow .time-2015 {
+    top: 1390px; }
+  .conference-schedules.timetable.vertical-narrow .time-2030 {
+    top: 1420px; }
+  .conference-schedules.timetable.vertical-narrow .time-2045 {
+    top: 1450px; }
   .conference-schedules.timetable.vertical-narrow .time-2100 {
     top: 1480px; }
+  .conference-schedules.timetable.vertical-narrow .time-2115 {
+    top: 1510px; }
+  .conference-schedules.timetable.vertical-narrow .time-2130 {
+    top: 1540px; }
+  .conference-schedules.timetable.vertical-narrow .time-2145 {
+    top: 1570px; }
+  .conference-schedules.timetable.vertical-narrow .time-2200 {
+    top: 1600px; }
   .conference-schedules.timetable.vertical-narrow .tracks-1 {
     width: 100px; }
   .conference-schedules.timetable.vertical-narrow .tracks-2 {
