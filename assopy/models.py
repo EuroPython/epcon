@@ -205,7 +205,7 @@ class User(models.Model):
     objects = UserManager()
 
     def __unicode__(self):
-        return 'Assopy user: %s - %s' % (self.id, self.card_name)
+        return 'Assopy user: %s - %s%s' % (self.id, self.name(), ' (%s)' % self.card_name if self.card_name else '')
 
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
