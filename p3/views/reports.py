@@ -33,6 +33,13 @@ def sim_report(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
         return http.HttpResponseForbidden()
 
+    speakers = {}
+    for row in cmodels.TalkSpeaker.objects\
+                    .filter(talk__conference=settings.CONFERENCE_CONFERENCE, talk__status='accepted')\
+                    .values_list('speaker__user', 'speaker__user__first_name', 'speaker__user__last_name',):
+        spk_id = row[0]
+        speakers[spk_id] = u'{0} {1}'.format(*row[1:])
+
     tickets = cmodels.Ticket.objects\
         .filter(
             orderitem__order___complete=True,
@@ -44,6 +51,19 @@ def sim_report(request):
         t = tickets.get(id=request.POST['ticket'])
         t.frozen = not t.frozen
         t.save()
+        t.p3_conference_sim.number = request.POST.get('number', '').strip()
+        t.p3_conference_sim.save()
+
+    tickets = list(tickets.iterator())
+
+    # dict che associa ad ogni compratore l'elenco dei suoi biglietti.
+    #
+    # Il numero di telefono lo vogliamo chiedere solo per gli speaker, ma uno
+    # speaker potrebbe aver comprato più di una SIM. Se esiste una
+    # corrispondenza esatta tra il nome dello speaker e quello riportato sul
+    # biglietto abbiamo trovato quello che cercavamo, altrimenti chiedo il
+    # numero di telefono di ogni SIM acquistata.
+    tickets_by_buyer = defaultdict(list)
 
     compiled = dict([ (x[0], { 'label': x[1], 'total': 0, 'done': 0 }) for x in models.TICKET_SIM_TYPE ])
     for t in tickets:
@@ -52,6 +72,17 @@ def sim_report(request):
             compiled[sim_type]['total'] += 1
             if t.frozen:
                 compiled[sim_type]['done'] += 1
+        if t.user_id in speakers:
+            tickets_by_buyer[t.user_id].append(t)
+
+    for user_id, user_tickets in tickets_by_buyer.items():
+        for t in user_tickets:
+            if t.orderitem.order.user.name().lower() == speakers[user_id].lower():
+                t.for_speaker = True
+                break
+        else:
+            for t in user_tickets:
+                t.for_speaker = True
     ctx = {
         'tickets': tickets,
         'compiled': compiled,

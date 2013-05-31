@@ -22,17 +22,33 @@
         </table>
     </p>
     <h2>Dettaglio SIM</h2>
+    <script>
+        function freeze(e) {
+            var form = $(this);
+            tel = form.parents('tr').find('input[type=tel]');
+            if(tel.length > 0) {
+                if(!tel.val()) {
+                    alert("Inserisci il numero di telefono");
+                    tel.focus();
+                    return false;
+                }
+                form.find('input[name=number]').val(tel.val());
+            }
+            return true;
+        }
+    </script>
     <table>
         <tr>
-            <th>#</th>
+            <th style="width: 30px">#</th>
             <th>Attendee</th>
             <th>SIM type</th>
             <th>Internet</th>
             <th>Document</th>
+            <th>Numero di telefono</th>
             <th>&nbsp;</th>
         </tr>
         {% for t in tickets %}
-        <tr class="{% if t.frozen %}frozen{% endif %}">
+        <tr id="t{{ t.id }}" class="{% if t.frozen %}frozen{% endif %}">
             <td>{{ forloop.counter }}</td>
             {% if t.p3_conference_sim %}
             <td>{{ t.name }}</td>
@@ -46,15 +62,25 @@
                 {% endif %}
             </td>
             <td>
+                {% if t.for_speaker and t.p3_conference_sim.document %}
+                    {% if t.frozen %}
+                        {{ t.p3_conference_sim.number }}
+                    {% else %}
+                    <input type="tel" placeholder="Numero di telefono" value="{{ t.p3_conference_sim.number }}" />
+                    {% endif %}
+                {% endif %}
+            </td>
+            <td>
                 {% if t.p3_conference_sim.document %}
-                <form action="{% url p3-sim-report %}" method="POST">{% csrf_token %}
+                <form action="{% url p3-sim-report %}#t{{ t.id }}" method="POST" onsubmit="return freeze.call(this, arguments[0])" >{% csrf_token %}
                     <input type="hidden" name="ticket" value="{{ t.id }}" />
                     <input type="submit" value="{% if t.frozen %}unfreeze{% else %}freeze{% endif %}" />
+                    <input type="hidden" name="number" value="{{ t.p3_conference_sim.number }}" />
                 </form>
                 {% endif %}
             </td>
             {% else %}
-            <td colspan="5"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
+            <td colspan="6"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
             {% endif %}
         </tr>
         {% endfor %}

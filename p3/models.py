@@ -140,6 +140,7 @@ class TicketSIM(models.Model):
         default='std',
         help_text='Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).',
     )
+    number = models.CharField(max_length=20, blank=True, help_text="Telephone number")
 
 HOTELROOM_ROOM_TYPE = (
     ('t1', 'Single room'),
