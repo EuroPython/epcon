@@ -24,6 +24,7 @@ from tagging.fields import TagField
 import conference
 import conference.gmap
 from conference import settings
+from conference import signals
 
 from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
 from taggit.managers import TaggableManager
@@ -1144,10 +1145,16 @@ class EventBookingManager(models.Manager):
         except EventBooking.DoesNotExist:
             e = EventBooking(event_id=eid, user_id=uid)
             e.save()
+            signals.event_booked.send(sender=Event, booked=True, event_id=eid, user_id=uid)
         return e
 
     def cancel_reservation(self, eid, uid):
-        EventBooking.objects.filter(event=eid, user=uid).delete()
+        try:
+            e = EventBooking.objects.get(event=eid, user=uid)
+        except EventBooking.DoesNotExist:
+            return
+        e.delete()
+        signals.event_booked.send(sender=Event, booked=False, event_id=eid, user_id=uid)
 
 class EventBooking(models.Model):
     event = models.ForeignKey(Event)
