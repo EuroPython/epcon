@@ -164,6 +164,9 @@ class HotelRoom(models.Model):
     class Meta:
         unique_together = (('conference', 'room_type'),)
 
+    def __unicode__(self):
+        return '%s: %s' % (self.conference, self.get_room_type_display())
+
     def clean(self):
         try:
             self._calc_rules()

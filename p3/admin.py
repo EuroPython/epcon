@@ -266,6 +266,9 @@ class TicketRoomAdmin(admin.ModelAdmin):
     list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
     list_select_related = True
     search_fields = ('ticket__user__first_name', 'ticket__user__last_name', 'ticket__user__email', 'ticket__orderitem__order__code')
+    date_hierarchy = 'ticket__orderitem__order__created'
+    raw_id_fields = ('ticket', )
+    list_filter = ('room_type__room_type',)
 
     def _user(self, o):
         return o.ticket.user
