@@ -277,27 +277,40 @@ class TicketRoomManager(models.Manager):
             }
         }
         """
-        # estraggo solo su quelli che hanno almeno un giorno prenotato nel
-        # periodo che mi interessa
         start, end = period
-        tickets = self.valid_tickets()\
-            .filter(
-                Q(checkin__lte=start, checkout__gte=end)
-                | Q(checkin__gt=start, checkin__lt=end)
-                | Q(checkout__gt=start, checkout__lt=end)
-            )
+        inc = datetime.timedelta(days=1)
 
-        tickets = tickets.select_related('room_type')
+        # la presenza di un periodo ben definito ci può suggerire di usare una
+        # query ad hoc (come faceva l'implementazione precedente), bisogna però
+        # stare attenti alle prenotazioni adiacenti; cioè quelle prenotazioni
+        # che possono condividere il periodo selezionato perché una termina
+        # prima dell'altra. Ad esempio:
+        #
+        # start = 2/7
+        # end = 6/7
+        #
+        # biglietti:
+        #   1, 2/7 -> 8/7
+        #   2, 30/6 -> 3/7
+        #   3, 5/7 -> 10/7
+        #
+        # sebbene ci siano 3 biglietti nel periodo richiesto i posti letto
+        # effettivamente occupati sono 2 perché i biglietti #2 e #3 possono
+        # condividere la stessa stanza.
+        #
+        # Per questo motivo si utilizza la `overall_status` che sebbene un po'
+        # più lenta tiene già conto di questi casi.
+        reservations = self.overall_status()
+        output = reservations[start]
 
-        status = defaultdict(lambda: { 'available': 0, 'free': 0, 'reserved': 0 })
-        for t in tickets:
-            status[t.room_type.room_type]['reserved'] += 1
-
-        for hr in HotelRoom.objects.filter(conference=dsettings.CONFERENCE_CONFERENCE):
-            s = status[hr.room_type]
-            s['available'] = hr.quantity * hr.beds()
-            s['free'] = s['available'] - s['reserved']
-        return dict(status)
+        start += inc
+        while start <= end:
+            day_status = reservations[start]
+            for room_type, room_status in day_status.items():
+                if output[room_type]['free'] > room_status['free']:
+                    output[room_type] = room_status
+            start += inc
+        return output
 
     def can_be_booked(self, items):
         """
@@ -339,6 +352,9 @@ class TicketRoom(models.Model):
     unused = models.BooleanField(default=False)
 
     objects = TicketRoomManager()
+
+    def __unicode__(self):
+        return '%s (%s) %s -> %s' % (self.room_type.get_room_type_display(), self.get_ticket_type_display(), self.checkin, self.checkout)
 
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')
