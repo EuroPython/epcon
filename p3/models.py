@@ -212,7 +212,7 @@ class TicketRoomManager(models.Manager):
         # prima di tutto individuo i biglietti validi; sono quelli il cui
         # ordine è confermato o, nel caso di ordini con bonifico bancario, sono
         # avvenuti di "recente"...
-        incomplete_limit = datetime.date.today() - datetime.timedelta(days=15)
+        incomplete_limit = datetime.date.today() - datetime.timedelta(days=60)
         return TicketRoom.objects\
             .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
             .filter(
@@ -246,7 +246,7 @@ class TicketRoomManager(models.Manager):
         for t in qs:
             rt = t['room_type__room_type']
             start = t['checkin']
-            while start <= t['checkout']:
+            while start < t['checkout']:
                 if start not in period:
                     period[start] = s = {}
                     for hr in rooms:

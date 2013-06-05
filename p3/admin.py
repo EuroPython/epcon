@@ -235,7 +235,7 @@ class HotelRoomAdmin(admin.ModelAdmin):
         rdays = models.TicketRoom.objects.reserved_days()
         day = rdays[day_ix]
 
-        qs = models.TicketRoom.objects\
+        qs = models.TicketRoom.objects.valid_tickets()\
             .filter(room_type__room_type=room_type, checkin__lte=day, checkout__gte=day)\
             .select_related('ticket__user', 'ticket__orderitem__order')\
             .order_by('ticket__orderitem__order__created')
@@ -255,8 +255,10 @@ class HotelRoomAdmin(admin.ModelAdmin):
                 'order': {
                     'id': order.id,
                     'code': order.code,
+                    'method': order.method,
+                    'complete': order._complete,
                 },
-                'period': (row.checkin, row.checkout),
+                'period': (row.checkin, row.checkout, row.checkout == day),
             })
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 

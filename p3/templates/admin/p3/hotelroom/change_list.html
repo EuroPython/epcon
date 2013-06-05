@@ -66,15 +66,17 @@
             var p = $.getJSON(url);
             p.then(function(data) {
                 details.html('');
-                var table = $('<table><tr><th>User<th>Order<th>Checkin<th>Checkout</table>');
+                var table = $('<table><tr><th>#<th>User<th>Order<th>Method<th>Checkin<th>Checkout</table>');
                 for(var ix=0; ix<data.length; ix++) {
                     var t = data[ix];
                     var row = $(
                         '<tr>' +
+                        '<td>' + (ix+1) + '</td>' +
                         '<td><a href="/admin/auth/user/' + t.user.id + '/">' + t.user.name + '</a></td>' +
                         '<td><a href="/admin/assopy/order/' + t.order.id + '/">' + t.order.code + '</a></td>' +
+                        '<td style="' + (t.order.complete ? 'color: green' : 'color: red') + '">' + t.order.method + '</td>' + 
                         '<td>' + t.period[0] + '</td>' +
-                        '<td>' + t.period[1] + '</td>' +
+                        '<td style="' + (t.period[2] ? 'color: red' : '') + '"' + (t.period[2] ? ' title="checkout this day, not counted in the overall status"' : '') + '>' + t.period[1] + '</td>' +
                         '</tr>');
                     table.append(row);
                 }
