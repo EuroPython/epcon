@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from collections import defaultdict
-from conference.models import Ticket, Speaker
+from conference.models import Ticket, Speaker, Talk
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Count
@@ -362,6 +362,10 @@ speaker_status.short_description = 'Statistiche speaker'
 def conference_speakers(conf, code=None):
     all_spks = Speaker.objects.byConference(conf, only_accepted=False)
     accepted_spks = Speaker.objects.byConference(conf)
+    not_scheduled = Speaker.objects\
+        .filter(talkspeaker__talk__in=Talk.objects\
+            .filter(conference=conf, status='accepted', event=None))\
+        .distinct()
     if code is None:
         return [
             {
@@ -374,12 +378,19 @@ def conference_speakers(conf, code=None):
                 'title': 'Tutti gli speaker accettati',
                 'total': accepted_spks.count()
             },
+            {
+                'id': 'speakers_not_scheduled',
+                'title': 'Speaker accettati ma non schedulati',
+                'total': not_scheduled.count()
+            },
         ]
     else:
         if code == 'all_speakers':
             qs = all_spks
         elif code == 'accepted_speakers':
             qs = accepted_spks
+        elif code == 'speakers_not_scheduled':
+            qs = not_scheduled
         output = {
             'columns': (
                 ('name', 'Name'),
