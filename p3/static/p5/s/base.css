@@ -1828,52 +1828,64 @@ section.countdown {
 }
 
 @keyframes assault {
-    0% { background-position-x: 10px; }
-    12% { background-position-x: 10px; }
-    13% { background-position-x: 20px; }
-    24% { background-position-x: 20px; }
-    25% { background-position-x: 50px; }
-    37% { background-position-x: 50px; }
-    38% { background-position-x: 90px; }
-    55% { background-position-x: 90px; }
-    56% { background-position-x: 145px; }
-    100% { background-position-x: 145px; }
-}
-
-@-moz-keyframes assault {
-    0% { background-position: 10px 3px; }
-    12% { background-position: 10px 3px; }
-    13% { background-position: 20px 3px; }
-    24% { background-position: 20px 3px; }
-    25% { background-position: 50px 3px; }
-    37% { background-position: 50px 3px; }
-    38% { background-position: 90px 3px; }
-    55% { background-position: 90px 3px; }
-    56% { background-position: 145px 3px; }
-    100% { background-position: 145px 3px; }
+    0% { width: 34px; }
+    12% { width: 34px; }
+    13% { width: 64px; }
+    24% { width: 64px; }
+    25% { width: 150px; }
+    37% { width: 150px; }
+    38% { width: 270px; }
+    55% { width: 270px; }
+    56% { width: 450px; }
+    100% { width: 450px; }
 }
 
 @-webkit-keyframes assault {
-    0% { background-position-x: 10px; }
-    12% { background-position-x: 10px; }
-    13% { background-position-x: 20px; }
-    24% { background-position-x: 20px; }
-    25% { background-position-x: 50px; }
-    37% { background-position-x: 50px; }
-    38% { background-position-x: 90px; }
-    55% { background-position-x: 90px; }
-    56% { background-position-x: 145px; }
-    100% { background-position-x: 145px; }
+    0% { width: 34px; }
+    12% { width: 34px; }
+    13% { width: 64px; }
+    24% { width: 64px; }
+    25% { width: 150px; }
+    37% { width: 150px; }
+    38% { width: 270px; }
+    55% { width: 270px; }
+    56% { width: 450px; }
+    100% { width: 450px; }
 }
 
+@-moz-keyframes assault {
+    0% { width: 34px; }
+    12% { width: 34px; }
+    13% { width: 64px; }
+    24% { width: 64px; }
+    25% { width: 150px; }
+    37% { width: 150px; }
+    38% { width: 270px; }
+    55% { width: 270px; }
+    56% { width: 450px; }
+    100% { width: 450px; }
+}
 
-section.countdown:hover {
-    background-image: url(/static/p5/i/baron.gif);
-    background-repeat: no-repeat;
-    background-position: 10px 3px;
+section.countdown {
+    position: relative;
+}
+section.countdown .baron {
+    display: none;
+}
+section.countdown:hover .baron {
+    display: block;
+    background: #FFCF08;
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 1px;
+    width: 34px;
     animation: assault 20s ease 1s infinite normal;
     -webkit-animation: assault 20s ease 1s infinite normal;
     -moz-animation: assault 20s ease 1s infinite normal;
+    background-image: url(/static/p5/i/baron.gif);
+    background-repeat: no-repeat;
+    background-position: right center;
 }
 
 .sprints > div {
