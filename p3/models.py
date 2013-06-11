@@ -376,7 +376,7 @@ class SprintPresence(models.Model):
     user = models.ForeignKey('assopy.User')
 
 class P3ProfileManager(models.Manager):
-    def by_tags(self, tags, ignore_case=False):
+    def by_tags(self, tags, ignore_case=True, conf=dsettings.CONFERENCE_CONFERENCE):
         if ignore_case:
             from conference.models import ConferenceTag
             names = []
@@ -385,8 +385,10 @@ class P3ProfileManager(models.Manager):
                     .filter(name__iexact=t)\
                     .values_list('name', flat=True))
             tags = names
+        from p3 import dataaccess
         return P3Profile.objects\
             .filter(interests__name__in=tags)\
+            .filter(profile__user__in=dataaccess.conference_users(conf))\
             .distinct()
 
 class P3Profile(models.Model):
