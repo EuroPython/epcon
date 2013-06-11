@@ -140,11 +140,17 @@ def all_user_tickets(uid, conference):
 def _i_all_user_tickets(sender, **kw):
     o = kw['instance']
     if sender is models.TicketConference:
-        uid = o.ticket.user_id
         conference = o.ticket.fare.conference
+        params = [ (o.ticket.user_id, conference) ]
+        if o.assigned_to:
+            try:
+                uid = User.objects.get(email__iexact=o.assigned_to).id
+            except User.DoesNotExist:
+                pass
+            else:
+                params.append((uid, conference))
     elif sender is cmodels.Ticket:
-        uid = o.user_id
-        conference = o.fare.conference
+        params = [ (o.user_id, o.fare.conference) ]
     else:
         uid = o.user.user_id
         try:
@@ -154,7 +160,8 @@ def _i_all_user_tickets(sender, **kw):
                 .values('ticket__fare__conference')[0]
         except IndexError:
             return []
-    return 'all_user_tickets:%s:%s' % (uid, conference)
+        params = [ (uid, conference) ]
+    return [ 'all_user_tickets:%s:%s' % (uid, conference) for uid, conference in params ]
 
 all_user_tickets = cache_me(
     models=(models.TicketConference, cmodels.Ticket, amodels.Order,),
