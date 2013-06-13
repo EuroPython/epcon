@@ -461,6 +461,17 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
 class P3ProfileEmailContactForm(forms.Form):
     email = forms.EmailField(label="Enter new email")
 
+    def __init__(self, *args, **kw):
+        self.user = kw.pop('user', None)
+        super(P3ProfileEmailContactForm, self).__init__(*args, **kw)
+
+    def clean_email(self):
+        value = self.cleaned_data['email'].strip()
+        if self.user:
+            if value != self.user.email and User.objects.filter(email__iexact=value).exists():
+                raise forms.ValidationError('Email already registered')
+        return value
+
 class P3ProfileSpamControlForm(forms.ModelForm):
     spam_recruiting = forms.BooleanField(label='I want to receive a few selected job offers through EuroPython.', required=False)
     spam_user_message = forms.BooleanField(label='I want to receive private messages from other partecipants.', required=False)

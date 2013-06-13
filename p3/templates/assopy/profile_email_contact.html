@@ -1,15 +1,19 @@
 {% load p3 assopy_tags i18n %}
 {% p3_profile_data request.user.id as profile %}
+{% if not pform %}
 {% get_form "P3ProfileEmailContactForm" bound=profile as pform %}
+{% endif %}
 <div id="account-email-contact-async-target" class="form-box">
 
     <h2>Primary email contact</h2>
     
-    <form action="{% url p3-account-email %}" class="async live-edit" method="POST" rel="#account-email-contact-async-target">
+    <form action="{% url p3-account-email %}" class="async{% if pform.is_valid %} live-edit{% endif %}" method="POST" rel="#account-email-contact-async-target">
         <p>This is the e-mail address which we can use to contact you. It is also the e-mail you can use to login in our website (in case you don't like web accounts or social networks to do it).</p>
+        {% if pform.is_valid %}
         <div class="the-email" style="text-align: center; margin-top: 20px">
             <span>{{ profile.email }}</span> &mdash; <a href="#" class="live-edit-switch">Change</a>
         </div>
+        {% endif %}
         {{ pform.email|field }}
         <div class="button mini">
             <a href="#" class="autosubmit">Save</a>

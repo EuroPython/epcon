@@ -125,9 +125,8 @@ def OTCHandler_E(request, token):
 
 @login_required
 def p3_account_email(request):
-    ctx = {}
     if request.method == 'POST':
-        form = p3forms.P3ProfileEmailContactForm(data=request.POST)
+        form = p3forms.P3ProfileEmailContactForm(data=request.POST, user=request.user)
         if form.is_valid():
             email = form.cleaned_data['email']
             if email != request.user.email:
@@ -144,6 +143,12 @@ def p3_account_email(request):
                     },
                     to=[email]
                 ).send()
+    else:
+        form = p3forms.P3ProfileEmailContactForm(initial={'email': request.user.email})
+
+    ctx = {
+        'pform': form,
+    }
     return render(request, "assopy/profile_email_contact.html", ctx)
 
 @login_required
