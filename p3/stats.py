@@ -7,12 +7,14 @@ from django.db.models import Q, Count
 from p3 import models
 from conference import models as cmodels
 
-def _tickets(conf, ticket_type=None, fare_code=None):
+def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
     qs = Ticket.objects\
-        .filter(
-            orderitem__order___complete=True,
-            fare__conference=conf,
-        )
+        .filter(fare__conference=conf)
+    if only_complete:
+        qs = qs.filter(orderitem__order___complete=True)
+    else:
+        qs = qs.filter(Q(orderitem__order___complete=True)|Q(orderitem__order__method='bank'))
+
     if ticket_type:
         qs = qs.filter(fare__ticket_type=ticket_type)
     if fare_code:
@@ -27,8 +29,8 @@ def _compiled(conf, ticket_type='conference'):
         .exclude(p3_conference=None)\
         .exclude(name='')
 
-def _not_compiled(conf, ticket_type='conference'):
-    return _tickets(conf, ticket_type)\
+def _not_compiled(conf, ticket_type='conference', only_complete=True):
+    return _tickets(conf, ticket_type, only_complete=only_complete)\
         .filter(Q(p3_conference=None)|Q(name=''))
 
 def shirt_sizes(conf):
@@ -65,11 +67,11 @@ def presence_days(conf, code=None):
     qs = {
         'all': {
             'c': _compiled(conf),
-            'n': _not_compiled(conf),
+            'n': _not_compiled(conf, only_complete=False),
         },
         'nostaff': {
             'c': _compiled(conf).exclude(ticket_type='staff'),
-            'n': _not_compiled(conf).exclude(ticket_type='staff'),
+            'n': _not_compiled(conf, only_complete=False).exclude(ticket_type='staff'),
         }
     }
     totals = {}
@@ -81,7 +83,7 @@ def presence_days(conf, code=None):
     output = {
         'columns': (
             ('total', 'Totale'),
-            ('total_nc', '<span title="Considerando i non completi">Proiezione NC</span>'),
+            ('total_nc', '<span title="Considerando i non compilati e gli ordini bancari non completi">Proiezione NCNC</span>'),
         ),
         'data': [],
     }
@@ -292,7 +294,7 @@ def tickets_status(conf, code=None):
                     'uid': x.user.id,
                 })
     return output
-tickets_status.short_description = 'Statistiche biglietti'
+tickets_status.short_description = 'Statistiche biglietti (solo ordini confermati)'
 
 def speaker_status(conf, code=None):
     t = _tickets(conf, 'conference')
