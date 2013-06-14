@@ -209,7 +209,7 @@ def fares_available(fare_type, sort=None):
 
     fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
     if fare_type == 'conference':
-        fares = [ f for f in fares_list if f['code'][0] == 'T' ]
+        fares = [ f for f in fares_list if f['code'][0] == 'T' and f['ticket_type'] == 'conference' ]
     elif fare_type == 'hotel-room-sharing':
         fares = [ f for f in fares_list if f['code'].startswith('HB') ]
     elif fare_type == 'hotel-room':
