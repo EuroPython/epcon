@@ -510,48 +510,57 @@ def hotel_tickets(conf, code=None):
             'p3_conference_room')
 
     if code is None:
-        output = [
-            {
-                'id': 'HR1',
-                'title': 'Camere singole',
-                'total': qs['HR1'].count(),
-            },
-            {
-                'id': 'HR2',
-                'title': 'Camere doppie',
-                'total': qs['HR2'].count(),
-            },
-            {
-                'id': 'HR3',
-                'title': 'Camere triple',
-                'total': qs['HR3'].count(),
-            },
-            {
-                'id': 'HR4',
-                'title': 'Camere quadruple',
-                'total': qs['HR4'].count(),
-            },
-            {
-                'id': 'HB2',
-                'title': 'Posto letto in doppia',
-                'total': qs['HB2'].count(),
-            },
-            {
-                'id': 'HB3',
-                'title': 'Posto letto in tripla',
-                'total': qs['HB3'].count(),
-            },
-            {
-                'id': 'HB4',
-                'title': 'Posto letto in quadrupla',
-                'total': qs['HB4'].count(),
-            },
-            {
-                'id': 'not-compiled',
-                'title': 'Biglietti non compilati',
-                'total': not_compiled.count(),
-            },
-        ]
+        output = {
+            'columns': (
+                ('total', 'Total'),
+                ('note', 'Note'),
+            ),
+            'data': [
+                {
+                    'id': 'HR1',
+                    'title': 'Camere singole',
+                    'total': qs['HR1'].count(),
+                },
+                {
+                    'id': 'HR2',
+                    'title': 'Camere doppie',
+                    'total': qs['HR2'].count(),
+                },
+                {
+                    'id': 'HR3',
+                    'title': 'Camere triple',
+                    'total': qs['HR3'].count(),
+                },
+                {
+                    'id': 'HR4',
+                    'title': 'Camere quadruple',
+                    'total': qs['HR4'].count(),
+                },
+                {
+                    'id': 'HB2',
+                    'title': 'Posto letto in doppia',
+                    'total': qs['HB2'].count(),
+                },
+                {
+                    'id': 'HB3',
+                    'title': 'Posto letto in tripla',
+                    'total': qs['HB3'].count(),
+                },
+                {
+                    'id': 'HB4',
+                    'title': 'Posto letto in quadrupla',
+                    'total': qs['HB4'].count(),
+                },
+                {
+                    'id': 'not-compiled',
+                    'title': 'Biglietti non compilati',
+                    'total': not_compiled.count(),
+                    'note': """
+                        biglietti il cui nome non è compilato oppure è uguale
+                        a quello del compratore (solo dal secondo biglietto in poi)"""
+                },
+            ]
+        }
     else:
         def ticket_name(ticket):
             name = ticket.name.strip()
