@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from conference.utils import send_email
 from conference.models import Talk, Event, TalkSpeaker
 
 from django.dispatch import Signal
@@ -37,6 +36,7 @@ Tags: %(tags)s
     'type': tlk.get_type_display(),
     'tags': [ x.name for x in tlk.tags.all() ],
     }
+    from conference.utils import send_email
     send_email(
         subject=subject,
         message=body,
