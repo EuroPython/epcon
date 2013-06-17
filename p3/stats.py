@@ -419,14 +419,96 @@ conference_speakers.short_description = 'Speaker conferenza'
 def hotel_tickets(conf, code=None):
     qs = {}
     for x in ('1', '2', '3', '4'):
-        qs['HR' + x] = User.objects.filter(
-            id__in=_tickets(conf, fare_code='HR' + x).values('orderitem__order__user__user'))
+        qs['HR' + x] = _tickets(conf, fare_code='HR' + x)\
+            .values('orderitem__order__user__user')
     for x in ('2', '3', '4'):
         qs['HB' + x] = _tickets(conf, fare_code='HB' + x)\
             .select_related(
                 'user',
                 'orderitem__order__user__user__attendeeprofile__p3_profile',
                 'p3_conference_room')
+
+    # biglietti hotel non compilati
+    # -----------------------------
+    # È l'unione tra i biglietti che hanno il campo name vuoto (e non sono
+    # stati marcati come unused) e quelli che contengono il campo name uguale
+    # al nome del compratore.
+    #
+    # Dato che è leggitimo per una persona comprarsi un biglietto hotel per se
+    # stessa la seconda condizione evidenzia solo i biglietti in cui il nome
+    # del compratore compare per più di una volta.
+    #
+    # La seconda query (che risolve il secondo vincolo) è particolarmente
+    # lunga, devo ripetere le condizioni nel where (e di conseguenza le join)
+    # per poter individuare con esatezza tra tutti i biglietti di un certo
+    # utente quali sono quelli con il problema.
+    #
+    # Mettiamo caso che un utente abbia acquistato 4 biglietti
+    #
+    # . buyer   ticket_name
+    # 1 Mr. X   Mr. X
+    # 2 Mr. X   <empty>
+    # 3 Mr. X   Mrs. X
+    # 4 Mr. X   Mr. X
+    #
+    # La prima parte della query individua la riga numero 2 mentre la seconda
+    # le righe 1 e 4; senza la ripetizioni delle condizioni la seconda query
+    # ritornerebbe anche la riga 3.
+    #
+    # Se e quando sqlite supporterà la clausola WITH ne potremo riparlare.
+    not_compiled_sql = """
+    select p3t.id
+    from p3_ticketroom p3t inner join conference_ticket ct
+     on p3t.ticket_id = ct.id
+    inner join conference_fare f
+     on ct.fare_id=f.id
+    where
+      f.conference=%s
+      and f.code in ('HR1', 'HR2', 'HR3', 'HR4', 'HB2', 'HB3', 'HB4')
+      and ltrim(ct.name) = '' and p3t.unused=0
+
+    union
+
+    select p3t.id
+    from p3_ticketroom p3t inner join conference_ticket ct
+     on p3t.ticket_id = ct.id
+    inner join auth_user u
+     on ct.user_id=u.id
+    inner join conference_fare f
+     on ct.fare_id=f.id
+    inner join (
+        select ct.user_id, count(*) as x
+        from p3_ticketroom p3t inner join conference_ticket ct
+         on p3t.ticket_id = ct.id
+        inner join auth_user u
+         on ct.user_id=u.id
+        inner join conference_fare f
+         on ct.fare_id=f.id
+        where
+          f.conference=%s
+          and f.code in ('HR1', 'HR2', 'HR3', 'HR4', 'HB2', 'HB3', 'HB4')
+          and p3t.unused=0
+          and (
+            lower(ct.name) = lower(u.first_name || ' ' || u.last_name)
+            or lower(ct.name) = lower(u.last_name || ' ' || u.first_name))
+        group by ct.user_id
+        having x>1) hot_items
+      on ct.user_id = hot_items.user_id
+    where
+      f.conference=%s
+      and f.code in ('HR1', 'HR2', 'HR3', 'HR4', 'HB2', 'HB3', 'HB4')
+      and (
+        lower(ct.name) = lower(u.first_name || ' ' || u.last_name)
+        or lower(ct.name) = lower(u.last_name || ' ' || u.first_name))
+    """
+    from p3.utils import RawSubquery
+    not_compiled = _tickets(conf)\
+        .filter(p3_conference_room__id__in=RawSubquery(not_compiled_sql, [conf, conf, conf]))\
+        .select_related(
+            'user',
+            'orderitem__order__user__user__attendeeprofile__p3_profile',
+            'p3_conference_room')
+
     if code is None:
         output = [
             {
@@ -464,9 +546,27 @@ def hotel_tickets(conf, code=None):
                 'title': 'Posto letto in quadrupla',
                 'total': qs['HB4'].count(),
             },
+            {
+                'id': 'not-compiled',
+                'title': 'Biglietti non compilati',
+                'total': not_compiled.count(),
+            },
         ]
     else:
-        if code[1] == 'R':
+        def ticket_name(ticket):
+            name = ticket.name.strip()
+            if not name:
+                name = 'buyed by <a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(ticket.user_id,)),
+                    ticket.user.first_name,
+                    ticket.user.last_name)
+            else:
+                name = '<a href="%s">%s</a>' % (
+                    reverse('admin:auth_user_change', args=(ticket.user_id,)),
+                    name)
+            return name
+
+        if code == 'not-compiled' or code[1] == 'R':
             output = {
                 'columns': (
                     ('name', 'Name'),
@@ -475,14 +575,15 @@ def hotel_tickets(conf, code=None):
                 'data': [],
             }
             data = output['data']
-            for x in qs[code]:
+            if code == 'not-compiled':
+                query = not_compiled
+            else:
+                query = qs[code]
+            for ticket in query:
                 data.append({
-                    'name': '<a href="%s">%s %s</a>' % (
-                        reverse('admin:auth_user_change', args=(x.id,)),
-                        x.first_name,
-                        x.last_name),
-                    'email': x.email,
-                    'uid': x.id,
+                    'name': ticket_name(ticket),
+                    'email': ticket.user.email,
+                    'uid': ticket.user.id,
                 })
         else:
             output = {
@@ -498,12 +599,10 @@ def hotel_tickets(conf, code=None):
             }
             data = output['data']
             for ticket in qs[code]:
-                interests = ', '.join(ticket.orderitem.order.user.user.attendeeprofile.p3_profile.interests.all().values_list('name', flat=True))
+                interests = ', '.join(
+                    ticket.orderitem.order.user.user.attendeeprofile.p3_profile.interests.all().values_list('name', flat=True))
                 data.append({
-                    'name': '<a href="%s">%s %s</a>' % (
-                        reverse('admin:auth_user_change', args=(ticket.user_id,)),
-                        ticket.user.first_name,
-                        ticket.user.last_name),
+                    'name': ticket_name(ticket),
                     'email': ticket.user.email,
                     'order': '<a href="%s">%s</a>' % (
                         reverse('admin:assopy_order_change', args=(ticket.orderitem.order_id,)),

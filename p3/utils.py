@@ -164,3 +164,39 @@ def conference2ical(conf, user=None, abstract=False):
         timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
         cal = f(timetables, altf=altf)
     return cal
+
+class RawSubquery(object):
+    """
+    An utility class to use a raw query as a subquery without incurring in the
+    performance loss caused by evaluating the two queries independently.
+
+    Given this raw query (rawq):
+
+        SELECT t1.user_id
+        FROM (
+            ...
+        ) t1 INNER JOIN (
+            ...
+        ) t2
+            ON t1.something = t2.something_else
+
+    You can write this:
+
+    MyModel.objects.filter(id__in=RawSubquery(rawq))
+
+    instead of:
+
+    cursor = connection.cursor()
+    data = [ x[0] for x in cursor.execute(rawq, []).fetchall() ]
+    MyModel.objects.filter(id__in=data)
+    """
+    def __init__(self, raw, params=()):
+        self.raw = raw
+        self.params = params
+
+    def prepare(self):
+        return self
+
+    def as_sql(self):
+        return (self.raw, self.params)
+

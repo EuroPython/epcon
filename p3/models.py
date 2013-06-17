@@ -349,7 +349,10 @@ class TicketRoom(models.Model):
     ticket_type = models.CharField(max_length=1, choices=TICKETROOM_TICKET_TYPE)
     checkin = models.DateField(db_index=True)
     checkout = models.DateField(db_index=True)
-    unused = models.BooleanField(default=False)
+    unused = models.BooleanField(
+        default=False,
+        verbose_name="Bed place not needed",
+        help_text='Check if you don\'t use this bed place.')
 
     objects = TicketRoomManager()
 
