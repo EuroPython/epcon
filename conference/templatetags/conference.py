@@ -999,14 +999,6 @@ def voting_data(conference):
         'groups': dict(groups),
     }
 
-@fancy_tag(register)
-def latest_tweets(screen_name, count=1):
-    if settings.LATEST_TWEETS_FILE:
-        data = simplejson.loads(file(settings.LATEST_TWEETS_FILE).read())[:count]
-    else:
-        data = utils.latest_tweets(screen_name, count)
-    return data
-
 @register.filter
 def convert_twitter_links(text, args=None):
     text = re.sub(r'(https?://[^\s]*)', r'<a href="\1">\1</a>', text)
