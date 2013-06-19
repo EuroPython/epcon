@@ -89,6 +89,17 @@ def _assign_ticket(ticket, email):
                 recipient = amodels.User.objects.get(assopy_id=rid).user
             except amodels.User.DoesNotExist:
                 pass
+            else:
+                if recipient.email != email:
+                    log.info(
+                            'email "%s" found on genropy; but user (%s) have a different email: "%s"',
+                        email.encode('utf-8'), unicode(recipient).encode('utf-8'), recipient.email.encode('utf-8'))
+                    email = recipient.email
+                else:
+                    log.info(
+                        'email "%s" found on genropy; user (%s)',
+                        email.encode('utf-8'), unicode(recipient).encode('utf-8'))
+
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
         just_created = True
@@ -122,6 +133,7 @@ def _assign_ticket(ticket, email):
         },
         to=[email]
     ).send()
+    return email
 
 @login_required
 @transaction.commit_on_success
@@ -183,8 +195,13 @@ def ticket(request, tid):
                 new = x.assigned_to or ''
                 if old != new:
                     if x.assigned_to:
-                        log.info('ticket assigned to "%s"', x.assigned_to)
-                        _assign_ticket(t, x.assigned_to)
+                        changed = _assign_ticket(t, x.assigned_to)
+                        if changed != x.assigned_to:
+                            log.info('ticket assigned to "%s" instead of "%s"', changed, x.assigned_to)
+                            x.assigned_to = changed
+                            x.save()
+                        else:
+                            log.info('ticket assigned to "%s"', x.assigned_to)
                     else:
                         log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
                         _reset_ticket(t)
