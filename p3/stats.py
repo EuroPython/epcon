@@ -420,7 +420,7 @@ def hotel_tickets(conf, code=None):
     qs = {}
     for x in ('1', '2', '3', '4'):
         qs['HR' + x] = _tickets(conf, fare_code='HR' + x)\
-            .values('orderitem__order__user__user')
+            .select_related('orderitem__order__user__user')
     for x in ('2', '3', '4'):
         qs['HB' + x] = _tickets(conf, fare_code='HB' + x)\
             .select_related(
@@ -430,12 +430,12 @@ def hotel_tickets(conf, code=None):
 
     # biglietti hotel non compilati
     # -----------------------------
-    # È l'unione tra i biglietti che hanno il campo name vuoto (e non sono
+    # È l'unione tra i biglietti che hanno name o document vuoti (e non sono
     # stati marcati come unused) e quelli che contengono il campo name uguale
     # al nome del compratore.
     #
     # Dato che è leggitimo per una persona comprarsi un biglietto hotel per se
-    # stessa la seconda condizione evidenzia solo i biglietti in cui il nome
+    # stessa, la seconda condizione evidenzia solo i biglietti in cui il nome
     # del compratore compare per più di una volta.
     #
     # La seconda query (che risolve il secondo vincolo) è particolarmente
@@ -465,7 +465,7 @@ def hotel_tickets(conf, code=None):
     where
       f.conference=%s
       and f.code in ('HR1', 'HR2', 'HR3', 'HR4', 'HB2', 'HB3', 'HB4')
-      and ltrim(ct.name) = '' and p3t.unused=0
+      and (ltrim(ct.name) = '' or document = '') and p3t.unused=0
 
     union
 
@@ -556,8 +556,9 @@ def hotel_tickets(conf, code=None):
                     'title': 'Biglietti non compilati',
                     'total': not_compiled.count(),
                     'note': """
-                        biglietti il cui nome non è compilato oppure è uguale
-                        a quello del compratore (solo dal secondo biglietto in poi)"""
+                        biglietti il cui nome non è compilato, manca il documento di identità
+                        oppure è uguale a quello del compratore
+                        (solo dal secondo biglietto in poi)"""
                 },
             ]
         }
