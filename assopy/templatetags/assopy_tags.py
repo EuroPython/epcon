@@ -289,4 +289,12 @@ def render_voucher(context, item):
 
 @register.assignment_tag(takes_context=True)
 def orderitem_can_be_refunded(context, item):
-    return settings.ORDERITEM_CAN_BE_REFUNDED(context['user'], item)
+    req = context['request']
+    try:
+        d = req.session['doppelganger']
+    except AttributeError:
+        user = context['user']
+    else:
+        from django.contrib.auth.models import User
+        user = User.objects.get(id=d[0])
+    return settings.ORDERITEM_CAN_BE_REFUNDED(user, item)

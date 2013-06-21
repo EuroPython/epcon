@@ -647,7 +647,14 @@ def refund(request, order_id, item_id):
     if request.method == 'POST':
         if r:
             return http.HttpResponseBadRequest()
-        if not settings.ORDERITEM_CAN_BE_REFUNDED(request.user, item):
+        try:
+            d = request.session.doppelganger
+        except AttributeError:
+            user = request.user
+        else:
+            from django.contrib.auth.models import User
+            user = User.objects.get(id=d[0])
+        if not settings.ORDERITEM_CAN_BE_REFUNDED(user, item):
             return http.HttpResponseBadRequest()
         form = aforms.RefundItemForm(item, data=request.POST)
         if not form.is_valid():
