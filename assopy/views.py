@@ -399,7 +399,7 @@ def paypal_cc_billing(request, code):
         return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
     form = aforms.PayPalForm(o)
     cc_data = {
-        "address_override" : 1,
+        "address_override" : 0,
         "no_shipping" : 1,
         "email": o.user.user.email,
         "first_name" : o.card_name,
