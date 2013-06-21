@@ -501,6 +501,8 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
     return qs.exists()
 
 def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
+    if user.is_superuser:
+        return True
     if not item.ticket:
         return False
     ticket = item.ticket
