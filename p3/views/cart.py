@@ -29,9 +29,12 @@ class P3BillingData(aforms.BillingData):
         data = self.cleaned_data
         if 'cf_code' in self.cleaned_data:
             cf_code = self.cleaned_data['cf_code']
+            vat = self.cleaned_data.get('vat_number', '')
             country = self.cleaned_data['country']
             if country and country.pk == 'IT':
-               if not cf_code or len(cf_code) != 16:
+               # il cf è di 16 caratteri per le persone fisiche, le aziende
+               # possono averlo più corto
+               if not cf_code or (len(cf_code) != 16 and not vat):
                    # hack per associare l'errore al campo cf_code
                    e = forms.ValidationError('"Codice Fiscale" is required for Italian customers')
                    self._errors['cf_code'] = self.error_class(e.messages)
