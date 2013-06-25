@@ -51,10 +51,8 @@ class Command(BaseCommand):
             raise CommandError('conference code is missing')
 
         cmdargs = settings.TICKET_BADGE_PROG_ARGS
-        tickets = models.Ticket.objects\
-            .filter(fare__conference=conference, fare__ticket_type=options['type'])
-        if options['fare']:
-            tickets = tickets.filter(fare__code__startswith=options['fare'])
+        tickets = settings.CONFERENCE_TICKETS(
+            conference, ticket_type=options['type'], fare_code=options['fare'])
         if options['names']:
             q = Q()
             for n in options['names'].split(','):

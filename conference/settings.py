@@ -53,6 +53,20 @@ LATEST_TWEETS_FILE = getattr(settings, 'CONFERENCE_LATEST_TWEETS_FILE', None)
 
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
 
+def _CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
+    from conference import models
+    tickets = models.Ticket.objects\
+        .filter(fare__conference=conf)
+    if ticket_type:
+        tickets = tickets.filter(fare__ticket_type=ticket_type)
+    if fare_code:
+        if fare_code.endswith('%'):
+            tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
+        else:
+            tickets = tickets.filter(fare__code=fare_code)
+    return tickets
+
+CONFERENCE_TICKETS = getattr(settings, 'CONFERENCE_TICKETS', _CONFERENCE_TICKETS)
 # TICKET_BADGE_ENABLED abilita o meno la possibilità di generare badge tramite
 # admin
 TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', False)
@@ -139,7 +153,7 @@ ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TIC
 def _VIDEO_COVER_EVENTS(conference):
     from conference import dataaccess
     return [ x['id'] for x in dataaccess.events(conf=conference) ]
-    
+
 VIDEO_COVER_EVENTS = getattr(settings, 'CONFERENCE_VIDEO_COVER_EVENTS', _VIDEO_COVER_EVENTS)
 
 def _VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False):
