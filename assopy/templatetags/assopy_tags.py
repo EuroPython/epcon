@@ -292,7 +292,7 @@ def orderitem_can_be_refunded(context, item):
     req = context['request']
     try:
         d = req.session['doppelganger']
-    except AttributeError:
+    except KeyError:
         user = context['user']
     else:
         from django.contrib.auth.models import User

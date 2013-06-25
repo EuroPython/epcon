@@ -648,8 +648,8 @@ def refund(request, order_id, item_id):
         if r:
             return http.HttpResponseBadRequest()
         try:
-            d = request.session.doppelganger
-        except AttributeError:
+            d = request.session['doppelganger']
+        except KeyError:
             user = request.user
         else:
             from django.contrib.auth.models import User
