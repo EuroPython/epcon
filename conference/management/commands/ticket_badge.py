@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
 from conference import models
+from conference import settings
 from conference import utils
 
 class Command(BaseCommand):
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('conference code is missing')
 
-        cmdargs = []
+        cmdargs = settings.TICKET_BADGE_PROG_ARGS
         tickets = models.Ticket.objects\
             .filter(fare__conference=conference, fare__ticket_type=options['type'])
         if options['fare']:

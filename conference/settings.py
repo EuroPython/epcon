@@ -96,9 +96,9 @@ import os.path
 import conference
 TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG',
     os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))
-TICKED_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG_ARGS', [])
-TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION',
-    lambda tickets: [])
+TICKET_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-n', '6'])
+TICKET_BADGE_PROG_ARGS_ADMIN = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '0', '-p', 'A4', '-n', '2'])
+TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION', lambda tickets: [])
 
 SCHEDULE_ATTENDEES = getattr(settings, 'CONFERENCE_SCHEDULE_ATTENDEES', lambda schedule, forecast=False: 0)
 

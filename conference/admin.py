@@ -995,7 +995,7 @@ class TicketAdmin(admin.ModelAdmin):
         return qs
 
     def do_ticket_badge(self, request, qs):
-        files = utils.render_badge(qs, cmdargs=['-e', '0', '-p', 'A4', '-n', '4'])
+        files = utils.render_badge(qs, cmdargs=settings.TICKET_BADGE_PROG_ARGS_ADMIN)
         if len(files) <= 1:
             try:
                 data = files[0][0]

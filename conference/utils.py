@@ -755,7 +755,7 @@ def render_event_video_cover(eid, thumb=(256, 256)):
     return True
 
 def render_badge(tickets, cmdargs=None):
-    cmdargs = (cmdargs or []) + settings.TICKED_BADGE_PROG_ARGS
+    cmdargs = cmdargs or []
     files = []
     for group in settings.TICKET_BADGE_PREPARE_FUNCTION(tickets):
         tfile = tempfile.NamedTemporaryFile(suffix='.tar')
