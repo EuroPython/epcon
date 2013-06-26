@@ -22,6 +22,7 @@ def conference_ticket_badge(tickets):
     for t in qs:
         if t.fare.conference not in groups:
             groups[t.fare.conference] = {
+                'name': t.fare.conference,
                 'plugin': os.path.join(settings.OTHER_STUFF, 'badge', t.fare.conference, 'conf.py'),
                 'tickets': [],
             }
