@@ -302,7 +302,6 @@ CONFERENCE_FORMS = {
     'EventBooking': 'p3.forms.P3EventBookingForm',
 }
 
-CONFERENCE_LATEST_TWEETS_FILE = SITE_DATA_ROOT + '/latest_tweets.txt'
 CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
@@ -730,11 +729,6 @@ def P3_LIVE_EMBED(request, track=None, event=None):
 
 # cronjob
 
-def cron_latest_tweets():
-    from conference.management.commands import latest_tweets
-    cmd = latest_tweets.Command()
-    cmd.handle('europython', count=5, output=CONFERENCE_LATEST_TWEETS_FILE)
-
 def cron_cleanup():
     from django.core.management.commands import cleanup
     cmd = cleanup.Command()
@@ -742,7 +736,6 @@ def cron_cleanup():
 
 CRONTAB_COMMAND_PREFIX = 'DATA_DIR=%s OTHER_STUFF=%s' % (DATA_DIR, OTHER_STUFF)
 CRONJOBS = [
-    ('*/10 * * * *', 'pycon.settings.cron_latest_tweets'),
     ('@weekly', 'pycon.settings.cron_cleanup')
 ]
 
