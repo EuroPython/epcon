@@ -40,14 +40,19 @@ def conference_ticket_badge(tickets):
             days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
             badge_image = p3c.badge_image.path if p3c.badge_image else None
         if p3c and p3c.assigned_to:
-            profile = AttendeeProfile.objects.get(user__email=p3c.assigned_to)
+            profile = AttendeeProfile.objects\
+                        .select_related('user')\
+                        .get(user__email=p3c.assigned_to)
         else:
             profile = t.user.attendeeprofile
         name = t.name.strip()
         if not name:
-            name = t.orderitem.order.user.name()
-            if p3c and p3c.assigned_to:
-                name = p3c.assigned_to + ' (%s)' % name
+            if profile.user.first_name or profile.user.last_name:
+                name = '%s %s' % (profile.user.first_name, profile.user.last_name)
+            else:
+                name = t.orderitem.order.user.name()
+                if p3c and p3c.assigned_to:
+                    name = p3c.assigned_to + ' (%s)' % name
         groups[t.fare.conference]['tickets'].append({
             'name': name,
             'tagline': tagline,
