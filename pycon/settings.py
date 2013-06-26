@@ -307,6 +307,19 @@ CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
+def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
+    from conference import models
+    tickets = models.Ticket.objects\
+        .filter(fare__conference=conf, orderitem__order___complete=True)
+    if ticket_type:
+        tickets = tickets.filter(fare__ticket_type=ticket_type)
+    if fare_code:
+        if fare_code.endswith('%'):
+            tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
+        else:
+            tickets = tickets.filter(fare__code=fare_code)
+    return tickets
+
 def CONFERENCE_VOTING_OPENED(conf, user):
     # possono accedere alla pagina:
     #   chiunque durante il community voting
