@@ -995,17 +995,11 @@ class TicketAdmin(admin.ModelAdmin):
         return qs
 
     def do_ticket_badge(self, request, qs):
-        files = utils.render_badge(qs, cmdargs=settings.TICKET_BADGE_PROG_ARGS_ADMIN)
-        if len(files) <= 1:
-            try:
-                data = files[0][0]
-            except IndexError:
-                data = ''
-            response = http.HttpResponse(data, mimetype="application/x-gzip")
-            response['Content-Disposition'] = 'attachment; filename=badge.tar.gz'
-        else:
-            # TODO zip all the tar files together
-            raise RuntimeError()
+        output = utils.render_badge(qs, cmdargs=settings.TICKET_BADGE_PROG_ARGS_ADMIN)
+        name, output_dir, _ = output[0]
+        tar = utils.archive_dir(output_dir)
+        response = http.HttpResponse(tar, mimetype="application/x-gzip")
+        response['Content-Disposition'] = 'attachment; filename=badge-%s.tar.gz' % name
         return response
     do_ticket_badge.short_description = 'Ticket Badge'
 

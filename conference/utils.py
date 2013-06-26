@@ -789,6 +789,20 @@ def render_badge(tickets, cmdargs=None, stderr=subprocess.PIPE):
         output.append((group['name'], temp_dir, data))
     return output
 
+def archive_dir(directory):
+    from cStringIO import StringIO
+    import tarfile
+
+    archive = StringIO()
+    tar = tarfile.open(fileobj=archive, mode='w:gz')
+
+    for fname in os.listdir(directory):
+        fpath = os.path.join(directory, fname)
+        if os.path.isfile(fpath):
+            tar.add(fpath, arcname=fname)
+    tar.close()
+    return archive.getvalue()
+
 def timetables2ical(tts, altf=lambda d, comp: d):
     from conference import ical
     from conference import dataaccess
