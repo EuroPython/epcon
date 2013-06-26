@@ -50,7 +50,7 @@
                         {% if row.id %} <a href="{% url admin:conference-ticket-stats-details conference %}?code={{ results.id }}.{{ row.id }}">(details)</a>{% endif %}
                     </th>
                     {% for colid, colname in results.columns %}
-                    <td>{{ row|attrib_:colid }}</td>
+                    <td>{% if row|attrib_:colid %}{{ row|attrib_:colid }}{% endif %}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}

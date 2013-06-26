@@ -49,8 +49,6 @@ STUFF_URL = getattr(settings, 'CONFERENCE_STUFF_URL', settings.MEDIA_URL)
 
 TALKS_RANKING_FILE = getattr(settings, 'CONFERENCE_TALKS_RANKING_FILE', None)
 
-LATEST_TWEETS_FILE = getattr(settings, 'CONFERENCE_LATEST_TWEETS_FILE', None)
-
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
 
 def _CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):

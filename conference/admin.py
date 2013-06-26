@@ -213,7 +213,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         writer = csv.writer(buff)
         writer.writerow(colnames)
         for row in result['data']:
-            writer.writerow([ row[c].encode('utf-8') for c in colid ])
+            writer.writerow([ row.get(c, '').encode('utf-8') for c in colid ])
 
         fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
         r = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
