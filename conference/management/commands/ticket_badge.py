@@ -5,7 +5,6 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
-from conference import models
 from conference import settings
 from conference import utils
 
@@ -62,14 +61,11 @@ class Command(BaseCommand):
         if options['ids']:
             tickets = tickets.filter(id__in=options['ids'].split(','))
             cmdargs.extend(['-e', '0', '-p', 'A4', '-n', '4'])
-        files = utils.render_badge(tickets, cmdargs=cmdargs)
-        f, input_data = files[0]
+
+        print >>sys.stderr, '* %d tickets' % tickets.count()
+        files = utils.render_badge(tickets, cmdargs=cmdargs, stderr=None)
+        name, f, input_data = files[0]
         if options['input_data']:
             file(options['input_data'], 'w').write(input_data)
-        f.seek(0)
-        while True:
-            data = f.read(16*1024)
-            if not data:
-                break
-            sys.stdout.write(data)
+        print name, f
 

@@ -754,17 +754,31 @@ def render_event_video_cover(eid, thumb=(256, 256)):
 
     return True
 
-def render_badge(tickets, cmdargs=None):
+def render_badge(tickets, cmdargs=None, stderr=subprocess.PIPE):
+    """
+    Prepara i badge dei biglietti passati
+
+    I biglietti vengono processati dalla funzione
+    settings.TICKET_BADGE_PREPARE_FUNCTION che può raggrupparli come crede;
+    ogni gruppo viene memorizzato in una directory diversa.
+
+    L'output contiene una tupla di tre elementi per ogni gruppo ritornato dalla
+    funzione di preparazione:
+
+        - nome del gruppo (v. settings.TICKET_BADGE_PREPARE_FUNCTION)
+        - directory contenente i badge
+        - document json passato in input alla funzione di rendering
+    """
     cmdargs = cmdargs or []
-    files = []
+    output = []
     for group in settings.TICKET_BADGE_PREPARE_FUNCTION(tickets):
-        tfile = tempfile.NamedTemporaryFile(suffix='.tar')
-        args = [settings.TICKED_BADGE_PROG, '-o', tfile.name] + cmdargs + [ '-c', group['plugin']]
+        temp_dir = tempfile.mkdtemp(prefix='%s-' % group['name'])
+        args = [settings.TICKED_BADGE_PROG ] + cmdargs + [ '-c', group['plugin'], temp_dir]
         p = subprocess.Popen(
             args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=stderr,
             close_fds=True,
         )
         data = json.dumps(group['tickets'])
@@ -772,9 +786,8 @@ def render_badge(tickets, cmdargs=None):
         if p.returncode:
             log.warn('badge maker exit with "%s"', p.returncode)
             log.warn('badge maker stderr: %s', serr)
-        tfile.seek(0)
-        files.append((tfile, data))
-    return files
+        output.append((group['name'], temp_dir, data))
+    return output
 
 def timetables2ical(tts, altf=lambda d, comp: d):
     from conference import ical
