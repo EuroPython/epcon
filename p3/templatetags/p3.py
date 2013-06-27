@@ -205,7 +205,7 @@ def fares_available(fare_type, sort=None):
     Restituisce l'elenco delle tariffe attive in questo momento per la
     tipologia specificata.
     """
-    assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
+    assert fare_type in ('all', 'conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
 
     fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
     if fare_type == 'conference':
@@ -218,6 +218,8 @@ def fares_available(fare_type, sort=None):
         fares = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
     elif fare_type == 'partner':
         fares = [ f for f in fares_list if f['ticket_type'] in 'partner' ]
+    elif fare_type == 'all':
+        fares = fares_list
     if sort == "price":
         fares.sort(key=lambda x: x['price'])
     return fares

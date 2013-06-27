@@ -195,6 +195,9 @@
         </div>
         <div class="span-3">
             {% fares_available "conference" sort="price" as fares %}
+            {% if not fares %}
+                {% fares_available "all" sort="price" as fares %}
+            {% endif %}
             {% if fares %}
             <div class="buy badge">
                 <h5><a href="/registration/">Buy Tickets</a></h5>
