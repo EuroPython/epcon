@@ -595,46 +595,50 @@ def HCOMMENTS_MODERATOR_REQUEST(request, comment):
 
 P3_ANONYMOUS_AVATAR = 'p5/i/headshot-default.jpg'
 
+P3_LIVE_INTERNAL_IPS = ('2.228.78.', '10.3.3.', '127.0.0.1')
+P3_INTERNAL_SERVER = 'live.ep:1935'
+P3_INTERNAL_SERVER = '10.3.3.237:1935'
+
 P3_LIVE_TRACKS = {
     'track1': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=MpOzYZIdmqo',
+            'external': 'qZ_QH0PM6Pk',
             'internal': 'live/spaghetti',
         }
     },
     'track2': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=kT-Qgno3li8',
+            'external': 'qVtbnFcHAqI',
             'internal': 'live/lasagne',
         }
     },
     'track3': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=h7iJGt66gSE',
+            'external': 'UkeCmFFI4J0',
             'internal': 'live/ravioli',
         }
     },
     'track4': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=4jPvrK7bPBo',
+            'external': 'ygJttmU9HdA',
             'internal': 'live/tagliatelle',
         }
     },
     'track-ita': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=-aTjP9_di4E',
+            'external': 'UWALqrT3REM',
             'internal': 'live/big_mac',
         }
     },
     'training1': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=iK8WSdZi3Hk',
+            'external': 'OTu7ELrIi7k',
             'internal': 'live/pizza_margherita',
         }
     },
     'training2': {
         'stream': {
-            'external': 'https://www.youtube.com/watch?v=a8SrynF6ogc',
+            'external': 'whyuIwClsFc',
             'internal': 'live/pizza_napoli',
         }
     },
@@ -649,13 +653,19 @@ def P3_LIVE_EMBED(request, track=None, event=None):
     if event:
         # ep2012, tutti i keynote vengono trasmessi dalla track "lasagne"
         if 'keynote' in event['tags'] or len(event['tracks'])>1:
-            track = 'track2'
+            track = 'track1'
         else:
             track = event['tracks'][0]
 
-    if request.META['REMOTE_ADDR'].startswith('2.228.78.'):
+    internal = False
+    for check in P3_LIVE_INTERNAL_IPS:
+        if request.META['REMOTE_ADDR'].startswith(check):
+            internal = True
+            break
+
+    if internal:
         try:
-            url = 'live.ep/' + P3_LIVE_TRACKS[track]['stream']['internal']
+            url = '{0}/{1}'.format(P3_INTERNAL_SERVER, P3_LIVE_TRACKS[track]['stream']['internal'])
         except KeyError:
             return None
         data = {
@@ -670,7 +680,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
                 For almost all<br/>Linux, Windows, Android
             </div>
             <div class="button" style="float: left; margin-right: 20px;">
-                <h5><a href="http://live.ep:1935/live/%(stream)s/playlist.m3u8">HLS&#xF8FF;</a></h5>
+                <h5><a href="http://%(url)s/playlist.m3u8">HLS&#xF8FF;</a></h5>
                 Apple world (mainly)
             </div>
             <div class="button" style="float: left; margin-right: 20px;">
@@ -713,7 +723,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
             return data
 
         try:
-            yurl = P3_LIVE_TRACKS[track]['stream']['external']
+            yurl = 'https://www.youtube.com/watch?v={0}'.format(P3_LIVE_TRACKS[track]['stream']['external'])
         except KeyError:
             return None
 

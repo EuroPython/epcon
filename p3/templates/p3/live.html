@@ -58,7 +58,7 @@
     {% endblock %}
     {% block MAIN_CONTENT %}
 <div id="live" class="cms">
-    <h1>EuroPython 2012 - Now Live!</h1>
+    <h1>EuroPython {{ tracks.0.schedule.date.year }} - Now Live!</h1>
     {% for t in tracks %}
     <div class="track" id="{{ t.track }}">
         <h2>On Track "{{ t.title|safe }}"</h2>
