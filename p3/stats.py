@@ -420,7 +420,9 @@ def hotel_tickets(conf, code=None):
     qs = {}
     for x in ('1', '2', '3', '4'):
         qs['HR' + x] = _tickets(conf, fare_code='HR' + x)\
-            .select_related('orderitem__order__user__user')
+            .select_related(
+                'orderitem__order__user__user',
+                'p3_conference_room')
     for x in ('2', '3', '4'):
         qs['HB' + x] = _tickets(conf, fare_code='HB' + x)\
             .select_related(
@@ -581,6 +583,9 @@ def hotel_tickets(conf, code=None):
                 'columns': (
                     ('name', 'Name'),
                     ('email', 'Email'),
+                    ('order', 'Order Number'),
+                    ('checkin', 'Check in'),
+                    ('checkout', 'Check out'),
                 ),
                 'data': [],
             }
@@ -593,6 +598,11 @@ def hotel_tickets(conf, code=None):
                 data.append({
                     'name': ticket_name(ticket),
                     'email': ticket.user.email,
+                    'order': '<a href="%s">%s</a>' % (
+                        reverse('admin:assopy_order_change', args=(ticket.orderitem.order_id,)),
+                        ticket.orderitem.order.code),
+                    'checkin': ticket.p3_conference_room.checkin,
+                    'checkout': ticket.p3_conference_room.checkout,
                     'uid': ticket.user.id,
                 })
         else:
