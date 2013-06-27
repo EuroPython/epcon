@@ -128,7 +128,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
-    'pingback.middleware.PingbackMiddleware',
 )
 
 ROOT_URLCONF = 'pycon.urls'
@@ -273,6 +272,9 @@ MICROBLOG_EMAIL_INTEGRATION = True
 MICROBLOG_TWITTER_USERNAME = 'europython'
 MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
 MICROBLOG_TWITTER_INTEGRATION = False
+
+MICROBLOG_PINGBACK_SERVER = False
+MICROBLOG_TRACKBACK_SERVER = False
 
 def MICROBLOG_POST_FILTER(posts, user):
     if user and user.is_staff:
