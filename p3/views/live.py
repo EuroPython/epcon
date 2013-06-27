@@ -43,6 +43,12 @@ def live(request):
 def live_track(request, track):
     return render(request, 'p3/live_track.html', {})
 
+def live_track_video(request, track):
+    url = settings.P3_LIVE_REDIRECT_URL(request, track)
+    class R(http.HttpResponseRedirect):
+        allowed_schemes = ['http', 'https', 'rtsp', 'rtmp']
+    return R(url)
+
 @render_to_json
 def live_track_events(request, track):
     conf, date = _live_conference()

@@ -644,6 +644,31 @@ P3_LIVE_TRACKS = {
     },
 }
 
+def P3_LIVE_REDIRECT_URL(request, track):
+    internal = False
+    for check in P3_LIVE_INTERNAL_IPS:
+        if request.META['REMOTE_ADDR'].startswith(check):
+            internal = True
+            break
+    url = None
+    if internal:
+        import re
+        ua = request.META['HTTP_USER_AGENT']
+
+        base = '{0}/{1}'.format(P3_INTERNAL_SERVER, P3_LIVE_TRACKS[track]['stream']['internal'])
+        if re.search('Android', ua, re.I):
+            url = 'rtsp://' + base
+        elif re.search('iPhone|iPad|iPod', ua, re.I):
+            url = 'http://%s/playlist.m3u8' % base
+        else:
+            url = 'rtmp://' + base
+    else:
+        try:
+            url = 'https://www.youtube.com/watch?v={0}'.format(P3_LIVE_TRACKS[track]['stream']['external'])
+        except KeyError:
+            pass
+    return url
+
 def P3_LIVE_EMBED(request, track=None, event=None):
     from django.core.cache import cache
 
