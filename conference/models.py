@@ -878,7 +878,7 @@ class ScheduleManager(models.Manager):
         """
         seats_available = defaultdict(lambda: 0)
         for row in EventTrack.objects\
-                    .filter(event__schedule__conference='ep2012')\
+                    .filter(event__schedule__conference=conference)\
                     .values('event', 'track__seats'):
             seats_available[row['event']] += row['track__seats']
 
