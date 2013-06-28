@@ -645,8 +645,13 @@ def pp_tickets(conf, code=None):
     qs = {}
     for fcode in fcodes:
         qs[fcode] = _tickets(conf, fare_code=fcode)
+    all_attendees = User.objects.filter(id__in=_tickets(conf, ticket_type='partner').values('user'))
     if code is None:
-        output = []
+        output = [{
+            'id': 'all',
+            'total': all_attendees.count(),
+            'title': 'Tutti i partecipanti al partner program',
+        }]
         from conference.templatetags.conference import fare_blob
         titles = {}
         for f in cmodels.Fare.objects.filter(code__in=fcodes):
@@ -666,14 +671,25 @@ def pp_tickets(conf, code=None):
             'data': [],
         }
         data = output['data']
-        for x in qs[code]:
-            data.append({
-                'name': '<a href="%s">%s %s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.user_id,)),
-                    x.user.first_name,
-                    x.user.last_name),
-                'email': x.user.email,
-                'uid': x.user_id,
-            })
+        if code == 'all':
+            for x in all_attendees:
+                data.append({
+                    'name': '<a href="%s">%s %s</a>' % (
+                        reverse('admin:auth_user_change', args=(x.id,)),
+                        x.first_name,
+                        x.last_name),
+                    'email': x.email,
+                    'uid': x.id,
+                })
+        else:
+            for x in qs[code]:
+                data.append({
+                    'name': '<a href="%s">%s %s</a>' % (
+                        reverse('admin:auth_user_change', args=(x.user_id,)),
+                        x.user.first_name,
+                        x.user.last_name),
+                    'email': x.user.email,
+                    'uid': x.user_id,
+                })
     return output
 pp_tickets.short_description = 'Biglietti Partner program'
