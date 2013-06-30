@@ -871,7 +871,7 @@ class ScheduleManager(models.Manager):
                     scores[f.id] += score
         return scores
 
-    def expected_attendance(self, conference, factor=0.95):
+    def expected_attendance(self, conference, factor=0.85):
         """
         restituisce per ogni evento la previsione di partecipazione basata
         sugli EventInterest.
