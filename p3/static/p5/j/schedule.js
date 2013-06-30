@@ -470,6 +470,8 @@ function highlighter(mode, option) {
                 if(seats_normalized > 1)
                     seats_normalized = 1
                 e.attr('data-seats', seats_normalized);
+                e.attr('data-raw-seats', data.seats);
+                e.attr('data-raw-expected', data.expected);
 
                 if(data.overbook) {
                     var track = e.parents('.track').attr('data-track');
