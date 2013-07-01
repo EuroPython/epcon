@@ -946,6 +946,16 @@ class Schedule(models.Model):
     class Meta:
         ordering = ['date']
 
+    def __unicode__(self):
+        return '{0}: {1}'.format(self.conference, self.date)
+
+    def speakers(self):
+        qs = Event.objects\
+            .filter(schedule=self, talk__id__isnull=False)\
+            .values('talk__talkspeaker__speaker')
+        return Speaker.objects.filter(user__in=qs)
+
+
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule)
     track = models.CharField('nome track', max_length=20)
