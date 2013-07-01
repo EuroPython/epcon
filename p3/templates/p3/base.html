@@ -147,7 +147,12 @@
             <strong>Conference SOLD OUT!</strong>
             {% endcomment %}
             {% endif %}
-            <a href="https://ep2013.europython.eu/blog/2013/05/20/enjoy-your-evenings">PyBarbecue</a> seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!
+            <a href="https://ep2013.europython.eu/blog/2013/05/20/enjoy-your-evenings">PyBarbecue</a>
+            {% if COUNTDOWN.pyfiorentina >= 10 %}
+            seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!
+            {% else %}
+            few seats left!
+            {% endif %}
         </section>
     </div>
 
