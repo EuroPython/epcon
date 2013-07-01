@@ -453,20 +453,29 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
             lines[ix] = line
         return lines
 
-    if conference == 'ep2012':
+    if conference in ('ep2012', 'ep2013'):
         master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert('RGBA')
 
         if type == 'back':
             return master
 
-        ftitle = ImageFont.truetype(
-            os.path.join(stuff, 'League Gothic.otf'),
-            36, encoding="unic")
-        fauthor = ImageFont.truetype(
-            os.path.join(stuff, 'Arial_Unicode.ttf'),
-            21, encoding="unic")
+        if conference == 'ep2012':
+            ftitle = ImageFont.truetype(
+                os.path.join(stuff, 'League Gothic.otf'),
+                36, encoding="unic")
+            fauthor = ImageFont.truetype(
+                os.path.join(stuff, 'Arial_Unicode.ttf'),
+                21, encoding="unic")
+            y = 175
+        elif conference == 'ep2013':
+            ftitle = ImageFont.truetype(
+                os.path.join(stuff, 'League_Gothic.otf'),
+                36, encoding="unic")
+            fauthor = ImageFont.truetype(
+                os.path.join(stuff, 'League_Gothic.otf'),
+                28, encoding="unic")
+            y = 190
 
-        y = 175
         width = master.size[0] - 40
         d = ImageDraw.Draw(master)
 
@@ -497,6 +506,8 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
         return None
 
 CONFERENCE_TICKET_BADGE_ENABLED = True
+CONFERENCE_TICKET_BADGE_PROG_ARGS = ['-e', '0', '-p', 'A4', '-n', '1']
+
 def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
     from p3.utils import conference_ticket_badge
     return conference_ticket_badge(tickets)
@@ -597,7 +608,6 @@ P3_ANONYMOUS_AVATAR = 'p5/i/headshot-default.jpg'
 
 P3_LIVE_INTERNAL_IPS = ('2.228.78.', '10.3.3.', '127.0.0.1')
 P3_INTERNAL_SERVER = 'live.ep:1935'
-P3_INTERNAL_SERVER = '10.3.3.237:1935'
 
 P3_LIVE_TRACKS = {
     'track1': {
@@ -678,7 +688,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
     if event:
         # ep2012, tutti i keynote vengono trasmessi dalla track "lasagne"
         if 'keynote' in event['tags'] or len(event['tracks'])>1:
-            track = 'track1'
+            track = 'track2'
         else:
             track = event['tracks'][0]
 
@@ -696,7 +706,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
         data = {
             'track': track,
             'stream': url.rsplit('/', 1)[1],
-            'url': url.rsplit('/', 1)[0],
+            'url': url,
         }
         html = """
         <div>
