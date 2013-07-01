@@ -666,6 +666,7 @@ def pp_tickets(conf, code=None):
         output = {
             'columns': (
                 ('name', 'Name'),
+                ('buyer', 'Buyer'),
                 ('email', 'Email'),
             ),
             'data': [],
@@ -674,7 +675,8 @@ def pp_tickets(conf, code=None):
         if code == 'all':
             for x in all_attendees:
                 data.append({
-                    'name': '<a href="%s">%s %s</a>' % (
+                    'name': '',
+                    'buyer': '<a href="%s">%s %s</a>' % (
                         reverse('admin:auth_user_change', args=(x.id,)),
                         x.first_name,
                         x.last_name),
@@ -684,7 +686,8 @@ def pp_tickets(conf, code=None):
         else:
             for x in qs[code]:
                 data.append({
-                    'name': '<a href="%s">%s %s</a>' % (
+                    'name': x.name or ('%s %s' % (x.user.first_name, x.user.last_name)),
+                    'buyer': '<a href="%s">%s %s</a>' % (
                         reverse('admin:auth_user_change', args=(x.user_id,)),
                         x.user.first_name,
                         x.user.last_name),
