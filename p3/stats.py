@@ -416,6 +416,82 @@ def conference_speakers(conf, code=None):
     return output
 conference_speakers.short_description = 'Speaker conferenza'
 
+def conference_speakers_day(conf, code=None):
+    from p3 import dataaccess
+    from conference.dataaccess import talks_data
+    from conference.dataaccess import events
+
+    schedules = cmodels.Schedule.objects.filter(conference=conf)
+    data = {}
+    for s in schedules:
+        people = dataaccess.profiles_data(s.speakers()\
+            .order_by('user__first_name', 'user__last_name')\
+            .values_list('user', flat=True))
+        people_data = []
+        for p in people:
+            o = {
+                'uid': p['id'],
+                'email': p['email'],
+                'name': p['name'],
+                'phones': [p['phone']],
+                'talks': p['talks']['accepted'][conf],
+            }
+            people_data.append(o)
+        data[s.date.strftime('%Y-%m-%d')] = people_data
+    if code is None:
+        output = []
+        for date, peoples in sorted(data.items()):
+            output.append({
+                'id': 'd%s' % date,
+                'title': date,
+                'total': len(peoples),
+            })
+        return output
+    else:
+        people_data = data[code[1:]]
+        conf_events = dict([(x['id'], x) for x in events(conf='ep2013')])
+        tracks = defaultdict(list)
+        for p in people_data:
+            tickets = [
+                tid for tid, _, fare, complete in dataaccess.all_user_tickets(p['uid'], conf)
+                if complete and fare.startswith('SIM') ]
+            if tickets:
+                p['phones'].extend(
+                    models.TicketSIM.objects\
+                        .filter(ticket__in=tickets)\
+                        .values_list('number', flat=True))
+            p['phones'] = filter(None, p['phones'])
+            for talk in talks_data(p['talks']):
+                for event_id in talk['events_id']:
+                    if conf_events[event_id]['time'].date().strftime('%Y-%m-%d') == code[1:]:
+                        for track in conf_events[event_id]['tracks']:
+                            if p not in tracks[track]:
+                                tracks[track].append(p)
+        output = {
+            'columns': (
+                ('name', 'Name'),
+                ('email', 'Email'),
+                ('phones', 'Phones'),
+                ('track', 'Track'),
+            ),
+            'data': [],
+        }
+        data = output['data']
+        for track, people in sorted(tracks.items()):
+            for x in people:
+                data.append({
+                    'name': '<a href="%s">%s</a>' % (
+                        reverse('admin:auth_user_change', args=(x['uid'],)),
+                        x['name']),
+                    'email': x['email'],
+                    'uid': x['uid'],
+                    'phones': ', '.join(x['phones']),
+                    'track': track,
+                })
+        return output
+
+conference_speakers_day.short_description = 'Speaker conferenza per giorno'
+
 def hotel_tickets(conf, code=None):
     qs = {}
     for x in ('1', '2', '3', '4'):
