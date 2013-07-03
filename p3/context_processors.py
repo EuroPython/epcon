@@ -20,7 +20,7 @@ def countdown(request):
             cache.set('p3_countdown_conference', conference, 60)
     pyfiorentina = cache.get('p3_countdown_pyfiorentina')
     if pyfiorentina is None:
-        pyfiorentina = 330 - sum(
+        pyfiorentina = 360 - sum(
             x['c'] for x in sold.filter(ticket__fare__code='VOUPE03')
         )
         if pyfiorentina > 10:
