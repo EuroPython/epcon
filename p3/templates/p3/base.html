@@ -136,6 +136,7 @@
     {% endblock %}
 
     <div class="container clearfix">
+        {% comment %}
         <section class="notice countdown">
             <div class="baron"></div>
             {% if COUNTDOWN.conference > 1 %}
@@ -143,9 +144,7 @@
             {% elif COUNTDOWN.conference == 1 %}
             <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} ticket left
             {% else %}
-            {% comment %}
             <strong>Conference SOLD OUT!</strong>
-            {% endcomment %}
             {% endif %}
             <a href="https://ep2013.europython.eu/blog/2013/05/20/enjoy-your-evenings">PyBarbecue</a>
             {% if COUNTDOWN.pyfiorentina >= 0 %}
@@ -154,6 +153,7 @@
             few seats left!
             {% endif %}
         </section>
+        {% endcomment %}
     </div>
 
     <div class="container clearfix">
