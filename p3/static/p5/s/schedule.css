@@ -682,6 +682,8 @@ body#schedule > .page > .container {
     height: 150px; }
   .conference-schedules.timetable.vertical-narrow .duration-90 {
     height: 180px; }
+  .conference-schedules.timetable.vertical-narrow .duration-135 {
+    height: 270px; }
   .conference-schedules.timetable.vertical-narrow .duration-150 {
     height: 300px; }
   .conference-schedules.timetable.vertical-narrow .duration-180 {
@@ -689,7 +691,7 @@ body#schedule > .page > .container {
   .conference-schedules.timetable.vertical-narrow .duration-240 {
     height: 480px; }
   .conference-schedules.timetable.vertical-narrow .duration-270 {
-    height: 570px; }
+    height: 540px; }
   .conference-schedules.timetable.vertical-narrow .duration-420 {
     height: 840px; }
   .conference-schedules.timetable.vertical-narrow .duration-480 {
