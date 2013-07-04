@@ -134,6 +134,7 @@ def tickets_status(conf, code=None):
     sim_tickets = _tickets(conf, fare_code='SIM%')\
         .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
         .select_related('p3_conference_sim')
+    voupe03 = _tickets(conf, fare_code='VOUPE03')
     if code is None:
         output = [
             {
@@ -154,6 +155,11 @@ def tickets_status(conf, code=None):
                 'id': 'sim_tickets',
                 'title': 'SIM non compilati',
                 'total': sim_tickets.count(),
+            },
+            {
+                'id': 'voupe03_tickets',
+                'title': 'VOUPE03 (PyFiorentina)',
+                'total': voupe03.count(),
             },
         ]
 
@@ -292,6 +298,28 @@ def tickets_status(conf, code=None):
                     'email': x.user.email,
                     'fare': x.fare.code,
                     'uid': x.user.id,
+                })
+        elif code in ('voupe03_tickets',):
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                    ('buyer', 'Buyer'),
+                ),
+                'data': [],
+            }
+            if code == 'voupe03_tickets':
+                qs = voupe03
+            qs = qs.select_related('user')
+            data = output['data']
+            for x in sorted(qs, key=lambda x: x.name or '%s %s' % (x.user.first_name, x.user.last_name)):
+                buyer_name = '%s %s' % (x.user.first_name, x.user.last_name)
+                buyer = '<a href="%s">%s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.user.id,)), buyer_name)
+                data.append({
+                    'name': x.name or buyer_name,
+                    'buyer': buyer,
+                    'uid': x.user.id,
+                    'email': x.user.email,
                 })
     return output
 tickets_status.short_description = 'Statistiche biglietti (solo ordini confermati)'
