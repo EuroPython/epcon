@@ -613,44 +613,44 @@ P3_INTERNAL_SERVER = 'live.ep:1935'
 P3_LIVE_TRACKS = {
     'track1': {
         'stream': {
-            'external': 'qZ_QH0PM6Pk',
+            'external': 'WQnU7Qvy-xg',
             'internal': 'live/spaghetti',
         }
     },
     'track2': {
         'stream': {
-            'external': 'qVtbnFcHAqI',
+            'external': 'urwOdSH3Tyg',
             'internal': 'live/lasagne',
         }
     },
     'track3': {
         'stream': {
-            'external': 'UkeCmFFI4J0',
+            'external': 'tdGKPPlhqAI',
             'internal': 'live/ravioli',
         }
     },
     'track4': {
         'stream': {
-            'external': 'ygJttmU9HdA',
+            'external': 'IeKx5Qy_8lY',
             'internal': 'live/tagliatelle',
         }
     },
     'track-ita': {
         'stream': {
-            'external': 'UWALqrT3REM',
-            'internal': 'live/big_mac',
+            'external': 'JSjXKGom9VI',
+            'internal': 'live/bigmac',
         }
     },
     'training1': {
         'stream': {
-            'external': 'OTu7ELrIi7k',
-            'internal': 'live/pizza_margherita',
+            'external': '6CG-25uxPdI',
+            'internal': 'live/pizzamargherita',
         }
     },
     'training2': {
         'stream': {
-            'external': 'whyuIwClsFc',
-            'internal': 'live/pizza_napoli',
+            'external': 'iy1phHF-mec',
+            'internal': 'live/pizzanapoli',
         }
     },
 }
