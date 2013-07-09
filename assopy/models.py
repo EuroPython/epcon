@@ -205,7 +205,8 @@ class User(models.Model):
     objects = UserManager()
 
     def __unicode__(self):
-        return 'Assopy user: %s - %s%s' % (self.id, self.name(), ' (%s)' % self.card_name if self.card_name else '')
+        name = self.card_name or self.name()
+        return 'Assopy user: %s (%s)' % (name, self.id)
 
     def name(self):
         name = '%s %s' % (self.user.first_name, self.user.last_name)
@@ -288,6 +289,9 @@ class UserOAuthInfo(models.Model):
     service = models.CharField(max_length=20)
     token = models.CharField(max_length=200)
     secret = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return u'{0} token for {1}'.format(self.service, self.user)
 
 class Coupon(models.Model):
     conference = models.ForeignKey('conference.Conference')
