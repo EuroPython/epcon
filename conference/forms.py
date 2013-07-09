@@ -403,7 +403,7 @@ class AdminSendMailForm(forms.Form):
                 output.append(msg)
             else:
                 break
-        return output
+        return reversed(output)
 
     def save_email(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
