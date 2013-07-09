@@ -49,10 +49,22 @@ STUFF_URL = getattr(settings, 'CONFERENCE_STUFF_URL', settings.MEDIA_URL)
 
 TALKS_RANKING_FILE = getattr(settings, 'CONFERENCE_TALKS_RANKING_FILE', None)
 
-LATEST_TWEETS_FILE = getattr(settings, 'CONFERENCE_LATEST_TWEETS_FILE', None)
-
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
 
+def _CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
+    from conference import models
+    tickets = models.Ticket.objects\
+        .filter(fare__conference=conf)
+    if ticket_type:
+        tickets = tickets.filter(fare__ticket_type=ticket_type)
+    if fare_code:
+        if fare_code.endswith('%'):
+            tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
+        else:
+            tickets = tickets.filter(fare__code=fare_code)
+    return tickets
+
+CONFERENCE_TICKETS = getattr(settings, 'CONFERENCE_TICKETS', _CONFERENCE_TICKETS)
 # TICKET_BADGE_ENABLED abilita o meno la possibilità di generare badge tramite
 # admin
 TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', False)
@@ -96,9 +108,9 @@ import os.path
 import conference
 TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG',
     os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))
-TICKED_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG_ARGS', [])
-TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION',
-    lambda tickets: [])
+TICKET_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '1', '-n', '6'])
+TICKET_BADGE_PROG_ARGS_ADMIN = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '0', '-p', 'A4', '-n', '2'])
+TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION', lambda tickets: [])
 
 SCHEDULE_ATTENDEES = getattr(settings, 'CONFERENCE_SCHEDULE_ATTENDEES', lambda schedule, forecast=False: 0)
 
@@ -139,7 +151,7 @@ ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TIC
 def _VIDEO_COVER_EVENTS(conference):
     from conference import dataaccess
     return [ x['id'] for x in dataaccess.events(conf=conference) ]
-    
+
 VIDEO_COVER_EVENTS = getattr(settings, 'CONFERENCE_VIDEO_COVER_EVENTS', _VIDEO_COVER_EVENTS)
 
 def _VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False):
