@@ -234,6 +234,13 @@ def talk(request, slug, talk, full_access, talk_form=None):
             data['type'] = talk.type
             data['tags'] = ','.join([ x.name for x in talk.tags.all() ])
         form = talk_form(data=data, files=request.FILES, instance=talk)
+        if not conf.cfp() and not data['tags'] and 'tags' in form.fields:
+            # Il CFP e' chiuso e stiamo editando un talk senza tags, la cosa
+            # non e' normalmente possibile visto che i tags sono richiesti;
+            # stiamo probabilmente editando un talk inserito tramite admin, se
+            # questo e' il caso non ha senso far fallire la validazione della
+            # form.
+            form.fields['tags'].required = False
         if form.is_valid():
             talk = form.save()
             messages.info(request, 'Your talk has been modified.')
