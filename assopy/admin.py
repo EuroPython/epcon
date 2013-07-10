@@ -52,6 +52,7 @@ class OrderItemAdminForm(forms.ModelForm):
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
     form = OrderItemAdminForm
+    raw_id_fields = ('ticket',)
 
     def get_formset(self, request, obj=None, **kwargs):
         # se ho emesso un invoice impedisco di variare gli order items
@@ -99,7 +100,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
     list_select_related = True
     list_filter = ('method', '_complete',)
-    list_per_page = 20
+    raw_id_fields = ('user',)
     search_fields = (
         'code', 'card_name',
         'user__user__first_name', 'user__user__last_name', 'user__user__email',
