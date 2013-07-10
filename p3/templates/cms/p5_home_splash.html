@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load pages_tags microblog_tags %}
+{% load pages_tags microblog_tags markup conference %}
 {% block EXTRA_HEAD %}
 <style>
 section.splash {
@@ -23,9 +23,15 @@ section.splash img {
 
 {% block MAIN_CONTENT %}
     {% imageplaceholder splash-image as imgsrc %}
+    {% if imgsrc %}
     <section class="splash">
         <img src="{{ MEDIA_URL }}{{ imgsrc }}" alt=""/>
     </section>
+    {% endif %}
+
+    {% placeholder text with markItUpMarkdown as text parsed %}
+    {% render_page_template text as m %}
+    {{ m|markdown }}
 
     <section class="clearfix">
         {% post_list count=3 as posts %}
