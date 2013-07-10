@@ -16,6 +16,7 @@ from p3 import models
 import datetime
 
 TALK_DURATION = (
+    (30, '30 minutes inc Q&A'),
     (45, '30 minutes + 10 Q&A'),
     (60, '45 minutes + 10 Q&A'),
     (90, '70 minutes + 15 Q&A'),
