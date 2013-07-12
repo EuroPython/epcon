@@ -46,8 +46,11 @@
                 {% for row in results.data %}
                 <tr>
                     <th>
-                        {{ row.title }}
-                        {% if row.id %} <a href="{% url admin:conference-ticket-stats-details conference %}?code={{ results.id }}.{{ row.id }}">(details)</a>{% endif %}
+                        {% if row.id %}
+                            <a href="{% url admin:conference-ticket-stats-details conference %}?code={{ results.id }}.{{ row.id }}">{{ row.title }}</a>
+                        {% else %}
+                            {{ row.title }}
+                        {% endif %}
                     </th>
                     {% for colid, colname in results.columns %}
                     <td>{% if row|attrib_:colid %}{{ row|attrib_:colid }}{% endif %}</td>
