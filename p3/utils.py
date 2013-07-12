@@ -84,6 +84,27 @@ def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
     })
     return gravatar_url
 
+def spam_recruiter_by_conf(conf):
+    """
+    Restituisce un queryset con gli User che hanno accettato di essere
+    contattati via email per motivi di recruiting
+    """
+    from django.contrib.auth.models import User
+
+    tickets = settings.CONFERENCE_TICKETS(conf, ticket_type='conference')
+    owned = tickets.filter(p3_conference__assigned_to='')
+    assigned = tickets.exclude(p3_conference__assigned_to='')
+
+    first_run = User.objects\
+        .filter(\
+            id__in=owned.values('user'),\
+            attendeeprofile__p3_profile__spam_recruiting=True)
+
+    second_run = User.objects\
+        .filter(\
+            email__in=assigned.values('p3_conference__assigned_to'),\
+            attendeeprofile__p3_profile__spam_recruiting=True)
+    return first_run | second_run
 
 from django.core.cache import cache
 from django.utils.http import urlquote

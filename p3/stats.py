@@ -135,6 +135,8 @@ def tickets_status(conf, code=None):
         .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
         .select_related('p3_conference_sim')
     voupe03 = _tickets(conf, fare_code='VOUPE03')
+    from p3.utils import spam_recruiter_by_conf
+    spam_recruiting = spam_recruiter_by_conf(conf)
     if code is None:
         output = [
             {
@@ -160,6 +162,11 @@ def tickets_status(conf, code=None):
                 'id': 'voupe03_tickets',
                 'title': 'VOUPE03 (PyFiorentina)',
                 'total': voupe03.count(),
+            },
+            {
+                'id': 'spam_recruiting',
+                'title': 'SPAM recruiting',
+                'total': spam_recruiting.count(),
             },
         ]
 
@@ -321,6 +328,24 @@ def tickets_status(conf, code=None):
                     'uid': x.user.id,
                     'email': x.user.email,
                 })
+        elif code == 'spam_recruiting':
+            output = {
+                'columns': (
+                    ('name', 'Name'),
+                ),
+                'data': [],
+            }
+            qs = spam_recruiting.order_by('first_name', 'last_name')
+            data = output['data']
+            for x in qs:
+                buyer_name = '%s %s' % (x.first_name, x.last_name)
+                name = '<a href="%s">%s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.id,)), buyer_name)
+                data.append({
+                    'name': name,
+                    'uid': x.id,
+                    'email': x.email,
+                })
     return output
 tickets_status.short_description = 'Statistiche biglietti (solo ordini confermati)'
 
@@ -462,7 +487,7 @@ def conference_speakers_day(conf, code=None):
                 'email': p['email'],
                 'name': p['name'],
                 'phones': [p['phone']],
-                'talks': p['talks']['accepted'][conf],
+                'talks': p['talks']['accepted'].get(conf, []),
             }
             people_data.append(o)
         data[s.date.strftime('%Y-%m-%d')] = people_data
