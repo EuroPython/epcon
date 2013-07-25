@@ -17,6 +17,5 @@ django-crontab==0.4.2
 
 -e git+ssh://src.develer.com/git/projects/microblog#egg=microblog
 -e git+ssh://src.develer.com/git/projects/hcomments#egg=hcomments
--e git+ssh://src.develer.com/git/projects/develer_tools#egg=develer_tools
 -e git+ssh://src.develer.com/git/projects/conference#egg=conference
 -e git+ssh://src.develer.com/git/projects/assopy#egg=assopy

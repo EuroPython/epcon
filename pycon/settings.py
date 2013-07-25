@@ -173,7 +173,6 @@ INSTALLED_APPS = (
     'south',
     'templatesadmin',
     'email_template',
-    'develer_tools',
     'paypal.standard.ipn',
 
     'recaptcha_works',
