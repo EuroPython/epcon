@@ -3,7 +3,7 @@ from django import forms
 from django import http
 from django import template
 from django.conf import settings as dsettings
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db import transaction
@@ -637,7 +637,7 @@ if not settings.GENRO_BACKEND:
     class InvoiceAdminForm(forms.ModelForm):
         class Meta:
             model = models.Invoice
-            exclude = "assopy_id"
+            exclude = ("assopy_id",)
             widgets = {
                 'price':ReadOnlyWidget,
                 'vat' : ReadOnlyWidget,

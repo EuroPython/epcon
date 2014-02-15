@@ -277,8 +277,8 @@ class UserIdentity(models.Model):
     gender = models.CharField(max_length=10, blank=True)
     birthday = models.DateField(null=True)
     email = models.EmailField(blank=True)
-    url = models.URLField(verify_exists=False)
-    photo = models.URLField(verify_exists=False)
+    url = models.URLField()
+    photo = models.URLField()
     phoneNumber = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
 

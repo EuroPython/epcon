@@ -1,5 +1,5 @@
 from django.conf import settings as dsettings
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url, include
 from assopy.forms import LoginForm, PasswordResetForm, SetPasswordForm
 
 urlpatterns = patterns('',
