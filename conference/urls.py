@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('conference.views',
     url(r'^p/(?P<slug>[\w-]+)/?$', 'user_profile', name='conference-profile'),

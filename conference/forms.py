@@ -251,11 +251,12 @@ class SpeakerForm(forms.Form):
     ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
 
 _abstract = models.Talk._meta.get_field_by_name('abstracts')[0]
+
 class TalkForm(forms.ModelForm):
     abstract = forms.CharField(
         max_length=5000,
-        label=_abstract.verbose_name,
-        help_text=_abstract.help_text,
+        label='Talk abstract',
+        help_text='',
         widget=forms.Textarea(),)
 
     class Meta:

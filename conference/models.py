@@ -359,9 +359,9 @@ class AttendeeProfile(models.Model):
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
 
-    personal_homepage = models.URLField(_('Personal homepage'), verify_exists=False, blank=True)
+    personal_homepage = models.URLField(_('Personal homepage'), blank=True)
     company = models.CharField(_('Company'), max_length=50, blank=True)
-    company_homepage = models.URLField(_('Company homepage'), verify_exists=False, blank=True)
+    company_homepage = models.URLField(_('Company homepage'), blank=True)
     job_title = models.CharField(_('Job title'), max_length=50, blank=True)
 
     location = models.CharField(_('Location'), max_length=100, blank=True)
@@ -572,7 +572,6 @@ class Talk(models.Model, UrlMixin):
     video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
     teaser_video = models.URLField(
         _('Teaser video'),
-        verify_exists=False,
         blank=True,
         help_text=_('Insert the url for your teaser video'))
     status = models.CharField(max_length=8, choices=TALK_STATUS)
@@ -759,7 +758,7 @@ class Sponsor(models.Model):
     """
     sponsor = models.CharField(max_length=100, help_text='nome dello sponsor')
     slug = models.SlugField()
-    url = models.URLField(verify_exists=False, blank=True)
+    url = models.URLField(blank=True)
     logo = models.ImageField(
         upload_to=_fs_upload_to('sponsor'), blank=True,
         help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
@@ -791,7 +790,7 @@ class MediaPartner(models.Model):
     """
     partner = models.CharField(max_length=100, help_text='nome del media partner')
     slug = models.SlugField()
-    url = models.URLField(verify_exists=False, blank=True)
+    url = models.URLField(blank=True)
     logo = models.ImageField(
         upload_to=_fs_upload_to('media-partner'), blank = True,
         help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
@@ -1182,7 +1181,7 @@ class Hotel(models.Model):
     """
     name = models.CharField('nome dell\'hotel', max_length = 100)
     telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
-    url = models.URLField(verify_exists = False, blank = True)
+    url = models.URLField(blank = True)
     email = models.EmailField('email', blank = True)
     availability = models.CharField('Disponibilità', max_length = 50, blank = True)
     price = models.CharField('Prezzo', max_length = 50, blank = True)
@@ -1208,7 +1207,7 @@ class SpecialPlace(models.Model):
     name = models.CharField('nome', max_length = 100)
     address = models.CharField('indirizzo', max_length = 200, default = '', blank = True)
     type = models.CharField(max_length = 10, choices=SPECIAL_PLACE_TYPES)
-    url = models.URLField(verify_exists = False, blank = True)
+    url = models.URLField(blank = True)
     email = models.EmailField('email', blank = True)
     telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
     note = models.TextField('note', blank = True)
