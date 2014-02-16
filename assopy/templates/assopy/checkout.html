@@ -4,7 +4,7 @@
     <h1>Checkout</h1>
     <div class="cms">
         {{ form.non_field_errors }}
-        <form action="{% url assopy-checkout %}" method="post">{% csrf_token %}
+        <form action="{% url "assopy-checkout" %}" method="post">{% csrf_token %}
             <fieldset>
                 {% for f in form %}{{ f|field }}{% endfor %}
             </fieldset>

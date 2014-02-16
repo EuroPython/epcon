@@ -27,7 +27,7 @@ h1 span {
     <h1>{{ user.name }} <span>({% trans "Your profile" %})</span></h1>
     <div class="span-5">
         <div class="form-box">
-            <form action="{% url assopy-profile %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <form action="{% url "assopy-profile" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
                     {% for f in form %}{{ f|field }}{% endfor %}
                 </fieldset>
@@ -57,7 +57,7 @@ h1 span {
                     <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Delete account" %}" /></li>
                     {% endfor %}
                 </ul>
-                <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
+                <form id="remove-identity" action="{% url "assopy-profile-identities" %}" method="post">
                     <input type="hidden" name="identifier" value="" />
                 </form>
                 <script type="text/javascript">
@@ -81,7 +81,7 @@ h1 span {
                     });
                 </script>
                 <p>
-                    {% url assopy-profile as u %}
+                    {% url "assopy-profile" as u %}
                     {% render_janrain_box u "overlay" %}
                 </p>
                 {% endblock %}
@@ -90,7 +90,7 @@ h1 span {
                 {% if request.user.speaker %}
                 <h4>{% trans "Speaker profile" %}</h4>
                 <p>
-                    <a href="{% url conference-myself-profile %}">{% trans "Your public page" %}</a>
+                    <a href="{% url "conference-myself-profile" %}">{% trans "Your public page" %}</a>
                 </p>
                 {% endif %}
                 {% endblock %}
@@ -113,7 +113,7 @@ h1 span {
                 {% with request.user.assopy_user.tickets as tickets %}
                     {% if tickets|length %}
                     <h4>{% trans "Utilities" %}</h4>
-                    <p><a href="{% url assopy-tickets %}">{% trans "Your tickets" %}</a></p>
+                    <p><a href="{% url "assopy-tickets" %}">{% trans "Your tickets" %}</a></p>
                     {% endif %}
                 {% endwith %}
                 {% endblock %}

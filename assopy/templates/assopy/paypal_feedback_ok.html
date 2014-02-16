@@ -23,7 +23,7 @@
     <h1>{% trans "Purchase completed" %}</h1>
     <div class="span-12 append-1">
         <div class="cms">
-            {% url assopy-tickets as u %}
+            {% url "assopy-tickets" as u %}
             {% blocktrans %}
             <p>Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address.</p>
             <div class="badge"><h5><a href="/accounts/tickets/">Edit your tickets &rarr;</a></h5></div>

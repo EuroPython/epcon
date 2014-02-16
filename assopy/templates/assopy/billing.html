@@ -5,7 +5,7 @@
     <div class="span-7 append-1">
         <div class="cms">
             {{ form.non_field_errors }}
-            <form action="{% url assopy-billing %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <form action="{% url "assopy-billing" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
                     {% for f in form %}{{ f|field }}{% endfor %}
                 </fieldset>

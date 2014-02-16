@@ -4,7 +4,7 @@
     <h1>{% trans "Order completed" %}</h1>
     <div class="span-8">
         <div class="cms">
-            {% url assopy-tickets as u %}
+            {% url "assopy-tickets" as u %}
             {% with order.code as ocode %}
             {% blocktrans %}
             <p>Thank you for your order. You will receieve an email with all the details for the wire transfer.</p>

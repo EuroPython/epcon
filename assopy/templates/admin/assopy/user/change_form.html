@@ -5,10 +5,10 @@
             <a class="historylink" href="history/">History</a>
         </li>
         <li>
-            <a class="" href="{% url admin:assopy-user-order uid=object_id %}">New order</a>
+            <a class="" href="{% url "admin:assopy-user-order" uid=object_id %}">New order</a>
         </li>
         <li>
-            <a class="" href="{% url admin:assopy-login-user uid=object_id %}">Log in as this user</a>
+            <a class="" href="{% url "admin:assopy-login-user" uid=object_id %}">Log in as this user</a>
         </li>
     </ul>
 {% endblock %}

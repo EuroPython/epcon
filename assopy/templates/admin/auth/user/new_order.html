@@ -11,7 +11,7 @@
 
 {% block content %}
     <h2>Fill a new order for: {{ user.name }}</h2>
-    <form action="{% url admin:auser-order uid=user.user_id%}" method="post">{% csrf_token %}
+    <form action="{% url "admin:auser-order" uid=user.user_id%}" method="post">{% csrf_token %}
         <table>
             {% for field in form %}
             {% if not field.field.fare %}

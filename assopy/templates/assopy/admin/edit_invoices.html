@@ -27,7 +27,7 @@
     {% endfor %}
     </table>
     <hr />
-    <form action="{% url admin:assopy-edit-invoices %}?id={{ ids }}" method="post">{% csrf_token %}
+    <form action="{% url "admin:assopy-edit-invoices" %}?id={{ ids }}" method="post">{% csrf_token %}
         {{ form }}
         <div>
             <input type="submit" value="Save invoices" />

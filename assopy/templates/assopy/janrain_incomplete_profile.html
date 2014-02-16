@@ -5,7 +5,7 @@
     <div class="cms">
         <p>Hi {{ name }}, the provider you've chosen ({{ provider }}) doesn't supply a verified email. Please enter your email address in the form below to complete the registration process:</p>
         <p>
-        <form action="{% url assopy-janrain-incomplete-profile %}" method="post">{% csrf_token %}
+        <form action="{% url "assopy-janrain-incomplete-profile" %}" method="post">{% csrf_token %}
             {{ form.email|field }}
             <button type="submit">Proceed</button>
         </form>

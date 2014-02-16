@@ -11,7 +11,7 @@
     <div class="fares">
         <ul>
         {% for fare in fares %}
-            <li><a href="{% url admin:assopy-order-vouchers-fare conference=fare.conference fare=fare.code %}">{{ fare.name }}</a></li>
+            <li><a href="{% url "admin:assopy-order-vouchers-fare" conference=fare.conference fare=fare.code %}">{{ fare.name }}</a></li>
         {% endfor %}
         </ul>
     </div>
