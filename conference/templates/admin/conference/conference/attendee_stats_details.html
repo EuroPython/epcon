@@ -52,7 +52,7 @@ table {
 </div>
 {% endblock %}{% block content %}
 {% with stat.get_data as result %}
-<h1>{{ stat.short_description }} (<a href="{% url admin:conference-ticket-stats-details-csv conference %}?code={{ stat_code }}">csv</a>)</h1>
+<h1>{{ stat.short_description }} (<a href="{% url "admin:conference-ticket-stats-details-csv" conference %}?code={{ stat_code }}">csv</a>)</h1>
 <table>
     <tr>
         {% if result.data.0.uid %}

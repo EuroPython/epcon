@@ -47,7 +47,7 @@
                 <tr>
                     <th>
                         {% if row.id %}
-                            <a href="{% url admin:conference-ticket-stats-details conference %}?code={{ results.id }}.{{ row.id }}">{{ row.title }}</a>
+                            <a href="{% url "admin:conference-ticket-stats-details" conference %}?code={{ results.id }}.{{ row.id }}">{{ row.title }}</a>
                         {% else %}
                             {{ row.title }}
                         {% endif %}

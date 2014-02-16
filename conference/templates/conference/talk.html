@@ -4,7 +4,7 @@
     <table>
         <tr>
             <th>speaker</th>
-            <td><a href="{% url conference-speaker slug=talk.speaker.slug %}">{{ talk.speaker }}</a></td>
+            <td><a href="{% url "conference-speaker" slug=talk.speaker.slug %}">{{ talk.speaker }}</a></td>
         </tr>
         <tr>
             <th>durata</th>

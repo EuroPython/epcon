@@ -5,11 +5,11 @@
 </head>
 <body>
     <h1>Talk voting</h1>
-    <form action="{% url conference-voting %}" method="get">
+    <form action="{% url "conference-voting" %}" method="get">
         {{ form }}
         <input type="submit" />
     </form>
-    <form action="{% url conference-voting %}?{{ request.GET.urlencode }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <form action="{% url "conference-voting" %}?{{ request.GET.urlencode }}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <table style="width: 500px">
         {% for t in talks %}
             <tr>

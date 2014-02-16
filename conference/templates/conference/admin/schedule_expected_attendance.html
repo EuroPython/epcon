@@ -9,7 +9,7 @@
 </div>
 {% endblock %}{% block content %}
 {% comment %}
-<form action="{% url admin:conference-schedule-expected_attendance %}" method="GET">
+<form action="{% url "admin:conference-schedule-expected_attendance" %}" method="GET">
     {{ form }}
     <input type="submit" />
 </form>

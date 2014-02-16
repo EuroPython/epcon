@@ -9,6 +9,6 @@
         </a>
         </li>
     {% endif %}
-        <li><a href="{% url admin:conference-speaker-stat-list %}">Speaker list [{{ CONFERENCE }}]</a></li>
+        <li><a href="{% url "admin:conference-speaker-stat-list" %}">Speaker list [{{ CONFERENCE }}]</a></li>
     </ul>
 {% endblock %}

@@ -17,13 +17,13 @@
     {% for s in speakers %}
     {% profile_data s.user as p %}
     <tr>
-        <td>{{ forloop.counter }} - <a href="{% url conference-profile slug=p.slug %}">{{ p.name }}</a></td>
+        <td>{{ forloop.counter }} - <a href="{% url "conference-profile" slug=p.slug %}">{{ p.name }}</a></td>
         <td>{{ p.email }}</td>
         <td>
             <ul>
             {% for t in s.talks %}
             {% if t.conference == CONFERENCE %}
-            <li><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></li>
+            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
             {% endif %}
             {% endfor %}
             </ul>
@@ -40,13 +40,13 @@
     {% for s in speakers %}
     {% profile_data s.user as p %}
     <tr>
-        <td>{{ forloop.counter }} - <a href="{% url conference-profile slug=p.slug %}">{{ p.name }}</a></td>
+        <td>{{ forloop.counter }} - <a href="{% url "conference-profile" slug=p.slug %}">{{ p.name }}</a></td>
         <td>{{ p.email }}</td>
         <td>
             <ul>
             {% for t in s.talks %}
             {% if t.conference == CONFERENCE %}
-            <li><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></li>
+            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
             {% endif %}
             {% endfor %}
             </ul>
