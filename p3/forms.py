@@ -92,11 +92,12 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         initial='en', required=False)
 
     def __init__(self, user, *args, **kwargs):
-        data = {
-            'mobile': user.assopy_user.phone,
-            'birthday': user.assopy_user.birthday,
-            'activity_homepage': user.assopy_user.www,
-        }
+#         data = {
+#             'mobile': user.assopy_user.phone,
+#             'birthday': user.assopy_user.birthday,
+#             'activity_homepage': user.assopy_user.www,
+#         }
+        data = {}
         data.update(kwargs.get('initial', {}))
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)

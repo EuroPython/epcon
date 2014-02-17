@@ -592,7 +592,8 @@ def render_archive(context, conference):
         if not e['talk']:
             return False
         return True
-    events = { x['id']:x for x in filter(match, cdataaccess.events(conf=conference)) }
+    #events = { x['id']:x for x in filter(match, cdataaccess.events(conf=conference)) }
+    events = { }
     talks = {}
     for e in events.values():
         t = e['talk']
