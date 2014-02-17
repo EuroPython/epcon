@@ -1,0 +1,18 @@
+/* ============================================ */
+/* This file has a mobile-to-desktop breakpoint */
+/* ============================================ */
+
+
+@import "unsemantic-ie-snap";
+
+@media all {
+    @import "unsemantic-grid-base";
+}
+
+@media screen and (max-width: $bpmobilemax) {
+    @import "unsemantic-grid-mobile";        
+}
+
+@media screen and (min-width: $bpdesktopmin) {
+    @import "unsemantic-grid-desktop";
+}

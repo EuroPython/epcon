@@ -1,0 +1,77 @@
+@charset "UTF-8";
+/* 
+
+Built on Rock Hammer by Stuff and Nonsense
+URL: http://stuffandnonsense.co.uk/projects/rock-hammer/ 
+
+*/
+
+// Media query support required?
+$media-queries-supported : true;
+
+// Opacity support in IE required via the proprietry ActiveX?
+$ie8-opacity-supported 	 : false;
+
+// Import all SASS imports
+@import 'imports';
+
+
+// @@REMOVE: Quick styles for placeholder page
+
+.container {
+}
+
+
+footer {
+    background: $navigationbackgroundcolor;    
+    hr {
+        border-color: $primarycolor;
+    }
+}
+
+section {
+    padding: $baselineheight 0 0 0;
+    
+    &.alt {
+        background: $white;
+    }
+    
+/*
+    p:last-child {
+        margin-bottom: 0;
+    }
+*/
+
+/*
+    p {
+        @include columns(2);
+    }
+*/
+}
+
+header {
+    padding: $baselineheight * 2 0 $baselineheight 0;
+
+/*
+    .branding {
+        margin: -50px 0 0 -50px;
+    }
+*/
+
+    h1 {
+        color: $secondarycolor;
+        span { 
+            color: $primarycolor; }
+    }
+    
+    .subhead {
+        @extend h2;
+        color: $neutralcolor; }    
+}
+
+/*
+.fa-twitter {
+    vertical-align: middle;
+    color: $primarycolor;
+}
+*/
