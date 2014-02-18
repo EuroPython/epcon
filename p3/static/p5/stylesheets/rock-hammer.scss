@@ -53,14 +53,15 @@ footer {
 
 section {
     padding: $baselineheight 0 $baselineheight 0;
-    
-    &.alt {
-        background: $white;
-    }
         
     p:last-child {
         margin-bottom: 0;
     }
+}
+
+// Zebra stripes
+.page section:nth-child(odd) {
+    background: $white;    
 }
 
 header {
@@ -83,5 +84,25 @@ header {
         color: $neutralcolor; }    
 }
 
+
+// @@REMOVEME: use actual help-block
+.help-text {
+    @extend .help-block;
+}
+
+.tag {
+    background: $lighterneutralcolor;
+    border: 1px solid $lightneutralcolor;
+    border-radius: $borderradius;
+    padding: 0 6px;
+    display: inline-block;
+    @include font-size(14);
+    margin-right: $gutterwidth/4;
+    margin-bottom: $baselineheight/4;    
+    &:hover {
+        background: $white;
+        text-decoration: none;
+    }
+}
 
 

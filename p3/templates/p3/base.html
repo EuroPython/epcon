@@ -169,26 +169,24 @@
     </div><!-- /grid-container -->
   </header>
   
-    <div class="clearfix">
-        {% comment %}
-        <section class="notice countdown">
-            <div class="baron"></div>
-            {% if COUNTDOWN.conference > 1 %}
-            <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} tickets left
-            {% elif COUNTDOWN.conference == 1 %}
-            <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} ticket left
-            {% else %}
-            <strong>Conference SOLD OUT!</strong>
-            {% endif %}
-            <a href="https://ep2013.europython.eu/blog/2013/05/20/enjoy-your-evenings">PyBarbecue</a>
-            {% if COUNTDOWN.pyfiorentina >= 0 %}
-            seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!
-            {% else %}
-            few seats left!
-            {% endif %}
-        </section>
-        {% endcomment %}
-    </div>
+    {% comment %}
+    <section class="notice countdown">
+        <div class="baron"></div>
+        {% if COUNTDOWN.conference > 1 %}
+        <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} tickets left
+        {% elif COUNTDOWN.conference == 1 %}
+        <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} ticket left
+        {% else %}
+        <strong>Conference SOLD OUT!</strong>
+        {% endif %}
+        <a href="https://ep2013.europython.eu/blog/2013/05/20/enjoy-your-evenings">PyBarbecue</a>
+        {% if COUNTDOWN.pyfiorentina >= 0 %}
+        seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!
+        {% else %}
+        few seats left!
+        {% endif %}
+    </section>
+    {% endcomment %}
 
     <div class="page clearfix">
         {% block TEASER %}{% endblock %}

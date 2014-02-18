@@ -1706,7 +1706,7 @@ input[type="search"],
 input[type="tel"] {
   display: inline-block;
   margin-bottom: 0.75em;
-  padding: 6px 11px;
+  padding: 6px 6px;
   font-size: 18px;
   font-size: 1.8rem;
   line-height: 1.5em;
@@ -1904,14 +1904,14 @@ textarea[readonly] {
   opacity: 0;
   transition: opacity .5s .5s ease; }
 
-.help-block,
+.help-block, .help-text,
 .help-inline {
   color: #4b473a;
   font-size: 14.4px;
   font-size: 1.44rem;
   line-height: 1.4; }
 
-.help-block {
+.help-block, .help-text {
   display: block;
   margin-bottom: 0.75em; }
 
@@ -1922,11 +1922,11 @@ textarea[readonly] {
   vertical-align: middle;
   padding-left: 14px; }
 
-.help-block,
+.help-block, .help-text,
 .help-inline {
   color: #4b473a; }
 
-.help-block {
+.help-block, .help-text {
   display: block;
   margin-bottom: 0.75em; }
 
@@ -1964,11 +1964,13 @@ textarea[readonly] {
     *padding-left: 28px; }
     .form-horizontal .controls:first-child {
       *padding-left: 28px; }
-  .form-horizontal .help-block {
+  .form-horizontal .help-block, .form-horizontal .help-text {
     margin-bottom: 0; }
-  .form-horizontal input + .help-block,
+  .form-horizontal input + .help-block, .form-horizontal input + .help-text,
   .form-horizontal select + .help-block,
-  .form-horizontal textarea + .help-block {
+  .form-horizontal select + .help-text,
+  .form-horizontal textarea + .help-block,
+  .form-horizontal textarea + .help-text {
     margin-top: 0.75em; }
   .form-horizontal .form-actions {
     padding-left: 49%; }
@@ -4546,10 +4548,11 @@ footer {
 
 section {
   padding: 1.5em 0 1.5em 0; }
-  section.alt {
-    background: white; }
   section p:last-child {
     margin-bottom: 0; }
+
+.page section:nth-child(odd) {
+  background: white; }
 
 header {
   padding: 3em 0 1.5em 0;
@@ -4564,3 +4567,17 @@ header {
       color: #306a99; }
   header .subhead {
     color: #807c70; }
+
+.tag {
+  background: #d4d3ce;
+  border: 1px solid #bdbab3;
+  border-radius: 4px;
+  padding: 0 6px;
+  display: inline-block;
+  font-size: 14px;
+  font-size: 1.4rem;
+  margin-right: 7px;
+  margin-bottom: 0.375em; }
+  .tag:hover {
+    background: white;
+    text-decoration: none; }

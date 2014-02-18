@@ -2,22 +2,17 @@
 {% load i18n conference assopy_tags %}
 
 {% block EXTRA_HEAD %}{{ form.media }}{% endblock %}
-{% block PAGE_TITLE %}New talk submission &mdash; {% endblock %}
+{% block PAGE_TITLE %}Nuovo talk{% endblock %}
 
 {% block MAIN_CONTENT %}
-    <h1>New submission</h1>
-    <div class="span-9 last">
-        {% if proposed_talks %}
-        <section class="notice">
-            <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.<br />To edit your submission{{ proposed_talks.count|pluralize }}, please visit your <a href="{% url conference-profile slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
-        </section>
-        {% endif %}
 
-        <form class="talk-form" action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-
-            {% if not proposed_talks %}
+<form class="talk-form" action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">
+{% if not proposed_talks %}
+    <section>
+        <div class="grid-container">
+        <div class="grid-100">      
             <fieldset>
-                <legend>Speaker profile</legend>
+                <legend>Profilo speaker</legend>
                 
                 <div class="span-3">{{ form.first_name|field }}</div>
                 <div class="span-6 last">{{ form.last_name|field }}</div>
@@ -29,7 +24,7 @@
                 <hr />
                 <div class="span-3">{{ form.job_title|field }}</div>
                 <div class="span-3">{{ form.birthday|field }}</div>
-
+        
                 <div class="span-3 last">{{ form.phone|field }}</div>
                 <div class="span-3">{{ form.company|field }}</div>
                 <div class="span-6 last">{{ form.company_homepage|field }}</div>
@@ -38,31 +33,49 @@
                 <div class="span-9 last">{{ form.first_time|field }}</div>
                 <div class="span-9 last">{{ form.personal_agreement|field }}</div>
             </fieldset>
-            {% endif %}
+        </div><!-- /grid -->
+        </div><!-- /grid-container -->
+    </section>
+{% endif %}    
 
-            <fieldset>
-                <legend>Talk description</legend>
-                <div>{{ form.type|field }}</div>
+<section>
+<div class="grid-container">
 
-                <div>{{ form.title|field }}</div>
-                <div class="span-3">{{ form.language|field }}</div>
-                <div class="span-3">{{ form.duration|field }}</div>
-                <div class="span-3 last">{{ form.level|field }}</div>
-                
-                <hr />
-                <div>{{ form.abstract|field }}</div>
-                <div>{{ form.tags|field }}</div>
-                <div>{{ form.video_agreement|field }}</div>
-
-                <div>{{ form.slides_agreement|field }}</div>
-            </fieldset>
-            <fieldset class="border">
-                <p class="note"><b>Note</b>: if you are available to give the same talk both in Italian and English, 
-                please submit the talk twice, with fully translated title and abstract.
-                </p>
-                <button type="submit">Submit Talk</button>
-            </fieldset>
-        </form>
+{% if proposed_talks %}
+    <div class="alert--info">
+        <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}. To edit your submission{{ proposed_talks.count|pluralize }}, visit your <a href="{% url conference-profile slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
     </div>
+{% endif %}    
+
+    <fieldset>
+        <legend>Nuovo talk</legend>
+        <div>{{ form.type|field }}</div>
+
+        <div>{{ form.title|field }}</div>
+        <div class="span-3">{{ form.language|field }}</div>
+        <div class="span-3">{{ form.duration|field }}</div>
+        <div class="span-3 last">{{ form.level|field }}</div>
+        
+        <hr />
+        
+        <div>{{ form.abstract|field }}</div>
+        <div>{{ form.tags|field }}</div>
+        
+        <div>{{ form.video_agreement|field }}</div>
+        <div>{{ form.slides_agreement|field }}</div>
+    </fieldset>
+    <fieldset>
+        <p class="secondary"><b>Note</b>: if you are available to give the same talk both in Italian and English, please submit the talk twice, with fully translated title and abstract.</p>
+        <button type="submit" name="" class="btn btn-primary">Invia il talk</button>
+    </fieldset>
+</div><!-- /grid -->
+</div><!-- /grid-container -->
+</section>
+
+{% csrf_token %}
+</form>
+
 {% endblock %}
+
+
 
