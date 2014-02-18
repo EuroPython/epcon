@@ -64,7 +64,7 @@ content : 'bp6'; }
 
 [role="contentinfo"] {
 color: $lighterneutralcolor;
-padding : $baselineheight $gutterwidth / 2;
+padding : $baselineheight 0;
 
 ul {
 @include zero;
@@ -73,5 +73,6 @@ list-style: none;
 a {
     color : $navigationlinkcolor;
     &:hover { color : $navigationlinkcolorhover; }
+    &:visited { color : $navigationlinkcolor; }
 }  
 }

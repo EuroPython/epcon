@@ -58,7 +58,7 @@ ol,
 ul,
 dl,
 address {
-margin-bottom : $baselineheight;
+margin-bottom : $baselineheight / 2;
 @include font-size($basefontsize);
 line-height : $baselineheight; }
 
@@ -67,7 +67,7 @@ small {
 
 ul,
 ol {
-margin : 0 0 $baselineheight #{-$gutterwidth};
+margin : 0 0 $baselineheight / 2 #{-$gutterwidth};
 padding : 0 0 0 $gutterwidth; }
 
 li ul,
@@ -134,7 +134,7 @@ content : none; }
 
 dl,
 dd {
-margin-bottom : $baselineheight;  }
+margin-bottom : $baselineheight / 2;  }
 
 dt {
 font-weight : bold; }

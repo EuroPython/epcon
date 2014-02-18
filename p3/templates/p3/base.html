@@ -24,7 +24,7 @@
 <!-- <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/h/apple-touch-icon-144x144-precomposed.png"> -->
 
     {% if current_page and request.user.is_staff %}
-        <link rel="alternate" type="application/x-wiki" title="Edit this page!" href="{% url admin:pages_page_change current_page.pk %}"/>
+        <link rel="alternate" type="application/x-wiki" title="Edit this page" href="{% url admin:pages_page_change current_page.pk %}"/>
     {% endif %}
 
     <!-- For all browsers -->
@@ -98,14 +98,11 @@
     {% endfor %}
 {% endif %}
     {% block TOP_NAV_BLOCK %}
-
     <a href="#navigation-toggle" class="navigation-toggle">Menu</a>
     <nav id="navigation-toggle" role="navigation">
         <ul>
             {% with request.META.PATH_INFO as pth %}
-                <li class="{% ifequal pth "/" %}current{% endifequal %}">
-                    <a href="/">Home</a>
-                </li>
+                <li class="{% ifequal pth "/" %}current{% endifequal %}"><a href="/">Home</a></li>
             {% endwith %}
             {% navigation "menu1" as pages %}
             {% for page in pages %}
@@ -118,7 +115,6 @@
                     <a href="/blog/">Blog</a>
                 </li>
             {% endwith %}
-
             {% if request.user.is_authenticated %}
                 <li class="user"><a href="{% url assopy-profile %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a></li>
                 {% if request.user.is_staff %}
@@ -132,9 +128,7 @@
                 <li class="user"><a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a></li>
             {% endif %}
         </ul>
-<!--         <form class="hidden" id="change-language" action="/i18n/setlang/" method="post"><div style="display: inline;"><input type="hidden" name="language" value="" /></div></form> -->
     </nav>
-
     {% endblock %}
 {% endblock %}
 
@@ -147,34 +141,29 @@
                 <div class="branding"><a href="/" title="PyCon homepage"><img src="{{STATIC_URL}}p5/images/pycon-logo2.png" alt="*" ></a></div>
             {% endblock %}
         </div>
-        <div class="grid-60">
+        <div class="grid-55">
             <h1>PyCon <span>Cinque</span></h1>
             <div class="subhead">Firenze, 23–25 Maggio 2014</div>
         </div>
 
-        <div class="grid-20">
+        <div class="grid-25">
             {% fares_available "conference" sort="price" as fares %}
             {% if not fares %}
                 {% fares_available "all" sort="price" as fares %}
             {% endif %}
             {% if fares %}
-            <div class="buy badge">
-                <h5><a href="/registration/">Buy Tickets</a></h5>
-                Starting from <b>{{ fares.0.price }}€</b>
+            <div class="badge buy">
+                <h5><i class="fa fa-ticket"></i>&ensp;<a href="/registration/">Buy Tickets</a></h5>
+                <p>Starting from <b>{{ fares.0.price }}€</b></p>
             </div>
-            {% else %}
-            &nbsp;
             {% endif %}
-        </div>
-
-        <div class="grid-20">
-            <div id="habla_available_div" class="badge chat hidden">
-                <h5><a href="#">Get Support</a></h5>
-                Chat with organizers
+            <div id="habla-available" class="badge chat hidden">
+                <h5><a href="#"><i class="fa fa-comments-o"></i>&ensp;Supporto online</a></h5>
+                <p>Chat with organizers</p>
             </div>
-            <div id="habla_unavailable_div" class="badge chat unavailable">
-                <h5><a href="#">Support unavailable</a></h5>
-                Please try again later
+            <div id="habla-unavailable" class="badge chat unavailable">
+                <h5><a href="#"><i class="fa fa-ban"></i>&ensp;Supporto non disp.</a></h5>
+                <p>Please try again later</p>
             </div>
         </div>
     </div><!-- /grid-container -->
@@ -209,57 +198,55 @@
 {% block FOOTER_BLOCK %}
 <footer role="contentinfo">
 <div class="grid-container">
-  <div class="grid-25">
-    <nav class="">
-        <h5>&nbsp;</h5>
-        <ul>
-            {% block BOTTOM_NAV_BLOCK %}
-                {% navigation "menu3" as pages %}
-                {% for page in pages %}
-                    <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
-                {% endfor %}
-            {% endblock %}
-
-            <li class="sep"><i class="fa fa-facebook-square"></i>&nbsp;<a href="#">PyCon on Facebook</a></li>
-            <li><i class="fa fa-rss"></i>&nbsp;<a href="/blog/feeds/latest/">Recent blog posts</a></li>
-        </ul>
-    </nav>
-  </div><!-- /grid -->
 
   <div class="grid-25">
-     {% box_latest_tweets %}
-  </div><!-- /grid -->
-
-  <div class="grid-25">
-
       <div class="donate">
-            <h5><span>Please</span> Donate</h5>
-            <p>EuroPython is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
-            <p class="">
+            <h5>Please donate</h5>
+            <p class="secondary">EuroPython is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
+            <p>
                 <img src="{{ STATIC_URL }}p5/images/icon-visa.png" alt="Visa" width="32" height="32" />
                 <img src="{{ STATIC_URL }}p5/images/icon-mastercard.png" alt="Mastercard" width="32" height="32" />
                 <img src="{{ STATIC_URL }}p5/images/icon-amex.png" alt="Amex" width="32" height="32" />
                 <img src="{{ STATIC_URL }}p5/images/icon-paypal.png" alt="Paypal" width="32" height="32" />
             </p>
-            <div>
-                <form id="donate-form" action="https://www.paypal.com/cgi-bin/webscr" method="POST">
-                    <input type="hidden" name="cmd" value="_s-xclick" />
-                    <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG" />
-                    <img alt="" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1" />
-                    <button class="btn btn-small btn-primary" type="submit" name="" title="PayPal - The safer, easier way to pay online!">Donate Now</button>
-                    <script type="text/javascript">
-/*
-                    $('#donate-form a').click(function(e) {
-                        e.preventDefault();
-                        $('#donate-form').submit();
-                    });
-*/
-                    </script>
-                </form>
-            </div>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="POST">
+                <input type="hidden" name="cmd" value="_s-xclick" />
+                <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG" />
+                <button class="btn btn-small btn-primary" type="submit" name="" style="margin-left: 0" title="PayPal - The safer, easier way to pay online!">Dona ora con PyaPal</button>
+                <img alt="" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1" />
+            </form>
         </div>
-        
   </div><!-- /grid -->
+  
+    <div class="grid-25">
+        <nav>
+            <h5>Il sito</h5>
+            <ul>
+                {% block BOTTOM_NAV_BLOCK %}
+                    {% navigation "menu3" as pages %}
+                    {% for page in pages %}
+                        <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
+                    {% endfor %}
+                {% endblock %}
+            </ul>
+        </nav>
+    </div><!-- /grid -->
+
+    <div class="grid-25">
+        <h5>Edizioni precedenti</h5>
+        <ul>
+            <li><a href="/ep2013/">EuroPython 2013</a></li>
+        </ul>
+    </div><!-- /grid -->
+    
+    <div class="grid-25">
+        <h5>Socializza</h5>
+        <ul>
+            <li><i class="fa fa-facebook-square"></i>&ensp;<a href="#">PyCon su Facebook</a></li>
+            <li><i class="fa fa-twitter-square"></i>&ensp;<a href="http://twitter.com/pyconit">Seguici su Twitter</a></li>
+            <li><i class="fa fa-rss-square"></i>&ensp;<a href="/blog/feeds/latest/">Ultimi post</a></li>
+        </ul>
+    </div><!-- /grid -->
   
   <div class="grid-100">
       <hr>
@@ -268,20 +255,22 @@
 </div><!-- /grid-container -->
 </footer>
 
-{% block SPONSORS %}
-<div class="sponsors">
-    <h5>Our Sponsors</h5>
-    {% conference_sponsor as sponsors %}
-    {% for s in sponsors %}
+{%comment%}
+    {% block SPONSORS %}
+    <div class="sponsors">
+        <h5>Our Sponsors</h5>
+        {% conference_sponsor as sponsors %}
+        {% for s in sponsors %}
+            <div class="ad">
+                <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="110" height="50" /></a>
+            </div>
+        {% endfor %}
         <div class="ad">
-            <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="110" height="50" /></a>
+            <a href="/sponsor/"><img src="{{ STATIC_URL }}p5/images/sponsor-wanted.png" alt="Become a sponsor" width="110" height="50" /></a>
         </div>
-    {% endfor %}
-    <div class="ad">
-        <a href="/sponsor/"><img src="{{ STATIC_URL }}p5/images/sponsor-wanted.png" alt="Become a sponsor" width="110" height="50" /></a>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}
+{%endcomment%}
 
 </div><!-- container -->
 
@@ -306,13 +295,13 @@
     </script>
     {% olark_chat %}
     <script type='text/javascript'>
-    $('#habla_available_div').click(function(e) {
+    $('#habla-available').click(function(e) {
         e.preventDefault();
         olark('api.box.expand');
     });
     olark('api.chat.onOperatorsAvailable', function() {
-        $('#habla_available_div').show();
-        $('#habla_unavailable_div').hide();
+        $('#habla-available').show();
+        $('#habla-unavailable').hide();
     });
     </script>
     {% comment %}Twitter library used by the follow button{% endcomment %}

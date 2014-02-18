@@ -1,0 +1,13 @@
+
+// Post lists
+.blog-archive {
+    ul {
+        list-style: none;     
+        li {
+            margin-bottom: $baselineheight / 2; }
+    }
+    
+    .h4 {
+        margin-bottom: 0;
+    }
+}

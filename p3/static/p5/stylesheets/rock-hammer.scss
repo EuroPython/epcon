@@ -18,6 +18,28 @@ $ie8-opacity-supported 	 : false;
 
 // @@REMOVE: Quick styles for placeholder page
 
+.meta {
+    @extend small;
+    color: $neutralcolor;
+}
+
+.badge {
+    background: $white;
+    border: 1px solid $lightneutralcolor;
+    padding: $baselineheight/2 $gutterwidth/2;
+    border-radius: $borderradius;
+    text-align: center;
+
+    h5 {
+        margin-bottom: 0;        
+    }
+    p { 
+        @extend small;
+        color: $neutralcolor;
+        margin-bottom: 0;
+    }
+}
+
 .container {
 }
 
@@ -30,23 +52,15 @@ footer {
 }
 
 section {
-    padding: $baselineheight 0 0 0;
+    padding: $baselineheight 0 $baselineheight 0;
     
     &.alt {
         background: $white;
     }
-    
-/*
+        
     p:last-child {
         margin-bottom: 0;
     }
-*/
-
-/*
-    p {
-        @include columns(2);
-    }
-*/
 }
 
 header {
@@ -69,9 +83,5 @@ header {
         color: $neutralcolor; }    
 }
 
-/*
-.fa-twitter {
-    vertical-align: middle;
-    color: $primarycolor;
-}
-*/
+
+

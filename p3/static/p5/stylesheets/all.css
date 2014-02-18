@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, .badge p, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -83,7 +83,7 @@ body:after {
 
 [role="contentinfo"] {
   color: #d4d3ce;
-  padding: 1.5em 14px; }
+  padding: 1.5em 0; }
   [role="contentinfo"] ul {
     margin: 0;
     padding: 0;
@@ -92,6 +92,8 @@ body:after {
     color: #88b5da; }
     [role="contentinfo"] a:hover {
       color: white; }
+    [role="contentinfo"] a:visited {
+      color: #88b5da; }
 
 [role="banner"] {
   *zoom: 1; }
@@ -147,7 +149,7 @@ h1, h2, header .subhead, h3, h4, h5, h6 {
   font-weight: 700;
   color: inherit;
   text-rendering: optimizelegibility; }
-  h1 small, h2 small, header .subhead small, h3 small, h4 small, h5 small, h6 small {
+  h1 small, h1 .meta, h1 .badge p, .badge h1 p, h2 small, header .subhead small, h2 .meta, header .subhead .meta, h2 .badge p, .badge h2 p, header .subhead .badge p, .badge header .subhead p, h3 small, h3 .meta, h3 .badge p, .badge h3 p, h4 small, h4 .meta, h4 .badge p, .badge h4 p, h5 small, h5 .meta, h5 .badge p, .badge h5 p, h6 small, h6 .meta, h6 .badge p, .badge h6 p {
     font-weight: normal;
     line-height: 1;
     color: #bdbab3; }
@@ -200,18 +202,18 @@ ol,
 ul,
 dl,
 address {
-  margin-bottom: 1.5em;
+  margin-bottom: 0.75em;
   font-size: 18px;
   font-size: 1.8rem;
   line-height: 1.5em; }
 
-small {
+small, .meta, .badge p {
   font-size: 15px;
   font-size: 1.5rem; }
 
 ul,
 ol {
-  margin: 0 0 1.5em -28px;
+  margin: 0 0 0.75em -28px;
   padding: 0 0 0 28px; }
 
 li ul,
@@ -236,18 +238,18 @@ blockquote {
   padding: 14px;
   background-color: #e0dfdc;
   font-style: normal; }
-  blockquote small:before {
+  blockquote small:before, blockquote .meta:before, blockquote .badge p:before, .badge blockquote p:before {
     content: '\00A0 \2014'; }
-  blockquote small:after {
+  blockquote small:after, blockquote .meta:after, blockquote .badge p:after, .badge blockquote p:after {
     content: ''; }
   blockquote.pull-right {
     float: right;
     background-color: transparent; }
-    blockquote.pull-right p, blockquote.pull-right small {
+    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right .badge p, .badge blockquote.pull-right p {
       text-align: right; }
-    blockquote.pull-right small:before {
+    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right .badge p:before, .badge blockquote.pull-right p:before {
       content: ''; }
-    blockquote.pull-right small:after {
+    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right .badge p:after, .badge blockquote.pull-right p:after {
       content: '\00A0 \2014'; }
   blockquote cite {
     font-style: normal; }
@@ -264,7 +266,7 @@ q:after {
 
 dl,
 dd {
-  margin-bottom: 1.5em; }
+  margin-bottom: 0.75em; }
 
 dt {
   font-weight: bold; }
@@ -494,6 +496,26 @@ a {
 
 .swatch-success span:nth-child(4) {
   background-color: rgba(188, 212, 222, 0.6); }
+
+.btn {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0dfdc), to(#c8c6c1));
+  background-image: -webkit-linear-gradient(top, #e0dfdc, #c8c6c1);
+  background-color: #c8c6c1;
+  background-image: -moz-linear-gradient(top, #e0dfdc, #c8c6c1);
+  background-image: -ms-linear-gradient(top, #e0dfdc, #c8c6c1);
+  background-image: -o-linear-gradient(top, #e0dfdc, #c8c6c1);
+  background-image: linear, top, #e0dfdc, #c8c6c1;
+  background-repeat: repeat-x; }
+
+.btn-primary {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#306a99), to(#244f72));
+  background-image: -webkit-linear-gradient(top, #306a99, #244f72);
+  background-color: #244f72;
+  background-image: -moz-linear-gradient(top, #306a99, #244f72);
+  background-image: -ms-linear-gradient(top, #306a99, #244f72);
+  background-image: -o-linear-gradient(top, #306a99, #244f72);
+  background-image: linear, top, #306a99, #244f72;
+  background-repeat: repeat-x; }
 
 .accordion {
   margin-bottom: 1.5em; }
@@ -1620,7 +1642,6 @@ table {
   box-shadow: inset 0 1px 7px #c8c6c1; }
 
 form {
-  margin: 0 0 1.5em 0;
   font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; }
   form p {
     margin-bottom: 0.75em; }
@@ -1651,7 +1672,7 @@ legend {
   font-weight: bold;
   line-height: 1.5em;
   white-space: normal; }
-  legend small {
+  legend small, legend .meta, legend .badge p, .badge legend p {
     font-size: 1.125em;
     color: #4b473a; }
 
@@ -4451,6 +4472,13 @@ nav[role=navigation].active {
   #navigation-toggle li.user a {
     text-transform: none; }
 
+.blog-archive ul {
+  list-style: none; }
+  .blog-archive ul li {
+    margin-bottom: 0.75em; }
+.blog-archive .h4 {
+  margin-bottom: 0; }
+
 @media print {
   * {
     background: transparent !important;
@@ -4496,25 +4524,32 @@ nav[role=navigation].active {
 
   tr {
     page-break-inside: avoid; } }
+.meta {
+  color: #807c70; }
+
+.badge {
+  background: white;
+  border: 1px solid #bdbab3;
+  padding: 0.75em 14px;
+  border-radius: 4px;
+  text-align: center; }
+  .badge h5 {
+    margin-bottom: 0; }
+  .badge p {
+    color: #807c70;
+    margin-bottom: 0; }
+
 footer {
   background: #1e425f; }
   footer hr {
     border-color: #306a99; }
 
 section {
-  padding: 1.5em 0 0 0;
-  /*
-      p:last-child {
-          margin-bottom: 0;
-      }
-  */
-  /*
-      p {
-          @include columns(2);
-      }
-  */ }
+  padding: 1.5em 0 1.5em 0; }
   section.alt {
     background: white; }
+  section p:last-child {
+    margin-bottom: 0; }
 
 header {
   padding: 3em 0 1.5em 0;
@@ -4529,10 +4564,3 @@ header {
       color: #306a99; }
   header .subhead {
     color: #807c70; }
-
-/*
-.fa-twitter {
-    vertical-align: middle;
-    color: $primarycolor;
-}
-*/

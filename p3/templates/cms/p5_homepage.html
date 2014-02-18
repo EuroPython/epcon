@@ -3,9 +3,17 @@
 {% block BODY_CLASS %}home{% endblock %}
 
 {% block TEASER %}
+
+<section class="">
+    <div class="grid-container">
+    <div class="grid-100">
         <div class="intro">
-            <p><b>EuroPython</b> is the official European conference about the <b>Python programming language</b>. It is aimed at everyone in the Python community, of all skill levels, both users and&nbsp;programmers.</p>
+            <p class="lead"><b>PyCon</b> claim kale chips trust fund, cred assumenda dolore selfies hella leggings cillum.  Letterpress iPhone odio, duis  delectus Schlitz street art.  Portland pariatur hoodie veniam, hella flexitarian Pinterest.  Et stumptown beard direct trade  mumblecore.</p>
         </div>        
+    </div><!-- /grid-100 -->
+    </div><!-- /grid-container -->
+</section>
+
 
 <section class="alt">
     <div class="grid-container">
@@ -42,108 +50,79 @@
     </div><!-- /grid-container -->
 </section>
 
-<section class="alt">
+<section class="">
 <div class="grid-container">
-
+    
+    <div class="grid-100">      
         <h2>PyCon at a glance</h2>
+    </div>
 
-        <div class="span-1">                            
-            <h3>Learn</h3>
-        </div>
-        <div class="span-3">
-            
-            <dl>
-                <dt><span>Talks</span></dt>
-                <dd>More than 120 talks in 5 different tracks</dd>
-
-                <dt><a href="/training">Trainings</a></dt>
-                <dd>In-depth 4-hours sessions: write code, improve your skills</dd>
-                
-                <dt><a href="/poster-session">Posters</a></dt>
-                <dd>Watch visualizations of projects, and chat with the authors</dd>                
-           </dl>
-        
-        </div>
-
-        <div class="span-1">                            
-            <h3>Hack</h3>
-        </div>
-        <div class="span-3">
-            <dl>
+    <div class="grid-33">            
+        <h3>Learn</h3>                        
+        <dl>
+            <dt><span>Talks</span></dt>
+            <dd>More than 120 talks in 5 different tracks</dd>
+            <dt><a href="/training">Trainings</a></dt>
+            <dd>In-depth 4-hours sessions: write code, improve your skills</dd>
+            <dt><a href="/poster-session">Posters</a></dt>
+            <dd>Watch visualizations of projects, and chat with the authors</dd>                
+       </dl>
+    </div>
+    
+    <div class="grid-33">
+        <h3>Hack</h3>
+        <dl>
             <dt><a href="/p3/sprints/">Sprints</a></dt>
             <dd>Contribute to your favourite Python project and discuss with developers</dd>
-
             <dt><a href="/pyevents">Competitions</a></dt>
             <dd>Solve problems and riddle, win fantastic prizes</dd>
-
             <dt><a href="/openspace">Open space</a></dt>
             <dd>Relax, get a tan, and join BoF, meetups, and impromptu talks</dd>
-
-            </dl>
-        </div>
-        
-
-        <div class="span-1">                            
-            <h3>Discover</h3>
-        </div>
-        <div class="span-3 last">
-            
-            <dl>
+        </dl>
+    </div>
+    
+    <div class="grid-33">
+        <h3>Discover</h3>
+        <dl>
             <dt><a href="/find-out-whos-coming">Find out who's coming</a></dt>
             <dd>Browse the attendees list, get in touch, organize a meetup</dd>
-
             <dt><a href="/recruiting">Recruiting</a></dt>
             <dd>Looking for a Python job? Meet companies that need you</dd>
-
             <dt><a href="/pyevents">Social events</a></dt> 
             <dd>Pizza, beer, steak: refurbish your soul in the evening</dd>
-
-            </dl>
-        
-        </div>
-
+        </dl>
+    </div>
 
 </div><!-- /grid-container -->
 </section>
 
 
-
+     
 {% endblock%}
 
 {% block MAIN_CONTENT %}
-    {% if not conf.conference %}
-    <section class="where">
-            <h2>Let’s meet in <span>Florence</span></h2>
-            <p>EuroPython 2013 will be held in the world-famous beautiful city of Florence. Take 
-            the chance to <a href="/partner-program">visit the city</a> and the marvellous Tuscany, bringing your partner and family with you.
-            We’re preparing a great <b>partner program</b> with guided tours and visits to museums at cheap rates! </p>
-    </section>
-    {% endif %}
 
-    <section class="clearfix">
-        {% post_list count=3 as posts %}
-        <div class="blog border span-6">
-            <h2>From the blog</h2>
-            <ul>
-                {% for post in posts %}
-                {% get_post_data post.id as data %}
-                <li>
-                    <h3><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
-                    <div class="meta">Posted on <b>{{ post.date|date:"M j Y" }}</b>{% if data.comments %} &mdash; <a href="{{ data.url }}#comments">{{ data.comments|length }} comments</a>{% endif %}</div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+<section class="alt">
+<div class="grid-container">
+    <div class="grid-33">
+        {% box_latest_tweets %}
+    </div>
+    {% post_list count=3 as posts %}
+    <div class="blog-archive grid-33">
+        <h3>PyCon blog</h3>
+        <ul>
+            {% for post in posts %}
+            {% get_post_data post.id as data %}
+            <li>
+                <h3 class="h4"><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
+                <div class="meta">{{ post.date|date:"M j Y" }}&ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div><!-- /grid-container -->
+</section>
 
-        <div class="archives span-6 last">
-            <h2>Browse the <span>archives</h2>
-            <ul>
-                <li><a href="/ep2011/">EuroPython <span>2011</span></a></li>
-                <li><a href="/ep2012/">EuroPython <span>2012</span></a></li>
-                <li><a href="/ep2013/">EuroPython <span>2013</span></a></li>
-            </ul>
-        </div>
-    </section>
 {% endblock %}
 
 
