@@ -36,15 +36,18 @@ margin-bottom : $baselineheight * 2;
 *margin-left : -7px;
 padding : 0 0 $baselineheight / 2 0;
 border : 0;
-color : $textcolor;
-@include font-size($basefontsize * 1.5);
+color : $neutralcolor;
+//@include font-size($basefontsize * 1.5);
 font-weight : bold;
 line-height : $baselineheight;
 white-space : normal; 
-
+text-transform: uppercase;
+@extend .spaced;
+/*
 small {
-font-size : $baselineheight * .75;
+font-size : $basefontsize * .75;
 color : $formsmallcolor; }
+*/
 }
 
 label,
@@ -57,7 +60,11 @@ font-family : $formfontfamily; }
 label {
 display : block;
 margin-bottom : $baselineheight / 4;
-@include font-size($basefontsize); }
+@include font-size($basefontsize); 
+    span {
+    font-size : $basefontsize * .75;
+    color : $formsmallcolor; }
+}
 
 select,
 textarea,
@@ -208,7 +215,7 @@ textarea[disabled],
 input[readonly],
 select[readonly],
 textarea[readonly] {
-opacity : .25; }
+opacity : .45; }
 
 // actions
 
@@ -223,3 +230,24 @@ padding : ($baselineheight - 1) $gutterwidth $baselineheight;
 [placeholder]:focus::-webkit-input-placeholder {
 opacity : 0;
 transition : opacity .5s .5s ease; }
+
+// field status
+
+.has-error {
+input,
+textarea,
+select {
+border-color : $errorcolor;
+color : $errorcolor;
+}
+label { color: $errorcolor; }
+}
+
+.has-warning {
+    // @@TODO
+}
+.has-success {
+    // @@TODO
+}
+
+

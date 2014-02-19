@@ -145,8 +145,8 @@ $linkcolorfocus 				: darken($linkcolorvisited, 10);
 
 // Now define another set of colours. These will be used to style alerts and buttons
 $alertcolor 					: rgb(218,79,73);
-$errorcolor 					: rgb(176,20,0);
-$infocolor 						: rgb(216,220,162);
+$errorcolor 					: $secondarycolor; //rgb(176,20,0);
+$infocolor 						: #c5dcf0;
 $inversecolor 					: rgb(65,65,65);
 $successcolor 					: rgb(188,212,222);
 $warningcolor 					: $errorcolor;
@@ -551,23 +551,23 @@ $forminputbordercolorfocus 		: darken($forminputbordercolor, 25%);
 // Set inputs’ border radius. Default is $borderradius defined above
 $forminputborderradius			: $borderradius;
 
-// Set inputs’ font-family. Default is $borderradius defined above
-$forminputfontfamily			: $altfontfamily;
+// Set inputs’ font-family. Default is formfontfamily defined above
+$forminputfontfamily			: $formfontfamily;
 
 // Set placeholder text colour
 $formplaceholdercolor 			: $lightneutralcolor;
 
-
-
+// Set labels width for horizontal form style
+$formlabelwidth                 : 29%;
 
 
 // =help ============
 
 // Set the colour for help text
-$formhelpcolor 					: lighten($textcolor, 10%);
+$formhelpcolor 					: $neutralcolor; //lighten($textcolor, 10%);
 
 // And small text inside forms
-$formsmallcolor 				: lighten($textcolor, 10%);
+$formsmallcolor 				: $neutralcolor; //lighten($textcolor, 10%);
 
 
 

@@ -358,7 +358,7 @@ sub {
   line-height: 1.4; }
 
 /*footnotes*/
-.spaced {
+.spaced, legend {
   letter-spacing: 1px; }
 
 a {
@@ -462,28 +462,28 @@ a {
   background-color: rgba(128, 124, 112, 0.6); }
 
 .swatch-error span:nth-child(1) {
-  background-color: rgba(176, 20, 0, 0.9); }
+  background-color: rgba(173, 61, 49, 0.9); }
 
 .swatch-error span:nth-child(2) {
-  background-color: rgba(176, 20, 0, 0.8); }
+  background-color: rgba(173, 61, 49, 0.8); }
 
 .swatch-error span:nth-child(3) {
-  background-color: rgba(176, 20, 0, 0.7); }
+  background-color: rgba(173, 61, 49, 0.7); }
 
 .swatch-error span:nth-child(4) {
-  background-color: rgba(176, 20, 0, 0.6); }
+  background-color: rgba(173, 61, 49, 0.6); }
 
 .swatch-info span:nth-child(1) {
-  background-color: rgba(216, 220, 162, 0.9); }
+  background-color: rgba(197, 220, 240, 0.9); }
 
 .swatch-info span:nth-child(2) {
-  background-color: rgba(216, 220, 162, 0.8); }
+  background-color: rgba(197, 220, 240, 0.8); }
 
 .swatch-info span:nth-child(3) {
-  background-color: rgba(216, 220, 162, 0.7); }
+  background-color: rgba(197, 220, 240, 0.7); }
 
 .swatch-info span:nth-child(4) {
-  background-color: rgba(216, 220, 162, 0.6); }
+  background-color: rgba(197, 220, 240, 0.6); }
 
 .swatch-success span:nth-child(1) {
   background-color: rgba(188, 212, 222, 0.9); }
@@ -576,20 +576,20 @@ a {
 /*alert--success*/
 .alert--danger,
 .alert--error {
-  background-color: #b01400;
-  border-color: #7d0e00;
-  color: #ffe6e3; }
+  background-color: #ad3d31;
+  border-color: #852f26;
+  color: white; }
   .alert--danger > h4,
   .alert--error > h4 {
-    color: #ffe6e3; }
+    color: white; }
 
 /*alert--error*/
 .alert--info {
-  background-color: #d8dca2;
-  border-color: #c8ce7d;
-  color: #585c23; }
+  background-color: #c5dcf0;
+  border-color: #9cc4e6;
+  color: #255f91; }
   .alert--info > h4 {
-    color: #585c23; }
+    color: #255f91; }
 
 /*alert--info*/
 .alert--block {
@@ -1666,15 +1666,16 @@ legend {
   *margin-left: -7px;
   padding: 0 0 0.75em 0;
   border: 0;
-  color: #2e2c24;
-  font-size: 27px;
-  font-size: 2.7rem;
+  color: #807c70;
   font-weight: bold;
   line-height: 1.5em;
-  white-space: normal; }
-  legend small, legend .meta, legend .badge p, .badge legend p {
-    font-size: 1.125em;
-    color: #4b473a; }
+  white-space: normal;
+  text-transform: uppercase;
+  /*
+  small {
+  font-size : $basefontsize * .75;
+  color : $formsmallcolor; }
+  */ }
 
 label,
 input,
@@ -1688,6 +1689,9 @@ label {
   margin-bottom: 0.375em;
   font-size: 18px;
   font-size: 1.8rem; }
+  label span {
+    font-size: 13.5;
+    color: #807c70; }
 
 select,
 textarea,
@@ -1887,7 +1891,7 @@ textarea[disabled],
 input[readonly],
 select[readonly],
 textarea[readonly] {
-  opacity: .25; }
+  opacity: .45; }
 
 .form-actions {
   margin-top: 1.5em;
@@ -1904,9 +1908,17 @@ textarea[readonly] {
   opacity: 0;
   transition: opacity .5s .5s ease; }
 
+.has-error input,
+.has-error textarea,
+.has-error select {
+  border-color: #ad3d31;
+  color: #ad3d31; }
+.has-error label {
+  color: #ad3d31; }
+
 .help-block, .help-text,
 .help-inline {
-  color: #4b473a;
+  color: #807c70;
   font-size: 14.4px;
   font-size: 1.44rem;
   line-height: 1.4; }
@@ -1924,7 +1936,7 @@ textarea[readonly] {
 
 .help-block, .help-text,
 .help-inline {
-  color: #4b473a; }
+  color: #807c70; }
 
 .help-block, .help-text {
   display: block;
@@ -1950,7 +1962,7 @@ textarea[readonly] {
       clear: both; }
   .form-horizontal .control-label {
     float: left;
-    width: 49%;
+    width: 29%;
     padding-top: 5px;
     padding-right: 28px;
     text-align: right;
@@ -1959,7 +1971,7 @@ textarea[readonly] {
     box-sizing: border-box; }
   .form-horizontal .controls {
     *display: inline-block;
-    margin-left: 49%;
+    margin-left: 29%;
     *margin-left: 0;
     *padding-left: 28px; }
     .form-horizontal .controls:first-child {
@@ -1973,7 +1985,7 @@ textarea[readonly] {
   .form-horizontal textarea + .help-text {
     margin-top: 0.75em; }
   .form-horizontal .form-actions {
-    padding-left: 49%; }
+    padding-left: 29%; }
 
 .form-horizontal input,
 .form-horizontal textarea,
@@ -1988,6 +2000,9 @@ textarea[readonly] {
 .form-horizontal label,
 .form-horizontal .btn-group {
   display: inline-block; }
+.form-horizontal label.radio,
+.form-horizontal label.checkbox {
+  display: block; }
 .form-horizontal .control-group {
   margin-bottom: 0.75em; }
 .form-horizontal legend + .control-group {
@@ -2086,23 +2101,23 @@ input.search-query {
   cursor: default; }
 
 .btn-error {
-  background-color: #b01400;
-  border-color: #7d0e00;
-  border-bottom-color: #4a0800;
+  background-color: #ad3d31;
+  border-color: #852f26;
+  border-bottom-color: #5e211a;
   color: white; }
   .btn-error:visited, .btn-error:active, .btn-error:hover {
-    background-color: #7d0e00;
+    background-color: #852f26;
     color: #f2f2f2; }
 
 /*btn-error*/
 .btn-info {
-  background-color: #d8dca2;
-  border-color: #c8ce7d;
-  border-bottom-color: #b9c058;
-  color: #585c23; }
+  background-color: #c5dcf0;
+  border-color: #9cc4e6;
+  border-bottom-color: #74abdb;
+  color: #255f91; }
   .btn-info:visited, .btn-info:active, .btn-info:hover {
-    background-color: #c8ce7d;
-    color: #474a1c; }
+    background-color: #9cc4e6;
+    color: #20517c; }
 
 /*btn-info*/
 .btn-inverse {
@@ -2136,12 +2151,12 @@ input.search-query {
 
 /*btn-success*/
 .btn-warning {
-  background-color: #b01400;
-  border-color: #7d0e00;
-  border-bottom-color: #4a0800;
+  background-color: #ad3d31;
+  border-color: #852f26;
+  border-bottom-color: #5e211a;
   color: white; }
   .btn-warning:visited, .btn-warning:active, .btn-warning:hover {
-    background-color: #971100;
+    background-color: #99362b;
     color: #f2f2f2; }
 
 /*btn-warning*/
@@ -4581,3 +4596,25 @@ header {
   .tag:hover {
     background: white;
     text-decoration: none; }
+
+.toggle,
+.tag-toggle {
+  padding: 0 0 0 14px;
+  cursor: pointer;
+  background: transparent url(../images/icon-arr-down.png) left center no-repeat; }
+
+.toggle.trigger-expanded {
+  background-image: url(../images/icon-arr-up.png); }
+
+dt.toggle {
+  font-weight: bold;
+  margin: 0.75em 0 0 0; }
+
+dt.toggle img {
+  vertical-align: middle; }
+
+dt.toggle + dd {
+  font-size: 14px;
+  font-size: 1.4rem;
+  color: #807c70;
+  margin: 0.75em 0 0 14px; }

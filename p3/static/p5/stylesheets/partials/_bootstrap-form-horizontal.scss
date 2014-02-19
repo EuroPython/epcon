@@ -12,7 +12,7 @@ margin-bottom : $baselineheight;
 
 .control-label {
 float : left;
-width : 49%;
+width : $formlabelwidth;
 padding-top : 5px;
 padding-right : $gutterwidth;
 text-align : right;
@@ -20,7 +20,7 @@ text-align : right;
 
 .controls {
 *display : inline-block;
-margin-left : 49%;
+margin-left : $formlabelwidth;
 *margin-left : 0;
 *padding-left : $gutterwidth;
 
@@ -40,7 +40,7 @@ margin-top : $baselineheight / 2; }
 }/*input*/
 
 .form-actions {
-padding-left : 49%; }
+padding-left : $formlabelwidth; }
 }
 
 .form-horizontal {
@@ -60,6 +60,11 @@ display : none; }
 label,
 .btn-group {
 display : inline-block; }
+
+// Used in radio and checkbox groups, use radio.inline to stack controls horizontally
+label.radio,
+label.checkbox {
+display : block; }
 
 .control-group {
 margin-bottom : $baselineheight / 2; }

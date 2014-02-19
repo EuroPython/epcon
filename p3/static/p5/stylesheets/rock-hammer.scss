@@ -90,6 +90,8 @@ header {
     @extend .help-block;
 }
 
+// INLINE ELEMENTS =============================================================================
+
 .tag {
     background: $lighterneutralcolor;
     border: 1px solid $lightneutralcolor;
@@ -105,4 +107,30 @@ header {
     }
 }
 
+
+.toggle, 
+.tag-toggle {
+    padding: 0 0 0 $gutterwidth/2;
+    cursor: pointer;
+    background: transparent url(../images/icon-arr-down.png) left center no-repeat;
+}
+
+.toggle.trigger-expanded {
+    background-image: url(../images/icon-arr-up.png);
+}
+
+dt.toggle {
+    font-weight: bold;
+    margin: $baselineheight/2 0 0 0;
+}
+
+dt.toggle img {
+    vertical-align: middle;
+}
+
+dt.toggle+dd {
+    @include font-size(14);
+    color: $neutralcolor;    
+    margin: $baselineheight/2 0 0 $gutterwidth/2;    
+}
 
