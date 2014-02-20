@@ -1,6 +1,6 @@
 {% load i18n comments %}
 {% load hcomments_tags %}
-<div id="add-comment">
+<div id="add-comment" class="well">
     <h3>{% trans "New comment" %} </h3>
     <div class="form-box">
         {% get_comment_form for object as form %}
@@ -66,7 +66,7 @@
                 {% endfor %}
             </div>
             <fieldset class="border">
-                <button type="submit" class="ok">{% trans "Post comment" %}</button>
+                <button type="submit" class="btn btn-primary">{% trans "Post comment" %}</button>
             </fieldset>
         </form>
     </div>

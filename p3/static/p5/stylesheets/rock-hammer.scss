@@ -18,10 +18,6 @@ $ie8-opacity-supported 	 : false;
 
 // @@REMOVE: Quick styles for placeholder page
 
-.meta {
-    @extend small;
-    color: $neutralcolor;
-}
 
 .badge {
     background: $white;
@@ -93,7 +89,15 @@ header {
     @extend .help-block;
 }
 
-// INLINE ELEMENTS =============================================================================
+// MISC. =============================================================================
+
+.meta {
+    @extend small;
+    color: $neutralcolor;    
+    a:link, a:visited {
+        color: $neutralcolor;        
+    }
+}
 
 .tag {
     background: $lighterneutralcolor;

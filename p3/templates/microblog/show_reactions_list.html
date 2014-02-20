@@ -6,10 +6,10 @@
     {% for r in reactions %}
         <li>
             {% if r.excerpt %}
-            <div class="excerpt">{{ r.excerpt }}</div>
+                <div class="excerpt">{{ r.excerpt }}</div>
             {% endif %}
-            <div class="metadata">
-                <span class="date">{{ r.date|date:"d F Y" }}</span> da
+            <div class="meta">
+                <date>{{ r.date|date:"d F Y" }}</date> da
                 <a href="{{ r.url }}" rel="nofollow">{% if r.blog_name %}{{ r.blog_name }}{% else %}{{ r.url }}{% endif %}</a>.
             </div>
         </li>
