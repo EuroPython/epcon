@@ -257,18 +257,18 @@ PAGE_REAL_TIME_SEARCH = False
 
 PAGE_USE_STRICT_URL = True
 
-MICROBLOG_LINK = 'http://www.europython.eu'
-MICROBLOG_TITLE = 'Europython blog'
-MICROBLOG_DESCRIPTION = 'latest news from europython'
-MICROBLOG_DEFAULT_LANGUAGE = 'en'
+MICROBLOG_LINK = 'http://www.pycon.it'
+MICROBLOG_TITLE = 'PyconIT blog'
+MICROBLOG_DESCRIPTION = 'latest news from pycon.it'
+MICROBLOG_DEFAULT_LANGUAGE = 'it'
 MICROBLOG_POST_LIST_PAGINATION = True
 MICROBLOG_POST_PER_PAGE = 10
 MICROBLOG_MODERATION_TYPE = 'akismet'
 MICROBLOG_AKISMET_KEY = '56c34997206c'
-MICROBLOG_EMAIL_RECIPIENTS = ['europython@python.org', 'europython-improve@python.org', 'pycon-organization@googlegroups.com']
+MICROBLOG_EMAIL_RECIPIENTS = ['pycon-organization@googlegroups.com']
 MICROBLOG_EMAIL_INTEGRATION = True
 
-MICROBLOG_TWITTER_USERNAME = 'europython'
+MICROBLOG_TWITTER_USERNAME = 'pyconit'
 MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
 MICROBLOG_TWITTER_INTEGRATION = False
 
@@ -281,7 +281,7 @@ def MICROBLOG_POST_FILTER(posts, user):
     else:
         return filter(lambda x: x.is_published(), posts)
 
-SESSION_COOKIE_NAME = 'ep_sessionid'
+SESSION_COOKIE_NAME = 'p5_sessionid'
 
 CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
 CONFERENCE_GOOGLE_MAPS = {
@@ -292,9 +292,9 @@ CONFERENCE_GOOGLE_MAPS = {
     'country': 'it',
 }
 
-CONFERENCE_CONFERENCE = 'ep2013'
+CONFERENCE_CONFERENCE = 'pycon5'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2013.europython.eu/voting-disallowed'
+CONFERENCE_VOTING_DISALLOWED = 'https://www.pycon.it/voting-disallowed'
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -558,8 +558,8 @@ ASSOPY_OTC_CODE_HANDLERS = {
     'e': 'p3.views.OTCHandler_E',
 }
 
-DEFAULT_URL_PREFIX = 'https://ep2012.europython.eu'
-PINGBACK_TARGET_DOMAIN = 'ep2012.europython.eu'
+DEFAULT_URL_PREFIX = 'https://www.pycon.it'
+PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 
 from datetime import date
@@ -570,10 +570,10 @@ P3_HOTEL_RESERVATION = {
 }
 P3_USER_MESSAGE_FOOTER = '''
 
-This message was sent from a participant at the conference EuroPython.
+This message was sent from a participant at the conference PyconITalia.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2013.europython.eu/accounts/profile/
+https://www.pycon.it/accounts/profile/
 '''
 
 TEMPLATESADMIN_EDITHOOKS = (
