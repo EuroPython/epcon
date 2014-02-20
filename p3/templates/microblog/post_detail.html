@@ -1,6 +1,6 @@
 {% extends "microblog/base.html" %}
 {% load hcomments_tags i18n microblog_tags %}
-{% block PAGE_TITLE %}{{ content.headline }} &mdash; {% endblock %}
+{% block PAGE_TITLE %}{{ content.headline }}{% endblock %}
 {% block PAGE_DESCRIPTION %}
     <meta name="keywords" content="{{ content.post.tags }}" />
     <meta name="description" content="{{ content.summary|striptags }}" />
