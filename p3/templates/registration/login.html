@@ -1,108 +1,74 @@
 {% extends "assopy/base.html" %}
 {% load assopy_tags i18n %}
 
-{% block EXTRA_HEAD %}
-<style type="text/css">
-.or {
-    text-align:center;
-    margin: 0 0 40px 0;
-    background: transparent url({{ STATIC_URL }}p5/i/sep.png) center left repeat-x;
-}
-
-.or span {
-	font: normal 30px/30px "League Gothic", "Arial Narrow", sans-serif;
-	text-transform: uppercase;
-    color: #4895a3;
-    letter-spacing: 2px;
-    padding: 0 10px;
-    background: #fcfad9;
-}
-
-h2 {
-    margin: 0 0 10px 0;
-    color: #635443;
-    text-align: center;
-}
-
-.create-account {
-    background: #E1DBC5;
-    padding: 15px 10px;
-	border: 1px solid #aba18f;
-}
-
-.login-method p {
-    font-size: 16px;
-    line-height: 30px;
-    margin-bottom: 10px;
-}
-</style>
-{% endblock %}
-
 {% block ASSOPY_MAIN_CONTENT %}
 
-    <h1>Log into EuroPython</h1>
+<section>
+       <div class="grid-container">
+       <div class="grid-100">      
+           <h1>Log into PyCon</h1>
+       </div><!-- /grid -->
+       <div class="grid-50">      
+            <h2>By using one of your existing web accounts</h2>
 
-    <div class="login-method">
-        <h2>By using one of your existing web accounts</h2>
-
-<!--         <hr /> -->
-
-        <div class="span-5">
-            <p>{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
-        </div>
-
-        <div class="span-7 last">
+            <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
+    
+       </div><!-- /grid -->
+       <div class="grid-50">      
             {% render_janrain_box next "embed" %}
+       </div><!-- /grid -->
+       </div><!-- /grid-container -->
+</section>
+
+
+<section>
+       <div class="grid-container">
+       <div class="grid-100">      
+
+        <h2>Or use your email and password</h2>        
+        <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
+
+        <hr />
+            
+       </div><!-- /grid -->
+
+       <div class="grid-50">      
+               
+        <div class="well">
+            {% if form.errors %}
+                <div class="alert alert-error">{% trans "Invalid credentials" %}</div>
+            {% endif %}
+            <form action="" method="post">
+                <fieldset>
+                    {{ form.email|field }}
+                    {{ form.password|field }}
+                    <input type="hidden" name="next" value="{{ next }}" />
+                    <button class="btn btn-primary" name="" value="" type="submit">Log in</button>
+                </fieldset>
+                {% csrf_token %}
+            </form>
         </div>
-    </div>
 
-    <hr />
+       </div><!-- /grid -->
 
-    <div class="or"><span>OR</span></div>
-
-    <div class="login-method">
-        <h2>By using email/password</h2>
-
-<!--         <hr /> -->
-
-        <div>
-            <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
-            <div id="classic-login">
-                <div class="span-7 append-1">
-                    <div class="form-box">
-                        <h2>Your EuroPython account</h2>
-
-                        {% if form.errors %}
-                            <div class="error-notice">{% trans "Invalid credentials" %}</div>
-                        {% endif %}
-
-                        <form action="" method="post">{% csrf_token %}
-                            <fieldset>
-                                {{ form.email|field }}
-                                {{ form.password|field }}
-                                <input type="hidden" name="next" value="{{ next }}" />
-                            </fieldset>
-                            <fieldset class="border">
-                                <button name="" value="" type="submit">Log in</button>
-                            </fieldset>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="span-4 last">
-                    <div class="create-account">
-                        <h2>{% trans "Don&#8217;t you have an account?" %}</h2>
-                        <div class="button">
-                            <a href="{% url assopy-new-account %}?next={{ next }}" class="">Create a new account now</a>
-                        </div>
-                        <hr />
-                        <h2>{% trans "Did you forget your password?" %}</h2>
-                        <div class="button mini">
-                            <a href="{% url assopy-password-reset %}" class="">Reset your password</a>
-                        </div>
-                    </div>
-                </div>
+       <div class="grid-40 prefix-10">  
+       
+            <h3>{% trans "Don&#8217;t you have an account?" %}</h3>
+            <div>
+                <a href="{% url assopy-new-account %}?next={{ next }}" class="btn">Create a new account now</a>
             </div>
-        </div>
-    </div>
+            
+            <hr />
+            
+            <h3>{% trans "Did you forget your password?" %}</h3>
+            <div>
+                <a href="{% url assopy-password-reset %}" class="btn">Reset your password</a>
+            </div>
+
+       </div><!-- /grid -->
+       </div><!-- /grid-container -->
+</section>
+
+
+
 {% endblock %}

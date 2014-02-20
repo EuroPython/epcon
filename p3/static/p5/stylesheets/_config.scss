@@ -126,7 +126,7 @@ $secondarycolor 				: #ad3d31;
 $tertiarycolor 					: #e5e0ca;
 
 // Now set a neutral colour for borders etc.
-$neutralcolor 					: #807c70;
+$neutralcolor 					: #807c6f;
 $midneutralcolor 				: darken($neutralcolor,25%);
 $darkneutralcolor 				: darken($neutralcolor,35%);
 $lightneutralcolor 				: lighten($neutralcolor,25%);
@@ -608,7 +608,7 @@ $buttonfontsize 				: $basefontsize;
 // Set the default button’s text colour
 // Colours for :hover and :active  are derived automatically from $buttoncolor
 // Override colours for :hover and :active in _bootstrap-form-buttons.scss
-$buttoncolor 					: $lightneutralcolor;
+$buttoncolor 					: $darkneutralcolor;
 
 
 

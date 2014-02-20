@@ -2,6 +2,11 @@
 {% block EXTRA_HEAD %}
 {% block ASSOPY_EXTRA_HEAD %}{% endblock %}
 {% endblock %}
+
+{% block HEADER %}
+    {%comment%}Remove header completely to save space{%endcomment%}
+{% endblock %}
+
 {% block MAIN_CONTENT %}
-{% block ASSOPY_MAIN_CONTENT %}{% endblock %}
+    {% block ASSOPY_MAIN_CONTENT %}{% endblock %}
 {% endblock %}
