@@ -3,27 +3,34 @@
 {% if not pform %}
 {% get_form "P3ProfileEmailContactForm" bound=profile as pform %}
 {% endif %}
-<div id="account-email-contact-async-target" class="form-box">
+<div id="account-email-contact-async-target">
 
-    <h2>Primary email contact</h2>
-    
+    {% pending_email_change request.user as pending %}
+    {% if pending %}
+        <div class="alert alert--info">
+            <p>You have requested to change your email contact to <b>{{ pending }}</b>.</p>
+            <p>We have sent you an email. Please follow the instructions in the message you will receive shortly.</p>        
+            <p><b>Note</b>: this change will not affect in any way the web accounts you use to log in.</p>
+        </div>
+    {% endif %}
+
     <form action="{% url p3-account-email %}" class="async{% if pform.is_valid %} live-edit{% endif %}" method="POST" rel="#account-email-contact-async-target">
-        <p>This is the e-mail address which we can use to contact you. It is also the e-mail you can use to login in our website (in case you don't like web accounts or social networks to do it).</p>
+        
         {% if pform.is_valid %}
-        <div class="the-email" style="text-align: center; margin-top: 20px">
-            <span>{{ profile.email }}</span> &mdash; <a href="#" class="live-edit-switch">Change</a>
-        </div>
-        {% endif %}
-        {{ pform.email|field }}
-        <div class="button mini">
-            <a href="#" class="autosubmit">Save</a>
-        </div>
-        {% pending_email_change request.user as pending %}
-        {% if pending %}
-        <p>You have requested to change your email contact to <b>{{ pending }}</b>.</p>
-        <p>We have sent you an email. Please follow the instructions in the message you will receive shortly.</p>        
-        <p><b>Note</b>: this change will not affect in any way the web accounts you use to log in.</p>
-        {% endif %}
+        <fieldset>
+            <legend>Primary email contact</legend>
+            <p>This is the e-mail address which we can use to contact you. It is also the e-mail you can use to login in our website (in case you don't like web accounts or social networks to do it).</p>
+
+            <p class="the-email">
+                <span>{{ profile.email }}</span> &mdash; <a href="#" class="live-edit-switch">Change</a>
+            </p>
+            {% endif %}
+            {{ pform.email|field }}
+        </fieldset>        
+    
+        <fieldset>
+            <a href="#" class="btn btn-primary autosubmit">Save changes</a>
+        </fieldset>
     </form>
 
 </div>

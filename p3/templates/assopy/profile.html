@@ -2,33 +2,39 @@
 {% load assopy_tags i18n p3 %}
 
 {% block ASSOPY_MAIN_CONTENT %}
-<div class="span-12">
-    {% p3_profile_data request.user.id as profile %}
-    <div class="auto-tabs">
-        <ul>
-            <li><a href="#account-personal-data">Personal data</a></li>
-            <li><a href="#account-email-contact">Email contact</a></li>
-            <li><a href="#account-spam-control">Privacy settings</a></li>
-            <li><a href="#account-login-options">Login options</a></li>
-            <li><a href="#account-orders">Orders, invoices &amp; coupons</a></li>
+{% p3_profile_data request.user.id as profile %}
+<section>
+   <div class="grid-container">
+   <div class="grid-100 grid-parent">    
+
+        <ul class="nav nav-tabs">
+            <li><a data-toggle="tab" class="active" href="#account-personal-data">Personal data</a></li>
+            <li><a data-toggle="tab" href="#account-email-contact">Email contact</a></li>
+            <li><a data-toggle="tab" href="#account-spam-control">Privacy settings</a></li>
+            <li><a data-toggle="tab" href="#account-login-options">Login options</a></li>
+            <li><a data-toggle="tab" href="#account-orders">Orders, invoices &amp; coupons</a></li>
         </ul>
-        <section id="account-personal-data">
-            {% include "assopy/profile_personal_data.html" %}
-        </section>
-        <section class="profile-user-email" id="account-email-contact">
-            {% include "assopy/profile_email_contact.html" %}
-        </section>
-        <section class="profile-spam-control" id="account-spam-control">
-            {% include "assopy/profile_spam_control.html" %}
-        </section>
-        <div id="account-login-options">
-            <section class="profile-user-data web-accounts clearfix">
+
+        <div class="tab-content">
+          <div class="tab-pane active" id="account-personal-data">
+              {% include "assopy/profile_personal_data.html" %}              
+          </div>
+          <div class="tab-pane" id="account-email-contact">
+            {% include "assopy/profile_email_contact.html" %}            
+          </div>
+
+          <div class="tab-pane" id="account-spam-control">
+            {% include "assopy/profile_spam_control.html" %}         
+          </div>
+
+          <div class="tab-pane" id="account-login-options">
+            <div class="profile-user-data web-accounts clearfix">
                 <h4>{% trans "Web accounts for log in" %}</h4>
                 <div class="span-6">
 
                     <ul id="web-accounts">
                         {% for i in user.identities.all %}
-                        <li class="clearfix" data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Remove account" %}" /></li>
+                        <li class="clearfix" data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/images/icon-delete.png" title="{% trans "Remove account" %}" /></li>
                         {% endfor %}
                     </ul>
                     <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
@@ -61,12 +67,14 @@
                 </div>
                 <div class="span-5 last">You can connect more web accounts to your EuroPython profile, so that you can use any of them for logging in
                          (without having to remember which one you used to create the account).</div>
-            </section>
-        </div>
-        <div id="account-orders">
-            {% with request.user.assopy_user|user_coupons as coupons %}
+            </div>
+        </div>        
+
+          <div class="tab-pane" id="account-orders">
+
+              {% with request.user.assopy_user|user_coupons as coupons %}
                 {% if coupons.valid|length or coupons.invalid|length%}
-                <section class="profile-user-data coupons">
+                <div class="profile-user-data coupons">
                     <h4>{% trans "Your discount coupons" %}</h4>
                     <ul>
                     {% for c in coupons.valid %}
@@ -80,14 +88,14 @@
                         </li>
                     {% endfor %}
                     </ul>
-                </section>
+                </div>
                 {% endif %}
             {% endwith %}
 
             {% with request.user.assopy_user.orders as orders %}
-            <section class="profile-user-data tickets cms">
+            <div class="profile-user-data tickets">
                 <h4>{% trans "Your orders" %}</h4>
-                <table style="width: 720px">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Order#</th>
@@ -124,70 +132,46 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            </section>
+            </div>
             {% endwith %}
+
+          </div>
+          
         </div>
-    </div>
-    <script>setup_auto_tabs(document);</script>
-</div>
-<hr />
-<div class="clearfix">
+
+    </div> <!-- /tab-content -->
+    <script>setup_auto_tabs(document);</script> 
+ 
+    <hr />
 
     <h2>Other personal pages</h2>
-    <hr/>
 
-    <div class="span-6">
-        <section>
-            <div class="button">
-                <a href="{% url conference-profile slug=profile.slug %}">Your public profile &rarr;</a>
-            </div>
-            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">Partecipate in
-                  "<a href="/find-out-whos-coming">Find out who's coming</a>": let
-                  people know that you will be coming to EuroPython.
-            </div>
-        </section>
-    </div>
+    <dl>
+                    
+        <dt><a href="{% url conference-profile slug=profile.slug %}">Your public profile</a></dt>
+        <dd>Partecipate in “<a href="/find-out-whos-coming">Find out who's coming</a>”: let people know that you will be coming to EuroPython.
+        </dd>
 
-    {% all_user_tickets fare_type="all" as tickets %}
-    <div class="span-6 last">
-         {% if tickets|length %}
-             <section>
-                <div class="button">
-                   <a href="{% url conference-profile-conferences %}">Conference & Contacts &rarr;</a>
-                </div>
-
-                <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">
-                   See the conferences you have attended and who you have met.
-                </div>
-              </section>
-         {% endif %}
-    </div>
-
-    <hr/>
+        {% all_user_tickets fare_type="all" as tickets %}
 
         {% if tickets|length %}
-    <div class="span-6">
-        <section>
-            <div class="button">
-                <a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}}) &rarr;</a>
-            </div>
-
-            <div style="margin-top: 15px; margin-bottom: 15px; font-size: smaller;">
-                Fill in and review all your tickets.
-        </div>
-        </section>
-    </div>
-
-    <div class="span-6 last">
-        <section>
-            <div class="button">
-                <a href="{% url p3-my-schedule %}">Your personal schedule &rarr;</a>
-            </div>
-        </section>
-    </div>
+            <dt><a href="{% url conference-profile-conferences %}">Conference &amp; contacts</a></dt>
+            <dd>See the conferences you have attended and who you have met.</dd>
         {% endif %}
 
-</div>
+        {% if tickets|length %}
+            <dt><a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}})</a></dt>
+            <dd>Fill in and review all your tickets.</dd>
+
+            <dt><a class="btn" href="{% url p3-my-schedule %}">Your personal schedule</a></dt>
+        {% endif %}
+    </dl>
+
+   </div><!-- /grid -->
+   </div><!-- /grid-container -->
+</section>
+
+        
 {% endblock %}
 
 

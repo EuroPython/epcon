@@ -141,3 +141,11 @@ dt.toggle+dd {
     margin: $baselineheight/2 0 0 $gutterwidth/2;    
 }
 
+
+.janrain-box {
+    max-width: 558px;
+    display: block;
+/*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
+    min-height: 240px;
+}
+

@@ -15,7 +15,7 @@ float : left;
 width : $formlabelwidth;
 padding-top : 5px;
 padding-right : $gutterwidth;
-text-align : right;
+text-align : left;
 @include box-sizing(border-box); }
 
 .controls {

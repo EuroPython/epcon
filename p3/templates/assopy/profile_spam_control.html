@@ -3,10 +3,11 @@
 {% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
 <div id="account-spam-control-async-target" class="never form-box">
     <form action="{% url p3-account-spam-control %}" class="async" method="POST" rel="#account-spam-control-async-target">
-        <h2>Privacy settings<span class="notice-ok async-feedback"> Saved</span></h2>
-        <p>We respect your privacy. We <b>never share your personal data</b> with anyone. Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
+        <h2>Privacy settings <span class="notice-ok async-feedback">Saved</span></h2>
+        
+        <p class="lead">We respect your privacy. We <b>never share your personal data</b> with anyone. Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
+        
         <p>This page contains additional privacy settings for advanced opt-in features.</p>
-        <br/>
 
         <fieldset>
             <legend>Recruiting</legend>

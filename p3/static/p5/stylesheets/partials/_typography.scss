@@ -145,10 +145,10 @@ font-weight : bold; }
 dt {
 float : left;
 clear : left;
-width : 30.38869258%; }
+width : $formlabelwidth; }
 
 dd {
-margin-left : 32.99289258%; }
+margin-left : $formlabelwidth; }
 }
 
 abbr[title] {
@@ -200,7 +200,8 @@ sub {
 bottom : -.25em; }
 
 .lead {
-@include font-size($basefontsize * 1.15); }
+@include font-size($basefontsize * 1.15); 
+color: $neutralcolor; }
 
 .secondary {
 @include font-size($basefontsize / 1.15); }
