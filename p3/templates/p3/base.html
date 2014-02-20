@@ -62,12 +62,11 @@
         {% conference_js_data tags=ptags %}
     </script>
     
-    <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/javascripts/vendor/modernizr-min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/vendor/modernizr-min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/jquerytools/1.2.5/jquery.tools.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-ui-1.8.17.custom.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}conference/init.js"></script>
-
     <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery.form.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/utils.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/rateit/src/jquery.rateit.min.js"></script>
@@ -315,5 +314,9 @@
             xdReceiver: '/static/p5/x/rpx_xdcomm.html'
         });
     </script>
+
+    <!-- @@TODO We should really use head.js -->
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/vendor/bootstrap/bootstrap-tab.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/nav-patterns/responsive-nav.min.js""></script>
 </body>
 </html>

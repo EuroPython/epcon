@@ -281,9 +281,9 @@ dt {
   .dl-horizontal dt {
     float: left;
     clear: left;
-    width: 30.38869258%; }
+    width: 29%; }
   .dl-horizontal dd {
-    margin-left: 32.99289258%; }
+    margin-left: 29%; }
 
 abbr[title] {
   border-bottom: 1px dotted #bcbab2;
@@ -337,7 +337,8 @@ sub {
 
 .lead {
   font-size: 20.7px;
-  font-size: 2.07rem; }
+  font-size: 2.07rem;
+  color: #807c6f; }
 
 .secondary {
   font-size: 15.65217px;
@@ -1965,7 +1966,7 @@ textarea[readonly] {
     width: 29%;
     padding-top: 5px;
     padding-right: 28px;
-    text-align: right;
+    text-align: left;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
@@ -4880,3 +4881,9 @@ dt.toggle + dd {
   font-size: 1.4rem;
   color: #807c6f;
   margin: 0.75em 0 0 14px; }
+
+.janrain-box {
+  max-width: 558px;
+  display: block;
+  /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
+  min-height: 240px; }

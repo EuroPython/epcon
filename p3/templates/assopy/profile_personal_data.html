@@ -3,46 +3,92 @@
 {% if not pform %}
     {% get_form "P3ProfilePersonalDataForm" bound=profile as pform %}
 {% endif %}
-<div id="account-personal-data-async-target" class="form-box clearfix">
+<div id="account-personal-data-async-target">    
+    <div class="grid-20">   
+        <div class="profile-user-picture">
+            {% if profile.image %}
+                <img class="" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
+            {% else %}
+                <img class="" src="{{ STATIC_URL }}p5/images/headshot-default.jpg" alt="{{ profile.name }}" width="98" height="98" />
+            {% endif %}
+        </div>
+    </div><!-- /grid -->    
+    <div class="grid-80">   
+        <div class="profile-user-identity-data">  
+     
+            <form action="{% url p3-account-data %}" class="async live-edit form-horizontal" method="POST" rel="#account-personal-data-async-target">
 
-    <div class="profile-user-picture">
-        {% if profile.image %}
-            <img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
-        {% else %}
-            <img class="block" src="{{ STATIC_URL }}p5/i/headshot-default.jpg" alt="{{ profile.name }}" width="98" height="98" />
-        {% endif %}
-    </div>
+                <dl class="dl-horizontal">
+                    <dt>Name</dt>  
+                    <dd>{{ profile.name }}</dd>
+    
+                    <dt>Phone</dt>
+                    <dd>{{ profile.phone }}</dd>
+    
+                    {% if profile.talks %}
+                        <dt>Birthday</dt>
+                        <dd>{{ profile.birthday }}</dd>
+                    {% endif %}
+                </dl> 
 
-    <div class="profile-user-identity-data">  
-        <h2>{% trans "Personal data" %}</h2>
-        <form action="{% url p3-account-data %}" class="async live-edit" method="POST" rel="#account-personal-data-async-target">
-            
-            <dl>
-                <dt>Name</dt>  
-                <dd>
-                    <span>{{ profile.name }}</span>
-                    {{ pform.first_name|field }}
-                    {{ pform.last_name|field }}
-                </dd>
+                <div class="control-group">
+                    <label class="control-label" for="">Nome <span>(richiesto)</span></label>
+                    <div class="controls">
+                        <input type="text" id="" name="">
+<!--                         {{ pform.first_name|field }} -->
+                    </div><!-- controls -->
+                </div><!-- control-group -->
+                                
+                <div class="control-group">
+                    <label class="control-label" for="">Cognome <span>(richiesto)</span></label>
+                    <div class="controls">
+                        <input type="text" id="" name="">
+                        <!--    {{ pform.last_name|field }} -->
+                    </div><!-- controls -->
+                </div><!-- control-group -->
+ 
+                <div class="control-group">
+                    <label class="control-label" for="">Data di nascita <span>(richiesta)</span></label>
+                    <div class="controls">
+                        <select name="d" class="input-small">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>&ensp;
+                        <select name="m" class="input-small">
+                            <option>Jan</option>
+                            <option>Feb</option>
+                            <option>Mar</option>
+                            <option>Apr</option>
+                            <option>May</option>
+                        </select>&ensp;
+                        <select name="y" class="input-small">
+                            <option>1970</option>
+                            <option>1971</option>
+                            <option>1972</option>
+                            <option>1973</option>
+                        </select>
+                        <span class="help-block">We require date of birth for speakers to accomodate for Italian laws regarding minors. This date will <i>never</i> be published.</span>
+<!--                         {{ pform.birthday|field:"tpl:no_label" }} -->
+                    </div><!-- controls -->
+                </div><!-- control-group -->
 
-                <dt>Phone</dt>
-                <dd>
-                    <span>{{ profile.phone }}</span>
-                    {{ pform.phone|field:"tpl:no_label" }}
-                </dd>
-                {% if profile.talks %}
-                <dt>Birthday</dt>
-                <dd>
-                    <span>{{ profile.birthday }}</span>
-                    {{ pform.birthday|field:"tpl:no_label" }}
-                </dd>
-                {% endif %}
-            </dl>                    
-            <div class="button mini">
-                <a href="#" class="live-edit-switch">Change</a>
-                <a href="#" class="autosubmit">Save</a>
-            </div>
-        </form>
-    </div>
+                <div class="control-group">
+                    <label class="control-label" for="">Telefono <span>(richiesto)</span></label>
+                    <div class="controls">
+                        <input type="tel" id="" name="" placeholder="Formato internazionale +39-055-123456">
+                        <span class="help-block">We require a mobile number for all speakers for important last minutes contacts. This number will <i>never</i> be published</span>
+<!--                         {{ pform.phone|field:"tpl:no_label" }} -->
+                    </div><!-- controls -->
+                </div><!-- control-group -->
 
+                <fieldset class="form-actions"> 
+                    <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> Modifica</a>
+                    <button name="" class="btn btn-primary autosubmit">Salva modifiche</button>
+                </fieldset>
+            </form>
+        </div>
+    </div><!-- /grid -->           
 </div>

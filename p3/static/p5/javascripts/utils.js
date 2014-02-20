@@ -331,8 +331,14 @@ function autorefresh(o) {
     });
 }
 
-function setup_auto_tabs(ctx) {
-     $('.auto-tabs', ctx).tabs();
+function setup_auto_tabs(_) {
+/*
+    $('.nav-tabs a.active').tab('show'); 
+    $('.nav-tabs a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    })
+*/
 }
 
 /*
