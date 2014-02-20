@@ -1,20 +1,23 @@
 {% extends "p3/base.html" %}
 {% load i18n microblog_tags p3 conference %}
-{% block PAGE_TITLE %}Blog &mdash; {% endblock %}
+{% block PAGE_TITLE %}Blog{% endblock %}
 
 {% block MAIN_CONTENT %}
-<div class="page">
-    <div class="container clearfix">
-        {% block BLOG_HEADER %}{% endblock %}
 
-        <div class="column span-8">
+<section>
+       <div class="grid-container">
+       <div class="grid-80">      
+            {% block BLOG_HEADER %}{% endblock %}
             {% block BLOG_CONTENT %}{% endblock %}
-        </div>
+       </div><!-- /grid -->
 
-        <div class="column span-4 last">
-            <div class="blog-feed">
-                <h4><a href="/blog/feeds/latest">Blog feed <img src="{{ STATIC_URL }}p5/i/icon-feed.png"></a></h4>
+       <div class="grid-20">      
+
+<!--
+           <div class="blog-feed">
+                <h4><a href="/blog/feeds/latest"><i class="fa fa-rss-square"></i>&ensp;Blog feed</a></h4>
             </div>
+-->
             {% block BLOG_POST_INFO %}{% endblock %}
 
             <div id="blog-archives-browser">
@@ -28,7 +31,10 @@
                 </ul>
 
             </div>
-        </div>
-    </div>
-</div>
+
+
+       </div><!-- /grid -->
+
+       </div><!-- /grid-container -->
+</section>
 {% endblock %}
