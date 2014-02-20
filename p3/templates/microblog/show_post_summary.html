@@ -4,19 +4,20 @@
     {% if post.image %}
     <img src="{{ post.image }}" alt="" />
     {% endif %}
-    <h2>
+    <h2 class="h4">
         {% if not post.is_published %}
         <span class="draft">[DRAFT]</span>
         {% endif %}
         <a title="Permalink a questo articolo" href="{{ url }}">{{ content.headline }}</a>
     </h2>
-    <p class="metadata">
-        {% blocktrans with post.author.first_name as first_name and post.author.last_name as last_name and post.date|date:"j M Y" as post_date %}
-        Scritto da <b>{{ first_name }} {{ last_name }}</b> il {{ post_date }} &mdash;
-        {% endblocktrans %}
-
-        <a title="Commenti articolo" href="{{ url }}#comments">{% trans "Commenti" %} ({{ comments|length }})</a>
-    </p>
     <div class="summary">{{ content|prepare_summary|safe }}</div>
+    <div class="meta">
+        {% blocktrans with post.author.first_name as first_name and post.author.last_name as last_name and post.date|date:"j M Y" as post_date %}
+        &mdash;&emsp;{{ first_name }} {{ last_name }}, {{ post_date }}&emsp;
+        {% endblocktrans %}
+        {%if comments|length %}
+            <a title="Commenti articolo" href="{{ url }}#comments">{% trans "Commenti" %} ({{ comments|length }})</a>
+        {%endif%}
+    </div>
 </div>
 {% endif %}

@@ -1,8 +1,11 @@
 {% load i18n microblog_tags %}
-<ul class="blog-archive">
-{% for post in posts %}
-    <li>{% show_post_summary post %}</li>
-{% empty %}
-    <li><i>{% trans "Nessun post trovato." %}</i></li>
-{% endfor %}
-</ul>
+<div class="blog-archive">
+    <ul>
+    {% for post in posts %}
+        <li>{% show_post_summary post %}</li>
+    {% empty %}
+        <li><i>{% trans "Nessun post trovato." %}</i></li>
+    {% endfor %}
+    </ul>
+</div>
+
