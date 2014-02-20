@@ -156,10 +156,10 @@ h1, h2, header .subhead, h3, h4, h5, h6 {
 
 h1,
 .h1 {
-  font-size: 72px;
-  font-size: 7.2rem;
+  font-size: 36px;
+  font-size: 3.6rem;
   line-height: 1.5;
-  margin-bottom: 0; }
+  margin-bottom: 0.75em; }
 
 h2, header .subhead,
 .h2 {
@@ -4784,7 +4784,11 @@ header {
       }
   */ }
   header h1 {
-    color: #ad3d31; }
+    color: #ad3d31;
+    font-size: 72px;
+    font-size: 7.2rem;
+    /*         line-height: 1.5; */
+    margin-bottom: 0; }
     header h1 span {
       color: #306a99; }
   header .subhead {

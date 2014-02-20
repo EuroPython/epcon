@@ -18,9 +18,9 @@ color : $lightneutralcolor; }
 
 h1,
 .h1 {
-@include font-size($basefontsize * 4);
+@include font-size($basefontsize * 2);
 line-height: 1.5;
-margin-bottom: 0; }
+margin-bottom: $baselineheight / 2; }
 
 h2,
 .h2 {

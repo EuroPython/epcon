@@ -75,6 +75,9 @@ header {
 
     h1 {
         color: $secondarycolor;
+        @include font-size($basefontsize * 4);
+/*         line-height: 1.5; */
+        margin-bottom: 0;
         span { 
             color: $primarycolor; }
     }
