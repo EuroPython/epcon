@@ -1,0 +1,8 @@
+<div class="control-group {% if field.errors %}has-error {% endif %}{{ classes }}">
+    <div class="controls">
+        <label class="checkbox">{{ field }} {{ field.label|safe }}{% if field.field.required %} <span>(richiesto)</span>{% endif %}</label>
+        {% if field.help_text %}
+            <span class="help-block">{{ field.help_text|safe }}</span>
+        {% endif %}
+    </div>
+</div>

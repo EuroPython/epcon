@@ -1,0 +1,15 @@
+<div class="control-group {% if field.errors %}has-error {% endif %}{{ classes }}">
+    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %} <span>(richiesto)</span>{% endif %}</label>
+    <div class="controls">
+        <select name="{{ field.name }}" class="input-xlarge" id="{{ field.auto_id }}">
+            {% for value in field.field.choices %}
+            <option value="{{ value.0 }}" {% if value.0 == field.value %}selected{%endif %}>{{ value.1 }}</option>
+            {% endfor %}
+        </select>
+        {% if field.help_text %}
+            <span class="help-block">{{ field.help_text|safe }}</span>
+        {% endif %}
+    </div>
+</div>
+
+

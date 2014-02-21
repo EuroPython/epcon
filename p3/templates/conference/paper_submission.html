@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load i18n conference assopy_tags %}
+{% load i18n conference assopy_tags formstyle %}
 
 {% block EXTRA_HEAD %}{{ form.media }}{% endblock %}
 {% block PAGE_TITLE %}Nuovo talk{% endblock %}
@@ -10,264 +10,77 @@
 {% if not proposed_talks %}
     <section>
         <div class="grid-container">
-        <div class="grid-100">      
+        <div class="grid-100">
             <h2>Profilo speaker</h2>
-        
+
             <fieldset>
                 <legend>Dati personali</legend>
-
-                <div class="control-group has-error">
-                    <label class="control-label" for="">Nome <span>(richiesto)</span></label>
-                    <div class="controls">
-                        <input type="text" id="" name="">
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-                                
-                <div class="control-group">
-                    <label class="control-label" for="">Cognome <span>(richiesto)</span></label>
-                    <div class="controls">
-                        <input type="text" id="" name="">
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-                
-                <div class="control-group">
-                    <label class="control-label" for="">Titolo</label>
-                    <div class="controls">
-                        <input type="text" id="" name="">
-                        <span class="help-block">Ad es.: Studente, sviluppatore, CTO, JS ninja, BDFL</span>
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-
-                <div class="control-group">
-                    <label class="control-label" for="">Data di nascita <span>(richiesta)</span></label>
-                    <div class="controls">
-                        <select name="d" class="input-small">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>&ensp;
-                        <select name="m" class="input-small">
-                            <option>Jan</option>
-                            <option>Feb</option>
-                            <option>Mar</option>
-                            <option>Apr</option>
-                            <option>May</option>
-                        </select>&ensp;
-                        <select name="y" class="input-small">
-                            <option>1970</option>
-                            <option>1971</option>
-                            <option>1972</option>
-                            <option>1973</option>
-                        </select>
-                        <span class="help-block">We require date of birth for speakers to accomodate for Italian laws regarding minors. This date will <i>never</i> be published.</span>
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-
-                <div class="control-group">
-                    <label class="control-label" for="">Telefono <span>(richiesto)</span></label>
-                    <div class="controls">
-                        <input type="tel" id="" name="" placeholder="Formato internazionale +39-055-123456">
-                        <span class="help-block">We require a mobile number for all speakers for important last minutes contacts. This number will <i>never</i> be published</span>
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-                
-
+                {{ form.first_name|form_field }}
+                {{ form.last_name|form_field }}
+                {{ form.job_title|form_field }}
+                {{ form.birthday|form_field }}
+                {{ form.phone|form_field }}
             </fieldset>
             <fieldset>
                 <legend>Azienda</legend>
-
-                <div class="control-group">
-                    <label class="control-label" for="">Nome</label>
-                    <div class="controls">
-                        <input type="text" id="" name="">
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-                                
-                <div class="control-group">
-                    <label class="control-label" for="">Sito web dell'azienda</label>
-                    <div class="controls">
-                        <input type="url" id="" name="">
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-            </fieldset>         
-            
+                {{ form.company|form_field }}
+                {{ form.company_homepage|form_field }}
+            </fieldset>
             <fieldset>
                 <legend>Su di te</legend>
-                
-                <div class="control-group">
-                    <label class="control-label" for="">Breve biografia <span>(richiesta)</span></label>
-                    <div class="controls">
-                        {{ form.bio|field }}
-                        <span class="help-block">Please enter a short biography (one or two paragraphs). Do <i>not</i> paste your CV</span>
-                    </div><!-- controls -->
-                </div><!-- control-group -->
-                
+
+                {{ form.bio|form_field }}
             </fieldset>
-          <fieldset>
-                <div class="control-group">
-                <div class="controls">  
-                    <label class="checkbox"><input type="checkbox" name="" value=""> I’m a first-time speaker</label>
-                </div><!-- controls -->
-                </div>        
-
-                <div class="control-group">
-                <div class="controls">  
-                    <label class="checkbox"><input type="checkbox" name="" value=""> Acconsento a pubblicare i miei dati, eccetto data di nascita e numero di telefono <span>(richiesto)</span></label>
-                </div><!-- controls -->
-                </div>        
+            <fieldset>
+                {{ form.first_time|form_field }}
+                {{ form.personal_agreement|form_field }}
           </fieldset>
-
-      {%comment%}
-                <div class="span-3">{{ form.first_name|field }}</div>
-                <div class="span-6 last">{{ form.last_name|field }}</div>
-
-                <div class="span-3">{{ form.job_title|field }}</div>
-                <div class="span-3">{{ form.birthday|field }}</div>
-
-        
-                <div class="span-3 last">{{ form.phone|field }}</div>
-                <div class="span-3">{{ form.company|field }}</div>
-                <div class="span-6 last">{{ form.company_homepage|field }}</div>
-
-                <div class="span-9 last">{{ form.first_time|field }}</div>
-                <div class="span-9 last">{{ form.personal_agreement|field }}</div>    
-        {%endcomment%}
-
-
         </div><!-- /grid -->
         </div><!-- /grid-container -->
     </section>
-{% endif %}    
+{% endif %}
 
 <section>
-<div class="grid-container">
-<div class="grid-100">   
-    <h2>Invia un nuovo talk</h2>
+    <div class="grid-container">
+    <div class="grid-100">
+        <h2>Invia un nuovo talk</h2>
 
-{% if proposed_talks %}
-    <div class="alert alert--info">
-        <p>You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}. To edit your submission{{ proposed_talks.count|pluralize }}, visit your <a href="{% url conference-profile slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
-    </div>
-{% endif %}    
-
-    <fieldset>
-<!--         <legend>???</legend> -->
-        <div class="control-group">
-            <label class="control-label" for="">Tipo <span>(richiesto)</span></label>
-            <div class="controls">
-                <label class="radio"><input type="radio" name="t">Talk standard</label>
-                <label class="radio"><input type="radio" name="t">Training (4 ore)</label>
-                <label class="radio"><input type="radio" name="t">Poster session</label>
-                <label class="radio"><input type="radio" name="t">Sessione di help desk</label>
-            </div><!-- controls -->
-        </div><!-- control-group -->
-
-        <div class="control-group">
-            <label class="control-label" for="">Titolo <span>(richiesto)</span></label>
-            <div class="controls">
-                <input type="text" id="" name="">
-            </div><!-- controls -->
-        </div><!-- control-group -->
-                          
-
-        <div class="control-group">
-            <label class="control-label" for="">Lingua</label>
-            <div class="controls">
-                <select name="d" class="input-xlarge">
-                    <option selected="selected">Italiano</option>
-                    <option>English</option>
-                </select>
-            </div><!-- controls -->
-        </div><!-- control-group -->
-
-        <div class="control-group">
-            <label class="control-label" for="">Durata</label>
-            <div class="controls">
-                <select name="d" class="input-xlarge">
-                    <option selected="selected">30 minuti incluso Q&amp;A</option>
-                    <option>30 minuti + Q&amp;A</option>
-                    <option>45 minuti incluso Q&amp;A</option>
-                    <option>70 minuti incluso Q&amp;A</option>
-                </select>
-                <span class="help-block">Durata <i>desiderata</i> del talk</span>
-            </div><!-- controls -->
-        </div><!-- control-group -->
-
-        <div class="control-group">
-            <label class="control-label" for="">Audience level <span>(richiesto)</span></label>
-            <div class="controls">
-                <select name="d" class="input-xlarge">
-                    <option selected="selected">Beginner</option>
-                    <option selected="selected">Intermediate</option>
-                    <option selected="selected">Advanced</option>
-                </select>
-            </div><!-- controls -->
-        </div><!-- control-group -->
-
-
-        <div class="control-group">
-            <label class="control-label" for="">Sommario <span>(richiesto)</span></label>
-            <div class="controls">
-                {{ form.abstract|field }}                
-                <span class="help-block">Short description (two or three paragraphs) of the talk you are submitting. Be sure to include the goals of your talk and any prerequisite required to fully understand it.</span>
-            </div><!-- controls -->
-        </div><!-- control-group -->
-    </fieldset>
-    
-    <fieldset>
-<!--         <legend>Tag</legend> -->
-        <div class="control-group">
-            <label class="control-label">Tag <span>(richiesti)</span></label>
-            <div class="controls">
-                {{ form.tags|field }}
-            </div><!-- controls -->
-        </div><!-- control-group -->
-    </fieldset>
-
-    <fieldset>  
-<!--         <legend>???</legend>       -->
-        <div class="control-group">
-        <div class="controls">
-            <label class="checkbox">
-                <input type="checkbox" name="" value=""> I agree to let the organization record my talk and publish the video <span>(richiesto)</span>
-            </label>
-        </div><!-- controls -->
+    {% if proposed_talks %}
+        <div class="alert alert--info">
+            <p>
+                You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.
+                To edit your submission{{ proposed_talks.count|pluralize }},
+                visit your <a href="{% url conference-profile slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
         </div>
+    {% endif %}
 
-        <div class="control-group">
-        <div class="controls">
-            <label class="checkbox">
-                <input type="checkbox" name="" value=""> I agree to release all the talk material after the event <span>(richiesto)</span>
-            </label>
-        </div><!-- controls -->
-        </div>
-                
-    </fieldset>
-    
-    <fieldset class="form-actions">
-        <button type="submit" name="" class="btn btn-primary">Invia il talk</button>
-    </fieldset>
-        
-    <div class="alert alert--info"><b>Note</b>: if you are available to give the same talk both in Italian and English, please submit the talk twice, with fully translated title and abstract.</div>
+        <fieldset>
+            {{ form.type|form_field }}
+            {{ form.title|form_field }}
+            {{ form.language|form_field }}
+            {{ form.duration|form_field }}
+            {{ form.level|form_field }}
+            {{ form.abstract|form_field }}
+        </fieldset>
 
-      {%comment%}
-        <div>{{ form.type|field }}</div>
-        <div>{{ form.title|field }}</div>
-        <div class="span-3">{{ form.language|field }}</div>
-        <div class="span-3">{{ form.duration|field }}</div>
-        <div class="span-3 last">{{ form.level|field }}</div>
-        
-        <hr />
+        <fieldset>
+            {{ form.tags|form_field }}
+        </fieldset>
 
-        <div>{{ form.video_agreement|field }}</div>
-        <div>{{ form.slides_agreement|field }}</div>
+        <fieldset>
+            {{ form.video_agreement|form_field }}
+            {{ form.slides_agreement|form_field }}
+        </fieldset>
 
-      {%endcomment%}
-    
-</div><!-- /grid -->
-</div><!-- /grid-container -->
+        <fieldset class="form-actions">
+            <button type="submit" name="" class="btn btn-primary">Invia il talk</button>
+        </fieldset>
+
+        <div class="alert alert--info">
+            <b>Note</b>: if you are available to give the same talk both in Italian and English,
+            please submit the talk twice, with fully translated title and abstract.</div>
+    </div><!-- /grid -->
+    </div><!-- /grid-container -->
 </section>
 
 {% csrf_token %}
