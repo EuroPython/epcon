@@ -4487,6 +4487,8 @@ nav[role=navigation].active {
     #navigation-toggle li a:hover {
       color: white;
       text-decoration: none; }
+  #navigation-toggle li.current a {
+    color: white; }
   #navigation-toggle li.user a {
     text-transform: none; }
 

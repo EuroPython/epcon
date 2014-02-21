@@ -85,7 +85,12 @@ nav[role=navigation].active {
             }
         }
         
-        // Speecial user-related nav items
+        // Current nav item 
+        &.current a {
+            color : $navigationlinkcolorhover;
+        }
+        
+        // Special user-related nav items
         &.user a {
             text-transform : none;            
         }
