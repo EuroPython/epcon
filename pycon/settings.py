@@ -177,6 +177,7 @@ INSTALLED_APPS = (
 
     'recaptcha_works',
     'django_crontab',
+    'formstyle',
 )
 
 RECAPTCHA_OPTIONS = {
