@@ -1,18 +1,16 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
 <div id="profile-public-data-async-target">
-    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-public-data-async-target">{% csrf_token %}
-        <input type="hidden" name="section" value="public-data" />
-        <dl>
+    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-public-data-async-target">
+        <dl class="dl-horizontal">
             {% if profile_data.tagline or full_access %}
             <dt>Tagline</dt>
             <dd>
                 {% if profile_data.tagline %}
                     <span>{{ profile_data.tagline }}</span>
                 {% else %}
-                    <span class="not-set">&mdash; Not set &mdash;</span>
+                    <span>&mdash;</span>
                 {% endif %}
-                {% if full_access %}{{ form.tagline|field:"tpl:no_label" }}{% endif %}
             </dd>
             {% endif %}
             {% if profile_data.personal_homepage or full_access %}
@@ -21,33 +19,30 @@
                 {% if profile_data.personal_homepage %}
                     <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
                 {% else %}
-                    <span class="not-set">&mdash; Not set &mdash;</span>
+                    <span>&mdash;</span>
                 {% endif %}
-                {% if full_access %}{{ form.personal_homepage|field:"tpl:no_label" }}{% endif %}
             </dd>
             {% endif %}
             {% if profile_data.twitter or full_access %}
             <dt>Twitter</dt>
             <dd>
                 {% if profile_data.twitter %}
-                    <span><a href="http://twitter.com/#!/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
+                    <span><a href="http://twitter.com/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
                 {% else %}
-                    <span class="not-set">&mdash; Not set &mdash;</span>
+                    <span>&mdash;</span>
                 {% endif %}
-                {% if full_access %}{{ form.twitter|field:"tpl:no_label" }}{% endif %}
             </dd>
             {% endif %}
             {% if profile_data.interests or full_access %}
             <dt>Technical interests</dt>
             <dd>
                 {% if profile_data.interests %}
-                {% for p in profile_data.interests %}
-                    {{ p }}{% if not forloop.last %},{% endif %}
-                {% endfor %}
+                    {% for p in profile_data.interests %}
+                        {{ p }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
                 {% else %}
-                    <span class="not-set">&mdash; Not set &mdash;</span>
+                    <span>&mdash;</span>
                 {% endif %}
-                {% if full_access %}{{ form.interests|field:"tpl:no_label" }}{% endif %}
             </dd>
             {% endif %}
             {% if profile_data.location or full_access %}
@@ -56,42 +51,55 @@
                 {% if profile_data.location %}
                     <span>{{ profile_data.location }}</span>
                 {% else %}
-                    <span class="not-set">&mdash; Not set &mdash;</span>
-                {% endif %}
-                {% if full_access %}{{ form.location|field:"tpl:no_label" }}{% endif %}
-                {% if profile_data.country and full_access %}
-                <div id="chart_div" style="width: 128px; height: 71px; position: absolute; left: -135px; top: 0px"></div>
-                <script type="text/javascript">
-                (function() {
-                    google.load('visualization', '1.0', {
-                        'packages':['corechart', 'geochart'],
-                        'callback': function() {
-                            var data = new google.visualization.DataTable();
-                            data.addColumn('string', 'Country');
-                            data.addRows([
-                                ['{{ profile_data.country }}'],
-                            ]);
-                            var options = {
-                                region: '{{ profile_data.country }}'
-                            };
-                            var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
-                            chart.draw(data, options);
-                        }
-                    });
-                })();
-                </script>
+                    <span>&mdash;</span>
                 {% endif %}
             </dd>
             {% endif %}
 
-            {% include "conference/profile_publicdata_company_form.html" %}
-
         </dl>
+        
         {% if full_access %}
-        <div class="button mini">
-            <a href="#" class="live-edit-switch">Edit profile</a>
-            <a href="#" class="autosubmit">Save changes</a>
-        </div>
+            <fieldset>
+                {{ form.tagline|form_field }}
+                {{ form.personal_homepage|form_field }}
+                {{ form.twitter|form_field }}
+                {{ form.interests|form_field }}
+            </fieldset>
+            <fieldset>
+                <legend>Posizione</legend> 
+                {{ form.location|form_field }}
+                {% if profile_data.country  %}
+                    <div id="chart-div" style="width: 128px; height: 71px; position: absolute; left: -135px; top: 0px"></div>
+                    <script type="text/javascript">
+                    (function() {
+                        google.load('visualization', '1.0', {
+                            'packages':['corechart', 'geochart'],
+                            'callback': function() {
+                                var data = new google.visualization.DataTable();
+                                data.addColumn('string', 'Country');
+                                data.addRows([
+                                    ['{{ profile_data.country }}'],
+                                ]);
+                                var options = {
+                                    region: '{{ profile_data.country }}'
+                                };
+                                var chart = new google.visualization.GeoChart(document.getElementById('chart-div'));
+                                chart.draw(data, options);
+                            }
+                        });
+                    })();
+                    </script>
+                {% endif %}
+            </fieldset>
         {% endif %}
+            
+        {% include "conference/profile_publicdata_company_form.html" %}
+
+        {% if full_access %}
+            <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> Modifica profilo</a>
+            <button class="btn btn-primary autosubmit">Salva modifiche</a>
+        {% endif %}
+        {% csrf_token %}
+        <input type="hidden" name="section" value="public-data" />        
     </form>
 </div>

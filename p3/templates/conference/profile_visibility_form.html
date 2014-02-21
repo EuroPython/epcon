@@ -1,36 +1,37 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-<section id="profile-user-visibility" class="profile-user-visibility clearfix">
-    <div class="profile-visibility form-box">
-        <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-user-visibility">{% csrf_token %}
-            <input type="hidden" name="section" value="visibility" />
-
-            {% if profile_data.visibility == "x" %}
-                <span class="profile-closed">Your profile is not visibile by anyone.&nbsp;</span>
-            {% endif %}
-            {% if profile_data.visibility == "m" %}
-                <span class="profile-open">Only <b>conference participants</b> can view your profile.&nbsp;</span>
-            {% endif %}
-            {% if profile_data.visibility == "p" %}
-                {% if profile_data.talks.accepted.all %}
-                <span class="profile-open">Your profile is <b>publicly visible</b> because you are an EuroPython speaker.&nbsp;</span>
-                {% else %}
-                <span class="profile-open">Your profile is <b>publicly visible</b>.&nbsp;</span>
-                {% endif %}     
-            {% endif %}
+<div id="profile-user-visibility" class="profile-user-visibility">
+    <div class="profile-visibility">
+        <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-user-visibility">
+            <div>
+                {% if profile_data.visibility == "x" %}
+                    <span class="profile-closed"><i class="fa fa-ban"></i> Your profile is not visibile by anyone.</span>
+                {% endif %}
+                {% if profile_data.visibility == "m" %}
+                    <span class="profile-open"><i class="fa fa-users"></i> Only <b>conference participants</b> can view your profile.</span>
+                {% endif %}
+                {% if profile_data.visibility == "p" %}
+                    {% if profile_data.talks.accepted.all %}
+                    <span class="profile-open"><i class="fa fa-globe"></i> Your profile is <b>publicly visible</b> because you are a PyCon speaker.</span>
+                    {% else %}
+                    <span class="profile-open"><i class="fa fa-globe"></i> Your profile is <b>publicly visible</b>.</span>
+                    {% endif %}     
+                {% endif %}
+                {% if full_access and not profile_data.talks.accepted.all %}
+                    &emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> Modifica</a>
+                {% endif %}
+            </div>
             {{ form.visibility|field:"autosubmit" }}
-            {% if full_access and not profile_data.talks.accepted.all %}
-            <a href="#" class="live-edit-switch">Change</a>
-            {% endif %}
-
             {% if profile_data.visibility == "x" or profile_data.visibility == "m" %}
-            {% if profile_data.talks.proposed|attrib_:CONFERENCE %}
-            <br/><br/><b>NOTE:</b> If any of your proposals is accepted, this profile will be forced to be publicly visibile.
-            {% endif %}
+                {% if profile_data.talks.proposed|attrib_:CONFERENCE %}
+                    <p class="secondary"><b>Note</b>: If any of your proposals is accepted, this profile will be forced to be publicly visibile.</p>
+                {% endif %}
             {% endif %}          
+            <input type="hidden" name="section" value="visibility" />
+            {% csrf_token %}
         </form>
     </div>
-</section>
+</div>
 
 
 

@@ -6,32 +6,47 @@
 {% endblock %}
 
 {% block MAIN_CONTENT %}
-    {% p3_profile_data profile.user_id as profile_data %}
-    <div class="span-8">
+{% p3_profile_data profile.user_id as profile_data %}
 
-        {% if full_access %}
+{% if full_access %}
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
         {% include "conference/profile_visibility_form.html" %}
-        {% endif %}
-        
-        <hr />
-        
-        <section class="profile-user-identity clearfix">
+   </div><!-- /grid -->
+   </div><!-- /grid-container -->
+</section>
 
-                {% include "conference/profile_picture_form.html" %}
+{% endif %}
 
-                <div class="profile-user-identity-data">
-                    <h1>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h1>
-                    {% include "conference/profile_publicdata_form.html" %}
-                </div>
-        </section>
+<section id="profile-user-identity">
+    <div class="grid-container">
+    <div class="grid-100">
+        <h2>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h2>
+    </div><!-- /grid -->
+    <div class="grid-20">
+        {% include "conference/profile_picture_form.html" %}
+    </div><!-- /grid -->
+    <div class="grid-80">
+        {% include "conference/profile_publicdata_form.html" %}
+    </div><!-- /grid -->
+   </div><!-- /grid-container -->
+</section>
 
-        <hr />
 
+<section>
+    <div class="grid-container">
+    <div class="grid-80 suffix-20">
         {% include "conference/profile_bio_form.html" %}
+   </div><!-- /grid -->
+   </div><!-- /grid-container -->
+</section>
 
-    </div>
+<section>
+    <div class="grid-container">
+    <div class="grid-80 suffix-20">
 
-    <div class="span-4 last">
+    <div class="">
         {% current_conference as conf %}
         {% if conf.voting %}
             {% sum_ "talks" profile_data.talks.by_conf|attrib_:conf.code profile_data.talks.accepted.all %}
@@ -43,7 +58,7 @@
             {% endif %}
         {% endif %}
         {% if talks %}
-        <section class="speaker-talks">
+        <div class="speaker-talks">
             <h2>{{ profile_data.name }}’s Talks</h2>
             <dl>
             {% for conf, talks_list in talks|ordered_talks %}
@@ -53,7 +68,7 @@
                 {% endfor %}
             {% endfor %}
             </dl>
-        </section>
+        </div>
         {% endif %}
         {% if profile_data.twitter %}
         <script src="https://widgets.twimg.com/j/2/widget.js"></script>
@@ -88,4 +103,8 @@
         </script>
         {% endif %}
     </div>
+
+   </div><!-- /grid -->
+   </div><!-- /grid-container -->
+</section>
 {% endblock %}

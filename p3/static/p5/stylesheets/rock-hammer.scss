@@ -89,6 +89,18 @@ header {
     @extend .help-block;
 }
 
+// USERS =============================================================================
+
+
+// Avatar class, used profile and talk pages
+.avatar {    
+    border: 2px solid $lightneutralcolor;
+    display: block;    
+    @extend .img-rounded;
+}
+
+
+
 // MISC. =============================================================================
 
 .meta {
@@ -148,4 +160,7 @@ dt.toggle+dd {
 /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
     min-height: 240px;
 }
+
+
+
 

@@ -2,26 +2,29 @@
 {% p3_profile_data profile.user_id as profile_data %}
 
 {% if profile_data.bio or full_access %}
-<section id="profile-user-bio" class="profile-user-bio">
-    <h2>Quick Bio</h2>
-    <div class="cms">
-        <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">{% csrf_token %}
-            <input type="hidden" name="section" value="bio" />
-            <div>
-                {% if profile_data.bio %}
-                {{ profile_data.bio|markdown2 }}
-                {% else %}
-                    <p>Why don’t you write something about you?</p>
-                {% endif %}
-            </div>
-            {% if full_access %}{{ form.bio|field:"tpl:no_label" }}{% endif %}
-            {% if full_access %}
-            <div class="button mini">
-                <a href="#" class="live-edit-switch">Edit bio</a>
-                <a href="#" class="autosubmit">Save changes</a>
-            </div>
-            {% endif %}
-        </form>
-    </div>
-</section>
+<div id="profile-user-bio" class="profile-user-bio">
+    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">
+        <dl class="dl-horizontal">
+            <dt>Breve biografia</dt>
+            <dd>
+                <div class="cms">
+                    {% if profile_data.bio %}
+                        {{ profile_data.bio|markdown2 }}
+                    {% else %}
+                        <p><i>Why don’t you write something about you?</i></p>
+                    {% endif %}
+                </div>
+            </dd>
+        </dl>
+        {% if full_access %}
+            {{ form.bio|form_field}}
+            <fieldset class="form-actions">
+                <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> Modifica biografia</a>
+                <button href="#" class="btn btn-primary autosubmit">Salva modifiche</button>
+            </fieldset>
+        {% endif %}
+        {% csrf_token %}
+        <input type="hidden" name="section" value="bio" />
+    </form>
+</div>
 {% endif %}
