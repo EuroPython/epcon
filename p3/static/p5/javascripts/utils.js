@@ -196,24 +196,24 @@ function setup_toggles(ctx) {
 }
 function setup_live_edit(ctx) {
     $('form.live-edit', ctx).each(function() {
-        var fields = $('.field', this);
-        var readonly = fields.prev();
+        var toggles = $('.live-edit-toggle', this);
+        var readonly = toggles.prev();
         var switches = $('.live-edit-switch', this);
         var autosubmit = $('.autosubmit', this);
         switches.click(function(e) {
             e.preventDefault();
-            var visible = $(':visible', fields).length > 0;
+            var visible = $(':visible', toggles).length > 0;
             if(visible) {
                 readonly.show();
-                fields.hide();
+                toggles.hide();
                 autosubmit.hide();
             }
             else {
                 readonly.hide();
-                fields.show();
+                toggles.show();
                 autosubmit.show();
             }
-            switches.show();
+            //switches.show();
             $(this).hide();
         })
     });

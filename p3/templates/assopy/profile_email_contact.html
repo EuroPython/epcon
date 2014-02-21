@@ -1,4 +1,4 @@
-{% load p3 assopy_tags i18n %}
+{% load p3 formstyle i18n %}
 {% p3_profile_data request.user.id as profile %}
 {% if not pform %}
 {% get_form "P3ProfileEmailContactForm" bound=profile as pform %}
@@ -9,25 +9,29 @@
     {% if pending %}
         <div class="alert alert--info">
             <p>You have requested to change your email contact to <b>{{ pending }}</b>.</p>
-            <p>We have sent you an email. Please follow the instructions in the message you will receive shortly.</p>        
+            <p>We have sent you an email. Please follow the instructions in the message you will receive shortly.</p>
             <p><b>Note</b>: this change will not affect in any way the web accounts you use to log in.</p>
         </div>
     {% endif %}
 
     <form action="{% url p3-account-email %}" class="async{% if pform.is_valid %} live-edit{% endif %}" method="POST" rel="#account-email-contact-async-target">
-        
-        {% if pform.is_valid %}
+
         <fieldset>
+            {% if pform.is_valid %}
             <legend>Primary email contact</legend>
-            <p>This is the e-mail address which we can use to contact you. It is also the e-mail you can use to login in our website (in case you don't like web accounts or social networks to do it).</p>
+            <p>This is the e-mail address which we can use to contact you.
+                It is also the e-mail you can use to login in our website
+                (in case you don't like web accounts or social networks to do it).</p>
 
             <p class="the-email">
                 <span>{{ profile.email }}</span> &mdash; <a href="#" class="live-edit-switch">Change</a>
             </p>
             {% endif %}
-            {{ pform.email|field }}
-        </fieldset>        
-    
+            <div class="live-edit-toggle">
+                {{ pform.email|form_field }}
+            </div>
+        </fieldset>
+
         <fieldset>
             <a href="#" class="btn btn-primary autosubmit">Save changes</a>
         </fieldset>

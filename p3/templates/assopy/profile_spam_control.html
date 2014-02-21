@@ -1,12 +1,13 @@
-{% load p3 assopy_tags i18n %}
+{% load p3 i18n formstyle %}
 {% p3_profile_data request.user.id as profile %}
 {% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
 <div id="account-spam-control-async-target" class="never form-box">
     <form action="{% url p3-account-spam-control %}" class="async" method="POST" rel="#account-spam-control-async-target">
         <h2>Privacy settings <span class="notice-ok async-feedback">Saved</span></h2>
-        
-        <p class="lead">We respect your privacy. We <b>never share your personal data</b> with anyone. Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
-        
+
+        <p class="lead">We respect your privacy. We <b>never share your personal data</b> with anyone.
+            Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
+
         <p>This page contains additional privacy settings for advanced opt-in features.</p>
 
         <fieldset>
@@ -15,7 +16,7 @@
                In addition to the official <a href="/recruiting">recruiting sessions</a>, you might like to receive
                selected job offers via email, and evaluate them in a more private environment.</p>
 
-            {{ pform.spam_recruiting|field:"autosubmit" }}
+            {{ pform.spam_recruiting|form_field:"autosubmit" }}
 
             <div class="hint">
                 <ul>
@@ -24,36 +25,33 @@
                 </ul>
             </div>
         </fieldset>
-        <br/>
 
         <fieldset>
             <legend>User messages</legend>
-                            
-               <p>After you buy a ticket and activate your <a href="{% url conference-profile slug=profile.slug %}">public profile</a>,
-                  other participants will be able to <a href="/find-whos-coming">find out</a> that you are coming to the conference.
-                  Do you want them to be able to contact you through our website?</p>
 
-                {{ pform.spam_user_message|field:"autosubmit" }}
-        
-                <div class="hint">
-                    <ul>
-                        <li>Your email address will <b>never</b> be shared with other participants.</li>
-                        <li>We will send you one mail notifying you of the received message.</li>
-                        <li>User messages will be active until the conference ends.</li>
-                    </ul>
-                </div>
+            <p>After you buy a ticket and activate your <a href="{% url conference-profile slug=profile.slug %}">public profile</a>,
+                other participants will be able to <a href="/find-whos-coming">find out</a> that you are coming to the conference.
+                Do you want them to be able to contact you through our website?</p>
+
+            {{ pform.spam_user_message|form_field:"autosubmit" }}
+
+            <div class="hint">
+                <ul>
+                    <li>Your email address will <b>never</b> be shared with other participants.</li>
+                    <li>We will send you one mail notifying you of the received message.</li>
+                    <li>User messages will be active until the conference ends.</li>
+                </ul>
+            </div>
         </fieldset>
-        <br/>
 
         <fieldset>
             <legend>SMS messages</legend>
-            <!-- @@TODO Check se è phone number è vuoto? -->
 
-               <p>Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes,
-                  last-minute schedule changes, impromptu happenings, etc.). Do you want to receive these information through SMS?</p>
+            <p>Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes,
+                last-minute schedule changes, impromptu happenings, etc.). Do you want to receive these information through SMS?</p>
 
 
-            {{ pform.spam_sms|field:"autosubmit" }}
+            {{ pform.spam_sms|form_field:"autosubmit" }}
 
             <div class="hint">
                 <ul>
@@ -64,7 +62,6 @@
             </div>
 
             <p>NOTE: you must insert your phone number in the “Personal data” section to activate this service.</p>
-
         </fieldset>
     </form>
 </div>
