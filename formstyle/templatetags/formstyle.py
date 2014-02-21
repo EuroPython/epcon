@@ -22,7 +22,7 @@ def form_field(field, classes=None):
         classes = ""
     elif isinstance(classes, (list, tuple)):
         classes = ' '.join(classes)
-    classes += " {} {}".format(widget_name.lower(), field_name.lower())
+    classes += " field {} {}".format(widget_name.lower(), field_name.lower())
 
     ctx = template.Context({
         'field': field,
