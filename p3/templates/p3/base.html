@@ -120,7 +120,7 @@
                     <li><a title="Enter admin" href="/admin/"><i class="fa fa-wrench"></i></a></li>
                 {% endif %}
                 {% if request.session.doppelganger %}
-                    <li><a href="{% url admin:auser-kill-doppelganger %}" title="kill the doppelganger"><i class="fa fa-bolt"></i></a></li>
+                    <li><a href="{% url admin:auser-kill-doppelganger %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a></li>
                 {% endif %}
                 <li class="user"><a href="/accounts/logout/?next=/">Log out</a></li>
             {% else %}
@@ -210,7 +210,7 @@
             <form action="https://www.paypal.com/cgi-bin/webscr" method="POST">
                 <input type="hidden" name="cmd" value="_s-xclick" />
                 <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG" />
-                <button class="btn btn-small btn-primary" type="submit" name="" style="margin-left: 0" title="PayPal - The safer, easier way to pay online!">Dona ora con PyaPal</button>
+                <button class="btn btn-small btn-primary" type="submit" name="" style="margin-left: 0" title="PayPal - The safer, easier way to pay online!">Dona ora con PayPal</button>
                 <img alt="" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1" />
             </form>
         </div>
