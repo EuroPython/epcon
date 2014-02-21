@@ -161,6 +161,14 @@ dt.toggle+dd {
     min-height: 240px;
 }
 
+// This is for legacy simpler forms like log in and signup
 
+form .field.error {
+   @extend .has-error;    
+   .errorlist {
+       @include zero;
+       color: $errorcolor;
+   }
+}
 
 

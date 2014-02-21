@@ -1,0 +1,28 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags %}
+{% block ASSOPY_MAIN_CONTENT %}
+<section>
+   <div class="grid-container">
+       <div class="grid-100">      
+            <h1>Crea un nuovo account</h1> 
+       </div><!-- /grid -->
+       <div class="grid-50">      
+            <div class="well">
+                <form action=".?next={{ next }}" method="post">
+                    <fieldset>
+                        {% if form.non_field_errors %}
+                            <p class="errornote">{{ form.non_field_errors }}</p>
+                        {% endif %}
+                        {% for f in form %}{{ f|field }}{% endfor %}
+                    </fieldset>
+                    <fieldset>
+                        <button name="" value="" class="btn btn-primary" type="submit">Crea il tuo account</button>
+                    </fieldset>
+                    {% csrf_token %}
+                </form>
+            </div>
+       </div><!-- /grid -->
+   </div><!-- /grid -->
+   </div><!-- /grid-container -->
+</section>
+{% endblock %}
