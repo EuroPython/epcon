@@ -2,40 +2,39 @@
 {% load pages_tags markup p3 conference %}
 
 {% block MAIN_CONTENT %}
-    <h1>{% if current_page %}{% show_content current_page "title" %}{% endif %}</h1>
-
-    {% block PAGE_SUMMARY_TOP %}{% endblock %}
-    <div class="page-summary">
-        {% placeholder subtitle with markItUpMarkdown as text parsed %}
-        {{ text|markdown }}
-    </div>
-    {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
-
-    <div class="{% block PAGE__CLASS_MAIN_COLUMN %}span-7 append-1{% endblock %}">
+<div class="grid-container">
+    <div class="grid-100">
+        {% if current_page %}
+            <h1>{% show_content current_page "title" %}</h1>
+        {% endif %}
+        {% block PAGE_SUMMARY_TOP %}{% endblock %}
+        <div class="page-summary">
+            {% placeholder subtitle with markItUpMarkdown as text parsed %}
+            {{ text|markdown }}
+        </div>
+        {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
+    </div> <!-- /grid -->
+    <div class="grid-66">    
         {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
         <div class="cms">
             {% placeholder text with markItUpMarkdown as text parsed %}
             {% render_page_template text as m %}
             {{ m|markdown }}
-        </div>
+        </div><!-- /cms -->
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
-    </div>
-
+    </div> <!-- /grid -->
     {% block PAGE__AFTER_MAIN_COLUMN %}
-    <div class="span-4 last">
-        <aside>
-            <div class="cms">
-                {% render_fb_like ref="like_page_col" %}
-                {% block PAGE_SIDEBAR_TOP %}{% endblock %}
-                {% block PAGE_SIDEBAR %}
-                {% placeholder right-column with markItUpMarkdown as rtext parsed %}
-                {{ rtext|markdown }}
-                {% endblock %}
-                {% box_didyouknow %}
-                {% box_newsletter %}
-            </div>
-        </aside>
-    </div>
+        <aside class="grid-33">
+            {% render_fb_like ref="like_page_col" %}
+            {% block PAGE_SIDEBAR_TOP %}{% endblock %}
+            {% block PAGE_SIDEBAR %}
+            {% placeholder right-column with markItUpMarkdown as rtext parsed %}
+            {{ rtext|markdown }}
+            {% endblock %}
+            {% box_didyouknow %}
+            {% box_newsletter %}
+        </aside> <!-- /aside grid -->
     {% endblock %}
+</div><!-- /grid-container -->
 {% endblock %}
 
