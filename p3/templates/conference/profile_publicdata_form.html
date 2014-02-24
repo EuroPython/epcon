@@ -59,6 +59,7 @@
         </dl>
 
         {% if full_access %}
+        <div class="live-edit-toggle">
             <fieldset>
                 {{ form.tagline|form_field }}
                 {{ form.personal_homepage|form_field }}
@@ -91,6 +92,7 @@
                     </script>
                 {% endif %}
             </fieldset>
+        </div>
         {% endif %}
 
         {% include "conference/profile_publicdata_company_form.html" %}

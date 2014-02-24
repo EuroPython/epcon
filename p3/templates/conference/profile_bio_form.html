@@ -1,11 +1,11 @@
-{% load conference i18n p3 assopy_tags %}
+{% load conference i18n p3 formstyle conference %}
 {% p3_profile_data profile.user_id as profile_data %}
 
 {% if profile_data.bio or full_access %}
 <div id="profile-user-bio" class="profile-user-bio">
     <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">
         <dl class="dl-horizontal">
-            <dt>Breve biografia</dt>
+            <dt>{% trans "Short bio" %}</dt>
             <dd>
                 <div class="cms">
                     {% if profile_data.bio %}
@@ -17,10 +17,12 @@
             </dd>
         </dl>
         {% if full_access %}
+            <div class="live-edit-toggle">
             {{ form.bio|form_field}}
+            </div>
             <fieldset class="form-actions">
-                <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> Modifica biografia</a>
-                <button href="#" class="btn btn-primary autosubmit">Salva modifiche</button>
+                <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                <button href="#" class="btn btn-primary autosubmit">{% trans "Save" %}</button>
             </fieldset>
         {% endif %}
         {% csrf_token %}
