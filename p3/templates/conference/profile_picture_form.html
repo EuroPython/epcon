@@ -3,7 +3,7 @@
 <div id="profile-picture-async-target">
     <form id="form_profile_picture"
         class="async"
-        action="{% url p3-profile slug=profile_data.slug %}"
+        action="{% url "p3-profile" slug=profile_data.slug %}"
         method="post"
         enctype="multipart/form-data"
         rel="#profile-picture-async-target">

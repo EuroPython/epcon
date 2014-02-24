@@ -2,7 +2,7 @@
 {% load i18n p3 assopy_tags %}
 {% block MAIN_CONTENT %}
     <h1>{% trans "Propose a Sprint" %}</h1>
-    <form action="{% url p3-sprint-submission %}" method="post">{% csrf_token %}
+    <form action="{% url "p3-sprint-submission" %}" method="post">{% csrf_token %}
         <fieldset>
         {% for f in form %}
             {{ f|field }}

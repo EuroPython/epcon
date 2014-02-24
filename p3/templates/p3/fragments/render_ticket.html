@@ -146,7 +146,7 @@
         {% comment %}
         {% if ticket.fare.payment_type == 'v' %}
         <p>
-            <a href="{% url assopy-orderitem-voucher order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">Download your voucher</a>
+            <a href="{% url "assopy-orderitem-voucher" order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">Download your voucher</a>
         </p>
         {% endif %}
         {% endcomment %}
@@ -155,7 +155,7 @@
 
     <div class="overlay">
         {% if not ticket.frozen %}
-        <form action="{% url p3-ticket tid=ticket.id %}" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+        <form action="{% url "p3-ticket" tid=ticket.id %}" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
         {% if ticket.fare.ticket_type == "conference" %}
             <fieldset class="container clearfix">
                 <div class="span-6">
@@ -194,17 +194,17 @@
                     <p style="padding: 0 15px 0 0;">
                     {% if pdata.visibility == "x" %}
                         <span>
-                            Your <a href="{% url conference-profile slug=pdata.slug %}">profile</a> is not visibile by anyone.
+                            Your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> is not visibile by anyone.
                             <br />
                             <br />
                             Why don't you let people know that you are coming? (<a href="/find-out-whos-coming">Check why</a>)
                         </span>
                     {% endif %}
                     {% if pdata.visibility == "m" %}
-                        <span>Only <b>conference participants</b> can view your <a href="{% url conference-profile slug=pdata.slug %}">profile</a>.&nbsp;</span>
+                        <span>Only <b>conference participants</b> can view your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a>.&nbsp;</span>
                     {% endif %}
                     {% if pdata.visibility == "p" %}
-                        <span>Your <a href="{% url conference-profile slug=pdata.slug %}">profile</a> is <b>publicly visible</b>.&nbsp;</span>
+                        <span>Your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> is <b>publicly visible</b>.&nbsp;</span>
                     {% endif %}
                     </p>
                 </div>

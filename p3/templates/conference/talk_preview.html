@@ -34,7 +34,7 @@
                 (Size: {{ info.1|filesizeformat }})
             </div>
             {% endif %}
-            <a href="{% url conference-talk slug=talk.slug %}">Go to the talk full page</a>
+            <a href="{% url "conference-talk" slug=talk.slug %}">Go to the talk full page</a>
         </div>
     </div>
 </div>

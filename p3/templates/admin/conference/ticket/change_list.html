@@ -9,7 +9,7 @@
 {{ block.super }}
 <script type="text/javascript">
 (function() {
-    var url = "{% url admin:p3-ticket-stats-data %}";
+    var url = "{% url "admin:p3-ticket-stats-data" %}";
     function accumulate(data) {
         var t = 0;
         for(var ix=0; ix<data.length; ix++) {

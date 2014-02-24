@@ -72,7 +72,7 @@
             </td>
             <td>
                 {% if t.p3_conference_sim.document %}
-                <form action="{% url p3-sim-report %}#t{{ t.id }}" method="POST" onsubmit="return freeze.call(this, arguments[0])" >{% csrf_token %}
+                <form action="{% url "p3-sim-report" %}#t{{ t.id }}" method="POST" onsubmit="return freeze.call(this, arguments[0])" >{% csrf_token %}
                     <input type="hidden" name="ticket" value="{{ t.id }}" />
                     <input type="submit" value="{% if t.frozen %}unfreeze{% else %}freeze{% endif %}" />
                     <input type="hidden" name="number" value="{{ t.p3_conference_sim.number }}" />

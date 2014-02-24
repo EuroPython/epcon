@@ -41,7 +41,7 @@ hr.border {
                 <hr class="border" />
                 <h3>Met on: {{ p.timestamp|date:"dS M Y" }} at {{ p.timestamp|date:"H.i" }}</h3>
                 <p class="message">{{ p.message }}</p>
-                <form class="async unlink" action="{% url conference-profile-link uuid=profile.uuid %}" method="POST">{% csrf_token %}
+                <form class="async unlink" action="{% url "conference-profile-link" uuid=profile.uuid %}" method="POST">{% csrf_token %}
                     <input type="hidden" name="delete" value="1" />
                     <fieldset>
                         <a href="#" class="">Remove connection</a>

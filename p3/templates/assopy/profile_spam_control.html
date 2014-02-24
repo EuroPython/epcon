@@ -2,7 +2,7 @@
 {% p3_profile_data request.user.id as profile %}
 {% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
 <div id="account-spam-control-async-target" class="never form-box">
-    <form action="{% url p3-account-spam-control %}" class="async" method="POST" rel="#account-spam-control-async-target">
+    <form action="{% url "p3-account-spam-control" %}" class="async" method="POST" rel="#account-spam-control-async-target">
         <h2>Privacy settings <span class="notice-ok async-feedback">Saved</span></h2>
 
         <p class="lead">We respect your privacy. We <b>never share your personal data</b> with anyone.
@@ -29,7 +29,7 @@
         <fieldset>
             <legend>User messages</legend>
 
-            <p>After you buy a ticket and activate your <a href="{% url conference-profile slug=profile.slug %}">public profile</a>,
+            <p>After you buy a ticket and activate your <a href="{% url "conference-profile" slug=profile.slug %}">public profile</a>,
                 other participants will be able to <a href="/find-whos-coming">find out</a> that you are coming to the conference.
                 Do you want them to be able to contact you through our website?</p>
 

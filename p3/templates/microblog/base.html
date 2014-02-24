@@ -15,7 +15,7 @@
                 {% year_list as years %}
                 <ul>
                 {% for d, count in years %}
-                    <li><a href="{% url microblog-list-by-year year=d.year %}">{{ d.year }}</a> ({{ count }})</li>
+                    <li><a href="{% url "microblog-list-by-year" year=d.year %}">{{ d.year }}</a> ({{ count }})</li>
                 {% endfor %}
                 </ul>
             </div>

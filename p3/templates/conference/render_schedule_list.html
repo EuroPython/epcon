@@ -13,13 +13,13 @@
 
                 {% randint as r %}
                 <a
-                    href="{% url conference-talk slug=e.talk.slug %}"
+                    href="{% url "conference-talk" slug=e.talk.slug %}"
                     class="toggle"
                     rel="#talk_{{ r }}">{% if "teaser" in e.tags %}[Teaser Talk] {% endif %}{{ e.name|safe }}</a>
                 by
                 {% for s in e.talk.speakers %}
-                <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
-                <div id="talk_{{ r }}" class="talk preview span-12" data-url="{% url conference-talk-preview slug=e.talk.slug %}"></div>
+                <a href="{% url "conference-speaker" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                <div id="talk_{{ r }}" class="talk preview span-12" data-url="{% url "conference-talk-preview" slug=e.talk.slug %}"></div>
                 {% endfor %}
             {% endif %}
         </li>
@@ -34,7 +34,7 @@
                 <div class="talk-level {{ e.talk.level }}">&nbsp;</div>
                 {% with e|event_has_track:"teaser" as teaser %}
                     <a
-                        href="{% url conference-talk slug=e.talk.slug %}"
+                        href="{% url "conference-talk" slug=e.talk.slug %}"
                         class="trigger-overlay"
                         {% if teaser %}
                         data-overlay-onload="$('#global-overlay h1').prepend('<a href=&quot;/training#teaser-talks&quot;>Teaser Talk:</a> ')"
@@ -42,14 +42,14 @@
                         {% if teaser %}[Teaser Talk] {% endif %}{{ e.talk.title }}</a>
                     by
                     {% for s in e.talk.get_all_speakers %}
-                    <a href="{% url conference-speaker slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                    <a href="{% url "conference-speaker" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                     in
                     <strong><i>{{ e.get_track.title|safe }}</i></strong>
                     {% if e.talk %}
                         {% embed_video e.talk args="width=500,height=400" as h %}
                         {% if h %}
-                        <a href="{% url conference-talk-video slug=e.talk.slug %}?torrent=1">BitTorrent</a>
+                        <a href="{% url "conference-talk-video" slug=e.talk.slug %}?torrent=1">BitTorrent</a>
                         {% endif %}
                     {% endif %}
                 {% endwith %}

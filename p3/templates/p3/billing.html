@@ -12,7 +12,7 @@
     </div>
 
     <div class="span-9 last">
-        <form action="{% url p3-billing %}" method="post">{% csrf_token %}
+        <form action="{% url "p3-billing" %}" method="post">{% csrf_token %}
             {{ form|form_errors }}
             <fieldset>
                 <legend>{% trans "Your order" %}</legend>
@@ -110,7 +110,7 @@
             function _geoCode() {
                 var address = $('#id_address').val();
                 var region = $('#id_country').val();
-                var url = "{% url assopy-geocode %}";
+                var url = "{% url "assopy-geocode" %}";
                 $.getJSON(
                     url,
                     {

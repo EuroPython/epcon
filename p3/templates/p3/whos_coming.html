@@ -13,7 +13,7 @@
         <a href="/find-out-whos-coming">Discover how to see them all!</a>
         {% endif %}
     </h2>
-    <form id="filter-form" class="async" rel="#people-wrapper" action="{% url p3-whos-coming-conference conference=conference %}" method="GET">
+    <form id="filter-form" class="async" rel="#people-wrapper" action="{% url "p3-whos-coming-conference" conference=conference %}" method="GET">
         <fieldset>
             <legend>Filter by</legend>
             <div class="span-3">

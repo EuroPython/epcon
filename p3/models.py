@@ -400,7 +400,7 @@ class P3Profile(models.Model):
     interests = TaggableManager(through=ConferenceTaggedItem)
     twitter = models.CharField(max_length=80, blank=True)
     image_gravatar = models.BooleanField(default=False)
-    image_url = models.URLField(max_length=500, verify_exists=False, blank=False)
+    image_url = models.URLField(max_length=500, blank=False)
     country = models.CharField(max_length=2, blank=True, default='', db_index=True)
 
     spam_recruiting = models.BooleanField(default=False)

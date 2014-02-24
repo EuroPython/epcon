@@ -14,7 +14,7 @@
                 'form': $('#add-comment form.new-comment'),
                 'wrapper': $('#comments'),
                 'comments': $('#comments li'),
-                'remove': "{% url hcomments-delete-comment %}"
+                'remove': "{% url "hcomments-delete-comment" %}"
             });
             hcomments.onCommentModerated = function(comment) {
                 var e = comment ? comment : $('.form-box');

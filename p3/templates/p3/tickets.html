@@ -5,7 +5,7 @@
 
     {% if not tickets %}
     <section class="notice">
-        {% url p3-cart as u %}
+        {% url "p3-cart" as u %}
         <p>{% blocktrans %}You still have not bought any ticket with this account. Please proceed to the <a href="{{ u }}">cart</a> to place an order.{% endblocktrans %}</p>
     </section>
     {% endif %}

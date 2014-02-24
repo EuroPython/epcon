@@ -61,7 +61,7 @@
                 data-time="{{ cell.time|time:"H:i" }}"
                 data-track="{{ cell.row }}"
                 data-event-id="{{ ref.id }}"
-                data-event-url="{% url conference-schedule-event conference=schedule.conference slug=schedule.slug eid=ref.id %}"
+                data-event-url="{% url "conference-schedule-event" conference=schedule.conference slug=schedule.slug eid=ref.id %}"
                 style="{{ cell.size }}">
                 <div class="wrapper">
                 {% if ref.talk %}
@@ -69,7 +69,7 @@
                     <div class="talk-level {{ ref.talk.level }}">&nbsp;</div>
                     <h3 data-talk="{{ ref.talk.id }}">
                         <a
-                            href="{% url conference-talk slug=ref.talk.slug %}"
+                            href="{% url "conference-talk" slug=ref.talk.slug %}"
                             class="event-trigger-overlay"
                             {% if teaser %}
                             data-overlay-onload="$('#global-overlay h1').prepend('<a href=&quot;/training#teaser-talks&quot;>Teaser Talk:</a> ')"
@@ -80,7 +80,7 @@
                     by 
                     {% get_talk_speakers ref.talk as speakers %}
                     {% for ts in speakers %}
-                    <a href="{% url conference-speaker slug=ts.speaker.slug %}">{{ ts.speaker.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                    <a href="{% url "conference-speaker" slug=ts.speaker.slug %}">{{ ts.speaker.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                     {% endif %}
                     <div class="tools">
@@ -88,7 +88,7 @@
                         {% if not teaser %}
                         <div class="talk-vote">{% talk_vote ref.talk as x %}{% if x %}{{ x.vote}}/10{% endif %}</div>
                         {% endif %}
-                        <div class="talk-interest" data-url="{% url conference-schedule-event-interest conference=schedule.conference slug=schedule.slug eid=ref.id %}">
+                        <div class="talk-interest" data-url="{% url "conference-schedule-event-interest" conference=schedule.conference slug=schedule.slug eid=ref.id %}">
                             <button class="down {% if interest < 0 %}active{% endif %}"></button>
                             <button class="up {% if interest > 0 %}active{% endif %}"></button>
                         </div>

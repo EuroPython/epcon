@@ -73,14 +73,14 @@ Beta version, small changes could be introduced to meet speakers' necessities.
         <a href="#">Schedule view</a>
         <div>
             <ul>
-                <li><a href="{% url p3-whos-coming-conference conference=conference %}?speaker=on">Speakers list</a></li>
+                <li><a href="{% url "p3-whos-coming-conference" conference=conference %}?speaker=on">Speakers list</a></li>
                 <li>
-                    <a href="{% url p3-schedule-list conference=conference %}">List view</a>
-                    <a style="border: 0" href="{% url p3-schedule-ics conference=conference %}">
+                    <a href="{% url "p3-schedule-list" conference=conference %}">List view</a>
+                    <a style="border: 0" href="{% url "p3-schedule-ics" conference=conference %}">
                         <img style="vertical-align: middle" src="{{ STATIC_URL }}p5/i/icon-ical.png" />
                     </a>
                 </li>
-                <li><a href="{% url p3-schedule-my-schedule conference=conference %}">My schedule</a></li>
+                <li><a href="{% url "p3-schedule-my-schedule" conference=conference %}">My schedule</a></li>
             </ul>
         </div>
     </div>
@@ -141,13 +141,13 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                 {% endfor %}
             </ul>
             <div class="button mini" style="margin-top: 10px;">
-                <a href="{% url p3-schedule-list conference=CONFERENCE %}">List view</a>
+                <a href="{% url "p3-schedule-list" conference=CONFERENCE %}">List view</a>
             </div>
             <div class="button mini" style="margin-top: 10px;">
-                <a href="{% url p3-my-schedule %}">My schedule</a>
+                <a href="{% url "p3-my-schedule" %}">My schedule</a>
             </div>
             <div class="button mini" style="margin-top: 10px;">
-                <a href="{% url p3-schedule-speakers conference=CONFERENCE %}">Speakers list</a>
+                <a href="{% url "p3-schedule-speakers" conference=CONFERENCE %}">Speakers list</a>
             </div>
             <a class="trigger-overlay schedule-help" href="/schedule-help">How to use</a>
         </div>
@@ -182,10 +182,10 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                     <div class="speakers">
                         <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
                         {% for s in e.talk.speakers %}
-                        <a href="{% url conference-profile slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                        <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </div>
-                    <h3 class="name"><a href="{% url conference-talk slug=e.talk.slug %}">{{ e.name }}</a></h3>
+                    <h3 class="name"><a href="{% url "conference-talk" slug=e.talk.slug %}">{{ e.name }}</a></h3>
                     <div class="maximized all-tags">
                         {% for tag in e.talk.tags %}<a class="tag">{{ tag }}</a>{% endfor %}
                     </div>
@@ -207,7 +207,7 @@ Beta version, small changes could be introduced to meet speakers' necessities.
                         <ul>
                             {% for t in posters %}
                             <li>
-                            <a href="{% url conference-talk slug=t.slug %}" title="by {% for s in t.speakers %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">{{ t.title }}</a>
+                            <a href="{% url "conference-talk" slug=t.slug %}" title="by {% for s in t.speakers %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">{{ t.title }}</a>
                             </li>
                             {% endfor %}
                         </ul>

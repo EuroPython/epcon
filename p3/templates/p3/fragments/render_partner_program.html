@@ -20,7 +20,7 @@
         </ul>
         <div class="call-to-action partner-program">
         {% for fare in group %}
-            <a href="{% url p3-cart %}?f={{ fare.code }}">{{ fare|fare_blob:"date"|as_datetime|date:"F jS, D" }} →</a>
+            <a href="{% url "p3-cart" %}?f={{ fare.code }}">{{ fare|fare_blob:"date"|as_datetime|date:"F jS, D" }} →</a>
         {% endfor %}
         </div>
     {% endwith %}

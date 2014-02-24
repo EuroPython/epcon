@@ -64,7 +64,7 @@
             {% for conf, talks_list in talks|ordered_talks %}
                 <dt>{{ conf }}</dt>
                 {% for t in talks_list %}
-                <dd><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>{% if t.status != "accepted" %} ({{ t.status }}){% endif %}</dd>
+                <dd><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a>{% if t.status != "accepted" %} ({{ t.status }}){% endif %}</dd>
                 {% endfor %}
             {% endfor %}
             </dl>

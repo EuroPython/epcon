@@ -6,7 +6,7 @@
 
 {% block MAIN_CONTENT %}
 
-<form class="talk-form form-horizontal" action="{% url conference-paper-submission %}" method="post" enctype="multipart/form-data">
+<form class="talk-form form-horizontal" action="{% url "conference-paper-submission" %}" method="post" enctype="multipart/form-data">
 {% if not proposed_talks %}
     <section>
         <div class="grid-container">
@@ -50,7 +50,7 @@
             <p>
                 You have already submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.
                 To edit your submission{{ proposed_talks.count|pluralize }},
-                visit your <a href="{% url conference-profile slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
+                visit your <a href="{% url "conference-profile" slug=speaker.user.attendeeprofile.slug %}">speaker profile</a>.</p>
         </div>
     {% endif %}
 

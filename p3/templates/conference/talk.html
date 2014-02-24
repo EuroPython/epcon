@@ -18,7 +18,7 @@
             'form': $('#add-comment form.new-comment'),
             'wrapper': $('#comments'),
             'comments': $('#comments li'),
-            'remove': "{% url hcomments-delete-comment %}"
+            'remove': "{% url "hcomments-delete-comment" %}"
         });
         hcomments.onCommentModerated = function(comment) {
             var e = comment ? comment : $('.form-box');
@@ -72,7 +72,7 @@
             <p>
                 {% trans "by" %}
                 {% for spk in talk_data.speakers %}
-                <a href="{% url conference-profile slug=spk.slug %}">{{ spk.name }}</a>
+                <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
                 {% if not forloop.last %}-{% endif %}
                 {% endfor %}
                 for
@@ -113,7 +113,7 @@
                         {% comment %}
                         (expected attendance {{ e.expected_attendance.expected|floatformat:"0" }} people)
                         {% endcomment %}
-                        <a href="{% url p3-schedule conference=e.schedule.conference %}"><b>See schedule</b></a>
+                        <a href="{% url "p3-schedule" conference=e.schedule.conference %}"><b>See schedule</b></a>
                     </section>
                     {% endif %}
                 {% endfor %}
@@ -129,7 +129,7 @@
         {% endwith %}
         {% if full_access %}
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
-            <form class="talk-details talk-form" action="{% url conference-talk slug=talk.slug %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <form class="talk-details talk-form" action="{% url "conference-talk" slug=talk.slug %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
                 {{ form.title|field }}
                 {% if cfp %}
@@ -203,12 +203,12 @@
             <div id="talk-voting">
                 <h4>Community voting is open</h4>
                 {% user_votes talk_id=talk.id as vote %}
-                <form action="{% url conference-voting %}" method="post">{% csrf_token %}
+                <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
                     Vote this talk:
                     <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{% firstof vote "0" %}" step="0.5" style="width: 0"/>
                     <div class="rateit" data-rateit-backingfld="#id_vote-{{ talk.id }}"></div>
                     <div>
-                        {% url conference-voting as u %}
+                        {% url "conference-voting" as u %}
                         {% if u|full_url in request.META.HTTP_REFERER %}
                             <a href="{{ request.META.HTTP_REFERER }}">Back to the voting list</a>
                         {% else %}

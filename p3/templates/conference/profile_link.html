@@ -46,7 +46,7 @@
 {% if linked %}
 <hr class="sep" />
 <div class="cms">
-    <form id="message-form" class="async" action="{% url conference-profile-link-message uuid=p2.uuid %}" method="POST">{% csrf_token %}
+    <form id="message-form" class="async" action="{% url "conference-profile-link-message" uuid=p2.uuid %}" method="POST">{% csrf_token %}
         <fieldset>
             {{ form.message|field }}
         </fieldset>
@@ -71,7 +71,7 @@
 <hr class="stars" />
 <div class="clearfix">
     <div class="button" style="text-align: center;">
-        <a href="{% url conference-profile-conferences %}">See who you have met!</a>
+        <a href="{% url "conference-profile-conferences" %}">See who you have met!</a>
     </div>
 </div>
 {% endblock %}

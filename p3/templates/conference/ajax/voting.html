@@ -9,7 +9,7 @@
             <h2 id="t{{ t.id }}">
                 <a href="#ord{{ row.ordinal }}" id="ord{{ row.ordinal }}">{{ row.ordinal }}</a> -
                 {% if voting_allowed or special_user %}
-                <a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a>
+                <a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a>
                 {% else %}
                 {{ t.title }}
                 {% endif %}
@@ -20,7 +20,7 @@
                 By {% for s in t.speakers %}
                     {% if voting_allowed or special_user %}
                     {% with alldata.speakers|attrib_:s.id as pdata %}
-                    <a href="{% url conference-profile slug=s.slug %}"><b class="speaker-name" data-twitter="{{ pdata.twitter }}">{{ s.name }}</b></a>
+                    <a href="{% url "conference-profile" slug=s.slug %}"><b class="speaker-name" data-twitter="{{ pdata.twitter }}">{{ s.name }}</b></a>
                     {% endwith %}
                     {% else %}
                     <b class="speaker-name">{{ s.name }}</b>
@@ -31,18 +31,18 @@
                 for <b>{{ t.level|field_label:"Talk.level" }}</b>
             </div>
             {% endwith %}
-            <form action="{% url conference-voting %}" method="post">{% csrf_token %}
+            <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
                 <input name="vote-{{ t.id }}" id="id_vote-{{ t.id }}" type="range" min="0" max="10" value="{{ row.user_vote.vote|default:"0" }}" step="0.5" style="display: none; width: 0;"/>
                 <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
                 <div class="feedback-vote"><b>Thank you! <a href="#">Share your vote!</a></b></div>
             </form>
             {% if voting_allowed %}
             <dl>
-                <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url conference-talk-xml t.slug %}">Abstract</dt>
+                <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url "conference-talk-xml" t.slug %}">Abstract</dt>
                 <dd>
                     <div class="cms" data-talk="{{ t.id }}" style="display: none">
                         <div class="abstract"></div>
-                        <div><b>Questions on this talk?</b> <a href="{% url conference-talk slug=t.slug %}#comments">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
+                        <div><b>Questions on this talk?</b> <a href="{% url "conference-talk" slug=t.slug %}#comments">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
                     </div>
                 </dd>
             </dl>
@@ -88,7 +88,7 @@
                     var activity = new RPXNOW.Social.Activity('Share your vote', tweet, url);
                     activity.setTitle('Europython 2013 - Community voting');
                     activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
-                    {% url conference-voting as u %}
+                    {% url "conference-voting" as u %}
                     activity.addActionLink('Vote a talk', '{{ u|full_url }}');
                     var media = new RPXNOW.Social.ImageMediaCollection();
                     media.addImage('https://ep2013.europython.eu/media/uploads/twitter-avatar.png', url);

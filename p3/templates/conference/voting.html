@@ -19,10 +19,10 @@
     {% if not voting_allowed %}
     <section class="notice">
         {% if request.user.is_authenticated %}
-        <p>To join the community voting, you must buy a ticket. You can buy one <a href="{% url p3-cart %}">here</a>.</p>
+        <p>To join the community voting, you must buy a ticket. You can buy one <a href="{% url "p3-cart" %}">here</a>.</p>
         {% else %}
         <p>To join the community voting, you must buy a ticket.</p>
-        <p>If you already bought a ticket please <a href="/accounts/login/">log in</a>, otherwise you can buy one <a href="{% url p3-cart %}">here</a>.</p>
+        <p>If you already bought a ticket please <a href="/accounts/login/">log in</a>, otherwise you can buy one <a href="{% url "p3-cart" %}">here</a>.</p>
         {% endif %}
     </section>
     {% endif %}
@@ -32,7 +32,7 @@
         <p>Cast your vote!</p>
     </div>
 
-    <form class="async" rel="#talk-voting-wrapper" action="{% url conference-voting %}" method="GET" id="form-options">
+    <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
         <div class="span-7 inline">
             {{ form.abstracts|field:"autosubmit" }}
             {{ form.talk_type|field:"autosubmit" }}
@@ -69,7 +69,7 @@
                     {% endif %}
                 </div>
                 <div class="span-9 cms last">
-                    <h3>Set your favorite tags in your <a href="{% url conference-profile slug=pdata.slug %}">profile</a> and filter by your interests with one click.</h3>
+                    <h3>Set your favorite tags in your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> and filter by your interests with one click.</h3>
                 </div>
             {% endif %}
         </div>

@@ -34,7 +34,7 @@
                             </li>
                             {% endfor %}
                         </ul>
-                        <form id="remove-identity" action="{% url assopy-profile-identities %}" method="post">
+                        <form id="remove-identity" action="{% url "assopy-profile-identities" %}" method="post">
                             <input type="hidden" name="identifier" value="" />
                         </form>
                         <script type="text/javascript">
@@ -58,7 +58,7 @@
                             });
                         </script>
                         <div class="button mini">
-                            {% url assopy-profile as u %}
+                            {% url "assopy-profile" as u %}
                             {% render_janrain_box u "overlay" %}
                         </div>
                     </div>
@@ -112,12 +112,12 @@
                                     {% else %}
                                         {% for i in invoices %}
                                             {% if i.assopy_id %}
-                                                <a href="{% url genro-legacy-invoice assopy_id=i.assopy_id %}">{{ i.code }}</a>
+                                                <a href="{% url "genro-legacy-invoice" assopy_id=i.assopy_id %}">{{ i.code }}</a>
                                             {% else %}
-                                                <a href="{% url assopy-invoice-pdf order_code=o.code code=i.code %}">{{ i.code }}</a>
+                                                <a href="{% url "assopy-invoice-pdf" order_code=o.code code=i.code %}">{{ i.code }}</a>
                                                 {% comment %}
                                                 {% for cn in i.credit_notes.all %}
-                                                    (<a href="{% url assopy-invoice-pdf assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
+                                                    (<a href="{% url "assopy-invoice-pdf" assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
                                                 {% endfor %}
                                                 {% endcomment %}
                                             {% endif %}
@@ -141,22 +141,22 @@
 
     <dl>
 
-        <dt><a href="{% url conference-profile slug=profile.slug %}">Your public profile</a></dt>
+        <dt><a href="{% url "conference-profile" slug=profile.slug %}">Your public profile</a></dt>
         <dd>Partecipate in “<a href="/find-out-whos-coming">Find out who's coming</a>”: let people know that you will be coming to EuroPython.
         </dd>
 
         {% all_user_tickets fare_type="all" as tickets %}
 
         {% if tickets|length %}
-            <dt><a href="{% url conference-profile-conferences %}">Conference &amp; contacts</a></dt>
+            <dt><a href="{% url "conference-profile-conferences" %}">Conference &amp; contacts</a></dt>
             <dd>See the conferences you have attended and who you have met.</dd>
         {% endif %}
 
         {% if tickets|length %}
-            <dt><a href="{% url assopy-tickets %}">{% trans "Your tickets" %} ({{tickets|length}})</a></dt>
+            <dt><a href="{% url "assopy-tickets" %}">{% trans "Your tickets" %} ({{tickets|length}})</a></dt>
             <dd>Fill in and review all your tickets.</dd>
 
-            <dt><a class="btn" href="{% url p3-my-schedule %}">Your personal schedule</a></dt>
+            <dt><a class="btn" href="{% url "p3-my-schedule" %}">Your personal schedule</a></dt>
         {% endif %}
     </dl>
 

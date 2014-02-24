@@ -46,7 +46,7 @@
             <th>{{ dstatus.label }}</th>
             {% for s in dstatus.days %}
             <td class="{% if s.free < 0 %}danger{% elif s.free < 5 %}full{% elif s.free < 15 %}almost{% else %}empty{% endif %}">
-                <a href="{% url admin:p3-hotelrooms-tickets-data %}?day={{ forloop.counter0 }}&amp;type={{ dstatus.type }}" title="{{ s.reserved }}/{{ s.available }}">{{ s.free }}</a>
+                <a href="{% url "admin:p3-hotelrooms-tickets-data" %}?day={{ forloop.counter0 }}&amp;type={{ dstatus.type }}" title="{{ s.reserved }}/{{ s.available }}">{{ s.free }}</a>
             </td>
             {% endfor %}
         </tr>

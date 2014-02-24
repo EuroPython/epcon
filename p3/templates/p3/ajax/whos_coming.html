@@ -8,7 +8,7 @@
         <div class="span-6 {% cycle 'border' 'last' %}">
             <div id="{{ profile_data.slug }}" class="person-card">
                 <div class="person-card-picture">
-                    <a href="{% url conference-profile slug=profile_data.slug %}"><img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="76" /></a>
+                    <a href="{% url "conference-profile" slug=profile_data.slug %}"><img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="76" /></a>
                 </div>
                 <div class="person-card-profile">
                     <h2>{{ profile_data.name }}</h2>
@@ -32,7 +32,7 @@
                         {% if profile_data.interests %}
                         <dd class="tags">
                             {% for t in profile_data.interests|eval_:"list(x)[:5]" %}<span class="tag">{{ t }}</span>{% endfor %}
-                            {% if profile_data.interests|length > 5 %} and <a href="{% url conference-profile slug=profile_data.slug %}">{{ profile_data.interests|length|eval_:"x-5" }} more</a>{% endif %}
+                            {% if profile_data.interests|length > 5 %} and <a href="{% url "conference-profile" slug=profile_data.slug %}">{{ profile_data.interests|length|eval_:"x-5" }} more</a>{% endif %}
                         </dd>
                         {% endif %}
                     </dl>
@@ -59,7 +59,7 @@
                     <h4>Talks</h4>
                     <ul>
                         {% for t in talks %}
-                        <li><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></li>
+                        <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

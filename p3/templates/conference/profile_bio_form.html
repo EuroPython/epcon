@@ -3,7 +3,7 @@
 
 {% if profile_data.bio or full_access %}
 <div id="profile-user-bio" class="profile-user-bio">
-    <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">
+    <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">
         <dl class="dl-horizontal">
             <dt>{% trans "Short bio" %}</dt>
             <dd>

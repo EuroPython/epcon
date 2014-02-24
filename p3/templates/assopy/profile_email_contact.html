@@ -14,7 +14,7 @@
         </div>
     {% endif %}
 
-    <form action="{% url p3-account-email %}" class="async{% if pform.is_valid %} live-edit{% endif %}" method="POST" rel="#account-email-contact-async-target">
+    <form action="{% url "p3-account-email" %}" class="async{% if pform.is_valid %} live-edit{% endif %}" method="POST" rel="#account-email-contact-async-target">
 
         <fieldset>
             {% if pform.is_valid %}

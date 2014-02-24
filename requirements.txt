@@ -1,4 +1,4 @@
-Django==1.4.3
+Django==1.5.5
 South==0.7.6
 pillow
 django-page-cms==1.4.5

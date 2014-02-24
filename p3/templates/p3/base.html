@@ -20,7 +20,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="{{ STATIC_URL }}p5/images/h/apple-touch-icon.png">
  
     {% if current_page and request.user.is_staff %}
-        <link rel="alternate" type="application/x-wiki" title="Edit this page" href="{% url admin:pages_page_change current_page.pk %}"/>
+        <link rel="alternate" type="application/x-wiki" title="Edit this page" href="{% url "admin:pages_page_change" current_page.pk %}"/>
     {% endif %}
 
     <!-- For all browsers -->
@@ -69,7 +69,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
     {% if current_page|check_map %}
         <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
-        <script type="text/javascript" src="{% url p3-map-js %}"></script>
+        <script type="text/javascript" src="{% url "p3-map-js" %}"></script>
     {% endif %}
     {% block EXTRA_HEAD %}{% endblock %}
 
@@ -111,12 +111,12 @@
                 </li>
             {% endwith %}
             {% if request.user.is_authenticated %}
-                <li class="user"><a href="{% url assopy-profile %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a></li>
+                <li class="user"><a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a></li>
                 {% if request.user.is_staff %}
                     <li><a title="Enter admin" href="/admin/"><i class="fa fa-wrench"></i></a></li>
                 {% endif %}
                 {% if request.session.doppelganger %}
-                    <li><a href="{% url admin:auser-kill-doppelganger %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a></li>
+                    <li><a href="{% url "admin:auser-kill-doppelganger" %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a></li>
                 {% endif %}
                 <li class="user"><a href="/accounts/logout/?next=/">Log out</a></li>
             {% else %}

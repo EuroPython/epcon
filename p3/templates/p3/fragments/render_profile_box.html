@@ -1,7 +1,7 @@
 {% load conference p3 %}
 <div id="{{ profile.slug }}" class="person-card">
     <div class="person-card-picture">
-        <a href="{% url conference-profile slug=profile.slug %}"><img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="76" /></a>
+        <a href="{% url "conference-profile" slug=profile.slug %}"><img class="block" src="{{ profile.image }}" alt="{{ profile.name }}" width="76" /></a>
     </div>
     <div class="person-card-profile">
         <h2>{{ profile.name }}</h2>
@@ -25,7 +25,7 @@
             {% if profile.interests %}
             <dd class="tags">
                 {% for t in profile.interests|eval_:"list(x)[:5]" %}<span class="tag">{{ t }}</span>{% endfor %}
-                {% if profile.interests|length > 5 %} and <a href="{% url conference-profile slug=profile.slug %}">{{ profile.interests|length|eval_:"x-5" }} more</a>{% endif %}
+                {% if profile.interests|length > 5 %} and <a href="{% url "conference-profile" slug=profile.slug %}">{{ profile.interests|length|eval_:"x-5" }} more</a>{% endif %}
             </dd>
             {% endif %}
         </dl>
@@ -37,7 +37,7 @@
             <div class="bio">
                 {{ shorted }}
             {% if shorted|length < bio|length %}
-                <a class="see-more" href="{% url conference-profile slug=profile.slug %}">See more</a>
+                <a class="see-more" href="{% url "conference-profile" slug=profile.slug %}">See more</a>
             {% endif %}
             </div>
             {% endwith %}
@@ -52,7 +52,7 @@
         <h4>Talks</h4>
         <ul>
             {% for t in talks %}
-            <li><a href="{% url conference-talk slug=t.slug %}">{{ t.title }}</a></li>
+            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
             {% endfor %}
         </ul>
     </div>
