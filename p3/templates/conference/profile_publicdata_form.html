@@ -1,4 +1,4 @@
-{% load conference i18n p3 assopy_tags %}
+{% load conference i18n p3 formstyle %}
 {% p3_profile_data profile.user_id as profile_data %}
 <div id="profile-public-data-async-target">
     <form action="{% url p3-profile slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-public-data-async-target">
@@ -57,7 +57,7 @@
             {% endif %}
 
         </dl>
-        
+
         {% if full_access %}
             <fieldset>
                 {{ form.tagline|form_field }}
@@ -92,7 +92,7 @@
                 {% endif %}
             </fieldset>
         {% endif %}
-            
+
         {% include "conference/profile_publicdata_company_form.html" %}
 
         {% if full_access %}
@@ -100,6 +100,6 @@
             <button class="btn btn-primary autosubmit">Salva modifiche</a>
         {% endif %}
         {% csrf_token %}
-        <input type="hidden" name="section" value="public-data" />        
+        <input type="hidden" name="section" value="public-data" />
     </form>
 </div>
