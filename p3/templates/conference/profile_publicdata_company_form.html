@@ -1,46 +1,36 @@
 {% load conference i18n p3 assopy_tags %}
 {% p3_profile_data profile.user_id as profile_data %}
-
-{% if profile_data.company or full_access %}
-<dt>Company</dt>        
-<dd>
-    {% if profile_data.company %}
-        <span>{{ profile_data.company }}</span>
-    {% else %}
-        <span class="not-set">&mdash; Not set &mdash;</span>
-    {% endif %}
-    {% if full_access %}{{ form.company|field:"tpl:no_label" }}{% endif %}
-</dd>
-{% endif %}
-
-{% if profile_data.job_title or full_access %}
-<dt>Job title</dt>
-<dd>
-    {% if profile_data.job_title %}
-        <span>{{ profile_data.job_title }}</span>
-    {% else %}
-        <span class="not-set">&mdash; Not set &mdash;</span>
-    {% endif %}
-    {% if full_access %}{{ form.job_title|field:"tpl:no_label" }}{% endif %}
-</dd>
-{% if profile_data.company_homepage or full_access %}
-<dt>Company web site</dt>
-<dd>
-    {% if profile_data.company_homepage %}
-        <span>{{ profile_data.company_homepage|beautify_url }}</span>
-    {% else %}
-        <span class="not-set">&mdash; Not set &mdash;</span>
-    {% endif %}
-    {% if full_access %}{{ form.company_homepage|field:"tpl:no_label" }}{% endif %}
-</dd>
-{% endif %}
-{% endif %} 
+<dl class="dl-horizontal">
+    <dt>Azienda</dt>        
+    <dd>
+        {% if profile_data.company %}
+            <span>{{ profile_data.company }}</span>
+        {% else %}
+            <span>&mdash;</span>
+        {% endif %}
+    </dd>
+    <dt>Job title</dt>
+    <dd>
+        {% if profile_data.job_title %}
+            <span>{{ profile_data.job_title }}</span>
+        {% else %}
+            <span>&mdash;</span>
+        {% endif %}
+    </dd>
+    <dt>Sito web</dt>
+    <dd>
+        {% if profile_data.company_homepage %}
+            <span>{{ profile_data.company_homepage|beautify_url }}</span>
+        {% else %}
+            <span>&mdash;</span>
+        {% endif %}
+    </dd>
 </dl>
+
 {% if full_access %}
-<!--
-<div class="button mini">
-    <a href="#" class="live-edit-switch">Edit company information</a>
-    <a href="#" class="autosubmit">Save changes</a>
-</div>
--->
+<fieldset>
+    {{ form.company|form_field }}
+    {{ form.job_title|form_field }}    
+    {{ form.company_homepage|form_field }}
+</fieldset>
 {% endif %}
