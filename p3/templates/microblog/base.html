@@ -1,40 +1,25 @@
 {% extends "p3/base.html" %}
 {% load i18n microblog_tags p3 conference %}
 {% block PAGE_TITLE %}Blog{% endblock %}
-
 {% block MAIN_CONTENT %}
-
 <section>
        <div class="grid-container">
-       <div class="grid-70 suffix-10">      
+       <div class="grid-66">      
             {% block BLOG_HEADER %}{% endblock %}
             {% block BLOG_CONTENT %}{% endblock %}
        </div><!-- /grid -->
-
-       <div class="grid-20">      
-
-<!--
-           <div class="blog-feed">
-                <h4><a href="/blog/feeds/latest"><i class="fa fa-rss-square"></i>&ensp;Blog feed</a></h4>
-            </div>
--->
-            {% block BLOG_POST_INFO %}{% endblock %}
-
+       <div class="grid-33">      
             <div id="blog-archives-browser">
                 {% render_fb_like ref="like_blog_col" %}
                 <h3>{% trans "Archivio" %}</h3>
                 {% year_list as years %}
                 <ul>
-                    {% for d, count in years %}
+                {% for d, count in years %}
                     <li><a href="{% url microblog-list-by-year year=d.year %}">{{ d.year }}</a> ({{ count }})</li>
-                    {% endfor %}
+                {% endfor %}
                 </ul>
-
             </div>
-
-
        </div><!-- /grid -->
-
        </div><!-- /grid-container -->
 </section>
 {% endblock %}

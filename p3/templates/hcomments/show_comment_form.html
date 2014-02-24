@@ -2,41 +2,30 @@
 {% load hcomments_tags %}
 <div id="add-comment" class="well">
     <h3>{% trans "New comment" %} </h3>
-    <div class="form-box">
-        {% get_comment_form for object as form %}
-        <form class="new-comment" action="{% comment_form_target %}#preview-comment" method="post">{% csrf_token %}
-            <div class="clearfix">
-                {% if request.user.is_authenticated %}
-                <div class="column" style="float: left; width: 490px; margin: 0 10px 0 0">
-                    <fieldset>
-                        {% with form.comment as field %}
-                        <div class="field {% if field.errors %}error{% endif %}">
-                            {% if field.errors %}{{ field.errors }}{% endif %}
-                            {{ field.label_tag }} {{ field }}
-                        </div>
-                        {% endwith %}
-                        {% for field in form %}
-                            {% if field.is_hidden %}
-                            {{ field }}
-                            {% endif %}
-                        {% endfor %}
-                    </fieldset>
+    {% get_comment_form for object as form %}
+    <form class="new-comment" action="{% comment_form_target %}#preview-comment" method="post">
+        <fieldset>
+            {% if request.user.is_authenticated %}
+                {% with form.comment as field %}
+                <div class="field {% if field.errors %}error{% endif %}">
+                    {% if field.errors %}{{ field.errors }}{% endif %}
+                    {{ field.label_tag }} {{ field }}
                 </div>
-                {% else %}
-                <div class="column" style="float: left; width: 310px; margin: 0 10px 0 0">
-                    <fieldset>
-                        {% with form.comment as field %}
-                        <div class="field {% if field.errors %}error{% endif %}">
-                            {% if field.errors %}{{ field.errors }}{% endif %}
-                            {{ field.label_tag }} {{ field }}
-                        </div>
-                        {% endwith %}
-                    </fieldset>
-                </div>
-                <div class="column" style="float: left; width: 180px;">
-                    <fieldset>
-                        {% for field in form %}
-                            {% if field.name != "comment" and field.name != "captcha" %}
+                {% endwith %}
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                    {{ field }}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                    {% with form.comment as field %}
+                    <div class="field {% if field.errors %}error{% endif %}">
+                        {% if field.errors %}{{ field.errors }}{% endif %}
+                        {{ field.label_tag }} {{ field }}
+                    </div>
+                    {% endwith %}
+                    {% for field in form %}
+                        {% if field.name != "comment" and field.name != "captcha" %}
                             {% if field.is_hidden %}
                                 {{ field }}
                             {% else %}
@@ -45,30 +34,24 @@
                                     {{ field.label_tag }} {{ field }}
                                 </div>
                             {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                    </fieldset>
-                </div>
+                        {% endif %}
+                    {% endfor %}
+            {% endif %}
+            {% for field in form %}
+                {% if field.name == "captcha" %}
+                    {% with form.captcha as field %}
+                    <div class="field {% if field.errors %}error{% endif %}">
+                        {% if field.errors %}{{ field.errors }}{% endif %}
+                        {{ field.label_tag }} {{ field }}
+                    </div>
+                    {% endwith %}
                 {% endif %}
-                {% for field in form %}
-                    {% if field.name == "captcha" %}
-                        <div class="column" style="float: left; width: 490px; margin: 0 10px 0 0">
-                            <fieldset>
-                                {% with form.captcha as field %}
-                                <div class="field {% if field.errors %}error{% endif %}">
-                                    {% if field.errors %}{{ field.errors }}{% endif %}
-                                    {{ field.label_tag }} {{ field }}
-                                </div>
-                                {% endwith %}
-                            </fieldset>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <fieldset class="border">
-                <button type="submit" class="btn btn-primary">{% trans "Post comment" %}</button>
-            </fieldset>
-        </form>
-    </div>
+            {% endfor %}
+        </fieldset>
+        <fieldset>
+            <button type="submit" class="btn btn-primary">{% trans "Post comment" %}</button>
+        </fieldset>
+    {% csrf_token %}
+    </form>
     {% show_subscribe_form object %}
 </div>

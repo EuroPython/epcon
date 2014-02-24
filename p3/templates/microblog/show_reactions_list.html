@@ -9,8 +9,7 @@
                 <div class="excerpt">{{ r.excerpt }}</div>
             {% endif %}
             <div class="meta">
-                <date>{{ r.date|date:"d F Y" }}</date> da
-                <a href="{{ r.url }}" rel="nofollow">{% if r.blog_name %}{{ r.blog_name }}{% else %}{{ r.url }}{% endif %}</a>.
+                &mdash; <a href="{{ r.url }}" rel="nofollow">{% if r.blog_name %}{{ r.blog_name }}{% else %}{{ r.url }}{% endif %}</a>,&emsp;<time>{{ r.date|date:"d F Y" }}</time>
             </div>
         </li>
     {% endfor %}

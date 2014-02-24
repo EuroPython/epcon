@@ -54,21 +54,3 @@
 
 {% endblock %}
 
-{% block BLOG_POST_INFO %}
-{% get_post_data post.id as data %}
-<div id="blog-post-info">
-    <dl>
-        <dt>{% trans "Scritto da" %}</dt>
-        <dd>{{ post.author.first_name }}</dd>
-
-        <dt>{% trans "Data" %}</dt>
-        <dd>{{ post.date|date:"d F Y" }}</dd>
-
-        {% if data.tags %}
-        <dt>{% trans "Tag" %}</dt>
-        <dd>{% for t in data.tags %}<a class="tag" href="{% url microblog-tag tag=t.name %}">{{ t.name }}</a>{% endfor %}</dd>
-        {% endif %}
-    </dl>
-</div>
-
-{% endblock %}

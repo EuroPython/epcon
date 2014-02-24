@@ -3,12 +3,22 @@
 {% if content %}
     {% trackback_rdf content %}
 
-    <div class="page-summary">{{ content.summary|safe }}</div>
+    <div class="lead">{{ content.summary|safe }}</div>
 
     {% if content.body %}
         <div class="cms">{{ content.body|safe }}</div>
     {% endif %}
 
+    <hr style="visibility: hidden">
+
+    {% get_post_data post.id as data %}
+    <div class="meta">
+            &mdash;&emsp;{{ post.author.first_name }}, {{ post.date|date:"d F Y" }} 
+            {% if data.tags %}
+                &emsp;{% for t in data.tags %}<a class="tag" href="{% url microblog-tag tag=t.name %}">{{ t.name }}</a>{% endfor %}
+            {% endif %}
+    </div>
+        
     {% show_social_networks content %}
     
 {% endif %}
