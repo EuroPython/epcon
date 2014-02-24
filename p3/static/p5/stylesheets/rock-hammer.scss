@@ -118,6 +118,15 @@ header {
 
 .calendar {
 
+    .deadline {
+        
+    }
+
+    .deadline.expired {
+        text-decoration: line-through;       
+        color: $neutralcolor;        
+    }
+
     time {
         background: $primarycolor;
         padding: 3px 6px;
@@ -125,11 +134,7 @@ header {
         color: $white;
         @include font-size(14);
         border-radius: $borderradius;
-    }
-    
-    .more {
-        margin-top: $baselineheight;
-    }
+    }    
 }
 
 // USERS =============================================================================

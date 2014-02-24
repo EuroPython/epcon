@@ -4864,6 +4864,9 @@ header {
     .notice h3 span {
       color: #ad3d31; }
 
+.calendar .deadline.expired {
+  text-decoration: line-through;
+  color: #807c6f; }
 .calendar time {
   background: #306a99;
   padding: 3px 6px;
@@ -4872,8 +4875,6 @@ header {
   font-size: 14px;
   font-size: 1.4rem;
   border-radius: 4px; }
-.calendar .more {
-  margin-top: 1.5em; }
 
 .avatar {
   border: 2px solid #bcbab2;
