@@ -4507,7 +4507,7 @@ nav[role=navigation].active {
 .blog-archive .h4 {
   margin-bottom: 0; }
 .blog-archive .summary {
-  font-style: italic; }
+  /*         font-style: italic; */ }
 
 #home .blog-archive ul li {
   margin-bottom: 0.75em; }

@@ -3,7 +3,10 @@
 {% if content %}
     {% trackback_rdf content %}
 
-    <div class="lead">{{ content.summary|safe }}</div>
+    {%if content.summary %}
+        <div class="lead">{{ content.summary|safe }}</div>
+        <hr />
+    {% endif %}
 
     {% if content.body %}
         <div class="cms">{{ content.body|safe }}</div>
