@@ -89,6 +89,49 @@ header {
     @extend .help-block;
 }
 
+
+// HOME =============================================================================
+
+.notice {
+/*
+    @extend .well;
+    @extend .well--large;
+    margin-bottom: 0;
+*/
+    // Icons
+    .fa {
+        color: $neutralcolor;
+    }
+    h3 {
+        text-transform: uppercase;
+        margin-bottom: $baselineheight/2;
+
+        span {
+            color: $secondarycolor;
+        }
+    }   
+}
+
+.home-notice {
+    // Special styles for notice on homepage
+}
+
+.calendar {
+
+    time {
+        background: $primarycolor;
+        padding: 3px 6px;
+        text-transform: uppercase;
+        color: $white;
+        @include font-size(14);
+        border-radius: $borderradius;
+    }
+    
+    .more {
+        margin-top: $baselineheight;
+    }
+}
+
 // USERS =============================================================================
 
 

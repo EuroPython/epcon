@@ -17,36 +17,44 @@
 
 <section>
     <div class="grid-container">
-    <div class="grid-100">
-        {% current_conference as conf %}
-            <div class="">
+        <!-- NOTICE -->
+        <div class="grid-50 grid-parent notice home-notice">
+            <div class="grid-15">
+                <i class="fa fa-file-text fa-3x"></i>
+            </div><!-- /grid -->
+            <div class="grid-85">
+                {% current_conference as conf %}
                 {% if conf.cfp %}
-                <div class="home-notice">
-                    <a href="/call-for-proposals/"><img src="{{ STATIC_URL }}p5/images/notice-call-for-paper.png" alt="Call for paper is open. Submit your paper" width="315" height="130" /></a>                    
-                </div>
+                    <h3>Il Call for Proposal è <span>aperto</span></h3>
+                    <p class=""><p>Umami pariatur wolf sustainable American Apparel cornhole, +1 labore.  Craft beer whatever pork belly banjo.</p></p>
+                    <a class="btn btn-primary" href="/call-for-proposals/">Inviaci i tuoi talk</a>                    
                 {% endif %}
                 {% if conf.voting %}
-                <div class="home-notice">
-                    <div class="badge" style="margin-left: 50px; margin-right: 50px">
-                         <h5><a href="/talk-voting/">Talk voting is open &rarr; </a></h5>
+                    <h3>La votazione dei talk è <span>aperta</span></h3>
+                    <a class="btn btn-primary" href="/talk-voting/">Vota i tuoi talk preferiti</a>
+                {% endif %}        
+            </div><!-- /grid -->
+        </div><!-- /grid notice -->
+        <!-- NEXT DEADLINE -->
+        <div class="grid-50 grid-parent notice home-notice">
+            <div class="grid-15">
+                <i class="fa fa-calendar-o fa-3x"></i>
+            </div><!-- /grid -->
+            <div class="grid-85">
+                {% get_deadlines limit=1 as l %}
+                {% if l %}
+                <div class="calendar">
+                    <h3>Prossima scadenza</h3>
+                    <div class="deadline">
+                        <p><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>&emsp;{{ l.0.body|safe }}</p>
+                    </div>                   
+                    <div class="more">
+                        <a href="/calendar">Vedi tutte le scadenze &rarr;</a>
                     </div>
                 </div>
                 {% endif %}
-            </div>
-        
-            <div class="">
-                {% get_deadlines limit=1 as l %}
-                {% if l %}
-                <div class="cal">
-                    <h2><span>Next stop is&hellip;</span><span class="more"><a href="/calendar">See full calendar</a></span></h2>
-                    <div class="deadline clearfix">
-                        <h3><span>{{ l.0.date|date:"d" }}</span> {{ l.0.date|date:"b" }}</h3>
-                        <p>{{ l.0.body|safe }}</p>
-                    </div>                   
-                </div>
-                {% endif %}
-            </div>
-    </div><!-- /grid-100 -->
+            </div><!-- /grid -->
+        </div><!-- /grid notice -->
     </div><!-- /grid-container -->
 </section>
 
