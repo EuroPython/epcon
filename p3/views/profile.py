@@ -48,6 +48,7 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
             form.save()
     else:
         form = p3forms.P3ProfileForm(instance=profile)
+
     ctx = {
         'form': form,
         'full_access': full_access,

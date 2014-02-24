@@ -603,7 +603,7 @@ def HCOMMENTS_MODERATOR_REQUEST(request, comment):
             return request.user in owners
     return False
 
-P3_ANONYMOUS_AVATAR = 'p5/i/headshot-default.jpg'
+P3_ANONYMOUS_AVATAR = 'p5/images/headshot-default.jpg'
 
 P3_LIVE_INTERNAL_IPS = ('2.228.78.', '10.3.3.', '127.0.0.1')
 P3_INTERNAL_SERVER = 'live.ep:1935'
