@@ -10,18 +10,21 @@
         {% endif %}
         
         {% if full_access %}
+        <div class="overlay" id="profile-picture-form">
                 <fieldset>
-                    <label class="radio"><input type="radio" name="opt" value="x"{% if not profile_data.image %} checked="checked"{% endif %}> Do not show any picture</label>        
-                    <label class="radio"><input type="radio" name="opt" value="g"{% if profile_data.image_gravatar %} checked="checked"{% endif %}> Use my Gravatar</label>
+                    <legend>Immagine profilo</legend> 
+                    <label class="radio"><input type="radio" name="opt" value="x"{% if not profile_data.image %} checked="checked"{% endif %}> Nessuna immagine</label>        
+                    <label class="radio"><input type="radio" name="opt" value="g"{% if profile_data.image_gravatar %} checked="checked"{% endif %}> Usa il mio Gravatar (???email)</label>
                     <!-- hidden: -->{{ form.image_gravatar|field:"tpl:no_label" }}
-                    <label class="radio"><input type="radio" name="opt" value="u"{% if profile_data.image_url %} checked="checked"{% endif %}> Use this web address &darr;</label>
+                    <label class="radio"><input type="radio" name="opt" value="u"{% if profile_data.image_url %} checked="checked"{% endif %}> Usa questo indirizzo web &darr;</label>
                         {{ form.image_url|field:"tpl:no_label" }}
-                    <label class="radio"><input type="radio" name="opt" value="f"{% if profile_data.image and not profile_data.image_url and not profile_data.image_gravatar %} checked="checked"{% endif %}> Use this picture &darr;</label>                    
+                    <label class="radio"><input type="radio" name="opt" value="f"{% if profile_data.image and not profile_data.image_url and not profile_data.image_gravatar %} checked="checked"{% endif %}> Carica immagine &darr;</label>                    
                         {{ form.image|field:"tpl:no_label" }}
                 </fieldset>
                 <fieldset>
                     <button href="#" class="btn btn-primary autosubmit">Salva modifiche</button>
                 </fieldset>
+        </div>
         {% endif %}
         {% csrf_token %}
         <input type="hidden" name="section" value="picture" />
