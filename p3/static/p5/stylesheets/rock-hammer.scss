@@ -219,6 +219,18 @@ form .field.error {
    }
 }
 
+// Inline edit for profile sections and other forms
+
+.live-edit {
+    .live-edit-toggle {
+        display: none;
+    }
+    .autosubmit {
+        display: none;
+    }
+}
+
+
 
 // OVERLAY =============================================================================
 
