@@ -231,6 +231,26 @@ form .field.error {
 }
 
 
+.page-summary {
+    p {
+        @extend .lead;        
+    }
+}
+
+// Aside (sidebar) custom typography 
+
+aside {
+    h4 {
+        @extend .h5;                
+        margin: $baselineheight / 2 0;    
+    }
+    
+/*
+    p, li {
+        @include font-size(16);
+    }
+*/
+}
 
 // OVERLAY =============================================================================
 

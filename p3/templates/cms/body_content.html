@@ -5,20 +5,20 @@
 <div class="grid-container">
     <div class="grid-100">
         <h1>{% show_content current_page "title" %}</h1>
+    </div> <!-- /grid -->
+    <div class="grid-60">    
         <div class="page-summary">
             {% placeholder subtitle with markItUpMarkdown as text parsed %}
             {{ text|markdown }}
         </div>    
-    </div> <!-- /grid -->
-    <div class="grid-66">    
         <div class="cms {% block PAGE__CLASS_MAIN_COLUMN %}{% endblock %}">
-                {% placeholder text with markItUpMarkdown as text parsed %}
-                {% render_page_template text as m %}
-                {{ m|markdown }}
+            {% placeholder text with markItUpMarkdown as text parsed %}
+            {% render_page_template text as m %}
+            {{ m|markdown }}
         </div><!-- /cms -->
     </div> <!-- /grid -->
     {% block PAGE__AFTER_MAIN_COLUMN %}
-        <aside class="grid-33">
+        <aside class="grid-30 prefix-10 well well--small">
             {% block PAGE_SIDEBAR_TOP %}
             {% endblock %}
             {% block PAGE_SIDEBAR %}

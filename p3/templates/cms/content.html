@@ -7,14 +7,14 @@
         {% if current_page %}
             <h1>{% show_content current_page "title" %}</h1>
         {% endif %}
+    </div> <!-- /grid -->
+    <div class="grid-60">
         {% block PAGE_SUMMARY_TOP %}{% endblock %}
         <div class="page-summary">
             {% placeholder subtitle with markItUpMarkdown as text parsed %}
             {{ text|markdown2 }}
         </div>
-        {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
-    </div> <!-- /grid -->
-    <div class="grid-66">
+        {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}        
         {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
         <div class="cms">
             {% placeholder text with markItUpMarkdown as text parsed %}
@@ -24,7 +24,7 @@
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
     </div> <!-- /grid -->
     {% block PAGE__AFTER_MAIN_COLUMN %}
-        <aside class="grid-33">
+        <aside class="grid-30 prefix-10 well well--small">
             {% render_fb_like ref="like_page_col" %}
             {% block PAGE_SIDEBAR_TOP %}{% endblock %}
             {% block PAGE_SIDEBAR %}
