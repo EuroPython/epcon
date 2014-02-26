@@ -1834,24 +1834,24 @@ input[type="checkbox"]:focus {
 
 input:-moz-placeholder,
 textarea:-moz-placeholder {
-  font-size: 14px;
-  font-size: 1.4rem;
-  color: #bcbab2; }
+  font-size: 16px;
+  font-size: 1.6rem;
+  color: #807c6f; }
 input::-moz-placeholder,
 textarea::-moz-placeholder {
-  font-size: 14px;
-  font-size: 1.4rem;
-  color: #bcbab2; }
+  font-size: 16px;
+  font-size: 1.6rem;
+  color: #807c6f; }
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
-  font-size: 14px;
-  font-size: 1.4rem;
-  color: #bcbab2; }
+  font-size: 16px;
+  font-size: 1.6rem;
+  color: #807c6f; }
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
-  font-size: 14px;
-  font-size: 1.4rem;
-  color: #bcbab2; }
+  font-size: 16px;
+  font-size: 1.6rem;
+  color: #807c6f; }
 
 .radio,
 .checkbox {
@@ -1903,7 +1903,7 @@ textarea[disabled],
 input[readonly],
 select[readonly],
 textarea[readonly] {
-  opacity: .45; }
+  opacity: .65; }
 
 .form-actions {
   margin-top: 1.5em;
