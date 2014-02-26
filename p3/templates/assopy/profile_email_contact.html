@@ -9,8 +9,7 @@
     {% if pending %}
         <div class="alert alert--info">
             <p>You have requested to change your email contact to <b>{{ pending }}</b>.</p>
-            <p>We have sent you an email. Please follow the instructions in the message you will receive shortly.</p>
-            <p><b>Note</b>: this change will not affect in any way the web accounts you use to log in.</p>
+            <p>We have sent you an email. Please follow the instructions in the message you will receive shortly. This change will not affect in any way the web accounts you use to log in.</p>
         </div>
     {% endif %}
 
@@ -18,12 +17,11 @@
 
         <fieldset>
             {% if pform.is_valid %}
-            <legend>Primary email contact</legend>
-            <p>This is the email address which we can use to contact you. It is also the email you can use to login in our website in case you don't like web accounts or social networks to do it.</p>
-
-            <p class="the-email">
-                <span>{{ profile.email }}</span>&emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> Change</a>
-            </p>
+                <legend>Primary email contact</legend>
+                <p>This is the email address which we can use to contact you. It is also the email you can use to login in our website in case you don't like web accounts or social networks to do it.</p>
+                <p class="the-email">
+                    <b>{{ profile.email }}</b>&emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                </p>
             {% endif %}
             <div class="live-edit-toggle">
                 {{ pform.email|form_field }}
@@ -31,7 +29,7 @@
         </fieldset>
 
         <fieldset>
-            <a href="#" class="btn btn-primary autosubmit">Save changes</a>
+            <button class="btn btn-primary autosubmit">{% trans "Save" %}</button>
         </fieldset>
     </form>
 

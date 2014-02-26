@@ -7,9 +7,9 @@
     <div class="grid-20">
         <div class="profile-user-picture">
             {% if profile.image %}
-                <img class="" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
+                <img class="avatar" src="{{ profile.image }}" alt="{{ profile.name }}" width="98" />
             {% else %}
-            <img class="" src="{% static "p5/images/headshot-default.jpg" %}" alt="{{ profile.name }}" width="98" height="98" />
+                <img class="" src="{% static "p5/images/headshot-default.jpg" %}" alt="{{ profile.name }}" width="98" height="98" />
             {% endif %}
         </div>
     </div><!-- /grid -->
@@ -19,30 +19,30 @@
             <form action="{% url "p3-account-data" %}" class="async live-edit form-horizontal" method="POST" rel="#account-personal-data-async-target">
 
                 <dl class="dl-horizontal">
-                    <dt>Name</dt>
+                    <dt>{% trans "Name" %}</dt>
                     <dd>{{ profile.name }}</dd>
 
-                    <dt>Phone</dt>
+                    <dt>{% trans "Phone" %}</dt>
                     <dd>{{ profile.phone|default:'—' }}</dd>
 
                     {% if profile.talks %}
-                        <dt>Birthday</dt>
+                        <dt>{% trans "Date of birth" %}</dt>
                         <dd>{{ profile.birthday|default:'—' }}</dd>
                     {% endif %}
                 </dl>
 
                 <div class="div-horizontal live-edit-toggle">
-                {{ pform.first_name|form_field }}
-                {{ pform.last_name|form_field }}
-                {% if profile.talks %}
-                    {{ pform.birthday|form_field }}
-                    {{ pform.phone|form_field }}
-                {% endif %}
+                    {{ pform.first_name|form_field }}
+                    {{ pform.last_name|form_field }}
+                    {% if profile.talks %}
+                        {{ pform.phone|form_field }}
+                        {{ pform.birthday|form_field }}
+                    {% endif %}
                 </div>
 
                 <fieldset class="form-actions">
-                    <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> Modifica</a>
-                    <button name="" class="btn btn-primary autosubmit">Salva modifiche</button>
+                    <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                    <button name="" class="btn btn-primary autosubmit">{% trans "Save" %}</button>
                 </fieldset>
             </form>
         </div>
