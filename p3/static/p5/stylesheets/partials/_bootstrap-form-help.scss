@@ -35,3 +35,9 @@ display : inline-block;
 *zoom : 1;
 vertical-align : middle;
 padding-left : $gutterwidth; }
+
+// An help-bock can be a list too
+
+ul.help-block {
+list-style : outside disc; 
+margin-left : $gutterwidth; }

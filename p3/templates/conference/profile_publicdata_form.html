@@ -1,7 +1,7 @@
 {% load conference i18n p3 formstyle %}
 {% p3_profile_data profile.user_id as profile_data %}
 <div id="profile-public-data-async-target">
-    <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async" method="post" rel="#profile-public-data-async-target">
+    <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async form-horizontal" method="post" rel="#profile-public-data-async-target">
         <dl class="dl-horizontal">
             {% if profile_data.tagline or full_access %}
             <dt>Tagline</dt>
@@ -47,7 +47,7 @@
             {% endif %}
             {% if profile_data.location or full_access %}
             <dt>Location</dt>
-            <dd{% if profile_data.country %} style="position: relative;"{% endif %}>
+            <dd>
                 {% if profile_data.location %}
                     <span>{{ profile_data.location }}</span>
                 {% else %}
@@ -70,7 +70,7 @@
                 <legend>Posizione</legend> 
                 {{ form.location|form_field }}
                 {% if profile_data.country  %}
-                    <div id="chart-div" style="width: 128px; height: 71px; position: absolute; left: -135px; top: 0px"></div>
+                    <div id="chart-div" style="width: 100%; position: absolute;"></div>
                     <script type="text/javascript">
                     (function() {
                         google.load('visualization', '1.0', {
@@ -92,14 +92,16 @@
                     </script>
                 {% endif %}
             </fieldset>
-        </div>
+        </div><!-- /live-edit-toggle -->
         {% endif %}
 
         {% include "conference/profile_publicdata_company_form.html" %}
 
         {% if full_access %}
-            <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> Modifica profilo</a>
-            <button class="btn btn-primary autosubmit">Salva modifiche</a>
+            <fieldset class="form-actions">
+                <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                <button class="btn btn-primary autosubmit">{% trans "Save" %}</a>
+            </fieldset>
         {% endif %}
         {% csrf_token %}
         <input type="hidden" name="section" value="public-data" />

@@ -3,9 +3,9 @@
 
 {% if profile_data.bio or full_access %}
 <div id="profile-user-bio" class="profile-user-bio">
-    <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async" method="post" enctype="multipart/form-data" rel="#profile-user-bio">
+    <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async form-horizontal" method="post" enctype="multipart/form-data" rel="#profile-user-bio">
         <dl class="dl-horizontal">
-            <dt>{% trans "Short bio" %}</dt>
+            <dt>{% trans "Compact biography" %}</dt>
             <dd>
                 <div class="cms">
                     {% if profile_data.bio %}
@@ -18,7 +18,7 @@
         </dl>
         {% if full_access %}
             <div class="live-edit-toggle">
-            {{ form.bio|form_field}}
+                {{ form.bio|form_field}}
             </div>
             <fieldset class="form-actions">
                 <a href="#" class="btn live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>

@@ -18,13 +18,13 @@
                     {% endif %}     
                 {% endif %}
                 {% if full_access and not profile_data.talks.accepted.all %}
-                    &emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> Modifica</a>
+                    &emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
                 {% endif %}
             </div>
             {{ form.visibility|field:"autosubmit" }}
             {% if profile_data.visibility == "x" or profile_data.visibility == "m" %}
                 {% if profile_data.talks.proposed|attrib_:CONFERENCE %}
-                    <p class="secondary"><b>Note</b>: If any of your proposals is accepted, this profile will be forced to be publicly visibile.</p>
+                    <p><b>Note</b>: If any of your proposals is accepted, this profile will be forced to be publicly visibile.</p>
                 {% endif %}
             {% endif %}          
             <input type="hidden" name="section" value="visibility" />

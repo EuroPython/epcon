@@ -28,9 +28,11 @@
 </dl>
 
 {% if full_access %}
-<fieldset>
-    {{ form.company|form_field }}
-    {{ form.job_title|form_field }}    
-    {{ form.company_homepage|form_field }}
-</fieldset>
+    <fieldset>
+        {{ form.company|form_field }}
+        {{ form.job_title|form_field }}    
+        {{ form.company_homepage|form_field }}
+    </fieldset>
 {% endif %}
+
+

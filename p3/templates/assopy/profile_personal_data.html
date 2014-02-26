@@ -23,11 +23,11 @@
                     <dd>{{ profile.name }}</dd>
 
                     <dt>Phone</dt>
-                    <dd>{{ profile.phone }}</dd>
+                    <dd>{{ profile.phone|default:'—' }}</dd>
 
                     {% if profile.talks %}
                         <dt>Birthday</dt>
-                        <dd>{{ profile.birthday }}</dd>
+                        <dd>{{ profile.birthday|default:'—' }}</dd>
                     {% endif %}
                 </dl>
 

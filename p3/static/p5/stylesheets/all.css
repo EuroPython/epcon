@@ -1963,6 +1963,10 @@ form .field.error select {
   vertical-align: middle;
   padding-left: 28px; }
 
+ul.help-block, ul.help-text {
+  list-style: outside disc;
+  margin-left: 28px; }
+
 .form-horizontal {
   /*controls*/
   /*input*/ }

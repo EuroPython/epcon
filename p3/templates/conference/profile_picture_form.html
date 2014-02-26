@@ -9,7 +9,7 @@
         rel="#profile-picture-async-target">
         {% if full_access %}
             <img class="avatar" src="{{ profile.p3_profile.profile_image_url }}" alt="{{ profile_data.name }}" width="98" height="98" />
-            <a href="#" class="trigger-overlay" rel="#profile-picture-form"><i class="fa fa-edit"></i> Modifica</a>
+            <a href="#" class="trigger-overlay" rel="#profile-picture-form"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
         {% else %}
             <img class="avatar" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="98" height="98" />
         {% endif %}

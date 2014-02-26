@@ -19,12 +19,10 @@
         <fieldset>
             {% if pform.is_valid %}
             <legend>Primary email contact</legend>
-            <p>This is the e-mail address which we can use to contact you.
-                It is also the e-mail you can use to login in our website
-                (in case you don't like web accounts or social networks to do it).</p>
+            <p>This is the email address which we can use to contact you. It is also the email you can use to login in our website in case you don't like web accounts or social networks to do it.</p>
 
             <p class="the-email">
-                <span>{{ profile.email }}</span> &mdash; <a href="#" class="live-edit-switch">Change</a>
+                <span>{{ profile.email }}</span>&emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> Change</a>
             </p>
             {% endif %}
             <div class="live-edit-toggle">

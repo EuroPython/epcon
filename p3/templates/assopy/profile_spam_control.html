@@ -5,7 +5,7 @@
     <form action="{% url "p3-account-spam-control" %}" class="async" method="POST" rel="#account-spam-control-async-target">
         <h2>Privacy settings <span class="notice-ok async-feedback">Saved</span></h2>
 
-        <p class="lead">We respect your privacy. We <b>never share your personal data</b> with anyone.
+        <p class="lead">We respect your privacy. We <i>never share your personal data</i> with anyone.
             Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
 
         <p>This page contains additional privacy settings for advanced opt-in features.</p>
@@ -18,12 +18,10 @@
 
             {{ pform.spam_recruiting|form_field:"autosubmit" }}
 
-            <div class="hint">
-                <ul>
-                    <li>Your email address will <b>never</b> be shared with any of our recruiting sponsor. We send the emails.</li>
-                    <li>You will receive max 10 job offers; all emails will be sent between June 15th and July 20th.</li>
-                </ul>
-            </div>
+            <ul class="help-block">
+                <li>Your email address will <i>never</i> be shared with any of our recruiting sponsor. We send the emails.</li>
+                <li>You will receive max 10 job offers; all emails will be sent between June 15th and July 20th.</li>
+            </ul>
         </fieldset>
 
         <fieldset>
@@ -35,13 +33,11 @@
 
             {{ pform.spam_user_message|form_field:"autosubmit" }}
 
-            <div class="hint">
-                <ul>
-                    <li>Your email address will <b>never</b> be shared with other participants.</li>
-                    <li>We will send you one mail notifying you of the received message.</li>
-                    <li>User messages will be active until the conference ends.</li>
-                </ul>
-            </div>
+            <ul class="help-block">
+                <li>Your email address will <b>never</b> be shared with other participants.</li>
+                <li>We will send you one mail notifying you of the received message.</li>
+                <li>User messages will be active until the conference ends.</li>
+            </ul>
         </fieldset>
 
         <fieldset>
@@ -53,15 +49,12 @@
 
             {{ pform.spam_sms|form_field:"autosubmit" }}
 
-            <div class="hint">
-                <ul>
-                    <li>Your phone number will <b>never</b> be shared with other people.</li>
+                <ul class="help-block">
+                    <li>You must insert your phone number in the “Personal data” section to activate this service.</li>
+                    <li>Your phone number will <i>never</i> be shared with other people.</li>
                     <li>This SMS message service will be active only for the time span of the conference.</li>
                     <li>Make sure you don't pay any roaming fee for incoming SMS while in Italy (or that you don't care about it...).</li>
                 </ul>
-            </div>
-
-            <p>NOTE: you must insert your phone number in the “Personal data” section to activate this service.</p>
         </fieldset>
     </form>
 </div>
