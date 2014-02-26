@@ -21,6 +21,9 @@ footer {
     hr {
         border-color: $primarycolor;
     }
+    p, li {
+        @include font-size(16);
+    }
 }
 
 section {

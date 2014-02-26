@@ -193,10 +193,43 @@
 <footer role="contentinfo">
 <div class="grid-container">
 
-  <div class="grid-25">
+    <div class="grid-25">
+        <nav>
+            <h5>Il sito</h5>
+            <ul>
+                {% block BOTTOM_NAV_BLOCK %}
+                    {% navigation "menu3" as pages %}
+                    {% for page in pages %}
+                        <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
+                    {% endfor %}
+                {% endblock %}
+            </ul>
+        </nav>
+    </div><!-- /grid -->
+    
+    <div class="grid-25">
+        <h5>Socializza</h5>
+        <ul>
+            <li><i class="fa fa-facebook-square"></i>&ensp;<a href="#">PyCon su Facebook</a></li>
+            <li><i class="fa fa-twitter-square"></i>&ensp;<a href="http://twitter.com/pyconit">Seguici su Twitter</a></li>
+            <li><i class="fa fa-rss-square"></i>&ensp;<a href="/blog/feeds/latest/">Ultimi post</a></li>
+        </ul>
+    </div><!-- /grid -->
+
+
+    {%comment%}
+    <div class="grid-25">
+        <h5>Edizioni precedenti</h5>
+        <ul>
+            <li><a href="/ep2013/">EuroPython 2013</a></li>
+        </ul>
+    </div><!-- /grid -->
+    {%endcomment%}
+    
+    <div class="grid-50">
       <div class="donate">
             <h5>Please donate</h5>
-            <p class="secondary">EuroPython is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
+            <p>EuroPython is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
             <p>
                 <img src="{{ STATIC_URL }}p5/images/icon-visa.png" alt="Visa" width="32" height="32" />
                 <img src="{{ STATIC_URL }}p5/images/icon-mastercard.png" alt="Mastercard" width="32" height="32" />
@@ -211,36 +244,6 @@
             </form>
         </div>
   </div><!-- /grid -->
-  
-    <div class="grid-25">
-        <nav>
-            <h5>Il sito</h5>
-            <ul>
-                {% block BOTTOM_NAV_BLOCK %}
-                    {% navigation "menu3" as pages %}
-                    {% for page in pages %}
-                        <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
-                    {% endfor %}
-                {% endblock %}
-            </ul>
-        </nav>
-    </div><!-- /grid -->
-
-    <div class="grid-25">
-        <h5>Edizioni precedenti</h5>
-        <ul>
-            <li><a href="/ep2013/">EuroPython 2013</a></li>
-        </ul>
-    </div><!-- /grid -->
-    
-    <div class="grid-25">
-        <h5>Socializza</h5>
-        <ul>
-            <li><i class="fa fa-facebook-square"></i>&ensp;<a href="#">PyCon su Facebook</a></li>
-            <li><i class="fa fa-twitter-square"></i>&ensp;<a href="http://twitter.com/pyconit">Seguici su Twitter</a></li>
-            <li><i class="fa fa-rss-square"></i>&ensp;<a href="/blog/feeds/latest/">Ultimi post</a></li>
-        </ul>
-    </div><!-- /grid -->
   
   <div class="grid-100">
       <hr>
