@@ -1,4 +1,4 @@
-@import url("http://fonts.googleapis.com/css?family=Lato:700italic,400,400italic,700");
+@import url("http://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
 /* 
 
 Built on Rock Hammer by Stuff and Nonsense
@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, .badge p, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -165,10 +165,10 @@ figure {
 h1, h2, header .subhead, h3, h4, h5, h6 {
   margin: 0;
   font-family: inherit;
-  font-weight: 700;
+  font-weight: 400;
   color: inherit;
   text-rendering: optimizelegibility; }
-  h1 small, h1 .meta, h1 .badge p, .badge h1 p, h2 small, header .subhead small, h2 .meta, header .subhead .meta, h2 .badge p, .badge h2 p, header .subhead .badge p, .badge header .subhead p, h3 small, h3 .meta, h3 .badge p, .badge h3 p, h4 small, h4 .meta, h4 .badge p, .badge h4 p, h5 small, h5 .meta, h5 .badge p, .badge h5 p, h6 small, h6 .meta, h6 .badge p, .badge h6 p {
+  h1 small, h1 .meta, h2 small, header .subhead small, h2 .meta, header .subhead .meta, h3 small, h3 .meta, h4 small, h4 .meta, h5 small, h5 .meta, h6 small, h6 .meta {
     font-weight: normal;
     line-height: 1;
     color: #bcbab2; }
@@ -177,8 +177,10 @@ h1,
 .h1 {
   font-size: 36px;
   font-size: 3.6rem;
-  line-height: 1.5;
-  margin-bottom: 0.75em; }
+  line-height: 1.2;
+  margin-bottom: 0.75em;
+  font-weight: 300;
+  text-transform: uppercase; }
 
 h2, header .subhead,
 .h2 {
@@ -227,7 +229,7 @@ address {
   font-size: 1.8rem;
   line-height: 1.5em; }
 
-small, .meta, .badge p {
+small, .meta {
   font-size: 15px;
   font-size: 1.5rem; }
 
@@ -258,18 +260,18 @@ blockquote {
   padding: 14px;
   background-color: #e0dfdb;
   font-style: normal; }
-  blockquote small:before, blockquote .meta:before, blockquote .badge p:before, .badge blockquote p:before {
+  blockquote small:before, blockquote .meta:before {
     content: '\00A0 \2014'; }
-  blockquote small:after, blockquote .meta:after, blockquote .badge p:after, .badge blockquote p:after {
+  blockquote small:after, blockquote .meta:after {
     content: ''; }
   blockquote.pull-right {
     float: right;
     background-color: transparent; }
-    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right .badge p, .badge blockquote.pull-right p {
+    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta {
       text-align: right; }
-    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right .badge p:before, .badge blockquote.pull-right p:before {
+    blockquote.pull-right small:before, blockquote.pull-right .meta:before {
       content: ''; }
-    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right .badge p:after, .badge blockquote.pull-right p:after {
+    blockquote.pull-right small:after, blockquote.pull-right .meta:after {
       content: '\00A0 \2014'; }
   blockquote cite {
     font-style: normal; }
@@ -4563,7 +4565,7 @@ form .field.error .errorlist {
 .blog-archive .h4 {
   margin-bottom: 0; }
 .blog-archive .summary {
-  /*         font-style: italic; */ }
+  color: #807c6f; }
 
 #home .blog-archive ul li {
   margin-bottom: 0.75em; }
@@ -4647,7 +4649,7 @@ form .field.error .errorlist {
   display: block; }
 
 .cms figure.border img {
-  border: 5px solid #807c6f; }
+  border: 5px solid #bcbab2; }
 
 .cms .floated {
   float: left;
@@ -4827,20 +4829,19 @@ section {
 
 header {
   padding: 3em 0 1.5em 0;
-  /*
-      .branding {
-          margin: -50px 0 0 -50px;
-      }
-  */ }
+  text-align: center; }
   header h1 {
     color: #ad3d31;
-    font-size: 72px;
-    font-size: 7.2rem;
+    font-size: 63px;
+    font-size: 6.3rem;
     /*         line-height: 1.5; */
+    text-transform: uppercase;
+    font-weight: 300;
     margin-bottom: 0; }
     header h1 span {
       color: #306a99; }
   header .subhead {
+    font-weight: 300;
     color: #807c6f; }
 
 .notice .fa {
@@ -4852,16 +4853,24 @@ header {
     color: #ad3d31; }
 
 .badge {
-  background: white;
-  border: 1px solid #bcbab2;
-  padding: 0.75em 14px;
-  border-radius: 4px;
+  margin-top: 3em;
   text-align: center; }
-  .badge h5 {
-    margin-bottom: 0; }
-  .badge p {
+  .badge a {
+    border: 1px solid #bcbab2;
+    padding: 0.75em 14px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    display: block;
+    width: 90%;
+    margin: 0.375em auto;
+    letter-spacing: 1px; }
+    .badge a:hover {
+      background: white; }
+  .badge small, .badge .meta {
     color: #807c6f;
     margin-bottom: 0; }
+  .badge .fa {
+    color: #807c6f; }
 
 .calendar .deadline.expired {
   text-decoration: line-through;

@@ -40,17 +40,14 @@ section {
 
 header {
     padding: $baselineheight * 2 0 $baselineheight 0;
-
-/*
-    .branding {
-        margin: -50px 0 0 -50px;
-    }
-*/
+    text-align: center;
 
     h1 {
         color: $secondarycolor;
-        @include font-size($basefontsize * 4);
+        @include font-size($basefontsize * 3.5);
 /*         line-height: 1.5; */
+        text-transform: uppercase;
+        font-weight: 300;
         margin-bottom: 0;
         span { 
             color: $primarycolor; }
@@ -58,6 +55,7 @@ header {
     
     .subhead {
         @extend h2;
+        font-weight: 300;
         color: $neutralcolor; }    
 }
 
@@ -84,22 +82,38 @@ header {
 }
 
 .badge {
-    background: $white;
-    border: 1px solid $lightneutralcolor;
-    padding: $baselineheight/2 $gutterwidth/2;
-    border-radius: $borderradius;
+    margin-top: $baselineheight * 2;
     text-align: center;
-
-    h5 {
-        margin-bottom: 0;        
+    a {
+        border: 1px solid $lightneutralcolor;
+        padding: $baselineheight/2 $gutterwidth/2;
+        border-radius: $borderradius;
+        text-transform: uppercase;  
+        display: block;        
+        width: 90%;
+        margin: $baselineheight/4 auto;
+        letter-spacing: 1px;
+        &:hover {
+            background: $white;  
+        }
     }
-    p { 
-        @extend small;
+    small { 
         color: $neutralcolor;
         margin-bottom: 0;
     }
+    // Icons
+    .fa {
+        color: $neutralcolor;
+    }
 }
 
+.badge-buy {
+    // Special styles for buy badge
+}
+
+.badge-chat {
+    // Special styles for chat badge
+}
 
 // CALENDAR ==========================================================================
 

@@ -19,8 +19,10 @@ color : $lightneutralcolor; }
 h1,
 .h1 {
 @include font-size($basefontsize * 2);
-line-height: 1.5;
-margin-bottom: $baselineheight / 2; }
+line-height: 1.2;
+margin-bottom: $baselineheight / 2; 
+font-weight: 300; 
+text-transform: uppercase; }
 
 h2,
 .h2 {

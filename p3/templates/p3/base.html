@@ -132,32 +132,36 @@
 {% block HEADER %}
   <header role="banner">
     <div class="grid-container">
-        <div class="grid-20">
-            <div class="branding"><a href="/" title="PyCon homepage"><img src="{{STATIC_URL}}p5/images/pycon-logo2.png" alt="*" ></a></div>
-        </div>
-        <div class="grid-55">
-            <h1>PyCon <span>Cinque</span></h1>
-            <div class="subhead">Firenze, 23–25 Maggio 2014</div>
-        </div>
-
         <div class="grid-25">
             {% fares_available "conference" sort="price" as fares %}
             {% if not fares %}
                 {% fares_available "all" sort="price" as fares %}
             {% endif %}
             {% if fares %}
-            <div class="badge buy">
-                <h5><i class="fa fa-ticket"></i>&ensp;<a href="/registration/">Buy Tickets</a></h5>
-                <p>Starting from <b>{{ fares.0.price }}€</b></p>
-            </div>
+                <div class="badge badge-buy">
+                    <i class="fa fa-ticket fa-3x"></i>
+                    <a href="/registration/">Buy tickets</a>
+                    <small>Starting from <b>{{ fares.0.price }}</b>€</small>
+                </div>
+            {%else%}
+                &nbsp;
             {% endif %}
-            <div id="habla-available" class="badge chat hidden">
-                <h5><a href="#"><i class="fa fa-comments-o"></i>&ensp;Supporto online</a></h5>
-                <p>Chat with organizers</p>
+        </div>
+        <div class="grid-50">
+            <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p5/images/pycon-logo.png" width="190" height="160" alt="*" ></a></div>
+            <h1>PyCon <span>Cinque</span></h1>
+            <div class="subhead">Firenze, 23–25 Maggio 2014</div>
+        </div>
+        <div class="grid-25">
+            <div id="habla-available" class="badge badge-chat hidden">
+                <i class="fa fa-comments-o fa-3x"></i>
+                <a href="#">Supporto online</a>
+                <small>Chat with organizers</small>
             </div>
-            <div id="habla-unavailable" class="badge chat unavailable">
-                <h5><a href="#"><i class="fa fa-ban"></i>&ensp;Supporto non disp.</a></h5>
-                <p>Please try again later</p>
+            <div id="habla-unavailable" class="badge badge-chat unavailable">
+                <i class="fa fa-ban fa-3x"></i>
+                <a href="#">Supporto offline</a></h5>
+                <small>Please try again later</small>
             </div>
         </div>
     </div><!-- /grid-container -->
