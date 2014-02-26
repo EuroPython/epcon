@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .badge p, .meta, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, .badge p, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -143,13 +143,32 @@ figure {
     font-style: italic;
     color: #3c3a34; }
 
+.meta {
+  color: #807c6f; }
+  .meta a:link, .meta a:visited {
+    color: #807c6f; }
+
+.tag {
+  background: #d4d2cd;
+  border: 1px solid #bcbab2;
+  border-radius: 4px;
+  padding: 0 6px;
+  display: inline-block;
+  font-size: 14px;
+  font-size: 1.4rem;
+  margin-right: 7px;
+  margin-bottom: 0.375em; }
+  .tag:hover {
+    background: white;
+    text-decoration: none; }
+
 h1, h2, header .subhead, h3, h4, h5, h6 {
   margin: 0;
   font-family: inherit;
   font-weight: 700;
   color: inherit;
   text-rendering: optimizelegibility; }
-  h1 small, h1 .badge p, .badge h1 p, h1 .meta, h2 small, header .subhead small, h2 .badge p, .badge h2 p, header .subhead .badge p, .badge header .subhead p, h2 .meta, header .subhead .meta, h3 small, h3 .badge p, .badge h3 p, h3 .meta, h4 small, h4 .badge p, .badge h4 p, h4 .meta, h5 small, h5 .badge p, .badge h5 p, h5 .meta, h6 small, h6 .badge p, .badge h6 p, h6 .meta {
+  h1 small, h1 .meta, h1 .badge p, .badge h1 p, h2 small, header .subhead small, h2 .meta, header .subhead .meta, h2 .badge p, .badge h2 p, header .subhead .badge p, .badge header .subhead p, h3 small, h3 .meta, h3 .badge p, .badge h3 p, h4 small, h4 .meta, h4 .badge p, .badge h4 p, h5 small, h5 .meta, h5 .badge p, .badge h5 p, h6 small, h6 .meta, h6 .badge p, .badge h6 p {
     font-weight: normal;
     line-height: 1;
     color: #bcbab2; }
@@ -208,7 +227,7 @@ address {
   font-size: 1.8rem;
   line-height: 1.5em; }
 
-small, .badge p, .meta {
+small, .meta, .badge p {
   font-size: 15px;
   font-size: 1.5rem; }
 
@@ -239,18 +258,18 @@ blockquote {
   padding: 14px;
   background-color: #e0dfdb;
   font-style: normal; }
-  blockquote small:before, blockquote .badge p:before, .badge blockquote p:before, blockquote .meta:before {
+  blockquote small:before, blockquote .meta:before, blockquote .badge p:before, .badge blockquote p:before {
     content: '\00A0 \2014'; }
-  blockquote small:after, blockquote .badge p:after, .badge blockquote p:after, blockquote .meta:after {
+  blockquote small:after, blockquote .meta:after, blockquote .badge p:after, .badge blockquote p:after {
     content: ''; }
   blockquote.pull-right {
     float: right;
     background-color: transparent; }
-    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .badge p, .badge blockquote.pull-right p, blockquote.pull-right .meta {
+    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right .badge p, .badge blockquote.pull-right p {
       text-align: right; }
-    blockquote.pull-right small:before, blockquote.pull-right .badge p:before, .badge blockquote.pull-right p:before, blockquote.pull-right .meta:before {
+    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right .badge p:before, .badge blockquote.pull-right p:before {
       content: ''; }
-    blockquote.pull-right small:after, blockquote.pull-right .badge p:after, .badge blockquote.pull-right p:after, blockquote.pull-right .meta:after {
+    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right .badge p:after, .badge blockquote.pull-right p:after {
       content: '\00A0 \2014'; }
   blockquote cite {
     font-style: normal; }
@@ -4492,6 +4511,47 @@ nav[role=navigation].active {
  *
  * This file is non-free. See README.md for an explanation.
  */
+.janrain-box {
+  max-width: 558px;
+  display: block;
+  /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
+  min-height: 240px; }
+
+form .field.error .errorlist {
+  margin: 0;
+  padding: 0;
+  color: #ad3d31; }
+
+.overlay {
+  display: none;
+  z-index: 10000;
+  background: white;
+  padding: 0.75em 28px;
+  width: 30em;
+  min-height: 15em;
+  box-shadow: 0 0 15px #807c6f; }
+
+.overlay .close {
+  position: absolute;
+  background: transparent url(../images/icon-close.png) center center no-repeat;
+  width: 36px;
+  height: 36px;
+  top: -18px;
+  right: -18px; }
+
+#global-overlay {
+  padding: 0.75em 28px; }
+
+#global-overlay .contentWrap {
+  height: 450px;
+  overflow-y: auto; }
+
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
 .blog-archive ul {
   list-style: none; }
   .blog-archive ul li {
@@ -4686,7 +4746,18 @@ nav[role=navigation].active {
   text-transform: capitalize;
   padding-right: 10px; }
 
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
 #form_profile_picture .field > label {
+  display: none; }
+
+.live-edit .live-edit-toggle {
+  display: none; }
+.live-edit .autosubmit {
   display: none; }
 
 @media print {
@@ -4734,18 +4805,6 @@ nav[role=navigation].active {
 
   tr {
     page-break-inside: avoid; } }
-.badge {
-  background: white;
-  border: 1px solid #bcbab2;
-  padding: 0.75em 14px;
-  border-radius: 4px;
-  text-align: center; }
-  .badge h5 {
-    margin-bottom: 0; }
-  .badge p {
-    color: #807c6f;
-    margin-bottom: 0; }
-
 footer {
   background: #1e425f; }
   footer hr {
@@ -4777,19 +4836,25 @@ header {
   header .subhead {
     color: #807c6f; }
 
-.notice {
-  /*
-      @extend .well;
-      @extend .well--large;
-      margin-bottom: 0;
-  */ }
-  .notice .fa {
-    color: #807c6f; }
-  .notice h3 {
-    text-transform: uppercase;
-    margin-bottom: 0.75em; }
-    .notice h3 span {
-      color: #ad3d31; }
+.notice .fa {
+  color: #807c6f; }
+.notice h3 {
+  text-transform: uppercase;
+  margin-bottom: 0.75em; }
+  .notice h3 span {
+    color: #ad3d31; }
+
+.badge {
+  background: white;
+  border: 1px solid #bcbab2;
+  padding: 0.75em 14px;
+  border-radius: 4px;
+  text-align: center; }
+  .badge h5 {
+    margin-bottom: 0; }
+  .badge p {
+    color: #807c6f;
+    margin-bottom: 0; }
 
 .calendar .deadline.expired {
   text-decoration: line-through;
@@ -4802,29 +4867,6 @@ header {
   font-size: 14px;
   font-size: 1.4rem;
   border-radius: 4px; }
-
-.avatar, #comments .gravatar {
-  border: 2px solid #bcbab2;
-  display: block; }
-
-.meta {
-  color: #807c6f; }
-  .meta a:link, .meta a:visited {
-    color: #807c6f; }
-
-.tag {
-  background: #d4d2cd;
-  border: 1px solid #bcbab2;
-  border-radius: 4px;
-  padding: 0 6px;
-  display: inline-block;
-  font-size: 14px;
-  font-size: 1.4rem;
-  margin-right: 7px;
-  margin-bottom: 0.375em; }
-  .tag:hover {
-    background: white;
-    text-decoration: none; }
 
 .toggle,
 .tag-toggle {
@@ -4848,51 +4890,9 @@ dt.toggle + dd {
   color: #807c6f;
   margin: 0.75em 0 0 14px; }
 
-.janrain-box {
-  max-width: 558px;
-  display: block;
-  /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
-  min-height: 240px; }
+aside h4 {
+  margin: 0.75em 0; }
 
-form .field.error .errorlist {
-  margin: 0;
-  padding: 0;
-  color: #ad3d31; }
-
-.live-edit .live-edit-toggle {
-  display: none; }
-.live-edit .autosubmit {
-  display: none; }
-
-aside {
-  /*
-      p, li {
-          @include font-size(16);
-      }
-  */ }
-  aside h4 {
-    margin: 0.75em 0; }
-
-.overlay {
-  display: none;
-  z-index: 10000;
-  background: white;
-  padding: 0.75em 28px;
-  width: 30em;
-  min-height: 15em;
-  box-shadow: 0 0 15px #807c6f; }
-
-.overlay .close {
-  position: absolute;
-  background: transparent url(../images/icon-close.png) center center no-repeat;
-  width: 36px;
-  height: 36px;
-  top: -18px;
-  right: -18px; }
-
-#global-overlay {
-  padding: 0.75em 28px; }
-
-#global-overlay .contentWrap {
-  height: 450px;
-  overflow-y: auto; }
+.avatar, #comments .gravatar {
+  border: 2px solid #bcbab2;
+  display: block; }

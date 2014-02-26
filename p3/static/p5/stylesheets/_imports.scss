@@ -83,10 +83,12 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 @import "partials/navigation-responsive-nav";
 //@import "partials/navigation-responsive-breadcrumb";
 
-// Styles for specific PyCon setions
-@import "partials/blog";
-@import "partials/cms";
-@import "partials/profile";
+// Styles for specific PyCon sections
+
+@import "partials/pycon/legacy";
+@import "partials/pycon/blog";
+@import "partials/pycon/cms";
+@import "partials/pycon/profile";
 
 @media print {
 @import "partials/print"; }

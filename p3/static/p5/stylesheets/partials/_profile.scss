@@ -1,7 +1,0 @@
-#form_profile_picture {
-    .field > label {
-        // in questa form le label adiacenti ai field non si devono vedere, ce
-        // ne sono altre all'esterno del div.field per guidare l'utente.
-        display: none;
-    }
-}

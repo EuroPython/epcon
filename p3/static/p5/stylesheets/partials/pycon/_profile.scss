@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+#form_profile_picture {
+    .field > label {
+        // in questa form le label adiacenti ai field non si devono vedere, ce
+        // ne sono altre all'esterno del div.field per guidare l'utente.
+        display: none;
+    }
+}
+
+
+// Inline edit for profile sections and other user-related forms
+
+.live-edit {
+    .live-edit-toggle {
+        display: none;
+    }
+    .autosubmit {
+        display: none;
+    }
+}
+

@@ -16,30 +16,6 @@ $ie8-opacity-supported 	 : false;
 @import 'imports';
 
 
-// @@REMOVE: Quick styles for placeholder page
-
-
-.badge {
-    background: $white;
-    border: 1px solid $lightneutralcolor;
-    padding: $baselineheight/2 $gutterwidth/2;
-    border-radius: $borderradius;
-    text-align: center;
-
-    h5 {
-        margin-bottom: 0;        
-    }
-    p { 
-        @extend small;
-        color: $neutralcolor;
-        margin-bottom: 0;
-    }
-}
-
-.container {
-}
-
-
 footer {
     background: $navigationbackgroundcolor;    
     hr {
@@ -48,8 +24,7 @@ footer {
 }
 
 section {
-    padding: $baselineheight 0 $baselineheight 0;
-        
+    padding: $baselineheight 0 $baselineheight 0;        
     p:last-child {
         margin-bottom: 0;
     }
@@ -84,20 +59,9 @@ header {
 }
 
 
-// @@REMOVEME: use actual help-block
-.help-text {
-    @extend .help-block;
-}
-
-
-// HOME =============================================================================
+// HOME ==============================================================================
 
 .notice {
-/*
-    @extend .well;
-    @extend .well--large;
-    margin-bottom: 0;
-*/
     // Icons
     .fa {
         color: $neutralcolor;
@@ -115,6 +79,26 @@ header {
 .home-notice {
     // Special styles for notice on homepage
 }
+
+.badge {
+    background: $white;
+    border: 1px solid $lightneutralcolor;
+    padding: $baselineheight/2 $gutterwidth/2;
+    border-radius: $borderradius;
+    text-align: center;
+
+    h5 {
+        margin-bottom: 0;        
+    }
+    p { 
+        @extend small;
+        color: $neutralcolor;
+        margin-bottom: 0;
+    }
+}
+
+
+// CALENDAR ==========================================================================
 
 .calendar {
 
@@ -137,42 +121,10 @@ header {
     }    
 }
 
-// USERS =============================================================================
-
-
-// Avatar class, used profile and talk pages
-.avatar {    
-    border: 2px solid $lightneutralcolor;
-    display: block;    
-    @extend .img-rounded;
-}
-
 
 
 // MISC. =============================================================================
 
-.meta {
-    @extend small;
-    color: $neutralcolor;    
-    a:link, a:visited {
-        color: $neutralcolor;        
-    }
-}
-
-.tag {
-    background: $lighterneutralcolor;
-    border: 1px solid $lightneutralcolor;
-    border-radius: $borderradius;
-    padding: 0 6px;
-    display: inline-block;
-    @include font-size(14);
-    margin-right: $gutterwidth/4;
-    margin-bottom: $baselineheight/4;    
-    &:hover {
-        background: $white;
-        text-decoration: none;
-    }
-}
 
 
 .toggle, 
@@ -202,34 +154,6 @@ dt.toggle+dd {
 }
 
 
-.janrain-box {
-    max-width: 558px;
-    display: block;
-/*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
-    min-height: 240px;
-}
-
-// This is for legacy simpler forms like log in and signup
-
-form .field.error {
-   @extend .has-error;    
-   .errorlist {
-       @include zero;
-       color: $errorcolor;
-   }
-}
-
-// Inline edit for profile sections and other forms
-
-.live-edit {
-    .live-edit-toggle {
-        display: none;
-    }
-    .autosubmit {
-        display: none;
-    }
-}
-
 
 .page-summary {
     p {
@@ -244,41 +168,13 @@ aside {
         @extend .h5;                
         margin: $baselineheight / 2 0;    
     }
-    
-/*
-    p, li {
-        @include font-size(16);
-    }
-*/
 }
 
-// OVERLAY =============================================================================
-
-.overlay {
-	display: none;	
-	z-index: 10000;	
-	background: $white;
-	padding: $baselineheight/2 $gutterwidth;	
-	width: 30em;	
-	min-height: $baselineheight * 10;	
-	box-shadow: 0 0 15px $neutralcolor;
-}
-
-.overlay .close {
-    position: absolute;
-    background: transparent url(../images/icon-close.png) center center no-repeat;
-    width: 36px;    
-    height: 36px;
-    top: -18px;
-    right: -18px;
+// Avatar class, used profile, talk pages and blog commenters
+.avatar {    
+    border: 2px solid $lightneutralcolor;
+    display: block;    
+    @extend .img-rounded;
 }
 
 
-#global-overlay {
-	padding: $baselineheight/2 $gutterwidth;
-}
-
-#global-overlay .contentWrap {
-    height: 450px;
-    overflow-y: auto;
-}
