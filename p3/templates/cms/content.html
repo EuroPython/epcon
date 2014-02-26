@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load pages_tags markup p3 conference %}
+{% load pages_tags p3 conference %}
 
 {% block MAIN_CONTENT %}
 <div class="grid-container">
@@ -10,16 +10,16 @@
         {% block PAGE_SUMMARY_TOP %}{% endblock %}
         <div class="page-summary">
             {% placeholder subtitle with markItUpMarkdown as text parsed %}
-            {{ text|markdown }}
+            {{ text|markdown2 }}
         </div>
         {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
     </div> <!-- /grid -->
-    <div class="grid-66">    
+    <div class="grid-66">
         {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
         <div class="cms">
             {% placeholder text with markItUpMarkdown as text parsed %}
             {% render_page_template text as m %}
-            {{ m|markdown }}
+            {{ m|markdown2 }}
         </div><!-- /cms -->
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
     </div> <!-- /grid -->
@@ -29,7 +29,7 @@
             {% block PAGE_SIDEBAR_TOP %}{% endblock %}
             {% block PAGE_SIDEBAR %}
             {% placeholder right-column with markItUpMarkdown as rtext parsed %}
-            {{ rtext|markdown }}
+            {{ rtext|markdown2 }}
             {% endblock %}
             {% box_didyouknow %}
             {% box_newsletter %}
