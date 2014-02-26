@@ -4820,12 +4820,16 @@ footer {
     font-size: 1.6rem; }
 
 section {
-  padding: 1.5em 0 1.5em 0; }
+  padding: 3em 0; }
   section p:last-child {
     margin-bottom: 0; }
 
 .page section:nth-child(odd) {
-  background: white; }
+  background-color: white;
+  background: url("../images/texture-section-top.jpg") top center repeat-x, url("../images/texture-section-bottom.jpg") bottom center repeat-x, url("../images/texture-section-center.jpg") center center; }
+
+.no-multiplebgs .page section:nth-child(odd) {
+  background-color: white; }
 
 header {
   padding: 3em 0 1.5em 0;
@@ -4858,6 +4862,7 @@ header {
   .badge a {
     border: 1px solid #bcbab2;
     padding: 0.75em 14px;
+    background: #d4d2cd;
     border-radius: 4px;
     text-transform: uppercase;
     display: block;
@@ -4912,3 +4917,7 @@ aside h4 {
 .avatar, #comments .gravatar {
   border: 2px solid #bcbab2;
   display: block; }
+
+html {
+  background-image: url(../images/texture-page.jpg);
+  background-attachment: fixed; }

@@ -27,7 +27,7 @@ footer {
 }
 
 section {
-    padding: $baselineheight 0 $baselineheight 0;        
+    padding: $baselineheight*2 0;        
     p:last-child {
         margin-bottom: 0;
     }
@@ -35,7 +35,13 @@ section {
 
 // Zebra stripes
 .page section:nth-child(odd) {
-    background: $white;    
+    background-color: $white;
+    background: url('../images/texture-section-top.jpg') top center repeat-x, url('../images/texture-section-bottom.jpg') bottom center repeat-x, 
+    url('../images/texture-section-center.jpg') center center;    
+}
+.no-multiplebgs {
+    .page section:nth-child(odd) {
+        background-color: $white; }
 }
 
 header {
@@ -87,6 +93,7 @@ header {
     a {
         border: 1px solid $lightneutralcolor;
         padding: $baselineheight/2 $gutterwidth/2;
+        background: $lighterneutralcolor;
         border-radius: $borderradius;
         text-transform: uppercase;  
         display: block;        
@@ -194,4 +201,11 @@ aside {
     @extend .img-rounded;
 }
 
+
+// Textures
+
+html {
+    background-image: url(../images/texture-page.jpg);
+    background-attachment: fixed;
+}
 
