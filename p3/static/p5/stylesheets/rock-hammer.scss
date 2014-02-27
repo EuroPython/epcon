@@ -16,7 +16,17 @@ $ie8-opacity-supported 	 : false;
 @import 'imports';
 
 
+// PYCON ==============================================================================
+
+html {
+    background-image: url(../images/texture-page.jpg);
+    background-attachment: fixed;
+}
+
+
+
 footer {
+/*     margin: $baselineheight * 2 0 0 0; */
     background: $navigationbackgroundcolor;    
     hr {
         border-color: $primarycolor;
@@ -28,20 +38,24 @@ footer {
 
 section {
     padding: $baselineheight*2 0;        
-    p:last-child {
-        margin-bottom: 0;
-    }
 }
 
 // Zebra stripes
 .page section:nth-child(odd) {
     background: $white;
-    background: url('../images/texture-section-top.jpg') top center repeat-x, url('../images/texture-section-bottom.jpg') bottom center repeat-x, 
-    url('../images/texture-section-center.jpg') center center;    
+    background: url('../images/texture-section-top.jpg') top center repeat-x, 
+        url('../images/texture-section-bottom.jpg') bottom center repeat-x, 
+        url('../images/texture-section-center.jpg') center center;    
 }
 
+// Covers the whole page (see content.html template)
+.page section.full-page-height {
+    background: $white url('../images/texture-section-top.jpg') top center repeat-x;   
+}
+
+
 header {
-    padding: $baselineheight * 2 0 $baselineheight 0;
+    padding: $baselineheight*2 0;
     text-align: center;
 
     h1 {
@@ -59,6 +73,21 @@ header {
         @extend h2;
         font-weight: 300;
         color: $neutralcolor; }    
+}
+
+.page-summary {
+    p {
+        @extend .lead;        
+    }
+}
+
+// Aside (sidebar) custom typography 
+
+aside {
+    h4 {
+        @extend .h5;                
+        margin: $baselineheight / 2 0;    
+    }
 }
 
 
@@ -175,21 +204,6 @@ dt.toggle+dd {
 
 
 
-.page-summary {
-    p {
-        @extend .lead;        
-    }
-}
-
-// Aside (sidebar) custom typography 
-
-aside {
-    h4 {
-        @extend .h5;                
-        margin: $baselineheight / 2 0;    
-    }
-}
-
 // Avatar class, used profile, talk pages and blog commenters
 .avatar {    
     border: 2px solid $lightneutralcolor;
@@ -197,11 +211,4 @@ aside {
     @extend .img-rounded;
 }
 
-
-// Textures
-
-html {
-    background-image: url(../images/texture-page.jpg);
-    background-attachment: fixed;
-}
 
