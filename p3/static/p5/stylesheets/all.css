@@ -2201,15 +2201,15 @@ input.search-query {
   border-radius: 8px; }
 
 .btn-small {
-  padding: 5px 10px;
-  font-size: 12px;
-  font-size: 1.2rem;
+  padding: 4px 9px;
+  font-size: 14.4px;
+  font-size: 1.44rem;
   line-height: inherit; }
 
 .btn-mini {
   padding: 3px 5px;
-  font-size: 10.28571px;
-  font-size: 1.02857rem;
+  font-size: 12px;
+  font-size: 1.2rem;
   line-height: inherit; }
 
 .btn-group {

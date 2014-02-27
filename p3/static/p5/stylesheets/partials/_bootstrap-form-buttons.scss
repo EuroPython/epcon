@@ -152,13 +152,13 @@ border-width : $buttonborderwidth * 2;
 border-radius : $borderradius * 2; }
 
 .btn-small {
-padding : 5px 10px;
-@include font-size($buttonfontsize / 1.5);
+padding : 4px 9px;
+@include font-size($buttonfontsize / 1.25);
 line-height : inherit; }
 
 .btn-mini {
 padding : 3px 5px;
-@include font-size($buttonfontsize / 1.75);
+@include font-size($buttonfontsize / 1.5);
 line-height : inherit; }
 
 .btn-group {

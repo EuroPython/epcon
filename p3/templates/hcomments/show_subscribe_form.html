@@ -1,0 +1,17 @@
+{% load i18n hcomments_tags %}
+{% if request.user.is_authenticated %}
+<form action="{% url "hcomments-subscribe" %}" method="POST">
+    <div>
+    {% if object|subscribed:request.user %}
+        <p>{% trans "You are <i>subscribed</i> to this thread." %}</p>
+        <button class="btn btn-small" type="submit" name="unsubscribe" class="ok">{% trans "Unsubscribe" %}</button>
+    {% else %}
+        <p>{% trans "You can subscribe to this thread to receive updates via email." %}</p>
+        <button class="btn  btn-small" type="submit" name="subscribe" class="ok">{% trans "Subscribe" %}</button>
+    {% endif %}
+    </div>
+    {% csrf_token %}
+    {{ form.content_type }}
+    {{ form.object_pk }}    
+</form>
+{% endif %}
