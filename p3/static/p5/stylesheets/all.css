@@ -4825,11 +4825,8 @@ section {
     margin-bottom: 0; }
 
 .page section:nth-child(odd) {
-  background-color: white;
+  background: white;
   background: url("../images/texture-section-top.jpg") top center repeat-x, url("../images/texture-section-bottom.jpg") bottom center repeat-x, url("../images/texture-section-center.jpg") center center; }
-
-.no-multiplebgs .page section:nth-child(odd) {
-  background-color: white; }
 
 header {
   padding: 3em 0 1.5em 0;
