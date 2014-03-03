@@ -8,11 +8,11 @@
     <div class="grid-100 grid-parent">
 
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#account-personal-data">Personal data</a></li>
-            <li><a data-toggle="tab" href="#account-email-contact">Email contact</a></li>
-            <li><a data-toggle="tab" href="#account-spam-control">Privacy settings</a></li>
-            <li><a data-toggle="tab" href="#account-login-options">Login options</a></li>
-            <li><a data-toggle="tab" href="#account-orders">Orders, invoices &amp; coupons</a></li>
+            <li class="active"><a data-toggle="tab" href="#account-personal-data">{% trans "Personal data" %}</a></li>
+            <li><a data-toggle="tab" href="#account-email-contact">{% trans "Email contact" %}</a></li>
+            <li><a data-toggle="tab" href="#account-spam-control">{% trans "Privacy settings" %}</a></li>
+            <li><a data-toggle="tab" href="#account-login-options">{% trans "Login options" %}</a></li>
+            <li><a data-toggle="tab" href="#account-orders">{% trans "Orders, invoices &amp; coupons" %}</a></li>
         </ul>
 
         <div class="tab-content">
@@ -62,8 +62,7 @@
                             {% render_janrain_box u "overlay" %}
                         </div>
                     </div>
-                    <div class="span-5 last">You can connect more web accounts to your EuroPython profile, so that you can use any of them for logging in
-                        (without having to remember which one you used to create the account).</div>
+                    <div class="span-5 last">{% trans "You can connect more web accounts to your profile, so that you can use any of them for logging in (without having to remember which one you used to create the account)." %}</div>
                 </div>
             </div>
 
@@ -76,12 +75,12 @@
                         <ul>
                         {% for c in coupons.valid %}
                             <li class="coupon valid">
-                                <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
+                                <p><b>{% trans "Code:" %} {{ c.code }}</b><br />{{ c.description }}</p>
                             </li>
                         {% endfor %}
                         {% for c in coupons.invalid %}
                             <li class="coupon invalid">
-                                <p><b>Code: {{ c.code }}</b><br />{{ c.description }}</p>
+                                <p><b>{% trans "Code:" %} {{ c.code }}</b><br />{{ c.description }}</p>
                             </li>
                         {% endfor %}
                         </ul>
@@ -95,9 +94,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Order#</th>
-                                <th>Date</th>
-                                <th>Invoice</th>
+                                <th>{% trans "Order#" %}</th>
+                                <th>{% trans "Date" %}</th>
+                                <th>{% trans "Invoice" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,7 +107,7 @@
                                 <td>
                                     {% with o.invoices.all as invoices %}
                                     {% if not invoices %}
-                                    N/A
+                                    {% trans "N/A" %}
                                     {% else %}
                                         {% for i in invoices %}
                                             {% if i.assopy_id %}
@@ -137,26 +136,24 @@
 
     <hr />
 
-    <h2>Other personal pages</h2>
+    <h2>{% trans "Other personal pages" %}</h2>
 
     <dl>
-
-        <dt><a href="{% url "conference-profile" slug=profile.slug %}">Your public profile</a></dt>
-        <dd>Partecipate in “<a href="/find-out-whos-coming">Find out who's coming</a>”: let people know that you will be coming to EuroPython.
-        </dd>
+        <dt><a href="{% url "conference-profile" slug=profile.slug %}">{% trans "Your public profile" %}</a></dt>
+        <dd>{% blocktrans with url="/find-out-whos-coming" %}Partecipate in “<a href="{{ url }}">Find out who's coming</a>”: let people know that you will be coming to this conference.{% endblocktrans %}</dd>
 
         {% all_user_tickets fare_type="all" as tickets %}
 
         {% if tickets|length %}
-            <dt><a href="{% url "conference-profile-conferences" %}">Conference &amp; contacts</a></dt>
-            <dd>See the conferences you have attended and who you have met.</dd>
+        <dt><a href="{% url "conference-profile-conferences" %}">{% trans "Conference &amp; contacts" %}</a></dt>
+        <dd>{% trans "See the conferences you have attended and who you have met." %}</dd>
         {% endif %}
 
         {% if tickets|length %}
             <dt><a href="{% url "assopy-tickets" %}">{% trans "Your tickets" %} ({{tickets|length}})</a></dt>
-            <dd>Fill in and review all your tickets.</dd>
+            <dd>{% trans "Fill in and review all your tickets." %}</dd>
 
-            <dt><a class="btn" href="{% url "p3-my-schedule" %}">Your personal schedule</a></dt>
+            <dt><a class="btn" href="{% url "p3-my-schedule" %}">{% trans "Your personal schedule" %}</a></dt>
         {% endif %}
     </dl>
 

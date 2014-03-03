@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 18:14+0100\n"
+"POT-Creation-Date: 2014-03-03 23:02+0100\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -153,6 +153,23 @@ msgstr ""
 msgid "Django administration"
 msgstr ""
 
+#: p3/templates/assopy/profile.html:11
+#, fuzzy
+msgid "Personal data"
+msgstr "Personal website"
+
+#: p3/templates/assopy/profile.html:13
+msgid "Privacy settings"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:14
+msgid "Login options"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:15
+msgid "Orders, invoices &amp; coupons"
+msgstr ""
+
 #: p3/templates/assopy/profile.html:27
 msgid "Web accounts for log in"
 msgstr ""
@@ -172,18 +189,78 @@ msgid ""
 "assistance"
 msgstr ""
 
-#: p3/templates/assopy/profile.html:75
+#: p3/templates/assopy/profile.html:65
+msgid ""
+"You can connect more web accounts to your profile, so that you can use any "
+"of them for logging in (without having to remember which one you used to "
+"create the account)."
+msgstr ""
+
+#: p3/templates/assopy/profile.html:74
 msgid "Your discount coupons"
 msgstr ""
 
-#: p3/templates/assopy/profile.html:94
+#: p3/templates/assopy/profile.html:78 p3/templates/assopy/profile.html:83
+msgid "Code:"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:93
 msgid "Your orders"
 msgstr ""
 
-#: p3/templates/assopy/profile.html:157 p3/templates/p3/tickets.html:4
+#: p3/templates/assopy/profile.html:97
+msgid "Order#"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:98
+msgid "Date"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:99
+msgid "Invoice"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:110
+msgid "N/A"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:140
+#, fuzzy
+msgid "Other personal pages"
+msgstr "Personal website"
+
+#: p3/templates/assopy/profile.html:143
+msgid "Your public profile"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:144
+#, python-format
+msgid ""
+"Partecipate in “<a href=\"%(url)s\">Find out who's coming</a>”: let people "
+"know that you will be coming to this conference."
+msgstr ""
+
+#: p3/templates/assopy/profile.html:149
+msgid "Conference &amp; contacts"
+msgstr ""
+
+#: p3/templates/assopy/profile.html:150
+msgid "See the conferences you have attended and who you have met."
+msgstr ""
+
+#: p3/templates/assopy/profile.html:154 p3/templates/p3/tickets.html:4
 #, fuzzy
 msgid "Your tickets"
 msgstr "Your talks"
+
+#: p3/templates/assopy/profile.html:155
+msgid "Fill in and review all your tickets."
+msgstr ""
+
+#: p3/templates/assopy/profile.html:157
+#, fuzzy
+msgid "Your personal schedule"
+msgstr "Personal website"
 
 #: p3/templates/assopy/profile_email_contact.html:23
 #: p3/templates/assopy/profile_personal_data.html:44
@@ -308,9 +385,9 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 #: p3/templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
 msgstr ""
-"If you have any problems please contact us via <a onclick=\"habla_window."
-"show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a "
-"href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+"If you have any problems please contact us via <a onclick=\"habla_window.show"
+"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
+"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
 #: p3/templates/conference/profile.html:25
 msgid "It’s you!"
@@ -857,29 +934,53 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: p3/templates/registration/login.html:14
+#: p3/templates/registration/login.html:9
+msgid "Log into PyCon"
+msgstr ""
+
+#: p3/templates/registration/login.html:12
+msgid "By using one of your existing web accounts"
+msgstr ""
+
+#: p3/templates/registration/login.html:13
 msgid ""
 "You will be able to specify billing and personal info later; e.g.: you can "
 "use your personal Facebook account to buy tickets for your company and the "
 "Facebook name will not appear anywhere."
 msgstr ""
 
-#: p3/templates/registration/login.html:29
+#: p3/templates/registration/login.html:24
+msgid "Or use your email and password"
+msgstr ""
+
+#: p3/templates/registration/login.html:25
 msgid ""
 "If you <i>really</i> don’t want to use an existing web account but you "
 "prefer a standard registration and login&nbsp;form."
 msgstr ""
 
-#: p3/templates/registration/login.html:39
+#: p3/templates/registration/login.html:33
 msgid "Invalid credentials"
 msgstr ""
 
-#: p3/templates/registration/login.html:56
+#: p3/templates/registration/login.html:40
+msgid "Log in"
+msgstr ""
+
+#: p3/templates/registration/login.html:48
 msgid "Don&#8217;t you have an account?"
 msgstr ""
 
-#: p3/templates/registration/login.html:63
+#: p3/templates/registration/login.html:50
+msgid "Create a new account"
+msgstr ""
+
+#: p3/templates/registration/login.html:55
 msgid "Did you forget your password?"
+msgstr ""
+
+#: p3/templates/registration/login.html:57
+msgid "Recover your password"
 msgstr ""
 
 #: pycon/settings.py:47
