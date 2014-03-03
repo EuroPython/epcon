@@ -114,7 +114,8 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'conference.context_processors.current_url',
     'conference.context_processors.stuff',
     'pages.context_processors.media',
-    'p3.context_processors.countdown',
+    #'p3.context_processors.countdown',
+    'p3.context_processors.settings',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -574,6 +575,7 @@ PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 
 from datetime import date
+P3_NEWSLETTER_SUBSCRIBE_URL = "http://groups.google.com/group/python-italia-aps/boxsubscribe"
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 P3_HOTEL_RESERVATION = {
     'period': (date(2013, 6, 28), date(2013, 7, 9)),

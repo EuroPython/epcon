@@ -2,19 +2,19 @@
 # Copyright (C) 2009 Python Italia.
 # This file is distributed under the same license as the p3 package.
 # dvd <dvd@gnx.it>, 2009.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 17:13+0100\n"
+"POT-Creation-Date: 2014-03-03 17:48+0100\n"
 "PO-Revision-Date: 2014-03-03 17:26+0100\n"
 "Last-Translator: David Mugnai <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "X-Translated-Using: django-rosetta 0.7.4\n"
 
 #: p3/forms.py:48
@@ -47,8 +47,8 @@ msgstr ""
 #: p3/forms.py:70
 msgid ""
 "This speaker profile will be publicly accesible if one of your talks is "
-"accepted. Your mobile phone and date of birth will <strong>never</strong> be"
-" published"
+"accepted. Your mobile phone and date of birth will <strong>never</strong> be "
+"published"
 msgstr ""
 
 #: p3/forms.py:73
@@ -72,8 +72,7 @@ msgstr ""
 
 #: p3/forms.py:81 p3/forms.py:168 p3/forms.py:261 p3/forms.py:354
 msgid ""
-"Please enter a short biography (one or two paragraphs). Do not paste your "
-"CV!"
+"Please enter a short biography (one or two paragraphs). Do not paste your CV!"
 msgstr ""
 
 #: p3/forms.py:85
@@ -109,8 +108,8 @@ msgstr ""
 
 #: p3/forms.py:425
 msgid ""
-"If you opt-in the privacy settings, we can send you important communications"
-" via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This "
+"If you opt-in the privacy settings, we can send you important communications "
+"via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This "
 "number will <strong>never</strong> be published."
 msgstr ""
 
@@ -121,8 +120,8 @@ msgstr ""
 #: p3/forms.py:431
 msgid ""
 "We require date of birth for speakers to accomodate for Italian laws "
-"regarding minors.<br />Format: YYYY-MM-DD<br />This date will "
-"<strong>never</strong> be published."
+"regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</"
+"strong> be published."
 msgstr ""
 
 #: p3/forms.py:565
@@ -219,18 +218,18 @@ msgid ""
 "PyCon Italy, the biggest national conference in Europe dedicated to the "
 "Python programming language."
 msgstr ""
-"Dopo il grande successo dell'ultima edizione, anche quest'anno vi aspettiamo"
-" numerosi  al Pycon Italia, il più grande convegno nazionale dedicato al "
+"Dopo il grande successo dell'ultima edizione, anche quest'anno vi aspettiamo "
+"numerosi  al Pycon Italia, il più grande convegno nazionale dedicato al "
 "linguaggio di programmazione Python."
 
 #: p3/templates/cms/index.html:63
 msgid ""
 "We expect more than 400 visitors among companies, professionals and "
-"hobbystis that will have a chance to attend to numerous talks about the most"
-" up to date topics  in the Python world."
+"hobbystis that will have a chance to attend to numerous talks about the most "
+"up to date topics  in the Python world."
 msgstr ""
-"Ci aspettiamo più di 400 partecipanti tra aziende, professionisti e studenti"
-" che parteciperanno ai numerosi interventi sugli argomenti più attuali "
+"Ci aspettiamo più di 400 partecipanti tra aziende, professionisti e studenti "
+"che parteciperanno ai numerosi interventi sugli argomenti più attuali "
 "relativi al mondo Python."
 
 #: p3/templates/cms/index.html:81
@@ -295,9 +294,9 @@ msgstr "Se hai partecipato a Pycon1 o Pycon2 puoi riusare lo stesso account."
 #: p3/templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
 msgstr ""
-"Se hai problemi contattaci in <a onclick=\"habla_window.show(); "
-"habla_window.expand()\" href=\"#\">chat</a> o scrivi a <a "
-"href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+"Se hai problemi contattaci in <a onclick=\"habla_window.show(); habla_window."
+"expand()\" href=\"#\">chat</a> o scrivi a <a href=\"mailto:gestionale@pycon."
+"it\">gestionale@pycon.it</a>"
 
 #: p3/templates/conference/profile.html:25
 msgid "It’s you!"
@@ -533,10 +532,14 @@ msgstr ""
 #: p3/templates/p3/billing.html:59
 msgid ""
 "\n"
-"                            Paypal is used for credit card transactions.<br />\n"
-"                            <strong>No registration is required</strong>, you will just need to\n"
-"                            click on a small link for non-registered users, located somewhere in the\n"
-"                            page (the exact position varies depending on the browser's language),\n"
+"                            Paypal is used for credit card transactions.<br /"
+">\n"
+"                            <strong>No registration is required</strong>, "
+"you will just need to\n"
+"                            click on a small link for non-registered users, "
+"located somewhere in the\n"
+"                            page (the exact position varies depending on the "
+"browser's language),\n"
 "                            and then fill in the form.\n"
 "                            "
 msgstr ""
@@ -557,6 +560,20 @@ msgstr ""
 msgid "Did you know"
 msgstr ""
 
+#: p3/templates/p3/box_newsletter.html:4
+msgid "Newsletter"
+msgstr ""
+
+#: p3/templates/p3/box_newsletter.html:5
+msgid ""
+"If you want to stay updated with news about thie conference, sign-up to the "
+"official low-traffic PyCon mailing-list:"
+msgstr ""
+
+#: p3/templates/p3/box_newsletter.html:8
+msgid "Sign up"
+msgstr ""
+
 #: p3/templates/p3/box_talks_conference.html:3
 msgid "Your talks"
 msgstr ""
@@ -572,8 +589,8 @@ msgstr ""
 #: p3/templates/p3/cart.html:23
 #, python-format
 msgid ""
-"In order to buy the tickets you have to <a "
-"href=\"/accounts/login/?next=%(u)s\">log in</a></p>"
+"In order to buy the tickets you have to <a href=\"/accounts/login/?next=%(u)s"
+"\">log in</a></p>"
 msgstr ""
 
 #: p3/templates/p3/cart.html:30
@@ -802,8 +819,8 @@ msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:187
 msgid ""
-"This ticket grants you full access to the conference. The above selection is"
-" just for helping out the organizers."
+"This ticket grants you full access to the conference. The above selection is "
+"just for helping out the organizers."
 msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:214
@@ -839,11 +856,11 @@ msgstr ""
 msgid "Italiano"
 msgstr ""
 
-#: pycon/settings.py:48 pycon/settings.py:255
+#: pycon/settings.py:48 pycon/settings.py:256
 msgid "English"
 msgstr ""
 
-#: pycon/settings.py:254
+#: pycon/settings.py:255
 msgid "Italian"
 msgstr ""
 
@@ -879,12 +896,12 @@ msgstr ""
 
 #~ msgid ""
 #~ "La conferenza Italiana sul linguaggio di programmazione Python dove "
-#~ "sviluppatori, aziende e università si incontrano per imparare, collaborare e"
-#~ " crescere insieme."
+#~ "sviluppatori, aziende e università si incontrano per imparare, "
+#~ "collaborare e crescere insieme."
 #~ msgstr ""
 #~ "La conferenza Italiana sul linguaggio di programmazione Python dove "
-#~ "sviluppatori, aziende e università si incontrano per imparare, collaborare e"
-#~ " crescere insieme."
+#~ "sviluppatori, aziende e università si incontrano per imparare, "
+#~ "collaborare e crescere insieme."
 
 #~ msgid "I nostri sponsor"
 #~ msgstr "I nostri sponsor"
@@ -936,11 +953,10 @@ msgstr ""
 
 #~ msgid "saluto di guido in homepage"
 #~ msgstr ""
-#~ "Questa edizione di PyCon Italia sarà arricchita dalla presenza di un ospite "
-#~ "d&#8217;eccezione: <b><a "
-#~ "href=\"http://it.wikipedia.org/wiki/Guido_van_Rossum\">Guido van "
-#~ "Rossum</a></b>, l&#8217;ideatore di Python, che terrà un keynote sulla "
-#~ "nascita del linguaggio."
+#~ "Questa edizione di PyCon Italia sarà arricchita dalla presenza di un "
+#~ "ospite d&#8217;eccezione: <b><a href=\"http://it.wikipedia.org/wiki/"
+#~ "Guido_van_Rossum\">Guido van Rossum</a></b>, l&#8217;ideatore di Python, "
+#~ "che terrà un keynote sulla nascita del linguaggio."
 
 #~ msgid "Pycon Tre"
 #~ msgstr "Pycon Tre"

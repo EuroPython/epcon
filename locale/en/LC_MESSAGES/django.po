@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 17:13+0100\n"
+"POT-Creation-Date: 2014-03-03 17:47+0100\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -574,6 +574,20 @@ msgstr ""
 msgid "Did you know"
 msgstr ""
 
+#: p3/templates/p3/box_newsletter.html:4
+msgid "Newsletter"
+msgstr ""
+
+#: p3/templates/p3/box_newsletter.html:5
+msgid ""
+"If you want to stay updated with news about thie conference, sign-up to the "
+"official low-traffic PyCon mailing-list:"
+msgstr ""
+
+#: p3/templates/p3/box_newsletter.html:8
+msgid "Sign up"
+msgstr ""
+
 #: p3/templates/p3/box_talks_conference.html:3
 msgid "Your talks"
 msgstr "Your talks"
@@ -867,11 +881,11 @@ msgstr ""
 msgid "Italiano"
 msgstr ""
 
-#: pycon/settings.py:48 pycon/settings.py:255
+#: pycon/settings.py:48 pycon/settings.py:256
 msgid "English"
 msgstr ""
 
-#: pycon/settings.py:254
+#: pycon/settings.py:255
 msgid "Italian"
 msgstr ""
 

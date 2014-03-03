@@ -1,5 +1,16 @@
 # -*- coding: UTF-8 -*-
+import django.conf
 from django.core.cache import cache
+
+def settings(request):
+    names = (
+        'NEWSLETTER_SUBSCRIBE_URL',
+        'TWITTER_USER',
+    )
+    output = {}
+    for x in names:
+        output[x] = getattr(django.conf.settings, 'P3_' + x, None)
+    return output
 
 def countdown(request):
     from assopy.models import OrderItem
