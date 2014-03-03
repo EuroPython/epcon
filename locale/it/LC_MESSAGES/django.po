@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-03 18:14+0100\n"
-"PO-Revision-Date: 2014-03-03 23:13+0100\n"
+"PO-Revision-Date: 2014-03-03 23:31+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -177,11 +177,11 @@ msgstr ""
 #: p3/templates/assopy/profile.html:13
 #: p3/templates/assopy/profile_spam_control.html:6
 msgid "Privacy settings"
-msgstr ""
+msgstr "Impostazioni privacy"
 
 #: p3/templates/assopy/profile.html:14
 msgid "Login options"
-msgstr ""
+msgstr "Opzioni di login"
 
 #: p3/templates/assopy/profile.html:15
 msgid "Orders, invoices &amp; coupons"
@@ -212,6 +212,9 @@ msgid ""
 "of them for logging in (without having to remember which one you used to "
 "create the account)."
 msgstr ""
+"Puoi aggiungere più account social al tuo profilo, in modo da usarne uno "
+"qualunque per fare login (senza ricordarti quale avevi usato per creare "
+"l'account)"
 
 #: p3/templates/assopy/profile.html:74
 msgid "Your discount coupons"
@@ -219,7 +222,7 @@ msgstr "I tuoi coupon sconto"
 
 #: p3/templates/assopy/profile.html:78 p3/templates/assopy/profile.html:83
 msgid "Code:"
-msgstr ""
+msgstr "Codice:"
 
 #: p3/templates/assopy/profile.html:93
 msgid "Your orders"
@@ -227,19 +230,19 @@ msgstr "I tuoi ordini"
 
 #: p3/templates/assopy/profile.html:97
 msgid "Order#"
-msgstr ""
+msgstr "Ordine"
 
 #: p3/templates/assopy/profile.html:98
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: p3/templates/assopy/profile.html:99
 msgid "Invoice"
-msgstr ""
+msgstr "Fattura"
 
 #: p3/templates/assopy/profile.html:110
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: p3/templates/assopy/profile.html:140
 #, fuzzy
@@ -248,7 +251,7 @@ msgstr "Sito personale"
 
 #: p3/templates/assopy/profile.html:143
 msgid "Your public profile"
-msgstr ""
+msgstr "Il tuo profilo pubblico"
 
 #: p3/templates/assopy/profile.html:144
 #, python-format
@@ -256,10 +259,12 @@ msgid ""
 "Partecipate in “<a href=\"%(url)s\">Find out who's coming</a>”: let people "
 "know that you will be coming to this conference."
 msgstr ""
+"Fai sapere a tutti che verrai a PyCon: compila il tuo profilo e pubblicalo "
+"nella sezione \"<a href=\"%(url)s\">Scopri chi viene</a>"
 
 #: p3/templates/assopy/profile.html:149
 msgid "Conference &amp; contacts"
-msgstr ""
+msgstr "Conferenza &amp; contatti"
 
 #: p3/templates/assopy/profile.html:150
 msgid "See the conferences you have attended and who you have met."
@@ -285,8 +290,8 @@ msgstr ""
 
 #: p3/templates/assopy/profile_email_contact.html:12
 msgid ""
-"We have sent you an email. Please follow the instructions in the message you "
-"will receive shortly. This change will not affect in any way the web "
+"We have sent you an email. Please follow the instructions in the message you"
+" will receive shortly. This change will not affect in any way the web "
 "accounts you use to log in."
 msgstr ""
 
@@ -345,32 +350,41 @@ msgstr ""
 
 #: p3/templates/assopy/profile_spam_control.html:13
 msgid "Recruiting"
-msgstr ""
+msgstr "Recruiting"
 
 #: p3/templates/assopy/profile_spam_control.html:14
 #, python-format
 msgid ""
 "Many of our sponsors support our conference to offer jobs and recruit good "
-"Python programmers. In addition to the official <a href=\"%(url)s"
-"\">recruiting sessions</a>, you might like to receive selected job offers "
-"via email, and evaluate them in a more private environment."
+"Python programmers. In addition to the official <a "
+"href=\"%(url)s\">recruiting sessions</a>, you might like to receive selected"
+" job offers via email, and evaluate them in a more private environment."
 msgstr ""
+"Molti dei nostri sponsor supportano la conferenza per cercare e assumere "
+"ottimi programmatori Python. In aggiunta alla <a href=\"%(url)s\">sessione "
+"di recruiting</a> ufficiale, puoi decidere di ricevere alcune offerte "
+"speciali via email, selezionate da noi, e valutarle in un contesto più "
+"privato."
 
 #: p3/templates/assopy/profile_spam_control.html:19
 msgid ""
 "Your email address will <i>never</i> be shared with any of our recruiting "
 "sponsor. We send the emails."
 msgstr ""
+"Il tuo indirizzo email non verrà <i>mai</i> condiviso con alcuno sponsor. "
+"Siamo noi a mandare le email."
 
 #: p3/templates/assopy/profile_spam_control.html:20
 msgid ""
 "You will receive max 10 job offers; all emails will be sent between June "
 "15th and July 20th."
 msgstr ""
+"Riceverai al massimo 10 offerte di lavoro; tutte le email verranno inviate "
+"tra la settimana precedente e quella successiva alla conferenza."
 
 #: p3/templates/assopy/profile_spam_control.html:25
 msgid "User messages"
-msgstr ""
+msgstr "Messaggi tra utenti"
 
 #: p3/templates/assopy/profile_spam_control.html:28
 #, python-format
@@ -380,35 +394,43 @@ msgid ""
 "out</a> that you are coming to the conference. Do you want them to be able "
 "to contact you through our website?"
 msgstr ""
+"Dopo aver comprato un biglietto e attivato il tuo <a "
+"href=\"%(profile_url)s\">profilo pubblico</a>, gli altri partecipanti "
+"potranno trovarti nella sezione \"<a href=\"%(url)s\">Scopri chi "
+"viene</a>\". Vuoi che possano contattarti tramite il sito web?"
 
 #: p3/templates/assopy/profile_spam_control.html:33
-msgid "Your email address will <b>never</b> be shared with other participants."
+msgid ""
+"Your email address will <b>never</b> be shared with other participants."
 msgstr ""
+"Il tuo indirizzo email non verrà <b>mai</b> condiviso con gli altri "
+"partecipanti. "
 
 #: p3/templates/assopy/profile_spam_control.html:34
 msgid "We will send you one mail notifying you of the received message."
 msgstr ""
+"Ti invieremo una email che conterrà il messaggio che ti hanno inviato."
 
 #: p3/templates/assopy/profile_spam_control.html:35
 msgid "User messages will be active until the conference ends."
-msgstr ""
+msgstr "L'invio di messaggio sarà attivo fino al termine della conferenza"
 
 #: p3/templates/assopy/profile_spam_control.html:40
 msgid "SMS messages"
-msgstr ""
+msgstr "Messaggi SMS"
 
 #: p3/templates/assopy/profile_spam_control.html:42
 msgid ""
-"Sometimes it is useful for organizers to send last-minute information to all "
-"participants (eg: transportation strikes, last-minute schedule changes, "
+"Sometimes it is useful for organizers to send last-minute information to all"
+" participants (eg: transportation strikes, last-minute schedule changes, "
 "impromptu happenings, etc.). Do you want to receive these information "
 "through SMS?"
 msgstr ""
 
 #: p3/templates/assopy/profile_spam_control.html:48
 msgid ""
-"You must insert your phone number in the “Personal data” section to activate "
-"this service."
+"You must insert your phone number in the “Personal data” section to activate"
+" this service."
 msgstr ""
 
 #: p3/templates/assopy/profile_spam_control.html:49
@@ -976,6 +998,8 @@ msgid ""
 "You still have not bought any ticket with this account. Please proceed to "
 "the <a href=\"%(u)s\">cart</a> to place an order."
 msgstr ""
+"Non hai ancora comprato nessun biglietto con questo account. Vai al <a "
+"href=\"%(u)s\">carrello</a> per fare un ordine."
 
 #: p3/templates/p3/tickets.html:73
 msgid ""
@@ -985,23 +1009,23 @@ msgstr ""
 
 #: p3/templates/p3/tickets.html:124
 msgid "Please enter the name"
-msgstr ""
+msgstr "Inserisci il nome"
 
 #: p3/templates/p3/tickets.html:139
 msgid "Enter the email of the person you want to assign the ticket"
-msgstr ""
+msgstr "Inserisci l'email della persona a cui vuoi assegnare il biglietto"
 
 #: p3/templates/p3/tickets.html:143
 msgid "Please don't use your email address."
-msgstr ""
+msgstr "Non usare il tuo indirizzo email."
 
 #: p3/templates/p3/tickets.html:153
 msgid "ticket assigned to"
-msgstr ""
+msgstr "Biglietto assegnato a"
 
 #: p3/templates/p3/tickets.html:159
 msgid "Are you sure to reclaim this ticket"
-msgstr ""
+msgstr "Sei sicuro di volerti riprendere questo biglietto?"
 
 #: p3/templates/p3/fragments/render_cart_og_ticket_row.html:13
 msgid "Goodies name"
@@ -1035,11 +1059,11 @@ msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:98
 msgid "Edit information"
-msgstr ""
+msgstr "Modifica"
 
 #: p3/templates/p3/fragments/render_ticket.html:112
 msgid "Additional information (they won&#8217;t show up on the ticket)"
-msgstr ""
+msgstr "Informazioni aggiuntive (non appariranno nel badge)"
 
 #: p3/templates/p3/fragments/render_ticket.html:114
 msgid "Attending on days:"
@@ -1047,19 +1071,19 @@ msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:116
 msgid "Diet:"
-msgstr ""
+msgstr "Alimentazione"
 
 #: p3/templates/p3/fragments/render_ticket.html:118
 msgid "Shirt size:"
-msgstr ""
+msgstr "Taglia della maglietta"
 
 #: p3/templates/p3/fragments/render_ticket.html:142
 msgid "Deposit:"
-msgstr ""
+msgstr "Anticipo"
 
 #: p3/templates/p3/fragments/render_ticket.html:142
 msgid "Balance:"
-msgstr ""
+msgstr "Saldo"
 
 #: p3/templates/p3/fragments/render_ticket.html:187
 msgid ""
@@ -1069,11 +1093,11 @@ msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:214
 msgid "Save Changes"
-msgstr ""
+msgstr "Salva"
 
 #: p3/templates/registration/login.html:9
 msgid "Log into PyCon"
-msgstr ""
+msgstr "Effettua il login"
 
 #: p3/templates/registration/login.html:12
 msgid "By using one of your existing web accounts"
@@ -1114,23 +1138,23 @@ msgstr ""
 
 #: p3/templates/registration/login.html:55
 msgid "Did you forget your password?"
-msgstr ""
+msgstr "Hai dimenticato la password?"
 
 #: p3/templates/registration/login.html:57
 msgid "Recover your password"
-msgstr ""
+msgstr "Recupera la password"
 
 #: pycon/settings.py:47
 msgid "Italiano"
-msgstr ""
+msgstr "Italiano"
 
 #: pycon/settings.py:48 pycon/settings.py:256
 msgid "English"
-msgstr ""
+msgstr "Inglese"
 
 #: pycon/settings.py:255
 msgid "Italian"
-msgstr ""
+msgstr "Italiano"
 
 #~ msgid "affiliated"
 #~ msgstr "convenzionato"
