@@ -84,20 +84,22 @@ header {
 // Aside (sidebar) custom typography 
 
 aside {
-
-}
-
-.slot {
-    @extend .well;
-    @extend .well--small;
-    h4 {
-        @extend .h5;                
-        margin: $baselineheight / 2 0;    
+    .slot {
+        @extend .well;
+        @extend .well--small;
+        h4 {
+            @extend .h5;                
+            margin: $baselineheight / 2 0;    
+        }
     }
 }
 
 
 // HOME ==============================================================================
+
+.intro .lead {
+    color: $textcolor;
+}
 
 .notice {
     // Icons
