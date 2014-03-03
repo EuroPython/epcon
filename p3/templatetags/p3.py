@@ -38,9 +38,9 @@ register = template.Library()
 def box_pycon_italia():
     return {}
 
-@register.inclusion_tag('p3/box_newsletter.html')
-def box_newsletter():
-    return {}
+@register.inclusion_tag('p3/box_newsletter.html', takes_context=True)
+def box_newsletter(context):
+    return context
 
 @register.inclusion_tag('p3/box_cal.html', takes_context = True)
 def box_cal(context, limit=None):
