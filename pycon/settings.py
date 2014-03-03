@@ -139,6 +139,11 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
 )
 
+LOCALE_PATHS = (
+    os.path.join(PROJECT_DIR, 'locale'),
+)
+
+
 INSTALLED_APPS = (
     'filebrowser',
     # attenzione l'ordine tra p3/assopy/admin è importante per risolvere
