@@ -13,14 +13,14 @@
         {% block PAGE_SUMMARY_TOP %}{% endblock %}
         <div class="page-summary">
             {% placeholder subtitle with markItUpMarkdown as text parsed %}
-            {{ text|markdown2 }}
+            {{ text|markdown2:"nosafe" }}
         </div>
-        {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}        
+        {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
         {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
         <div class="cms">
             {% placeholder text with markItUpMarkdown as text parsed %}
             {% render_page_template text as m %}
-            {{ m|markdown2 }}
+            {{ m|markdown2:"nosafe" }}
         </div><!-- /cms -->
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
     </div> <!-- /grid -->
@@ -30,7 +30,7 @@
             {% block PAGE_SIDEBAR_TOP %}{% endblock %}
             {% block PAGE_SIDEBAR %}
             {% placeholder right-column with markItUpMarkdown as rtext parsed %}
-            {{ rtext|markdown2 }}
+            {{ rtext|markdown2:"nosafe" }}
             {% endblock %}
             {% box_didyouknow %}
             {% box_newsletter %}
