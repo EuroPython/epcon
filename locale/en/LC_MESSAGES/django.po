@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 23:11+0100\n"
+"POT-Creation-Date: 2014-03-03 23:56+0100\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -104,7 +104,7 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: p3/forms.py:265
+#: p3/forms.py:265 p3/templates/conference/profile_publicdata_form.html:7
 msgid "Tagline"
 msgstr ""
 
@@ -542,6 +542,51 @@ msgstr ""
 msgid "Use this picture"
 msgstr ""
 
+#: p3/templates/conference/profile_publicdata_form.html:17
+msgid "Website"
+msgstr ""
+
+#: p3/templates/conference/profile_publicdata_form.html:27
+#: p3/templates/conference/speaker.html:42
+msgid "Twitter"
+msgstr "Twitter"
+
+#: p3/templates/conference/profile_publicdata_form.html:37
+msgid "Technical interests"
+msgstr ""
+
+#: p3/templates/conference/profile_publicdata_form.html:49
+#, fuzzy
+msgid "Location"
+msgstr "Duration"
+
+#: p3/templates/conference/profile_publicdata_form.html:70
+msgid "Position"
+msgstr ""
+
+#: p3/templates/conference/profile_visibility_form.html:8
+msgid "Your profile is not visibile by anyone."
+msgstr ""
+
+#: p3/templates/conference/profile_visibility_form.html:11
+msgid "Only <b>conference participants</b> can view your profile."
+msgstr ""
+
+#: p3/templates/conference/profile_visibility_form.html:15
+msgid ""
+"Your profile is <b>publicly visible</b> because you are a PyCon speaker."
+msgstr ""
+
+#: p3/templates/conference/profile_visibility_form.html:17
+msgid "Your profile is <b>publicly visible</b>."
+msgstr ""
+
+#: p3/templates/conference/profile_visibility_form.html:27
+msgid ""
+"<b>Note</b>: If any of your proposals is accepted, this profile will be "
+"forced to be publicly visibile."
+msgstr ""
+
 #: p3/templates/conference/render_hotels.html:5
 msgid "Nome"
 msgstr "Name"
@@ -562,10 +607,6 @@ msgstr "Updated in %(d)s"
 #: p3/templates/conference/render_schedule.html:33
 msgid "sponsorizzato da"
 msgstr "sponsorized by"
-
-#: p3/templates/conference/speaker.html:42
-msgid "Twitter"
-msgstr "Twitter"
 
 #: p3/templates/conference/speaker.html:46
 msgid "Sito personale"
