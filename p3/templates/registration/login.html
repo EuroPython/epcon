@@ -1,74 +1,63 @@
 {% extends "assopy/base.html" %}
-{% load assopy_tags i18n %}
+{% load formstyle assopy_tags i18n %}
 
 {% block ASSOPY_MAIN_CONTENT %}
 
 <section>
-       <div class="grid-container">
-       <div class="grid-100">      
-           <h1>Log into PyCon</h1>
-       </div><!-- /grid -->
-       <div class="grid-50">      
-            <h2>By using one of your existing web accounts</h2>
-
-            <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
-    
-       </div><!-- /grid -->
-       <div class="grid-50">      
-            {% render_janrain_box next "embed" %}
-       </div><!-- /grid -->
-       </div><!-- /grid-container -->
+    <div class="grid-container">
+    <div class="grid-100">
+        <h1>{% trans "Log into PyCon" %}</h1>
+    </div>
+    <div class="grid-50">
+        <h2>{% trans "By using one of your existing web accounts" %}</h2>
+        <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
+    </div>
+    <div class="grid-50">
+        {% render_janrain_box next "embed" %}
+    </div>
+    </div>
 </section>
 
-
 <section>
-       <div class="grid-container">
-       <div class="grid-100">      
-
-        <h2>Or use your email and password</h2>        
+    <div class="grid-container">
+    <div class="grid-100">
+        <h2>{% trans "Or use your email and password" %}</h2>
         <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
+    </div>
 
-        <hr />
-            
-       </div><!-- /grid -->
+    <hr />
 
-       <div class="grid-50">      
-               
+    <div class="grid-50">
         <div class="well">
             {% if form.errors %}
                 <div class="alert alert-error">{% trans "Invalid credentials" %}</div>
             {% endif %}
             <form action="" method="post">
                 <fieldset>
-                    {{ form.email|field }}
-                    {{ form.password|field }}
+                    {{ form.email|form_field }}
+                    {{ form.password|form_field }}
                     <input type="hidden" name="next" value="{{ next }}" />
-                    <button class="btn btn-primary" name="" value="" type="submit">Log in</button>
+                    <button class="btn btn-primary" name="" value="" type="submit">{% trans "Log in" %}</button>
                 </fieldset>
                 {% csrf_token %}
             </form>
         </div>
+    </div>
 
-       </div><!-- /grid -->
+    <div class="grid-40 prefix-10">
+        <h3>{% trans "Don&#8217;t you have an account?" %}</h3>
+        <div>
+            <a href="{% url "assopy-new-account" %}?next={{ next }}" class="btn">{% trans "Create a new account" %}</a>
+        </div>
 
-       <div class="grid-40 prefix-10">  
-       
-            <h3>{% trans "Don&#8217;t you have an account?" %}</h3>
-            <div>
-                <a href="{% url "assopy-new-account" %}?next={{ next }}" class="btn">Crea un nuovo account</a>
-            </div>
-            
-            <hr />
-            
-            <h3>{% trans "Did you forget your password?" %}</h3>
-            <div>
-                <a href="{% url "assopy-password-reset" %}" class="btn">Ripristina la tua  password</a>
-            </div>
+        <hr />
 
-       </div><!-- /grid -->
-       </div><!-- /grid-container -->
+        <h3>{% trans "Did you forget your password?" %}</h3>
+        <div>
+            <a href="{% url "assopy-password-reset" %}" class="btn">{% trans "Recover your password" %}</a>
+        </div>
+    </div>
+    </div>
 </section>
-
-
 
 {% endblock %}
