@@ -246,11 +246,11 @@ PAGE_TEMPLATES = (
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_LANGUAGES = (
+    ('it-it', ugettext('Italian')),
     ('en-us', ugettext('English')),
 )
-PAGE_DEFAULT_LANGUAGE = 'en-us'
-PAGE_LANGUAGE_MAPPING = lambda lang: 'en-us'
-
+PAGE_DEFAULT_LANGUAGE = PAGE_LANGUAGES[0][0]
+PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]
 
 PAGE_REAL_TIME_SEARCH = False
 
