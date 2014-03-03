@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 17:13+0100\n"
+"POT-Creation-Date: 2014-03-03 18:14+0100\n"
 "PO-Revision-Date: 2014-03-03 17:38+0100\n"
 "Last-Translator: David Mugnai <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -283,7 +283,7 @@ msgstr "La prossima scadenza"
 msgid "All the deadlines &rarr;"
 msgstr "Vedi tutte le scadenze &rarr;"
 
-#: p3/templates/cms/p5_homepage.html:79
+#: p3/templates/cms/p5_homepage.html:78
 msgid "PyCon blog"
 msgstr ""
 
@@ -559,6 +559,11 @@ msgstr ""
 #: p3/templates/p3/box_didyouknow.html:4
 msgid "Did you know"
 msgstr ""
+
+#: p3/templates/p3/box_latest_tweets.html:3
+#, fuzzy
+msgid "Le ultime da Twitter"
+msgstr "Seguici su Twitter"
 
 #: p3/templates/p3/box_newsletter.html:4
 msgid "Newsletter"
@@ -914,9 +919,6 @@ msgstr ""
 
 #~ msgid "Da Twitter"
 #~ msgstr "Da Twitter"
-
-#~ msgid "Seguici su Twitter"
-#~ msgstr "Seguici su Twitter"
 
 #~ msgid "siamo già in"
 #~ msgstr "siamo già in"
