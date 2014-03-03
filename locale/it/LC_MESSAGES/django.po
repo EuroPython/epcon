@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 17:48+0100\n"
-"PO-Revision-Date: 2014-03-03 17:26+0100\n"
+"POT-Creation-Date: 2014-03-03 17:13+0100\n"
+"PO-Revision-Date: 2014-03-03 17:38+0100\n"
 "Last-Translator: David Mugnai <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "Language: \n"
@@ -260,11 +260,11 @@ msgstr "Archivio blog"
 
 #: p3/templates/cms/p5_homepage.html:30
 msgid "Call for Proposal is <span>open</span>"
-msgstr ""
+msgstr "Il Call for proposal è <span>aperto</span>"
 
 #: p3/templates/cms/p5_homepage.html:32
 msgid "Submit your proposal"
-msgstr ""
+msgstr "Inviaci i tuoi talk"
 
 #: p3/templates/cms/p5_homepage.html:35
 msgid "Talk voting is <span>open</span>"
@@ -276,7 +276,7 @@ msgstr ""
 
 #: p3/templates/cms/p5_homepage.html:50 p3/templates/p3/box_cal.html:3
 msgid "Next deadline"
-msgstr ""
+msgstr "La prossima scadenza"
 
 #: p3/templates/cms/p5_homepage.html:53
 #, fuzzy
@@ -463,7 +463,7 @@ msgstr ""
 
 #: p3/templates/p3/base.html:203
 msgid "The site"
-msgstr ""
+msgstr "Il sito"
 
 #: p3/templates/p3/base.html:216
 msgid "Social"
