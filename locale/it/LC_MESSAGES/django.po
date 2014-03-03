@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-03 18:14+0100\n"
-"PO-Revision-Date: 2014-03-03 23:31+0100\n"
+"PO-Revision-Date: 2014-03-03 23:55+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "Sito personale"
 
 #: p3/templates/assopy/profile.html:12
 msgid "Email contact"
-msgstr ""
+msgstr "Email"
 
 #: p3/templates/assopy/profile.html:13
 #: p3/templates/assopy/profile_spam_control.html:6
@@ -185,7 +185,7 @@ msgstr "Opzioni di login"
 
 #: p3/templates/assopy/profile.html:15
 msgid "Orders, invoices &amp; coupons"
-msgstr ""
+msgstr "Ordini, fatture &amp; coupon"
 
 #: p3/templates/assopy/profile.html:27
 msgid "Web accounts for log in"
@@ -286,7 +286,7 @@ msgstr "Sito personale"
 #: p3/templates/assopy/profile_email_contact.html:11
 #, python-format
 msgid "You have requested to change your email contact to <b>%(pending)s</b>."
-msgstr ""
+msgstr "Hai richiesto di cambiare la tua email in: <b>%(pending)s</b>."
 
 #: p3/templates/assopy/profile_email_contact.html:12
 msgid ""
@@ -294,10 +294,13 @@ msgid ""
 " will receive shortly. This change will not affect in any way the web "
 "accounts you use to log in."
 msgstr ""
+"Ti abbiamo inviato una email. Segui le istruzioni che riceverai a breve. "
+"Questa modifica non influenzerà gli account social che utilizzi per fare "
+"login."
 
 #: p3/templates/assopy/profile_email_contact.html:19
 msgid "Primary email contact"
-msgstr ""
+msgstr "Contatto email primario"
 
 #: p3/templates/assopy/profile_email_contact.html:20
 msgid ""
@@ -305,6 +308,8 @@ msgid ""
 "email you can use to login in our website in case you don't like web "
 "accounts or social networks to do it."
 msgstr ""
+"Questa è l'email che possiamo usare per contattarti. E' anche l'email che "
+"usi per fare login in questo sito, se non vuoi usare gli account social."
 
 #: p3/templates/assopy/profile_email_contact.html:22
 #: p3/templates/assopy/profile_personal_data.html:44
@@ -333,7 +338,7 @@ msgstr "Telefono"
 
 #: p3/templates/assopy/profile_spam_control.html:6
 msgid "Saved"
-msgstr ""
+msgstr "Salvato"
 
 #: p3/templates/assopy/profile_spam_control.html:8
 #, python-format
@@ -342,11 +347,16 @@ msgid ""
 "anyone. Have a look at our <a href=\"%(url)s\">privacy policy</a> for "
 "further information."
 msgstr ""
+"Rispettiamo la tua privacy. <i>Non condividiamo i tuoi dati personali</i> "
+"con nessuno. Dai un'occhiata alla nostra <a href=\"%(url)s\">privacy "
+"policy</a> per maggiori informazioni."
 
 #: p3/templates/assopy/profile_spam_control.html:10
 msgid ""
 "This page contains additional privacy settings for advanced opt-in features."
 msgstr ""
+"Questa pagina contiene impostazioni aggiuntivi per la privacy per "
+"funzionalità avanzata che puoi voler attivare."
 
 #: p3/templates/assopy/profile_spam_control.html:13
 msgid "Recruiting"
@@ -426,28 +436,36 @@ msgid ""
 "impromptu happenings, etc.). Do you want to receive these information "
 "through SMS?"
 msgstr ""
+"A volte, è utile per gli organizzatori inviare informazioni dell'ultimo "
+"minuto a tutti i partecipanti (es: scioperi dei mezzi pubblici, cambi di "
+"programma improvvisi, eventi organizzati all'ultimo, ecc.). Vuoi ricevere "
+"questo genere di avvisi per SMS?"
 
 #: p3/templates/assopy/profile_spam_control.html:48
 msgid ""
 "You must insert your phone number in the “Personal data” section to activate"
 " this service."
 msgstr ""
+"Devi inserire il tuo numero di telefono tra i tuoi dati di profilo per "
+"attivare questo servizio."
 
 #: p3/templates/assopy/profile_spam_control.html:49
 msgid "Your phone number will <i>never</i> be shared with other people."
-msgstr ""
+msgstr "Il tuo numero di telefono non sarà <i>mai</i> condiviso con nessuno."
 
 #: p3/templates/assopy/profile_spam_control.html:50
 msgid ""
 "This SMS message service will be active only for the time span of the "
 "conference."
 msgstr ""
+"Questo servizio SMS verrà utilizzato solo durante il periodo della "
+"conferenza."
 
 #: p3/templates/assopy/profile_spam_control.html:51
 msgid ""
 "Make sure you don't pay any roaming fee for incoming SMS while in Italy (or "
 "that you don't care about it...)."
-msgstr ""
+msgstr "<span></span>"
 
 #: p3/templates/cms/index-simple.html:32
 msgid "Dal blog"
@@ -1033,29 +1051,29 @@ msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:6
 msgid "Ticket frozen; editing disabled"
-msgstr ""
+msgstr "Biglietto congelato; modifiche disabilitate"
 
 #: p3/templates/p3/fragments/render_ticket.html:21
 #, python-format
 msgid "Ticket not active; waiting for wire transfer (order %(code)s)"
-msgstr ""
+msgstr "Biglietto non attivo, in attesa di bonifico (ordine %(code)s)"
 
 #: p3/templates/p3/fragments/render_ticket.html:54
 #, python-format
 msgid "Currently assigned to <b>%(assigned_to)s</b>"
-msgstr ""
+msgstr "Assegnato a <b>%(assigned_to)s</b>"
 
 #: p3/templates/p3/fragments/render_ticket.html:54
 msgid "Reclaim"
-msgstr ""
+msgstr "Riprenditelo"
 
 #: p3/templates/p3/fragments/render_ticket.html:62
 msgid "for me"
-msgstr ""
+msgstr "per me"
 
 #: p3/templates/p3/fragments/render_ticket.html:64
 msgid "for someone else"
-msgstr ""
+msgstr "per qualcun altro"
 
 #: p3/templates/p3/fragments/render_ticket.html:98
 msgid "Edit information"
@@ -1101,7 +1119,7 @@ msgstr "Effettua il login"
 
 #: p3/templates/registration/login.html:12
 msgid "By using one of your existing web accounts"
-msgstr ""
+msgstr "Utilizza uno degli account social"
 
 #: p3/templates/registration/login.html:13
 msgid ""
@@ -1109,32 +1127,37 @@ msgid ""
 "use your personal Facebook account to buy tickets for your company and the "
 "Facebook name will not appear anywhere."
 msgstr ""
+"Potrai specificare i nomi dei partecipanti e i dati di fatturazione in "
+"seguito; per esempio, puoi tranquillamente usare Facebook per fare login, e "
+"poi comprare biglietti intestati alla tua azienda."
 
 #: p3/templates/registration/login.html:24
 msgid "Or use your email and password"
-msgstr ""
+msgstr "Oppure usa email e password"
 
 #: p3/templates/registration/login.html:25
 msgid ""
 "If you <i>really</i> don’t want to use an existing web account but you "
 "prefer a standard registration and login&nbsp;form."
 msgstr ""
+"Se <i>davvero</i> non vuoi usare nessun account social, ma preferisci una "
+"form di registrazione e login tradizionale."
 
 #: p3/templates/registration/login.html:33
 msgid "Invalid credentials"
-msgstr ""
+msgstr "Credenziali non valide"
 
 #: p3/templates/registration/login.html:40
 msgid "Log in"
-msgstr ""
+msgstr "Log in"
 
 #: p3/templates/registration/login.html:48
 msgid "Don&#8217;t you have an account?"
-msgstr ""
+msgstr "Sei sicuro di avere un account?"
 
 #: p3/templates/registration/login.html:50
 msgid "Create a new account"
-msgstr ""
+msgstr "Crea un nuovo account"
 
 #: p3/templates/registration/login.html:55
 msgid "Did you forget your password?"
