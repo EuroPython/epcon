@@ -1,8 +1,8 @@
-from fabric.api import env, task, get, lcd, local
-from fabric.contrib import django
-
+# -*- coding: UTF-8 -*-
 import sys
 import os.path
+from fabric.api import env, task, get, run, cd
+from fabric.contrib import django
 sys.path.insert(0, os.path.dirname(env.real_fabfile))
 
 django.project('pycon')
@@ -11,11 +11,15 @@ from django.conf import settings
 env.use_ssh_config = True
 env.hosts = [ 'pycon.it' ]
 
+REMOTE_DEPLOY = '/srv/pycon5/'
+REMOTE_PROJECT_DIR = os.path.join(REMOTE_DEPLOY, 'pycon_site/')
+REMOTE_DATA_DIR = os.path.join(REMOTE_DEPLOY, 'data/')
+
 @task
 def sync_db():
-    remote_path = '/srv/europython/data/site/p3.db'
-    local_path = settings.DATABASES['default']['NAME']
-    get(remote_path, local_path)
+    get(
+        os.path.join(REMOTE_DATA_DIR, 'site', 'p3.db'),
+        settings.DATABASES['default']['NAME'])
 
 def parent_(path):
     if path[-1] == '/':
@@ -24,25 +28,11 @@ def parent_(path):
 
 @task
 def sync_media():
-    remote_path = '/srv/europython/data/media_public'
-    local_path = parent_(settings.MEDIA_ROOT)
-    get(remote_path, local_path)
+    get(
+        os.path.join(REMOTE_DATA_DIR, 'media_public'),
+        parent_(settings.MEDIA_ROOT))
 
 @task
-def update():
-    venv = os.environ['VIRTUAL_ENV']
-    src = os.path.join(venv, 'src')
-    with lcd(src):
-        for f in os.listdir(src):
-            fpath = os.path.join(src, f)
-            if not os.path.isdir(fpath):
-                continue
-            with lcd(fpath):
-                print '--> git', fpath
-                local('git pull')
-    print '--> git .'
-    local('git pull')
-    print '--> syncdb + migrate'
-    local('./manage.py syncdb')
-    local('./manage.py migrate')
-
+def deploy():
+    with cd(os.path.join(REMOTE_DEPLOY, 'bin')):
+        run('update.sh')
