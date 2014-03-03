@@ -4,7 +4,7 @@
     <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async form-horizontal" method="post" rel="#profile-public-data-async-target">
         <dl class="dl-horizontal">
             {% if profile_data.tagline or full_access %}
-            <dt>Tagline</dt>
+            <dt>{% trans "Tagline" %}</dt>
             <dd>
                 {% if profile_data.tagline %}
                     <span>{{ profile_data.tagline }}</span>
@@ -14,7 +14,7 @@
             </dd>
             {% endif %}
             {% if profile_data.personal_homepage or full_access %}
-            <dt>Website</dt>
+            <dt>{% trans "Website" %}</dt>
             <dd>
                 {% if profile_data.personal_homepage %}
                     <a href="{{ profile_data.personal_homepage }}">{{ profile_data.personal_homepage|beautify_url }}</a>
@@ -24,7 +24,7 @@
             </dd>
             {% endif %}
             {% if profile_data.twitter or full_access %}
-            <dt>Twitter</dt>
+            <dt>{% trans "Twitter" %}</dt>
             <dd>
                 {% if profile_data.twitter %}
                     <span><a href="http://twitter.com/{{ profile_data.twitter }}">@{{ profile_data.twitter }}</a></span>
@@ -34,7 +34,7 @@
             </dd>
             {% endif %}
             {% if profile_data.interests or full_access %}
-            <dt>Technical interests</dt>
+            <dt>{% trans "Technical interests" %}</dt>
             <dd>
                 {% if profile_data.interests %}
                     {% for p in profile_data.interests %}
@@ -46,7 +46,7 @@
             </dd>
             {% endif %}
             {% if profile_data.location or full_access %}
-            <dt>Location</dt>
+            <dt>{% trans "Location" %}</dt>
             <dd>
                 {% if profile_data.location %}
                     <span>{{ profile_data.location }}</span>
@@ -67,7 +67,7 @@
                 {{ form.interests|form_field }}
             </fieldset>
             <fieldset style="position: relative;">
-                <legend>Posizione</legend> 
+                <legend>{% trans "Position" %}</legend>
                 {{ form.location|form_field }}
                 {% if profile_data.country  %}
                     <div id="chart-div" style="width: 100%; position: absolute;"></div>

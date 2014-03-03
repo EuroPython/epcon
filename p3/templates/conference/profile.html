@@ -13,8 +13,8 @@
     <div class="grid-container">
     <div class="grid-100">
         {% include "conference/profile_visibility_form.html" %}
-   </div><!-- /grid -->
-   </div><!-- /grid-container -->
+   </div>
+   </div>
 </section>
 
 {% endif %}
@@ -23,23 +23,22 @@
     <div class="grid-container">
     <div class="grid-100">
         <h2>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h2>
-    </div><!-- /grid -->
+    </div>
     <div class="grid-20">
         {% include "conference/profile_picture_form.html" %}
-    </div><!-- /grid -->
+    </div>
     <div class="grid-80">
         {% include "conference/profile_publicdata_form.html" %}
-    </div><!-- /grid -->
-   </div><!-- /grid-container -->
+    </div>
+   </div>
 </section>
-
 
 <section>
     <div class="grid-container">
     <div class="grid-80 prefix-20">
         {% include "conference/profile_bio_form.html" %}
-   </div><!-- /grid -->
-   </div><!-- /grid-container -->
+   </div>
+   </div>
 </section>
 
 <section>
