@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 23:02+0100\n"
+"POT-Creation-Date: 2014-03-03 23:06+0100\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -158,6 +158,10 @@ msgstr ""
 msgid "Personal data"
 msgstr "Personal website"
 
+#: p3/templates/assopy/profile.html:12
+msgid "Email contact"
+msgstr ""
+
 #: p3/templates/assopy/profile.html:13
 msgid "Privacy settings"
 msgstr ""
@@ -262,7 +266,30 @@ msgstr ""
 msgid "Your personal schedule"
 msgstr "Personal website"
 
-#: p3/templates/assopy/profile_email_contact.html:23
+#: p3/templates/assopy/profile_email_contact.html:11
+#, python-format
+msgid "You have requested to change your email contact to <b>%(pending)s</b>."
+msgstr ""
+
+#: p3/templates/assopy/profile_email_contact.html:12
+msgid ""
+"We have sent you an email. Please follow the instructions in the message you "
+"will receive shortly. This change will not affect in any way the web "
+"accounts you use to log in."
+msgstr ""
+
+#: p3/templates/assopy/profile_email_contact.html:19
+msgid "Primary email contact"
+msgstr ""
+
+#: p3/templates/assopy/profile_email_contact.html:20
+msgid ""
+"This is the email address which we can use to contact you. It is also the "
+"email you can use to login in our website in case you don't like web "
+"accounts or social networks to do it."
+msgstr ""
+
+#: p3/templates/assopy/profile_email_contact.html:22
 #: p3/templates/assopy/profile_personal_data.html:44
 #: p3/templates/conference/profile_bio_form.html:24
 #: p3/templates/conference/profile_picture_form.html:12
@@ -271,7 +298,7 @@ msgstr "Personal website"
 msgid "Edit"
 msgstr ""
 
-#: p3/templates/assopy/profile_email_contact.html:32
+#: p3/templates/assopy/profile_email_contact.html:31
 #: p3/templates/assopy/profile_personal_data.html:45
 #: p3/templates/conference/profile_bio_form.html:25
 #: p3/templates/conference/profile_picture_form.html:30

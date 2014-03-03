@@ -8,17 +8,16 @@
     {% pending_email_change request.user as pending %}
     {% if pending %}
         <div class="alert alert--info">
-            <p>You have requested to change your email contact to <b>{{ pending }}</b>.</p>
-            <p>We have sent you an email. Please follow the instructions in the message you will receive shortly. This change will not affect in any way the web accounts you use to log in.</p>
+            <p>{% blocktrans %}You have requested to change your email contact to <b>{{ pending }}</b>.{% endblocktrans %}</p>
+            <p>{% trans "We have sent you an email. Please follow the instructions in the message you will receive shortly. This change will not affect in any way the web accounts you use to log in." %}</p>
         </div>
     {% endif %}
 
     <form action="{% url "p3-account-email" %}" class="async{% if pform.is_valid %} live-edit{% endif %}" method="POST" rel="#account-email-contact-async-target">
-
         <fieldset>
             {% if pform.is_valid %}
-                <legend>Primary email contact</legend>
-                <p>This is the email address which we can use to contact you. It is also the email you can use to login in our website in case you don't like web accounts or social networks to do it.</p>
+                <legend>{% trans "Primary email contact" %}</legend>
+                <p>{% trans "This is the email address which we can use to contact you. It is also the email you can use to login in our website in case you don't like web accounts or social networks to do it." %}</p>
                 <p class="the-email">
                     <b>{{ profile.email }}</b>&emsp;<a href="#" class="live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
                 </p>
@@ -32,7 +31,4 @@
             <button class="btn btn-primary autosubmit">{% trans "Save" %}</button>
         </fieldset>
     </form>
-
 </div>
-
-
