@@ -1,19 +1,21 @@
 {% extends "p3/base.html" %}
-{% load p3 microblog_tags conference %}
+{% load p3 microblog_tags conference i18n pages_tags %}
 {% block BODY_ID %}home{% endblock %}
 
 {% block TEASER %}
 
+{% placeholder lead_text as lead_text with Textarea %}
+{% if lead_text %}
 <section>
     <div class="grid-container">
     <div class="grid-100">
         <div class="intro">
-            <p class="lead"><b>PyCon</b> claim kale chips trust fund, cred assumenda dolore selfies hella leggings cillum.  Letterpress iPhone odio, duis  delectus Schlitz street art.  Portland pariatur hoodie veniam, hella flexitarian Pinterest.  Et stumptown beard direct trade  mumblecore.</p>
-        </div>        
-    </div><!-- /grid-100 -->
-    </div><!-- /grid-container -->
+            <p class="lead">{{ lead_text }}</p>
+        </div>
+    </div>
+    </div>
 </section>
-
+{% endif %}
 
 <section>
     <div class="grid-container">
@@ -25,14 +27,15 @@
             <div class="grid-85">
                 {% current_conference as conf %}
                 {% if conf.cfp %}
-                    <h3>Il Call for Proposal è <span>aperto</span></h3>
-                    <p class=""><p>Umami pariatur wolf sustainable American Apparel cornhole, +1 labore.  Craft beer whatever pork belly banjo.</p></p>
-                    <a class="btn btn-primary" href="/call-for-proposals/">Inviaci i tuoi talk</a>                    
+                    <h3>{% trans "Call for Proposal is <span>open</span>" %}</h3>
+                    <p class="">{% placeholder "cfp_teaser_text" %}</p>
+                    <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
                 {% endif %}
                 {% if conf.voting %}
-                    <h3>La votazione dei talk è <span>aperta</span></h3>
-                    <a class="btn btn-primary" href="/talk-voting/">Vota i tuoi talk preferiti</a>
-                {% endif %}        
+                    <h3>{% trans "Talk voting is <span>open</span>" %}</h3>
+                    <p class="">{% placeholder "voting_teaser_text" %}</p>
+                    <a class="btn btn-primary" href="/talk-voting/">{% trans "Cast your vote" %}</a>
+                {% endif %}
             </div><!-- /grid -->
         </div><!-- /grid notice -->
         <!-- NEXT DEADLINE -->
@@ -44,10 +47,10 @@
                 {% get_deadlines limit=1 as l %}
                 {% if l %}
                 <div class="calendar">
-                    <h3>Prossima scadenza</h3>
-                    <p class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>&emsp;{{ l.0.body|safe }}</p>                   
+                    <h3>{% trans "Next deadline" %}</h3>
+                    <p class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>&emsp;{{ l.0.body|safe }}</p>
                     <div class="more">
-                        <a href="/calendar">Vedi tutte le scadenze &rarr;</a>
+                        <a href="/calendar">{% trans "All the deadlines &rarr;" %}</a>
                     </div>
                 </div>
                 {% endif %}
@@ -56,54 +59,12 @@
     </div><!-- /grid-container -->
 </section>
 
+{% placeholder main_text as main_text with Textarea %}
+{% if main_text %}
 <section>
-<div class="grid-container">
-    
-    <div class="grid-100">      
-        <h2>PyCon at a glance</h2>
-    </div>
-
-    <div class="grid-33">            
-        <h3>Learn</h3>                        
-        <dl>
-            <dt><span>Talks</span></dt>
-            <dd>More than 120 talks in 5 different tracks</dd>
-            <dt><a href="/training">Trainings</a></dt>
-            <dd>In-depth 4-hours sessions: write code, improve your skills</dd>
-            <dt><a href="/poster-session">Posters</a></dt>
-            <dd>Watch visualizations of projects, and chat with the authors</dd>                
-       </dl>
-    </div>
-    
-    <div class="grid-33">
-        <h3>Hack</h3>
-        <dl>
-            <dt><a href="/p3/sprints/">Sprints</a></dt>
-            <dd>Contribute to your favourite Python project and discuss with developers</dd>
-            <dt><a href="/pyevents">Competitions</a></dt>
-            <dd>Solve problems and riddle, win fantastic prizes</dd>
-            <dt><a href="/openspace">Open space</a></dt>
-            <dd>Relax, get a tan, and join BoF, meetups, and impromptu talks</dd>
-        </dl>
-    </div>
-    
-    <div class="grid-33">
-        <h3>Discover</h3>
-        <dl>
-            <dt><a href="/find-out-whos-coming">Find out who's coming</a></dt>
-            <dd>Browse the attendees list, get in touch, organize a meetup</dd>
-            <dt><a href="/recruiting">Recruiting</a></dt>
-            <dd>Looking for a Python job? Meet companies that need you</dd>
-            <dt><a href="/pyevents">Social events</a></dt> 
-            <dd>Pizza, beer, steak: refurbish your soul in the evening</dd>
-        </dl>
-    </div>
-
-</div><!-- /grid-container -->
+    {{ main_text }}
 </section>
-
-
-     
+{% endif %}
 {% endblock%}
 
 {% block MAIN_CONTENT %}
