@@ -52,3 +52,15 @@ class DetailsWithAjaxSupport(pviews.Details):
 pviews.details = DetailsWithAjaxSupport()
 urlpatterns += patterns('', (r'', include('pages.urls')))
 
+from django.conf import settings
+
+if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
+    # XXX questo codice starebbe bene in settings.py, purtroppo li non posso
+    # importare rosetta.signals (a causa di un problema di dipendenze
+    # circolari). urls.py non è il posto perfetto ma dovrebbe funzionare sempre
+    # (tranne che con i management command)
+    import rosetta.signals
+    def on_rosetta_post_save(sender, **kw):
+        settings.ROSETTA_AFTER_SAVE(sender=sender, **kw)
+    rosetta.signals.post_save.connect(on_rosetta_post_save)
+
