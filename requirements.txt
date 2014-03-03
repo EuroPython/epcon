@@ -1,7 +1,8 @@
 Django==1.5.5
 South==0.7.6
 pillow
-django-page-cms==1.4.5
+html5lib==0.95
+django-page-cms==1.5.3
 django-authority==0.4 #serve a django-page-cms ma non è incluso nelle sue dipendenze
 django-taggit==0.9.3
 django-rosetta==0.6.8
