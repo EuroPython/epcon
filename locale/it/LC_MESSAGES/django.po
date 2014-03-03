@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 23:06+0100\n"
+"POT-Creation-Date: 2014-03-03 23:11+0100\n"
 "PO-Revision-Date: 2014-03-03 17:38+0100\n"
 "Last-Translator: David Mugnai <dvd@gnx.it>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -150,6 +150,7 @@ msgid "Email contact"
 msgstr ""
 
 #: p3/templates/assopy/profile.html:13
+#: p3/templates/assopy/profile_spam_control.html:6
 msgid "Privacy settings"
 msgstr ""
 
@@ -298,6 +299,107 @@ msgstr ""
 
 #: p3/templates/assopy/profile_personal_data.html:25
 msgid "Phone"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:6
+msgid "Saved"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:8
+#, python-format
+msgid ""
+"We respect your privacy. We <i>never share your personal data</i> with "
+"anyone. Have a look at our <a href=\"%(url)s\">privacy policy</a> for "
+"further information."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:10
+msgid ""
+"This page contains additional privacy settings for advanced opt-in features."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:13
+msgid "Recruiting"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:14
+#, python-format
+msgid ""
+"Many of our sponsors support our conference to offer jobs and recruit good "
+"Python programmers. In addition to the official <a href=\"%(url)s"
+"\">recruiting sessions</a>, you might like to receive selected job offers "
+"via email, and evaluate them in a more private environment."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:19
+msgid ""
+"Your email address will <i>never</i> be shared with any of our recruiting "
+"sponsor. We send the emails."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:20
+msgid ""
+"You will receive max 10 job offers; all emails will be sent between June "
+"15th and July 20th."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:25
+msgid "User messages"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:28
+#, python-format
+msgid ""
+"After you buy a ticket and activate your <a href=\"%(profile_url)s\">public "
+"profile</a>, other participants will be able to <a href=\"%(url)s\">find "
+"out</a> that you are coming to the conference. Do you want them to be able "
+"to contact you through our website?"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:33
+msgid "Your email address will <b>never</b> be shared with other participants."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:34
+msgid "We will send you one mail notifying you of the received message."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:35
+msgid "User messages will be active until the conference ends."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:40
+msgid "SMS messages"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:42
+msgid ""
+"Sometimes it is useful for organizers to send last-minute information to all "
+"participants (eg: transportation strikes, last-minute schedule changes, "
+"impromptu happenings, etc.). Do you want to receive these information "
+"through SMS?"
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:48
+msgid ""
+"You must insert your phone number in the “Personal data” section to activate "
+"this service."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:49
+msgid "Your phone number will <i>never</i> be shared with other people."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:50
+msgid ""
+"This SMS message service will be active only for the time span of the "
+"conference."
+msgstr ""
+
+#: p3/templates/assopy/profile_spam_control.html:51
+msgid ""
+"Make sure you don't pay any roaming fee for incoming SMS while in Italy (or "
+"that you don't care about it...)."
 msgstr ""
 
 #: p3/templates/cms/index-simple.html:32

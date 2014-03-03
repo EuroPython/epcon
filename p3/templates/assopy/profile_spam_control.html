@@ -3,58 +3,53 @@
 {% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
 <div id="account-spam-control-async-target" class="never form-box">
     <form action="{% url "p3-account-spam-control" %}" class="async" method="POST" rel="#account-spam-control-async-target">
-        <h2>Privacy settings <span class="notice-ok async-feedback">Saved</span></h2>
+        <h2>{% trans "Privacy settings" %} <span class="notice-ok async-feedback">{% trans "Saved" %}</span></h2>
 
-        <p class="lead">We respect your privacy. We <i>never share your personal data</i> with anyone.
-            Have a look at our <a href="/privacy-policy">privacy policy</a> for further information.</p>
+        <p class="lead">{% blocktrans with url="/privacy-policy" %}We respect your privacy. We <i>never share your personal data</i> with anyone. Have a look at our <a href="{{ url }}">privacy policy</a> for further information.{% endblocktrans %}</p>
 
-        <p>This page contains additional privacy settings for advanced opt-in features.</p>
+        <p>{% trans "This page contains additional privacy settings for advanced opt-in features." %}</p>
 
         <fieldset>
-            <legend>Recruiting</legend>
-            <p>Many EuroPython sponsors support our conference to offer jobs and recruit good Python programmers.
-               In addition to the official <a href="/recruiting">recruiting sessions</a>, you might like to receive
-               selected job offers via email, and evaluate them in a more private environment.</p>
+            <legend>{% trans "Recruiting" %}</legend>
+            <p>{% blocktrans with url="/recruiting" %}Many of our sponsors support our conference to offer jobs and recruit good Python programmers. In addition to the official <a href="{{ url }}">recruiting sessions</a>, you might like to receive selected job offers via email, and evaluate them in a more private environment.{% endblocktrans %}</p>
 
             {{ pform.spam_recruiting|form_field:"autosubmit" }}
 
             <ul class="help-block">
-                <li>Your email address will <i>never</i> be shared with any of our recruiting sponsor. We send the emails.</li>
-                <li>You will receive max 10 job offers; all emails will be sent between June 15th and July 20th.</li>
+                <li>{% trans "Your email address will <i>never</i> be shared with any of our recruiting sponsor. We send the emails." %}</li>
+                <li>{% trans "You will receive max 10 job offers; all emails will be sent between June 15th and July 20th." %}</li>
             </ul>
         </fieldset>
 
         <fieldset>
-            <legend>User messages</legend>
+            <legend>{% trans "User messages" %}</legend>
 
-            <p>After you buy a ticket and activate your <a href="{% url "conference-profile" slug=profile.slug %}">public profile</a>,
-                other participants will be able to <a href="/find-whos-coming">find out</a> that you are coming to the conference.
-                Do you want them to be able to contact you through our website?</p>
+            {% url "conference-profile" slug=profile.slug as profile_url %}
+            <p>{% blocktrans with url="/find-whos-coming" %}After you buy a ticket and activate your <a href="{{ profile_url }}">public profile</a>, other participants will be able to <a href="{{ url }}">find out</a> that you are coming to the conference. Do you want them to be able to contact you through our website?{% endblocktrans %}</p>
 
             {{ pform.spam_user_message|form_field:"autosubmit" }}
 
             <ul class="help-block">
-                <li>Your email address will <b>never</b> be shared with other participants.</li>
-                <li>We will send you one mail notifying you of the received message.</li>
-                <li>User messages will be active until the conference ends.</li>
+                <li>{% trans "Your email address will <b>never</b> be shared with other participants." %}</li>
+                <li>{% trans "We will send you one mail notifying you of the received message." %}</li>
+                <li>{% trans "User messages will be active until the conference ends." %}</li>
             </ul>
         </fieldset>
 
         <fieldset>
-            <legend>SMS messages</legend>
+            <legend>{% trans "SMS messages" %}</legend>
 
-            <p>Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes,
-                last-minute schedule changes, impromptu happenings, etc.). Do you want to receive these information through SMS?</p>
+            <p>{% trans "Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes, last-minute schedule changes, impromptu happenings, etc.). Do you want to receive these information through SMS?" %}</p>
 
 
             {{ pform.spam_sms|form_field:"autosubmit" }}
 
-                <ul class="help-block">
-                    <li>You must insert your phone number in the “Personal data” section to activate this service.</li>
-                    <li>Your phone number will <i>never</i> be shared with other people.</li>
-                    <li>This SMS message service will be active only for the time span of the conference.</li>
-                    <li>Make sure you don't pay any roaming fee for incoming SMS while in Italy (or that you don't care about it...).</li>
-                </ul>
+            <ul class="help-block">
+                <li>{% trans "You must insert your phone number in the “Personal data” section to activate this service." %}</li>
+                <li>{% trans "Your phone number will <i>never</i> be shared with other people." %}</li>
+                <li>{% trans "This SMS message service will be active only for the time span of the conference." %}</li>
+                <li>{% trans "Make sure you don't pay any roaming fee for incoming SMS while in Italy (or that you don't care about it...)." %}</li>
+            </ul>
         </fieldset>
     </form>
 </div>
