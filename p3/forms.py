@@ -89,7 +89,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
         choices=cmodels.TALK_LANGUAGES,
-        initial='en', required=False)
+        initial='it', required=False)
 
     def __init__(self, user, *args, **kwargs):
 #         data = {
