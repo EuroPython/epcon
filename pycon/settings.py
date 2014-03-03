@@ -44,7 +44,7 @@ LANGUAGE_CODE = 'en-us'
 
 ugettext = lambda s: s
 LANGUAGES = (
-#    ('it', ugettext('Italiano')),
+    ('it', ugettext('Italiano')),
     ('en', ugettext('English')),
 )
 
@@ -255,6 +255,13 @@ PAGE_LANGUAGE_MAPPING = lambda lang: 'en-us'
 PAGE_REAL_TIME_SEARCH = False
 
 PAGE_USE_STRICT_URL = True
+
+ROSETTA_EXCLUDED_APPLICATIONS = (
+    'debug_toolbar',
+    'filebrowser',
+    'pages',
+    'rosetta',
+)
 
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconIT blog'
