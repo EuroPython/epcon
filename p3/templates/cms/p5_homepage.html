@@ -76,7 +76,7 @@
     </div>
     {% post_list count=3 as posts %}
     <div class="blog-archive grid-33">
-        <h3>PyCon blog</h3>
+        <h3>{% trans "PyCon blog" %}</h3>
         <ul>
             {% for post in posts %}
             {% get_post_data post.id as data %}

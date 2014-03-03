@@ -11,14 +11,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="cleartype" content="on" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    
+
     <meta name="description" content="" />
     <meta name="author" content="Python Italia" />
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}p5/images/favicon.ico" />
     <link rel="shortcut icon" href="{{ STATIC_URL }}p5/images/favicon.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" sizes="144x144" href="{{ STATIC_URL }}p5/images/h/apple-touch-icon.png">
- 
+
     {% if current_page and request.user.is_staff %}
         <link rel="alternate" type="application/x-wiki" title="Edit this page" href="{% url "admin:pages_page_change" current_page.pk %}"/>
     {% endif %}
@@ -57,7 +57,7 @@
         {% p3_tags as ptags %}
         {% conference_js_data tags=ptags %}
     </script>
-    
+
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/vendor/modernizr-min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}conference/jquery-ui/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/jquerytools/1.2.5/jquery.tools.min.js"></script>
@@ -168,7 +168,7 @@
   </header>
 {% endblock %}
 
-  
+
     {% comment %}
     <section class="notice countdown">
         <div class="baron"></div>
@@ -199,7 +199,7 @@
 
     <div class="grid-25">
         <nav>
-            <h5>Il sito</h5>
+            <h5>{% trans "The site" %}</h5>
             <ul>
                 {% block BOTTOM_NAV_BLOCK %}
                     {% navigation "menu3" as pages %}
@@ -210,13 +210,17 @@
             </ul>
         </nav>
     </div><!-- /grid -->
-    
+
     <div class="grid-25">
-        <h5>Socializza</h5>
+        <h5>{% trans "Social" %}</h5>
         <ul>
-            <li><i class="fa fa-facebook-square"></i>&ensp;<a href="#">PyCon su Facebook</a></li>
-            <li><i class="fa fa-twitter-square"></i>&ensp;<a href="http://twitter.com/pyconit">Seguici su Twitter</a></li>
-            <li><i class="fa fa-rss-square"></i>&ensp;<a href="/blog/feeds/latest/">Ultimi post</a></li>
+            <li>
+                <i class="fa fa-facebook-square"></i>&ensp;
+                <a href="#">{% trans "PyCon on Facebook" %}</a></li>
+            <li><i class="fa fa-twitter-square"></i>&ensp;
+                <a href="http://twitter.com/pyconit">{% trans "Follow us on twitter" %}</a></li>
+            <li><i class="fa fa-rss-square"></i>&ensp;
+                <a href="/blog/feeds/latest/">{% trans "Latest posts" %}</a></li>
         </ul>
     </div><!-- /grid -->
 
@@ -229,11 +233,11 @@
         </ul>
     </div><!-- /grid -->
     {%endcomment%}
-    
+
     <div class="grid-50">
       <div class="donate">
-            <h5>Please donate</h5>
-            <p>EuroPython is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!</p>
+          <h5>{% trans "Please donate" %}</h5>
+          <p>{% trans "This conference is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!" %}</p>
             <p>
                 <img src="{{ STATIC_URL }}p5/images/icon-visa.png" alt="Visa" width="32" height="32" />
                 <img src="{{ STATIC_URL }}p5/images/icon-mastercard.png" alt="Mastercard" width="32" height="32" />
@@ -243,12 +247,12 @@
             <form action="https://www.paypal.com/cgi-bin/webscr" method="POST">
                 <input type="hidden" name="cmd" value="_s-xclick" />
                 <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG" />
-                <button class="btn btn-small btn-primary" type="submit" name="" style="margin-left: 0" title="PayPal - The safer, easier way to pay online!">Dona ora con PayPal</button>
+                <button class="btn btn-small btn-primary" type="submit" name="" style="margin-left: 0" title="PayPal - The safer, easier way to pay online!">{% trans "Donate now (via PayPal)" %}</button>
                 <img alt="" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1" />
             </form>
         </div>
   </div><!-- /grid -->
-  
+
   <div class="grid-100">
       <hr>
       <p><small>&copy; 2007&ndash;2014 <a href="/python-italia/">Python Italia</a> with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</small></p>
