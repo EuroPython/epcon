@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 17:47+0100\n"
+"POT-Creation-Date: 2014-03-03 18:14+0100\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -297,7 +297,7 @@ msgstr "Next deadline"
 msgid "All the deadlines &rarr;"
 msgstr "All the deadlines &rarr;"
 
-#: p3/templates/cms/p5_homepage.html:79
+#: p3/templates/cms/p5_homepage.html:78
 msgid "PyCon blog"
 msgstr ""
 
@@ -573,6 +573,11 @@ msgstr ""
 #: p3/templates/p3/box_didyouknow.html:4
 msgid "Did you know"
 msgstr ""
+
+#: p3/templates/p3/box_latest_tweets.html:3
+#, fuzzy
+msgid "Le ultime da Twitter"
+msgstr "Follow us on Twitter"
 
 #: p3/templates/p3/box_newsletter.html:4
 msgid "Newsletter"
@@ -927,9 +932,6 @@ msgstr ""
 
 #~ msgid "Da Twitter"
 #~ msgstr "From Twitter"
-
-#~ msgid "Seguici su Twitter"
-#~ msgstr "Follow us on Twitter"
 
 #~ msgid "siamo già in"
 #~ msgstr "we are just in"
