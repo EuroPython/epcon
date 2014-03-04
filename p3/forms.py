@@ -16,11 +16,11 @@ from p3 import models
 import datetime
 
 TALK_DURATION = (
-    (30, '30 minutes inc Q&A'),
-    (45, '30 minutes + 10 Q&A'),
-    (60, '45 minutes + 10 Q&A'),
-    (90, '70 minutes + 15 Q&A'),
-    (240, '4 hours'))
+    (30, _('30 minutes inc Q&A')),
+    (45, _('45 minutes inc Q&A')),
+    (60, _('60 minutes inc Q&A')),
+    (90, _('90 minutes inc Q&A')),
+)
 
 class P3TalkFormMixin(object):
     def clean(self):

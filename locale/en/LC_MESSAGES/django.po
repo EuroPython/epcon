@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 23:56+0100\n"
+"POT-Creation-Date: 2014-03-04 11:09+0100\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -16,6 +16,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.6.5\n"
+
+#: p3/forms.py:19
+msgid "30 minutes inc Q&A"
+msgstr ""
+
+#: p3/forms.py:20
+msgid "45 minutes inc Q&A"
+msgstr ""
+
+#: p3/forms.py:21
+msgid "60 minutes inc Q&A"
+msgstr ""
+
+#: p3/forms.py:22
+msgid "90 minutes inc Q&A"
+msgstr ""
 
 #: p3/forms.py:48
 #, fuzzy
@@ -104,7 +120,7 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: p3/forms.py:265 p3/templates/conference/profile_publicdata_form.html:7
+#: p3/forms.py:265 p3/templates/conference/profile_publicdata_form.html:10
 msgid "Tagline"
 msgstr ""
 
@@ -294,7 +310,7 @@ msgstr ""
 #: p3/templates/assopy/profile_personal_data.html:44
 #: p3/templates/conference/profile_bio_form.html:24
 #: p3/templates/conference/profile_picture_form.html:12
-#: p3/templates/conference/profile_publicdata_form.html:102
+#: p3/templates/conference/profile_publicdata_form.html:105
 #: p3/templates/conference/profile_visibility_form.html:21
 msgid "Edit"
 msgstr ""
@@ -303,7 +319,7 @@ msgstr ""
 #: p3/templates/assopy/profile_personal_data.html:45
 #: p3/templates/conference/profile_bio_form.html:25
 #: p3/templates/conference/profile_picture_form.html:30
-#: p3/templates/conference/profile_publicdata_form.html:103
+#: p3/templates/conference/profile_publicdata_form.html:106
 msgid "Save"
 msgstr ""
 
@@ -514,9 +530,9 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 #: p3/templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
 msgstr ""
-"If you have any problems please contact us via <a onclick=\"habla_window.show"
-"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
-"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+"If you have any problems please contact us via <a onclick=\"habla_window."
+"show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a "
+"href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
 #: p3/templates/conference/profile.html:25
 msgid "It’s you!"
@@ -542,25 +558,25 @@ msgstr ""
 msgid "Use this picture"
 msgstr ""
 
-#: p3/templates/conference/profile_publicdata_form.html:17
+#: p3/templates/conference/profile_publicdata_form.html:20
 msgid "Website"
 msgstr ""
 
-#: p3/templates/conference/profile_publicdata_form.html:27
+#: p3/templates/conference/profile_publicdata_form.html:30
 #: p3/templates/conference/speaker.html:42
 msgid "Twitter"
 msgstr "Twitter"
 
-#: p3/templates/conference/profile_publicdata_form.html:37
+#: p3/templates/conference/profile_publicdata_form.html:40
 msgid "Technical interests"
 msgstr ""
 
-#: p3/templates/conference/profile_publicdata_form.html:49
+#: p3/templates/conference/profile_publicdata_form.html:52
 #, fuzzy
 msgid "Location"
 msgstr "Duration"
 
-#: p3/templates/conference/profile_publicdata_form.html:70
+#: p3/templates/conference/profile_publicdata_form.html:73
 msgid "Position"
 msgstr ""
 

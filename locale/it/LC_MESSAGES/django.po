@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 18:14+0100\n"
+"POT-Creation-Date: 2014-03-04 11:09+0100\n"
 "PO-Revision-Date: 2014-03-03 23:55+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -16,6 +16,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.7.4\n"
+
+#: p3/forms.py:19
+msgid "30 minutes inc Q&A"
+msgstr ""
+
+#: p3/forms.py:20
+msgid "45 minutes inc Q&A"
+msgstr ""
+
+#: p3/forms.py:21
+msgid "60 minutes inc Q&A"
+msgstr ""
+
+#: p3/forms.py:22
+msgid "90 minutes inc Q&A"
+msgstr ""
 
 #: p3/forms.py:48
 msgid "Duration"
@@ -114,7 +130,7 @@ msgstr ""
 msgid "Days"
 msgstr ""
 
-#: p3/forms.py:265 p3/templates/conference/profile_publicdata_form.html:7
+#: p3/forms.py:265 p3/templates/conference/profile_publicdata_form.html:10
 msgid "Tagline"
 msgstr ""
 
@@ -313,7 +329,7 @@ msgstr ""
 #: p3/templates/assopy/profile_personal_data.html:44
 #: p3/templates/conference/profile_bio_form.html:24
 #: p3/templates/conference/profile_picture_form.html:12
-#: p3/templates/conference/profile_publicdata_form.html:102
+#: p3/templates/conference/profile_publicdata_form.html:105
 #: p3/templates/conference/profile_visibility_form.html:21
 msgid "Edit"
 msgstr "Modifica"
@@ -322,7 +338,7 @@ msgstr "Modifica"
 #: p3/templates/assopy/profile_personal_data.html:45
 #: p3/templates/conference/profile_bio_form.html:25
 #: p3/templates/conference/profile_picture_form.html:30
-#: p3/templates/conference/profile_publicdata_form.html:103
+#: p3/templates/conference/profile_publicdata_form.html:106
 msgid "Save"
 msgstr "Salva"
 
@@ -346,8 +362,8 @@ msgid ""
 "further information."
 msgstr ""
 "Rispettiamo la tua privacy. <i>Non condividiamo i tuoi dati personali</i> "
-"con nessuno. Dai un'occhiata alla nostra <a href=\"%(url)s\">privacy "
-"policy</a> per maggiori informazioni."
+"con nessuno. Dai un'occhiata alla nostra <a href=\"%(url)s\">privacy policy</"
+"a> per maggiori informazioni."
 
 #: p3/templates/assopy/profile_spam_control.html:10
 msgid ""
@@ -589,26 +605,26 @@ msgstr "Usa l'immagine a questo indirizzo web"
 msgid "Use this picture"
 msgstr "Usa questa immagine"
 
-#: p3/templates/conference/profile_publicdata_form.html:17
+#: p3/templates/conference/profile_publicdata_form.html:20
 #, fuzzy
 msgid "Website"
 msgstr "Il sito"
 
-#: p3/templates/conference/profile_publicdata_form.html:27
+#: p3/templates/conference/profile_publicdata_form.html:30
 #: p3/templates/conference/speaker.html:42
 msgid "Twitter"
 msgstr "Twitter"
 
-#: p3/templates/conference/profile_publicdata_form.html:37
+#: p3/templates/conference/profile_publicdata_form.html:40
 msgid "Technical interests"
 msgstr ""
 
-#: p3/templates/conference/profile_publicdata_form.html:49
+#: p3/templates/conference/profile_publicdata_form.html:52
 #, fuzzy
 msgid "Location"
 msgstr "Durata"
 
-#: p3/templates/conference/profile_publicdata_form.html:70
+#: p3/templates/conference/profile_publicdata_form.html:73
 msgid "Position"
 msgstr ""
 
