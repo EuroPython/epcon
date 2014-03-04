@@ -202,7 +202,7 @@ function setup_live_edit(ctx) {
         var autosubmit = $('.autosubmit', this);
         switches.click(function(e) {
             e.preventDefault();
-            var visible = $(':visible', toggles).length > 0;
+            var visible = toggles.is(':visible');
             if(visible) {
                 readonly.show();
                 toggles.hide();
