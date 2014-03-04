@@ -81,19 +81,22 @@ header {
     }
 }
 
-// Aside (sidebar) custom typography 
+// Slot are used as sidebar items and profile pages
 
-aside {
-    .slot {
-        @extend .well;
-        @extend .well--small;
-        h4 {
-            @extend .h5;                
-            margin: $baselineheight / 2 0;    
-        }
+.slot {
+    @extend .well;
+    h4 {
+        @extend .h6;              
+        @extend .spaced;
+        margin: 0 0 $baselineheight / 2 0;    
+        text-transform: uppercase;
+    }    
+    ul, ol, p {
+        @include font-size(16);
+        line-height: $altlineheight;
     }
-}
 
+}
 
 // HOME ==============================================================================
 

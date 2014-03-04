@@ -141,7 +141,7 @@ figure {
     font-size: 14px;
     font-size: 1.4rem;
     font-style: italic;
-    color: #3c3a34; }
+    color: #656257; }
 
 .meta {
   color: #807c6f; }
@@ -204,14 +204,14 @@ h4,
   margin-bottom: 1.5em; }
 
 h5,
-.h5,
-aside .slot h4 {
+.h5 {
   font-size: 20.7px;
   font-size: 2.07rem;
   margin-bottom: 1.5em; }
 
 h6,
-.h6 {
+.h6,
+.slot h4 {
   font-size: 18px;
   font-size: 1.8rem;
   margin-bottom: 1.5em;
@@ -381,7 +381,7 @@ sub {
   line-height: 1.4; }
 
 /*footnotes*/
-.spaced, legend {
+.spaced, legend, .slot h4 {
   letter-spacing: 1px; }
 
 a {
@@ -643,7 +643,7 @@ a {
     .breadcrumb > li a {
       color: #306a99; }
     .breadcrumb > li > .divider {
-      color: #3c3a34; }
+      color: #656257; }
   .breadcrumb > .active {
     color: #bcbab2; }
 
@@ -727,8 +727,8 @@ a {
   right: 0;
   bottom: 0;
   padding: 15px;
-  background-color: #201f1c;
-  background-color: rgba(32, 31, 28, 0.75); }
+  background-color: #3c3a34;
+  background-color: rgba(60, 58, 52, 0.75); }
 
 .carousel-caption h4,
 .carousel-caption p {
@@ -849,7 +849,7 @@ a {
   border-bottom-color: #bcbab2;
   border-radius: 4px;
   cursor: pointer;
-  color: #201f1c; }
+  color: #3c3a34; }
 
 .modal-header h3 {
   margin: 0;
@@ -1248,7 +1248,7 @@ a {
   display: inline-block;
   padding: 4px 11px;
   background-color: #efecdf;
-  border: 1px solid #cec49a;
+  border: 1px solid #cdc49b;
   border-radius: 4px;
   font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14.4px;
@@ -1257,7 +1257,7 @@ a {
 
 .pager li > a:hover {
   text-decoration: none;
-  background-color: #ded8bc; }
+  background-color: #ded8bd; }
 
 .pager .next > a,
 .pager .next > span {
@@ -1296,7 +1296,7 @@ a {
   line-height: 1.5em;
   text-decoration: none;
   background-color: #efecdf;
-  border: 1px solid #cec49a;
+  border: 1px solid #cdc49b;
   border-left-width: 0;
   color: #306a99; }
 
@@ -1638,21 +1638,21 @@ table {
   border-bottom-color: #306a99; }
 
 /*tooltip*/
-.well, aside .slot {
+.well, .slot {
   min-height: 20px;
   padding: 14px;
   margin-bottom: 1.5em;
-  background-color: #e0dfdb;
-  border: 2px solid #c8c6c0;
+  background-color: #e5e2d3;
+  border: 0 solid #d2cdb3;
   border-radius: 4px;
   color: #2e2c24; }
-  .well p:last-child, aside .slot p:last-child {
+  .well p:last-child, .slot p:last-child {
     margin-bottom: 0; }
 
 .well--large {
   padding: 28px; }
 
-.well--small, aside .slot {
+.well--small {
   padding: 7px; }
 
 form {
@@ -2100,7 +2100,7 @@ input.search-query {
   font-size: 18px;
   font-size: 1.8rem;
   line-height: 1.5em;
-  color: #201f1c;
+  color: #3c3a34;
   text-align: center;
   vertical-align: middle;
   background-color: #e0dfdb;
@@ -2109,7 +2109,7 @@ input.search-query {
   border-radius: 4px;
   cursor: pointer; }
   .btn:visited, .cms .call-to-action a:visited, .btn:hover, .cms .call-to-action a:hover, .btn:active, .cms .call-to-action a:active {
-    color: black;
+    color: #050504;
     text-decoration: none; }
 
 /*btn*/
@@ -4663,8 +4663,8 @@ form .field.error .errorlist {
   margin: 0 0 0 10px; }
 
 .cms li {
-  margin: 0 0 0.75em 28px;
-  color: #807c6f; }
+  margin: 0 0 0.375em 28px;
+  color: #656257; }
 
 .cms dd {
   margin-bottom: 0.75em; }
@@ -4857,8 +4857,13 @@ header {
     font-weight: 300;
     color: #807c6f; }
 
-aside .slot h4 {
-  margin: 0.75em 0; }
+.slot h4 {
+  margin: 0 0 0.75em 0;
+  text-transform: uppercase; }
+.slot ul, .slot ol, .slot p {
+  font-size: 16px;
+  font-size: 1.6rem;
+  line-height: 1.35em; }
 
 .intro .lead, .intro .page-summary p, .page-summary .intro p {
   color: #2e2c24; }

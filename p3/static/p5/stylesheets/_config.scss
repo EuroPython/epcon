@@ -33,7 +33,7 @@
 
 // Start the ‘atmosphere’ of your design by defining the colours of your pages and text
 
-$bodycolor 						: lighten(#e5e0ca, 6%);
+$bodycolor 						: #EFECDF;
 $textcolor 						: #2e2c24;
 
 
@@ -127,8 +127,8 @@ $tertiarycolor 					: #e5e0ca;
 
 // Now set a neutral colour for borders etc.
 $neutralcolor 					: #807c6f;
-$midneutralcolor 				: darken($neutralcolor,25%);
-$darkneutralcolor 				: darken($neutralcolor,35%);
+$midneutralcolor 				: darken($neutralcolor,10%);
+$darkneutralcolor 				: darken($neutralcolor,25%);
 $lightneutralcolor 				: lighten($neutralcolor,25%);
 $lighterneutralcolor 			: lighten($neutralcolor,35%);
 $lightestneutralcolor 			: lighten($neutralcolor,40%);
@@ -490,16 +490,13 @@ $alertcolorwarning				: darken($warningcolor, 20%);
 // Wells have a default flat background colour
 // Add an optional gradient in _bootstrap-wells.scss
 // Configure the gradient colours in _texture.scss
-$wellbackgroundcolor 			: $lightestneutralcolor;
+$wellbackgroundcolor 			: #e5e2d3;
 
 // Set wells’ border width
-$wellborderwidth 				: $alertborderwidth;
+$wellborderwidth 				: 0;
 
 // And wells’ border style
 $wellborderstyle 				: $borderstyle;
-
-// And wells’ border color
-$wellcolor						: lighten($neutralcolor, 75%);
 
 // Set the wells’ border radius. Default is $borderradius defined above
 $wellborderradius 				: $borderradius;

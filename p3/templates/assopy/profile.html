@@ -5,6 +5,35 @@
 {% p3_profile_data request.user.id as profile %}
 <section>
     <div class="grid-container">
+        
+    <div class="grid-25">
+        <div class="slot">
+            <p>{% blocktrans with url="/find-out-whos-coming" %}Partecipate in <a href="{{ url }}">Find out who's coming</a>: let people know that you will be coming to this conference.{% endblocktrans %}</p>
+            <a class="btn btn-small" href="{% url "conference-profile" slug=profile.slug %}">{% trans "View your public profile" %}</a>
+        </div>
+    </div>
+
+    {% all_user_tickets fare_type="all" as tickets %}                
+    {% if tickets|length %}
+        <div class="grid-25">
+            <div class="slot">
+                <p>{% trans "See the conferences you have attended and who you have met." %}</p>
+                <a class="btn btn-small" href="{% url "conference-profile-conferences" %}">{% trans "Conference &amp; contacts" %}</a></h3>
+            </div>
+        </div>
+        <div class="grid-25">
+            <div class="slot">
+                <p>{% trans "Fill in and review all your tickets." %}</p>
+                <a class="btn btn-small" href="{% url "assopy-tickets" %}">{% trans "View your tickets" %} ({{tickets|length}})</a>
+            </div>
+        </div>
+        <div class="grid-25">
+            <div class="slot">
+                <a class="btn btn-small" href="{% url "p3-my-schedule" %}">{% trans "View your schedule" %}</a>                                
+            </div>
+        </div>
+    {% endif %}
+
     <div class="grid-100 grid-parent">
 
         <ul class="nav nav-tabs">
@@ -133,29 +162,6 @@
             </div>
         </div>
     </div> <!-- /tab-content -->
-
-    <hr />
-
-    <h2>{% trans "Other personal pages" %}</h2>
-
-    <dl>
-        <dt><a href="{% url "conference-profile" slug=profile.slug %}">{% trans "Your public profile" %}</a></dt>
-        <dd>{% blocktrans with url="/find-out-whos-coming" %}Partecipate in “<a href="{{ url }}">Find out who's coming</a>”: let people know that you will be coming to this conference.{% endblocktrans %}</dd>
-
-        {% all_user_tickets fare_type="all" as tickets %}
-
-        {% if tickets|length %}
-        <dt><a href="{% url "conference-profile-conferences" %}">{% trans "Conference &amp; contacts" %}</a></dt>
-        <dd>{% trans "See the conferences you have attended and who you have met." %}</dd>
-        {% endif %}
-
-        {% if tickets|length %}
-            <dt><a href="{% url "assopy-tickets" %}">{% trans "Your tickets" %} ({{tickets|length}})</a></dt>
-            <dd>{% trans "Fill in and review all your tickets." %}</dd>
-
-            <dt><a class="btn" href="{% url "p3-my-schedule" %}">{% trans "Your personal schedule" %}</a></dt>
-        {% endif %}
-    </dl>
 
    </div><!-- /grid -->
    </div><!-- /grid-container -->
