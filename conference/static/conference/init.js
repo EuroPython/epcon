@@ -255,9 +255,9 @@ function setup_conference_fields(ctx) {
                 wrapper.find('a.tag').click(function(e) {
                     e.preventDefault();
                     $(this)
-                        .parents('.field')
-                        .children('.tag-field')
-                        .tagit('createTag', this.innerHTML);
+                        .parents('.all-tags')
+                            .prevAll('.tag-field')
+                                .tagit('createTag', this.innerHTML);
                 });
                 tag_field.
                     parent()
