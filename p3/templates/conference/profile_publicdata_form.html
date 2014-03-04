@@ -1,7 +1,10 @@
 {% load conference i18n p3 formstyle %}
 {% p3_profile_data profile.user_id as profile_data %}
 <div id="profile-public-data-async-target">
-    <form action="{% url "p3-profile" slug=profile_data.slug %}" class="live-edit async form-horizontal" method="post" rel="#profile-public-data-async-target">
+    <form action="{% url "p3-profile" slug=profile_data.slug %}"
+        class="live-edit async form-horizontal"
+        method="post"
+        rel="#profile-public-data-async-target">
         <dl class="dl-horizontal">
             {% if profile_data.tagline or full_access %}
             <dt>{% trans "Tagline" %}</dt>
