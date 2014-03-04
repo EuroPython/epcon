@@ -25,3 +25,12 @@
     }
 }
 
+// Clickable UI icons
+
+span.icon {
+    cursor: pointer;
+}
+
+span.icon-remove {
+    color: $errorcolor;
+}
