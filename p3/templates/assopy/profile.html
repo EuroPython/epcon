@@ -25,12 +25,12 @@
             <div class="tab-pane" id="account-login-options">
                 <div class="profile-user-data web-accounts clearfix">
                     <h4>{% trans "Web accounts for log in" %}</h4>
-                    <div class="span-6">
+                    <div class="">
                         <ul id="web-accounts">
                             {% for i in user.identities.all %}
-                            <li class="clearfix" data-identifier="{{ i.identifier }}">
-                                <span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>
-                                &nbsp;<img class="clickable delete" src="{% static "assopy/images/icon-delete.png" %}" title="{% trans "Remove account" %}" />
+                            <li class="" data-identifier="{{ i.identifier }}">
+                                <p title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</p>
+                                &nbsp;<span title="{% trans 'Remove account' %}" class="icon icon-remove"><i class="fa fa-remove"></i></span>
                             </li>
                             {% endfor %}
                         </ul>
@@ -38,7 +38,7 @@
                             <input type="hidden" name="identifier" value="" />
                         </form>
                         <script type="text/javascript">
-                            $('#web-accounts img.delete').click(function(e) {
+                            $('#web-accounts span.icon-remove').click(function(e) {
                                 if(!confirm('Are you sure?')) {
                                     return;
                                 }
@@ -62,7 +62,7 @@
                             {% render_janrain_box u "overlay" %}
                         </div>
                     </div>
-                    <div class="span-5 last">{% trans "You can connect more web accounts to your profile, so that you can use any of them for logging in (without having to remember which one you used to create the account)." %}</div>
+                    <div class="">{% trans "You can connect more web accounts to your profile, so that you can use any of them for logging in (without having to remember which one you used to create the account)." %}</div>
                 </div>
             </div>
 

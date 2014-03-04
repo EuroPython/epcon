@@ -1,4 +1,4 @@
-@import url("http://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
+@import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
 /* 
 
 Built on Rock Hammer by Stuff and Nonsense
@@ -352,10 +352,10 @@ sup {
   vertical-align: baselineheight; }
 
 sup {
-  top: -.5em; }
+  top: -0.5em; }
 
 sub {
-  bottom: -.25em; }
+  bottom: -0.25em; }
 
 .lead, .page-summary p {
   font-size: 20.7px;
@@ -1676,7 +1676,7 @@ fieldset {
 legend {
   display: block;
   width: 100%;
-  margin-bottom: 3em;
+  /* margin-bottom : $baselineheight / 2; */
   *margin-left: -7px;
   padding: 0 0 0.75em 0;
   border: 0;
@@ -3095,7 +3095,7 @@ input.search-query {
   .grid-100 {
     clear: both;
     width: 100%; } }
-/*!
+/*
  *  Font Awesome 4.0.3 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
@@ -3149,13 +3149,13 @@ input.search-query {
 
 .fa-li {
   position: absolute;
-  left: -2.142857142857143em;
+  left: -2.14286em;
   width: 2.142857142857143em;
   top: 0.14285714285714285em;
   text-align: center; }
 
 .fa-li.fa-lg {
-  left: -1.8571428571428572em; }
+  left: -1.85714em; }
 
 .fa-border {
   padding: .2em .25em .15em;
@@ -4428,7 +4428,7 @@ input.search-query {
 .fa-plus-square-o:before {
   content: "\f196"; }
 
-/*! responsive-nav.js v1.0.14 by @viljamis */
+/* responsive-nav.js v1.0.14 by @viljamis */
 .js nav[role=navigation] {
   clip: rect(0 0 0 0);
   max-height: 0;
@@ -4765,6 +4765,12 @@ form .field.error .errorlist {
   display: none; }
 .live-edit .autosubmit {
   display: none; }
+
+span.icon {
+  cursor: pointer; }
+
+span.icon-remove {
+  color: #ad3d31; }
 
 @media print {
   * {
