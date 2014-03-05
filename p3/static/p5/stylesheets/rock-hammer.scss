@@ -213,7 +213,17 @@ dt.toggle+dd {
     margin: $baselineheight/2 0 0 $gutterwidth/2;    
 }
 
-
+// Notice which disappears after while
+.async-feedback {
+    display: none;
+    position: fixed;
+    top: $baselineheight;
+    left: 50%;
+    right: 0;
+    width: 50%;
+    margin-left: -25%; // Half the width
+    text-align: center;
+}
 
 // Avatar class, used profile, talk pages and blog commenters
 .avatar {    

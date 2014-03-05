@@ -509,16 +509,16 @@ a {
   background-color: rgba(197, 220, 240, 0.6); }
 
 .swatch-success span:nth-child(1) {
-  background-color: rgba(188, 212, 222, 0.9); }
+  background-color: rgba(203, 229, 142, 0.9); }
 
 .swatch-success span:nth-child(2) {
-  background-color: rgba(188, 212, 222, 0.8); }
+  background-color: rgba(203, 229, 142, 0.8); }
 
 .swatch-success span:nth-child(3) {
-  background-color: rgba(188, 212, 222, 0.7); }
+  background-color: rgba(203, 229, 142, 0.7); }
 
 .swatch-success span:nth-child(4) {
-  background-color: rgba(188, 212, 222, 0.6); }
+  background-color: rgba(203, 229, 142, 0.6); }
 
 .btn, .cms .call-to-action a {
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0dfdb), to(#c8c6c0));
@@ -579,7 +579,7 @@ a {
   padding: 8px 35px 8px 14px;
   margin-bottom: 1.5em;
   background-color: #da4f49;
-  border: 2px solid #9d2520;
+  border: 1px solid #9d2520;
   border-radius: 4px;
   font-size: 18px;
   font-size: 1.8rem;
@@ -590,11 +590,11 @@ a {
 
 /*alert*/
 .alert--success {
-  background-color: #bcd4de;
-  border-color: #9abecd;
-  color: #335868; }
+  background-color: #cbe58e;
+  border-color: #b8db65;
+  color: #495e16; }
   .alert--success > h4 {
-    color: #335868; }
+    color: #495e16; }
 
 /*alert--success*/
 .alert--danger,
@@ -2161,13 +2161,13 @@ input.search-query {
 
 /*btn-primary*/
 .btn-success {
-  background-color: #bcd4de;
-  border-color: #9abecd;
-  border-bottom-color: #9abecd;
-  color: #335868; }
+  background-color: #cbe58e;
+  border-color: #b8db65;
+  border-bottom-color: #b8db65;
+  color: #495e16; }
   .btn-success:visited, .btn-success:active, .btn-success:hover {
-    background-color: #abc9d6;
-    color: #2b4a57; }
+    background-color: #c1e079;
+    color: #394a11; }
 
 /*btn-success*/
 .btn-warning {
@@ -4930,6 +4930,16 @@ dt.toggle + dd {
   font-size: 1.4rem;
   color: #807c6f;
   margin: 0.75em 0 0 14px; }
+
+.async-feedback {
+  display: none;
+  position: fixed;
+  top: 1.5em;
+  left: 50%;
+  right: 0;
+  width: 50%;
+  margin-left: -25%;
+  text-align: center; }
 
 .avatar, #comments .gravatar {
   border: 2px solid #bcbab2;

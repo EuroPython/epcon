@@ -148,7 +148,7 @@ $alertcolor 					: rgb(218,79,73);
 $errorcolor 					: $secondarycolor; //rgb(176,20,0);
 $infocolor 						: #c5dcf0;
 $inversecolor 					: rgb(65,65,65);
-$successcolor 					: rgb(188,212,222);
+$successcolor 					: #cbe58e;
 $warningcolor 					: $errorcolor;
 
 
@@ -431,7 +431,7 @@ $alertpadding					: 8px 35px 8px 14px;
 $alertbackgroundcolor 			: $alertcolor;
 
 // Set the alert’s border width
-$alertborderwidth 				: $borderwidth * 2;
+$alertborderwidth 				: $borderwidth;
 
 // And the alert’s border style
 $alertborderstyle 				: $borderstyle;
