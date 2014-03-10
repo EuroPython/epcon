@@ -65,17 +65,19 @@ nav[role=navigation].active {
     
     li {
         @include media-query-bp($bp3){
-            display : inline-block;
+            //display : inline-block;
+            float: left;
             margin : 0 $gutterwidth / 2 0 0;}
         
         a {
-            display : block;
+            display: block;
             padding : $gutterwidth / 2 $gutterwidth / 4;
             border-top : $navigationborderwidth $navigationborderstyle $navigationbordercolor;
             color : $navigationlinkcolor;
             text-transform : uppercase;
             
             @include media-query-bp($bp3){
+                display : inline-block;
                 border : none;
                 @include font-size(16);}
         
@@ -91,8 +93,10 @@ nav[role=navigation].active {
         }
         
         // Special user-related nav items
-        &.user a {
-            text-transform : none;            
+        &.right {
+            @include media-query-bp($bp3){
+                float: right; }
+            a { text-transform : none; }
         }
     }
     

@@ -95,7 +95,7 @@
     {% block TOP_NAV_BLOCK %}
     <a href="#navigation-toggle" class="navigation-toggle">Menu</a>
     <nav id="navigation-toggle" role="navigation">
-        <ul>
+        <ul class="clearfix">
             {% with request.META.PATH_INFO as pth %}
                 <li class="{% ifequal pth "/" %}current{% endifequal %}"><a href="/">Home</a></li>
             {% endwith %}
@@ -110,18 +110,20 @@
                     <a href="/blog/">Blog</a>
                 </li>
             {% endwith %}
+            <li class="right">
             {% if request.user.is_authenticated %}
-                <li class="user"><a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a></li>
+                <a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
                 {% if request.user.is_staff %}
-                    <li><a title="Enter admin" href="/admin/"><i class="fa fa-wrench"></i></a></li>
+                    <a title="Enter admin" href="/admin/"><i class="fa fa-wrench"></i></a>
                 {% endif %}
                 {% if request.session.doppelganger %}
-                    <li><a href="{% url "admin:auser-kill-doppelganger" %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a></li>
+                    <a href="{% url "admin:auser-kill-doppelganger" %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a>
                 {% endif %}
-                <li class="user"><a href="/accounts/logout/?next=/">Log out</a></li>
+                    <a href="/accounts/logout/?next=/">Log out</a>
             {% else %}
-                <li class="user"><a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a></li>
+                <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
             {% endif %}
+            </li>
         </ul>
     </nav>
     {% endblock %}
