@@ -532,7 +532,7 @@ class TalkAdmin(MultiLingualAdminContent):
         return bool(obj.video_type) and (bool(obj.video_url) or bool(obj.video_file))
     _video.boolean = True
 
-    @transaction.commit_on_success
+    #@transaction.commit_on_success
     def do_accept_talks_in_schedule(self, request, queryset):
         conf = set(t.conference for t in queryset)
         next = urlresolvers.reverse('admin:conference_talk_changelist')
@@ -638,7 +638,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     @views.json
-    @transaction.commit_on_success
+    #@transaction.commit_on_success
     def events(self, request, sid):
         sch = get_object_or_404(models.Schedule, id=sid)
         if request.method != 'POST':
@@ -657,7 +657,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             }
         return output
 
-    @transaction.commit_on_success
+    #@transaction.commit_on_success
     def event(self, request, sid, eid):
         ev = get_object_or_404(models.Event, schedule=sid, id=eid)
 
@@ -835,7 +835,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             }
             return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
 
-    @transaction.commit_on_success
+    #@transaction.commit_on_success
     def tracks(self, request, sid, tid):
         track = get_object_or_404(models.Track, schedule=sid, id=tid)
         from conference.forms import TrackForm

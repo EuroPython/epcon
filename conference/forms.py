@@ -195,7 +195,7 @@ class SubmissionForm(forms.Form):
         super(SubmissionForm, self).__init__(*args, **kwargs)
         self.user = user
 
-    @transaction.commit_on_success
+    #@transaction.commit_on_success
     def save(self):
         data = self.cleaned_data
 
