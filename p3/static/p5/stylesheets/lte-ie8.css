@@ -53,7 +53,7 @@ hr { clear: both; display: block; margin: 1.5em 0; padding: 0; height: 1px; bord
 
 img { max-width: 100%; height: auto; border-width: 0; vertical-align: middle; -ms-interpolation-mode: bicubic; }
 
-.img-rounded { border-radius: 4px; }
+.img-rounded, #comments .gravatar, .avatar { border-radius: 4px; }
 
 .img-polaroid { padding: 14px; background-color: white; border: 1px solid #bcbab2; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 
@@ -1941,7 +1941,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 
 .comment-moderated { padding: 0.75em 14px; color: #D7CEF5; background: #161E33; margin: 0 0 10px 0; }
 
-#comments .gravatar { float: left; margin-right: 14px; }
+#comments .gravatar { float: left; margin-right: 14px; border: 2px solid #bcbab2; display: block; }
 #comments .body { margin-left: 54px; }
 #comments li.comment-level-0 { padding-left: 0; }
 #comments li.comment-level-1, #comments li.comment-level-2, #comments li.comment-level-3, #comments li.comment-level-4 { background: transparent url(../images/comment-reply.png) 0 top no-repeat; }
@@ -2016,6 +2016,8 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 .cms .place th { border-bottom: 1px dotted #94946F; text-transform: capitalize; padding-right: 10px; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
+.avatar { border: 2px solid #bcbab2; display: block; }
+
 #form_profile_picture .field > label { display: none; }
 
 .live-edit .live-edit-toggle { display: none; }

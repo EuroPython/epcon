@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, header .subhead, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+html, body, body, div, span, object, iframe, h1, h2, h3, header .subhead, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
 
 article, aside, figure, footer, header, hgroup, nav, section { display: block; }
 
@@ -53,7 +53,7 @@ hr { clear: both; display: block; margin: 1.5em 0; padding: 0; height: 1px; bord
 
 img { max-width: 100%; height: auto; border-width: 0; vertical-align: middle; -ms-interpolation-mode: bicubic; }
 
-.img-rounded, .avatar, #comments .gravatar { border-radius: 4px; }
+.img-rounded, #comments .gravatar, .avatar { border-radius: 4px; }
 
 .img-polaroid { padding: 14px; background-color: white; border: 1px solid #bcbab2; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 
@@ -69,14 +69,14 @@ figure figcaption { display: block; font-weight: normal; font-size: 14px; font-s
 .tag { background: #d4d2cd; border: 1px solid #bcbab2; border-radius: 4px; padding: 0 6px; display: inline-block; font-size: 14px; font-size: 1.4rem; margin-right: 7px; margin-bottom: 0.375em; }
 .tag:hover { background: white; text-decoration: none; }
 
-h1, h2, header .subhead, h3, h4, h5, h6 { margin: 0; font-family: inherit; font-weight: 400; color: inherit; text-rendering: optimizelegibility; }
-h1 small, h1 .meta, h2 small, header .subhead small, h2 .meta, header .subhead .meta, h3 small, h3 .meta, h4 small, h4 .meta, h5 small, h5 .meta, h6 small, h6 .meta { font-weight: normal; line-height: 1; color: #bcbab2; }
+h1, h2, h3, header .subhead, h4, h5, h6 { margin: 0; font-family: inherit; font-weight: 400; color: inherit; text-rendering: optimizelegibility; }
+h1 small, h1 .meta, h2 small, h2 .meta, h3 small, header .subhead small, h3 .meta, header .subhead .meta, h4 small, h4 .meta, h5 small, h5 .meta, h6 small, h6 .meta { font-weight: normal; line-height: 1; color: #bcbab2; }
 
 h1, .h1 { font-size: 36px; font-size: 3.6rem; line-height: 1.2; margin-bottom: 0.75em; font-weight: 300; text-transform: uppercase; }
 
-h2, header .subhead, .h2 { font-size: 27px; font-size: 2.7rem; line-height: 1.2; margin-bottom: 0.75em; }
+h2, .h2 { font-size: 27px; font-size: 2.7rem; line-height: 1.2; margin-bottom: 0.75em; }
 
-h3, .h3 { font-size: 23.4px; font-size: 2.34rem; line-height: 1.3; margin-bottom: 1em; }
+h3, header .subhead, .h3 { font-size: 23.4px; font-size: 2.34rem; line-height: 1.3; margin-bottom: 1em; }
 
 h4, .h4 { font-size: 22.5px; font-size: 2.25rem; line-height: 1.25; margin-bottom: 1.5em; }
 
@@ -341,7 +341,7 @@ a:hover, a:active { outline: 0; }
 
 .modal-header .close { float: right; margin-top: 2px; background-color: #e0dfdb; border: 1px solid #c8c6c0; border-bottom-color: #bcbab2; border-radius: 4px; cursor: pointer; color: #3c3a34; }
 
-.modal-header h3 { margin: 0; line-height: 30px; }
+.modal-header h3, .modal-header header .subhead, header .modal-header .subhead { margin: 0; line-height: 30px; }
 
 .modal-body { position: relative; max-height: 400px; padding: 1.5em 28px; overflow-y: auto; }
 
@@ -1941,7 +1941,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 
 .comment-moderated { padding: 0.75em 14px; color: #D7CEF5; background: #161E33; margin: 0 0 10px 0; }
 
-#comments .gravatar { float: left; margin-right: 14px; }
+#comments .gravatar { float: left; margin-right: 14px; border: 2px solid #bcbab2; display: block; }
 #comments .body { margin-left: 54px; }
 #comments li.comment-level-0 { padding-left: 0; }
 #comments li.comment-level-1, #comments li.comment-level-2, #comments li.comment-level-3, #comments li.comment-level-4 { background: transparent url(../images/comment-reply.png) 0 top no-repeat; }
@@ -1979,7 +1979,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 /* ============== */
 .cms .highlights { padding: 10px; border-top: 2px dotted #aba18f; border-bottom: 2px dotted #aba18f; margin: 20px 0; background: #fff; }
 
-.cms .highlights h3 { color: #4895a3; margin: 0 0 10px 0; font-size: 21px; text-align: center; }
+.cms .highlights h3, .cms .highlights header .subhead, header .cms .highlights .subhead { color: #4895a3; margin: 0 0 10px 0; font-size: 21px; text-align: center; }
 
 .cms .highlights ul { margin-bottom: 0; }
 
@@ -2016,6 +2016,8 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 .cms .place th { border-bottom: 1px dotted #94946F; text-transform: capitalize; padding-right: 10px; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
+.avatar { border: 2px solid #bcbab2; display: block; }
+
 #form_profile_picture .field > label { display: none; }
 
 .live-edit .live-edit-toggle { display: none; }
@@ -2027,7 +2029,7 @@ span.icon-remove { color: #ad3d31; }
 
 @media print { * { background: transparent !important; color: black !important; box-shadow: none !important; text-shadow: none !important; }
   @page { margin: 0.5cm; }
-  h2, header .subhead, h3 { orphans: 3; widows: 3; page-break-after: avoid; }
+  h2, h3, header .subhead { orphans: 3; widows: 3; page-break-after: avoid; }
   p { orphans: 3; widows: 3; }
   pre, blockquote { border: 1px solid #666; page-break-inside: avoid; }
   abbr[title]:after { content: " (" attr(title) ")"; }
@@ -2060,8 +2062,8 @@ header .subhead { font-weight: 300; color: #807c6f; }
 .intro .lead, .intro .page-summary p, .page-summary .intro p { color: #2e2c24; }
 
 .notice .fa { color: #807c6f; }
-.notice h3 { text-transform: uppercase; margin-bottom: 0.75em; }
-.notice h3 span { color: #ad3d31; }
+.notice h3, .notice header .subhead, header .notice .subhead { text-transform: uppercase; margin-bottom: 0.75em; }
+.notice h3 span, .notice header .subhead span, header .notice .subhead span { color: #ad3d31; }
 
 .badge { margin-top: 3em; text-align: center; }
 .badge a { border: 1px solid #bcbab2; padding: 0.75em 14px; background: #d4d2cd; border-radius: 4px; text-transform: uppercase; display: block; width: 90%; margin: 0.375em auto; letter-spacing: 1px; }
@@ -2083,5 +2085,3 @@ dt.toggle img { vertical-align: middle; }
 dt.toggle + dd { font-size: 14px; font-size: 1.4rem; color: #807c6f; margin: 0.75em 0 0 14px; }
 
 .async-feedback { display: none; position: fixed; top: 1.5em; left: 50%; right: 0; width: 50%; margin-left: -25%; text-align: center; }
-
-.avatar, #comments .gravatar { border: 2px solid #bcbab2; display: block; }

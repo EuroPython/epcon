@@ -70,7 +70,7 @@ header {
     }
     
     .subhead {
-        @extend h2;
+        @extend h3;
         font-weight: 300;
         color: $neutralcolor; }    
 }
@@ -225,11 +225,6 @@ dt.toggle+dd {
     text-align: center;
 }
 
-// Avatar class, used profile, talk pages and blog commenters
-.avatar {    
-    border: 2px solid $lightneutralcolor;
-    display: block;    
-    @extend .img-rounded;
-}
+
 
 
