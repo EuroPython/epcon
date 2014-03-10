@@ -107,7 +107,6 @@ class Profile(forms.ModelForm):
             kwargs['initial'] = initial
         super(Profile, self).__init__(*args, **kwargs)
 
-    @transaction.commit_on_success
     def save(self, commit=True):
         data = self.cleaned_data
         self.instance.user.first_name = data['first_name']
