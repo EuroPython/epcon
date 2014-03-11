@@ -518,20 +518,19 @@ class TalkManager(models.Manager):
         talk.training_available = training_available
         talk.type = type
         with transaction.atomic():
-            try:
-                count = 0
-                check = slug
-                while True:
-                    if self.filter(slug=check).count() == 0:
-                        break
-                    count += 1
-                    check = '%s-%d' % (slug, count)
-                talk.slug = check
-                talk.save()
-                # associo qui lo speaker così se c'è qualche problema, ad esempio
-                # lo speaker non è valido, il tutto avviene in una transazione ed
-                # il db rimane pulito.
-                TalkSpeaker(talk=talk, speaker=speaker).save()
+            count = 0
+            check = slug
+            while True:
+                if self.filter(slug=check).count() == 0:
+                    break
+                count += 1
+                check = '%s-%d' % (slug, count)
+            talk.slug = check
+            talk.save()
+            # associo qui lo speaker così se c'è qualche problema, ad esempio
+            # lo speaker non è valido, il tutto avviene in una transazione ed
+            # il db rimane pulito.
+            TalkSpeaker(talk=talk, speaker=speaker).save()
         return talk
 
 TALK_TYPE = (
