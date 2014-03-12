@@ -69,11 +69,11 @@
                 {{ form.twitter|form_field }}
                 {{ form.interests|form_field }}
             </fieldset>
-            <fieldset style="position: relative;">
+            <fieldset>
                 <legend>{% trans "Position" %}</legend>
                 {{ form.location|form_field }}
                 {% if profile_data.country  %}
-                    <div id="chart-div" style="width: 100%; position: absolute;"></div>
+                    <div id="chart-div"></div><!-- placeholder -->
                     <script type="text/javascript">
                     (function() {
                         google.load('visualization', '1.0', {
