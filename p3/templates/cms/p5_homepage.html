@@ -20,42 +20,32 @@
 <section>
     <div class="grid-container">
         <!-- NOTICE -->
-        <div class="grid-50 grid-parent notice home-notice">
-            <div class="grid-15">
-                <i class="fa fa-file-text fa-3x"></i>
-            </div><!-- /grid -->
-            <div class="grid-85">
-                {% current_conference as conf %}
-                {% if conf.cfp %}
-                    <h3>{% trans "Call for Proposal is <span>open</span>" %}</h3>
+        <div class="grid-50 notice">
+            <div class="media">
+                <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
+                <div class="media-body">
+                    <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
                     <p class="">{% placeholder "cfp_teaser_text" %}</p>
                     <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
-                {% endif %}
-                {% if conf.voting %}
-                    <h3>{% trans "Talk voting is <span>open</span>" %}</h3>
-                    <p class="">{% placeholder "voting_teaser_text" %}</p>
-                    <a class="btn btn-primary" href="/talk-voting/">{% trans "Cast your vote" %}</a>
-                {% endif %}
-            </div><!-- /grid -->
+                </div><!-- /media-body -->
+            </div>
         </div><!-- /grid notice -->
         <!-- NEXT DEADLINE -->
-        <div class="grid-50 grid-parent notice home-notice">
-            <div class="grid-15">
-                <i class="fa fa-calendar-o fa-3x"></i>
-            </div><!-- /grid -->
-            <div class="grid-85">
-                {% get_deadlines limit=1 as l %}
-                {% if l %}
-                <div class="calendar">
-                    <h3>{% trans "Next deadline" %}</h3>
+        {% get_deadlines limit=1 as l %}
+        {% if l %}                        
+        <div class="grid-50 notice">
+            <div class="media">
+                <div class="pull-left"><i class="fa fa-calendar-o fa-3x"></i></div>
+                <div class="media-body calendar">
+                    <h3 class="media-heading">{% trans "Next deadline" %}</h3>
                     <p class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>&emsp;{{ l.0.body|safe }}</p>
                     <div class="more">
                         <a href="/calendar">{% trans "All the deadlines &rarr;" %}</a>
                     </div>
-                </div>
-                {% endif %}
-            </div><!-- /grid -->
+                </div><!-- /media-body -->
+            </div>
         </div><!-- /grid notice -->
+        {% endif %}
     </div><!-- /grid-container -->
 </section>
 

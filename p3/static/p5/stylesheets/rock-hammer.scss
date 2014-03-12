@@ -112,16 +112,17 @@ header {
     h3 {
         text-transform: uppercase;
         margin-bottom: $baselineheight/2;
-
         span {
             color: $secondarycolor;
         }
     }   
+    // Adjust media styles
+    .pull-left {
+        margin-right: $gutterwidth;
+    }
 }
 
-.home-notice {
-    // Special styles for notice on homepage
-}
+
 
 .badge {
     margin-top: $baselineheight * 2;
