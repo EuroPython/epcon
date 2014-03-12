@@ -146,7 +146,12 @@
                     <small>Starting from <b>{{ fares.0.price }}</b>€</small>
                 </div>
             {%else%}
-                &nbsp;
+                {%comment%}If empty show an utility badge{%endcomment%}
+                <div class="badge badge-track">
+                    <i class="fa fa-globe fa-3x"></i>
+                    <a title="Learn more" href="/english/">PyCon in English</a>
+                    <small>PyCon Italy also has an English track</small>
+                </div>
             {% endif %}
         </div>
         <div class="grid-50">
@@ -157,13 +162,13 @@
         <div class="grid-25">
             <div id="habla-available" class="badge badge-chat" style="display:none">
                 <i class="fa fa-comments-o fa-3x"></i>
-                <a href="#">Supporto online</a>
-                <small>Chat with organizers</small>
+                <a title="{% trans "Open chat window" %}" href="#">{% trans 'Supporto online' %}</a>
+                <small>{% trans 'Chat with organizers' %}</small>
             </div>
             <div id="habla-unavailable" class="badge badge-chat">
                 <i class="fa fa-ban fa-3x"></i>
-                <a href="#">Supporto offline</a></h5>
-                <small>Please try again later</small>
+                <a href="#">{% trans 'Supporto offline' %}</a></h5>
+                <small>{% trans "Please try again later" %}</small>
             </div>
         </div>
     </div><!-- /grid-container -->

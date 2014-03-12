@@ -5,7 +5,7 @@
 
 @mixin alertgrad 		{ @include vertical($alertcolor, darken($alertcolor, 10%)); }
 @mixin breadcrumbgrad	{ @include vertical($breadcrumbbackgroundcolor, darken($breadcrumbbackgroundcolor, 10%)); }
-@mixin buttongrad 		{ @include vertical($buttonbackgroundcolor, darken($buttonbackgroundcolor, 10%)); }
+@mixin buttongrad 		{ @include vertical($buttonbackgroundcolor, darken($buttonbackgroundcolor, 8%)); }
 @mixin errorgrad 		{ @include vertical($errorcolor, darken($errorcolor, 10%)); }
 @mixin forminputgrad 	{ @include vertical($white, $lighterneutralcolor); }
 @mixin greygrad 		{ @include vertical($white, darken($lighterneutralcolor, 10%)); }

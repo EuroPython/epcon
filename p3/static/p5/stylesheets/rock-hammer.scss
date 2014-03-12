@@ -127,18 +127,21 @@ header {
     margin-top: $baselineheight * 2;
     text-align: center;
     a {
-        border: 1px solid $lightneutralcolor;
+        border: 1px solid $buttonbordercolor;
         padding: $baselineheight/2 $gutterwidth/2;
-        background: $lighterneutralcolor;
-        border-radius: $borderradius;
+        background: $buttonbackgroundcolor;
+        @include buttongrad;
+        border-radius: $buttonborderradius;
         text-transform: uppercase;  
         display: block;        
         width: 90%;
         margin: $baselineheight/4 auto;
         letter-spacing: 1px;
+/*
         &:hover {
-            background: $white;  
+            color: $white;  
         }
+*/
     }
     small { 
         color: $neutralcolor;

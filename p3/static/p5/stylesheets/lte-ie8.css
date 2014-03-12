@@ -229,7 +229,7 @@ a:hover, a:active { outline: 0; }
 
 .swatch-success span:nth-child(4) { background-color: rgba(203, 229, 142, 0.6); }
 
-.btn, .cms .call-to-action a { background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0dfdb), to(#c8c6c0)); background-image: -webkit-linear-gradient(top, #e0dfdb, #c8c6c0); background-color: #c8c6c0; background-image: -moz-linear-gradient(top, #e0dfdb, #c8c6c0); background-image: -ms-linear-gradient(top, #e0dfdb, #c8c6c0); background-image: -o-linear-gradient(top, #e0dfdb, #c8c6c0); background-image: linear, top, #e0dfdb, #c8c6c0; background-repeat: repeat-x; }
+.btn, .cms .call-to-action a { background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0dfdb), to(#cdcbc5)); background-image: -webkit-linear-gradient(top, #e0dfdb, #cdcbc5); background-color: #cdcbc5; background-image: -moz-linear-gradient(top, #e0dfdb, #cdcbc5); background-image: -ms-linear-gradient(top, #e0dfdb, #cdcbc5); background-image: -o-linear-gradient(top, #e0dfdb, #cdcbc5); background-image: linear, top, #e0dfdb, #cdcbc5; background-repeat: repeat-x; }
 
 .btn-primary { background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#306a99), to(#244f72)); background-image: -webkit-linear-gradient(top, #306a99, #244f72); background-color: #244f72; background-image: -moz-linear-gradient(top, #306a99, #244f72); background-image: -ms-linear-gradient(top, #306a99, #244f72); background-image: -o-linear-gradient(top, #306a99, #244f72); background-image: linear, top, #306a99, #244f72; background-repeat: repeat-x; }
 
@@ -2027,7 +2027,7 @@ span.icon { cursor: pointer; }
 
 span.icon-remove { color: #ad3d31; }
 
-#chart-div { width: 100%; margin-left: 29%; }
+#chart-div { margin-left: 29%; }
 
 @media print { * { background: transparent !important; color: black !important; box-shadow: none !important; text-shadow: none !important; }
   @page { margin: 0.5cm; }
