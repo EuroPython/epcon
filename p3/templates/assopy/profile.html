@@ -54,12 +54,14 @@
             <div class="tab-pane" id="account-login-options">
                 <div class="profile-user-data web-accounts clearfix">
                     <h4>{% trans "Web accounts for log in" %}</h4>
+                    <p class="">{% trans "You can connect more web accounts to your profile, so that you can use any of them for logging in (without having to remember which one you used to create the account)." %}</p>
                     <div class="">
                         <ul id="web-accounts">
                             {% for i in user.identities.all %}
                             <li class="" data-identifier="{{ i.identifier }}">
-                                <p title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</p>
-                                &nbsp;<span title="{% trans 'Remove account' %}" class="icon icon-remove"><i class="fa fa-remove"></i></span>
+                                <p title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}
+                                &nbsp;<span title="{% trans 'Remove account' %}" class="icon icon-remove"><i class="fa fa-times-circle"></i></span>
+                                </p>
                             </li>
                             {% endfor %}
                         </ul>
@@ -86,12 +88,12 @@
                                 });
                             });
                         </script>
-                        <div class="button mini">
+                        <div>
+                            {%comment%}@@TODO: Add class .btn .btn-small to <a>{%endcomment%}
                             {% url "assopy-profile" as u %}
                             {% render_janrain_box u "overlay" %}
                         </div>
                     </div>
-                    <div class="">{% trans "You can connect more web accounts to your profile, so that you can use any of them for logging in (without having to remember which one you used to create the account)." %}</div>
                 </div>
             </div>
 
