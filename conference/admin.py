@@ -269,26 +269,42 @@ class DeadlineAdmin(admin.ModelAdmin):
     # Con il secondo oltre a salvare l'istanza di Deadline creo/modifico le
     # istanze di DeadlineContent in funzione delle lingue.
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(DeadlineAdmin, self).get_fieldsets(request, obj=obj)
+
+        fields = fieldsets[0][1]['fields']
+
+        for lang_code, _ in dsettings.LANGUAGES:
+            fields.append('headline_' + lang_code)
+            fields.append('body_' + lang_code)
+        return fieldsets
+
     def get_form(self, request, obj=None, **kwargs):
-        form = super(DeadlineAdmin, self).get_form(request, obj, **kwargs)
+        initials = {}
         if obj:
-            contents = dict((c.language, (c.headline, c.body)) for c in obj.deadlinecontent_set.all())
-        for l, _ in dsettings.LANGUAGES:
-            f = forms.CharField(max_length=200, required=False)
-            if obj:
-                try:
-                    f.initial = contents[l][0]
-                except:
-                    pass
-            form.base_fields['headline_' + l] = f
-            f = forms.CharField(widget=forms.Textarea, required=False)
-            if obj:
-                try:
-                    f.initial = contents[l][1]
-                except:
-                    pass
-            form.base_fields['body_' + l] = f
-        return form
+            initials = dict((c.language, (c.headline, c.body)) for c in obj.deadlinecontent_set.all())
+
+        class DeadlineForm(forms.ModelForm):
+            class Meta:
+                model = models.Deadline
+                fields = ('date',)
+            def __init__(self, *args, **kw):
+                super(DeadlineForm, self).__init__(*args, **kw)
+                for lang_code, _ in dsettings.LANGUAGES:
+                    headline = forms.CharField(max_length=200, required=False)
+                    try:
+                        headline.initial = initials[lang_code][0]
+                    except:
+                        pass
+                    self.fields['headline_' + lang_code] = headline
+
+                    body = forms.CharField(widget=forms.Textarea, required=False)
+                    try:
+                        body.initial = initials[lang_code][1]
+                    except:
+                        pass
+                    self.fields['body_' + lang_code] = body
+        return DeadlineForm
 
     def save_model(self, request, obj, form, change):
         obj.save()
