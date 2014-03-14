@@ -39,8 +39,13 @@ line-height : $baselineheight;
 color : $textcolor; }
 
 body:after {
-content : '320';
-display : none; 
+content : 'base';
+position: fixed;
+left: $gutterwidth / 2;
+bottom: $baselineheight / 2;
+color: $textcolor;
+z-index: 2;
+display : none; // Comment to show breakpoints
 
 @include media-query-bp($bp2) {
 content : 'bp2'; }
@@ -59,7 +64,8 @@ content : 'bp6'; }
 }
 
 .m-hide {
-@include hidden; }
+    @include hidden;
+}
 
 
 [role="contentinfo"] {

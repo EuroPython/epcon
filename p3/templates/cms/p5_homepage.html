@@ -29,6 +29,7 @@
                     <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
                 </div><!-- /media-body -->
             </div>
+            <hr class="hide-on-desktop" />
         </div><!-- /grid notice -->
         <!-- NEXT DEADLINE -->
         {% get_deadlines limit=1 as l %}
@@ -60,11 +61,11 @@
 {% block MAIN_CONTENT %}
 <section>
 <div class="grid-container">
-    <div class="grid-33">
+    <div class="grid-50">
         {% box_latest_tweets %}
     </div>
     {% post_list count=3 as posts %}
-    <div class="blog-archive grid-33">
+    <div class="blog-archive grid-50">
         <h3>{% trans "PyCon blog" %}</h3>
         <ul>
             {% for post in posts %}

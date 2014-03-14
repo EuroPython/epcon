@@ -30,7 +30,7 @@ html { background: #efecdf; font-size: 62.5%; -webkit-overflow-scrolling: touch;
 
 body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; color: #2e2c24; }
 
-body:after { content: '320'; display: none; }
+body:after { content: 'base'; position: fixed; left: 14px; bottom: 0.75em; color: #2e2c24; z-index: 2; display: none; }
 .lt-ie9 body:after { content: 'bp2'; }
 .lt-ie9 body:after { content: 'bp3'; }
 .lt-ie9 body:after { content: 'bp4'; }
@@ -311,7 +311,7 @@ a:hover, a:active { outline: 0; }
 /*hero-unit*/
 .media, .media-body { overflow: hidden; *overflow: visible; zoom: 1; }
 
-.media, .media .media { margin-top: 15px; }
+.media, .media .media { margin-top: 1.5em; }
 
 .media:first-child { margin-top: 0; }
 

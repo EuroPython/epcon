@@ -93,7 +93,7 @@
     {% endfor %}
 {% endif %}
     {% block TOP_NAV_BLOCK %}
-    <a href="#navigation-toggle" class="navigation-toggle">Menu</a>
+    <a href="#navigation-toggle" class="navigation-toggle"><i title="Menu" class="fa fa-bars"></i></a>
     <nav id="navigation-toggle" role="navigation">
         <ul class="clearfix">
             {% with request.META.PATH_INFO as pth %}
@@ -141,32 +141,34 @@
             {% endif %}
             {% if fares %}
                 <div class="badge badge-buy">
-                    <i class="fa fa-ticket fa-3x"></i>
+                    <i class="fa fa-ticket fa-3x hide-on-mobile"></i>
                     <a href="/registration/">Buy tickets</a>
                     <small>Starting from <b>{{ fares.0.price }}</b>€</small>
                 </div>
             {%else%}
                 {%comment%}If empty show an utility badge{%endcomment%}
                 <div class="badge badge-track">
-                    <i class="fa fa-globe fa-3x"></i>
+                    <i class="fa fa-globe fa-3x hide-on-mobile"></i>
                     <a title="Learn more" href="/english/">PyCon in English</a>
                     <small>PyCon Italy also has an English track</small>
                 </div>
             {% endif %}
-        </div>
+            <hr class="hide-on-desktop" />
+        </div>        
         <div class="grid-50">
-            <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p5/images/pycon-logo.png" width="190" height="190" alt="*" ></a></div>
+            <div class="branding hide-on-mobile"><a href="/" title="Home"><img src="{{STATIC_URL}}p5/images/pycon-logo.png" width="190" height="190" alt="*" ></a></div>
             <h1>PyCon <span>Cinque</span></h1>
             <div class="subhead">Firenze, 23–25 Maggio 2014</div>
+            <hr class="hide-on-desktop" />
         </div>
         <div class="grid-25">
             <div id="habla-available" class="badge badge-chat" style="display:none">
-                <i class="fa fa-comments-o fa-3x"></i>
+                <i class="fa fa-comments-o fa-3x hide-on-mobile"></i>
                 <a title="{% trans "Open chat window" %}" href="#">{% trans 'Supporto online' %}</a>
                 <small>{% trans 'Chat with organizers' %}</small>
             </div>
             <div id="habla-unavailable" class="badge badge-chat">
-                <i class="fa fa-ban fa-3x"></i>
+                <i class="fa fa-ban fa-3x  hide-on-mobile"></i>
                 <a href="#">{% trans 'Supporto offline' %}</a></h5>
                 <small>{% trans "Please try again later" %}</small>
             </div>
@@ -216,6 +218,7 @@
                 {% endblock %}
             </ul>
         </nav>
+        <hr class="hide-on-desktop" />        
     </div><!-- /grid -->
 
     <div class="grid-25">
@@ -229,6 +232,7 @@
             <li><i class="fa fa-rss-square"></i>&ensp;
                 <a href="/blog/feeds/latest/">{% trans "Latest posts" %}</a></li>
         </ul>
+        <hr class="hide-on-desktop" />        
     </div><!-- /grid -->
 
 
@@ -238,6 +242,7 @@
         <ul>
             <li><a href="/ep2013/">EuroPython 2013</a></li>
         </ul>
+        <hr class="hide-on-desktop" />                
     </div><!-- /grid -->
     {%endcomment%}
 

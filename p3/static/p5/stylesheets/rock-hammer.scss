@@ -26,7 +26,6 @@ html {
 
 
 footer {
-/*     margin: $baselineheight * 2 0 0 0; */
     background: $navigationbackgroundcolor;    
     hr {
         border-color: $primarycolor;
@@ -60,17 +59,23 @@ header {
 
     h1 {
         color: $secondarycolor;
-        @include font-size($basefontsize * 3.5);
-/*         line-height: 1.5; */
         text-transform: uppercase;
         font-weight: 300;
         margin-bottom: 0;
         span { 
             color: $primarycolor; }
+
+        @include font-size($basefontsize * 2.5);
+        @include media-query-bp($bp3) {
+            @include font-size($basefontsize * 3.5);
+        }    
     }
     
     .subhead {
-        @extend h3;
+        @include media-query-bp($bp3) {
+            // Like h3 
+            @include font-size($basefontsize * 1.3);
+        }    
         font-weight: 300;
         color: $neutralcolor; }    
 }
@@ -125,7 +130,11 @@ header {
 
 
 .badge {
-    margin-top: $baselineheight * 2;
+    // Top margins only if grid is activated
+    @include media-query-bp($bpdesktopmin) {
+        margin-top: $baselineheight * 2;
+    }       
+
     text-align: center;
     a {
         border: 1px solid $buttonbordercolor;
