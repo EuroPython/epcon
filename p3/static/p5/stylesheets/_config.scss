@@ -72,7 +72,10 @@ $bp6 							: $bp5;
 // You can keep the default pixel values or use the variables $bp2-$bp6 above
 
 $bpmobilemax                    : 767px;
-$bpdesktopmin                   : 768px;
+$bpdesktopmin                   : $bpmobilemax + 1;
+
+// Show current device (blue) and logical (green) breakpoints on the bottom
+$show-breakpoint                : false;
 
 // Does your design needs a maximum width to maintain readable line lengths? 
 
