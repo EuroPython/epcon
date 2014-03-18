@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-16 12:52+0200\n"
+"POT-Creation-Date: 2014-03-03 23:34+0100\n"
 "PO-Revision-Date: 2009-03-25 12:23+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
 #: forms.py:120
 msgid "First name"
@@ -36,11 +36,11 @@ msgid ""
 "strong> be published."
 msgstr ""
 
-#: forms.py:132 forms.py:233 models.py:317
+#: forms.py:132 forms.py:239 models.py:365
 msgid "Job title"
 msgstr ""
 
-#: forms.py:133 forms.py:234
+#: forms.py:133 forms.py:240
 msgid "eg: student, developer, CTO, js ninja, BDFL"
 msgstr ""
 
@@ -51,28 +51,28 @@ msgid ""
 "number will <strong>never</strong> be published."
 msgstr ""
 
-#: forms.py:139 forms.py:238
+#: forms.py:139 forms.py:244
 msgid "Your company"
 msgstr ""
 
-#: forms.py:140 forms.py:239 models.py:316
+#: forms.py:140 forms.py:245 models.py:364
 msgid "Company homepage"
 msgstr ""
 
-#: forms.py:142 forms.py:242 forms.py:370
+#: forms.py:142 forms.py:248 forms.py:333
 msgid "Compact biography"
 msgstr ""
 
-#: forms.py:143 forms.py:243 forms.py:371
+#: forms.py:143 forms.py:249 forms.py:334
 msgid ""
 "Please enter a short biography (one or two paragraphs). Do not paste your CV!"
 msgstr ""
 
-#: forms.py:146 forms.py:248
+#: forms.py:146 models.py:551
 msgid "Talk title"
 msgstr ""
 
-#: forms.py:148 forms.py:256
+#: forms.py:148
 msgid "Talk Type"
 msgstr ""
 
@@ -80,157 +80,169 @@ msgstr ""
 msgid "Talk Type description"
 msgstr ""
 
-#: forms.py:154 forms.py:250
+#: forms.py:154 models.py:557
 msgid "Suggested duration"
 msgstr ""
 
-#: forms.py:155 forms.py:251
+#: forms.py:155 models.py:559
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr ""
 
-#: forms.py:160
+#: forms.py:160 models.py:562
+msgid "Q&A duration"
+msgstr ""
+
+#: forms.py:164
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr ""
 
-#: forms.py:163 forms.py:261
+#: forms.py:167 models.py:579
 msgid "Audience level"
 msgstr ""
 
-#: forms.py:166 forms.py:265
+#: forms.py:170 models.py:567
 msgid "Talk abstract"
 msgstr ""
 
-#: forms.py:167 forms.py:266
+#: forms.py:171 models.py:568
 msgid ""
 "<p>Please enter a short description of the talk you are submitting. Be sure "
 "to includes the goals of your talk and any prerequisite required to fully "
 "understand it.</p><p>Suggested size: two or three paragraphs.</p>"
 msgstr ""
 
-#: forms.py:237 models.py:314
+#: forms.py:243 models.py:362
 msgid "Personal homepage"
 msgstr ""
 
-#: forms.py:245
+#: forms.py:251
 msgid "Presentation"
 msgstr ""
 
-#: forms.py:269
-msgid "Teaser video"
-msgstr ""
-
-#: forms.py:270
-msgid "Insert the url for your teaser video"
-msgstr ""
-
-#: models.py:58
+#: models.py:71
 msgid "Tagged Item"
 msgstr ""
 
-#: models.py:59
+#: models.py:72
 msgid "Tagged Items"
 msgstr ""
 
-#: models.py:307
+#: models.py:355
 msgid "Birthday"
 msgstr ""
 
-#: models.py:309
+#: models.py:357
 msgid "Phone"
 msgstr ""
 
-#: models.py:311
+#: models.py:359
 msgid ""
 "Enter a phone number where we can contact you in case of administrative "
 "issues.<br />Use the international format, eg: +39-055-123456"
 msgstr ""
 
-#: models.py:315
+#: models.py:363
 msgid "Company"
 msgstr ""
 
-#: models.py:319
+#: models.py:367
 msgid "Location"
 msgstr ""
 
-#: models.py:384
-msgid "5 minutes"
-msgstr ""
-
-#: models.py:385
-msgid "10 minutes"
-msgstr ""
-
-#: models.py:386
-msgid "15 minutes"
-msgstr ""
-
-#: models.py:387
-msgid "25 minutes"
-msgstr ""
-
-#: models.py:388
-msgid "30 minutes"
-msgstr ""
-
-#: models.py:389
-msgid "40 minutes"
-msgstr ""
-
-#: models.py:390
-msgid "45 minutes"
-msgstr ""
-
-#: models.py:391
-msgid "60 minutes"
-msgstr ""
-
-#: models.py:392
-msgid "75 minutes"
-msgstr ""
-
-#: models.py:393
-msgid "90 minutes"
-msgstr ""
-
-#: models.py:394
-msgid "120 minutes"
-msgstr ""
-
-#: models.py:395
-msgid "240 minutes"
-msgstr ""
-
-#: models.py:396
-msgid "480 minutes"
-msgstr ""
-
-#: models.py:399
+#: models.py:471
 msgid "Italian"
 msgstr ""
 
-#: models.py:400
+#: models.py:472
 msgid "English"
 msgstr ""
 
-#: models.py:403
+#: models.py:475
 msgid "Proposed"
 msgstr ""
 
-#: models.py:404
+#: models.py:476
 msgid "Accepted"
 msgstr ""
 
-#: models.py:413
+#: models.py:485
 msgid "Beginner"
 msgstr ""
 
-#: models.py:414
+#: models.py:486
 msgid "Intermediate"
 msgstr ""
 
-#: models.py:415
+#: models.py:487
 msgid "Advanced"
+msgstr ""
+
+#: models.py:564
+msgid "Language"
+msgstr ""
+
+#: models.py:574
+msgid "Teaser video"
+msgstr ""
+
+#: models.py:576
+msgid "Insert the url for your teaser video"
+msgstr ""
+
+#: settings.py:127
+msgid "5 minutes"
+msgstr ""
+
+#: settings.py:128
+msgid "10 minutes"
+msgstr ""
+
+#: settings.py:129
+msgid "15 minutes"
+msgstr ""
+
+#: settings.py:130
+msgid "25 minutes"
+msgstr ""
+
+#: settings.py:131
+msgid "30 minutes"
+msgstr ""
+
+#: settings.py:132
+msgid "40 minutes"
+msgstr ""
+
+#: settings.py:133
+msgid "45 minutes"
+msgstr ""
+
+#: settings.py:134
+msgid "55 minutes"
+msgstr ""
+
+#: settings.py:135
+msgid "60 minutes"
+msgstr ""
+
+#: settings.py:136
+msgid "75 minutes"
+msgstr ""
+
+#: settings.py:137
+msgid "90 minutes"
+msgstr ""
+
+#: settings.py:138
+msgid "120 minutes"
+msgstr ""
+
+#: settings.py:139
+msgid "240 minutes"
+msgstr ""
+
+#: settings.py:140
+msgid "480 minutes"
 msgstr ""
 
 #: templates/admin/conference/schedule/change_list.html:8
