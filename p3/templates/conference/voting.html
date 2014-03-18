@@ -26,73 +26,84 @@
         {% endif %}
     </section>
     {% endif %}
-    <h1>Talk Voting</h1>
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
 
-    <div class="page-summary">
-        <p>Cast your vote!</p>
-    </div>
+        <h1>Talk Voting</h1>
 
-    <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
-        <div class="span-7 inline">
-            {{ form.abstracts|field:"autosubmit" }}
-            {{ form.talk_type|field:"autosubmit" }}
+        <div class="page-summary">
+            <p>Cast your vote!</p>
         </div>
-        <div class="span-5 last inline">
-            {{ form.language|field:"autosubmit" }}
-            {{ form.order|field:"autosubmit" }}
-        </div>
-        <div class="span-12 last">
-            {{ form.tags|field:"autosubmit" }}
-            {% if user.is_authenticated %}
-                {% p3_profile_data user.id as pdata %}
-                <div class="span-3">
-                    {% if pdata.interests %}
-                    <div id="use-my-tag" class="button">
-                        <a href="#">Match my tags</a>
-                    </div>
-                    <script type="text/javascript">
-                    (function() {
-                        $('#use-my-tag a').click(function(e) {
-                            var form=$('#form-options');
-                            var input = $('input[name=tags]', form);
-                            var tags = [];
-                            $({{ pdata.interests|json_ }}).each(function(ix, val) {
-                                tags.push('"' + val + '"');
-                            });
-                            form.unbind('submit');
-                            input.val(tags.join(','));
-                            form.submit();
-                            return false;
-                        });
-                    })();
-                    </script>
-                    {% endif %}
-                </div>
-                <div class="span-9 cms last">
-                    <h3>Set your favorite tags in your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> and filter by your interests with one click.</h3>
-                </div>
-            {% endif %}
-        </div>
-    </form>
-    <hr class="stars" />
-    {% include "conference/ajax/voting.html" %}
-    <div class="span-4 last">
-        <aside>
-            <div class="cms">
-                <h4>How to vote:</h4>
-                <ul>
-                    <li>Click on the stars to cast a vote; half-points are allowed.</li>
-                    <li>Click on the talk name to go to the (linkable) talk page.</li>
-                    <li>Click on the speaker name to see the (linkable) speaker page, with full bio and other infos.</li>
-                    <li>Use the filters at the top to help you go through the talks.</li>
-                    <li>Sort by vote to help you review all your votes.</li>
-                    <li>Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract.</li>
-                    <li>Click on the red sign on the left of the stars to remove a vote, if you want to think about it more.</li>
-                    <li>If you leave some talks without a vote, we will assume that you don't like them at all (= minimum vote).</li>
-                </ul>
-                <h4>Need more info?</h4>
-                <p>Go to the <a href="/talk-voting">talk voting</a> description page for all the details. If you still have answers, <a href="/contacts">write us</a> or <a href="#" onclick="habla_window.show(); habla_window.expand()">chat with us</a>.</p>
+
+        <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
+            <div class="grid-60 inline">
+                {{ form.abstracts|form_field:"autosubmit" }}
+                {{ form.talk_type|form_field:"autosubmit" }}
             </div>
-        </aside>
+            <div class="grid-40 inline">
+                {{ form.language|form_field:"autosubmit" }}
+                {{ form.order|form_field:"autosubmit" }}
+            </div>
+            <div class="grid-100">
+                {{ form.tags|form_field:"autosubmit" }}
+                {% if user.is_authenticated %}
+                    {% p3_profile_data user.id as pdata %}
+                    <div class="span-3">
+                        {% if pdata.interests %}
+                        <div id="use-my-tag" class="button">
+                            <a href="#">Match my tags</a>
+                        </div>
+                        <script type="text/javascript">
+                        (function() {
+                            $('#use-my-tag a').click(function(e) {
+                                var form=$('#form-options');
+                                var input = $('input[name=tags]', form);
+                                var tags = [];
+                                $({{ pdata.interests|json_ }}).each(function(ix, val) {
+                                    tags.push('"' + val + '"');
+                                });
+                                form.unbind('submit');
+                                input.val(tags.join(','));
+                                form.submit();
+                                return false;
+                            });
+                        })();
+                        </script>
+                        {% endif %}
+                    </div>
+                    <div class="span-9 cms last">
+                        <h3>Set your favorite tags in your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> and filter by your interests with one click.</h3>
+                    </div>
+                {% endif %}
+            </div>
+        </form>
+        <hr class="stars" />
+        {% include "conference/ajax/voting.html" %}
+        <div class="span-4 last">
+            <aside>
+                <div class="cms">
+                    <h4>How to vote:</h4>
+                    <ul>
+                        <li>Click on the stars to cast a vote; half-points are allowed.</li>
+                        <li>Click on the talk name to go to the (linkable) talk page.</li>
+                        <li>Click on the speaker name to see the (linkable) speaker page, with full bio and other infos.</li>
+                        <li>Use the filters at the top to help you go through the talks.</li>
+                        <li>Sort by vote to help you review all your votes.</li>
+                        <li>Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract.</li>
+                        <li>Click on the red sign on the left of the stars to remove a vote, if you want to think about it more.</li>
+                        <li>If you leave some talks without a vote, we will assume that you don't like them at all (= minimum vote).</li>
+                    </ul>
+                    <h4>Need more info?</h4>
+                    <p>
+                        Go to the <a href="/talk-voting">talk voting</a> description page for all the details.
+                        If you still have answers, <a href="/contacts">write us</a> or
+                        <a href="#" onclick="habla_window.show(); habla_window.expand()">chat with us</a>.
+                    </p>
+                </div>
+            </aside>
+        </div>
     </div>
+    </div>
+</section>
 {% endblock %}
