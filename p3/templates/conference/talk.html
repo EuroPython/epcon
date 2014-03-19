@@ -42,21 +42,17 @@
     </script>
 {% endblock %}
 
-{% block LOGO %}
-{% if talk.conference != CONFERENCE %}
-<div class="logo">
-    <a title="EuroPython Archive" href="https://ep2012.europython.eu/ep2011/"><img src="{{ STATIC_URL }}p5/i/europython-logo-archive.png" alt="EuroPython Archive" title="" width="330" height="110" /></a>
-</div>
-{% else %}
-{{ block.super }}
-{% endif %}
-{% endblock %}
 
 {% block MAIN_CONTENT %}
     {% talk_data talk.id as talk_data %}
+
+
+<section class="full-page-height">
+    <div class="grid-container">
+    <div class="grid-100">
     <h1>{{ talk_data.title }}
     {% if full_access %}
-    <span class="action edit"><a href="#">(Edit talk)</a></span>
+    <span class="action edit"><a class="btn" href="#">Edit talk</a></span>
     <script type="text/javascript">//<![CDATA[
     $('.action a').click(function(e) {
         e.preventDefault();
@@ -67,23 +63,28 @@
     //]]>
     </script>
     {% endif %}</h1>
-    <div class="span-8">
+    </div>
+    
+
+    <div class="grid-60">
         <div class="page-summary">
             <p>
                 {% trans "by" %}
                 {% for spk in talk_data.speakers %}
-                <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
-                {% if not forloop.last %}-{% endif %}
+                    <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
+                    {% if not forloop.last %}, {% endif %}
                 {% endfor %}
-                for
-                <strong>
-                {% if talk_data.conference == "ep2011" %}
-                EuroPython 2011
-                {% endif %}
-                {% if talk_data.conference == "ep2012" %}
-                EuroPython 2012
-                {% endif %}
-                </strong>
+                {%comment%}
+                    for
+                    <strong>
+                    {% if talk_data.conference == "ep2011" %}
+                    EuroPython 2011
+                    {% endif %}
+                    {% if talk_data.conference == "ep2012" %}
+                    EuroPython 2012
+                    {% endif %}
+                    </strong>
+                {%endcomment%}
             </p>
         </div>
         {% with talk.event_set.all as events %}
@@ -94,7 +95,7 @@
             {% if talk_data.teaser_video %}
                 {% embed_video talk_data.teaser_video as h %}
                 {% if h %}
-                <h3>There is also a teaser video!</h3>
+                <h3>There is also a teaser video.</h3>
                 {{ h.html }}
                 {% endif %}
             {% endif %}
@@ -144,8 +145,8 @@
                 <hr />
                 {{ form.abstract|field }}
                 </fieldset>
-                <fieldset class="border">
-                    <button name="" value="" type="submit">Save Changes</button>
+                <fieldset>
+                    <button class="btn btn-primary" name="" value="" type="submit">Save Changes</button>
                 </fieldset>
             </form>
         </div>
@@ -158,87 +159,94 @@
             <h3>Do you have some questions on this talk? Leave a comment to the speaker!</h3>
         {% endif %}
         {% show_comment_form talk %}
-    </div>
-    <div class="span-4 last">
-        <div class="talk details">
-            {% if talk.slides %}
-            <div class="button mini">
-                {% stuff_info talk.slides as info %}
-                <a href="{{ talk.slides.url }}">Download slide ({{ info.0 }})</a><br />
-                (Size: {{ info.1|filesizeformat }})
-            </div>
-            <hr />
-            {% endif %}
-            <dl>
-                <dt>{% trans "Lingua" %}</dt>
-                <dd>{{ talk.language|upper }}</dd>
-
-                {% if talk.type != "p" %}
-                <dt>{% trans "Durata" %}</dt>
-                <dd>
-                    {% if talk.duration == 480 %}
-                        Full day (8h)
-                    {% else %}
-                        {{ talk.duration }} {% trans "minuti" %} (inc Q&amp;A)
-                    {% endif %}
-                </dd>
+    </div><!-- /grid -->
+    
+        <aside class="grid-30 prefix-10">             
+        <div class="slot cms">
+            <div class="talk details">
+                {% if talk.slides %}
+                    {% stuff_info talk.slides as info %}
+                    <a class="btn btn-small" href="{{ talk.slides.url }}">Download slide ({{ info.0 }})</a>
+                    (Size: {{ info.1|filesizeformat }})
+                    <hr />
                 {% endif %}
-
-                {% if track.translate %}
-                <dt>{% trans "Traduzione simultanea" %}</dt>
-                <dd>{% trans "disponibile" %}</dd>
-                {% endif %}
-            </dl>
-            {% if talk_data.tags %}
-            <hr />
-            <h4>Tagged as</h4>
-            <div class="all-tags">
-                {% for t in talk_data.tags %}
-                <span class="tag">{{ t }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
-            {% if voting and user.is_authenticated and talk.conference == CONFERENCE %}
-            <hr />
-            <div id="talk-voting">
-                <h4>Community voting is open</h4>
-                {% user_votes talk_id=talk.id as vote %}
-                <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
-                    Vote this talk:
-                    <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{% firstof vote "0" %}" step="0.5" style="width: 0"/>
-                    <div class="rateit" data-rateit-backingfld="#id_vote-{{ talk.id }}"></div>
-                    <div>
-                        {% url "conference-voting" as u %}
-                        {% if u|full_url in request.META.HTTP_REFERER %}
-                            <a href="{{ request.META.HTTP_REFERER }}">Back to the voting list</a>
+                <dl>
+                    <dt>{% trans "Lingua" %}</dt>
+                    <dd>{{ talk.language|upper }}</dd>
+    
+                    {% if talk.type != "p" %}
+                    <dt>{% trans "Durata" %}</dt>
+                    <dd>
+                        {% if talk.duration == 480 %}
+                            Full day (8h)
                         {% else %}
-                            <a href="{{ u }}">Back to the voting list</a>
+                            {{ talk.duration }} {% trans "minuti" %} (inc. Q&amp;A)
                         {% endif %}
-                    </div>
-                </form>
-                <script type="text/javascript">
-                    function rate(e, val) {
-                        var field = $(e.rateit('backingfld'));
-                        var form = field.parents('form');
-                        if(val == undefined)
-                            field.val(e.rateit('value'))
-                        else
-                            field.val(val);
-                        form.ajaxSubmit();
-                    }
-                    $('#talk-voting .rateit')
-                        .rateit()
-                        .bind('rated', function() {
-                            rate($(this));
-                        })
-                        .bind('reset', function() {
-                            rate($(this), 0);
-                        });
-                </script>
+                    </dd>
+                    {% endif %}
+    
+                    {% if track.translate %}
+                        <dt>{% trans "Traduzione simultanea" %}</dt>
+                        <dd>{% trans "Disponibile" %}</dd>
+                    {% endif %}
+                </dl>
+                {% if talk_data.tags %}
+                <hr />
+                <h4>Tagged as</h4>
+                <div class="all-tags">
+                    {% for t in talk_data.tags %}
+                    <span class="tag">{{ t }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if voting and user.is_authenticated and talk.conference == CONFERENCE %}
+                <hr />
+                <div id="talk-voting">
+                    <h4>Community voting is open</h4>
+                    {% user_votes talk_id=talk.id as vote %}
+                    <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
+                        Vote this talk:
+                        <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{% firstof vote "0" %}" step="0.5" style="width: 0"/>
+                        <div class="rateit" data-rateit-backingfld="#id_vote-{{ talk.id }}"></div>
+                        <div>
+                            {% url "conference-voting" as u %}
+                            {% if u|full_url in request.META.HTTP_REFERER %}
+                                <a href="{{ request.META.HTTP_REFERER }}">Back to the voting list</a>
+                            {% else %}
+                                <a href="{{ u }}">Back to the voting list</a>
+                            {% endif %}
+                        </div>
+                    </form>
+                    <script type="text/javascript">
+                        function rate(e, val) {
+                            var field = $(e.rateit('backingfld'));
+                            var form = field.parents('form');
+                            if(val == undefined)
+                                field.val(e.rateit('value'))
+                            else
+                                field.val(val);
+                            form.ajaxSubmit();
+                        }
+                        $('#talk-voting .rateit')
+                            .rateit()
+                            .bind('rated', function() {
+                                rate($(this));
+                            })
+                            .bind('reset', function() {
+                                rate($(this), 0);
+                            });
+                    </script>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
+ 
+     
         </div>
-    </div>
+        </aside>
+ 
+    </div><!-- /grid-container -->
+</section>
+    
 {% endblock %}
 
 
