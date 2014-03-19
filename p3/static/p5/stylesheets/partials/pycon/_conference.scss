@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+// TALKS =============================================================================
+
+#talk-voting {
+    @include zero;
+    list-style: none;
+    h3 {
+        margin-bottom: 0;
+    }        
+    .speakers {
+        @extend .meta;
+        text-transform: uppercase;
+    }    
+    li {
+        margin: 0 0 $baselineheight / 2 0;
+        padding: 0 0 $baselineheight / 2 0;    
+        border-bottom: 1px dotted $bordercolor; }
+
+    .abstract {
+        @include font-size(14);
+    }
+
+    // Talk in English
+    .international abbr {
+        background: $neutralcolor;
+        color: $white;
+        padding: 1px 3px;
+        @include font-size(14);
+        border-radius: 2px;
+    }
+    
+    // Talk with teaser video
+    .video .fa {
+        color: $primarycolor;
+    }
+    
+    
+}
+
+
+
+// CART & TICKETS ====================================================================

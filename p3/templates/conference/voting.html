@@ -1,19 +1,9 @@
 {% extends "p3/base.html" %}
 {% load conference formstyle p3 i18n %}
 
-{% block EXTRA_HEAD %}
-    {{ block.super }}
-    <style type="text/css">
-        #form-options .inline .field {
-            float: left;
-        }
-        .cms ul ul {
-            margin: 0;
-            list-style: none;
-        }
-    </style>
-{% endblock %}
-{% block PAGE_TITLE %}{% trans "Talk voting" %} &mdash; {% endblock %}
+
+
+{% block PAGE_TITLE %}{% trans "Talk voting" %}{% endblock %}
 
 {% block MAIN_CONTENT %}
     {% if not voting_allowed %}
@@ -27,87 +17,94 @@
         {% endif %}
     </section>
     {% endif %}
-<section>
+<section class="full-page-height">
     <div class="grid-container">
     <div class="grid-100">
-
         <h1>{% trans "Talk Voting" %}</h1>
+    </div>
+
+
+    <div class="grid-60">
+
 
         <div class="page-summary">
             <p>{% trans "Cast your vote!" %}</p>
         </div>
 
         <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
-            <div class="grid-60 inline">
+ 
+                <fieldset>
                 {{ form.abstracts|form_field:"autosubmit" }}
                 {{ form.talk_type|form_field:"autosubmit" }}
-            </div>
-            <div class="grid-40 inline">
+ 
                 {{ form.language|form_field:"autosubmit" }}
                 {{ form.order|form_field:"autosubmit" }}
-            </div>
-            <div class="grid-100">
+ 
                 {{ form.tags|form_field:"autosubmit" }}
                 {% if user.is_authenticated %}
+                    {% url "conference-profile" slug=pdata.slug as profile_url %}
+                    <p>{% blocktrans %}Set your favorite tags in <a href="{{ profile_url }}">your profile</a> and filter by your interests with one click.{% endblocktrans %}</p>
                     {% p3_profile_data user.id as pdata %}
-                    <div class="span-3">
-                        {% if pdata.interests %}
-                        <div id="use-my-tag" class="button">
-                            <a href="#">{% trans "Match my tags" %}</a>
-                        </div>
-                        <script type="text/javascript">
-                        (function() {
-                            $('#use-my-tag a').click(function(e) {
-                                var form=$('#form-options');
-                                var input = $('input[name=tags]', form);
-                                var tags = [];
-                                $({{ pdata.interests|json_ }}).each(function(ix, val) {
-                                    tags.push('"' + val + '"');
-                                });
-                                form.unbind('submit');
-                                input.val(tags.join(','));
-                                form.submit();
-                                return false;
+                    {% if pdata.interests %}
+                    <button id="use-my-tag" class="btn" type="button">{% trans "Match my tags" %}</button>
+                    <script>
+                    (function() {
+                        $('#use-my-tag').click(function(e) {
+                            var form=$('#form-options');
+                            var input = $('input[name=tags]', form);
+                            var tags = [];
+                            $({{ pdata.interests|json_ }}).each(function(ix, val) {
+                                tags.push('"' + val + '"');
                             });
-                        })();
-                        </script>
-                        {% endif %}
-                    </div>
-                    <div class="span-9 cms last">
-                        {% url "conference-profile" slug=pdata.slug as profile_url %}
-                        <h3>{% blocktrans %}Set your favorite tags in your <a href="{{ profile_url }}">profile</a> and filter by your interests with one click.{% endblocktrans %}</h3>
-                    </div>
+                            form.unbind('submit');
+                            input.val(tags.join(','));
+                            form.submit();
+                            return false;
+                        });
+                    })();
+                    </script>
+                    {% endif %}
                 {% endif %}
-            </div>
+                </fieldset>
         </form>
-        <hr class="stars" />
+        <hr  />
         {% include "conference/ajax/voting.html" %}
-        <div class="span-4 last">
-            <aside>
-                <div class="cms">
-                    <h4>{% trans "How to vote:" %}</h4>
-                    <ul>
-                        <li>{% trans "Click on the stars to cast a vote; half-points are allowed." %}</li>
-                        <li>{% trans "Click on the talk name to go to the (linkable) talk page." %}</li>
-                        <li>{% trans "Click on the speaker name to see the (linkable) speaker page, with full bio and other infos." %}</li>
-                        <li>{% trans "Use the filters at the top to help you go through the talks." %}</li>
-                        <li>{% trans "Sort by vote to help you review all your votes." %}</li>
-                        <li>{% trans "Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract." %}</li>
-                        <li>{% trans "Click on the red sign on the left of the stars to remove a vote, if you want to think about it more." %}</li>
-                        <li>{% trans "If you leave some talks without a vote, we will assume that you don't like them at all (= minimum vote)." %}</li>
-                    </ul>
-                    <h4>{% trans "Need more info?" %}</h4>
-                    <p>
-                        {% blocktrans with voting_url="/talk-voting" contacts_url="/contacts" chat_url="#" chat_click="habla_window.show(); habla_window.expand()" %}
-                        Go to the <a href="{{ voting_url }}">talk voting</a> description page for all the details.
-                        If you still have answers, <a href="{{ contacts_url }}">write us</a> or
-                        <a href="{{ chat_url }}" onclick="{{ chat_click }}">chat with us</a>.
-                        {% endblocktrans %}
-                    </p>
-                </div>
-            </aside>
+ 
+              
+    
+    </div> <!-- /grid -->
+    
+    <aside class="grid-30 prefix-10">             
+        <div class="slot cms">
+    
+            <h4>{% trans "How to vote:" %}</h4>
+            <ul>
+                <li>{% trans "Click on the stars to cast a vote; half-points are allowed." %}</li>
+                <li>{% trans "Click on the red sign on the left of the stars to remove a vote, if you want to think about it more." %}</li>
+    
+                <li>{% trans "Use the filters at the top to help you go through the talks." %}</li>
+                <li>{% trans "Sort by vote to help you review all your votes." %}</li>
+    
+    <!--
+                <li>{% trans "Click on the talk name to go to the (linkable) talk page." %}</li>
+                <li>{% trans "Click on the speaker name to see the (linkable) speaker page, with full bio and other infos." %}</li>
+    -->
+                <li>{% trans "Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract." %}</li>
+                <li>{% trans "If you leave some talks without a vote, we will assume that you don't like them at all (= minimum vote)." %}</li>
+            </ul>
+            
+            <h4>{% trans "Need more info?" %}</h4>
+            <p>
+                {% blocktrans with voting_url="/talk-voting" contacts_url="/contacts" chat_url="#" chat_click="habla_window.show(); habla_window.expand()" %}
+                Go to the <a href="{{ voting_url }}">talk voting</a> description page for all the details.
+                If you still have answers, <a href="{{ contacts_url }}">write us</a> or
+                <a href="{{ chat_url }}" onclick="{{ chat_click }}">chat with us</a>.
+                {% endblocktrans %}
+            </p> 
         </div>
-    </div>
-    </div>
+    </aside>
+ 
+ 
+    </div><!-- /grid-container -->
 </section>
 {% endblock %}

@@ -198,7 +198,17 @@ header {
 
 // MISC. =============================================================================
 
+// Clickable UI icons
 
+span.icon {
+    cursor: pointer;
+}
+
+span.icon-remove {
+    color: $errorcolor;
+}
+
+// Toggle elements 
 
 .toggle, 
 .tag-toggle {
