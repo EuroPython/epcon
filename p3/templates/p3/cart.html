@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load p3 assopy_tags i18n %}
+{% load p3 assopy_tags i18n conference formstyle %}
 
 {% block BODY_CLASS %}wizard{% endblock %}
 
@@ -9,6 +9,8 @@
     {% fares_available "hotel-room" as room_fares %}
     {% fares_available "other" as other_fares %}
     {% fares_available "partner" as partner_fares %}
+<section class="full-page-height">
+    <div class="grid-container">
     {% if conference_fares or room_sharing_fares or room_fares or other_fares or partner_fares %}
     <h1>{% trans "Buy tickets (1 of 2)" %}</h1>
 
@@ -20,7 +22,9 @@
         {% if not user.is_authenticated %}
         <section class="notice">
             {% url "p3-cart" as u %}
-            <p>{% blocktrans %}In order to buy the tickets you have to <a href="/accounts/login/?next={{ u }}">log in</a></p>{% endblocktrans %}
+            {% with "/accounts/login/?next="|add:u as url %}
+            <p>{% blocktrans %}In order to buy the tickets you have to <a href="{{ url }}">log in</a>{% endblocktrans %}</p>
+            {% endwith %}
         </section>
         {% endif %}
 
@@ -29,7 +33,7 @@
             <fieldset class="order-type">
                 <legend>{% trans "Select billing type" %}</legend>
                 <p>{% trans "Please, select the entity you are purchasing tickets for:" %}</p>
-                {{ form.order_type|field }}
+                {{ form.order_type|form_field }}
                 <p>{% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}</p>
             </fieldset>
             <fieldset class="tickets conference-tickets">
@@ -78,11 +82,18 @@
                 <h3>{% trans "Conference tickets - SOLD OUT" %}</h3>
                 {% endif %}
             </fieldset>
+            {% comment %}
             <fieldset class="tickets hotel-reservations">
                 {% if room_sharing_fares %}
-                <legend>Room sharing at Grand Hotel Mediterraneo</legend>
-                <p>Book single beds in shared rooms, save money and get to meet other Pythoners! See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
-                <p><b>Minimum stay: 3 nights</b></p>
+                <legend>{% trans "Room sharing at Grand Hotel Mediterraneo" %}</legend>
+                <p>
+                    {% blocktrans with url="/hotel-concession"%}
+                    Book single beds in shared rooms, save money and get to meet other Pythoners!
+                    See all details of our <a href="{{ url }}">concession</a> with the conference hotel.
+                    Rooms are limited, book now!
+                    {% endblocktrans %}
+                </p>
+                <p><b>{% trans "Minimum stay: 3 nights" %}</b></p>
                 <div class="cms">
                     <table>
                         <thead>
@@ -97,20 +108,26 @@
                             {% render_cart_rows "hotel-room-sharing" form %}
                         </tbody>
                     </table>
-                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">Add another</a></div>
+                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">{% trans "Add another" %}</a></div>
                 </div>
                 <div class="total">
                     {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
                 </div>
                 {% else %}
-                <h3>Hotel rooms are currently sold out</h3>
+                <h3>{% trans "Hotel rooms are currently sold out" %}</h3>
                 {% endif %}
             </fieldset>
             <fieldset class="tickets hotel-reservations">
                 {% if room_fares %}
                 <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
-                <p>Book a room in the conference hotel, including wifi and breakfast. See all details of our <a href="/hotel-concession">concession</a> with the conference hotel. Rooms are limited, book now!</p>
-                <p><b>Minimum stay: 3 nights</b></p>
+                <p>
+                    {% blocktrans with url="/hotel-concession"%}
+                    Book a room in the conference hotel, including wifi and breakfast.
+                    See all details of our <a href="{{ url }}">concession</a> with the conference hotel.
+                    Rooms are limited, book now!
+                    {% endblocktrans %}
+                </p>
+                <p><b>{% trans "Minimum stay: 3 nights" %}</b></p>
                 <div class="cms">
                     <table>
                         <thead>
@@ -125,15 +142,16 @@
                             {% render_cart_rows "hotel-room" form %}
                         </tbody>
                     </table>
-                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">Add another</a></div>
+                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">{% trans "Add another" %}</a></div>
                 </div>
                 <div class="total">
                     {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
                 </div>
                 {% else %}
-                <h3>Hotel rooms are currently sold out</h3>
+                <h3>{% trans "Hotel rooms are currently sold out" %}</h3>
                 {% endif %}
             </fieldset>
+            {% endcomment %}
 
             {% if other_fares %}
             <fieldset class="tickets other-goodies">
@@ -176,7 +194,7 @@
             <fieldset class="tickets coupon">
                 <legend>{% trans "Coupon code" %}</legend>
                 <div class="cms">
-                    {{ form.coupon|field }} <span></span>
+                    {{ form.coupon|form_field }} <span></span>
                     <hr />
                 </div>
                 <div class="total">
@@ -200,9 +218,11 @@
                 $('#form-cart select').attr('disabled', true);
             {% endif %}
         </script>
-        <script src="{{ STATIC_URL }}p5/j/cart.js"></script>
+        <script src="{{ STATIC_URL }}p5/javascripts/cart.js"></script>
     </div>
     {% else %}
-    <h1>Sorry no tickets available</h1>
+    <h1>{% trans "Sorry no tickets available" %}</h1>
     {% endif %}
+</div>
+</section>
 {% endblock %}
