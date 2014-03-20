@@ -1,4 +1,4 @@
-{% load conference assopy_tags p3 %}
+{% load conference assopy_tags p3 i18n %}
 {% warmup_conference_cache as alldata %}
 <div id="talk-voting-wrapper">
     <ul id="talk-voting">
@@ -25,15 +25,11 @@
                 {% else %}
                     {{ t.title }}
                 {% endif %}
-                {% if t.language == "it" %} <img src="{{ STATIC_URL }}p5/i/italian-flag.png" height="15" />{% endif %}
-                {% if t.teaser_video %}<img src="{{ STATIC_URL }}p5/i/tv.png" height="24" alt="" title="teaser video available" />{% endif %}
             </h3>
             <div class="meta">
                 {{ t.type|field_label:"Talk.type" }} for {{ t.level|field_label:"Talk.level" }}
-                {%comment%}
-                    {% if t.teaser_video %} &middot; <span class="video"><i title="{% trans 'Teaser video available' %}" class="fa fa-youtube-play"></i>&nbsp;Video</span>{% endif %}
-                    {% if t.language == "en" %} &middot; <span class="international"><i class="fa fa-globe"></i>&nbsp;<abbr>ENG</abbr></span>{% endif %}
-                {%endcomment%}
+                {% if t.teaser_video %} &middot; <span class="video"><i title="{% trans "Teaser video available" %}" class="fa fa-youtube-play"></i>&nbsp;Video</span>{% endif %}
+                {% if t.language == "en" %} &middot; <span class="international"><i class="fa fa-globe"></i>&nbsp;<abbr>ENG</abbr></span>{% endif %}
             </div>
             {% endwith %}
             <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
