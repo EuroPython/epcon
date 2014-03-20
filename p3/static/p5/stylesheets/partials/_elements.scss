@@ -72,7 +72,12 @@ display: inline-block;
 @include font-size(14);
 margin-right: $gutterwidth/4;
 margin-bottom: $baselineheight/4;    
-&:hover {
+}
+
+// anchor tag (clickable)
+
+a.tag:hover {
 background: $white;
 text-decoration: none; }
-}
+
+

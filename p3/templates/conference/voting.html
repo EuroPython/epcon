@@ -26,21 +26,18 @@
 
     <div class="grid-60">
 
-
-        <div class="page-summary">
-            <p>{% trans "Cast your vote!" %}</p>
-        </div>
-
         <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
  
-                <fieldset>
-                {{ form.abstracts|form_field:"autosubmit" }}
-                {{ form.talk_type|form_field:"autosubmit" }}
- 
-                {{ form.language|form_field:"autosubmit" }}
-                {{ form.order|form_field:"autosubmit" }}
- 
-                {{ form.tags|form_field:"autosubmit" }}
+                <fieldset class="clearfix">
+                    <legend>Filters</legend> 
+                
+                    {{ form.abstracts|form_field:"autosubmit" }}                
+                    {{ form.talk_type|form_field:"autosubmit" }} 
+                    {{ form.language|form_field:"autosubmit" }}
+                    {{ form.order|form_field:"autosubmit" }}                     
+                    {{ form.tags|form_field:"autosubmit" }}
+                </fieldset>
+                <fieldset>                                
                 {% if user.is_authenticated %}
                     {% url "conference-profile" slug=pdata.slug as profile_url %}
                     <p>{% blocktrans %}Set your favorite tags in <a href="{{ profile_url }}">your profile</a> and filter by your interests with one click.{% endblocktrans %}</p>

@@ -39,10 +39,31 @@
     .video .fa {
         color: $primarycolor;
     }
-    
+
     
 }
 
+#form-options {
+    
+    .control-group {
+        float: left;
+        margin-right: $gutterwidth;
+        
+/*
+        label {
+            @extend .meta;
+            text-transform: uppercase;            
+        }
+*/
+    }
+    
+    // Stop to float elements
+    .tagfield {
+        float: none;
+        clear: both;
+    }
+    
+}
 
 
 // CART & TICKETS ====================================================================
