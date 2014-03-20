@@ -2,7 +2,6 @@
 {% load conference formstyle p3 i18n %}
 
 
-
 {% block PAGE_TITLE %}{% trans "Talk voting" %}{% endblock %}
 
 {% block MAIN_CONTENT %}
@@ -27,17 +26,17 @@
     <div class="grid-60">
 
         <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
- 
+
                 <fieldset class="clearfix">
-                    <legend>Filters</legend> 
-                
-                    {{ form.abstracts|form_field:"autosubmit" }}                
-                    {{ form.talk_type|form_field:"autosubmit" }} 
+                    <legend>Filters</legend>
+
+                    {{ form.abstracts|form_field:"autosubmit" }}
+                    {{ form.talk_type|form_field:"autosubmit" }}
                     {{ form.language|form_field:"autosubmit" }}
-                    {{ form.order|form_field:"autosubmit" }}                     
+                    {{ form.order|form_field:"autosubmit" }}
                     {{ form.tags|form_field:"autosubmit" }}
                 </fieldset>
-                <fieldset>                                
+                <fieldset>
                 {% if user.is_authenticated %}
                     {% url "conference-profile" slug=pdata.slug as profile_url %}
                     <p>{% blocktrans %}Set your favorite tags in <a href="{{ profile_url }}">your profile</a> and filter by your interests with one click.{% endblocktrans %}</p>
@@ -66,22 +65,22 @@
         </form>
         <hr  />
         {% include "conference/ajax/voting.html" %}
- 
-              
-    
+
+
+
     </div> <!-- /grid -->
-    
-    <aside class="grid-30 prefix-10">             
+
+    <aside class="grid-30 prefix-10">
         <div class="slot cms">
-    
+
             <h4>{% trans "How to vote:" %}</h4>
             <ul>
                 <li>{% trans "Click on the stars to cast a vote; half-points are allowed." %}</li>
                 <li>{% trans "Click on the red sign on the left of the stars to remove a vote, if you want to think about it more." %}</li>
-    
+
                 <li>{% trans "Use the filters at the top to help you go through the talks." %}</li>
                 <li>{% trans "Sort by vote to help you review all your votes." %}</li>
-    
+
     <!--
                 <li>{% trans "Click on the talk name to go to the (linkable) talk page." %}</li>
                 <li>{% trans "Click on the speaker name to see the (linkable) speaker page, with full bio and other infos." %}</li>
@@ -89,7 +88,7 @@
                 <li>{% trans "Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract." %}</li>
                 <li>{% trans "If you leave some talks without a vote, we will assume that you don't like them at all (= minimum vote)." %}</li>
             </ul>
-            
+
             <h4>{% trans "Need more info?" %}</h4>
             <p>
                 {% blocktrans with voting_url="/talk-voting" contacts_url="/contacts" chat_url="#" chat_click="habla_window.show(); habla_window.expand()" %}
@@ -97,11 +96,10 @@
                 If you still have answers, <a href="{{ contacts_url }}">write us</a> or
                 <a href="{{ chat_url }}" onclick="{{ chat_click }}">chat with us</a>.
                 {% endblocktrans %}
-            </p> 
+            </p>
         </div>
     </aside>
- 
- 
+
     </div><!-- /grid-container -->
 </section>
 {% endblock %}
