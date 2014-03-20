@@ -20,6 +20,13 @@
     }
 }
 
+.speaker-talks {
+dt {
+    text-transform: uppercase;
+    margin-bottom: $baselineheight/4; }
+li {
+    margin: 0 0 $baselineheight/4 $gutterwidth; }     
+}
 
 // Inline edit for profile sections and other user-related forms
 

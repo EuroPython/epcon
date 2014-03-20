@@ -43,7 +43,7 @@
                     <p>{% blocktrans %}Set your favorite tags in <a href="{{ profile_url }}">your profile</a> and filter by your interests with one click.{% endblocktrans %}</p>
                     {% p3_profile_data user.id as pdata %}
                     {% if pdata.interests %}
-                    <button id="use-my-tag" class="btn" type="button">{% trans "Match my tags" %}</button>
+                    <button id="use-my-tag" class="btn btn-small" type="button">{% trans "Match my tags" %}</button>
                     <script>
                     (function() {
                         $('#use-my-tag').click(function(e) {

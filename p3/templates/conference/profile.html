@@ -8,6 +8,10 @@
 {% block MAIN_CONTENT %}
 {% p3_profile_data profile.user_id as profile_data %}
 
+<!--
+PROFILE VISIBILITY
+-->
+
 {% if full_access %}
 <section>
     <div class="grid-container">
@@ -16,8 +20,11 @@
    </div>
    </div>
 </section>
-
 {% endif %}
+
+<!--
+AVATAR AND PERSONAL INFORMATION
+-->
 
 <section id="profile-user-identity">
     <div class="grid-container">
@@ -33,6 +40,10 @@
    </div>
 </section>
 
+<!--
+BIO
+-->
+
 <section>
     <div class="grid-container">
     <div class="grid-80 prefix-20">
@@ -41,11 +52,14 @@
    </div>
 </section>
 
+<!--
+TALKS AND TWITTER
+-->
 <section>
     <div class="grid-container">
-    <div class="grid-80 suffix-20">
+    <div class="grid-50">
 
-    <div class="">
+ 
         {% current_conference as conf %}
         {% if conf.voting %}
             {% sum_ "talks" profile_data.talks.by_conf|attrib_:conf.code profile_data.talks.accepted.all %}
@@ -57,15 +71,17 @@
             {% endif %}
         {% endif %}
         {% if talks %}
-        <div class="speaker-talks">
+        <div class="speaker-talks well">
             <h2>{{ profile_data.name }}’s Talks</h2>
             <dl>
             {% for conf, talks_list in talks|ordered_talks %}
                 <dt>{{ conf }}</dt>
+                <dd><ul>
                 {% for t in talks_list %}
-                <dd><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a>{% if t.status != "accepted" %} ({{ t.status }}){% endif %}</dd>
+                    <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a>{% if t.status != "accepted" %} — {{ t.status }}{% endif %}</li>
                 {% endfor %}
             {% endfor %}
+                </ul></dd>
             </dl>
         </div>
         {% endif %}
@@ -101,7 +117,7 @@
         }
         </script>
         {% endif %}
-    </div>
+ 
 
    </div><!-- /grid -->
    </div><!-- /grid-container -->
