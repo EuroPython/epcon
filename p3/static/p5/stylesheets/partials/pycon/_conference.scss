@@ -13,14 +13,15 @@
     h3 {
         margin-bottom: 0;
     }        
-    .speakers {
-        @extend .meta;
-        text-transform: uppercase;
-    }    
     li {
         margin: 0 0 $baselineheight / 2 0;
         padding: 0 0 $baselineheight / 2 0;    
         border-bottom: 1px dotted $bordercolor; }
+
+    .talk-speakers {
+        @extend .meta;
+        text-transform: uppercase;
+    }    
 
     .abstract {
         @include font-size(14);

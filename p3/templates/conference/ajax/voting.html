@@ -6,7 +6,7 @@
         {% with alldata.talks|attrib_:row.id as t %}
         <li>
             {% with t.speakers|attrib_:"id"|contains_:request.user.id as special_user %}
-            <div class="speakers">
+            <div class="talk-speakers">
                 {% for s in t.speakers %}
                     {% if voting_allowed or special_user %}
                     {% with alldata.speakers|attrib_:s.id as pdata %}
@@ -76,7 +76,7 @@
             var tid = $('h2', talk).attr('id');
             var title = $('h2 a', talk).eq(1).html();
             var speakers = [];
-            $('.meta .speaker-name', talk).each(function() {
+            $('.talk-speakers .speaker-name', talk).each(function() {
                 var s = $(this);
                 if(!!(s.attr('data-twitter'))) {
                     speakers.push('@' + s.attr('data-twitter'));

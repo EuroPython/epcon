@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 */
 @import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .speakers, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .talk-speakers, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -116,9 +116,9 @@ figure {
     font-style: italic;
     color: #656257; }
 
-.meta, #talk-voting .speakers {
+.meta, #talk-voting .talk-speakers {
   color: #807c6f; }
-  .meta a:link, #talk-voting .speakers a:link, .meta a:visited, #talk-voting .speakers a:visited {
+  .meta a:link, #talk-voting .talk-speakers a:link, .meta a:visited, #talk-voting .talk-speakers a:visited {
     color: #807c6f; }
 
 .tag {
@@ -142,7 +142,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   color: inherit;
   text-rendering: optimizelegibility; }
-  h1 small, h1 .meta, h1 #talk-voting .speakers, #talk-voting h1 .speakers, h2 small, h2 .meta, h2 #talk-voting .speakers, #talk-voting h2 .speakers, h3 small, h3 .meta, h3 #talk-voting .speakers, #talk-voting h3 .speakers, h4 small, h4 .meta, h4 #talk-voting .speakers, #talk-voting h4 .speakers, h5 small, h5 .meta, h5 #talk-voting .speakers, #talk-voting h5 .speakers, h6 small, h6 .meta, h6 #talk-voting .speakers, #talk-voting h6 .speakers {
+  h1 small, h1 .meta, h1 #talk-voting .talk-speakers, #talk-voting h1 .talk-speakers, h2 small, h2 .meta, h2 #talk-voting .talk-speakers, #talk-voting h2 .talk-speakers, h3 small, h3 .meta, h3 #talk-voting .talk-speakers, #talk-voting h3 .talk-speakers, h4 small, h4 .meta, h4 #talk-voting .talk-speakers, #talk-voting h4 .talk-speakers, h5 small, h5 .meta, h5 #talk-voting .talk-speakers, #talk-voting h5 .talk-speakers, h6 small, h6 .meta, h6 #talk-voting .talk-speakers, #talk-voting h6 .talk-speakers {
     font-weight: normal;
     line-height: 1;
     color: #bcbab2; }
@@ -203,7 +203,7 @@ address {
   font-size: 1.8rem;
   line-height: 1.5em; }
 
-small, .meta, #talk-voting .speakers {
+small, .meta, #talk-voting .talk-speakers {
   font-size: 15px;
   font-size: 1.5rem; }
 
@@ -234,18 +234,18 @@ blockquote {
   padding: 14px;
   background-color: #e0dfdb;
   font-style: normal; }
-  blockquote small:before, blockquote .meta:before, blockquote #talk-voting .speakers:before, #talk-voting blockquote .speakers:before {
+  blockquote small:before, blockquote .meta:before, blockquote #talk-voting .talk-speakers:before, #talk-voting blockquote .talk-speakers:before {
     content: '\00A0 \2014'; }
-  blockquote small:after, blockquote .meta:after, blockquote #talk-voting .speakers:after, #talk-voting blockquote .speakers:after {
+  blockquote small:after, blockquote .meta:after, blockquote #talk-voting .talk-speakers:after, #talk-voting blockquote .talk-speakers:after {
     content: ''; }
   blockquote.pull-right {
     float: right;
     background-color: transparent; }
-    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .speakers, #talk-voting blockquote.pull-right .speakers {
+    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .talk-speakers, #talk-voting blockquote.pull-right .talk-speakers {
       text-align: right; }
-    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .speakers:before, #talk-voting blockquote.pull-right .speakers:before {
+    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .talk-speakers:before, #talk-voting blockquote.pull-right .talk-speakers:before {
       content: ''; }
-    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .speakers:after, #talk-voting blockquote.pull-right .speakers:after {
+    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .talk-speakers:after, #talk-voting blockquote.pull-right .talk-speakers:after {
       content: '\00A0 \2014'; }
   blockquote cite {
     font-style: normal; }
@@ -2142,9 +2142,9 @@ input.search-query {
   border-radius: 8px; }
 
 .btn-small {
-  padding: 4px 9px;
-  font-size: 14.4px;
-  font-size: 1.44rem;
+  padding: 5px 10px;
+  font-size: 15.65217px;
+  font-size: 1.56522rem;
   line-height: inherit; }
 
 .btn-mini {
@@ -4688,12 +4688,12 @@ form .field.error .errorlist {
   list-style: none; }
   #talk-voting h3 {
     margin-bottom: 0; }
-  #talk-voting .speakers {
-    text-transform: uppercase; }
   #talk-voting li {
     margin: 0 0 0.75em 0;
     padding: 0 0 0.75em 0;
     border-bottom: 1px dotted #bcbab2; }
+  #talk-voting .talk-speakers {
+    text-transform: uppercase; }
   #talk-voting .abstract {
     font-size: 14px;
     font-size: 1.4rem; }
@@ -4859,7 +4859,7 @@ header {
                 color: $white;  
             }
     */ }
-  .badge small, .badge .meta, .badge #talk-voting .speakers, #talk-voting .badge .speakers {
+  .badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers {
     color: #807c6f;
     margin-bottom: 0; }
   .badge .fa {

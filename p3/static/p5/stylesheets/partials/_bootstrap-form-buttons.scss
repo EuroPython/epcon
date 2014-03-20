@@ -152,8 +152,8 @@ border-width : $buttonborderwidth * 2;
 border-radius : $borderradius * 2; }
 
 .btn-small {
-padding : 4px 9px;
-@include font-size($buttonfontsize / 1.25);
+padding : 5px 10px;
+@include font-size($buttonfontsize / 1.15);
 line-height : inherit; }
 
 .btn-mini {

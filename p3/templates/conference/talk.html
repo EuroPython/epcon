@@ -50,42 +50,15 @@
 <section class="full-page-height">
     <div class="grid-container">
     <div class="grid-100">
-    <h1>{{ talk_data.title }}
-    {% if full_access %}
-    <span class="action edit"><a class="btn" href="#">Edit talk</a></span>
-    <script type="text/javascript">//<![CDATA[
-    $('.action a').click(function(e) {
-        e.preventDefault();
-        $('div.readonly').hide();
-        $('div.writable').show();
-        $(e.target).hide();
-    });
-    //]]>
-    </script>
-    {% endif %}</h1>
+        <h1>{{ talk_data.title }}</h1>
     </div>
     
-
     <div class="grid-60">
-        <div class="page-summary">
-            <p>
-                {% trans "by" %}
-                {% for spk in talk_data.speakers %}
-                    <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
-                    {% if not forloop.last %}, {% endif %}
-                {% endfor %}
-                {%comment%}
-                    for
-                    <strong>
-                    {% if talk_data.conference == "ep2011" %}
-                    EuroPython 2011
-                    {% endif %}
-                    {% if talk_data.conference == "ep2012" %}
-                    EuroPython 2012
-                    {% endif %}
-                    </strong>
-                {%endcomment%}
-            </p>
+        <div class="talk-speakers">
+        {% trans 'By' %} {% for spk in talk_data.speakers %}        
+            <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
+            {% if not forloop.last %}, {% endif %}
+        {% endfor %}
         </div>
         {% with talk.event_set.all as events %}
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
@@ -146,23 +119,37 @@
                 {{ form.abstract|field }}
                 </fieldset>
                 <fieldset>
-                    <button class="btn btn-primary" name="" value="" type="submit">Save Changes</button>
+                    <button class="btn btn-primary" name="" value="" type="submit">{% trans "Save" %}</button>
                 </fieldset>
             </form>
         </div>
+        {% if full_access %}    
+        <a href="#" class="btn btn-small live-edit-switch"><i class="fa fa-edit"></i> {% trans 'Edit' %}</a>
+        <script type="text/javascript">//<![CDATA[
+        $('.live-edit-switch').click(function(e) {
+            e.preventDefault();
+            $('div.readonly').hide();
+            $('div.writable').show();
+            $(e.target).hide();
+        });
+        //]]>
+        </script>
         {% endif %}
+
+        {% endif %}
+        <hr />
         {% get_comment_list talk as comments %}
         {% if comments %}
             <h3>Comments</h3>
             {% show_comment_list talk %}
         {% else %}
-            <h3>Do you have some questions on this talk? Leave a comment to the speaker!</h3>
+            <h3>Do you have some questions on this talk?</h3>
         {% endif %}
         {% show_comment_form talk %}
     </div><!-- /grid -->
     
         <aside class="grid-30 prefix-10">             
-        <div class="slot cms">
+        <div class="slot">
             <div class="talk details">
                 {% if talk.slides %}
                     {% stuff_info talk.slides as info %}
@@ -192,11 +179,9 @@
                 </dl>
                 {% if talk_data.tags %}
                 <hr />
-                <h4>Tagged as</h4>
+                <h4>Tag</h4>
                 <div class="all-tags">
-                    {% for t in talk_data.tags %}
-                    <span class="tag">{{ t }}</span>
-                    {% endfor %}
+                    {% for t in talk_data.tags %}<span class="tag">{{ t }}</span>{% endfor %}
                 </div>
                 {% endif %}
                 {% if voting and user.is_authenticated and talk.conference == CONFERENCE %}
