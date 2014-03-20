@@ -199,13 +199,15 @@ def render_ticket(context, ticket):
     })
     return ctx
 
-@register.assignment_tag
-def fares_available(fare_type, sort=None):
+@register.assignment_tag(takes_context=True)
+def fares_available(context, fare_type, sort=None):
     """
     Restituisce l'elenco delle tariffe attive in questo momento per la
     tipologia specificata.
     """
     assert fare_type in ('all', 'conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
+    if not settings.P3_FARES_ENABLED(context['user']):
+        return []
 
     fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
     if fare_type == 'conference':

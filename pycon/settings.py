@@ -574,6 +574,7 @@ PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 
 from datetime import date
+P3_FARES_ENABLED = lambda u: True
 P3_NEWSLETTER_SUBSCRIBE_URL = "http://groups.google.com/group/python-italia-aps/boxsubscribe"
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 P3_HOTEL_RESERVATION = {
