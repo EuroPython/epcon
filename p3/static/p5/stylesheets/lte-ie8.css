@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 */
 @import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, .talk-speakers, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .talk-speakers, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
 
 article, aside, figure, footer, header, hgroup, nav, section { display: block; }
 
@@ -49,15 +49,15 @@ figure { margin-bottom: 1.5em; }
 figure img { margin-bottom: 0.375em; }
 figure figcaption { display: block; font-weight: normal; font-size: 14px; font-size: 1.4rem; font-style: italic; color: #656257; }
 
-.meta, .talk-speakers { color: #807c6f; }
-.meta a:link, .talk-speakers a:link, .meta a:visited, .talk-speakers a:visited { color: #807c6f; }
+.meta, #talk-voting .talk-speakers { color: #807c6f; }
+.meta a:link, #talk-voting .talk-speakers a:link, .meta a:visited, #talk-voting .talk-speakers a:visited { color: #807c6f; }
 
 .tag { background: #d4d2cd; border: 1px solid #bcbab2; border-radius: 4px; padding: 0 6px; display: inline-block; font-size: 14px; font-size: 1.4rem; margin-right: 7px; margin-bottom: 0.375em; }
 
 a.tag:hover { background: white; text-decoration: none; }
 
 h1, h2, h3, h4, h5, h6 { margin: 0; font-family: inherit; font-weight: 400; color: inherit; text-rendering: optimizelegibility; }
-h1 small, h1 .meta, h1 .talk-speakers, h2 small, h2 .meta, h2 .talk-speakers, h3 small, h3 .meta, h3 .talk-speakers, h4 small, h4 .meta, h4 .talk-speakers, h5 small, h5 .meta, h5 .talk-speakers, h6 small, h6 .meta, h6 .talk-speakers { font-weight: normal; line-height: 1; color: #bcbab2; }
+h1 small, h1 .meta, h1 #talk-voting .talk-speakers, #talk-voting h1 .talk-speakers, h2 small, h2 .meta, h2 #talk-voting .talk-speakers, #talk-voting h2 .talk-speakers, h3 small, h3 .meta, h3 #talk-voting .talk-speakers, #talk-voting h3 .talk-speakers, h4 small, h4 .meta, h4 #talk-voting .talk-speakers, #talk-voting h4 .talk-speakers, h5 small, h5 .meta, h5 #talk-voting .talk-speakers, #talk-voting h5 .talk-speakers, h6 small, h6 .meta, h6 #talk-voting .talk-speakers, #talk-voting h6 .talk-speakers { font-weight: normal; line-height: 1; color: #bcbab2; }
 
 h1, .h1 { font-size: 36px; font-size: 3.6rem; line-height: 1.2; margin-bottom: 0.75em; font-weight: 300; text-transform: uppercase; }
 
@@ -73,22 +73,27 @@ h6, .h6 { font-size: 18px; font-size: 1.8rem; margin-bottom: 1.5em; font-weight:
 
 p, ol, ul, dl, address { margin-bottom: 0.75em; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; }
 
-small, .meta, .talk-speakers { font-size: 15px; font-size: 1.5rem; }
+small, .meta, #talk-voting .talk-speakers { font-size: 15px; font-size: 1.5rem; }
 
 ul, ol { margin: 0 0 0.75em -28px; padding: 0 0 0 28px; }
 
-li ul, li ol { list-style-type: none; margin: 1.5em 0; font-size: 16px; font-size: 1.6rem; }
-
+/*
+li ul,
+li ol {
+list-style-type : none;
+margin : $baselineheight 0;
+@include font-size(16); }
+*/
 ul.inline, ol.inline { list-style-type: none; margin-left: 0; }
 ul.inline > li, ol.inline > li { display: inline-block; padding-left: 14px; padding-right: 14px; }
 
 blockquote { margin: 0 0 1.5em 0; padding: 14px; background-color: #e0dfdb; font-style: normal; }
-blockquote small:before, blockquote .meta:before, blockquote .talk-speakers:before { content: '\00A0 \2014'; }
-blockquote small:after, blockquote .meta:after, blockquote .talk-speakers:after { content: ''; }
+blockquote small:before, blockquote .meta:before, blockquote #talk-voting .talk-speakers:before, #talk-voting blockquote .talk-speakers:before { content: '\00A0 \2014'; }
+blockquote small:after, blockquote .meta:after, blockquote #talk-voting .talk-speakers:after, #talk-voting blockquote .talk-speakers:after { content: ''; }
 blockquote.pull-right { float: right; background-color: transparent; }
-blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right .talk-speakers { text-align: right; }
-blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right .talk-speakers:before { content: ''; }
-blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right .talk-speakers:after { content: '\00A0 \2014'; }
+blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .talk-speakers, #talk-voting blockquote.pull-right .talk-speakers { text-align: right; }
+blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .talk-speakers:before, #talk-voting blockquote.pull-right .talk-speakers:before { content: ''; }
+blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .talk-speakers:after, #talk-voting blockquote.pull-right .talk-speakers:after { content: '\00A0 \2014'; }
 blockquote cite { font-style: normal; }
 
 q { quotes: none; }
@@ -217,13 +222,13 @@ a:hover, a:active { outline: 0; }
 
 .btn-primary { background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#306a99), to(#244f72)); background-image: -webkit-linear-gradient(top, #306a99, #244f72); background-color: #244f72; background-image: -moz-linear-gradient(top, #306a99, #244f72); background-image: -ms-linear-gradient(top, #306a99, #244f72); background-image: -o-linear-gradient(top, #306a99, #244f72); background-image: linear, top, #306a99, #244f72; background-repeat: repeat-x; }
 
-.accordion { margin-bottom: 1.5em; }
+.accordion { /* margin-bottom : $baselineheight;  */ }
 
 .accordion__heading { border-bottom-width: 0; }
-.accordion__heading .accordion__toggle { display: block; padding: 14px 0; cursor: pointer; }
+.accordion__heading .accordion__toggle { font-size: 16px; font-size: 1.6rem; text-transform: uppercase; display: block; cursor: pointer; }
 
 /*accordion-heading*/
-.accordion__inner { padding: 14px 0 0 0; border-top: 1px solid #bcbab2; }
+.accordion__inner { margin: 0.75em 0 0.75em 14px; /* border-top : $borderwidth $borderstyle $bordercolor;  */ }
 
 .collapse { position: relative; height: 0; overflow: hidden; -webkit-transition: height 0.25s ease-in; -moz-transition: height 0.25s ease-in; transition: height 0.25s ease-in; opacity: 0; }
 
@@ -782,7 +787,7 @@ input.search-query { margin-bottom: 0; padding-right: 14px; padding-right: 4px \
 /*btn.btn-large*/
 .btn-large { padding: 11px 18px; font-size: 22.5px; font-size: 2.25rem; line-height: inherit; border-width: 2px; border-radius: 8px; }
 
-.btn-small { padding: 4px 9px; font-size: 14.4px; font-size: 1.44rem; line-height: inherit; }
+.btn-small { padding: 5px 10px; font-size: 15.65217px; font-size: 1.56522rem; line-height: inherit; }
 
 .btn-mini { padding: 3px 5px; font-size: 12px; font-size: 1.2rem; line-height: inherit; }
 
@@ -2006,18 +2011,36 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 #chart-div { margin-left: 29%; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
-.talk-speakers { text-transform: uppercase; }
-
 #talk-voting { margin: 0; padding: 0; list-style: none; }
 #talk-voting h3 { margin-bottom: 0; }
-#talk-voting li { margin: 0 0 0.75em 0; padding: 0 0 0.75em 0; border-bottom: 1px dotted #bcbab2; }
-#talk-voting .abstract { font-size: 14px; font-size: 1.4rem; }
-#talk-voting .international abbr { background: #807c6f; color: white; padding: 1px 3px; font-size: 14px; font-size: 1.4rem; border-radius: 2px; }
-#talk-voting .video .fa { color: #306a99; }
+#talk-voting > li { margin: 0 0 0.75em 0; padding: 0 0 0.75em 0; border-bottom: 1px dotted #bcbab2; }
+#talk-voting .talk-speakers { text-transform: uppercase; }
+#talk-voting .accordion__inner * { font-size: 16px; font-size: 1.6rem; }
+#talk-voting .international abbr { background: #d4d2cd; padding: 1px 3px; font-size: 14px; font-size: 1.4rem; border-radius: 2px; }
+#talk-voting .video .fa { color: #ad3d31; }
+#talk-voting .rateit { margin: 0.75em 0; }
 
 #form-options .control-group { float: left; margin-right: 28px; /* label { @extend .meta; text-transform: uppercase;             }
 */ }
 #form-options .tagfield { float: none; clear: both; }
+
+div.rateit { display: inline-block; position: relative; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+div.rateit div.rateit-range { position: relative; display: inline-block; background: url(../images/rateit-star.gif); height: 16px; }
+
+div.rateit div.rateit-hover, div.rateit div.rateit-selected { position: absolute; }
+
+div.rateit div.rateit-hover { background: url(../images/rateit-star.gif) left -32px; }
+
+div.rateit div.rateit-hover-rtl { background-position: right -32px; }
+
+div.rateit div.rateit-selected { background: url(../images/rateit-star.gif) left -16px; }
+
+div.rateit div.rateit-selected-rtl { background-position: right -16px; }
+
+div.rateit div.rateit-reset { background: url(../images/rateit-delete.gif) 0 0; width: 16px; height: 16px; display: inline-block; float: left; }
+
+div.rateit div.rateit-reset:hover { background-position: 0 -16px; }
 
 @media print { * { background: transparent !important; color: black !important; box-shadow: none !important; text-shadow: none !important; }
   @page { margin: 0.5cm; }
