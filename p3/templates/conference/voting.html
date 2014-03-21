@@ -88,7 +88,9 @@
                 <li>{% trans "Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract." %}</li>
                 <li>{% trans "If you leave some talks without a vote, we will assume that you don't like them at all (= minimum vote)." %}</li>
             </ul>
+        </div><!-- /slot -->
 
+        <div class="slot cms">
             <h4>{% trans "Need more info?" %}</h4>
             <p>
                 {% blocktrans with voting_url="/talk-voting" contacts_url="/contacts" chat_url="#" chat_click="habla_window.show(); habla_window.expand()" %}
@@ -97,7 +99,8 @@
                 <a href="{{ chat_url }}" onclick="{{ chat_click }}">chat with us</a>.
                 {% endblocktrans %}
             </p>
-        </div>
+        </div><!-- /slot -->
+
     </aside>
 
     </div><!-- /grid-container -->

@@ -28,8 +28,8 @@
             </h3>
             <div class="meta">
                 {{ t.type|field_label:"Talk.type" }} for {{ t.level|field_label:"Talk.level" }}
-                {% if t.teaser_video %} &middot; <span class="video"><i title="{% trans "Teaser video available" %}" class="fa fa-youtube-play"></i>&nbsp;Video</span>{% endif %}
-                {% if t.language == "en" %} &middot; <span class="international"><i class="fa fa-globe"></i>&nbsp;<abbr>ENG</abbr></span>{% endif %}
+                {% if t.teaser_video %}&emsp;<span class="video" title="{% trans "Teaser video available" %}"><i class="fa fa-youtube-play"></i>&nbsp;Video</span>{% endif %}
+                {% if t.language == "en" %}&emsp;<span class="international"><i class="fa fa-globe"></i>&nbsp;<abbr>ENG</abbr></span>{% endif %}
             </div>
             {% endwith %}
             <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
@@ -42,9 +42,9 @@
                 <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url "conference-talk-xml" t.slug %}">Abstract</dt>
                 <dd>
                     <div data-talk="{{ t.id }}" style="display: none">
-                        <div class="abstract"></div>
+                        <div class="abstract cms"></div>
                         <hr />
-                        <div>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#comments">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
+                        <div>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#add-comment">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
                     </div>
                 </dd>
             </dl>

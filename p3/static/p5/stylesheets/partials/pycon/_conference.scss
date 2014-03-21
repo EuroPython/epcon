@@ -13,7 +13,7 @@
     h3 {
         margin-bottom: 0;
     }        
-    li {
+    > li {
         margin: 0 0 $baselineheight / 2 0;
         padding: 0 0 $baselineheight / 2 0;    
         border-bottom: 1px dotted $bordercolor; }
@@ -23,14 +23,13 @@
         text-transform: uppercase;
     }    
 
-    .abstract {
-        @include font-size(14);
+    .abstract * {
+        @include font-size(16);
     }
 
     // Talk in English
     .international abbr {
-        background: $neutralcolor;
-        color: $white;
+        background: $lighterneutralcolor;
         padding: 1px 3px;
         @include font-size(14);
         border-radius: 2px;
@@ -38,7 +37,7 @@
     
     // Talk with teaser video
     .video .fa {
-        color: $primarycolor;
+        color: $secondarycolor;
     }
 
     
