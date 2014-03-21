@@ -1,49 +1,32 @@
 {% extends "p3/base.html" %}
 {% load p3 %}
+
+{% block PAGE_TITLE %}{% trans 'Cannot find the requested page' %}{% endblock %}
+
 {% block MAIN_CONTENT %}
-<div class="column span-12">
-    <div class="page clearfix border">
-        <h1>Cannot find the requested page</h1>
+<section class="full-page-height">
+    <div class="grid-container">
+    <div class="grid-100">
 
-        <div class="column span-8">
-            <div class="page-summary">
-                <blockquote>
-                    <p>Oops! We're sorry, the page you requested does not exist.</p>
-                </blockquote>
-            </div>
-            <div class="cms">
-                <p>
-                    Here are a few useful links:
-                    <ul>
-                        <li>
-                            Our <a href="/blog/">Blog</a>;
-                        </li>
-                        <li>
-                            The <a href="/schedule/">conference schedule</a>;
-                        </li>
-                        <li>
-                            Our page about
-                            <a href="/sponsor/">sponsorship opportunities</a>;
-                        </li>
-                        <li>
-                            <a href="/faq/">Frequently asked questions</a> (F.A.Q.);
-                        </li>
-                        <li>
-                            ... or get back to the<a href="/">PyCon Home Page</a>
-                        </li>
-                    </ul>
-                </p>
-            </div>
+        <h1>{% trans 'Cannot find the requested page' %}</h1>
+        
+        <div class="page-summary">
+            <p>Oops! We are sorry, the page you requested does not exist.</p>
         </div>
 
-        <div class="column span-4 last">
-            <div id="sidebar" class="cms">
-                {% box_didyouknow %}
-                {% box_newsletter %}
-            </div>
-        </div>
-    </div>
-</div>
+        <p>Here are a few useful links:</p>
+        <ul>
+            <li>Our <a href="/blog/">Blog</a>;</li>
+            <li>The <a href="/schedule/">conference schedule</a>;</li>
+            <li>Our page about<a href="/sponsor/">sponsorship opportunities</a>;
+            </li>
+            <li><a href="/faq/">Frequently asked questions</a> (F.A.Q.);</li>
+            <li>... or get back to the<a href="/">PyCon Home Page</a></li>
+        </ul>
+
+    </div> <!-- /grid -->
+    </div><!-- /grid-container -->
+</section>
 {% endblock %}
 
 
