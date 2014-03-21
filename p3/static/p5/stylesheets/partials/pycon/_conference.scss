@@ -23,7 +23,7 @@
         text-transform: uppercase;
     }    
 
-    .abstract * {
+    .accordion__inner * {
         @include font-size(16);
     }
 
@@ -40,6 +40,9 @@
         color: $secondarycolor;
     }
 
+    .rateit {
+        margin: $baselineheight / 2 0;
+    }
     
 }
 

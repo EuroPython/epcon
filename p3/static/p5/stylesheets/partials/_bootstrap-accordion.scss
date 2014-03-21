@@ -5,20 +5,23 @@
 // Adapted from: https://github.com/twitter/bootstrap/blob/master/less/accordion.less
 
 .accordion {
-margin-bottom : $baselineheight; }
+/* margin-bottom : $baselineheight;  */
+}
 
 .accordion__heading {
 border-bottom-width : 0; 
 
 .accordion__toggle {
+@include font-size(16);
+text-transform: uppercase;
 display : block;
-padding : $gutterwidth / 2 0;
 cursor : pointer; }
 }/*accordion-heading*/
 
 .accordion__inner {
-padding : $gutterwidth / 2 0 0 0;
-border-top : $borderwidth $borderstyle $bordercolor; }
+margin : $baselineheight / 2 0 $baselineheight / 2 $gutterwidth / 2;
+/* border-top : $borderwidth $borderstyle $bordercolor;  */
+}
 
 .collapse {
 position : relative;

@@ -37,27 +37,62 @@
                 <div class="rateit"{% if not voting_allowed %} data-rateit-readonly="readonly"{% endif %} data-rateit-backingfld="#id_vote-{{ t.id }}"></div>
                 <div class="feedback-vote" style="display: none;"><b>Thank you!</b> <a href="#">Now share your vote</a></div>
             </form>
+
+            <div class="accordion" id="talk-accordion-{{ t.id }}">
+
+            <!-- Abstract -->
+                        
             {% if voting_allowed %}
-            <dl>
-                <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url "conference-talk-xml" t.slug %}">Abstract</dt>
-                <dd>
-                    <div data-talk="{{ t.id }}" style="display: none">
-                        <div class="abstract cms"></div>
-                        <hr />
-                        <div>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#add-comment">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
-                    </div>
-                </dd>
-            </dl>
+                <div class="accordion__group">
+                    <div class="accordion__heading" rel="div[data-talk={{ t.id }}]" data-src="{% url "conference-talk-xml" t.slug %}">
+                        <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-abstract-{{ t.id }}">Abstract</a>
+                    </div><!-- accordion-heading -->                    
+                    <div id="talk-abstract-{{ t.id }}" class="accordion__body collapse">
+                    <div class="accordion__inner" data-talk="{{ t.id }}">
+                        <div class="abstract cms"></div><!-- placeholder -->
+                        <p>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#add-comment">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</p>
+                    </div><!-- accordion-inner -->
+                    </div><!-- accordion-body -->
+                </div><!-- accordion-group -->
             {% endif %}
+            
+            <!-- Tags -->
+
             {% if t.tags %}
-            <div class="all-tags">
-                {% for tag in t.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
-            </div>
+                <div class="accordion__group">
+                    <div class="accordion__heading">
+                        <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-tags-{{ t.id }}">Tags</a>
+                    </div>                    
+                    <div id="talk-tags-{{ t.id }}" class="accordion__body collapse">
+                    <div class="accordion__inner">
+                        <div class="all-tags">
+                            {% for tag in t.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+                        </div>
+                    </div><!-- accordion-inner -->
+                    </div><!-- accordion-body -->
+                </div><!-- accordion-group -->
             {% endif %}
+            
+            </div><!-- /accordion -->
+
+            {%comment%}
+                {% if voting_allowed %}
+                <dl>
+                    <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url "conference-talk-xml" t.slug %}">Abstract</dt>
+                    <dd>
+                        <div data-talk="{{ t.id }}" style="display: none">
+                            <div class="abstract cms"></div>
+                            <hr />
+                            <div>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#add-comment">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
+                        </div>
+                    </dd>
+                </dl>
+                {% endif %}
+            {%endcomment%}
         </li>
         {% endwith %}
         {% empty %}
-            <li><h3>Sorry, no entries match your query.</h3></li>
+            <li><i>{% trans 'Sorry, no talks match your query.' %}</i></li>
         {% endfor %}
     </ul>
 </div><!-- /talk-voting-wrapper -->

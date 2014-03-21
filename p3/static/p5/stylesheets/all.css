@@ -510,19 +510,21 @@ a {
   background-repeat: repeat-x; }
 
 .accordion {
-  margin-bottom: 1.5em; }
+  /* margin-bottom : $baselineheight;  */ }
 
 .accordion__heading {
   border-bottom-width: 0; }
   .accordion__heading .accordion__toggle {
+    font-size: 16px;
+    font-size: 1.6rem;
+    text-transform: uppercase;
     display: block;
-    padding: 14px 0;
     cursor: pointer; }
 
 /*accordion-heading*/
 .accordion__inner {
-  padding: 14px 0 0 0;
-  border-top: 1px solid #bcbab2; }
+  margin: 0.75em 0 0.75em 14px;
+  /* border-top : $borderwidth $borderstyle $bordercolor;  */ }
 
 .collapse {
   position: relative;
@@ -4694,7 +4696,7 @@ form .field.error .errorlist {
     border-bottom: 1px dotted #bcbab2; }
   #talk-voting .talk-speakers {
     text-transform: uppercase; }
-  #talk-voting .abstract * {
+  #talk-voting .accordion__inner * {
     font-size: 16px;
     font-size: 1.6rem; }
   #talk-voting .international abbr {
@@ -4705,6 +4707,8 @@ form .field.error .errorlist {
     border-radius: 2px; }
   #talk-voting .video .fa {
     color: #ad3d31; }
+  #talk-voting .rateit {
+    margin: 0.75em 0; }
 
 #form-options .control-group {
   float: left;
