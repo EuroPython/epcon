@@ -2015,7 +2015,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: #ad3d31; }
 #talk-voting h3 { margin-bottom: 0; }
 #talk-voting > li { margin: 0 0 0.75em 0; padding: 0 0 0.75em 0; border-bottom: 1px dotted #bcbab2; }
 #talk-voting .talk-speakers { text-transform: uppercase; }
-#talk-voting .accordion__inner * { font-size: 16px; font-size: 1.6rem; }
+#talk-voting .accordion__group.abstract .accordion__inner * { font-size: 16px; font-size: 1.6rem; }
 #talk-voting .international abbr { background: #d4d2cd; padding: 1px 3px; font-size: 14px; font-size: 1.4rem; border-radius: 2px; }
 #talk-voting .video .fa { color: #ad3d31; }
 #talk-voting .rateit { margin: 0.75em 0; }

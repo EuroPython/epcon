@@ -23,7 +23,7 @@
         text-transform: uppercase;
     }    
 
-    .accordion__inner * {
+    .accordion__group.abstract .accordion__inner * {
         @include font-size(16);
     }
 

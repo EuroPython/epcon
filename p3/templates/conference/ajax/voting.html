@@ -43,7 +43,7 @@
             <!-- Abstract -->
                         
             {% if voting_allowed %}
-                <div class="accordion__group">
+                <div class="accordion__group abstract">
                     <div class="accordion__heading" rel="div[data-talk={{ t.id }}]" data-src="{% url "conference-talk-xml" t.slug %}">
                         <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-abstract-{{ t.id }}">Abstract</a>
                     </div><!-- accordion-heading -->                    
@@ -59,7 +59,7 @@
             <!-- Tags -->
 
             {% if t.tags %}
-                <div class="accordion__group">
+                <div class="accordion__group tags">
                     <div class="accordion__heading">
                         <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-tags-{{ t.id }}">Tags</a>
                     </div>                    
