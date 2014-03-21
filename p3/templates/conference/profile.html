@@ -5,6 +5,8 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% endblock %}
 
+{% block PAGE_TITLE %}{% p3_profile_data profile.user_id as profile_data %}{{ profile_data.name }}{% endblock %}
+
 {% block MAIN_CONTENT %}
 {% p3_profile_data profile.user_id as profile_data %}
 

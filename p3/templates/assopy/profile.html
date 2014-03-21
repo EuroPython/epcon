@@ -1,6 +1,8 @@
 {% extends "assopy/base.html" %}
 {% load assopy_tags i18n p3 static %}
 
+{% block PAGE_TITLE %}{% trans 'Your profile' %}{% endblock %}
+
 {% block ASSOPY_MAIN_CONTENT %}
 {% p3_profile_data request.user.id as profile %}
 <section>
