@@ -1,96 +1,126 @@
 {% extends "assopy/base.html" %}
-{% load p3 assopy_tags i18n %}
+{% load p3 assopy_tags i18n formstyle %}
 
-
-{% block BODY_CLASS %}wizard{% endblock %}
-
+{% block PAGE_TITLE %}{% trans "Buy tickets (2 of 2)" %}{% endblock %}
 
 {% block ASSOPY_MAIN_CONTENT %}
-    <h1>{% trans "Buy tickets (2 of 2)" %}</h1>
-    <div class="page-summary">
-        <p>{% trans "Review order and fill billing information." %}</p>
-    </div>
 
-    <div class="span-9 last">
-        <form action="{% url "p3-billing" %}" method="post">{% csrf_token %}
+<form action="{% url "p3-billing" %}" class="form-horizontal" method="post">
+
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+
+        <h1>{% trans "Buy tickets (2 of 2)" %}</h1>
+        <div class="page-summary">
+            <p>{% trans "Review order and fill billing information." %}</p>
+        </div>
+ 
+    </div><!--/grid -->
+</div><!-- /grid-container -->
+</section> 
+
+<!--
+= YOUR ORDER ===================================================================
+-->
+
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+
             {{ form|form_errors }}
+         
             <fieldset>
                 <legend>{% trans "Your order" %}</legend>
-                <div class="cms">
-                    <table>
-                        <col />
-                        <col />
-                        <col />
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>{% trans "Q,ty" %}</th>
-                                <th>{% trans "Price" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for fare, params, price in totals.tickets %}
-                            <tr>
-                                <td>{{ fare.name }}</td>
-                                <td>{{ params.qty }}</td>
-                                <td>€ {{ price|floatformat:"2" }}</td>
-                            </tr>
-                            {% endfor %}
-                            {% for price, coupon in totals.coupons.values %}
-                            <tr>
-                                <td colspan="2">{{ coupon.description }}</td>
-                                <td>€ {{ price|floatformat:"2" }}</td>
-                            </tr>
-                            {% endfor %}
-                            <tr class="subtotal">
-                                <td colspan="2" style="text-align: right">{% trans "Total" %}</td>
-                                <td>€ {{ totals.total|floatformat:"2" }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table" style="margin-bottom: 0">
+                    <col />
+                    <col />
+                    <col />
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>{% trans "Q.ty" %}</th>
+                            <th>{% trans "Price" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fare, params, price in totals.tickets %}
+                        <tr>
+                            <td>{{ fare.name }}</td>
+                            <td>{{ params.qty }}</td>
+                            <td>€ {{ price|floatformat:"2" }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% for price, coupon in totals.coupons.values %}
+                        <tr>
+                            <td colspan="2">{{ coupon.description }}</td>
+                            <td>€ {{ price|floatformat:"2" }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td colspan="2" style="text-align: right">{% trans "Total" %}</td>
+                            <td>€ <b>{{ totals.total|floatformat:"2" }}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
             </fieldset>
+
+    </div><!--/grid -->
+</div><!-- /grid-container -->
+</section> 
+
+<!--
+= BILLING ======================================================================
+-->
+
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
 
             <fieldset>
                 {% if totals.total != 0 %}
                     <legend>{% trans "Billing data" %}</legend>
-                    <div class="span-6">{{ form.payment|field }}
-                        <div id="id_payment_cc">
-                            {% blocktrans %}
-                            Paypal is used for credit card transactions.<br />
-                            <strong>No registration is required</strong>, you will just need to
-                            click on a small link for non-registered users, located somewhere in the
-                            page (the exact position varies depending on the browser's language),
-                            and then fill in the form.
-                            {% endblocktrans %}
+                    {{ form.payment|form_field }}
+                    <div id="id_payment_cc" class="help-block" style="display:none;">
+                        {% blocktrans %}
+                        Paypal is used for credit card transactions.<br />
+                        <strong>No registration is required</strong>, you will just need to
+                        click on a small link for non-registered users, located somewhere in the
+                        page (the exact position varies depending on the browser's language),
+                        and then fill in the form.
+                        {% endblocktrans %}
+                    </div>
+                    {{ form.country|form_field }}
+                    {{ form.address|form_field }}
+                    
+                    {%comment%}This fake field aligns Google results to the address above{%endcomment%}
+                    <div class="control-group">
+                        <label class="control-label">&nbsp;</label>
+                        <div class="controls">
+                            <div class="autocomplete" id="google-guess" style="display: none">
+                                <h4>{% trans "Google says" %}</h4>
+                                <ul></ul>
+                            </div>
                         </div>
                     </div>
-                    <div class="span-6">{{ form.card_name|field_widget:"size=58"|field }}</div>
-                    <div class="span-6">{{ form.country|field }}</div>
-                    <div class="span-6">{{ form.address|field_widget:"size=58"|field }}</div>
-                    <div class="span-6 cms">
-                        <div id="google-guess" style="display: none">
-                            <p>{% trans "Google says" %}:</p>
-                            <ul></ul>
-                        </div>
-                    </div>
+
                     {% if form.vat_number %}
-                    <div class="span-6">{{ form.vat_number|field }}</div>
+                        {{ form.vat_number|form_field }}
                     {% endif %}
                     {% if form.cf_code %}
-                    <div class="span-6" style="display: none;">{{ form.cf_code|field }}</div>
+                        <div style="display: none;">{{ form.cf_code|form_field }}</div>
                     {% endif %}
                     {% if form.billing_notes %}
-                    <div class="span-6">{{ form.billing_notes|field }}</div>
+                        {{ form.billing_notes|form_field }}
                     {% endif %}
-                    <div class="span-6">{{ form.code_conduct|field }}</div>
+                    {{ form.code_conduct|form_field }}
                 {% else %}
                     <legend>{% trans "You have nothing to pay" %}</legend>
-                    <div class="span-6">{{ form.code_conduct|field }}</div>
+                    {{ form.code_conduct|form_field }}
                 {% endif %}
             </fieldset>
-            <fieldset class="border">
-                <button value="" name="" type="submit">{% trans "Place Order &rarr;" %}</button>
+            <fieldset>
+                <button class="btn btn-primary" value="" name="" type="submit">{% trans "Place Order &rarr;" %}</button>
             </fieldset>
             <script type="text/javascript">
                 $('#id_payment').change(function(e) {
@@ -104,63 +134,71 @@
                     }
                 })
             </script>
-        </form>
 
-        <script type="text/javascript">
-            function _geoCode() {
-                var address = $('#id_address').val();
-                var region = $('#id_country').val();
-                var url = "{% url "assopy-geocode" %}";
-                $.getJSON(
-                    url,
-                    {
-                        'address': address,
-                        'region': region
-                    },
-                    function(data, textStatus, xhr) {
-                        var results = []
-                        if(data.status == 'OK') {
-                            $.each(data.results, function(ix, value) {
-                                results.push(value.formatted_address);
-                            })
-                        }
-                        var output = $('#google-guess');
-                        $('ul', output).remove();
-                        if(results.length > 0) {
-                            var ul = $('<ul>');
-                            $.each(results, function(ix, value) {
-                                ul.append($('<li><a href="#">' + value + '</a></li>'));
-                            })
-                            $('a', ul).click(function(e) {
-                                e.preventDefault()
-                                var address = $(this).html();
-                                $('#id_address').val(address.substr(0, address.lastIndexOf(',')));
-                            })
-                            output.append(ul);
-                            if(!output.is(':visible'))
-                                output.slideDown(1000);
-                        }
-                        else {
-                            output.slideUp('fast');
-                        }
-                    }
-                );
-            }
-            function _cfCode() {
-                var country = $('#id_country').val().toLowerCase();
-                var div = $('#id_cf_code').parents('div').eq(1);
-                if(country == 'it') {
-                    div.show();
+
+
+    </div><!--/grid -->
+</div><!-- /grid-container -->
+</section>
+
+{% csrf_token %}
+</form>
+
+<script type="text/javascript">
+    function _geoCode() {
+        var address = $('#id_address').val();
+        var region = $('#id_country').val();
+        var url = "{% url "assopy-geocode" %}";
+        $.getJSON(
+            url,
+            {
+                'address': address,
+                'region': region
+            },
+            function(data, textStatus, xhr) {
+                var results = []
+                if(data.status == 'OK') {
+                    $.each(data.results, function(ix, value) {
+                        results.push(value.formatted_address);
+                    })
+                }
+                var output = $('#google-guess');
+                $('ul', output).remove();
+                if(results.length > 0) {
+                    var ul = $('<ul>');
+                    $.each(results, function(ix, value) {
+                        ul.append($('<li><a href="#">' + value + '</a></li>'));
+                    })
+                    $('a', ul).click(function(e) {
+                        e.preventDefault()
+                        var address = $(this).html();
+                        $('#id_address').val(address.substr(0, address.lastIndexOf(',')));
+                    })
+                    output.append(ul);
+                    if(!output.is(':visible'))
+                        output.slideDown(1000);
                 }
                 else {
-                    div.hide();
+                    output.slideUp('fast');
                 }
             }
-            $('#id_country')
-                .change(_geoCode)
-                .change(_cfCode);
-            $('#id_address').change(_geoCode);
-            _cfCode();
-        </script>
-    </div>
+        );
+    }
+    function _cfCode() {
+        var country = $('#id_country').val().toLowerCase();
+        var div = $('#id_cf_code').parents('div').eq(1);
+        if(country == 'it') {
+            div.show();
+        }
+        else {
+            div.hide();
+        }
+    }
+    $('#id_country')
+        .change(_geoCode)
+        .change(_cfCode);
+    $('#id_address').change(_geoCode);
+    _cfCode();
+</script>
+ 
 {% endblock %}

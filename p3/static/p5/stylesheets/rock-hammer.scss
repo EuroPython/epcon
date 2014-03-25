@@ -216,6 +216,27 @@ form .no-label {
     }
 }
 
+
+// Autocomplete (used for cart Google-guess'ed billing address)
+
+.autocomplete {
+    background: $lightestneutralcolor;
+    padding: $baselineheight/2 $gutterwidth/2 0 $gutterwidth/2;
+    h4 {
+        @extend .h6;              
+        @extend .spaced;
+        margin: 0 0 $baselineheight / 2 0;    
+        text-transform: uppercase;        
+    }
+    
+    ul {
+        @include zero;   
+    }    
+    li {
+        padding: 0 0 $baselineheight / 2 0;    
+    }
+}
+
 // Toggle elements 
 
 .toggle, 

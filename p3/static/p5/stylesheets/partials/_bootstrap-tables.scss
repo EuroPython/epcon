@@ -14,6 +14,7 @@ font-family : $tablefontfamily; }
 .table {
 width : 100%;
 max-width : 100%;
+border-top : $tableborderwidth * 2 $tableborderstyle darken($tablebordercolor, 30%);
 margin-bottom : $baselineheight;
 
 th,

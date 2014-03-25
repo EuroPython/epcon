@@ -1,6 +1,7 @@
 {% extends "assopy/base.html" %}
 {% load p3 assopy_tags i18n conference formstyle %}
 
+{% block PAGE_TITLE %}{% trans "Buy tickets (1 of 2)" %}{% endblock %}
 
 {% block ASSOPY_MAIN_CONTENT %}
 {% fares_available "conference" as conference_fares %}
@@ -17,12 +18,6 @@
 <section>
     <div class="grid-container">
     <div class="grid-100">
-        
-        {{ form|form_errors }}
-        <div class="alert alert--error alert--block">    
-            <h4>Error, no ticket specified</h4><!-- h4 is optional -->
-            <p>Please select one or more tickets below.</p>
-        </div>
 
         <h1>{% trans "Buy tickets (1 of 2)" %}</h1>
     
@@ -49,7 +44,13 @@
 <section>
     <div class="grid-container">
     <div class="grid-100">
-     
+             
+        {{ form|form_errors }}
+        <div class="alert alert--error alert--block">    
+            <h4>Error, no ticket specified</h4><!-- h4 is optional -->
+            <p>Please select one or more tickets below.</p>
+        </div>
+
         <fieldset class="order-type">
             <legend>{% trans "Billing type" %}</legend>
             <p>{% trans "Select the entity you are purchasing tickets for." %}</p>
@@ -288,9 +289,18 @@
 </form>
 
     {% else %}
+
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+
         <div class="alert alert--info">
-            <p>{% trans "Sorry no tickets available" %}</p>
+            <p>{% trans "Sorry, no tickets are available" %}</p>
         </div>
+
+    </div><!--/grid -->
+</div><!-- /grid-container -->
+</section>
 
     {% endif %}
 

@@ -185,7 +185,8 @@ h5,
 
 h6,
 .h6,
-.slot h4 {
+.slot h4,
+.autocomplete h4 {
   font-size: 18px;
   font-size: 1.8rem;
   margin-bottom: 1.5em;
@@ -352,7 +353,7 @@ sub {
   line-height: 1.4; }
 
 /*footnotes*/
-.spaced, legend, .slot h4 {
+.spaced, legend, .slot h4, .autocomplete h4 {
   letter-spacing: 1px; }
 
 a {
@@ -1438,6 +1439,7 @@ table {
 .table {
   width: 100%;
   max-width: 100%;
+  border-top: 2px solid #8d897c;
   margin-bottom: 1.5em; }
   .table th,
   .table td {
@@ -4945,6 +4947,18 @@ span.icon-remove {
 form .no-label label {
   display: none !important;
   visibility: hidden; }
+
+.autocomplete {
+  background: #e0dfdb;
+  padding: 0.75em 14px 0 14px; }
+  .autocomplete h4 {
+    margin: 0 0 0.75em 0;
+    text-transform: uppercase; }
+  .autocomplete ul {
+    margin: 0;
+    padding: 0; }
+  .autocomplete li {
+    padding: 0 0 0.75em 0; }
 
 .toggle,
 .tag-toggle {
