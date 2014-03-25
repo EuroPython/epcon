@@ -143,15 +143,21 @@ $linkcolorhover 				: $secondarycolor;
 $linkcolorvisited   			: darken($linkcolorhover, 10);
 $linkcolorfocus 				: darken($linkcolorvisited, 10);
 
-// Now define another set of colours. These will be used to style alerts and buttons
-$alertcolor 					: rgb(218,79,73);
-$errorcolor 					: $secondarycolor; //rgb(176,20,0);
-$infocolor 						: #c5dcf0;
-$inversecolor 					: rgb(65,65,65);
-$successcolor 					: #cbe58e;
+// Define another set of colours. These will be used to style alerts and buttons
+$alertcolor 					: #f5efd0;
+$errorcolor 					: #B22222;
+$infocolor 						: #9DCFFF;
+$successcolor 					: #90EE90;
 $warningcolor 					: $errorcolor;
 
+// Define form validation states (success, warning, error) 
+// These usually are darker versions of colours above
+$errorstatecolor 			    : darken($errorcolor, 10%);
+$successstatecolor 				: darken($successcolor, 45%);
+$warningstatecolor              : darken($alertcolor, 50%);
 
+// Finally define this only for buttons
+$inversecolor 					: #414141;
 
 
 
@@ -440,7 +446,7 @@ $alertborderstyle 				: $borderstyle;
 $alertbordercolor				: darken($alertbackgroundcolor, 20%);
 
 // Set the alert’s border radius. Default is $borderradius defined above
-$alertborderradius 				: $borderradius;
+$alertborderradius 				: 0;
 
 // Set the alert’s font-size. 
 // Use only a number. Units (em/px/%) are not required

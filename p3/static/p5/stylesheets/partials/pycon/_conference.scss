@@ -70,3 +70,33 @@
 
 
 // CART & TICKETS ====================================================================
+
+#form-cart {
+
+// Totals 
+.total {
+    padding: $baselineheight/2 0;
+    text-align: center;
+    background: tint($primarycolor, 75%);
+}
+
+// Coupon field
+.coupon {
+    input { @extend .input-xlarge; }
+}
+.save {
+    color: $successstatecolor;
+}
+
+}
+  
+/*
+
+.room-type.selected {
+    color: red;
+}
+
+.room-type.disabled {
+    background: gray;
+}
+*/

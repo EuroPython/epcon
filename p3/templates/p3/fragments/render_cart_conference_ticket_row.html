@@ -1,14 +1,14 @@
 {% load assopy_tags %}
 {% for row in rows %}
 <tr>
-    <td><strong>{{ row.0.0.name }}</strong><br /><span class="fare-description">{{ row.0.0.description }}</span></td>
+    <td>{{ row.0.0.name }}<br /><small>{{ row.0.0.description }}</small></td>
     {% for fare, field, enabled in row %}
         <td class="fare" data-fare="{{ fare.code }}">
             {% if fare %}
-            <label id="fare-{{ fare.code }}" data-amount="{{ fare.price }}">€ <span class="fare">{{ fare.price }}</span></label>
+            <div id="fare-{{ fare.code }}" data-amount="{{ fare.price }}">€ <span class="fare">{{ fare.price }}</span></div>
             {% endif %}
         </td> 
-        <td class="fare{% if field.errors %} error{% endif %}" data-fare="{{ fare.code }}">
+        <td class="fare{% if field.errors %} has-error{% endif %}" data-fare="{{ fare.code }}">
             {% if fare %}
             <input type="text" size="2" name="{{ field.name }}" value="{{ field|field_value }}" />
             {% endif %}

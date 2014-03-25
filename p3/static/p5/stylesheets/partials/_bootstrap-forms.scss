@@ -16,8 +16,10 @@ list-style-type : none;
 margin : 0 0 $baselineheight 0;
 padding : 0; }
 
+/*
 br {
 display : none; }
+*/
 }
 
 fieldset {
@@ -237,10 +239,10 @@ transition : opacity .5s .5s ease; }
 input,
 textarea,
 select {
-border-color : $errorcolor;
-color : $errorcolor;
+border-color : $errorstatecolor;
+color : $errorstatecolor;
 }
-label { color: $errorcolor; }
+label { color: $errorstatecolor; }
 }
 
 .has-warning {

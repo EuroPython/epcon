@@ -208,6 +208,14 @@ span.icon-remove {
     color: $errorcolor;
 }
 
+// Invisible label in forms
+
+form .no-label {
+    label {
+        @include hidden;
+    }
+}
+
 // Toggle elements 
 
 .toggle, 
