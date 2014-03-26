@@ -1,4 +1,4 @@
-{% load assopy_tags conference i18n p3 %}
+{% load assopy_tags conference i18n p3 formstyle %}
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}" data-order="{{ ticket.orderitem.order.id }}" data-orderitem="{{ ticket.orderitem.id }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ticket.frozen %}
@@ -16,7 +16,7 @@
             {% endif %}
         </div>
         {% else %}
-        <div class="ticket-status inactive">
+        <div class="alert">
             {% with ticket.orderitem.order.code as code %}
             &darr; {% blocktrans %}Ticket not active; waiting for wire transfer (order {{ code }}){% endblocktrans %}
             {% endwith %}
@@ -27,47 +27,45 @@
     <div class="preview">
     {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
-        {% if ticket.p3_conference %}
-        <div class="ticket-name">{{ form.ticket_name|field_value|default:"No name specified!" }}</div>
-        <div class="ticket-tagline">{{ form.tagline|field_value|default:"something about me" }}</div>
-        <div class="ticket-python-experience">
-            Python power
-            {% for x in form.python_experience|field_value|as_range %}
-            <img src="{{ STATIC_URL }}p5/i/icon-star.png" alt="Star" width="16" height="16" />
-            {% endfor %}
+        <div class="preview-inner">
+            {% if ticket.p3_conference %}
+                <div class="ticket-name">{{ form.ticket_name|field_value|default:"No name specified" }}</div>
+                <div class="ticket-tagline">{{ form.tagline|field_value|default:"Something about me" }}</div>
+                <div class="ticket-python-experience">
+                    Python power
+                    {% for x in form.python_experience|field_value|as_range %}
+                        <img src="{{ STATIC_URL }}p5/images/rateit-star.gif" alt="*" width="16" height="16" />
+                    {% endfor %}
+                </div>
+                {% if ticket.p3_conference.profile %}
+                    {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
+                    <img class="avatar" src="{{ pdata.image }}" alt="" width="98" height="98" />
+                {% endif %}
+            {% else %}
+                <div>{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
+            {% endif %}
         </div>
-        {% if ticket.p3_conference.profile %}
-        <div class="ticket-attendee-image">
-            {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
-            <img src="{{ pdata.image }}" alt="" height="105" />
-        </div>
-        {% endif %}
-        {% else %}
-        <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
-        {% endif %}
-
         {% if not ticket.frozen %}
             {% if blocked %}
             <div class="ticket-commands ticket-assigned-to">
                 <p>
                 {% with form.assigned_to|field_value as assigned_to %}
-                {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} | <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
+                {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
                 {% endwith %}
                 </p>
             </div>
             {% else %}
             <div class="ticket-commands">
                 <p>
-                    This ticket is<br/>
-                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans "for me" %}</a>
+                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans 'This ticket is for me' %}</a>
                     {% if user == ticket.user %}
-                    | <a href="#" class="button mini assign-button">{% trans "for someone else" %}</a>
+                        <br /><a href="#" class="assign-button">{% trans "This ticket is for someone else" %}</a>
+                    {% endif %}
+                    {% orderitem_can_be_refunded ticket.orderitem as r %}
+                    {% if r %}
+                        <br /><a href="#" class="trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a>
                     {% endif %}
                 </p>
-                {% orderitem_can_be_refunded ticket.orderitem as r %}
-                {% if r %}
-                <p class="refund"><a href="#" class="refund-button trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a></p>
-                {% endif %}
             </div>
             {% endif %}
         {% endif %}
@@ -77,15 +75,18 @@
             <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
             <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
             {% if not form.document|field_value %}
-            <div class="ticket-warning">INCOMPLETE TICKET!<br />Please edit and add a document</div>
+            <div class="alert">
+                <h4>Warning, incomplete ticket</h4>
+                <p>Please edit and add a document.</p>
+            </div>
             {% endif %}
         {% else %}
             {% if ticket.fare.code|slice:":1" == 'H' %}
                 {% if not ticket.p3_conference_room.unused %}
-                <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
-                <div class="ticket-footer">from {{ ticket.p3_conference_room.checkin|date:"d M" }} until {{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
+                    <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
+                    <div class="ticket-footer">from {{ ticket.p3_conference_room.checkin|date:"d M" }} until {{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
                 {% else %}
-                <div class="ticket-name">Unused ticket!</div>
+                    <div class="ticket-name">This is an unused ticket</div>
                 {% endif %}
             {% else %}
                 <div class="ticket-name">{{ form.name|field_value|default:"Edit this ticket" }}</div>
@@ -118,8 +119,6 @@
             <dt>{% trans "Shirt size:" %}</dt>
             <dd>{{ form.shirt_size|field_display_value }}</dd>
         </dl>
-        {% else %}
-        &#9650; Select the ticket to edit.
         {% endif %}
     {% else %}
         {% if ticket.fare.code == 'SIM01' %}
@@ -155,62 +154,45 @@
 
     <div class="overlay">
         {% if not ticket.frozen %}
-        <form action="{% url "p3-ticket" tid=ticket.id %}" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+        <form action="{% url "p3-ticket" tid=ticket.id %}" class="form-horizontal" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
         {% if ticket.fare.ticket_type == "conference" %}
-            <fieldset class="container clearfix">
-                <div class="span-6">
+            <fieldset>
                     {% if user == ticket.user %}
-                    <div class="field">
                         {% if user.first_name or user.last_name %}
-                        <h2>Ticket name: {{ user.first_name }} {{ user.last_name }}</h2>
+                            <h2>Ticket for {{ user.first_name }} {{ user.last_name }}</h2>
                         {% else %}
-                        <h2>Ticket name: NO NAME SPECIFIED!</h2>
+                            <h2>Ticket for NO NAME SPECIFIED</h2>
                         {% endif %}
                         {% if user.attendeeprofile %}
-                        <p>want to change name? edit your <a href="/accounts/profile/">account</a>.</p>
+                            <p>Want to change name? <a href="/accounts/profile/">Edit your account</a>.</p>
                         {% endif %}
-                    </div>
                     {% else %}
-                    {{ form.ticket_name|field }}
+                        {{ form.ticket_name|form_field }}
                     {% endif %}
-                    {{ form.tagline|field }}
-                    <div class="span-3">
-                        {{ form.diet|field }}
-                    </div>
-                    <div class="span-3 last">
-                        {{ form.shirt_size|field }}
-                    </div>
-                    <div class="span-3">
-                        {{ form.python_experience|field }}
-                    </div>
-                    <div class="span-3 show-tooltip last" title="{% trans "This ticket grants you full access to the conference. The above selection is just for helping out the organizers." %}">
-                        {{ form.days|field }}
-                    </div>
-                    {{ form.assigned_to|field }}
-                </div>
-                <div class="span-3 last">
+                    {{ form.assigned_to|form_field:"no-label" }}
                     {% p3_profile_data request.user.id as pdata %}
-                    <img src="{{ pdata.image }}" alt="" width="98" />
-                    <p style="padding: 0 15px 0 0;">
+                    <p class="clearfix">
+                        <img style="float:left; margin-right: .75em;" class="avatar" src="{{ pdata.image }}" alt="" width="49" height="49" /><!-- halved size -->
                     {% if pdata.visibility == "x" %}
-                        <span>
-                            Your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> is not visibile by anyone.
-                            <br />
-                            <br />
-                            Why don't you let people know that you are coming? (<a href="/find-out-whos-coming">Check why</a>)
+                        <span><i class="fa fa-ban"></i> <a href="{% url "conference-profile" slug=pdata.slug %}">Your profile</a> is not visibile by anyone.
+                            Why don't you let people know that you are coming? <a href="/find-out-whos-coming">Find out why</a>.
                         </span>
                     {% endif %}
                     {% if pdata.visibility == "m" %}
-                        <span>Only <b>conference participants</b> can view your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a>.&nbsp;</span>
+                        <span><i class="fa fa-users"></i> Only <b>conference participants</b> can view <a href="{% url "conference-profile" slug=pdata.slug %}">your profile</a>.</span>
                     {% endif %}
                     {% if pdata.visibility == "p" %}
-                        <span>Your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> is <b>publicly visible</b>.&nbsp;</span>
+                        <span><i class="fa fa-globe"></i> Your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> is <b>publicly visible</b>.&nbsp;</span>
                     {% endif %}
                     </p>
-                </div>
+                    {{ form.tagline|form_field }}
+                    {{ form.diet|form_field }}
+                    {{ form.shirt_size|form_field }}
+                    {{ form.python_experience|form_field }}
+                    {{ form.days|form_field }}
             </fieldset>
-            <fieldset class="border">
-                <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
+            <fieldset>
+                <button class="btn btn-primary" name="" value="" type="submit">{% trans "Save" %}</button>
             </fieldset>
         {% else %}
             <fieldset>
@@ -218,8 +200,8 @@
                 {{ f|field }}
                 {% endfor %}
             </fieldset>
-            <fieldset class="border">
-                <button name="" value="" type="submit">Save Changes</button>
+            <fieldset>
+                <button class="btn btn-primary" name="" value="" type="submit">{% trans "Save" %}</button>
             </fieldset>
         {% endif %}
         </form>

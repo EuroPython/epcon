@@ -13,7 +13,7 @@ function setup_fragment(ctx) {
     setup_talkform(ctx);
     setup_profile_picture_form(ctx);
     setup_voting_form(ctx);
-    setup_tooltip(ctx);
+    //setup_tooltip(ctx);
     setup_toggles(ctx);
     setup_auto_tabs(ctx);
     // jQueryTools è bacato in tanti modi diversi; ad esempio l'overlay non si

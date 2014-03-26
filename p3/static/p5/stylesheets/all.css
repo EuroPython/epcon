@@ -92,7 +92,7 @@ img {
   vertical-align: middle;
   -ms-interpolation-mode: bicubic; }
 
-.img-rounded, #comments .gravatar, .avatar {
+.img-rounded, #comments .gravatar {
   border-radius: 4px; }
 
 .img-polaroid {
@@ -101,7 +101,7 @@ img {
   border: 1px solid #bcbab2;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 
-.img-circle {
+.img-circle, .avatar {
   border-radius: 500px; }
 
 figure {
@@ -4430,9 +4430,9 @@ form .field.error .errorlist {
   z-index: 10000;
   background: white;
   padding: 0.75em 28px;
-  width: 30em;
+  width: 35em;
   min-height: 15em;
-  box-shadow: 0 0 15px #807c6f; }
+  box-shadow: 0 0 15px #3c3a34; }
 
 .overlay .close {
   position: absolute;
@@ -4658,7 +4658,7 @@ form .field.error .errorlist {
  * This file is non-free. See README.md for an explanation.
  */
 .avatar {
-  border: 2px solid #bcbab2;
+  /*     border: 2px solid $lightneutralcolor; */
   display: block; }
 
 #form_profile_picture .field > label {
@@ -4740,6 +4740,126 @@ form .field.error .errorlist {
     background: gray;
 }
 */
+.ticket .preview {
+  background: white;
+  margin: 1.5em 0;
+  border: 1px solid #bcbab2;
+  border-radius: 4px;
+  position: relative;
+  min-height: 13.5em;
+  box-shadow: 0 0 4px #807c6f; }
+  .ticket .preview .preview-inner {
+    padding: 0 14px; }
+  .ticket .preview h2 {
+    padding: 0.375em 14px;
+    color: white;
+    /*
+     * background improbabile :) tutte le tariffe lo ridefiniscono, metto
+     * comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e
+     * ci scordiamo di aggiornare il css
+     */
+    background: thistle; }
+
+.ticket.conference .preview h2 {
+  background: #306a99; }
+
+.ticket.partner .preview h2 {
+  background: #301D1D; }
+
+.ticket[data-fare=SIM01] .preview h2 {
+  background: #EC7324; }
+
+.ticket[data-fare=VOUPE01] .preview h2 {
+  background: #194175; }
+
+.ticket[data-fare=VOUPE02] .preview h2 {
+  background: #793f4b; }
+
+.ticket[data-fare=HB1] .preview h2,
+.ticket[data-fare=HB2] .preview h2,
+.ticket[data-fare=HB3] .preview h2,
+.ticket[data-fare=HB4] .preview h2,
+.ticket[data-fare=HR1] .preview h2,
+.ticket[data-fare=HR2] .preview h2,
+.ticket[data-fare=HR3] .preview h2,
+.ticket[data-fare=HR4] .preview h2 {
+  background: #BB78FF; }
+
+/*
+.ticket-additional-info {
+}
+
+.ticket-additional-info dt,
+.ticket-additional-info dd {
+    display: inline;
+}
+
+.ticket-additional-info dd {
+    font-weight: bold;
+}
+
+.ticket-additional-info dt {
+    color: #635443;
+}
+*/
+.ticket-status {
+  padding: 5px 0;
+  text-align: center;
+  border: 2px solid transparent;
+  font-size: 12px; }
+
+.ticket-status.inactive {
+  border-color: #d9415a;
+  color: #d9415a;
+  background: #fff; }
+
+.ticket-status.active {
+  border-color: #4895a3;
+  color: #4895a3;
+  background: #fff; }
+
+.preview:hover .ticket-commands {
+  opacity: .85; }
+
+.ticket-commands {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  text-align: center;
+  min-height: 100%;
+  min-width: 100%;
+  background: white;
+  -webkit-transition: opacity 0.2s ease-out;
+  -moz-transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out;
+  opacity: 0; }
+  .ticket-commands p {
+    margin: 4.5em 0 0 0;
+    color: #807c6f; }
+
+.ticket-assigned-to.ticket-commands {
+  opacity: .8; }
+
+.ticket-name {
+  font-size: 24px;
+  font-size: 2.4rem;
+  text-transform: uppercase; }
+
+.ticket-tagline {
+  color: #807c6f;
+  font-style: italic;
+  margin-bottom: 1.5em; }
+
+.ticket-footer {
+  margin: 0;
+  position: absolute;
+  bottom: 0.75em;
+  right: 0; }
+
+.ticket-python-experience img {
+  vertical-align: middle; }
+
 div.rateit {
   display: inline-block;
   position: relative;

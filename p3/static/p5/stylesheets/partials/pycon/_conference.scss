@@ -90,7 +90,6 @@
 
 }
 
-  
 /*
 
 .room-type.selected {
@@ -101,3 +100,156 @@
     background: gray;
 }
 */
+
+.ticket {
+.preview {
+    background: $white;
+
+    margin: $baselineheight 0;    
+    border: 1px solid $bordercolor;    
+    border-radius: $borderradius;
+
+    position: relative;
+    min-height: $baselineheight*9;
+    box-shadow: 0 0 4px $neutralcolor;
+
+    .preview-inner {
+        padding: 0 $gutterwidth/2;
+        
+    }
+
+    h2 {
+        padding: $baselineheight/4 $gutterwidth/2;
+        color: $white;
+        /*
+         * background improbabile :) tutte le tariffe lo ridefiniscono, metto
+         * comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e
+         * ci scordiamo di aggiornare il css
+         */
+        background: thistle;
+    }
+}
+}
+
+.ticket.conference .preview h2 {
+    background: $primarycolor;
+}
+
+.ticket.partner .preview h2 {
+    background: #301D1D;
+}
+
+.ticket[data-fare=SIM01] .preview h2 {
+    background: #EC7324;
+}
+
+.ticket[data-fare=VOUPE01] .preview h2 {
+    background: #194175;
+}
+
+.ticket[data-fare=VOUPE02] .preview h2 {
+    background: #793f4b;
+}
+
+.ticket[data-fare=HB1] .preview h2,
+.ticket[data-fare=HB2] .preview h2,
+.ticket[data-fare=HB3] .preview h2,
+.ticket[data-fare=HB4] .preview h2,
+.ticket[data-fare=HR1] .preview h2,
+.ticket[data-fare=HR2] .preview h2,
+.ticket[data-fare=HR3] .preview h2,
+.ticket[data-fare=HR4] .preview h2
+{
+    background: #BB78FF;
+}
+
+/*
+.ticket-additional-info {
+}
+
+.ticket-additional-info dt,
+.ticket-additional-info dd {
+    display: inline;
+}
+
+.ticket-additional-info dd {
+    font-weight: bold;
+}
+
+.ticket-additional-info dt {
+    color: #635443;
+}
+*/
+
+
+.ticket-status {
+    padding: 5px 0;
+    text-align: center;    
+    border: 2px solid transparent;        
+    font-size: 12px;
+}
+
+
+.ticket-status.inactive {            
+    border-color: #d9415a;
+    color: #d9415a;
+    background: #fff;   
+}
+
+.ticket-status.active {
+    border-color: #4895a3;
+    color: #4895a3;
+    background: #fff;   
+}
+
+.preview:hover .ticket-commands {
+    opacity: .85;
+}
+
+.ticket-commands {
+    position: absolute;    
+    top: 0;
+    left: 0;
+    z-index: 1;
+    
+    text-align: center;
+
+    min-height: 100%;
+    min-width: 100%;
+
+    background: $white;
+    @include transition(opacity .2s ease-out);
+    opacity: 0;
+
+    p {
+        margin: $baselineheight*3 0 0 0;
+        color: $neutralcolor;
+    }
+}
+
+.ticket-assigned-to.ticket-commands {
+    opacity: .8;
+}
+
+.ticket-name {
+    @include font-size(24);
+	text-transform: uppercase;	
+}
+
+.ticket-tagline {
+    color: $neutralcolor;    
+    font-style: italic;
+    margin-bottom: $baselineheight;
+}
+
+.ticket-footer {
+	margin: 0;
+	position: absolute;
+	bottom: $baselineheight/2;
+	right: 0;
+}
+
+.ticket-python-experience img {
+    vertical-align: middle;
+}
+

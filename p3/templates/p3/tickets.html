@@ -1,225 +1,235 @@
 {% extends "assopy/base.html" %}
 {% load i18n p3 assopy_tags %}
+
+{% block PAGE_TITLE %}{% trans "Your tickets" %}{% endblock %}
+
+
 {% block MAIN_CONTENT %}
-    <h1>{% trans "Your tickets" %}</h1>
 
-    {% if not tickets %}
-    <section class="notice">
-        {% url "p3-cart" as u %}
-        <p>{% blocktrans %}You still have not bought any ticket with this account. Please proceed to the <a href="{{ u }}">cart</a> to place an order.{% endblocktrans %}</p>
-    </section>
-    {% endif %}
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+        <h1>{% trans "Your tickets" %}</h1>
 
-    {% for t in tickets %}
-        <div class="span-6 {% cycle '' 'last' %}">
-            {% render_ticket t %}
-        </div>
-        {% cycle '' '<hr />' %}
-    {% endfor %}
-    <style>
-        #id_reason {
-            height: 80px;
-        }
-        #id_bank {
-            height: 80px;
-        }
-    </style>
-    <div id="refund-form" class="overlay">
-        <h1>Refund details</h1>
-        <form action="" method="POST">
-            <h3>You are eligible for commission-free refund through paypal</h3>
-            {{ refund_form.reason|field }}
-            <div class="refund-method">
-                <h2>Choose the refund method</h2>
-                <label><input type="radio" name="rmethod" value="paypal">Through PayPal</label>
-                <label><input type="radio" name="rmethod" value="bank" checked>Through bank transfer</label>
-                <div class="hidden paypal">
-                {{ refund_form.paypal|field }}
-                </div>
-                <div class="bank">
-                {{ refund_form.bank|field }}
-                </div>
-                <p><b>Please note:</b> you are responsible for the commission fees, if any.</p>
+        {% if not tickets %}
+            {% url "p3-cart" as u %}
+            <div class="alert alert--info">
+                <p>{% blocktrans %}You still have not bought any ticket with this account. Please proceed to the <a href="{{ u }}">cart</a> to place an order.{% endblocktrans %}</p>
             </div>
-            <button type="submit">Ask for refund</button>
-        </form>
-    </div>
-    <script type="text/javascript">//<![CDATA[
-    (function() {
-        function reload_ticket(ticket) {
-            var id = ticket.attr('data-ticket');
-            var url = '/p3/tickets/' + id + '/';
-            $.get(url, function(data) {
-                ticket.replaceWith(data);
-                setup_fragment($('div.ticket[data-ticket=' + id + ']'));
-            })
-        }
-        $('#refund-form form').ajaxForm({
-            success: function(response, status, xhr, form) {
-                var trigger = form.data('trigger');
-                if(trigger) {
-                    reload_ticket(trigger.parents('div.ticket'));
-                    trigger.overlay().close();
-                }
-            },
-            error: function(xhr, textStarus, error) {
-                if(xhr.responseText) {
-                    var errors = JSON.parse(xhr.responseText);
-                    form_errors($('#refund-form form'), errors);
-                }
+        {% endif %}    
+    </div><!-- /grid -->
+    
+        {% for t in tickets %}
+            <div class="grid-50">
+                {% render_ticket t %}
+            </div><!--/grid -->
+            {% cycle '' '<hr />' %}
+        {% endfor %}
+        <style type="text/css">
+            #id_bank,
+            #id_reason {
+                height: 4.5em; /*  Couple of lines, padding inc. */
             }
-        });
-        function _error() {
-            alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
-        }
-        function _success(message, container) {
-            function w(response, status, xhr, form) {
-                /*
-                * se una form è di tipo multipart/form-data viene inviata
-                * tramite un iframe (non via XHR), jQuery non ha modo di
-                * conoscere lo status code e non viene mai chiamato l'error
-                * handler.
-                */
-                if((form.attr('enctype') == 'multipart/form-data') && (response.indexOf('errorlist') != -1)) {
-                    _error();
-                }
-                else {
-                    if(!container)
-                        container = form.parents('div.ticket');
-                    var p = container.parent();
-                    container.replaceWith(response)
-                    setup_fragment(p);
-                    feedback(message);
-                }
-            }
-            return w;
-        }
-        $('div.ticket form').live('submit', function(e) {
-            /*
-            * non mi piace impedire il submit da tasto invio, ma devo essere
-            * sicuro che venga eseguito il codice collegato con i
-            * button[type=submit]. Nota che con FF e chrome ( e forse con altri
-            * browser) questo non è un problema, perché la pressione dell'invio in
-            * un input causa l'evento click nel input/button di tipo submit
-            */
+        </style>
+        <div id="refund-form" class="overlay">
+            <h2>Refund Ticket</h2>
+            <form action="" method="POST">
+                <p>You are eligible for commission-free refund through PayPal.</p>
+                {{ refund_form.reason|field }}
+                <div class="refund-method">
+                    <h3>Choose the refund method</h3>
+                    <label><input type="radio" name="rmethod" value="paypal">Through PayPal</label>
+                    <label><input type="radio" name="rmethod" value="bank" checked>Through bank transfer</label>
+                    <div class="paypal" style="display:none">
+                        {{ refund_form.paypal|field }}
+                    </div>
+                    <div class="bank">
+                        {{ refund_form.bank|field }}
+                    </div>
+                    <p><b>Note</b>: you are responsible for the commission fees, if any.</p>
+                </div>
+                <button class="btn btn-primary" type="submit">Ask for Refund</button>
+            </form>
+        </div><!-- /overlay -->
+</div><!-- /grid-container -->
+</section>
 
-            e.preventDefault();
-        });
-        $('div.ticket form button[type=submit]').live('click', function(e) {
-            e.preventDefault();
-            var form = $(e.target).parents('form');
-            var container = form.parents('div.ticket');
-            form.ajaxSubmit({
-                success: _success('Ticket saved'),
-                beforeSubmit: function(arr, form, options) {
-                    /*
-                    * L'unico campo che assolutamente voglio è il nome del
-                    * partecipante.
-                    */
-                    var ticket = form.parents('.ticket');
-                    var f = ticket_field(form, 'ticket_name');
-                    if(f.length == 0)
-                        f = ticket_field(form, 'name');
-                    if(f.length && $.trim(f.val()) == '') {
-                        alert('{% trans "Please enter the name" %}');
-                        f.focus();
-                        return false;
-                    }
-                    return true;
-                },
-                error: _error
-            });
-        });
-        function ticket_field(form, field_name) {
-            var tid = $(form).parents('div.ticket').attr('data-ticket');
-            return $('input[name=t' + tid + '-' + field_name + ']', form);
-        }
-        $('div.ticket .assign-button').live('click', function(e) {
-            e.preventDefault();
-            var email = $.trim(prompt('{% trans "Enter the email of the person you want to assign the ticket" %}'));
-            if(!email)
-                return;
-            if(email == "{{ request.user.email }}") {
-                alert("{% trans "Please don't use your email address." %}");
-                return;
+<script type="text/javascript">//<![CDATA[
+(function() {
+    function reload_ticket(ticket) {
+        var id = ticket.attr('data-ticket');
+        var url = '/p3/tickets/' + id + '/';
+        $.get(url, function(data) {
+            ticket.replaceWith(data);
+            setup_fragment($('div.ticket[data-ticket=' + id + ']'));
+        })
+    }
+    $('#refund-form form').ajaxForm({
+        success: function(response, status, xhr, form) {
+            var trigger = form.data('trigger');
+            if(trigger) {
+                reload_ticket(trigger.parents('div.ticket'));
+                trigger.overlay().close();
             }
+        },
+        error: function(xhr, textStarus, error) {
+            if(xhr.responseText) {
+                var errors = JSON.parse(xhr.responseText);
+                form_errors($('#refund-form form'), errors);
+            }
+        }
+    });
+    function _error() {
+        alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
+    }
+    function _success(message, container) {
+        function w(response, status, xhr, form) {
+            /*
+            * se una form è di tipo multipart/form-data viene inviata
+            * tramite un iframe (non via XHR), jQuery non ha modo di
+            * conoscere lo status code e non viene mai chiamato l'error
+            * handler.
+            */
+            if((form.attr('enctype') == 'multipart/form-data') && (response.indexOf('errorlist') != -1)) {
+                _error();
+            }
+            else {
+                if(!container)
+                    container = form.parents('div.ticket');
+                var p = container.parent();
+                container.replaceWith(response)
+                setup_fragment(p);
+                feedback(message);
+            }
+        }
+        return w;
+    }
+    $('div.ticket form').live('submit', function(e) {
+        /*
+        * non mi piace impedire il submit da tasto invio, ma devo essere
+        * sicuro che venga eseguito il codice collegato con i
+        * button[type=submit]. Nota che con FF e chrome ( e forse con altri
+        * browser) questo non è un problema, perché la pressione dell'invio in
+        * un input causa l'evento click nel input/button di tipo submit
+        */
+
+        e.preventDefault();
+    });
+    $('div.ticket form button[type=submit]').live('click', function(e) {
+        e.preventDefault();
+        var form = $(e.target).parents('form');
+        var container = form.parents('div.ticket');
+        form.ajaxSubmit({
+            success: _success('Ticket saved'),
+            beforeSubmit: function(arr, form, options) {
+                /*
+                * L'unico campo che assolutamente voglio è il nome del
+                * partecipante.
+                */
+                var ticket = form.parents('.ticket');
+                var f = ticket_field(form, 'ticket_name');
+                if(f.length == 0)
+                    f = ticket_field(form, 'name');
+                if(f.length && $.trim(f.val()) == '') {
+                    alert('{% trans "Please enter the name" %}');
+                    f.focus();
+                    return false;
+                }
+                return true;
+            },
+            error: _error
+        });
+    });
+    function ticket_field(form, field_name) {
+        var tid = $(form).parents('div.ticket').attr('data-ticket');
+        return $('input[name=t' + tid + '-' + field_name + ']', form);
+    }
+    $('div.ticket .assign-button').live('click', function(e) {
+        e.preventDefault();
+        var email = $.trim(prompt('{% trans "Enter the email of the person you want to assign the ticket" %}'));
+        if(!email)
+            return;
+        if(email == "{{ request.user.email }}") {
+            alert("{% trans "Please don't use your email address." %}");
+            return;
+        }
+        var ticket = $(e.target).parents('.ticket');
+        var form = $('form', ticket);
+        ticket_field(form, 'assigned_to').val(email);
+        form.ajaxSubmit({
+            target: form.parents('div.ticket'),
+            replaceTarget: true,
+            success: function() {
+                feedback('{% trans "ticket assigned to" %} ' + email);
+            }
+        });
+    });
+    $('div.ticket .reclaim-button').live('click', function(e) {
+        e.preventDefault();
+        if(window.confirm('{% trans "Are you sure to reclaim this ticket" %}')) {
             var ticket = $(e.target).parents('.ticket');
             var form = $('form', ticket);
-            ticket_field(form, 'assigned_to').val(email);
+            ticket_field(form, 'assigned_to').val('');
             form.ajaxSubmit({
                 target: form.parents('div.ticket'),
                 replaceTarget: true,
                 success: function() {
-                    feedback('{% trans "ticket assigned to" %} ' + email);
+                    feedback('ticket reclaimed')
                 }
             });
-        });
-        $('div.ticket .reclaim-button').live('click', function(e) {
-            e.preventDefault();
-            if(window.confirm('{% trans "Are you sure to reclaim this ticket" %}')) {
-                var ticket = $(e.target).parents('.ticket');
-                var form = $('form', ticket);
-                ticket_field(form, 'assigned_to').val('');
-                form.ajaxSubmit({
-                    target: form.parents('div.ticket'),
-                    replaceTarget: true,
-                    success: function() {
-                        feedback('ticket reclaimed')
+        }
+    });
+    function setup_refund_form(ticket) {
+        var trigger = $('.refund-button', ticket);
+        var refund_type = trigger.data('refund-type');
+        var order = ticket.data('order');
+        var item = ticket.data('orderitem');
+
+        var form = $('#refund-form form');
+        if(!form.data('init')) {
+            form.data('init', 1);
+            form
+                .find('input[name=rmethod]')
+                .click(function(e) {
+                    var p = form.find('.refund-method .paypal');
+                    var b = form.find('.refund-method .bank');
+                    if(e.target.value == 'paypal') {
+                        p.show();
+                        b.hide();
+                    }
+                    else {
+                        p.hide();
+                        b.show();
                     }
                 });
-            }
-        });
-        function setup_refund_form(ticket) {
-            var trigger = $('.refund-button', ticket);
-            var refund_type = trigger.data('refund-type');
-            var order = ticket.data('order');
-            var item = ticket.data('orderitem');
-
-            var form = $('#refund-form form');
-            if(!form.data('init')) {
-                form.data('init', 1);
-                form
-                    .find('input[name=rmethod]')
-                    .click(function(e) {
-                        var p = form.find('.refund-method .paypal');
-                        var b = form.find('.refund-method .bank');
-                        if(e.target.value == 'paypal') {
-                            p.show();
-                            b.hide();
-                        }
-                        else {
-                            p.hide();
-                            b.show();
-                        }
-                    });
-            }
-            form.data('trigger', trigger);
-            form.get(0).action = '/accounts/orders/' + order + '/' + item + '/refund';
-
-            if(refund_type == 'payment') {
-                form
-                    .children('h3')
-                        .hide()
-                        .end()
-                    .children('.refund-method')
-                        .show();
-            }
-            else {
-                form
-                    .children('h3')
-                        .show()
-                        .end()
-                    .children('.refund-method')
-                        .hide();
-            }
-            form.get(0).reset();
         }
-        $('div.ticket .refund-button').live('click', function(e) {
-            e.preventDefault();
-            var ticket = $(e.target).parents('.ticket');
-            setup_refund_form(ticket)
-        });
-    })();
-    //]]>
-    </script>
+        form.data('trigger', trigger);
+        form.get(0).action = '/accounts/orders/' + order + '/' + item + '/refund';
+
+        if(refund_type == 'payment') {
+            form
+                .children('h3')
+                    .hide()
+                    .end()
+                .children('.refund-method')
+                    .show();
+        }
+        else {
+            form
+                .children('h3')
+                    .show()
+                    .end()
+                .children('.refund-method')
+                    .hide();
+        }
+        form.get(0).reset();
+    }
+    $('div.ticket .refund-button').live('click', function(e) {
+        e.preventDefault();
+        var ticket = $(e.target).parents('.ticket');
+        setup_refund_form(ticket)
+    });
+})();
+//]]>
+</script>
 {% endblock %}

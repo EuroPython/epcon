@@ -46,7 +46,7 @@ class P3TalkFormMixin(object):
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
-        help_text=_('This is the <b>desired duration</b> of the talk'),
+        help_text=_('This is the <i>desired duration</i> of the talk'),
         choices=TALK_DURATION,
         coerce=int,
         initial=60,
@@ -67,7 +67,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     )
     personal_agreement = forms.BooleanField(
         label=_('I agree to let you publish my data (excluding birth date and phone number).'),
-        help_text=_('This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <strong>never</strong> be published'),
+        help_text=_('This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <i>never</i> be published'),
     )
     slides_agreement = forms.BooleanField(
         label=_('I agree to release all the talk material after the event.'),
@@ -78,12 +78,12 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     )
     bio = forms.CharField(
         label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,)
     abstract = forms.CharField(
         max_length=5000,
         label=_('Talk abstract'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        help_text=_('<p>Short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
@@ -165,12 +165,12 @@ class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
 class P3SpeakerForm(cforms.SpeakerForm):
     bio = forms.CharField(
         label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,)
 
 class FormTicket(forms.ModelForm):
-    ticket_name = forms.CharField(max_length=60, required=False, help_text='name of the attendee')
-    days = forms.MultipleChoiceField(label=_('Probable days of attendance:'), choices=tuple(), widget=forms.CheckboxSelectMultiple, required=False)
+    ticket_name = forms.CharField(max_length=60, required=False, help_text='Name of the attendee')
+    days = forms.MultipleChoiceField(label=_('Probable days of attendance'), choices=tuple(), widget=forms.CheckboxSelectMultiple, help_text=_('This ticket grants you full access to the conference. The above selection is just for helping out the organizers'),required=False)
 
     class Meta:
         model = models.TicketConference
@@ -258,7 +258,7 @@ class FormSprint(forms.ModelForm):
 class P3ProfileForm(cforms.ProfileForm):
     bio = forms.CharField(
         label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,
         required=False,)
     tagline = forms.CharField(
@@ -351,7 +351,7 @@ class P3ProfilePublicDataForm(P3ProfileForm):
 class P3ProfileBioForm(P3ProfileForm):
     bio = forms.CharField(
         label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,
         required=False,)
     class Meta:
@@ -422,13 +422,13 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     phone = forms.CharField(
-        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This number will <strong>never</strong> be published.'),
+        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This number will <i>never</i> be published.'),
         max_length=30,
         required=False,
     )
     birthday = forms.DateField(
         label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
         input_formats=('%Y-%m-%d',),
         widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
         required=False,
@@ -475,7 +475,7 @@ class P3ProfileEmailContactForm(forms.Form):
         return value
 
 class P3ProfileSpamControlForm(forms.ModelForm):
-    spam_recruiting = forms.BooleanField(label='I want to receive a few selected job offers through EuroPython.', required=False)
+    spam_recruiting = forms.BooleanField(label='I want to receive a few selected job offers through PyCon.', required=False)
     spam_user_message = forms.BooleanField(label='I want to receive private messages from other partecipants.', required=False)
     spam_sms = forms.BooleanField(label='I want to receive SMS during the conference for main communications.', required=False)
     class Meta:

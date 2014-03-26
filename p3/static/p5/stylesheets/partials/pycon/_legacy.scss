@@ -36,9 +36,9 @@ form .field.error {
 	z-index: 10000;	
 	background: $white;
 	padding: $baselineheight/2 $gutterwidth;	
-	width: 30em;	
+	width: 35em;	
 	min-height: $baselineheight * 10;	
-	box-shadow: 0 0 15px $neutralcolor;
+	box-shadow: 0 0 15px $darkneutralcolor;
 }
 
 .overlay .close {
