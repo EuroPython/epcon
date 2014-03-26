@@ -7,18 +7,17 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.translation import ugettext as _
 from p3 import forms as p3forms
 
 class P3BillingData(aforms.BillingData):
-    card_name = forms.CharField(
-        label='Your Name',
-        max_length=200,
-    )
     payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='paypal')
-    code_conduct = forms.BooleanField(label='I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.')
+    code_conduct = forms.BooleanField(
+        label=_('I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.'))
 
     def __init__(self, *args, **kwargs):
         super(P3BillingData, self).__init__(*args, **kwargs)
+        self.fields['card_name'].label = _('Your Name')
         self.fields['country'].required = True
         self.fields['address'].required = True
 
@@ -36,15 +35,18 @@ class P3BillingData(aforms.BillingData):
                # possono averlo più corto
                if not cf_code or (len(cf_code) != 16 and not vat):
                    # hack per associare l'errore al campo cf_code
-                   e = forms.ValidationError('"Codice Fiscale" is required for Italian customers')
+                   e = forms.ValidationError(_('"Codice Fiscale" is required for Italian customers'))
                    self._errors['cf_code'] = self.error_class(e.messages)
                    del self.cleaned_data['cf_code']
         return data
 
 class P3BillingDataCompany(P3BillingData):
     billing_notes = forms.CharField(
-        label='Additional billing information',
-        help_text='If your company needs some information to appear on the invoice in addition to those provided above (eg. PO number, etc.), write them here.<br />We reserve the right to review the contents of this box.',
+        label=_('Additional billing information'),
+        help_text=_(
+            'If your company needs some information to appear on the invoice in addition to '
+            'those provided above (eg. PO number, etc.), write them here.<br />'
+            'We reserve the right to review the contents of this box.'),
         required=False,
         widget=forms.Textarea(attrs={'rows': 3}),
     )
@@ -55,7 +57,7 @@ class P3BillingDataCompany(P3BillingData):
 
     def __init__(self, *args, **kwargs):
         super(P3BillingDataCompany, self).__init__(*args, **kwargs)
-        self.fields['card_name'].label = 'Company Name'
+        self.fields['card_name'].label = _('Company Name')
         self.fields['address'].required = True
 
 #    def clean_vat_number(self):
