@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load p3 assopy_tags i18n formstyle %}
+{% load p3 i18n formstyle %}
 
 {% block PAGE_TITLE %}{% trans "Buy tickets (2 of 2)" %}{% endblock %}
 
@@ -15,10 +15,10 @@
         <div class="page-summary">
             <p>{% trans "Review order and fill billing information." %}</p>
         </div>
- 
+
     </div><!--/grid -->
 </div><!-- /grid-container -->
-</section> 
+</section>
 
 <!--
 = YOUR ORDER ===================================================================
@@ -29,7 +29,7 @@
     <div class="grid-100">
 
             {{ form|form_errors }}
-         
+
             <fieldset>
                 <legend>{% trans "Your order" %}</legend>
                 <table class="table" style="margin-bottom: 0">
@@ -67,7 +67,7 @@
 
     </div><!--/grid -->
 </div><!-- /grid-container -->
-</section> 
+</section>
 
 <!--
 = BILLING ======================================================================
@@ -80,6 +80,7 @@
             <fieldset>
                 {% if totals.total != 0 %}
                     <legend>{% trans "Billing data" %}</legend>
+                    {{ form.card_name|form_field }}
                     {{ form.payment|form_field }}
                     <div id="id_payment_cc" class="help-block" style="display:none;">
                         {% blocktrans %}
@@ -92,7 +93,7 @@
                     </div>
                     {{ form.country|form_field }}
                     {{ form.address|form_field }}
-                    
+
                     {%comment%}This fake field aligns Google results to the address above{%endcomment%}
                     <div class="control-group">
                         <label class="control-label">&nbsp;</label>
@@ -104,13 +105,13 @@
                         </div>
                     </div>
 
-                    {% if form.vat_number %}
+                    {% if 'vat_number' in form.fields %}
                         {{ form.vat_number|form_field }}
                     {% endif %}
-                    {% if form.cf_code %}
+                    {% if 'cf_code' in form.fields %}
                         <div style="display: none;">{{ form.cf_code|form_field }}</div>
                     {% endif %}
-                    {% if form.billing_notes %}
+                    {% if 'billing_notes' in form.fields %}
                         {{ form.billing_notes|form_field }}
                     {% endif %}
                     {{ form.code_conduct|form_field }}
@@ -134,8 +135,6 @@
                     }
                 })
             </script>
-
-
 
     </div><!--/grid -->
 </div><!-- /grid-container -->
@@ -186,7 +185,7 @@
     }
     function _cfCode() {
         var country = $('#id_country').val().toLowerCase();
-        var div = $('#id_cf_code').parents('div').eq(1);
+        var div = $('#id_cf_code').parents('div[style]').eq(0);
         if(country == 'it') {
             div.show();
         }
@@ -200,5 +199,5 @@
     $('#id_address').change(_geoCode);
     _cfCode();
 </script>
- 
+
 {% endblock %}
