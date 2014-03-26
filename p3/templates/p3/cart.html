@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load p3 assopy_tags i18n conference formstyle %}
+{% load p3 i18n conference formstyle %}
 
 {% block PAGE_TITLE %}{% trans "Buy tickets (1 of 2)" %}{% endblock %}
 
@@ -20,11 +20,11 @@
     <div class="grid-100">
 
         <h1>{% trans "Buy tickets (1 of 2)" %}</h1>
-    
+
         <div class="page-summary">
             <p>{% trans "Select conference tickets and additional services." %}</p>
         </div>
-    
+
         {% if not user.is_authenticated %}
         <div class="alert alert--info">
             {% url "p3-cart" as u %}
@@ -44,12 +44,8 @@
 <section>
     <div class="grid-container">
     <div class="grid-100">
-             
+
         {{ form|form_errors }}
-        <div class="alert alert--error alert--block">    
-            <h4>Error, no ticket specified</h4><!-- h4 is optional -->
-            <p>Please select one or more tickets below.</p>
-        </div>
 
         <fieldset class="order-type">
             <legend>{% trans "Billing type" %}</legend>
@@ -196,7 +192,7 @@
 <section>
     <div class="grid-container">
     <div class="grid-100">
-    
+
             {% if other_fares %}
             <fieldset class="tickets other-goodies">
                 <legend>{% trans "Other Goodies" %}</legend>
@@ -243,7 +239,7 @@
 <section>
     <div class="grid-container">
     <div class="grid-100">
-    
+
         <fieldset class="tickets coupon">
             <legend>{% trans "Coupon code" %}</legend>
             {{ form.coupon|form_field:"coupon" }} <span></span>

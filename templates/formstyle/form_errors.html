@@ -1,0 +1,9 @@
+<div class="alert alert--error alert--block {{ classes }}">
+    {% if form.non_field_errors %}
+        {% for e in form.non_field_errors %}
+        <p>{{ e }}</p>
+        {% endfor %}
+    {% else %}
+        <div>Warning, check your data on the form</div>
+    {% endif %}
+</div>
