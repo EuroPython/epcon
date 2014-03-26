@@ -29,3 +29,25 @@ def form_field(field, classes=None):
         'classes': classes
     })
     return tpl.render(ctx)
+
+@register.filter
+def form_errors(form, classes=None):
+    if not form.errors:
+        return ''
+
+    form_name = form.__class__.__name__
+    tpl =template.loader.select_template((
+        'formstyle/form_{}_errors.html'.format(form_name.lower()),
+        'formstyle/form_errors.html'))
+
+    if not classes:
+        classes = ""
+    elif isinstance(classes, (list, tuple)):
+        classes = ' '.join(classes)
+    classes += form_name
+
+    ctx = template.Context({
+        'form': form,
+        'classes': classes
+    })
+    return tpl.render(ctx)
