@@ -41,12 +41,12 @@
             <div class="accordion" id="talk-accordion-{{ t.id }}">
 
             <!-- Abstract -->
-                        
+
             {% if voting_allowed %}
                 <div class="accordion__group abstract">
-                    <div class="accordion__heading" rel="div[data-talk={{ t.id }}]" data-src="{% url "conference-talk-xml" t.slug %}">
+                    <div class="accordion__heading content-toggle" rel="div[data-talk={{ t.id }}]" data-src="{% url "conference-talk-xml" t.slug %}">
                         <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-abstract-{{ t.id }}">Abstract</a>
-                    </div><!-- accordion-heading -->                    
+                    </div><!-- accordion-heading -->
                     <div id="talk-abstract-{{ t.id }}" class="accordion__body collapse">
                     <div class="accordion__inner" data-talk="{{ t.id }}">
                         <div class="abstract cms"></div><!-- placeholder -->
@@ -55,14 +55,14 @@
                     </div><!-- accordion-body -->
                 </div><!-- accordion-group -->
             {% endif %}
-            
+
             <!-- Tags -->
 
             {% if t.tags %}
                 <div class="accordion__group tags">
                     <div class="accordion__heading">
                         <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-tags-{{ t.id }}">Tags</a>
-                    </div>                    
+                    </div>
                     <div id="talk-tags-{{ t.id }}" class="accordion__body collapse">
                     <div class="accordion__inner">
                         <div class="all-tags">
@@ -72,7 +72,7 @@
                     </div><!-- accordion-body -->
                 </div><!-- accordion-group -->
             {% endif %}
-            
+
             </div><!-- /accordion -->
 
             {%comment%}
@@ -162,8 +162,8 @@
             .rateit();
         {% endif %}
         {% if voting_allowed %}
-        $('#talk-voting .toggle').click(function(e) {
-            var trigger = $(e.target);
+        $('#talk-voting .content-toggle').click(function(e) {
+            var trigger = $(this);
             var dest = $(trigger.attr('rel')).children('.abstract');
             if(dest.attr('load'))
                 return;
