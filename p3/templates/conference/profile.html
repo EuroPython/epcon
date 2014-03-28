@@ -7,22 +7,27 @@
 
 {% block PAGE_TITLE %}{% p3_profile_data profile.user_id as profile_data %}{{ profile_data.name }}{% endblock %}
 
+{% block HEADER %}
+    {%comment%}Remove header completely to save space. In the future we may want to design a mini header instead?{%endcomment%}
+{% endblock %}
+
 {% block MAIN_CONTENT %}
 {% p3_profile_data profile.user_id as profile_data %}
 
 <!--
-PROFILE VISIBILITY
+NAME AND PROFILE VISIBILITY
 -->
 
-{% if full_access %}
-<section>
+<section id="profile-user-identity">
     <div class="grid-container">
-    <div class="grid-100">
-        {% include "conference/profile_visibility_form.html" %}
-   </div>
+        <div class="grid-100">
+            <h1>{{ profile_data.name }}{% if full_access %} &mdash; {% trans "It’s you!" %}{% endif %}</h1>
+            {% if full_access %}
+                {% include "conference/profile_visibility_form.html" %}
+            {% endif %}
+        </div>
    </div>
 </section>
-{% endif %}
 
 <!--
 AVATAR AND PERSONAL INFORMATION
@@ -30,9 +35,6 @@ AVATAR AND PERSONAL INFORMATION
 
 <section id="profile-user-identity">
     <div class="grid-container">
-    <div class="grid-100">
-        <h2>{{ profile_data.name }}{% if full_access %} <span>&mdash; {% trans "It’s you!" %}</span>{% endif %}</h2>
-    </div>
     <div class="grid-20">
         {% include "conference/profile_picture_form.html" %}
     </div>
@@ -60,8 +62,6 @@ TALKS AND TWITTER
 <section>
     <div class="grid-container">
     <div class="grid-50">
-
- 
         {% current_conference as conf %}
         {% if conf.voting %}
             {% sum_ "talks" profile_data.talks.by_conf|attrib_:conf.code profile_data.talks.accepted.all %}
