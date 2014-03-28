@@ -2,25 +2,23 @@
 <div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}" data-order="{{ ticket.orderitem.order.id }}" data-orderitem="{{ ticket.orderitem.id }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ticket.frozen %}
-        <div class="ticket-status inactive">
+        <div class="alert alert--info">
             &darr; {% blocktrans %}Ticket frozen; editing disabled{% endblocktrans %}
-            {% with ticket|frozen_reason as r %}{% if r %} - <strong>{{ r }}</strong>{% endif %}{% endwith %}
+            {% with ticket|frozen_reason as r %}{% if r %} ({{ r }}){% endif %}{% endwith %}
         </div>
     {% else %}
         {% if ocomplete or ticket.orderitem.order.method == "admin" %}
-        <div class="ticket-status{% if user != ticket.user %} active{% endif %}">
-            {% if user != ticket.user %}
-            &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
-            {% else %}
-            &nbsp;
-            {% endif %}
-        </div>
+            <div class="alert {% if user != ticket.user %}alert--success{% endif %}">
+                {% if user != ticket.user %}
+                &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
+                {% endif %}
+            </div>
         {% else %}
-        <div class="alert">
-            {% with ticket.orderitem.order.code as code %}
-            &darr; {% blocktrans %}Ticket not active; waiting for wire transfer (order {{ code }}){% endblocktrans %}
-            {% endwith %}
-        </div>
+            <div class="alert">
+                {% with ticket.orderitem.order.code as code %}
+                &darr; {% blocktrans %}Ticket not active; waiting for wire transfer (order {{ code }}){% endblocktrans %}
+                {% endwith %}
+            </div>
         {% endif %}
     {% endif %}
 
@@ -75,7 +73,7 @@
             <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
             <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
             {% if not form.document|field_value %}
-            <div class="alert">
+            <div class="alert alert-block">
                 <h4>Warning, incomplete ticket</h4>
                 <p>Please edit and add a document.</p>
             </div>

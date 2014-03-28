@@ -69,7 +69,7 @@
 }
 
 
-// CART & TICKETS ====================================================================
+// CART ========================================================================
 
 #form-cart {
 
@@ -100,6 +100,8 @@
     background: gray;
 }
 */
+
+// TICKETS =====================================================================
 
 .ticket {
 .preview {
@@ -180,27 +182,6 @@
     color: #635443;
 }
 */
-
-
-.ticket-status {
-    padding: 5px 0;
-    text-align: center;    
-    border: 2px solid transparent;        
-    font-size: 12px;
-}
-
-
-.ticket-status.inactive {            
-    border-color: #d9415a;
-    color: #d9415a;
-    background: #fff;   
-}
-
-.ticket-status.active {
-    border-color: #4895a3;
-    color: #4895a3;
-    background: #fff;   
-}
 
 .preview:hover .ticket-commands {
     opacity: .85;
