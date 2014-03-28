@@ -27,11 +27,11 @@
         <h2>{{ ticket.fare.name }}</h2>
         <div class="preview-inner">
             {% if ticket.p3_conference %}
-                <div class="ticket-name">{{ form.ticket_name|field_value|default:"No name specified" }}</div>
-                <div class="ticket-tagline">{{ form.tagline|field_value|default:"Something about me" }}</div>
+                <div class="ticket-name">{{ form.ticket_name.value|default:"No name specified" }}</div>
+                <div class="ticket-tagline">{{ form.tagline.value|default:"Something about me" }}</div>
                 <div class="ticket-python-experience">
                     Python power
-                    {% for x in form.python_experience|field_value|as_range %}
+                    {% for x in form.python_experience.value|as_range %}
                         <img src="{{ STATIC_URL }}p5/images/rateit-star.gif" alt="*" width="16" height="16" />
                     {% endfor %}
                 </div>
@@ -40,14 +40,14 @@
                     <img class="avatar" src="{{ pdata.image }}" alt="" width="98" height="98" />
                 {% endif %}
             {% else %}
-                <div>{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
+                <div>{{ form.ticket_name.value|default:"Edit this ticket" }}</div>
             {% endif %}
         </div>
         {% if not ticket.frozen %}
             {% if blocked %}
             <div class="ticket-commands ticket-assigned-to">
                 <p>
-                {% with form.assigned_to|field_value as assigned_to %}
+                {% with form.assigned_to.value as assigned_to %}
                 {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
                 {% endwith %}
                 </p>
@@ -70,9 +70,9 @@
     {% else %}
         <h2>{{ ticket.fare.name }}</h2>
         {% if ticket.fare.code == 'SIM01' %}
-            <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
+            <div class="ticket-name">{{ form.ticket_name.value|default:"Edit this ticket" }}</div>
             <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
-            {% if not form.document|field_value %}
+            {% if not form.document.value %}
             <div class="alert alert-block">
                 <h4>Warning, incomplete ticket</h4>
                 <p>Please edit and add a document.</p>
@@ -81,13 +81,13 @@
         {% else %}
             {% if ticket.fare.code|slice:":1" == 'H' %}
                 {% if not ticket.p3_conference_room.unused %}
-                    <div class="ticket-name">{{ form.ticket_name|field_value|default:"Edit this ticket" }}</div>
+                    <div class="ticket-name">{{ form.ticket_name.value|default:"Edit this ticket" }}</div>
                     <div class="ticket-footer">from {{ ticket.p3_conference_room.checkin|date:"d M" }} until {{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
                 {% else %}
                     <div class="ticket-name">This is an unused ticket</div>
                 {% endif %}
             {% else %}
-                <div class="ticket-name">{{ form.name|field_value|default:"Edit this ticket" }}</div>
+                <div class="ticket-name">{{ form.name.value|default:"Edit this ticket" }}</div>
                 <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
             {% endif %}
         {% endif %}
@@ -120,14 +120,14 @@
         {% endif %}
     {% else %}
         {% if ticket.fare.code == 'SIM01' %}
-            {% with form.document|field_value as doc %}
+            {% with form.document.value as doc %}
             {% if doc %}
                 <p>Uploaded <a href="{{ doc.url }}">Photo ID</a></p>
             {% endif %}
             {% endwith %}
         {% endif %}
         {% if ticket.fare.code|slice:":1" == 'H' %}
-            {% with form.document|field_value as doc %}
+            {% with form.document.value as doc %}
             {% if doc %}
                 <p>Uploaded <a href="{{ doc.url }}">Photo ID</a></p>
             {% endif %}
