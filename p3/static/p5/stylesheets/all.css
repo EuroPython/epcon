@@ -1,3 +1,14 @@
+body > div.draft {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    bottom: 0;
+    z-index: 100;
+    background-image: url(../images/flames.gif);
+    background-position: top left, top left;
+    background-repeat: repeat-y, repeat;
+}
 /* 
 
 Built on Rock Hammer by Stuff and Nonsense

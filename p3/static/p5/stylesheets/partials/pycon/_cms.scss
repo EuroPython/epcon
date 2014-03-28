@@ -5,6 +5,23 @@
  * This file is non-free. See README.md for an explanation.
  */
 
+/*
+ * editors must notice that the page is a draft and so not accessibile by anonymous users
+ *
+ * DON'T REMOVE AND DON'T TOUCH MY FLAMES :)
+ */
+body > div.draft {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    bottom: 0;
+    z-index: 100;
+    background-image: url(../images/flames.gif);
+    background-position: top left, top left;
+    background-repeat: repeat-y, repeat;
+}
+
 /* ============================================== */
 /* ! Custom styles for text pulled from the CMS   */
 /* ============================================== */
