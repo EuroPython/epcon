@@ -16,9 +16,9 @@
             <div class="alert alert--info">
                 {% blocktrans %}You still have not bought any ticket with this account. Please proceed to the <a href="{{ u }}">cart</a> to place an order.{% endblocktrans %}
             </div>
-        {% endif %}    
+        {% endif %}
     </div><!-- /grid -->
-    
+
         {% for t in tickets %}
             <div class="grid-50">
                 {% render_ticket t %}
