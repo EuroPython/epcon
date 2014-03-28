@@ -6,22 +6,21 @@
 
 {% block MAIN_CONTENT %}
     {% if not voting_allowed %}
-    {% url "p3-cart" as cart_url %}
-    <section class="notice">
-        {% if request.user.is_authenticated %}
-        <p>{% blocktrans %}To join the community voting, you must buy a ticket. You can buy one <a href="{{ cart_url }}">here</a>.{% endblocktrans %}</p>
-        {% else %}
-        <p>{% trans "To join the community voting, you must buy a ticket." %}</p>
-        <p>{% blocktrans with url="/accounts/login/" %}If you already bought a ticket please <a href="{{ url }}">log in</a>, otherwise you can buy one <a href="{{ cart_url }}">here</a>.{% endblocktrans %}</p>
-        {% endif %}
-    </section>
+        {% url "p3-cart" as cart_url %}
+        <div class="alert">
+            {% if request.user.is_authenticated %}
+            <p>{% blocktrans %}To join the community voting, you must buy a ticket. You can buy one <a href="{{ cart_url }}">here</a>.{% endblocktrans %}</p>
+            {% else %}
+            <p>{% trans "To join the community voting, you must buy a ticket." %}</p>
+            <p>{% blocktrans with url="/accounts/login/" %}If you already bought a ticket please <a href="{{ url }}">log in</a>, otherwise you can buy one <a href="{{ cart_url }}">here</a>.{% endblocktrans %}</p>
+            {% endif %}
+        </div><!--/ alert -->
     {% endif %}
 <section class="full-page-height">
     <div class="grid-container">
     <div class="grid-100">
         <h1>{% trans "Talk Voting" %}</h1>
     </div>
-
 
     <div class="grid-60">
 
