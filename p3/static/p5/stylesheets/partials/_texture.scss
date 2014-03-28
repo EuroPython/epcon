@@ -22,7 +22,7 @@
 @mixin wellgrad 		{ @include vertical($wellbackgroundcolor, darken($wellbackgroundcolor, 10%)); }
 
 .btn {
-    @include buttongrad;
+    @include buttongrad; 
 }
 
 .btn-primary {

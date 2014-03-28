@@ -25,6 +25,7 @@ border : $buttonborderwidth $buttonborderstyle $buttonbordercolor;
 border-bottom-color : $buttonbottombordercolor;
 border-radius : $buttonborderradius;
 cursor : pointer;
+text-shadow: 0 1px 0 rgba(255,255,255,.55);
 
 &:visited,
 &:hover,
@@ -49,6 +50,7 @@ border : {
 color : $buttonbordercolorerror;
 bottom-color : darken($buttonbordercolorerror, 10%); }
 color : $buttoncolorerror;
+text-shadow: none;
 
 &:visited,
 &:active,
@@ -64,6 +66,7 @@ border : {
 color : $buttonbordercolorinfo;
 bottom-color : darken($buttonbordercolorinfo, 10%); }
 color : $buttoncolorinfo;
+text-shadow: none;
 
 &:visited,
 &:active,
@@ -79,6 +82,7 @@ border : {
 color : $buttonbordercolorinverse;
 bottom-color : darken($buttonbordercolorinverse, 10%); }
 color : $buttoncolorinverse;
+text-shadow: none;
 
 &:visited,
 &:active,
@@ -94,6 +98,7 @@ border : {
 color : $buttonbordercolorprimary;
 bottom-color: darken($buttonbordercolorprimary, 10%); }
 color : $buttoncolorprimary;
+text-shadow: none;
 
 &:visited,
 &:active,
@@ -109,6 +114,7 @@ border : {
 color : $buttonbordercolorsuccess;
 bottom-color : darken($successcolor, 10%); }
 color : $buttoncolorsuccess;
+text-shadow: none;
 
 &:visited,
 &:active,
@@ -124,6 +130,7 @@ border : {
 color : $buttonbordercolorwarning;
 bottom-color : darken($buttonbordercolorwarning, 10%); }
 color : $buttoncolorwarning;
+text-shadow: none;
 
 &:visited,
 &:active,

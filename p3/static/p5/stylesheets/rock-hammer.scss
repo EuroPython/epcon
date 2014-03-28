@@ -147,11 +147,8 @@ header {
         width: 90%;
         margin: $baselineheight/4 auto;
         letter-spacing: 1px;
-/*
-        &:hover {
-            color: $white;  
-        }
-*/
+        text-shadow: 0 1px 0 rgba(255,255,255,.55);        
+
     }
     small { 
         color: $neutralcolor;
