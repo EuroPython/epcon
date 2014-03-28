@@ -10,7 +10,8 @@
         {% if ocomplete or ticket.orderitem.order.method == "admin" %}
             <div class="alert {% if user != ticket.user %}alert--success{% endif %}">
                 {% if user != ticket.user %}
-                &darr; Assigned to you by <a href="mailto:{{ ticket.user.email }}"><b>{{ ticket.user.assopy_user.name }}</b></a>
+                &darr;
+                {% blocktrans with url="mailto:"|add:ticket.user.email name=ticket.user.assopy_user.name %}Assigned to you by <a href="{{ url }}"><b>{{ name }}</b></a>{% endblocktrans %}
                 {% endif %}
             </div>
         {% else %}
@@ -22,15 +23,19 @@
         {% endif %}
     {% endif %}
 
+    {% trans "No name specified" as t_no_name %}
+    {% trans "Something about me" as t_about_me %}
+    {% trans "Edit this ticket" as t_edit_ticket %}
+    {% trans "Refund this ticket" as t_refund %}
     <div class="preview">
     {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
         <div class="preview-inner">
             {% if ticket.p3_conference %}
-                <div class="ticket-name">{{ form.ticket_name.value|default:"No name specified" }}</div>
-                <div class="ticket-tagline">{{ form.tagline.value|default:"Something about me" }}</div>
+                <div class="ticket-name">{{ form.ticket_name.value|default:t_no_name}}</div>
+                <div class="ticket-tagline">{{ form.tagline.value|default:t_about_me}}</div>
                 <div class="ticket-python-experience">
-                    Python power
+                    {% trans "Python power" %}
                     {% for x in form.python_experience.value|as_range %}
                         <img src="{{ STATIC_URL }}p5/images/rateit-star.gif" alt="*" width="16" height="16" />
                     {% endfor %}
@@ -40,16 +45,15 @@
                     <img class="avatar" src="{{ pdata.image }}" alt="" width="98" height="98" />
                 {% endif %}
             {% else %}
-                <div>{{ form.ticket_name.value|default:"Edit this ticket" }}</div>
+                <div>{{ form.ticket_name.value|default:t_edit_ticket}}</div>
             {% endif %}
         </div>
         {% if not ticket.frozen %}
             {% if blocked %}
             <div class="ticket-commands ticket-assigned-to">
                 <p>
-                {% with form.assigned_to.value as assigned_to %}
-                {% blocktrans %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %} <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
-                {% endwith %}
+                {% blocktrans with assigned_to=form.assigned_to.value %}Currently assigned to <b>{{ assigned_to }}</b>{% endblocktrans %}
+                <a href="#" class="reclaim-button">{% trans "Reclaim" %}</a>.
                 </p>
             </div>
             {% else %}
@@ -61,7 +65,7 @@
                     {% endif %}
                     {% orderitem_can_be_refunded ticket.orderitem as r %}
                     {% if r %}
-                        <br /><a href="#" class="trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a>
+                    <br /><a href="#" class="trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">{{ t_refund }}</a>
                     {% endif %}
                 </p>
             </div>
@@ -70,24 +74,24 @@
     {% else %}
         <h2>{{ ticket.fare.name }}</h2>
         {% if ticket.fare.code == 'SIM01' %}
-            <div class="ticket-name">{{ form.ticket_name.value|default:"Edit this ticket" }}</div>
+            <div class="ticket-name">{{ form.ticket_name.value|default:t_edit_ticket}}</div>
             <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
             {% if not form.document.value %}
             <div class="alert alert-block">
-                <h4>Warning, incomplete ticket</h4>
-                <p>Please edit and add a document.</p>
+                <h4>{% trans "Warning, incomplete ticket" %}</h4>
+                <p>{% trans "Add a document." %}</p>
             </div>
             {% endif %}
         {% else %}
             {% if ticket.fare.code|slice:":1" == 'H' %}
                 {% if not ticket.p3_conference_room.unused %}
-                    <div class="ticket-name">{{ form.ticket_name.value|default:"Edit this ticket" }}</div>
+                    <div class="ticket-name">{{ form.ticket_name.value|default:t_edit_ticket}}</div>
                     <div class="ticket-footer">from {{ ticket.p3_conference_room.checkin|date:"d M" }} until {{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
                 {% else %}
-                    <div class="ticket-name">This is an unused ticket</div>
+                <div class="ticket-name">{% trans "This is an unused ticket" %}</div>
                 {% endif %}
             {% else %}
-                <div class="ticket-name">{{ form.name.value|default:"Edit this ticket" }}</div>
+                <div class="ticket-name">{{ form.name.value|default:t_edit_ticket}}</div>
                 <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
             {% endif %}
         {% endif %}
@@ -98,7 +102,7 @@
             </p>
             {% orderitem_can_be_refunded ticket.orderitem as r %}
             {% if r %}
-            <p class="refund"><a href="#" class="refund-button trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">Refund this ticket</a></p>
+            <p class="refund"><a href="#" class="refund-button trigger-overlay" rel="#refund-form" data-refund-type="{{ ticket.orderitem.refund_type }}">{{ t_refund }}</a></p>
             {% endif %}
         </div>
         {% endif %}
@@ -122,14 +126,14 @@
         {% if ticket.fare.code == 'SIM01' %}
             {% with form.document.value as doc %}
             {% if doc %}
-                <p>Uploaded <a href="{{ doc.url }}">Photo ID</a></p>
+                <p>{% blocktrans with url=doc.url %}Uploaded <a href="{{ url }}">Photo ID</a>{% endblocktrans %}</p>
             {% endif %}
             {% endwith %}
         {% endif %}
         {% if ticket.fare.code|slice:":1" == 'H' %}
             {% with form.document.value as doc %}
             {% if doc %}
-                <p>Uploaded <a href="{{ doc.url }}">Photo ID</a></p>
+                <p>{% blocktrans with url=doc.url %}Uploaded <a href="{{ url }}">Photo ID</a>{% endblocktrans %}</p>
             {% endif %}
             {% endwith %}
         {% endif %}
@@ -143,7 +147,7 @@
         {% comment %}
         {% if ticket.fare.payment_type == 'v' %}
         <p>
-            <a href="{% url "assopy-orderitem-voucher" order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">Download your voucher</a>
+        <a href="{% url "assopy-orderitem-voucher" order_id=ticket.orderitem.order_id item_id=ticket.orderitem.id %}">{% trans "Download your voucher" %}</a>
         </p>
         {% endif %}
         {% endcomment %}
@@ -157,12 +161,12 @@
             <fieldset>
                     {% if user == ticket.user %}
                         {% if user.first_name or user.last_name %}
-                            <h2>Ticket for {{ user.first_name }} {{ user.last_name }}</h2>
+                            <h2>{% blocktrans with first_name=user.first_name last_name=user.last_name %}Ticket for {{ first_name }} {{ last_name }}{% endblocktrans %}</h2>
                         {% else %}
-                            <h2>Ticket for NO NAME SPECIFIED</h2>
+                            <h2>{% trans "Ticket for NO NAME SPECIFIED" %}</h2>
                         {% endif %}
                         {% if user.attendeeprofile %}
-                            <p>Want to change name? <a href="/accounts/profile/">Edit your account</a>.</p>
+                        <p>{% blocktrans with url="/accounts/profile/" %}Want to change name? <a href="{{ url }}">Edit your account</a>.{% endblocktrans %}</p>
                         {% endif %}
                     {% else %}
                         {{ form.ticket_name|form_field }}
@@ -171,16 +175,31 @@
                     {% p3_profile_data request.user.id as pdata %}
                     <p class="clearfix">
                         <img style="float:left; margin-right: .75em;" class="avatar" src="{{ pdata.image }}" alt="" width="49" height="49" /><!-- halved size -->
+                    {% url "conference-profile" slug=pdata.slug as profile_url %}
                     {% if pdata.visibility == "x" %}
-                        <span><i class="fa fa-ban"></i> <a href="{% url "conference-profile" slug=pdata.slug %}">Your profile</a> is not visibile by anyone.
-                            Why don't you let people know that you are coming? <a href="/find-out-whos-coming">Find out why</a>.
+                        <span>
+                            <i class="fa fa-ban"></i>
+                            {% blocktrans with url="/find-out-whos-coming" %}
+                            <a href="{{ profile_url }}">Your profile</a> is not visibile by anyone.
+                            Why don't you let people know that you are coming? <a href="{{ url }}">Find out why</a>.
+                            {% endblocktrans %}
                         </span>
                     {% endif %}
                     {% if pdata.visibility == "m" %}
-                        <span><i class="fa fa-users"></i> Only <b>conference participants</b> can view <a href="{% url "conference-profile" slug=pdata.slug %}">your profile</a>.</span>
+                        <span>
+                            <i class="fa fa-users"></i>
+                            {% blocktrans with url="/find-out-whos-coming" %}
+                            Only <b>conference participants</b> can view <a href="{{ profile_url }}">your profile</a>.
+                            {% endblocktrans %}
+                        </span>
                     {% endif %}
                     {% if pdata.visibility == "p" %}
-                        <span><i class="fa fa-globe"></i> Your <a href="{% url "conference-profile" slug=pdata.slug %}">profile</a> is <b>publicly visible</b>.&nbsp;</span>
+                        <span>
+                            <i class="fa fa-globe"></i>
+                            {% blocktrans with url="/find-out-whos-coming" %}
+                            Your <a href="{{ profile_url }}">profile</a> is <b>publicly visible</b>.
+                            {% endblocktrans %}
+                        </span>
                     {% endif %}
                     </p>
                     {{ form.tagline|form_field }}
