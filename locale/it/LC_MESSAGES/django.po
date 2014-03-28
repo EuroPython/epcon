@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-28 23:36+0100\n"
+"POT-Creation-Date: 2014-03-28 23:52+0100\n"
 "PO-Revision-Date: 2014-03-03 23:55+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -146,6 +146,25 @@ msgstr ""
 msgid "Describe yourself in one line"
 msgstr "Descriviti con una frase"
 
+#: p3/forms.py:377
+#, fuzzy
+msgid "no picture"
+msgstr "Immagine del profilo"
+
+#: p3/forms.py:378
+#, fuzzy
+msgid "use gravatar"
+msgstr "Usa il mio Gravatar"
+
+#: p3/forms.py:379
+msgid "use url"
+msgstr ""
+
+#: p3/forms.py:380
+#, fuzzy
+msgid "upload file"
+msgstr "Il tuo profilo pubblico"
+
 #: p3/forms.py:425
 #, fuzzy
 msgid ""
@@ -173,12 +192,44 @@ msgstr ""
 ">Formato: AAAA-MM-DD<br/>La tua data di nascita non verrà <b>mai</b> "
 "pubblicata."
 
+#: p3/forms.py:449 p3/forms.py:460
+msgid "This field is required for a speaker"
+msgstr ""
+
+#: p3/forms.py:474
+msgid "Email already registered"
+msgstr ""
+
+#: p3/forms.py:478
+msgid "I want to receive a few selected job offers through PyCon."
+msgstr ""
+
+#: p3/forms.py:479
+msgid "I want to receive private messages from other partecipants."
+msgstr ""
+
+#: p3/forms.py:480
+msgid "I want to receive SMS during the conference for main communications."
+msgstr ""
+
 #: p3/forms.py:565
 msgid "Room sharing"
 msgstr ""
 
 #: p3/forms.py:569
 msgid "Full room"
+msgstr ""
+
+#: p3/forms.py:627
+msgid "Insert your discount code and save money!"
+msgstr ""
+
+#: p3/forms.py:658 p3/forms.py:662 p3/forms.py:664
+msgid "invalid coupon"
+msgstr ""
+
+#: p3/forms.py:774
+msgid "already booked"
 msgstr ""
 
 #: p3/templates/404.html:4 p3/templates/404.html.py:11

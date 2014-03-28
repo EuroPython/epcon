@@ -374,10 +374,10 @@ class P3ProfileVisibilityForm(P3ProfileForm):
 
 class P3ProfilePictureForm(P3ProfileForm):
     opt = forms.ChoiceField(choices=(
-            ('x', 'no picture'),
-            ('g', 'use gravatar'),
-            ('u', 'use url'),
-            ('f', 'upload file'),
+            ('x', _('no picture')),
+            ('g', _('use gravatar')),
+            ('u', _('use url')),
+            ('f', _('upload file')),
         ), required=False)
     image_gravatar= forms.BooleanField(required=False, widget=forms.HiddenInput)
     image_url = forms.URLField(required=False)
@@ -446,7 +446,7 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
             pass
         else:
             if not value:
-                raise forms.ValidationError('This field is required for a speaker')
+                raise forms.ValidationError(_('This field is required for a speaker'))
         return value
 
     def clean_birthday(self):
@@ -457,7 +457,7 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
             pass
         else:
             if not value:
-                raise forms.ValidationError('This field is required for a speaker')
+                raise forms.ValidationError(_('This field is required for a speaker'))
         return value
 
 class P3ProfileEmailContactForm(forms.Form):
@@ -471,13 +471,13 @@ class P3ProfileEmailContactForm(forms.Form):
         value = self.cleaned_data['email'].strip()
         if self.user:
             if value != self.user.email and User.objects.filter(email__iexact=value).exists():
-                raise forms.ValidationError('Email already registered')
+                raise forms.ValidationError(_('Email already registered'))
         return value
 
 class P3ProfileSpamControlForm(forms.ModelForm):
-    spam_recruiting = forms.BooleanField(label='I want to receive a few selected job offers through PyCon.', required=False)
-    spam_user_message = forms.BooleanField(label='I want to receive private messages from other partecipants.', required=False)
-    spam_sms = forms.BooleanField(label='I want to receive SMS during the conference for main communications.', required=False)
+    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through PyCon.'), required=False)
+    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other partecipants.'), required=False)
+    spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'), required=False)
     class Meta:
         model = models.P3Profile
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
@@ -624,7 +624,7 @@ class HotelReservationsField(forms.Field):
 
 class P3FormTickets(aforms.FormTickets):
     coupon = forms.CharField(
-        label='Insert your discount code and save money!',
+        label=_('Insert your discount code and save money!'),
         max_length=10,
         required=False,
         widget=forms.TextInput(attrs={'size': 10}),
@@ -655,13 +655,13 @@ class P3FormTickets(aforms.FormTickets):
         if not data:
             return None
         if data[0] == '_':
-            raise forms.ValidationError('invalid coupon')
+            raise forms.ValidationError(_('invalid coupon'))
         try:
             coupon = amodels.Coupon.objects.get(code__iexact=data)
         except amodels.Coupon.DoesNotExist:
-            raise forms.ValidationError('invalid coupon')
+            raise forms.ValidationError(_('invalid coupon'))
         if not coupon.valid(self.user):
-            raise forms.ValidationError('invalid coupon')
+            raise forms.ValidationError(_('invalid coupon'))
         return coupon
 
     def _check_hotel_reservation(self, field_name):
@@ -771,5 +771,5 @@ class P3EventBookingForm(cforms.EventBookingForm):
             booked = cmodels.EventBooking.objects\
                 .filter(event__in=brothers, user=self.user)
             if booked.count() > 0:
-                raise forms.ValidationError('already booked')
+                raise forms.ValidationError(_('already booked'))
         return data
