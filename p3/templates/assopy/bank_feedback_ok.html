@@ -1,0 +1,28 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+{% block ASSOPY_MAIN_CONTENT %}
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+
+        <h1>{% trans "Order completed" %}</h1>
+        <div class="page-summary">
+            <p>Thank you for your order. You will receieve an email with all the details for the wire transfer.</p>
+        </div>
+        {% url "assopy-tickets" as u %}
+        {% with order.code as ocode %}
+            {% blocktrans %}
+            <p>If you don't receive this email please check yout spam folder and <a href="mailto:info@pycon.it?subject={{ ocode }}">write to us</a> specifying your order number: <b>{{ ocode }}</b></p>
+            
+            <h2>What to do next</h2>
+            <p>Meanwhile you can edit your tickets directly from your profile.</p>
+            <div><a class="btn" href="/accounts/tickets/">Edit your Tickets</a></div>
+            {% endblocktrans %}
+        {% endwith %}
+
+    </div><!--/grid -->
+</div><!-- /grid-container -->
+</section>
+
+{% endblock %}
+
