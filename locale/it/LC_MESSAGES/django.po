@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-26 23:00+0100\n"
+"POT-Creation-Date: 2014-03-28 23:36+0100\n"
 "PO-Revision-Date: 2014-03-03 23:55+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -193,6 +193,39 @@ msgstr ""
 msgid "Django administration"
 msgstr ""
 
+#: p3/templates/assopy/bank_feedback_ok.html:8
+msgid "Order completed"
+msgstr ""
+
+#: p3/templates/assopy/bank_feedback_ok.html:10
+msgid ""
+"Thank you for your order. You will receieve an email with all the details "
+"for the wire transfer."
+msgstr ""
+
+#: p3/templates/assopy/bank_feedback_ok.html:15
+#, python-format
+msgid ""
+"\n"
+"            If you don't receive this email please check yout spam folder "
+"and <a href=\"%(url)s\">write to us</a> specifying your order number: <b>"
+"%(code)s</b>\n"
+"            "
+msgstr ""
+
+#: p3/templates/assopy/bank_feedback_ok.html:19
+msgid "What to do next"
+msgstr ""
+
+#: p3/templates/assopy/bank_feedback_ok.html:20
+msgid "Meanwhile you can edit your tickets directly from your profile."
+msgstr ""
+
+#: p3/templates/assopy/bank_feedback_ok.html:21
+#, fuzzy
+msgid "Edit your Tickets"
+msgstr "I tuoi biglietti"
+
 #: p3/templates/assopy/profile.html:4
 #, fuzzy
 msgid "Your profile"
@@ -357,8 +390,8 @@ msgstr "Modifica"
 #: p3/templates/conference/profile_picture_form.html:30
 #: p3/templates/conference/profile_publicdata_form.html:106
 #: p3/templates/conference/talk.html:123
-#: p3/templates/p3/fragments/render_ticket.html:196
-#: p3/templates/p3/fragments/render_ticket.html:205
+#: p3/templates/p3/fragments/render_ticket.html:213
+#: p3/templates/p3/fragments/render_ticket.html:222
 msgid "Save"
 msgstr "Salva"
 
@@ -593,7 +626,7 @@ msgstr ""
 "expand()\" href=\"#\">chat</a> o scrivi a <a href=\"mailto:gestionale@pycon."
 "it\">gestionale@pycon.it</a>"
 
-#: p3/templates/conference/profile.html:34
+#: p3/templates/conference/profile.html:25
 msgid "It’s you!"
 msgstr "Sei tu!"
 
@@ -764,66 +797,66 @@ msgstr ""
 msgid "Talk Voting"
 msgstr ""
 
-#: p3/templates/conference/voting.html:42
+#: p3/templates/conference/voting.html:41
 #, python-format
 msgid ""
 "Set your favorite tags in <a href=\"%(profile_url)s\">your profile</a> and "
 "filter by your interests with one click."
 msgstr ""
 
-#: p3/templates/conference/voting.html:45
+#: p3/templates/conference/voting.html:44
 msgid "Match my tags"
 msgstr ""
 
-#: p3/templates/conference/voting.html:76
+#: p3/templates/conference/voting.html:75
 msgid "How to vote:"
 msgstr ""
 
-#: p3/templates/conference/voting.html:78
+#: p3/templates/conference/voting.html:77
 msgid "Click on the stars to cast a vote; half-points are allowed."
 msgstr ""
 
-#: p3/templates/conference/voting.html:79
+#: p3/templates/conference/voting.html:78
 msgid ""
 "Click on the red sign on the left of the stars to remove a vote, if you want "
 "to think about it more."
 msgstr ""
 
-#: p3/templates/conference/voting.html:81
+#: p3/templates/conference/voting.html:80
 msgid "Use the filters at the top to help you go through the talks."
 msgstr ""
 
-#: p3/templates/conference/voting.html:82
+#: p3/templates/conference/voting.html:81
 msgid "Sort by vote to help you review all your votes."
 msgstr ""
 
-#: p3/templates/conference/voting.html:85
+#: p3/templates/conference/voting.html:84
 msgid "Click on the talk name to go to the (linkable) talk page."
 msgstr ""
 
-#: p3/templates/conference/voting.html:86
+#: p3/templates/conference/voting.html:85
 msgid ""
 "Click on the speaker name to see the (linkable) speaker page, with full bio "
 "and other infos."
 msgstr ""
 
-#: p3/templates/conference/voting.html:88
+#: p3/templates/conference/voting.html:87
 msgid ""
 "Do you have some questions on a talk? Leave a comment in the talk page, and "
 "the speaker will answer you and enhance the abstract."
 msgstr ""
 
-#: p3/templates/conference/voting.html:89
+#: p3/templates/conference/voting.html:88
 msgid ""
 "If you leave some talks without a vote, we will assume that you don't like "
 "them at all (= minimum vote)."
 msgstr ""
 
-#: p3/templates/conference/voting.html:94
+#: p3/templates/conference/voting.html:93
 msgid "Need more info?"
 msgstr ""
 
-#: p3/templates/conference/voting.html:96
+#: p3/templates/conference/voting.html:95
 #, python-format
 msgid ""
 "\n"
@@ -1208,56 +1241,142 @@ msgstr ""
 msgid "Ticket frozen; editing disabled"
 msgstr "Biglietto congelato; modifiche disabilitate"
 
-#: p3/templates/p3/fragments/render_ticket.html:21
+#: p3/templates/p3/fragments/render_ticket.html:14
+#, python-format
+msgid "Assigned to you by <a href=\"%(url)s\"><b>%(name)s</b></a>"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:20
 #, python-format
 msgid "Ticket not active; waiting for wire transfer (order %(code)s)"
 msgstr "Biglietto non attivo, in attesa di bonifico (ordine %(code)s)"
 
-#: p3/templates/p3/fragments/render_ticket.html:53
+#: p3/templates/p3/fragments/render_ticket.html:26
+msgid "No name specified"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:27
+msgid "Something about me"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:28
+msgid "Edit this ticket"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:29
+msgid "Refund this ticket"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:38
+msgid "Python power"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:55
 #, python-format
 msgid "Currently assigned to <b>%(assigned_to)s</b>"
 msgstr "Assegnato a <b>%(assigned_to)s</b>"
 
-#: p3/templates/p3/fragments/render_ticket.html:53
+#: p3/templates/p3/fragments/render_ticket.html:56
 msgid "Reclaim"
 msgstr "Riprenditelo"
 
-#: p3/templates/p3/fragments/render_ticket.html:60
+#: p3/templates/p3/fragments/render_ticket.html:62
 msgid "This ticket is for me"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:62
+#: p3/templates/p3/fragments/render_ticket.html:64
 #, fuzzy
 msgid "This ticket is for someone else"
 msgstr "per qualcun altro"
 
-#: p3/templates/p3/fragments/render_ticket.html:99
+#: p3/templates/p3/fragments/render_ticket.html:81
+msgid "Warning, incomplete ticket"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:82
+msgid "Add a document."
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:91
+msgid "This is an unused ticket"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:101
 msgid "Edit information"
 msgstr "Modifica"
 
-#: p3/templates/p3/fragments/render_ticket.html:113
+#: p3/templates/p3/fragments/render_ticket.html:115
 msgid "Additional information (they won&#8217;t show up on the ticket)"
 msgstr "Informazioni aggiuntive (non appariranno nel badge)"
 
-#: p3/templates/p3/fragments/render_ticket.html:115
+#: p3/templates/p3/fragments/render_ticket.html:117
 msgid "Attending on days:"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:117
+#: p3/templates/p3/fragments/render_ticket.html:119
 msgid "Diet:"
 msgstr "Alimentazione"
 
-#: p3/templates/p3/fragments/render_ticket.html:119
+#: p3/templates/p3/fragments/render_ticket.html:121
 msgid "Shirt size:"
 msgstr "Taglia della maglietta"
 
-#: p3/templates/p3/fragments/render_ticket.html:141
+#: p3/templates/p3/fragments/render_ticket.html:129
+#: p3/templates/p3/fragments/render_ticket.html:136
+#, python-format
+msgid "Uploaded <a href=\"%(url)s\">Photo ID</a>"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:143
 msgid "Deposit:"
 msgstr "Anticipo"
 
-#: p3/templates/p3/fragments/render_ticket.html:141
+#: p3/templates/p3/fragments/render_ticket.html:143
 msgid "Balance:"
 msgstr "Saldo"
+
+#: p3/templates/p3/fragments/render_ticket.html:165
+#, python-format
+msgid "Ticket for %(first_name)s %(last_name)s"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:167
+msgid "Ticket for NO NAME SPECIFIED"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:170
+#, python-format
+msgid "Want to change name? <a href=\"%(url)s\">Edit your account</a>."
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:183
+#, python-format
+msgid ""
+"\n"
+"                            <a href=\"%(profile_url)s\">Your profile</a> is "
+"not visibile by anyone.\n"
+"                            Why don't you let people know that you are "
+"coming? <a href=\"%(url)s\">Find out why</a>.\n"
+"                            "
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:192
+#, python-format
+msgid ""
+"\n"
+"                            Only <b>conference participants</b> can view <a "
+"href=\"%(profile_url)s\">your profile</a>.\n"
+"                            "
+msgstr ""
+
+#: p3/templates/p3/fragments/render_ticket.html:200
+#, python-format
+msgid ""
+"\n"
+"                            Your <a href=\"%(profile_url)s\">profile</a> is "
+"<b>publicly visible</b>.\n"
+"                            "
+msgstr ""
 
 #: p3/templates/registration/login.html:9
 msgid "Log into PyCon"
