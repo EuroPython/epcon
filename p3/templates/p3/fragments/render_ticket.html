@@ -31,19 +31,20 @@
     {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
         <div class="preview-inner">
-            {% if ticket.p3_conference %}
-                <div class="ticket-name">{{ form.ticket_name.value|default:t_no_name}}</div>
-                <div class="ticket-tagline">{{ form.tagline.value|default:t_about_me}}</div>
-                <div class="ticket-python-experience">
-                    {% trans "Python power" %}
-                    {% for x in form.python_experience.value|as_range %}
-                        <img src="{{ STATIC_URL }}p5/images/rateit-star.gif" alt="*" width="16" height="16" />
-                    {% endfor %}
-                </div>
-                {% if ticket.p3_conference.profile %}
-                    {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
-                    <img class="avatar" src="{{ pdata.image }}" alt="" width="98" height="98" />
-                {% endif %}
+            {% if ticket.p3_conference %}                            
+                <div class="media">
+                    {% if ticket.p3_conference.profile %}
+                        {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
+                        <img class="avatar pull-left media-object" src="{{ pdata.image }}" alt="" width="49" height="49" />
+                    {% endif %}
+                    <div class="media-body">
+                        <h3 class="media-heading">{{ form.ticket_name.value|default:t_no_name}}</h3>
+                        <div class="tagline">{{ form.tagline.value|default:t_about_me}}</div>
+                        <div class="python-experience">
+                            {% trans "Python power" %}&nbsp;{% for x in form.python_experience.value|as_range %}<i class="fa fa-star"></i>{% endfor %}
+                        </div>
+                    </div><!-- media-body -->
+                </div><!-- /media -->
             {% else %}
                 <div>{{ form.ticket_name.value|default:t_edit_ticket}}</div>
             {% endif %}
@@ -113,7 +114,7 @@
     {% if ticket.fare.ticket_type == "conference" %}
         {% if ticket.p3_conference %}
         <p>{% trans "Additional information (they won&#8217;t show up on the ticket)" %}</p>
-        <dl>
+        <dl class="dl-horizontal">
             <dt>{% trans "Attending on days:" %}</dt>
             <dd>{% if form.single_day %}{{ form.days|field_display_value }}{% else %}{{ form.days|field_display_value|join:"; " }}{% endif %}.</dd>
             <dt>{% trans "Diet:" %}</dt>

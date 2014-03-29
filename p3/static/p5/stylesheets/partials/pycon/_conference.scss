@@ -130,6 +130,22 @@
          */
         background: thistle;
     }
+
+    .media-heading {
+        text-transform: uppercase;
+        margin-bottom: 0;
+    }
+
+    .tagline {
+        color: $neutralcolor;    
+        font-style: italic;
+        margin-bottom: $baselineheight/2;
+    }
+    
+    .fa-star {
+        color: gold;
+        text-shadow: 0 1px 0 rgba(0,0,0,.4);
+    }
 }
 }
 
@@ -212,25 +228,18 @@
     opacity: .8;
 }
 
+/*
 .ticket-name {
     @include font-size(24);
 	text-transform: uppercase;	
 }
+*/
 
-.ticket-tagline {
-    color: $neutralcolor;    
-    font-style: italic;
-    margin-bottom: $baselineheight;
-}
 
 .ticket-footer {
 	margin: 0;
 	position: absolute;
 	bottom: $baselineheight/2;
 	right: 0;
-}
-
-.ticket-python-experience img {
-    vertical-align: middle;
 }
 

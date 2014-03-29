@@ -1,14 +1,3 @@
-body > div.draft {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100px;
-    bottom: 0;
-    z-index: 100;
-    background-image: url(../images/flames.gif);
-    background-position: top left, top left;
-    background-repeat: repeat-y, repeat;
-}
 /* 
 
 Built on Rock Hammer by Stuff and Nonsense
@@ -1951,6 +1940,9 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 #reactions li, #comments li { margin: 0 0 0.75em 0; padding: 0 0 0.75em 0; border-bottom: 1px dotted #bcbab2; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
+/* editors must notice that the page is a draft and so not accessibile by anonymous users  DON'T REMOVE AND DON'T TOUCH MY FLAMES :) */
+body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-index: 100; background-image: url(../images/flames.gif); background-position: top left, top left; background-repeat: repeat-y, repeat; }
+
 /* ============================================== */
 /* ! Custom styles for text pulled from the CMS   */
 /* ============================================== */
@@ -2050,6 +2042,9 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 .ticket .preview { background: white; margin: 1.5em 0; border: 1px solid #bcbab2; border-radius: 4px; position: relative; min-height: 13.5em; box-shadow: 0 0 4px #807c6f; }
 .ticket .preview .preview-inner { padding: 0 14px; }
 .ticket .preview h2 { padding: 0.375em 14px; color: white; /* background improbabile :) tutte le tariffe lo ridefiniscono, metto comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e ci scordiamo di aggiornare il css */ background: thistle; }
+.ticket .preview .media-heading { text-transform: uppercase; margin-bottom: 0; }
+.ticket .preview .tagline { color: #807c6f; font-style: italic; margin-bottom: 0.75em; }
+.ticket .preview .fa-star { color: gold; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); }
 
 .ticket.conference .preview h2 { background: #306a99; }
 
@@ -2077,12 +2072,6 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 .ticket-additional-info dt { color: #635443;
 }
 */
-.ticket-status { padding: 5px 0; text-align: center; border: 2px solid transparent; font-size: 12px; }
-
-.ticket-status.inactive { border-color: #d9415a; color: #d9415a; background: #fff; }
-
-.ticket-status.active { border-color: #4895a3; color: #4895a3; background: #fff; }
-
 .preview:hover .ticket-commands { opacity: .85; }
 
 .ticket-commands { position: absolute; top: 0; left: 0; z-index: 1; text-align: center; min-height: 100%; min-width: 100%; background: white; -webkit-transition: opacity 0.2s ease-out; -moz-transition: opacity 0.2s ease-out; transition: opacity 0.2s ease-out; opacity: 0; }
@@ -2090,13 +2079,12 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 
 .ticket-assigned-to.ticket-commands { opacity: .8; }
 
-.ticket-name { font-size: 24px; font-size: 2.4rem; text-transform: uppercase; }
-
-.ticket-tagline { color: #807c6f; font-style: italic; margin-bottom: 1.5em; }
-
+/*
+.ticket-name { @include font-size(24);
+	text-transform: uppercase;	
+}
+*/
 .ticket-footer { margin: 0; position: absolute; bottom: 0.75em; right: 0; }
-
-.ticket-python-experience img { vertical-align: middle; }
 
 div.rateit { display: inline-block; position: relative; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
