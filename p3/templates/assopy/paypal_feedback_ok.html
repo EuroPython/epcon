@@ -1,0 +1,32 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+{% block ASSOPY_EXTRA_HEAD %}
+    {% order_complete order.id as ocomplete %}
+    {% if not ocomplete %}
+    <meta http-equiv="refresh" content="2;url=." />
+    {% endif %}
+{% endblock %}
+{% block ASSOPY_MAIN_CONTENT %}
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+        {% order_complete order.id as ocomplete %}
+        {% if not ocomplete %}
+        <h1>{% trans "Waiting for Paypal response..." %}</h1>
+        <div class="page-summary" role="contentinfo">
+            <p>{% blocktrans with code=order.code url="mailto:info@pycon.it" %}
+            Are you waiting for too long? <a href="{{ url }}">Write to us</a> specifying your order number {{ code }}
+            {% endblocktrans %}</p>
+        </div>
+        {% else %}
+        <h1>{% trans "Purchase completed" %}</h1>
+        <div class="page-summary" role="contentinfo">
+            <p>{% trans "Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address." %}</p>
+            <div class="badge"><h5><a href="{% url "assopy-tickets" %}">{% trans "Edit your tickets" %} &rarr;</a></h5></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</section>
+{% endblock %}
+
