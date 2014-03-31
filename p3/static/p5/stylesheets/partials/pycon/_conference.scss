@@ -86,6 +86,11 @@
 }
 .save {
     color: $successstatecolor;
+    display: none;
+}
+
+.total.save {
+    background-color: transparent;
 }
 
 }
