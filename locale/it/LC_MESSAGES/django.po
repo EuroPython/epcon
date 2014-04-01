@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 23:35+0200\n"
+"POT-Creation-Date: 2014-04-01 23:36+0200\n"
 "PO-Revision-Date: 2014-04-01 23:32+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
@@ -1198,6 +1198,11 @@ msgstr "Reazioni"
 #: p3/templates/microblog/show_social_networks.html:4
 msgid "Condividi questo post"
 msgstr ""
+
+#: p3/templates/p3/base.html:152
+#, fuzzy
+msgid "Buy tickets"
+msgstr "I tuoi biglietti"
 
 #: p3/templates/p3/base.html:153
 msgid "Starting from"
