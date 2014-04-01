@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 23:19+0200\n"
-"PO-Revision-Date: 2014-04-01 23:02+0100\n"
+"POT-Creation-Date: 2014-04-01 23:36+0200\n"
+"PO-Revision-Date: 2014-04-01 23:32+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "Language: \n"
@@ -263,17 +263,19 @@ msgstr "4 stelle"
 
 #: p3/models.py:48
 msgid "5 stars"
-msgstr ""
+msgstr "5 stelle"
 
 #: p3/models.py:82
 msgid ""
 "a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of "
 "FooBar Inc.; Student at MIT; Super Python fanboy"
 msgstr ""
+"Una tagline (anche divertente) che verrà scritta sul tuo badge<br/>Es: CEO, "
+"FooBar Srl; Studente al MIT; Super Python Fanboy"
 
 #: p3/models.py:84
 msgid "Days of attendance"
-msgstr ""
+msgstr "Giorni di presenza"
 
 #: p3/models.py:88
 msgid ""
@@ -453,13 +455,15 @@ msgstr ""
 
 #: p3/templates/assopy/paypal_feedback_ok.html:22
 msgid "Purchase completed"
-msgstr ""
+msgstr "Acquisto completato."
 
 #: p3/templates/assopy/paypal_feedback_ok.html:24
 msgid ""
 "Thank you for the purchase. The transaction was completed and a receipt from "
 "paypal will be sent to your email address."
 msgstr ""
+"Grazie per l'acquisto. La transazione è stata completata e paypal ti invierà "
+"una ricevuta per email."
 
 #: p3/templates/assopy/paypal_feedback_ok.html:25
 #, fuzzy
@@ -486,7 +490,7 @@ msgstr "Il tuo profilo pubblico"
 
 #: p3/templates/assopy/profile.html:22
 msgid "See the conferences you have attended and who you have met."
-msgstr ""
+msgstr "Guarda le conferenze a cui sei stato e le persone che hai conosciuto."
 
 #: p3/templates/assopy/profile.html:23
 msgid "Conference &amp; contacts"
@@ -852,11 +856,11 @@ msgstr "Vedi tutte le scadenze &rarr;"
 
 #: p3/templates/cms/p5_homepage.html:58
 msgid "Our Sponsors"
-msgstr ""
+msgstr "I nostri sponsor"
 
 #: p3/templates/cms/p5_homepage.html:69
 msgid "Become a sponsor"
-msgstr ""
+msgstr "Diventa uno sponsor"
 
 #: p3/templates/cms/p5_homepage.html:92
 msgid "PyCon blog"
@@ -909,7 +913,7 @@ msgstr "Twitter"
 
 #: p3/templates/conference/profile_publicdata_form.html:40
 msgid "Technical interests"
-msgstr ""
+msgstr "Interessi tecnologici"
 
 #: p3/templates/conference/profile_publicdata_form.html:52
 #, fuzzy
@@ -1195,6 +1199,24 @@ msgstr "Reazioni"
 msgid "Condividi questo post"
 msgstr ""
 
+#: p3/templates/p3/base.html:152
+#, fuzzy
+msgid "Buy tickets"
+msgstr "I tuoi biglietti"
+
+#: p3/templates/p3/base.html:153
+msgid "Starting from"
+msgstr ""
+
+#: p3/templates/p3/base.html:160
+#, fuzzy
+msgid "PyCon in English"
+msgstr "Inglese"
+
+#: p3/templates/p3/base.html:161
+msgid "PyCon Italy also has an English track"
+msgstr ""
+
 #: p3/templates/p3/base.html:175
 msgid "Open chat window"
 msgstr "Apri la chat"
@@ -1467,33 +1489,35 @@ msgstr ""
 
 #: p3/templates/p3/tickets.html:40
 msgid "Choose the refund method"
-msgstr ""
+msgstr "Scegli una modalità di rimborso"
 
 #: p3/templates/p3/tickets.html:41
 msgid "Through PayPal"
-msgstr ""
+msgstr "Tramite PayPal"
 
 #: p3/templates/p3/tickets.html:42
 msgid "Through bank transfer"
-msgstr ""
+msgstr "Tramite bonifico"
 
 #: p3/templates/p3/tickets.html:49
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #: p3/templates/p3/tickets.html:49
 msgid "you are responsible for the commission fees, if any."
-msgstr ""
+msgstr "le commissioni (se presenti) saranno a tuo carico"
 
 #: p3/templates/p3/tickets.html:51
 msgid "Ask for Refund"
-msgstr ""
+msgstr "Chiedi un rimborso"
 
 #: p3/templates/p3/tickets.html:83
 msgid ""
 "Cannot save the ticket.\\nUse the web chat, or contact info@pycon.it, for "
 "assistance."
 msgstr ""
+"Errore nel salvataggio del biglietto. Contattaci via chat o scrivi a "
+"info@pycon.it"
 
 #: p3/templates/p3/tickets.html:135
 msgid "Please enter the name"
@@ -1598,7 +1622,7 @@ msgstr "Informazioni aggiuntive (non appariranno nel badge)"
 
 #: p3/templates/p3/fragments/render_ticket.html:118
 msgid "Attending on days:"
-msgstr ""
+msgstr "Giorni di presenza:"
 
 #: p3/templates/p3/fragments/render_ticket.html:120
 msgid "Diet:"

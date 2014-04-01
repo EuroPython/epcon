@@ -149,15 +149,15 @@
             {% if fares %}
                 <div class="badge badge-buy">
                     <i class="fa fa-ticket fa-3x hide-on-mobile"></i>
-                    <a href="/registration/">Buy tickets</a>
-                    <small>Starting from <b>{{ fares.0.price }}</b>€</small>
+                    <a href="/registration/">{% trans "Buy tickets" %}</a>
+                    <small>{% trans "Starting from" %} <b>{{ fares.0.price }}</b>€</small>
                 </div>
             {%else%}
                 {%comment%}If empty show an utility badge{%endcomment%}
                 <div class="badge badge-track">
                     <i class="fa fa-globe fa-3x hide-on-mobile"></i>
-                    <a title="Learn more" href="/english/">PyCon in English</a>
-                    <small>PyCon Italy also has an English track</small>
+                    <a title="Learn more" href="/english/">{% trans "PyCon in English" %}</a>
+                    <small>{% trans "PyCon Italy also has an English track" %}</small>
                 </div>
             {% endif %}
             <hr class="hide-on-desktop" />
