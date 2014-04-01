@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-28 23:52+0100\n"
+"POT-Creation-Date: 2014-04-01 17:36+0200\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -227,17 +227,17 @@ msgstr ""
 msgid "Django administration"
 msgstr ""
 
-#: p3/templates/assopy/bank_feedback_ok.html:8
+#: p3/templates/assopy/bank_feedback_ok.html:7
 msgid "Order completed"
 msgstr ""
 
-#: p3/templates/assopy/bank_feedback_ok.html:10
+#: p3/templates/assopy/bank_feedback_ok.html:9
 msgid ""
 "Thank you for your order. You will receieve an email with all the details "
 "for the wire transfer."
 msgstr ""
 
-#: p3/templates/assopy/bank_feedback_ok.html:15
+#: p3/templates/assopy/bank_feedback_ok.html:14
 #, python-format
 msgid ""
 "\n"
@@ -247,17 +247,57 @@ msgid ""
 "            "
 msgstr ""
 
-#: p3/templates/assopy/bank_feedback_ok.html:19
+#: p3/templates/assopy/bank_feedback_ok.html:18
 msgid "What to do next"
 msgstr ""
 
-#: p3/templates/assopy/bank_feedback_ok.html:20
+#: p3/templates/assopy/bank_feedback_ok.html:19
 msgid "Meanwhile you can edit your tickets directly from your profile."
 msgstr ""
 
-#: p3/templates/assopy/bank_feedback_ok.html:21
+#: p3/templates/assopy/bank_feedback_ok.html:20
 #, fuzzy
 msgid "Edit your Tickets"
+msgstr "Your talks"
+
+#: p3/templates/assopy/paypal_cancel.html:7
+msgid "You have canceled the order from paypal"
+msgstr ""
+
+#: p3/templates/assopy/paypal_cancel.html:11
+msgid "back to paypal"
+msgstr ""
+
+#: p3/templates/assopy/paypal_cancel.html:13
+msgid "back to home page"
+msgstr ""
+
+#: p3/templates/assopy/paypal_feedback_ok.html:15
+msgid "Waiting for Paypal response..."
+msgstr ""
+
+#: p3/templates/assopy/paypal_feedback_ok.html:17
+#, python-format
+msgid ""
+"\n"
+"            Are you waiting for too long? <a href=\"%(url)s\">Write to us</"
+"a> specifying your order number %(code)s\n"
+"            "
+msgstr ""
+
+#: p3/templates/assopy/paypal_feedback_ok.html:22
+msgid "Purchase completed"
+msgstr ""
+
+#: p3/templates/assopy/paypal_feedback_ok.html:24
+msgid ""
+"Thank you for the purchase. The transaction was completed and a receipt from "
+"paypal will be sent to your email address."
+msgstr ""
+
+#: p3/templates/assopy/paypal_feedback_ok.html:25
+#, fuzzy
+msgid "Edit your tickets"
 msgstr "Your talks"
 
 #: p3/templates/assopy/profile.html:4
@@ -412,8 +452,8 @@ msgstr ""
 #: p3/templates/conference/profile_picture_form.html:30
 #: p3/templates/conference/profile_publicdata_form.html:106
 #: p3/templates/conference/talk.html:123
-#: p3/templates/p3/fragments/render_ticket.html:213
-#: p3/templates/p3/fragments/render_ticket.html:222
+#: p3/templates/p3/fragments/render_ticket.html:214
+#: p3/templates/p3/fragments/render_ticket.html:223
 msgid "Save"
 msgstr ""
 
@@ -616,9 +656,9 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 #: p3/templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
 msgstr ""
-"If you have any problems please contact us via <a onclick=\"habla_window."
-"show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a "
-"href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+"If you have any problems please contact us via <a onclick=\"habla_window.show"
+"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
+"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
 #: p3/templates/conference/profile.html:25
 msgid "It’s you!"
@@ -934,51 +974,51 @@ msgstr "Reactions"
 msgid "Condividi questo post"
 msgstr "Share this post"
 
-#: p3/templates/p3/base.html:167
+#: p3/templates/p3/base.html:170
 msgid "Open chat window"
 msgstr ""
 
-#: p3/templates/p3/base.html:167
+#: p3/templates/p3/base.html:170
 msgid "Supporto online"
 msgstr ""
 
-#: p3/templates/p3/base.html:168
+#: p3/templates/p3/base.html:171
 msgid "Chat with organizers"
 msgstr ""
 
-#: p3/templates/p3/base.html:172
+#: p3/templates/p3/base.html:175
 msgid "Supporto offline"
 msgstr ""
 
-#: p3/templates/p3/base.html:173
+#: p3/templates/p3/base.html:176
 msgid "Please try again later"
 msgstr ""
 
-#: p3/templates/p3/base.html:212
+#: p3/templates/p3/base.html:215
 msgid "The site"
 msgstr ""
 
-#: p3/templates/p3/base.html:226
+#: p3/templates/p3/base.html:229
 msgid "Social"
 msgstr ""
 
-#: p3/templates/p3/base.html:230
+#: p3/templates/p3/base.html:233
 msgid "PyCon on Facebook"
 msgstr ""
 
-#: p3/templates/p3/base.html:232
+#: p3/templates/p3/base.html:235
 msgid "Follow us on twitter"
 msgstr ""
 
-#: p3/templates/p3/base.html:234
+#: p3/templates/p3/base.html:237
 msgid "Latest posts"
 msgstr ""
 
-#: p3/templates/p3/base.html:253
+#: p3/templates/p3/base.html:256
 msgid "Please donate"
 msgstr ""
 
-#: p3/templates/p3/base.html:254
+#: p3/templates/p3/base.html:257
 msgid ""
 "This conference is organized by the Python Italia no-profit association. We "
 "are able to accept donations through PayPal and credit card, and we welcome "
@@ -986,7 +1026,7 @@ msgid ""
 "EuroPython event for everyone. Thanks!"
 msgstr ""
 
-#: p3/templates/p3/base.html:264
+#: p3/templates/p3/base.html:267
 msgid "Donate now (via PayPal)"
 msgstr ""
 
@@ -1239,89 +1279,89 @@ msgstr ""
 msgid "Refund this ticket"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:38
+#: p3/templates/p3/fragments/render_ticket.html:44
 msgid "Python power"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:55
+#: p3/templates/p3/fragments/render_ticket.html:56
 #, python-format
 msgid "Currently assigned to <b>%(assigned_to)s</b>"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:56
+#: p3/templates/p3/fragments/render_ticket.html:57
 msgid "Reclaim"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:62
+#: p3/templates/p3/fragments/render_ticket.html:63
 msgid "This ticket is for me"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:64
+#: p3/templates/p3/fragments/render_ticket.html:65
 msgid "This ticket is for someone else"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:81
+#: p3/templates/p3/fragments/render_ticket.html:82
 msgid "Warning, incomplete ticket"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:82
+#: p3/templates/p3/fragments/render_ticket.html:83
 #, fuzzy
 msgid "Add a document."
 msgstr "Comments"
 
-#: p3/templates/p3/fragments/render_ticket.html:91
+#: p3/templates/p3/fragments/render_ticket.html:92
 msgid "This is an unused ticket"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:101
+#: p3/templates/p3/fragments/render_ticket.html:102
 msgid "Edit information"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:115
+#: p3/templates/p3/fragments/render_ticket.html:116
 msgid "Additional information (they won&#8217;t show up on the ticket)"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:117
+#: p3/templates/p3/fragments/render_ticket.html:118
 msgid "Attending on days:"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:119
+#: p3/templates/p3/fragments/render_ticket.html:120
 msgid "Diet:"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:121
+#: p3/templates/p3/fragments/render_ticket.html:122
 msgid "Shirt size:"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:129
-#: p3/templates/p3/fragments/render_ticket.html:136
+#: p3/templates/p3/fragments/render_ticket.html:130
+#: p3/templates/p3/fragments/render_ticket.html:137
 #, python-format
 msgid "Uploaded <a href=\"%(url)s\">Photo ID</a>"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:143
+#: p3/templates/p3/fragments/render_ticket.html:144
 msgid "Deposit:"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:143
+#: p3/templates/p3/fragments/render_ticket.html:144
 msgid "Balance:"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:165
+#: p3/templates/p3/fragments/render_ticket.html:166
 #, python-format
 msgid "Ticket for %(first_name)s %(last_name)s"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:167
+#: p3/templates/p3/fragments/render_ticket.html:168
 msgid "Ticket for NO NAME SPECIFIED"
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:170
+#: p3/templates/p3/fragments/render_ticket.html:171
 #, python-format
 msgid "Want to change name? <a href=\"%(url)s\">Edit your account</a>."
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:183
+#: p3/templates/p3/fragments/render_ticket.html:184
 #, python-format
 msgid ""
 "\n"
@@ -1332,7 +1372,7 @@ msgid ""
 "                            "
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:192
+#: p3/templates/p3/fragments/render_ticket.html:193
 #, python-format
 msgid ""
 "\n"
@@ -1341,7 +1381,7 @@ msgid ""
 "                            "
 msgstr ""
 
-#: p3/templates/p3/fragments/render_ticket.html:200
+#: p3/templates/p3/fragments/render_ticket.html:201
 #, python-format
 msgid ""
 "\n"
@@ -1399,6 +1439,30 @@ msgstr ""
 msgid "Recover your password"
 msgstr ""
 
+#: p3/templates/registration/password_reset_done.html:8
+msgid "Password reset successful"
+msgstr ""
+
+#: p3/templates/registration/password_reset_done.html:10
+msgid ""
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. You should be receiving it shortly."
+msgstr ""
+
+#: p3/templates/registration/password_reset_form.html:8
+msgid "Ripristina la tua password"
+msgstr ""
+
+#: p3/templates/registration/password_reset_form.html:12
+msgid ""
+"Forgotten your password? Enter your email address, and we'll send "
+"instructions for setting a new one."
+msgstr ""
+
+#: p3/templates/registration/password_reset_form.html:19
+msgid "Invia nuova password"
+msgstr ""
+
 #: p3/views/cart.py:16
 msgid ""
 "I have read and accepted the <a class=\"trigger-overlay\" href=\"/code-of-"
@@ -1433,11 +1497,11 @@ msgstr ""
 msgid "Italiano"
 msgstr ""
 
-#: pycon/settings.py:48 pycon/settings.py:255
+#: pycon/settings.py:48 pycon/settings.py:256
 msgid "English"
 msgstr ""
 
-#: pycon/settings.py:254
+#: pycon/settings.py:255
 msgid "Italian"
 msgstr ""
 
