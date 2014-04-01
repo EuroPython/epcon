@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 23:04+0200\n"
+"POT-Creation-Date: 2014-04-01 23:19+0200\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -1364,6 +1364,38 @@ msgstr "Your talks"
 msgid ""
 "You still have not bought any ticket with this account. Please proceed to "
 "the <a href=\"%(u)s\">cart</a> to place an order."
+msgstr ""
+
+#: p3/templates/p3/tickets.html:35
+msgid "Refund Ticket"
+msgstr ""
+
+#: p3/templates/p3/tickets.html:37
+msgid "You are eligible for commission-free refund through PayPal."
+msgstr ""
+
+#: p3/templates/p3/tickets.html:40
+msgid "Choose the refund method"
+msgstr ""
+
+#: p3/templates/p3/tickets.html:41
+msgid "Through PayPal"
+msgstr ""
+
+#: p3/templates/p3/tickets.html:42
+msgid "Through bank transfer"
+msgstr ""
+
+#: p3/templates/p3/tickets.html:49
+msgid "Note"
+msgstr ""
+
+#: p3/templates/p3/tickets.html:49
+msgid "you are responsible for the commission fees, if any."
+msgstr ""
+
+#: p3/templates/p3/tickets.html:51
+msgid "Ask for Refund"
 msgstr ""
 
 #: p3/templates/p3/tickets.html:83

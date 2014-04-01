@@ -32,23 +32,23 @@
             }
         </style>
         <div id="refund-form" class="overlay">
-            <h2>Refund Ticket</h2>
+            <h2>{% trans "Refund Ticket" %}</h2>
             <form action="" method="POST">
-                <p>You are eligible for commission-free refund through PayPal.</p>
+                <p>{% trans "You are eligible for commission-free refund through PayPal." %}</p>
                 {{ refund_form.reason|field }}
                 <div class="refund-method">
-                    <h3>Choose the refund method</h3>
-                    <label><input type="radio" name="rmethod" value="paypal">Through PayPal</label>
-                    <label><input type="radio" name="rmethod" value="bank" checked>Through bank transfer</label>
+                    <h3>{% trans "Choose the refund method" %}</h3>
+                    <label><input type="radio" name="rmethod" value="paypal">{% trans "Through PayPal" %}</label>
+                    <label><input type="radio" name="rmethod" value="bank" checked>{% trans "Through bank transfer" %}</label>
                     <div class="paypal" style="display:none">
                         {{ refund_form.paypal|field }}
                     </div>
                     <div class="bank">
                         {{ refund_form.bank|field }}
                     </div>
-                    <p><b>Note</b>: you are responsible for the commission fees, if any.</p>
+                    <p><b>{% trans "Note" %}</b>: {% trans "you are responsible for the commission fees, if any." %}</p>
                 </div>
-                <button class="btn btn-primary" type="submit">Ask for Refund</button>
+                <button class="btn btn-primary" type="submit">{% trans "Ask for Refund" %}</button>
             </form>
         </div><!-- /overlay -->
 </div><!-- /grid-container -->
