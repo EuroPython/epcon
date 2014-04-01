@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 23:19+0200\n"
+"POT-Creation-Date: 2014-04-01 23:35+0200\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -803,9 +803,9 @@ msgstr "If you have an earlier account from Pycon1 or Pycon2 you can reuse it."
 #: p3/templates/conference/genro_wrapper.html:7
 msgid "genro-problem"
 msgstr ""
-"If you have any problems please contact us via <a onclick=\"habla_window."
-"show(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a "
-"href=\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
+"If you have any problems please contact us via <a onclick=\"habla_window.show"
+"(); habla_window.expand()\" href=\"#\">chat</a> or drop a line to <a href="
+"\"mailto:gestionale@pycon.it\">gestionale@pycon.it</a>"
 
 #: p3/templates/conference/profile.html:25
 msgid "It’s you!"
@@ -1120,6 +1120,18 @@ msgstr "Reactions"
 #: p3/templates/microblog/show_social_networks.html:4
 msgid "Condividi questo post"
 msgstr "Share this post"
+
+#: p3/templates/p3/base.html:153
+msgid "Starting from"
+msgstr ""
+
+#: p3/templates/p3/base.html:160
+msgid "PyCon in English"
+msgstr ""
+
+#: p3/templates/p3/base.html:161
+msgid "PyCon Italy also has an English track"
+msgstr ""
 
 #: p3/templates/p3/base.html:175
 msgid "Open chat window"
