@@ -2,19 +2,19 @@
 # Copyright (C) 2009 Python Italia
 # This file is distributed under the same license as the conference package.
 # dvd <dvd@gnx.it>, 2009.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-01 22:22+0200\n"
-"PO-Revision-Date: 2014-03-03 23:44+0100\n"
+"PO-Revision-Date: 2014-04-01 22:50+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "X-Translated-Using: django-rosetta 0.7.4\n"
 
 #: forms.py:120
@@ -32,12 +32,12 @@ msgstr "Data di nascita"
 #: forms.py:127
 msgid ""
 "We require date of birth for speakers to accomodate for Italian laws "
-"regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</"
-"strong> be published."
+"regarding minors.<br />Format: YYYY-MM-DD<br />This date will "
+"<strong>never</strong> be published."
 msgstr ""
-"Necessaria per verificare i requisiti d'età richiesti per legge.<br/"
-">Formato: AAAA-MM-DD<br/>La tua data di nascita non verrà <b>mai</b> "
-"pubblicata."
+"Necessaria per verificare i requisiti d'età richiesti per "
+"legge.<br/>Formato: AAAA-MM-DD<br/>La tua data di nascita non verrà "
+"<b>mai</b> pubblicata."
 
 #: forms.py:132 forms.py:239 models.py:365
 msgid "Job title"
@@ -54,8 +54,8 @@ msgid ""
 "number will <strong>never</strong> be published."
 msgstr ""
 "Richiediamo un numero di cellulare degli speaker da usare in caso "
-"d'emergenza.<br/>Utilizza il formato internazionale (+39-347-1234567). <br/"
-">Questo numero non verrà <strong>mai</strong> pubblicato."
+"d'emergenza.<br/>Utilizza il formato internazionale (+39-347-1234567). "
+"<br/>Questo numero non verrà <strong>mai</strong> pubblicato."
 
 #: forms.py:139 forms.py:244
 msgid "Your company"
@@ -71,12 +71,13 @@ msgstr "Breve biografia"
 
 #: forms.py:143 forms.py:249 forms.py:334
 msgid ""
-"Please enter a short biography (one or two paragraphs). Do not paste your CV!"
+"Please enter a short biography (one or two paragraphs). Do not paste your "
+"CV!"
 msgstr ""
 "Inserisci una tua breve biografia di 2/3 paragrafi. La biografia sarà "
 "visibile al pubblico una volta che il tuo talk sarà approvato. Per favore "
-"<b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e "
-"<b>P</b> per formattare il tuo testo."
+"<b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e"
+" <b>P</b> per formattare il tuo testo."
 
 #: forms.py:146 models.py:544
 msgid "Talk title"
@@ -90,9 +91,9 @@ msgstr "Tipo di intervento"
 msgid "Talk Type description"
 msgstr ""
 "<b>Talk</b>: è il classico intervento con slide, tempo prestabilito e Q&A "
-"finali. <b>Poster</b>: un modo innovativo per presentare i vostri progetti e "
-"il vostro know-how in una conferenza, preparando un poster di grande formato "
-"e spiegandolo direttamente alle persone."
+"finali. <b>Poster</b>: un modo innovativo per presentare i vostri progetti e"
+" il vostro know-how in una conferenza, preparando un poster di grande "
+"formato e spiegandolo direttamente alle persone."
 
 #: forms.py:154 models.py:550
 msgid "Suggested duration"
@@ -214,7 +215,7 @@ msgstr "Video di presentazione"
 
 #: models.py:569
 msgid "Insert the url for your teaser video"
-msgstr ""
+msgstr "Inserici la ulr del tuo video di presentazione"
 
 #: models.py:736
 msgid "holder of the ticket (who has buyed it?)"
@@ -255,9 +256,8 @@ msgid "45 minutes"
 msgstr "45 minuti"
 
 #: settings.py:134
-#, fuzzy
 msgid "55 minutes"
-msgstr "5 minuti"
+msgstr "55 minuti"
 
 #: settings.py:135
 msgid "60 minutes"
@@ -331,9 +331,8 @@ msgstr "prezzo"
 
 #~ msgid "List yout previous experiences"
 #~ msgstr ""
-#~ "Inserisci una o più esperienze di intervento come speaker in conferenze "
-#~ "che ritieni significative (<i>nome conferenza, anno, argomento del talk</"
-#~ "i>)"
+#~ "Inserisci una o più esperienze di intervento come speaker in conferenze che "
+#~ "ritieni significative (<i>nome conferenza, anno, argomento del talk</i>)"
 
 #~ msgid "Last year talks"
 #~ msgstr "N° talk tenuti nel 2011"
@@ -355,16 +354,17 @@ msgstr "prezzo"
 #~ msgstr "Training"
 
 #~ msgid ""
-#~ "Check if you are willing to also deliver a 4-hours hands-on training on "
-#~ "this subject.<br />See the Call for paper for details."
+#~ "Check if you are willing to also deliver a 4-hours hands-on training on this"
+#~ " subject.<br />See the Call for paper for details."
 #~ msgstr ""
-#~ "Check Training se sei disponibile a tenere un approfondimento "
-#~ "sull'argomento con una audience selezionata su prenotazione."
+#~ "Check Training se sei disponibile a tenere un approfondimento sull'argomento"
+#~ " con una audience selezionata su prenotazione."
 
 #~ msgid "Promo video description"
 #~ msgstr ""
-#~ "URL del video di presentazione del talk condiviso su Youtube. Il video "
-#~ "deve essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
+#~ "URL del video di presentazione del talk condiviso su Youtube. Il video deve "
+#~ "essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
 #~ "l'accettazione dei talk, verranno condivisi sul sito web nella pagina "
-#~ "pubblica dello speaker. <a href=\"http://www.bettersoftware.it/"
-#~ "blog/2011/02/24/call-paper-2011\">More &rarr;</a>"
+#~ "pubblica dello speaker. <a "
+#~ "href=\"http://www.bettersoftware.it/blog/2011/02/24/call-paper-2011\">More "
+#~ "&rarr;</a>"
