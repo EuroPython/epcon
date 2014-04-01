@@ -170,7 +170,11 @@ NewAccountForm = autostrip(NewAccountForm)
 
 class FormTickets(forms.Form):
     payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
-    order_type = forms.ChoiceField(choices=(('non-deductible', 'Personal Purchase'), ('deductible', 'Company Purchase')), initial='non-deductible')
+    order_type = forms.ChoiceField(
+        choices=(
+            ('non-deductible', _('Personal Purchase')),
+            ('deductible', _('Company Purchase'))),
+        initial='non-deductible')
 
     def __init__(self, *args, **kwargs):
         super(FormTickets, self).__init__(*args, **kwargs)
@@ -209,17 +213,17 @@ class FormTickets(forms.Form):
 
 class RefundItemForm(forms.Form):
     reason = forms.CharField(
-        label="Reason",
+        label=_("Reason"),
         max_length=200,
-        help_text="""Please enter the reason of your refund request""",
+        help_text=_("""Please enter the reason of your refund request"""),
         widget=forms.Textarea)
     paypal = forms.EmailField(
-        label="Your paypal address",
-        help_text="""If you prefer to receive payment via paypal""",
+        label=_("Your paypal address"),
+        help_text=_("""If you prefer to receive payment via paypal"""),
         required=False)
     bank = forms.CharField(
-        label="Bank routing information",
-        help_text="""Please specify IBAN, BIC and bank address (if in Europe) or any needed information for a worldwide transfer""",
+        label=_("Bank routing information"),
+        help_text=_("""Please specify IBAN, BIC and bank address (if in Europe) or any needed information for a worldwide transfer"""),
         required=False,
         widget=forms.Textarea)
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 17:47+0200\n"
+"POT-Creation-Date: 2014-04-01 23:15+0200\n"
 "PO-Revision-Date: 2011-04-07 17:18\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,57 +31,91 @@ msgstr ""
 msgid "Last Name"
 msgstr ""
 
-#: models.py:69
+#: forms.py:175
+msgid "Personal Purchase"
+msgstr ""
+
+#: forms.py:176
+msgid "Company Purchase"
+msgstr ""
+
+#: forms.py:216
+msgid "Reason"
+msgstr ""
+
+#: forms.py:218
+msgid "Please enter the reason of your refund request"
+msgstr ""
+
+#: forms.py:221
+msgid "Your paypal address"
+msgstr ""
+
+#: forms.py:222
+msgid "If you prefer to receive payment via paypal"
+msgstr ""
+
+#: forms.py:225
+msgid "Bank routing information"
+msgstr ""
+
+#: forms.py:226
+msgid ""
+"Please specify IBAN, BIC and bank address (if in Europe) or any needed "
+"information for a worldwide transfer"
+msgstr ""
+
+#: models.py:68
 msgid "ISO alpha-2"
 msgstr ""
 
-#: models.py:74
+#: models.py:73
 msgid "ISO alpha-3"
 msgstr ""
 
-#: models.py:75
+#: models.py:74
 msgid "ISO numeric"
 msgstr ""
 
-#: models.py:76
+#: models.py:75
 msgid "Country name"
 msgstr ""
 
-#: models.py:190 models.py:581
+#: models.py:188 models.py:578
 msgid "Card name"
 msgstr ""
 
-#: models.py:191
+#: models.py:189
 msgid "The name used for orders and invoices"
 msgstr ""
 
-#: models.py:193 models.py:582
+#: models.py:191 models.py:579
 msgid "Vat Number"
 msgstr ""
 
-#: models.py:194
+#: models.py:192
 msgid "Your VAT number if applicable"
 msgstr ""
 
-#: models.py:197
+#: models.py:195
 msgid "Needed only for Italian customers"
 msgstr ""
 
-#: models.py:198 models.py:586
+#: models.py:196 models.py:583
 msgid "Country"
 msgstr ""
 
-#: models.py:200
+#: models.py:198
 msgid "Address and City"
 msgstr ""
 
-#: models.py:203
+#: models.py:201
 msgid ""
 "Insert the full address, including city and zip code. We will help you "
 "through google."
 msgstr ""
 
-#: models.py:587
+#: models.py:584
 msgid "Address"
 msgstr ""
 
