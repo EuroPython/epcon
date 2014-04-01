@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-03 23:34+0100\n"
+"POT-Creation-Date: 2014-04-01 22:22+0200\n"
 "PO-Revision-Date: 2009-03-25 12:23+0100\n"
 "Last-Translator: dvd <dvd@gnx.it>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -187,6 +187,16 @@ msgstr ""
 
 #: models.py:569
 msgid "Insert the url for your teaser video"
+msgstr ""
+
+#: models.py:736
+msgid "holder of the ticket (who has buyed it?)"
+msgstr ""
+
+#: models.py:740
+msgid ""
+"Real name of the attendee.<br />This is the person that will attend the "
+"conference."
 msgstr ""
 
 #: settings.py:127
