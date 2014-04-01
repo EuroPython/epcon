@@ -157,9 +157,14 @@
                  * data contiene il totale generale, lo sconto ottenuto tramite
                  * coupon e il dettaglio dei costi dei singoli biglietti
                  */
-                var feedback = $('.coupon .cms span');
-                feedback.text((data.coupon || 0 ) != 0 ? 'coupon accepted' : '');
-                $('.coupon .total b', form).html('€ ' + (data.coupon || 0));
+                var feedback = $('.coupon .total');
+                if (data.coupon) {
+                    feedback.css('display', 'inline');
+                    feedback.find('b').html('€ ' + (data.coupon || 0));
+                }
+                else {
+                    feedback.css('display', 'none');
+                }
                 $('.grand.total b', form).html('€ ' + (data.total || 0));
                 $('.hotel-reservations td[data-fare]', form).next().html('');
                 $('.hotel-reservations tr').removeClass('error');

@@ -128,6 +128,7 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.locale.LocaleMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
+    'pycon.middleware.RisingResponse',
 )
 
 ROOT_URLCONF = 'pycon.urls'

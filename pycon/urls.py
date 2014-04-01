@@ -38,22 +38,12 @@ if settings.DEBUG:
         }),
    )
 
-from pages import views as pviews
-# Questa view reimplementa il vecchio supporto di pages per le richieste ajax.
-# Se una richiesta è ajax viene utilizzato un template ad hoc
-class DetailsWithAjaxSupport(pviews.Details):
-    def get_template(self, request, context):
-        tpl = super(DetailsWithAjaxSupport, self).get_template(request, context)
-        if request.is_ajax():
-            import os.path
-            bname, fname = os.path.split(tpl)
-            tpl = os.path.join(bname, 'body_' + fname)
-        return tpl
-pviews.details = DetailsWithAjaxSupport()
+from pycon import patch
+patch.patch_pages()
+
 urlpatterns += patterns('', (r'', include('pages.urls')))
 
 from django.conf import settings
-
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
     # XXX questo codice starebbe bene in settings.py, purtroppo li non posso
     # importare rosetta.signals (a causa di un problema di dipendenze

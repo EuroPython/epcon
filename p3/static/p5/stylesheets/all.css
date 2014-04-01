@@ -2029,7 +2029,8 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 #form-options .tagfield { float: none; clear: both; }
 
 #form-cart .total { padding: 0.75em 0; text-align: center; background: #cbd9e5; }
-#form-cart .save { color: #148414; }
+#form-cart .save { color: #148414; display: none;}
+#form-cart .total.save {background-color: transparent;}
 
 /*
 
