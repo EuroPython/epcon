@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.utils.translation import ugettext as _
 
 from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
 from taggit.managers import TaggableManager
@@ -33,18 +34,18 @@ TICKET_CONFERENCE_SHIRT_SIZES = (
     ('xxl', 'XXL (male)'),
 )
 TICKET_CONFERENCE_DIETS = (
-    ('omnivorous', 'Omnivorous'),
-    ('vegetarian', 'Vegetarian'),
-    #('vegan', 'Vegan'),
-    #('kosher', 'Kosher'),
+    ('omnivorous', _('Omnivorous')),
+    ('vegetarian', _('Vegetarian')),
+    #('vegan', _('Vegan')),
+    #('kosher', _('Kosher')),
 )
 TICKET_CONFERENCE_EXPERIENCES = (
-    (0, '0'),
-    (1, '1'),
-    (2, '2'),
-    (3, '3'),
-    (4, '4'),
-    (5, '5'),
+    (0, _('0 stars')),
+    (1, _('1 stars')),
+    (2, _('2 stars')),
+    (3, _('3 stars')),
+    (4, _('4 stars')),
+    (5, _('5 stars')),
 )
 class TicketConferenceManager(models.Manager):
     def get_query_set(self):
@@ -75,12 +76,16 @@ class TicketConference(models.Model):
     shirt_size = models.CharField(max_length=4, choices=TICKET_CONFERENCE_SHIRT_SIZES, default='l')
     python_experience = models.PositiveIntegerField(choices=TICKET_CONFERENCE_EXPERIENCES, default=0)
     diet = models.CharField(max_length=10, choices=TICKET_CONFERENCE_DIETS, default='omnivorous')
-    tagline = models.CharField(max_length=60, blank=True, help_text='a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of FooBar Inc.; Student at MIT; Super Python fanboy')
-    days = models.TextField(verbose_name='Days of attendance', blank=True)
+    tagline = models.CharField(
+        max_length=60,
+        blank=True,
+        help_text=_('a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of FooBar Inc.; Student at MIT; Super Python fanboy'))
+    days = models.TextField(
+        verbose_name=_('Days of attendance'), blank=True)
     badge_image = models.ImageField(
         null=True, blank=True,
         upload_to='p3/tickets/badge_image',
-        help_text='''A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine.''')
+        help_text=_('''A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine.'''))
     assigned_to = models.EmailField(blank=True)
 
     objects = TicketConferenceManager()
@@ -111,42 +116,40 @@ def _ticket_sim_upload_to(instance, filename):
     return fpath.encode('ascii', 'ignore')
 
 TICKET_SIM_TYPE = (
-    ('std', 'Standard SIM (USIM)'),
-    ('micro', 'Micro SIM'),
-    ('nano', 'Nano SIM'),
+    ('std', _('Standard SIM (USIM)')),
+    ('micro', _('Micro SIM')),
+    ('nano', _('Nano SIM')),
 )
 TICKET_SIM_PLAN_TYPE = (
-    ('std', 'Standard Plan'),
-    ('bb', 'BlackBerry Plan'),
+    ('std', _('Standard Plan')),
+    ('bb', _('BlackBerry Plan')),
 )
 class TicketSIM(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
     document = models.FileField(
-        verbose_name='ID Document',
+        verbose_name=_('ID Document'),
         upload_to=_ticket_sim_upload_to,
         storage=dsettings.SECURE_STORAGE,
         blank=True,
-        help_text='Italian regulations require a document ID to activate a phone SIM. You can use the same ID for up to three SIMs. Any document is fine (EU driving license, personal ID card, etc).',
-    )
+        help_text=_('Italian regulations require a document ID to activate a phone SIM. You can use the same ID for up to three SIMs. Any document is fine (EU driving license, personal ID card, etc).'))
     sim_type = models.CharField(
         max_length=5,
         choices=TICKET_SIM_TYPE,
         default='std',
-        help_text='Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4; Nano SIM is used for the last generation smartphone like the iPhone 5',
-    )
+        help_text=_('Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4; Nano SIM is used for the last generation smartphone like the iPhone 5'))
     plan_type = models.CharField(
         max_length=3,
         choices=TICKET_SIM_PLAN_TYPE,
         default='std',
-        help_text='Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).',
-    )
-    number = models.CharField(max_length=20, blank=True, help_text="Telephone number")
+        help_text=_('Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).'))
+    number = models.CharField(
+        max_length=20, blank=True, help_text=_("Telephone number"))
 
 HOTELROOM_ROOM_TYPE = (
-    ('t1', 'Single room'),
-    ('t2', 'Double room'),
-    ('t3', 'Triple room'),
-    ('t4', 'Quadruple room'),
+    ('t1', _('Single room')),
+    ('t2', _('Double room')),
+    ('t3', _('Triple room')),
+    ('t4', _('Quadruple room')),
 )
 class HotelRoom(models.Model):
     conference = models.ForeignKey('conference.Conference')
@@ -333,26 +336,25 @@ class TicketRoomManager(models.Manager):
         return True
 
 TICKETROOM_TICKET_TYPE = (
-    ('B', 'room shared'),
-    ('R', 'room not shared'),
+    ('B', _('room shared')),
+    ('R', _('room not shared')),
 )
 class TicketRoom(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_room')
     document = models.FileField(
-        verbose_name='ID Document',
+        verbose_name=_('ID Document'),
         upload_to=_ticket_sim_upload_to,
         storage=dsettings.SECURE_STORAGE,
         blank=True,
-        help_text='Italian regulations require a document ID to book an hotel room. Any document is fine (EU driving license, personal ID card, etc).',
-    )
+        help_text=_('Italian regulations require a document ID to book an hotel room. Any document is fine (EU driving license, personal ID card, etc).'))
     room_type = models.ForeignKey(HotelRoom)
     ticket_type = models.CharField(max_length=1, choices=TICKETROOM_TICKET_TYPE)
     checkin = models.DateField(db_index=True)
     checkout = models.DateField(db_index=True)
     unused = models.BooleanField(
         default=False,
-        verbose_name="Bed place not needed",
-        help_text='Check if you don\'t use this bed place.')
+        verbose_name=_("Bed place not needed"),
+        help_text=_('Check if you don\'t use this bed place.'))
 
     objects = TicketRoomManager()
 
@@ -396,7 +398,8 @@ class P3ProfileManager(models.Manager):
 
 class P3Profile(models.Model):
     profile = models.OneToOneField('conference.AttendeeProfile', related_name='p3_profile', primary_key=True)
-    tagline = models.CharField(max_length=60, blank=True, help_text='describe yourself in one line!')
+    tagline = models.CharField(
+        max_length=60, blank=True, help_text=_('describe yourself in one line!'))
     interests = TaggableManager(through=ConferenceTaggedItem)
     twitter = models.CharField(max_length=80, blank=True)
     image_gravatar = models.BooleanField(default=False)
