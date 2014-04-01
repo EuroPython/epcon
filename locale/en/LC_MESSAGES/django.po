@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 22:23+0200\n"
+"POT-Creation-Date: 2014-04-01 23:04+0200\n"
 "PO-Revision-Date: 2012-05-11 09:56\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: en <pycon-organization@googlegroups.com>\n"
@@ -1372,24 +1372,28 @@ msgid ""
 "assistance."
 msgstr ""
 
-#: p3/templates/p3/tickets.html:134
+#: p3/templates/p3/tickets.html:135
 msgid "Please enter the name"
 msgstr ""
 
-#: p3/templates/p3/tickets.html:149
+#: p3/templates/p3/tickets.html:151
 msgid "Enter the email of the person you want to assign the ticket"
 msgstr ""
 
-#: p3/templates/p3/tickets.html:153
+#: p3/templates/p3/tickets.html:156
 msgid "Please don't use your email address."
 msgstr ""
 
-#: p3/templates/p3/tickets.html:163
+#: p3/templates/p3/tickets.html:167
 msgid "ticket assigned to"
 msgstr ""
 
-#: p3/templates/p3/tickets.html:169
+#: p3/templates/p3/tickets.html:174
 msgid "Are you sure to reclaim this ticket"
+msgstr ""
+
+#: p3/templates/p3/tickets.html:183
+msgid "ticket reclaimed"
 msgstr ""
 
 #: p3/templates/p3/fragments/render_cart_og_ticket_row.html:13

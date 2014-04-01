@@ -80,7 +80,8 @@
         }
     });
     function _error() {
-        alert('{% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." %}');
+        {% trans "Cannot save the ticket.\nUse the web chat, or contact info@pycon.it, for assistance." as t_error %}
+        alert("{{ t_error|escapejs }}");
     }
     function _success(message, container) {
         function w(response, status, xhr, form) {
@@ -131,7 +132,8 @@
                 if(f.length == 0)
                     f = ticket_field(form, 'name');
                 if(f.length && $.trim(f.val()) == '') {
-                    alert('{% trans "Please enter the name" %}');
+                    {% trans "Please enter the name" as t_enter_name %}
+                    alert("{{ t_enter_name|escapejs }}");
                     f.focus();
                     return false;
                 }
@@ -146,11 +148,13 @@
     }
     $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
-        var email = $.trim(prompt('{% trans "Enter the email of the person you want to assign the ticket" %}'));
+        {% trans "Enter the email of the person you want to assign the ticket" as t_enter_email %}
+        var email = $.trim(prompt("{{ t_enter_email|escapejs }}"));
         if(!email)
             return;
         if(email == "{{ request.user.email }}") {
-            alert("{% trans "Please don't use your email address." %}");
+            {% trans "Please don't use your email address." as t_not_email %}
+            alert("{{ t_not_email|escapejs }}");
             return;
         }
         var ticket = $(e.target).parents('.ticket');
@@ -160,13 +164,15 @@
             target: form.parents('div.ticket'),
             replaceTarget: true,
             success: function() {
-                feedback('{% trans "ticket assigned to" %} ' + email);
+                {% trans "ticket assigned to" as t_assigned %}
+                feedback("{{ t_assigned|escapejs }}" + " " + email);
             }
         });
     });
     $('div.ticket .reclaim-button').live('click', function(e) {
         e.preventDefault();
-        if(window.confirm('{% trans "Are you sure to reclaim this ticket" %}')) {
+        {% trans "Are you sure to reclaim this ticket" as t_reclaim %}
+        if(window.confirm("{{ t_reclaim|escapejs }}")) {
             var ticket = $(e.target).parents('.ticket');
             var form = $('form', ticket);
             ticket_field(form, 'assigned_to').val('');
@@ -174,7 +180,8 @@
                 target: form.parents('div.ticket'),
                 replaceTarget: true,
                 success: function() {
-                    feedback('ticket reclaimed')
+                    {% trans "ticket reclaimed" as t_reclaimed %}
+                    feedback("{{ t_reclaimed|escapejs }}")
                 }
             });
         }
