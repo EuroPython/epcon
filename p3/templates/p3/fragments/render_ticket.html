@@ -31,7 +31,7 @@
     {% if ticket.fare.ticket_type == "conference" %}
         <h2>{{ ticket.fare.name }}</h2>
         <div class="preview-inner">
-            {% if ticket.p3_conference %}                            
+            {% if ticket.p3_conference %}
                 <div class="media">
                     {% if ticket.p3_conference.profile %}
                         {% p3_profile_data ticket.p3_conference.profile.user_id as pdata %}
