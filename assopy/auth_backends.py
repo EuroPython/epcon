@@ -13,7 +13,6 @@ import logging
 log = logging.getLogger('assopy.auth')
 
 class _AssopyBackend(ModelBackend):
-    @transaction.commit_on_success
     def linkUser(self, user):
         """
         collega l'utente assopy passato con il backend; crea l'utente remoto se

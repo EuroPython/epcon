@@ -400,7 +400,6 @@ class AuthUserAdmin(aUserAdmin):
             auth.login(request, user)
         return http.HttpResponseRedirect('/')
 
-    @transaction.commit_on_success
     def new_order(self, request, uid):
         from assopy import forms as aforms
         from conference.models import Fare

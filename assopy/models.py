@@ -14,7 +14,6 @@ from django.contrib import auth
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db import transaction
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
@@ -132,7 +131,6 @@ user_created = dispatch.Signal(providing_args=['profile_complete'])
 user_identity_created = dispatch.Signal(providing_args=['identity'])
 
 class UserManager(models.Manager):
-    @transaction.commit_on_success
     def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, assopy_id=None, send_mail=True):
         uname = janrain.suggest_username_from_email(email)
         duser = auth.models.User.objects.create_user(uname, email, password=password)
@@ -433,7 +431,6 @@ class OrderManager(models.Manager):
             t = qs.aggregate(t=models.Sum('price'))['t']
             return t if t is not None else 0
 
-    @transaction.commit_on_success
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
         if coupons:
             for c in coupons:
@@ -759,7 +756,6 @@ class InvoiceLog(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
 class InvoiceManager(models.Manager):
-    @transaction.commit_on_success
     def creates_from_order(self, order, update=False, payment_date=None):
         if settings.GENRO_BACKEND:
             if not order.assopy_id:

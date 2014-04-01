@@ -191,7 +191,6 @@ def OTCHandler_J(request, token):
     auth.login(request, duser)
     return redirect('assopy-profile')
 
-@transaction.commit_on_success
 def otc_code(request, token):
     t = models.Token.objects.retrieve(token)
     if t is None:
@@ -236,7 +235,6 @@ def _linkProfileToEmail(email, profile):
     return identity
 
 @csrf_exempt
-@transaction.commit_on_success
 def janrain_token(request):
     if request.method != 'POST':
         return http.HttpResponseNotAllowed(('POST',))
@@ -294,7 +292,6 @@ def janrain_token(request):
     return HttpResponseRedirectSeeOther(redirect_to)
 
 @render_to('assopy/janrain_incomplete_profile.html')
-@transaction.commit_on_success
 def janrain_incomplete_profile(request):
     p = request.session['incomplete-profile']
     try:
