@@ -517,9 +517,7 @@ class TalkManager(models.Manager):
         talk.level = level
         talk.training_available = training_available
         talk.type = type
-        cursor = connection.cursor()
-        cursor.execute('BEGIN EXCLUSIVE TRANSACTION')
-        try:
+        with transaction.atomic():
             count = 0
             check = slug
             while True:
@@ -533,11 +531,6 @@ class TalkManager(models.Manager):
             # lo speaker non è valido, il tutto avviene in una transazione ed
             # il db rimane pulito.
             TalkSpeaker(talk=talk, speaker=speaker).save()
-        except:
-            transaction.rollback()
-            raise
-        else:
-            transaction.commit()
         return talk
 
 TALK_TYPE = (

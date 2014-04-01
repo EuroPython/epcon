@@ -2,7 +2,7 @@
 # Copyright (C) 2009 Python Italia
 # This file is distributed under the same license as the conference package.
 # dvd <dvd@gnx.it>, 2009.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
@@ -11,6 +11,7 @@ msgstr ""
 "PO-Revision-Date: 2014-03-03 23:44+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,8 +33,8 @@ msgstr "Data di nascita"
 #: forms.py:127
 msgid ""
 "We require date of birth for speakers to accomodate for Italian laws "
-"regarding minors.<br />Format: YYYY-MM-DD<br />This date will "
-"<strong>never</strong> be published."
+"regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</"
+"strong> be published."
 msgstr ""
 "Necessaria per verificare i requisiti d'età richiesti per "
 "legge.<br/>Formato: AAAA-MM-DD<br/>La tua data di nascita non verrà "
@@ -71,15 +72,14 @@ msgstr "Breve biografia"
 
 #: forms.py:143 forms.py:249 forms.py:334
 msgid ""
-"Please enter a short biography (one or two paragraphs). Do not paste your "
-"CV!"
+"Please enter a short biography (one or two paragraphs). Do not paste your CV!"
 msgstr ""
 "Inserisci una tua breve biografia di 2/3 paragrafi. La biografia sarà "
 "visibile al pubblico una volta che il tuo talk sarà approvato. Per favore "
-"<b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e"
-" <b>P</b> per formattare il tuo testo."
+"<b>non fare copia-incolla del tuo CV</b>! Il campo supporta i tag <b>B</b> e "
+"<b>P</b> per formattare il tuo testo."
 
-#: forms.py:146 models.py:551
+#: forms.py:146 models.py:544
 msgid "Talk title"
 msgstr "Titolo talk"
 
@@ -91,22 +91,22 @@ msgstr "Tipo di intervento"
 msgid "Talk Type description"
 msgstr ""
 "<b>Talk</b>: è il classico intervento con slide, tempo prestabilito e Q&A "
-"finali. <b>Poster</b>: un modo innovativo per presentare i vostri progetti e"
-" il vostro know-how in una conferenza, preparando un poster di grande "
-"formato e spiegandolo direttamente alle persone."
+"finali. <b>Poster</b>: un modo innovativo per presentare i vostri progetti e "
+"il vostro know-how in una conferenza, preparando un poster di grande formato "
+"e spiegandolo direttamente alle persone."
 
-#: forms.py:154 models.py:557
+#: forms.py:154 models.py:550
 msgid "Suggested duration"
 msgstr "Durata prevista"
 
-#: forms.py:155 models.py:559
+#: forms.py:155 models.py:552
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr ""
 "<b>Standard Talk</b>: La durata si intende compreso lo spazio lasciato al "
 "pubblico per eventuali domande finali. <b>Poster</b>: non influente, il "
 "poster sarà sempre a disposizione dei partecipanti."
 
-#: forms.py:160 models.py:562
+#: forms.py:160 models.py:555
 #, fuzzy
 msgid "Q&A duration"
 msgstr "Durata prevista"
@@ -117,15 +117,15 @@ msgstr ""
 "Seleziona Italiano solo se non sei in grado di tenere un intervento in "
 "Inglese."
 
-#: forms.py:167 models.py:579
+#: forms.py:167 models.py:572
 msgid "Audience level"
 msgstr "Livello del pubblico"
 
-#: forms.py:170 models.py:567
+#: forms.py:170 models.py:560
 msgid "Talk abstract"
 msgstr "Abstract del talk"
 
-#: forms.py:171 models.py:568
+#: forms.py:171 models.py:561
 msgid ""
 "<p>Please enter a short description of the talk you are submitting. Be sure "
 "to includes the goals of your talk and any prerequisite required to fully "
@@ -214,6 +214,46 @@ msgid "Teaser video"
 msgstr "Video di presentazione"
 
 #: models.py:576
+msgid "Insert the url for your teaser video"
+msgstr ""
+
+#: models.py:471
+msgid "Italian"
+msgstr "Italiano"
+
+#: models.py:472
+msgid "English"
+msgstr "Inglese"
+
+#: models.py:475
+msgid "Proposed"
+msgstr "Proposto"
+
+#: models.py:476
+msgid "Accepted"
+msgstr "Accettato"
+
+#: models.py:485
+msgid "Beginner"
+msgstr "Introduttivo"
+
+#: models.py:486
+msgid "Intermediate"
+msgstr "Approfondimento"
+
+#: models.py:487
+msgid "Advanced"
+msgstr "Per Esperti"
+
+#: models.py:557
+msgid "Language"
+msgstr ""
+
+#: models.py:567
+msgid "Teaser video"
+msgstr "Video di presentazione"
+
+#: models.py:569
 msgid "Insert the url for your teaser video"
 msgstr ""
 
@@ -322,8 +362,9 @@ msgstr "prezzo"
 
 #~ msgid "List yout previous experiences"
 #~ msgstr ""
-#~ "Inserisci una o più esperienze di intervento come speaker in conferenze che "
-#~ "ritieni significative (<i>nome conferenza, anno, argomento del talk</i>)"
+#~ "Inserisci una o più esperienze di intervento come speaker in conferenze "
+#~ "che ritieni significative (<i>nome conferenza, anno, argomento del talk</"
+#~ "i>)"
 
 #~ msgid "Last year talks"
 #~ msgstr "N° talk tenuti nel 2011"
@@ -345,17 +386,16 @@ msgstr "prezzo"
 #~ msgstr "Training"
 
 #~ msgid ""
-#~ "Check if you are willing to also deliver a 4-hours hands-on training on this"
-#~ " subject.<br />See the Call for paper for details."
+#~ "Check if you are willing to also deliver a 4-hours hands-on training on "
+#~ "this subject.<br />See the Call for paper for details."
 #~ msgstr ""
-#~ "Check Training se sei disponibile a tenere un approfondimento sull'argomento"
-#~ " con una audience selezionata su prenotazione."
+#~ "Check Training se sei disponibile a tenere un approfondimento "
+#~ "sull'argomento con una audience selezionata su prenotazione."
 
 #~ msgid "Promo video description"
 #~ msgstr ""
-#~ "URL del video di presentazione del talk condiviso su Youtube. Il video deve "
-#~ "essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
+#~ "URL del video di presentazione del talk condiviso su Youtube. Il video "
+#~ "deve essere <b>pubblico</b> e taggato <b>bsw2012</b>. I video, dopo "
 #~ "l'accettazione dei talk, verranno condivisi sul sito web nella pagina "
-#~ "pubblica dello speaker. <a "
-#~ "href=\"http://www.bettersoftware.it/blog/2011/02/24/call-paper-2011\">More "
-#~ "&rarr;</a>"
+#~ "pubblica dello speaker. <a href=\"http://www.bettersoftware.it/"
+#~ "blog/2011/02/24/call-paper-2011\">More &rarr;</a>"

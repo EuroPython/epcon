@@ -68,7 +68,7 @@ msgid ""
 "Please enter a short biography (one or two paragraphs). Do not paste your CV!"
 msgstr ""
 
-#: forms.py:146 models.py:551
+#: forms.py:146 models.py:544
 msgid "Talk title"
 msgstr ""
 
@@ -80,15 +80,15 @@ msgstr ""
 msgid "Talk Type description"
 msgstr ""
 
-#: forms.py:154 models.py:557
+#: forms.py:154 models.py:550
 msgid "Suggested duration"
 msgstr ""
 
-#: forms.py:155 models.py:559
+#: forms.py:155 models.py:552
 msgid "This is the <b>net duration</b> of the talk, excluding Q&A"
 msgstr ""
 
-#: forms.py:160 models.py:562
+#: forms.py:160 models.py:555
 msgid "Q&A duration"
 msgstr ""
 
@@ -96,15 +96,15 @@ msgstr ""
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr ""
 
-#: forms.py:167 models.py:579
+#: forms.py:167 models.py:572
 msgid "Audience level"
 msgstr ""
 
-#: forms.py:170 models.py:567
+#: forms.py:170 models.py:560
 msgid "Talk abstract"
 msgstr ""
 
-#: forms.py:171 models.py:568
+#: forms.py:171 models.py:561
 msgid ""
 "<p>Please enter a short description of the talk you are submitting. Be sure "
 "to includes the goals of your talk and any prerequisite required to fully "
@@ -177,15 +177,15 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#: models.py:564
+#: models.py:557
 msgid "Language"
 msgstr ""
 
-#: models.py:574
+#: models.py:567
 msgid "Teaser video"
 msgstr ""
 
-#: models.py:576
+#: models.py:569
 msgid "Insert the url for your teaser video"
 msgstr ""
 
