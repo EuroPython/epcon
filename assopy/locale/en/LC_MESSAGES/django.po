@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-19 11:46+0200\n"
+"POT-Creation-Date: 2014-04-01 17:47+0200\n"
 "PO-Revision-Date: 2011-04-07 17:18\n"
 "Last-Translator: Francesco Pallanti <fpallanti@develer.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.5.3\n"
 
-#: forms.py:86
+#: forms.py:89
 msgid "First Name"
 msgstr ""
 
-#: forms.py:87
+#: forms.py:90
 msgid ""
 "Please do not enter a company name here.<br />You will be able to specify "
 "billing details during the checkout."
 msgstr ""
 
-#: forms.py:90
+#: forms.py:93
 msgid "Last Name"
 msgstr ""
 
@@ -47,87 +47,41 @@ msgstr ""
 msgid "Country name"
 msgstr ""
 
-#: models.py:192
-msgid "Photo"
-msgstr ""
-
-#: models.py:193
-msgid "Twitter"
-msgstr ""
-
-#: models.py:194
-msgid "Skype"
-msgstr ""
-
-#: models.py:195
-msgid "Jabber"
-msgstr ""
-
-#: models.py:196
-msgid "Www"
-msgstr ""
-
-#: models.py:198
-msgid "Phone"
-msgstr ""
-
-#: models.py:200
-msgid ""
-"Enter a phone number where we can contact you in case of administrative "
-"issues.<br />Use the international format, eg: +39-055-123456"
-msgstr ""
-
-#: models.py:202
-msgid "Birthday"
-msgstr ""
-
-#: models.py:203 models.py:601
+#: models.py:190 models.py:581
 msgid "Card name"
 msgstr ""
 
-#: models.py:204
-msgid "Account type"
+#: models.py:191
+msgid "The name used for orders and invoices"
 msgstr ""
 
-#: models.py:205 models.py:602
+#: models.py:193 models.py:582
 msgid "Vat Number"
 msgstr ""
 
-#: models.py:206 models.py:603
-msgid "Tax Identification Number"
+#: models.py:194
+msgid "Your VAT number if applicable"
 msgstr ""
 
-#: models.py:207 models.py:606
+#: models.py:197
+msgid "Needed only for Italian customers"
+msgstr ""
+
+#: models.py:198 models.py:586
 msgid "Country"
 msgstr ""
 
-#: models.py:208 models.py:607
-msgid "Zip Code"
-msgstr ""
-
-#: models.py:210
+#: models.py:200
 msgid "Address and City"
 msgstr ""
 
-#: models.py:213
+#: models.py:203
 msgid ""
 "Insert the full address, including city and zip code. We will help you "
 "through google."
 msgstr ""
 
-#: models.py:214 models.py:609
-msgid "City"
-msgstr ""
-
-#: models.py:215 models.py:610
-msgid "State"
-msgstr ""
-
-#: models.py:244
-msgid "According to VIES, this is not a valid vat number"
-msgstr ""
-
-#: models.py:608
+#: models.py:587
 msgid "Address"
 msgstr ""
 
@@ -273,24 +227,24 @@ msgstr ""
 msgid "Add another account"
 msgstr ""
 
-#: templates/assopy/voucher.html:10
+#: templates/assopy/render_voucher.html:9
 msgid "Voucher code"
 msgstr ""
 
-#: templates/assopy/voucher.html:11
+#: templates/assopy/render_voucher.html:10
 msgid "Buyer"
 msgstr ""
 
-#: templates/assopy/voucher.html:12
+#: templates/assopy/render_voucher.html:11
 msgid "Assigned to"
 msgstr ""
 
-#: templates/assopy/voucher.html:13
+#: templates/assopy/render_voucher.html:12
 msgid "Value"
 msgstr ""
 
-#: templates/assopy/voucher.html:25
-msgid "Bring this voucher with you to hain access to"
+#: templates/assopy/render_voucher.html:24
+msgid "Bring this voucher with you to gain access to"
 msgstr ""
 
 #: templates/registration/login.html:52
