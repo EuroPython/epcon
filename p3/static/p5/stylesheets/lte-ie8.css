@@ -12,7 +12,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 */
 @import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .talk-speakers, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .talk-speakers, .ticket-footer, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
 
 article, aside, figure, footer, header, hgroup, nav, section { display: block; }
 
@@ -57,7 +57,7 @@ figure figcaption { display: block; font-weight: normal; font-size: 14px; font-s
 a.tag:hover { background: white; text-decoration: none; }
 
 h1, h2, h3, h4, h5, h6 { margin: 0; font-family: inherit; font-weight: 400; color: inherit; text-rendering: optimizelegibility; }
-h1 small, h1 .meta, h1 #talk-voting .talk-speakers, #talk-voting h1 .talk-speakers, h2 small, h2 .meta, h2 #talk-voting .talk-speakers, #talk-voting h2 .talk-speakers, h3 small, h3 .meta, h3 #talk-voting .talk-speakers, #talk-voting h3 .talk-speakers, h4 small, h4 .meta, h4 #talk-voting .talk-speakers, #talk-voting h4 .talk-speakers, h5 small, h5 .meta, h5 #talk-voting .talk-speakers, #talk-voting h5 .talk-speakers, h6 small, h6 .meta, h6 #talk-voting .talk-speakers, #talk-voting h6 .talk-speakers { font-weight: normal; line-height: 1; color: #bcbab2; }
+h1 small, h1 .meta, h1 #talk-voting .talk-speakers, #talk-voting h1 .talk-speakers, h1 .ticket-footer, h2 small, h2 .meta, h2 #talk-voting .talk-speakers, #talk-voting h2 .talk-speakers, h2 .ticket-footer, h3 small, h3 .meta, h3 #talk-voting .talk-speakers, #talk-voting h3 .talk-speakers, h3 .ticket-footer, h4 small, h4 .meta, h4 #talk-voting .talk-speakers, #talk-voting h4 .talk-speakers, h4 .ticket-footer, h5 small, h5 .meta, h5 #talk-voting .talk-speakers, #talk-voting h5 .talk-speakers, h5 .ticket-footer, h6 small, h6 .meta, h6 #talk-voting .talk-speakers, #talk-voting h6 .talk-speakers, h6 .ticket-footer { font-weight: normal; line-height: 1; color: #bcbab2; }
 
 h1, .h1 { font-size: 36px; font-size: 3.6rem; line-height: 1.2; margin-bottom: 0.75em; font-weight: 300; text-transform: uppercase; }
 
@@ -73,7 +73,7 @@ h6, .h6 { font-size: 18px; font-size: 1.8rem; margin-bottom: 1.5em; font-weight:
 
 p, ol, ul, dl, address { margin-bottom: 0.75em; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; }
 
-small, .meta, #talk-voting .talk-speakers { font-size: 15px; font-size: 1.5rem; }
+small, .meta, #talk-voting .talk-speakers, .ticket-footer { font-size: 15px; font-size: 1.5rem; }
 
 ul, ol { margin: 0 0 0.75em -28px; padding: 0 0 0 28px; }
 
@@ -88,12 +88,12 @@ ul.inline, ol.inline { list-style-type: none; margin-left: 0; }
 ul.inline > li, ol.inline > li { display: inline-block; padding-left: 14px; padding-right: 14px; }
 
 blockquote { margin: 0 0 1.5em 0; padding: 14px; background-color: #e0dfdb; font-style: normal; }
-blockquote small:before, blockquote .meta:before, blockquote #talk-voting .talk-speakers:before, #talk-voting blockquote .talk-speakers:before { content: '\00A0 \2014'; }
-blockquote small:after, blockquote .meta:after, blockquote #talk-voting .talk-speakers:after, #talk-voting blockquote .talk-speakers:after { content: ''; }
+blockquote small:before, blockquote .meta:before, blockquote #talk-voting .talk-speakers:before, #talk-voting blockquote .talk-speakers:before, blockquote .ticket-footer:before { content: '\00A0 \2014'; }
+blockquote small:after, blockquote .meta:after, blockquote #talk-voting .talk-speakers:after, #talk-voting blockquote .talk-speakers:after, blockquote .ticket-footer:after { content: ''; }
 blockquote.pull-right { float: right; background-color: transparent; }
-blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .talk-speakers, #talk-voting blockquote.pull-right .talk-speakers { text-align: right; }
-blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .talk-speakers:before, #talk-voting blockquote.pull-right .talk-speakers:before { content: ''; }
-blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .talk-speakers:after, #talk-voting blockquote.pull-right .talk-speakers:after { content: '\00A0 \2014'; }
+blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .talk-speakers, #talk-voting blockquote.pull-right .talk-speakers, blockquote.pull-right .ticket-footer { text-align: right; }
+blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .talk-speakers:before, #talk-voting blockquote.pull-right .talk-speakers:before, blockquote.pull-right .ticket-footer:before { content: ''; }
+blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .talk-speakers:after, #talk-voting blockquote.pull-right .talk-speakers:after, blockquote.pull-right .ticket-footer:after { content: '\00A0 \2014'; }
 blockquote cite { font-style: normal; }
 
 q { quotes: none; }
@@ -1900,7 +1900,7 @@ nav[role=navigation].active { max-height: 25em; }
 
 form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 
-.overlay { display: none; z-index: 10000; background: white; padding: 0.75em 28px; width: 35em; min-height: 15em; box-shadow: 0 0 15px #3c3a34; }
+.overlay { position: absolute !important; display: none; z-index: 10000; background: white; padding: 0.75em 28px; width: 35em; min-height: 15em; box-shadow: 0 0 15px #3c3a34; }
 
 .overlay .close { position: absolute; background: transparent url(../images/icon-close.png) center center no-repeat; width: 36px; height: 36px; top: -18px; right: -18px; }
 
@@ -2029,7 +2029,8 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 #form-options .tagfield { float: none; clear: both; }
 
 #form-cart .total { padding: 0.75em 0; text-align: center; background: #cbd9e5; }
-#form-cart .save { color: #148414; }
+#form-cart .save { color: #148414; display: none; }
+#form-cart .total.save { background-color: transparent; }
 
 /*
 
@@ -2058,20 +2059,6 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 
 .ticket[data-fare=HB1] .preview h2, .ticket[data-fare=HB2] .preview h2, .ticket[data-fare=HB3] .preview h2, .ticket[data-fare=HB4] .preview h2, .ticket[data-fare=HR1] .preview h2, .ticket[data-fare=HR2] .preview h2, .ticket[data-fare=HR3] .preview h2, .ticket[data-fare=HR4] .preview h2 { background: #BB78FF; }
 
-/*
-.ticket-additional-info {
-}
-
-.ticket-additional-info dt,
-.ticket-additional-info dd { display: inline;
-}
-
-.ticket-additional-info dd { font-weight: bold;
-}
-
-.ticket-additional-info dt { color: #635443;
-}
-*/
 .preview:hover .ticket-commands { opacity: .85; }
 
 .ticket-commands { position: absolute; top: 0; left: 0; z-index: 1; text-align: center; min-height: 100%; min-width: 100%; background: white; -webkit-transition: opacity 0.2s ease-out; -moz-transition: opacity 0.2s ease-out; transition: opacity 0.2s ease-out; opacity: 0; }
@@ -2079,12 +2066,9 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 
 .ticket-assigned-to.ticket-commands { opacity: .8; }
 
-/*
-.ticket-name { @include font-size(24);
-	text-transform: uppercase;	
-}
-*/
-.ticket-footer { margin: 0; position: absolute; bottom: 0.75em; right: 0; }
+.ticket-footer { position: absolute; bottom: 0.75em; right: 14px; color: #807c6f; }
+
+#form-ticket-edit ul { margin: 0; }
 
 div.rateit { display: inline-block; position: relative; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none; -webkit-touch-callout: none; }
 

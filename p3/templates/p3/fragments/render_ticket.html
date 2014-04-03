@@ -76,7 +76,7 @@
         <h2>{{ ticket.fare.name }}</h2>
         {% if ticket.fare.code == 'SIM01' %}
             <div class="ticket-name">{{ form.ticket_name.value|default:t_edit_ticket}}</div>
-            <div class="ticket-tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
+            <div class="tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
             {% if not form.document.value %}
             <div class="alert alert-block">
                 <h4>{% trans "Warning, incomplete ticket" %}</h4>
@@ -87,7 +87,7 @@
             {% if ticket.fare.code|slice:":1" == 'H' %}
                 {% if not ticket.p3_conference_room.unused %}
                     <div class="ticket-name">{{ form.ticket_name.value|default:t_edit_ticket}}</div>
-                    <div class="ticket-footer">from {{ ticket.p3_conference_room.checkin|date:"d M" }} until {{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
+                    <div class="ticket-footer">{{ ticket.p3_conference_room.checkin|date:"d M" }}–{{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
                 {% else %}
                 <div class="ticket-name">{% trans "This is an unused ticket" %}</div>
                 {% endif %}
@@ -157,7 +157,7 @@
 
     <div class="overlay">
         {% if not ticket.frozen %}
-        <form action="{% url "p3-ticket" tid=ticket.id %}" class="form-horizontal" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+        <form id="form-ticket-edit" action="{% url "p3-ticket" tid=ticket.id %}" class="form-horizontal" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
         {% if ticket.fare.ticket_type == "conference" %}
             <fieldset>
                     {% if user == ticket.user %}
@@ -167,7 +167,7 @@
                             <h2>{% trans "Ticket for NO NAME SPECIFIED" %}</h2>
                         {% endif %}
                         {% if user.attendeeprofile %}
-                        <p>{% blocktrans with url="/accounts/profile/" %}Want to change name? <a href="{{ url }}">Edit your account</a>.{% endblocktrans %}</p>
+                        <div>{% blocktrans with url="/accounts/profile/" %}Want to change name? <a href="{{ url }}">Edit your account</a>.{% endblocktrans %}</div>
                         {% endif %}
                     {% else %}
                         {{ form.ticket_name|form_field }}

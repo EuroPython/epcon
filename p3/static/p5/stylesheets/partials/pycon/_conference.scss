@@ -186,24 +186,6 @@
     background: #BB78FF;
 }
 
-/*
-.ticket-additional-info {
-}
-
-.ticket-additional-info dt,
-.ticket-additional-info dd {
-    display: inline;
-}
-
-.ticket-additional-info dd {
-    font-weight: bold;
-}
-
-.ticket-additional-info dt {
-    color: #635443;
-}
-*/
-
 .preview:hover .ticket-commands {
     opacity: .85;
 }
@@ -233,18 +215,18 @@
     opacity: .8;
 }
 
-/*
-.ticket-name {
-    @include font-size(24);
-	text-transform: uppercase;	
-}
-*/
-
-
 .ticket-footer {
-	margin: 0;
 	position: absolute;
 	bottom: $baselineheight/2;
-	right: 0;
+	right: $gutterwidth/2;
+    color: $neutralcolor;  
+    @extend small;
 }
 
+// Tweaks to made it shorter
+
+#form-ticket-edit {
+    ul {
+        margin: 0;
+    }
+}
