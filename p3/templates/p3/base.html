@@ -79,11 +79,6 @@
     <meta property="og:image" content="{{ DEFAULT_URL_PREFIX }}{{ STATIC_URL }}p5/images/opengraph-pycon-logo.png" />
     <meta property="fb:admins" content="789244177" />
     {% endblock %}
-    <style>
-    .overlay * { 
-        margin: 0;
-    }
-    </style>
 </head>
 <body id="{% block BODY_ID %}{% endblock %}">
     {% if current_page.status == 0 or current_page.status == 2 or current_page.status == 3 %}
