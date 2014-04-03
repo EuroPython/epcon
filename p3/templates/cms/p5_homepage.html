@@ -17,17 +17,23 @@
 </section>
 {% endif %}
 
+{% current_conference as conf %}
 <section>
     <div class="grid-container">
         <!-- NOTICE -->
         <div class="grid-50 notice">
             <div class="media">
+                {% if conf.cfp %}
                 <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
                 <div class="media-body">
                     <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
                     <p class="">{% placeholder "cfp_teaser_text" %}</p>
                     <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
                 </div><!-- /media-body -->
+                {% else %}
+                <div class="pull-left"></div>
+                <div class="media-body"><p></p></div>
+                {% endif %}
             </div>
             <hr class="hide-on-desktop" />
         </div><!-- /grid notice -->
