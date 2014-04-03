@@ -2,19 +2,19 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-01 23:15+0200\n"
-"PO-Revision-Date: 2014-04-01 17:50+0100\n"
+"PO-Revision-Date: 2014-04-01 23:49+0100\n"
 "Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.7.4\n"
 
@@ -36,37 +36,39 @@ msgstr "Cognome"
 
 #: forms.py:175
 msgid "Personal Purchase"
-msgstr ""
+msgstr "Come privato (con ricevuta)"
 
 #: forms.py:176
 msgid "Company Purchase"
-msgstr ""
+msgstr "Come azienda (con fattura)"
 
 #: forms.py:216
 msgid "Reason"
-msgstr ""
+msgstr "Motivo"
 
 #: forms.py:218
 msgid "Please enter the reason of your refund request"
-msgstr ""
+msgstr "Inserisci il motivo della tua richiesta di rimborso"
 
 #: forms.py:221
 msgid "Your paypal address"
-msgstr ""
+msgstr "Il tuo indirizzo PayPal"
 
 #: forms.py:222
 msgid "If you prefer to receive payment via paypal"
-msgstr ""
+msgstr "Se preferisci ricevere il pagamento via PayPal"
 
 #: forms.py:225
 msgid "Bank routing information"
-msgstr ""
+msgstr "Informazioni sul bonifico"
 
 #: forms.py:226
 msgid ""
 "Please specify IBAN, BIC and bank address (if in Europe) or any needed "
 "information for a worldwide transfer"
 msgstr ""
+"Inserisci il tuo codice IBAN, il titolare del conto, o ogni altra "
+"informazione necessaria."
 
 #: models.py:68
 msgid "ISO alpha-2"
@@ -137,29 +139,20 @@ msgstr "Ordine completato"
 #, python-format
 msgid ""
 "\n"
-"            <p>Thank you for your order. You will receieve an email with all "
-"the details for the wire transfer.</p>\n"
-"            <p>If you don't receive this email please check yout spam folder "
-"and <a href=\"mailto:info@pycon.it\">write to us</a> specifying your order "
-"number: <b>%(ocode)s</b></p>\n"
+"            <p>Thank you for your order. You will receieve an email with all the details for the wire transfer.</p>\n"
+"            <p>If you don't receive this email please check yout spam folder and <a href=\"mailto:info@pycon.it\">write to us</a> specifying your order number: <b>%(ocode)s</b></p>\n"
 "            \n"
 "            <h2>What to do next</h2>\n"
-"            <p>Meanwhile you can edit your tickets directly from your "
-"profile.</p>\n"
-"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit "
-"your tickets &rarr;</a></h5></div>\n"
+"            <p>Meanwhile you can edit your tickets directly from your profile.</p>\n"
+"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit your tickets &rarr;</a></h5></div>\n"
 "            "
 msgstr ""
 "\n"
-"<p>Grazie per il tuo ordine. Riceverai una mail con tutti i dettagli per il "
-"bonifico bancario.</p>\n"
-"<p>Se non ricevi la mail nel giro di qualche minuto per favore controlla la "
-"tua cartella spam o <a href=\"mailto:info@betterembedded.it\">scrivici</a> "
-"specificando il numero d'ordine seguente: <b>%(ocode)s</b></p>\n"
+"<p>Grazie per il tuo ordine. Riceverai una mail con tutti i dettagli per il bonifico bancario.</p>\n"
+"<p>Se non ricevi la mail nel giro di qualche minuto per favore controlla la tua cartella spam o <a href=\"mailto:info@betterembedded.it\">scrivici</a> specificando il numero d'ordine seguente: <b>%(ocode)s</b></p>\n"
 "\n"
 "<h2>Cosa fare adesso?</h2>\n"
-"<p>Nel frattempo puoi <a href=\"/accounts/tickets/\">gestire i tuoi "
-"biglietti</a> direttamente dal tuo profilo utente.</p>"
+"<p>Nel frattempo puoi <a href=\"/accounts/tickets/\">gestire i tuoi biglietti</a> direttamente dal tuo profilo utente.</p>"
 
 #: templates/assopy/new_account_feedback.html:4
 msgid "Activation required"
@@ -193,13 +186,11 @@ msgstr "Stiamo aspettando risposta da Paypal ..."
 #, python-format
 msgid ""
 "\n"
-"            <p>Are you waiting for too long? <a href=\"mailto:info@pycon.it"
-"\">Write to us</a> specifying your order number %(ocode)s</p>\n"
+"            <p>Are you waiting for too long? <a href=\"mailto:info@pycon.it\">Write to us</a> specifying your order number %(ocode)s</p>\n"
 "            "
 msgstr ""
 "\n"
-"<p>Stai attendendo da troppo tempo?? <a href=\"mailto:info@betterembedded.it"
-"\">Scrivici</a> specificando il tuo numero ordine: %(ocode)s</p>"
+"<p>Stai attendendo da troppo tempo?? <a href=\"mailto:info@betterembedded.it\">Scrivici</a> specificando il tuo numero ordine: %(ocode)s</p>"
 
 #: templates/assopy/paypal_feedback_ok.html:23
 msgid "Purchase completed"
@@ -208,17 +199,13 @@ msgstr "Acquisto terminato"
 #: templates/assopy/paypal_feedback_ok.html:27
 msgid ""
 "\n"
-"            <p>Thank you for the purchase. The transaction was completed and "
-"a receipt from paypal will be sent to your email address.</p>\n"
-"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit "
-"your tickets &rarr;</a></h5></div>\n"
+"            <p>Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address.</p>\n"
+"            <div class=\"badge\"><h5><a href=\"/accounts/tickets/\">Edit your tickets &rarr;</a></h5></div>\n"
 "            "
 msgstr ""
 "\n"
-"<p>Grazie dell'acquisto. La transazione è stata completata e Paypal ha "
-"inviato ricevuta dell'acquisto direttamente al tuo indirizzo email.</p>\n"
-"<p>Adesso puoi inserire i dati dei <a href=\"%(u)s\">tuoi biglietti</a> "
-"direttamente dal tuo profilo utente.</p>"
+"<p>Grazie dell'acquisto. La transazione è stata completata e Paypal ha inviato ricevuta dell'acquisto direttamente al tuo indirizzo email.</p>\n"
+"<p>Adesso puoi inserire i dati dei <a href=\"%(u)s\">tuoi biglietti</a> direttamente dal tuo profilo utente.</p>"
 
 #: templates/assopy/paypal_pro.html:6
 msgid "Payd by credic card"
@@ -250,10 +237,11 @@ msgstr "Accesso rimosso"
 
 #: templates/assopy/profile.html:78
 msgid ""
-"Cannot remove the requested item, please contact info@pycon.it for assistance"
+"Cannot remove the requested item, please contact info@pycon.it for "
+"assistance"
 msgstr ""
-"Non posso cancellare l'oggetto richiesto, contattate <b>info@betterembedded."
-"it</b> per assistenza"
+"Non posso cancellare l'oggetto richiesto, contattate "
+"<b>info@betterembedded.it</b> per assistenza"
 
 #: templates/assopy/profile.html:91
 msgid "Speaker profile"
@@ -381,8 +369,8 @@ msgstr "(obbligatorio)"
 #~ "Enter a phone number where we can contact you in case of administrative "
 #~ "issues.<br />Use the international format, eg: +39-055-123456"
 #~ msgstr ""
-#~ "Inserisci un numero al quale poterti contattare per comunicazioni "
-#~ "urgenti. Il numero non sarà pubblicato. Usa il formato: <i>3331122444</i>"
+#~ "Inserisci un numero al quale poterti contattare per comunicazioni urgenti. "
+#~ "Il numero non sarà pubblicato. Usa il formato: <i>3331122444</i>"
 
 #~ msgid "Birthday"
 #~ msgstr "Data di nascita"
