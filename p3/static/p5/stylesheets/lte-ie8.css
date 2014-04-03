@@ -1900,7 +1900,7 @@ nav[role=navigation].active { max-height: 25em; }
 
 form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 
-.overlay { display: none; z-index: 10000; background: white; padding: 0.75em 28px; width: 35em; min-height: 15em; box-shadow: 0 0 15px #3c3a34; }
+.overlay { position: absolute !important; display: none; z-index: 10000; background: white; padding: 0.75em 28px; width: 35em; min-height: 15em; box-shadow: 0 0 15px #3c3a34; }
 
 .overlay .close { position: absolute; background: transparent url(../images/icon-close.png) center center no-repeat; width: 36px; height: 36px; top: -18px; right: -18px; }
 
