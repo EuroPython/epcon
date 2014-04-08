@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load i18n conference assopy_tags hcomments_tags %}
+{% load i18n conference hcomments_tags formstyle %}
 
 {% block PAGE_TITLE %}{{ talk.title }}{% endblock %}
 
@@ -52,10 +52,10 @@
     <div class="grid-100">
         <h1>{{ talk_data.title }}</h1>
     </div>
-    
+
     <div class="grid-60">
         <div class="talk-speakers">
-        {% trans 'By' %} {% for spk in talk_data.speakers %}        
+        {% trans 'By' %} {% for spk in talk_data.speakers %}
             <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
             {% if not forloop.last %}, {% endif %}
         {% endfor %}
@@ -105,25 +105,25 @@
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
             <form class="talk-details talk-form" action="{% url "conference-talk" slug=talk.slug %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
-                {{ form.title|field }}
+                {{ form.title|form_field }}
                 {% if cfp %}
-                {{ form.type|field }}
-                {{ form.duration|field }}
-                {{ form.language|field }}
-                {{ form.level|field }}
-                {{ form.teaser_video|field }}
-                {{ form.tags|field }}
+                {{ form.type|form_field }}
+                {{ form.duration|form_field }}
+                {{ form.language|form_field }}
+                {{ form.level|form_field }}
+                {{ form.teaser_video|form_field }}
+                {{ form.tags|form_field }}
                 {% endif %}
-                {{ form.slides|field }}
+                {{ form.slides|form_field }}
                 <hr />
-                {{ form.abstract|field }}
+                {{ form.abstract|form_field }}
                 </fieldset>
                 <fieldset>
                     <button class="btn btn-primary" name="" value="" type="submit">{% trans "Save" %}</button>
                 </fieldset>
             </form>
         </div>
-        {% if full_access %}    
+        {% if full_access %}
         <a href="#" class="btn btn-small live-edit-switch"><i class="fa fa-edit"></i> {% trans 'Edit' %}</a>
         <script type="text/javascript">//<![CDATA[
         $('.live-edit-switch').click(function(e) {
@@ -147,8 +147,8 @@
         {% endif %}
         {% show_comment_form talk %}
     </div><!-- /grid -->
-    
-        <aside class="grid-30 prefix-10">             
+
+        <aside class="grid-30 prefix-10">
         <div class="slot">
             <div class="talk details">
                 {% if talk.slides %}
@@ -160,7 +160,7 @@
                 <dl>
                     <dt>{% trans "Lingua" %}</dt>
                     <dd>{{ talk.language|upper }}</dd>
-    
+
                     {% if talk.type != "p" %}
                     <dt>{% trans "Durata" %}</dt>
                     <dd>
@@ -171,7 +171,7 @@
                         {% endif %}
                     </dd>
                     {% endif %}
-    
+
                     {% if track.translate %}
                         <dt>{% trans "Traduzione simultanea" %}</dt>
                         <dd>{% trans "Disponibile" %}</dd>
@@ -224,14 +224,14 @@
                 </div>
                 {% endif %}
             </div>
- 
-     
+
+
         </div>
         </aside>
- 
+
     </div><!-- /grid-container -->
 </section>
-    
+
 {% endblock %}
 
 
