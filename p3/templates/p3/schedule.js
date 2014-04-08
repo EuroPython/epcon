@@ -80,7 +80,7 @@
         else if(value != autocomplete['last_search']) {
             autocomplete['last_search'] = i.val();
             $.ajax({
-                url: '{% url p3-schedule-search conference=params.conference%}?q=' + i.val(),
+                url: '{% url "p3-schedule-search" conference=params.conference%}?q=' + i.val(),
                 dataType: 'json',
                 success: function(data, status, jqXHR) {
                     var events_ids = [];
