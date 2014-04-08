@@ -834,7 +834,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
             tpl = Template('''
-            <form class="async" method="POST" action="{% url admin:conference-schedule-event sid eid %}">{% csrf_token %}
+            <form class="async" method="POST" action="{% url "admin:conference-schedule-event" sid eid %}">{% csrf_token %}
                 <table>{{ form }}</table>
                 <div class="submit-row">
                     <input type="submit" name="save" value="save"/>
@@ -868,7 +868,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         else:
             form = TrackForm(instance=track)
             tpl = Template('''
-            <form class="async" method="POST" action="{% url admin:conference-schedule-tracks sid tid %}">{% csrf_token %}
+            <form class="async" method="POST" action="{% url "admin:conference-schedule-tracks" sid tid %}">{% csrf_token %}
                 <table>{{ form }}</table>
                 <div class="submit-row">
                     <input type="submit" />
