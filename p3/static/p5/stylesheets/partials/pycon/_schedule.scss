@@ -10,7 +10,6 @@
  * SETTINGS AND MIXINS
  */
 $cYellow: #FCFAD9;
-$cBrown: $neutralcolor;
 $cOrange: #e7880f;
 $cGreen: #d0d8bb;
 $cGreenLight: #D3DB9C;
@@ -873,7 +872,7 @@ body#schedule > .page > .container {
         padding: 4px 8px;
     }
     > div.selected{
-        background-color: $cBrown;
+        background-color: $neutralcolor;
         >a{
             color: $cWhite;            
         }
