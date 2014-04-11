@@ -1,5 +1,7 @@
 {% extends "p3/base.html" %}
-{% load p3 conference assopy_tags %}
+{% load p3 conference assopy_tags i18n %}
+
+{% block PAGE_TITLE %}{% trans "Schedule" %}{% endblock %}
 
 {% block EXTRA_HEAD %}
 <style>
@@ -51,9 +53,9 @@
 {% block BODY_ID %}schedule{% endblock %}
 
 {% block MAIN_CONTENT %}
-<section class="notice">
-Beta version, small changes could be introduced to meet speakers' necessities.
-</section>
+<div class="alert alert--info">
+    Beta version, small changes could be introduced to meet speakers' necessities.
+</div>
 {% schedules_data sids as schedules %}
 <nav id="schedule-navigator">
     <div>NAV</div>
@@ -273,6 +275,3 @@ Beta version, small changes could be introduced to meet speakers' necessities.
 <script src="{{ STATIC_URL }}p5/javascripts/schedule.js"></script>
 {% endblock %}
 
-{% block SPONSORS %}
-{% comment %}Omit sponsors col{% endcomment %}
-{% endblock %}
