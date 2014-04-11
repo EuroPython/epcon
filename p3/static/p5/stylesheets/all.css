@@ -5064,12 +5064,10 @@ body#schedule > .page > .container {
     border: 10px solid white;
     margin: 0 0 40px; }
     .conference-schedules.timetable .schedule h3 {
-      font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
       margin: 0 0 2px;
       text-transform: none; }
     .conference-schedules.timetable .schedule .hhmm {
-      color: #7d6f60;
-      font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif; }
+      color: #7d6f60; }
       .conference-schedules.timetable .schedule .hhmm span {
         color: #301d1d;
         font-size: 14px; }
@@ -5255,11 +5253,7 @@ body#schedule > .page > .container {
       border: 0;
       width: 16px;
       height: 16px;
-      box-shadow: none;
-      -moz-box-shadow: none;
-      -webkit-box-shadow: none;
-      -o-box-shadow: none;
-      -ms-box-shadow: none; }
+      box-shadow: none; }
   .conference-schedules.timetable .event .talk-interest a {
     padding-left: 18px; }
   .conference-schedules.timetable .event .talk-interest a.up {
@@ -5462,7 +5456,6 @@ body#schedule > .page > .container {
   top: 33%;
   left: 0;
   height: 40px;
-  width: 330px;
   background: white;
   padding: 0;
   border: 1px solid #7D6F60;
@@ -5477,11 +5470,11 @@ body#schedule > .page > .container {
   -webkit-transform-origin: center center;
   -o-transform-origin: center center;
   -ms-transform-origin: center center; }
+  #schedule-navigator ul {
+    list-style: none; }
   #schedule-navigator .close {
     position: absolute;
     right: 0; }
-  #schedule-navigator a {
-    border: 0; }
   #schedule-navigator .disabled {
     color: #999;
     opacity: 0.7; }
@@ -5494,24 +5487,33 @@ body#schedule > .page > .container {
     #schedule-navigator > div > div {
       display: none;
       position: absolute;
-      border: 2px solid #7D6F60;
-      transform: rotate(90deg) translate(10px, -10px);
-      -moz-transform: rotate(90deg) translate(10px, -10px);
-      -o-transform: rotate(90deg) translate(10px, -10px);
-      -webkit-transform: rotate(90deg) translate(10px, -10px);
-      -ms-transform: rotate(90deg) translate(10px, -10px);
+      border: 1px solid #bcbab2;
+      transform: rotate(90deg) translate(15px, -10px);
+      -moz-transform: rotate(90deg) translate(15px, -10px);
+      -o-transform: rotate(90deg) translate(15px, -10px);
+      -webkit-transform: rotate(90deg) translate(15px, -10px);
+      -ms-transform: rotate(90deg) translate(15px, -10px);
       transform-origin: left top;
       -moz-transform-origin: left top;
       -webkit-transform-origin: left top;
       -o-transform-origin: left top;
       -ms-transform-origin: left top;
       background: white;
-      padding: 0;
-      width: 150px; }
+      width: 12em; }
       #schedule-navigator > div > div h3 {
-        padding: 5px; }
-      #schedule-navigator > div > div ul li {
-        padding: 0 5px; }
+        padding: 0.375em 7px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-size: 1.4rem;
+        text-transform: uppercase;
+        background: #d4d2cd; }
+      #schedule-navigator > div > div ul {
+        margin: 0;
+        padding: 0; }
+        #schedule-navigator > div > div ul li {
+          padding: 0.1875em 7px;
+          font-size: 16px;
+          font-size: 1.6rem; }
       #schedule-navigator > div > div .tag-list {
         display: none; }
   #schedule-navigator > div:first-child {
@@ -5520,7 +5522,7 @@ body#schedule > .page > .container {
     font-weight: bold;
     padding: 4px 8px; }
   #schedule-navigator > div.selected {
-    background-color: #99886a; }
+    background-color: #807c6f; }
     #schedule-navigator > div.selected > a {
       color: white; }
     #schedule-navigator > div.selected a.filter-active {
@@ -5534,7 +5536,7 @@ body#schedule > .page > .container {
     left: 160px;
     background: white;
     border: 2px solid #7D6F60;
-    padding: 5px;
+    padding: 0.375em 7px;
     line-height: 20px;
     width: 630px; }
     #schedule-navigator .tag-list .tag {
@@ -5737,11 +5739,7 @@ body#schedule > .page > .container {
       .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event[data-intersection=o1].left-intersection-1, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event[data-intersection=o1].left-intersection-1, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event[data-intersection=o1].left-intersection-1 {
         right: 0;
         z-index: 102;
-        box-shadow: -3px 3px 8px 0 #aaa;
-        -moz-box-shadow: -3px 3px 8px 0 #aaa;
-        -webkit-box-shadow: -3px 3px 8px 0 #aaa;
-        -o-box-shadow: -3px 3px 8px 0 #aaa;
-        -ms-box-shadow: -3px 3px 8px 0 #aaa; }
+        box-shadow: -3px 3px 8px 0 #aaa; }
 
 .conference-schedules.timetable.vertical .schedule {
   width: 1400px; }

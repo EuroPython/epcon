@@ -10,7 +10,7 @@
  * SETTINGS AND MIXINS
  */
 $cYellow: #FCFAD9;
-$cBrown: #99886a;
+$cBrown: $neutralcolor;
 $cOrange: #e7880f;
 $cGreen: #d0d8bb;
 $cGreenLight: #D3DB9C;
@@ -49,13 +49,7 @@ $cExtraEventInfoExpanded: $cBeigeDark;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
-@mixin boxshadow($size: 20px, $color: #ccc){
-    box-shadow: inset 0px 0 $size 0px rgba($color, 1);
-    -moz-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
-    -webkit-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
-    -o-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
-    -ms-box-shadow: inset 0px 0 $size 0px rgba($color, 1);
-}
+
 @mixin setTrackColor($color){
     .title{
         background-color: $color;
@@ -227,13 +221,13 @@ body#schedule > .page > .container {
         border: 10px solid white;
         margin: 0 0 40px;
         h3 {
-            font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
+            //font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
             margin: 0 0 2px;
             text-transform: none;
         }
         .hhmm {
             color: #7d6f60;
-            font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
+            //font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
             span {
                 color: #301d1d;
                 font-size: 14px;
@@ -504,10 +498,6 @@ body#schedule > .page > .container {
                 width: 16px;
                 height: 16px;
                 box-shadow: none;
-                -moz-box-shadow: none;
-                -webkit-box-shadow: none;
-                -o-box-shadow: none;
-                -ms-box-shadow: none;
             }
         }
         .talk-interest {
@@ -819,20 +809,22 @@ body#schedule > .page > .container {
     top: 33%;
     left: 0;
     height: 40px;
-    width: 330px;
+    //width: 400px;
     background: white;
     padding: 0;
     border: 1px solid #7D6F60;
     z-index: 2000;
     @include transform(translate(-145px, 0) rotate(-90deg));
 
+    ul {
+        list-style: none;
+    }
+    
     .close {
         position: absolute;
         right: 0;
     }
-    a {
-        border: 0;
-    }
+
     .disabled {
         color: #999;
         opacity: 0.7;
@@ -847,17 +839,26 @@ body#schedule > .page > .container {
         > div {
             display: none;
             position: absolute;
-            border: 2px solid #7D6F60;
-            @include transform(rotate(90deg) translate(10px, -10px), left, top);
-            background: white;
-            padding: 0;
-            width: 150px;
+            border: 1px solid $bordercolor;
+            @include transform(rotate(90deg) translate(15px, -10px), left, top);
+            background: white;            
+            width: 12em;
             h3 {
-                padding: $nav_pad;
+                padding: $baselineheight/4 $gutterwidth/4;
+                margin-bottom: 0;
+                @include font-size(14);
+                text-transform: uppercase;
+                background: $lighterneutralcolor;
             }
             ul {
+                @include zero;
                 li {
-                    padding: 0 $nav_pad;
+                    padding: $baselineheight/8 $gutterwidth/4;
+                    @include font-size(16);                    
+                    a {
+                        // Hover active for all available space
+                        //display: block;
+                    }
                 }
             }
             .tag-list {
@@ -890,7 +891,7 @@ body#schedule > .page > .container {
         left: 160px;
         background: white;
         border: 2px solid #7D6F60;
-        padding: $nav_pad;
+        padding: $baselineheight/4 $gutterwidth/4;;
         line-height: 20px;
         width: 630px;
         .tag {
@@ -1034,10 +1035,6 @@ body#schedule > .page > .container {
                 right: 0;
                 z-index: 102;
                 box-shadow: -3px 3px 8px 0 #aaa;
-                -moz-box-shadow: -3px 3px 8px 0 #aaa;
-                -webkit-box-shadow: -3px 3px 8px 0 #aaa;
-                -o-box-shadow: -3px 3px 8px 0 #aaa;
-                -ms-box-shadow: -3px 3px 8px 0 #aaa;
             }
         }
     }
