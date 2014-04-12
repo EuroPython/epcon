@@ -230,3 +230,24 @@
         margin: 0;
     }
 }
+
+
+// WHO'S COMING  ===============================================================
+
+.person-card {
+    background: $white;
+    padding: $baselineheight/2 $gutterwidth/2;
+    border: 1px solid $bordercolor;
+    border-radius: $borderradius;
+    margin-bottom: $baselineheight;
+
+    .see-more {
+        @extend .meta;
+    }
+    
+    .person-card-picture {
+        float: left;
+        margin-right: $gutterwidth/2;
+    }
+}
+

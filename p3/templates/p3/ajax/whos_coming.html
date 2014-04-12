@@ -1,14 +1,11 @@
 {% load conference p3 %}
 {% p3_profiles_data pids as pdata %}
-<div id="people-wrapper" class="clearfix">
-    {% for profile_data in pdata %}
-
-        {% cycle '<div class="row clearfix">' '' '<div class="row even clearfix">' '' %}
-
-        <div class="span-6 {% cycle 'border' 'last' %}">
+<div id="people-wrapper" class="grid-container">
+    {% for profile_data in pdata %} 
+        <div class="grid-50">
             <div id="{{ profile_data.slug }}" class="person-card">
                 <div class="person-card-picture">
-                    <a href="{% url "conference-profile" slug=profile_data.slug %}"><img class="block" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="76" /></a>
+                    <a href="{% url "conference-profile" slug=profile_data.slug %}"><img class="avatar" src="{{ profile_data.image }}" alt="{{ profile_data.name }}" width="76" height="76" /></a>
                 </div>
                 <div class="person-card-profile">
                     <h2>{{ profile_data.name }}</h2>
@@ -22,10 +19,7 @@
 
                         {% if profile_data.twitter %}
                         <dd class="twitter">
-                            <a href="https://twitter.com/intent/user?screen_name={{ profile_data.twitter }}">
-                                <img src="https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png" alt=""/>
-                                Follow @{{ profile_data.twitter }}
-                            </a>
+                            <a href="https://twitter.com/intent/user?screen_name={{ profile_data.twitter }}"><i class="fa fa-twitter"></i>&nbsp;Follow @{{ profile_data.twitter }}</a>
                         </dd>
                         {% endif %}
 
@@ -37,7 +31,7 @@
                         {% endif %}
                     </dl>
                 </div>
-                <div class="person-card-bio cms">
+                <div class="person-card-bio">
                     {% if profile_data.bio %}
                         {% with profile_data.bio|markdown2:"smarty-pants,code-color" as bio %}
                         {% with bio|truncatewords_html:50 as shorted %}
@@ -55,11 +49,11 @@
                 {% if tids %}
                 {% talks_data tids as talks %}
                 <div class="speaker">speaker</div>
-                <div class="person-card-talks cms">
+                <div class="person-card-talks">
                     <h4>Talks</h4>
                     <ul>
                         {% for t in talks %}
-                        <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
+                            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -67,15 +61,13 @@
                 {% endwith %}
                 {% if profile_data.spam_user_message %}
                 <div class="user-message">
-                    <img src="{{ STATIC_URL }}p5/i/icon-mail.png" width="32" />
+                    <i class="fa fa-envelope"></i>
                     <div> </div>
                 </div>
                 {% endif %}
             </div>
         </div>
-
-        {% cycle '' '</div>' %}
-
+        {% cycle '' '<br class="clear" />' %}        
     {% endfor %}
-</div>
-<script type="text/javascript" src="{{ STATIC_URL }}p5/j/profile_box.js"></script>
+</div><!-- /grid-container -->
+<script src="{{ STATIC_URL }}p5/javascripts/profile_box.js"></script>

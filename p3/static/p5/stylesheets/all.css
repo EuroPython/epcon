@@ -13,7 +13,7 @@ URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 */
 @import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
 /* About $basefontsize*1.5 */
-html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .talk-speakers, .ticket-footer, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+html, body, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, .meta, #talk-voting .talk-speakers, .person-card .see-more, .ticket-footer, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -117,9 +117,9 @@ figure {
     font-style: italic;
     color: #656257; }
 
-.meta, #talk-voting .talk-speakers {
+.meta, #talk-voting .talk-speakers, .person-card .see-more {
   color: #807c6f; }
-  .meta a:link, #talk-voting .talk-speakers a:link, .meta a:visited, #talk-voting .talk-speakers a:visited {
+  .meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited {
     color: #807c6f; }
 
 .tag {
@@ -143,7 +143,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   color: inherit;
   text-rendering: optimizelegibility; }
-  h1 small, h1 .meta, h1 #talk-voting .talk-speakers, #talk-voting h1 .talk-speakers, h1 .ticket-footer, h2 small, h2 .meta, h2 #talk-voting .talk-speakers, #talk-voting h2 .talk-speakers, h2 .ticket-footer, h3 small, h3 .meta, h3 #talk-voting .talk-speakers, #talk-voting h3 .talk-speakers, h3 .ticket-footer, h4 small, h4 .meta, h4 #talk-voting .talk-speakers, #talk-voting h4 .talk-speakers, h4 .ticket-footer, h5 small, h5 .meta, h5 #talk-voting .talk-speakers, #talk-voting h5 .talk-speakers, h5 .ticket-footer, h6 small, h6 .meta, h6 #talk-voting .talk-speakers, #talk-voting h6 .talk-speakers, h6 .ticket-footer {
+  h1 small, h1 .meta, h1 #talk-voting .talk-speakers, #talk-voting h1 .talk-speakers, h1 .person-card .see-more, .person-card h1 .see-more, h1 .ticket-footer, h2 small, h2 .meta, h2 #talk-voting .talk-speakers, #talk-voting h2 .talk-speakers, h2 .person-card .see-more, .person-card h2 .see-more, h2 .ticket-footer, h3 small, h3 .meta, h3 #talk-voting .talk-speakers, #talk-voting h3 .talk-speakers, h3 .person-card .see-more, .person-card h3 .see-more, h3 .ticket-footer, h4 small, h4 .meta, h4 #talk-voting .talk-speakers, #talk-voting h4 .talk-speakers, h4 .person-card .see-more, .person-card h4 .see-more, h4 .ticket-footer, h5 small, h5 .meta, h5 #talk-voting .talk-speakers, #talk-voting h5 .talk-speakers, h5 .person-card .see-more, .person-card h5 .see-more, h5 .ticket-footer, h6 small, h6 .meta, h6 #talk-voting .talk-speakers, #talk-voting h6 .talk-speakers, h6 .person-card .see-more, .person-card h6 .see-more, h6 .ticket-footer {
     font-weight: normal;
     line-height: 1;
     color: #bcbab2; }
@@ -205,7 +205,7 @@ address {
   font-size: 1.8rem;
   line-height: 1.5em; }
 
-small, .meta, #talk-voting .talk-speakers, .ticket-footer {
+small, .meta, #talk-voting .talk-speakers, .person-card .see-more, .ticket-footer {
   font-size: 15px;
   font-size: 1.5rem; }
 
@@ -236,18 +236,18 @@ blockquote {
   padding: 14px;
   background-color: #e0dfdb;
   font-style: normal; }
-  blockquote small:before, blockquote .meta:before, blockquote #talk-voting .talk-speakers:before, #talk-voting blockquote .talk-speakers:before, blockquote .ticket-footer:before {
+  blockquote small:before, blockquote .meta:before, blockquote #talk-voting .talk-speakers:before, #talk-voting blockquote .talk-speakers:before, blockquote .person-card .see-more:before, .person-card blockquote .see-more:before, blockquote .ticket-footer:before {
     content: '\00A0 \2014'; }
-  blockquote small:after, blockquote .meta:after, blockquote #talk-voting .talk-speakers:after, #talk-voting blockquote .talk-speakers:after, blockquote .ticket-footer:after {
+  blockquote small:after, blockquote .meta:after, blockquote #talk-voting .talk-speakers:after, #talk-voting blockquote .talk-speakers:after, blockquote .person-card .see-more:after, .person-card blockquote .see-more:after, blockquote .ticket-footer:after {
     content: ''; }
   blockquote.pull-right {
     float: right;
     background-color: transparent; }
-    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .talk-speakers, #talk-voting blockquote.pull-right .talk-speakers, blockquote.pull-right .ticket-footer {
+    blockquote.pull-right p, blockquote.pull-right small, blockquote.pull-right .meta, blockquote.pull-right #talk-voting .talk-speakers, #talk-voting blockquote.pull-right .talk-speakers, blockquote.pull-right .person-card .see-more, .person-card blockquote.pull-right .see-more, blockquote.pull-right .ticket-footer {
       text-align: right; }
-    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .talk-speakers:before, #talk-voting blockquote.pull-right .talk-speakers:before, blockquote.pull-right .ticket-footer:before {
+    blockquote.pull-right small:before, blockquote.pull-right .meta:before, blockquote.pull-right #talk-voting .talk-speakers:before, #talk-voting blockquote.pull-right .talk-speakers:before, blockquote.pull-right .person-card .see-more:before, .person-card blockquote.pull-right .see-more:before, blockquote.pull-right .ticket-footer:before {
       content: ''; }
-    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .talk-speakers:after, #talk-voting blockquote.pull-right .talk-speakers:after, blockquote.pull-right .ticket-footer:after {
+    blockquote.pull-right small:after, blockquote.pull-right .meta:after, blockquote.pull-right #talk-voting .talk-speakers:after, #talk-voting blockquote.pull-right .talk-speakers:after, blockquote.pull-right .person-card .see-more:after, .person-card blockquote.pull-right .see-more:after, blockquote.pull-right .ticket-footer:after {
       content: '\00A0 \2014'; }
   blockquote cite {
     font-style: normal; }
@@ -4855,6 +4855,16 @@ body > div.draft {
 #form-ticket-edit ul {
   margin: 0; }
 
+.person-card {
+  background: white;
+  padding: 0.75em 14px;
+  border: 1px solid #bcbab2;
+  border-radius: 4px;
+  margin-bottom: 1.5em; }
+  .person-card .person-card-picture {
+    float: left;
+    margin-right: 14px; }
+
 div.rateit {
   display: inline-block;
   position: relative;
@@ -6051,7 +6061,7 @@ header {
     margin: 0.375em auto;
     letter-spacing: 1px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
-  .badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .ticket-footer {
+  .badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .person-card .see-more, .person-card .badge .see-more, .badge .ticket-footer {
     color: #807c6f;
     margin-bottom: 0; }
   .badge .fa {
