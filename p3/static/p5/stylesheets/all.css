@@ -5250,9 +5250,9 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event .talk-interest a {
     padding-left: 18px; }
   .conference-schedules.timetable .event .talk-interest a.up {
-    background: transparent url(../i/star-on-16.png) no-repeat left center; }
+    background: transparent url(../images/star-on-16.png) no-repeat left center; }
   .conference-schedules.timetable .event .talk-interest a.up.active {
-    background: transparent url(../i/star-off-16.png) no-repeat left center; }
+    background: transparent url(../images/star-off-16.png) no-repeat left center; }
   .conference-schedules.timetable .event.exposed .tools {
     background: white;
     bottom: 0;
@@ -5416,6 +5416,8 @@ body#schedule > .page > .container {
   .conference-schedules.timetable .event.interest-down {
     opacity: .7;
     background: #999; }
+  .conference-schedules.timetable .event.highlighted {
+    box-shadow: 0px 0px 60px #d0d8bb; }
   .conference-schedules.timetable .event.dimmed {
     opacity: 0.4;
     background: rgba(212, 210, 205, 0.3); }
@@ -5453,11 +5455,11 @@ body#schedule > .page > .container {
   padding: 0;
   border: 1px solid #7D6F60;
   z-index: 2000;
-  transform: translate(-145px, 0) rotate(-90deg);
-  -moz-transform: translate(-145px, 0) rotate(-90deg);
-  -o-transform: translate(-145px, 0) rotate(-90deg);
-  -webkit-transform: translate(-145px, 0) rotate(-90deg);
-  -ms-transform: translate(-145px, 0) rotate(-90deg);
+  transform: translate(-125px, 0) rotate(-90deg);
+  -moz-transform: translate(-125px, 0) rotate(-90deg);
+  -o-transform: translate(-125px, 0) rotate(-90deg);
+  -webkit-transform: translate(-125px, 0) rotate(-90deg);
+  -ms-transform: translate(-125px, 0) rotate(-90deg);
   transform-origin: center center;
   -moz-transform-origin: center center;
   -webkit-transform-origin: center center;
@@ -5719,7 +5721,7 @@ body#schedule > .page > .container {
     .conference-schedules.timetable.vertical-narrow .track[data-track=partner0] .event, .conference-schedules.timetable.vertical-narrow .track[data-track=partner1] .event, .conference-schedules.timetable.vertical-narrow .track[data-track=partner2] .event {
       /*
        * imposto il right (che in questo caso è equivalente a left=0) per
-       * ottenre a costo zero l'apertura della versione "exposed" verso
+       * ottenere a costo zero l'apertura della versione "exposed" verso
        * sinistra (utile perché la colonna partner-program è sulla destra
        * dello schedule)
        */
@@ -5734,12 +5736,10 @@ body#schedule > .page > .container {
         z-index: 102;
         box-shadow: -3px 3px 8px 0 #aaa; }
 
-.conference-schedules.timetable.vertical .schedule {
-  width: 1400px; }
 .conference-schedules.timetable.vertical .schedule > .hhmm {
   float: left;
   width: 40px;
-  height: 730px; }
+  height: 2800px; }
 .conference-schedules.timetable.vertical .schedule:after {
   content: ' ';
   display: block;
@@ -5748,107 +5748,141 @@ body#schedule > .page > .container {
   position: relative;
   float: left;
   width: 190px;
-  height: 730px; }
+  height: 2800px; }
 .conference-schedules.timetable.vertical .event {
   width: 100%; }
 .conference-schedules.timetable.vertical .duration-15 {
-  height: 15px; }
-.conference-schedules.timetable.vertical .duration-30 {
-  height: 30px; }
-.conference-schedules.timetable.vertical .duration-45 {
-  height: 45px; }
-.conference-schedules.timetable.vertical .duration-60 {
   height: 60px; }
-.conference-schedules.timetable.vertical .duration-75 {
-  height: 75px; }
-.conference-schedules.timetable.vertical .duration-90 {
-  height: 90px; }
-.conference-schedules.timetable.vertical .duration-240 {
+.conference-schedules.timetable.vertical .duration-30 {
+  height: 120px; }
+.conference-schedules.timetable.vertical .duration-45 {
+  height: 180px; }
+.conference-schedules.timetable.vertical .duration-60 {
   height: 240px; }
+.conference-schedules.timetable.vertical .duration-75 {
+  height: 300px; }
+.conference-schedules.timetable.vertical .duration-90 {
+  height: 360px; }
+.conference-schedules.timetable.vertical .duration-135 {
+  height: 540px; }
+.conference-schedules.timetable.vertical .duration-150 {
+  height: 600px; }
+.conference-schedules.timetable.vertical .duration-180 {
+  height: 720px; }
+.conference-schedules.timetable.vertical .duration-240 {
+  height: 960px; }
+.conference-schedules.timetable.vertical .duration-270 {
+  height: 1080px; }
+.conference-schedules.timetable.vertical .duration-420 {
+  height: 1680px; }
 .conference-schedules.timetable.vertical .duration-480 {
-  height: 480px; }
+  height: 1920px; }
 .conference-schedules.timetable.vertical .duration-630 {
-  height: 630px; }
+  height: 2520px; }
 .conference-schedules.timetable.vertical .time-0900 {
   top: 40px; }
 .conference-schedules.timetable.vertical .time-0915 {
-  top: 55px; }
-.conference-schedules.timetable.vertical .time-0930 {
-  top: 70px; }
-.conference-schedules.timetable.vertical .time-0945 {
-  top: 85px; }
-.conference-schedules.timetable.vertical .time-1000 {
   top: 100px; }
-.conference-schedules.timetable.vertical .time-1015 {
-  top: 115px; }
-.conference-schedules.timetable.vertical .time-1030 {
-  top: 130px; }
-.conference-schedules.timetable.vertical .time-1045 {
-  top: 145px; }
-.conference-schedules.timetable.vertical .time-1100 {
+.conference-schedules.timetable.vertical .time-0930 {
   top: 160px; }
-.conference-schedules.timetable.vertical .time-1115 {
-  top: 175px; }
-.conference-schedules.timetable.vertical .time-1130 {
-  top: 190px; }
-.conference-schedules.timetable.vertical .time-1145 {
-  top: 205px; }
-.conference-schedules.timetable.vertical .time-1200 {
+.conference-schedules.timetable.vertical .time-0945 {
   top: 220px; }
-.conference-schedules.timetable.vertical .time-1215 {
-  top: 235px; }
-.conference-schedules.timetable.vertical .time-1230 {
-  top: 250px; }
-.conference-schedules.timetable.vertical .time-1245 {
-  top: 265px; }
-.conference-schedules.timetable.vertical .time-1300 {
+.conference-schedules.timetable.vertical .time-1000 {
   top: 280px; }
-.conference-schedules.timetable.vertical .time-1315 {
-  top: 295px; }
-.conference-schedules.timetable.vertical .time-1330 {
-  top: 310px; }
-.conference-schedules.timetable.vertical .time-1345 {
-  top: 325px; }
-.conference-schedules.timetable.vertical .time-1400 {
+.conference-schedules.timetable.vertical .time-1015 {
   top: 340px; }
-.conference-schedules.timetable.vertical .time-1415 {
-  top: 355px; }
-.conference-schedules.timetable.vertical .time-1430 {
-  top: 370px; }
-.conference-schedules.timetable.vertical .time-1445 {
-  top: 385px; }
-.conference-schedules.timetable.vertical .time-1500 {
+.conference-schedules.timetable.vertical .time-1030 {
   top: 400px; }
-.conference-schedules.timetable.vertical .time-1515 {
-  top: 415px; }
-.conference-schedules.timetable.vertical .time-1530 {
-  top: 430px; }
-.conference-schedules.timetable.vertical .time-1545 {
-  top: 445px; }
-.conference-schedules.timetable.vertical .time-1600 {
+.conference-schedules.timetable.vertical .time-1045 {
   top: 460px; }
-.conference-schedules.timetable.vertical .time-1615 {
-  top: 475px; }
-.conference-schedules.timetable.vertical .time-1630 {
-  top: 490px; }
-.conference-schedules.timetable.vertical .time-1645 {
-  top: 505px; }
-.conference-schedules.timetable.vertical .time-1700 {
+.conference-schedules.timetable.vertical .time-1100 {
   top: 520px; }
-.conference-schedules.timetable.vertical .time-1715 {
-  top: 535px; }
-.conference-schedules.timetable.vertical .time-1730 {
-  top: 550px; }
-.conference-schedules.timetable.vertical .time-1745 {
-  top: 565px; }
-.conference-schedules.timetable.vertical .time-1800 {
+.conference-schedules.timetable.vertical .time-1115 {
   top: 580px; }
+.conference-schedules.timetable.vertical .time-1130 {
+  top: 640px; }
+.conference-schedules.timetable.vertical .time-1145 {
+  top: 700px; }
+.conference-schedules.timetable.vertical .time-1200 {
+  top: 760px; }
+.conference-schedules.timetable.vertical .time-1215 {
+  top: 820px; }
+.conference-schedules.timetable.vertical .time-1230 {
+  top: 880px; }
+.conference-schedules.timetable.vertical .time-1245 {
+  top: 940px; }
+.conference-schedules.timetable.vertical .time-1300 {
+  top: 1000px; }
+.conference-schedules.timetable.vertical .time-1315 {
+  top: 1060px; }
+.conference-schedules.timetable.vertical .time-1330 {
+  top: 1120px; }
+.conference-schedules.timetable.vertical .time-1345 {
+  top: 1180px; }
+.conference-schedules.timetable.vertical .time-1400 {
+  top: 1240px; }
+.conference-schedules.timetable.vertical .time-1415 {
+  top: 1300px; }
+.conference-schedules.timetable.vertical .time-1430 {
+  top: 1360px; }
+.conference-schedules.timetable.vertical .time-1445 {
+  top: 1420px; }
+.conference-schedules.timetable.vertical .time-1500 {
+  top: 1480px; }
+.conference-schedules.timetable.vertical .time-1515 {
+  top: 1540px; }
+.conference-schedules.timetable.vertical .time-1530 {
+  top: 1600px; }
+.conference-schedules.timetable.vertical .time-1545 {
+  top: 1660px; }
+.conference-schedules.timetable.vertical .time-1600 {
+  top: 1720px; }
+.conference-schedules.timetable.vertical .time-1615 {
+  top: 1780px; }
+.conference-schedules.timetable.vertical .time-1630 {
+  top: 1840px; }
+.conference-schedules.timetable.vertical .time-1645 {
+  top: 1900px; }
+.conference-schedules.timetable.vertical .time-1700 {
+  top: 1960px; }
+.conference-schedules.timetable.vertical .time-1715 {
+  top: 2020px; }
+.conference-schedules.timetable.vertical .time-1730 {
+  top: 2080px; }
+.conference-schedules.timetable.vertical .time-1745 {
+  top: 2140px; }
+.conference-schedules.timetable.vertical .time-1800 {
+  top: 2200px; }
 .conference-schedules.timetable.vertical .time-1815 {
-  top: 595px; }
+  top: 2260px; }
 .conference-schedules.timetable.vertical .time-1830 {
-  top: 610px; }
+  top: 2320px; }
+.conference-schedules.timetable.vertical .time-1900 {
+  top: 2440px; }
+.conference-schedules.timetable.vertical .time-1915 {
+  top: 2500px; }
 .conference-schedules.timetable.vertical .time-1930 {
-  top: 670px; }
+  top: 2560px; }
+.conference-schedules.timetable.vertical .time-1945 {
+  top: 2620px; }
+.conference-schedules.timetable.vertical .time-2000 {
+  top: 2680px; }
+.conference-schedules.timetable.vertical .time-2015 {
+  top: 2740px; }
+.conference-schedules.timetable.vertical .time-2030 {
+  top: 2800px; }
+.conference-schedules.timetable.vertical .time-2045 {
+  top: 2860px; }
+.conference-schedules.timetable.vertical .time-2100 {
+  top: 2920px; }
+.conference-schedules.timetable.vertical .time-2115 {
+  top: 2980px; }
+.conference-schedules.timetable.vertical .time-2130 {
+  top: 3040px; }
+.conference-schedules.timetable.vertical .time-2145 {
+  top: 3100px; }
+.conference-schedules.timetable.vertical .time-2200 {
+  top: 3160px; }
 .conference-schedules.timetable.vertical .tracks-1 {
   width: 190px; }
 .conference-schedules.timetable.vertical .tracks-2 {

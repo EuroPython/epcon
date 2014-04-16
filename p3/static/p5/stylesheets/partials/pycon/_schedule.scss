@@ -479,10 +479,10 @@ body#schedule > .page > .container {
                 padding-left: 18px;
             }
             a.up {
-                background: transparent url(../i/star-on-16.png) no-repeat left center;
+                background: transparent url(../images/star-on-16.png) no-repeat left center;
             }
             a.up.active {
-                background: transparent url(../i/star-off-16.png) no-repeat left center;
+                background: transparent url(../images/star-off-16.png) no-repeat left center;
             }
         }
         &.exposed {
@@ -733,7 +733,7 @@ body#schedule > .page > .container {
 
     /* risultato di una ricerca */
     .event.highlighted {
-        //@include boxshadow(59px, $cGreen);
+        box-shadow: 0px 0px 60px $cGreen;
     }
 
     /* escluso da una ricerca */
@@ -788,7 +788,7 @@ body#schedule > .page > .container {
     padding: 0;
     border: 1px solid #7D6F60;
     z-index: 2000;
-    @include transform(translate(-145px, 0) rotate(-90deg));
+    @include transform(translate(-125px, 0) rotate(-90deg));
 
     ul {
         list-style: none;
@@ -989,7 +989,7 @@ body#schedule > .page > .container {
         .event {
             /*
              * imposto il right (che in questo caso è equivalente a left=0) per
-             * ottenre a costo zero l'apertura della versione "exposed" verso
+             * ottenere a costo zero l'apertura della versione "exposed" verso
              * sinistra (utile perché la colonna partner-program è sulla destra
              * dello schedule)
              */
@@ -1016,11 +1016,11 @@ body#schedule > .page > .container {
 
 .conference-schedules.timetable.vertical {
     $trackW: 190px;
-    $slot15: 15px;
+    $slot15: 60px;
     $event0: 40px;
-    $height: $event0 + $slot15 * 42 + 60;
+    $height: $event0 + $slot15 * 45 + 60;
     .schedule {
-        width: 1400px;
+        //width: 1400px;
     }
     .schedule > .hhmm {
         float: left;
@@ -1046,7 +1046,12 @@ body#schedule > .page > .container {
     .duration-60 { height: $slot15*4; }
     .duration-75 { height: $slot15*5; }
     .duration-90 { height: $slot15*6; }
+    .duration-135 { height: $slot15*9; }
+    .duration-150 { height: $slot15*10; }
+    .duration-180 { height: $slot15*12; }
     .duration-240 { height: $slot15*16; }
+    .duration-270 { height: $slot15*18; }
+    .duration-420 { height: $slot15*28; }
     .duration-480 { height: $slot15*32; }
     .duration-630 { height: $slot15*42; }
     .time-0900 { top: $event0 + $slot15 * 0; }
@@ -1088,7 +1093,19 @@ body#schedule > .page > .container {
     .time-1800 { top: $event0 + $slot15 * 36; }
     .time-1815 { top: $event0 + $slot15 * 37; }
     .time-1830 { top: $event0 + $slot15 * 38; }
+    .time-1900 { top: $event0 + $slot15 * 40; }
+    .time-1915 { top: $event0 + $slot15 * 41; }
     .time-1930 { top: $event0 + $slot15 * 42; }
+    .time-1945 { top: $event0 + $slot15 * 43; }
+    .time-2000 { top: $event0 + $slot15 * 44; }
+    .time-2015 { top: $event0 + $slot15 * 45; }
+    .time-2030 { top: $event0 + $slot15 * 46; }
+    .time-2045 { top: $event0 + $slot15 * 47; }
+    .time-2100 { top: $event0 + $slot15 * 48; }
+    .time-2115 { top: $event0 + $slot15 * 49; }
+    .time-2130 { top: $event0 + $slot15 * 50; }
+    .time-2145 { top: $event0 + $slot15 * 51; }
+    .time-2200 { top: $event0 + $slot15 * 52; }
     .tracks-1 { width: $trackW * 1; }
     .tracks-2 { width: $trackW * 2; }
     .tracks-3 { width: $trackW * 3; }

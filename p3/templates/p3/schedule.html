@@ -86,6 +86,7 @@
             </ul>
         </div>
     </div>
+    <!--
     <div>
         <a href="#">Filters</a>
         <div>
@@ -118,6 +119,7 @@
             </ul>
         </div>
     </div>
+    -->
 </nav>
 
 {% comment %}
@@ -157,7 +159,7 @@
 </nav>
 {% endcomment %}
 <div class="page clearfix">
-    <div class="conference-schedules timetable vertical-narrow"  data-conference="{{ conference }}">
+    <div class="conference-schedules timetable vertical"  data-conference="{{ conference }}">
     {% for sid, timet in timetables %}
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% with timet|timetable_remove_first:"break" as tt %}
@@ -258,6 +260,7 @@
         </div>
         {% endwith %}
         {% endwith %}
+        <div></div>
     {% endfor %}
     </div>
 </div>

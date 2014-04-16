@@ -210,7 +210,7 @@ function highlighter(mode, option) {
         .children('div')
             .prepend('' +
                 '<div class="close">' +
-                '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
+                '   <a href="#"><img src="' + STATIC_URL + 'p5/images/close.png" width="24" /></a>' +
                 '</div>')
             .find('.close')
                 .bind('click', function(ev) {
@@ -555,7 +555,7 @@ function highlighter(mode, option) {
         .filter(function() { return !!$(this).attr('data-talk') || $('.abstract', this).length; })
             .prepend('' +
                 '<div class="maximized close-event">' +
-                '   <a href="#"><img src="' + STATIC_URL + 'p5/i/close.png" width="24" /></a>' +
+                '   <a href="#"><img src="' + STATIC_URL + 'p5/images/close.png" width="24" /></a>' +
                 '</div>')
             .bind('click', function(ev) {
                 var e = $(this);
