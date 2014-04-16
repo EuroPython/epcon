@@ -769,7 +769,7 @@ def expected_attendance(conference):
     vals = data.values()
     max_score = max([ x['score'] for x in vals ])
     for x in vals:
-        x['score_normalized'] = x['score'] / max_score
+        x['score_normalized'] = x['score'] / (max_score or 1)
     return data
 
 def _i_expected_attendance(sender, **kw):
