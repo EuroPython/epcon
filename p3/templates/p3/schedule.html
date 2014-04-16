@@ -3,53 +3,6 @@
 
 {% block PAGE_TITLE %}{% trans "Schedule" %}{% endblock %}
 
-{% block EXTRA_HEAD %}
-<style>
-{% comment %}
-/* layout */
-.horizontal .hhmm { height: 20px; }
-.horizontal.schedule { width: 3000px; }
-.horizontal .track { position: relative; height: 75px; }
-.horizontal .event.duration-15 { width: 50px; }
-.horizontal .event.duration-30 { width: 100px; }
-.horizontal .event.duration-45 { width: 150px; }
-.horizontal .event.duration-60 { width: 200px; }
-.horizontal .event.duration-75 { width: 250px; }
-.horizontal .event.duration-90 { width: 300px; }
-.horizontal .event.duration-240 { width: 800px; }
-.horizontal .event.duration-480 { width: 1600px; }
-.horizontal .time-0900 { left: 0; }
-.horizontal .time-0930 { left: 100px; }
-.horizontal .time-0945 { left: 150px; }
-.horizontal .time-1030 { left: 300px; }
-.horizontal .time-1115 { left: 450px; }
-.horizontal .time-1215 { left: 650px; }
-.horizontal .time-1300 { left: 800px; }
-.horizontal .time-1315 { left: 850px; }
-.horizontal .time-1430 { left: 1100px; }
-.horizontal .time-1530 { left: 1300px; }
-.horizontal .time-1630 { left: 1500px; }
-.horizontal .time-1715 { left: 1650px; }
-.horizontal .time-1815 { left: 1850px; }
-.horizontal .time-1830 { left: 1900px; }
-.horizontal .time-1930 { left: 2100px; }
-.horizontal .event.tracks-1 { height: 75px; }
-.horizontal .event.tracks-2 { height: 150px; }
-.horizontal .event.tracks-3 { height: 225px; }
-.horizontal .event.tracks-4 { height: 300px; }
-.horizontal .event.tracks-5 { height: 375px; }
-.horizontal .event.tracks-6 { height: 450px; }
-.horizontal .event.tracks-7 { height: 525px; }
-.horizontal .event.tracks-8 { height: 600px; }
-.horizontal .track .title {
-    position: absolute;
-    left: -40px;
-}
-{% endcomment %}
-
-</style>
-{% endblock %}
-
 {% block BODY_ID %}schedule{% endblock %}
 
 {% block MAIN_CONTENT %}
@@ -86,7 +39,7 @@
             </ul>
         </div>
     </div>
-    <!--
+    {% comment %}
     <div>
         <a href="#">Filters</a>
         <div>
@@ -119,7 +72,7 @@
             </ul>
         </div>
     </div>
-    -->
+    {% endcomment %}
 </nav>
 
 {% comment %}
@@ -164,99 +117,109 @@
         {% with schedules|attrib_:forloop.counter0 as sdata %}
         {% with timet|timetable_remove_first:"break" as tt %}
         <div id="{{ sdata.slug }}" class="schedule">
-            <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
-            <div class="hhmm">
-                <div>Track</div>
-                {% for time_, events in tt.iterOnTimes %}
-                {% with events|attrib_:"tags"|eval_:"set(sum(map(list, x), []))" as tlist %}
-                {% comment %}Se gli eventi sono solo special non metto l'ora (è ripetuta nel testo){% endcomment %}
-                {% if tlist|length > 1 or "special" not in tlist %}
-                <div class="time-{{ time_|time:"Hi" }}"><span>{{ time_|time:"H" }}</span>:{{ time_|time:"i" }}</div>
-                {% endif %}
-                {% endwith %}
-                {% endfor %}
+            <div class="schedule__title">
+                <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             </div>
-            {% for track, events in tt.iterOnTracks %}
-            <div class="track" data-track="{{ track }}">
-                <div class="title">{{ sdata.tracks|attrib_:track|attrib_:"title"|safe }}</div>
-                {% for e in events %}
-                {% if e.tracks|length == 1 or e.tracks.0 == track %}
-                <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if e.bookable %} bookable{% endif %}" data-id="{{ e.id }}"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}{% if e.intersection %} data-intersection="o{{ e.intersection }}"{% endif %}{% if "partner-program" in e.tags %} data-fare="{{ e.fare }}"{% endif %}>
-                    {% if e.talk %}
-                    <div class="speakers">
-                        <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
-                        {% for s in e.talk.speakers %}
-                        <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </div>
-                    <h3 class="name"><a href="{% url "conference-talk" slug=e.talk.slug %}">{{ e.name }}</a></h3>
-                    <div class="maximized all-tags">
-                        {% for tag in e.talk.tags %}<a class="tag">{{ tag }}</a>{% endfor %}
-                    </div>
-                    <div class="maximized abstract"> </div>
-                    {% else %}
-                    {% if not e.abstract %}
-                    <h3 class="name">
-                        {% if "special" in e.tags %}
-                        <div class="hhmm"><span>{{ e.time|time:"H" }}</span>:{{ e.time|time:"i" }}</div>
-                        {% endif %}
-                        {{ e.name|safe }}
-                    </h3>
-                    {% else %}
-                    <h3 class="name"><a href="#">{{ e.name|safe }}</a></h3>
-                    <div class="maximized abstract">{{ e.abstract|safe }}</div>
-                    {% endif %}
-                    {% if "poster" in e.tags %}
-                        {% conference_talks type="p"  as posters %}
-                        <ul>
-                            {% for t in posters %}
-                            <li>
-                            <a href="{% url "conference-talk" slug=t.slug %}" title="by {% for s in t.speakers %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">{{ t.title }}</a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% endif %}
-                    <div class="status-bar">
-                        {% if e.talk %}
-                            <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
-                        {% endif %}
-                        <div class="tools">
-                            {% comment %}
-                            {% if ref in overbooked %}
-                            <div class="room-full">
-                                <img src="{{ STATIC_URL }}p5/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
-                            </div>
-                            {% endif %}
-                            {% endcomment %}
-                            {% if "recruiting" in e.tags or "lightning" in e.tags or "poster" in e.tags %}
-                            <div class="toggle-notice">&nbsp;</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if "recruiting" in e.tags %}
-                    <div class="notice">
-                        <h3>Recruiting session</h3>
-                        <p>Are you a professional looking for a job? Is your company looking for proficient programmers? EuroPython is your greatest opportunity to hire the best Python programmers! <a href="/recruiting">More details</a></p>
-                    </div>
-                    {% endif %}
-                    {% if "lightning" in e.tags %}
-                    <div class="notice">
-                        <h3>Lightning talks</h3>
-                        <p>A lightning talk is a short talk, typically only five minutes in duration, providing an opportunity for participants to deliver a presentation on a subject of their choosing. <a href="/talks/lightning-talks">More details</a></p>
-                    </div>
-                    {% endif %}
-                    {% if "poster" in e.tags %}
-                    <div class="notice">
-                        <h3>Poster session</h3>
-                        <p>We are glad to introduce a poster session at EuroPython for the first time, to provide an alternative and innovative way to discuss and share your experiences with other people. <a href="/poster-session">More details</a></p>
-                    </div>
-                    {% endif %}
+            <div class="schedule__header">
+                <div class="schedule__header--hhmm">Track</div>
+                {% for track, events in tt.iterOnTracks %}
+                <div class="schedule__header--track" data-track="{{ track }}">
+                    {{ sdata.tracks|attrib_:track|attrib_:"title"|safe }}
                 </div>
-                {% endif %}
                 {% endfor %}
             </div>
-            {% endfor %}
+            <div class="schedule__body offset-{{ tt.iterOnTimes.next.0.time|time:"Hi" }}">
+                <div class="hhmm">
+                    {% for time_, events in tt.iterOnTimes %}
+                    {% with events|attrib_:"tags"|eval_:"set(sum(map(list, x), []))" as tlist %}
+                    {% comment %}Se gli eventi sono solo special non metto l'ora (è ripetuta nel testo){% endcomment %}
+                    {% if tlist|length > 1 or "special" not in tlist %}
+                    <div class="time-{{ time_|time:"Hi" }}"><span>{{ time_|time:"H" }}</span>:{{ time_|time:"i" }}</div>
+                    {% endif %}
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+                {% for track, events in tt.iterOnTracks %}
+                <div class="track" data-track="{{ track }}">
+                    {% for e in events %}
+                    {% if e.tracks|length == 1 or e.tracks.0 == track %}
+                    <div id="e{{ e.id }}" class="event time-{{ e.time|time:"Hi" }} duration-{{ e.duration }} tracks-{{ e.tracks|length }} {{ e.tags|join:" " }}{% if e.bookable %} bookable{% endif %}" data-id="{{ e.id }}"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}{% if e.intersection %} data-intersection="o{{ e.intersection }}"{% endif %}{% if "partner-program" in e.tags %} data-fare="{{ e.fare }}"{% endif %}>
+                        {% if e.talk %}
+                        <div class="speakers">
+                            <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
+                            {% for s in e.talk.speakers %}
+                            <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h3 class="name"><a href="{% url "conference-talk" slug=e.talk.slug %}">{{ e.name }}</a></h3>
+                        <div class="maximized all-tags">
+                            {% for tag in e.talk.tags %}<a class="tag">{{ tag }}</a>{% endfor %}
+                        </div>
+                        <div class="maximized abstract"> </div>
+                        {% else %}
+                        {% if not e.abstract %}
+                        <h3 class="name">
+                            {% if "special" in e.tags %}
+                            <div class="hhmm"><span>{{ e.time|time:"H" }}</span>:{{ e.time|time:"i" }}</div>
+                            {% endif %}
+                            {{ e.name|safe }}
+                        </h3>
+                        {% else %}
+                        <h3 class="name"><a href="#">{{ e.name|safe }}</a></h3>
+                        <div class="maximized abstract">{{ e.abstract|safe }}</div>
+                        {% endif %}
+                        {% if "poster" in e.tags %}
+                            {% conference_talks type="p"  as posters %}
+                            <ul>
+                                {% for t in posters %}
+                                <li>
+                                <a href="{% url "conference-talk" slug=t.slug %}" title="by {% for s in t.speakers %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">{{ t.title }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% endif %}
+                        <div class="status-bar">
+                            {% if e.talk %}
+                                <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
+                            {% endif %}
+                            <div class="tools">
+                                {% comment %}
+                                {% if ref in overbooked %}
+                                <div class="room-full">
+                                    <img src="{{ STATIC_URL }}p5/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
+                                </div>
+                                {% endif %}
+                                {% endcomment %}
+                                {% if "recruiting" in e.tags or "lightning" in e.tags or "poster" in e.tags %}
+                                <div class="toggle-notice">&nbsp;</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if "recruiting" in e.tags %}
+                        <div class="notice">
+                            <h3>Recruiting session</h3>
+                            <p>Are you a professional looking for a job? Is your company looking for proficient programmers? EuroPython is your greatest opportunity to hire the best Python programmers! <a href="/recruiting">More details</a></p>
+                        </div>
+                        {% endif %}
+                        {% if "lightning" in e.tags %}
+                        <div class="notice">
+                            <h3>Lightning talks</h3>
+                            <p>A lightning talk is a short talk, typically only five minutes in duration, providing an opportunity for participants to deliver a presentation on a subject of their choosing. <a href="/talks/lightning-talks">More details</a></p>
+                        </div>
+                        {% endif %}
+                        {% if "poster" in e.tags %}
+                        <div class="notice">
+                            <h3>Poster session</h3>
+                            <p>We are glad to introduce a poster session at EuroPython for the first time, to provide an alternative and innovative way to discuss and share your experiences with other people. <a href="/poster-session">More details</a></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endwith %}
         {% endwith %}

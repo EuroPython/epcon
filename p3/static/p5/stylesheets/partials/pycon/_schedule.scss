@@ -132,10 +132,48 @@ body#schedule > .page > .container {
     /* centra gli schedule (grazie al display di .schedule) */
     text-align: center;
     .schedule {
-        position: relative;
         /* serve a limitare la larghezza al contenuto*/
         display: inline-block;
-        min-width: 440px;
+
+        .schedule__title {
+        }
+        .schedule__header {
+            div {
+                display: inline-block;
+            }
+        }
+        .schedule__body {
+            min-width: 440px;
+        }
+    }
+    /* z-index madness;
+     * ----------------
+     * Questo blocco serve a creare uno stacking context in modo che titolo ed
+     * header dello schedule siano posti "sopra" (z-index) al body; in questo
+     * modo posso spostare il body usando margin-top e tagliarne l'overflow.
+     *
+     * Vedi: https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Understanding_z_index/The_stacking_context
+     *
+     * La proprietà z-index viene presa in considerazione solo per gli elementi
+     * "posizionati" (il che vuol dire no position static) per questo ho
+     * ripetuto qui le varie position, insieme a questo commento la ripetizione
+     * serva da documentazione.
+     */
+    .schedule {
+        position: relative;
+        overflow: hidden;
+        .schedule__title {
+            position: relative;
+            z-index: 10;
+        }
+        .schedule__header {
+            position: relative;
+            z-index: 10;
+        }
+        .schedule__body {
+            position: relative;
+            z-index: 9;
+        }
     }
     .track {
         /* ripristino il default in modo da minimizzare l'impatto del
@@ -188,7 +226,10 @@ body#schedule > .page > .container {
 
             .minimized { display: none; }
             .maximized { display: block; }
-            span.maximized { display: inline; font-weight: bold; }
+            span.maximized {
+                display: inline;
+                font-weight: bold;
+            }
         }
     }
 }
@@ -197,10 +238,41 @@ body#schedule > .page > .container {
     /*
      * UI
      */
+
+    %track-title {
+        @include font-size(16);
+        min-height: 40px;
+        border: 2px solid $white;
+        box-sizing: border-box;
+        background-color: $cBeige;
+
+        &[data-track=track1],
+        &[data-track=track2],
+        &[data-track=track3],
+        &[data-track=track4],
+        &[data-track=track-ita]{
+            background: $cBeige;
+        }
+        &[data-track=training1], &[data-track=training2]{
+            background: $cTraining;
+        }
+    }
+
     .schedule {
         background: $white;
         border: 10px solid white;
         margin: 0 0 40px;
+    }
+    .schedule__header {
+        &--hhmm {
+            font-size: 11px;
+            font-variant: small-caps;
+        }
+        &--track {
+            @extend %track-title;
+        }
+    }
+    .schedule__body {
         h3 {
             margin: 0 0 2px;
             text-transform: none;
@@ -223,7 +295,7 @@ body#schedule > .page > .container {
                 text-align: left;
                 @include font-size(16);
                 min-height: 40px;
-                border: 2px solid $white;                
+                border: 2px solid $white;
                 box-sizing: border-box;
                 background-color: $cBeige;
                 //background-image: url("img/arrow.png");
@@ -1019,14 +1091,24 @@ body#schedule > .page > .container {
     $slot15: 60px;
     $event0: 40px;
     $height: $event0 + $slot15 * 45 + 60;
-    .schedule {
+    .schedule__header {
+        &--hhmm {
+            width: 40px;
+        }
+        &--track {
+            width: $trackW;
+        }
+    }
+    .schedule__body {
         //width: 1400px;
-    }
-    .schedule > .hhmm {
-        float: left;
-        width: 40px;
         height: $height;
+        > .hhmm {
+            float: left;
+            width: 40px;
+            height: $height;
+        }
     }
+
     .schedule:after {
         content: ' ';
         display: block;
@@ -1054,58 +1136,17 @@ body#schedule > .page > .container {
     .duration-420 { height: $slot15*28; }
     .duration-480 { height: $slot15*32; }
     .duration-630 { height: $slot15*42; }
-    .time-0900 { top: $event0 + $slot15 * 0; }
-    .time-0915 { top: $event0 + $slot15 * 1; }
-    .time-0930 { top: $event0 + $slot15 * 2; }
-    .time-0945 { top: $event0 + $slot15 * 3; }
-    .time-1000 { top: $event0 + $slot15 * 4; }
-    .time-1015 { top: $event0 + $slot15 * 5; }
-    .time-1030 { top: $event0 + $slot15 * 6; }
-    .time-1045 { top: $event0 + $slot15 * 7; }
-    .time-1100 { top: $event0 + $slot15 * 8; }
-    .time-1115 { top: $event0 + $slot15 * 9; }
-    .time-1130 { top: $event0 + $slot15 * 10; }
-    .time-1145 { top: $event0 + $slot15 * 11; }
-    .time-1200 { top: $event0 + $slot15 * 12; }
-    .time-1215 { top: $event0 + $slot15 * 13; }
-    .time-1230 { top: $event0 + $slot15 * 14; }
-    .time-1245 { top: $event0 + $slot15 * 15; }
-    .time-1300 { top: $event0 + $slot15 * 16; }
-    .time-1315 { top: $event0 + $slot15 * 17; }
-    .time-1330 { top: $event0 + $slot15 * 18; }
-    .time-1345 { top: $event0 + $slot15 * 19; }
-    .time-1400 { top: $event0 + $slot15 * 20; }
-    .time-1415 { top: $event0 + $slot15 * 21; }
-    .time-1430 { top: $event0 + $slot15 * 22; }
-    .time-1445 { top: $event0 + $slot15 * 23; }
-    .time-1500 { top: $event0 + $slot15 * 24; }
-    .time-1515 { top: $event0 + $slot15 * 25; }
-    .time-1530 { top: $event0 + $slot15 * 26; }
-    .time-1545 { top: $event0 + $slot15 * 27; }
-    .time-1600 { top: $event0 + $slot15 * 28; }
-    .time-1615 { top: $event0 + $slot15 * 29; }
-    .time-1630 { top: $event0 + $slot15 * 30; }
-    .time-1645 { top: $event0 + $slot15 * 31; }
-    .time-1700 { top: $event0 + $slot15 * 32; }
-    .time-1715 { top: $event0 + $slot15 * 33; }
-    .time-1730 { top: $event0 + $slot15 * 34; }
-    .time-1745 { top: $event0 + $slot15 * 35; }
-    .time-1800 { top: $event0 + $slot15 * 36; }
-    .time-1815 { top: $event0 + $slot15 * 37; }
-    .time-1830 { top: $event0 + $slot15 * 38; }
-    .time-1900 { top: $event0 + $slot15 * 40; }
-    .time-1915 { top: $event0 + $slot15 * 41; }
-    .time-1930 { top: $event0 + $slot15 * 42; }
-    .time-1945 { top: $event0 + $slot15 * 43; }
-    .time-2000 { top: $event0 + $slot15 * 44; }
-    .time-2015 { top: $event0 + $slot15 * 45; }
-    .time-2030 { top: $event0 + $slot15 * 46; }
-    .time-2045 { top: $event0 + $slot15 * 47; }
-    .time-2100 { top: $event0 + $slot15 * 48; }
-    .time-2115 { top: $event0 + $slot15 * 49; }
-    .time-2130 { top: $event0 + $slot15 * 50; }
-    .time-2145 { top: $event0 + $slot15 * 51; }
-    .time-2200 { top: $event0 + $slot15 * 52; }
+
+    @each $hour, $hix in ("09": 0, "10": 1, "11": 2, "12": 3, "13": 4, "14": 5, "15": 6, "16": 7, "17": 8, "18": 9, "19": 10, "20": 11, "21": 12, "22": 13) {
+        @each $minute, $mix in ("00": 0, "15": 1, "30": 2, "45": 3) {
+            .offset-#{$hour}#{$minute} {
+                margin-top: -1 * ($event0 + $slot15 * ($hix * 4 + $mix));
+            }
+            .time-#{$hour}#{$minute} {
+                top: $event0 + $slot15 * ($hix * 4 + $mix);
+            }
+        }
+    }
     .tracks-1 { width: $trackW * 1; }
     .tracks-2 { width: $trackW * 2; }
     .tracks-3 { width: $trackW * 3; }
