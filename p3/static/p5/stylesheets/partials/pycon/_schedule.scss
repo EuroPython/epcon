@@ -185,7 +185,7 @@ body#schedule > .page > .container {
         position: absolute;
         z-index: 100;
     }
-    .event.special { z-index: 101; }
+    .event.special, .event.break { z-index: 101; }
     .hhmm { position: relative; }
     .hhmm > div { position: absolute; }
 
@@ -312,7 +312,7 @@ body#schedule > .page > .container {
             // ma gli eventi della track 1 e della track 2 possono sovrapporsi agli special durante il pranzo
             // per questo devo assicurarmi qui che stiano sopra lo special del pranzo
             .event[class~="tracks-1"]{ z-index: 102; }
-            .event.special{ z-index: 101; }
+            .event.special, .event.break{ z-index: 101; }
         }
 
         .track[data-track=track1],
@@ -720,7 +720,7 @@ body#schedule > .page > .container {
         }
     }
 
-    .event.special {
+    .event.special, .event.break {
         background-color: rgba($cBeige, .6);
         background-image: url(../images/schedule-track-empty.png);
         background-position: bottom left;
@@ -1090,7 +1090,7 @@ body#schedule > .page > .container {
     $trackW: 190px;
     $slot15: 60px;
     $event0: 40px;
-    $height: $event0 + $slot15 * 45 + 60;
+    $height: $event0 + $slot15 * 49;
     .schedule__header {
         &--hhmm {
             width: 40px;
@@ -1137,7 +1137,11 @@ body#schedule > .page > .container {
     .duration-480 { height: $slot15*32; }
     .duration-630 { height: $slot15*42; }
 
-    @each $hour, $hix in ("09": 0, "10": 1, "11": 2, "12": 3, "13": 4, "14": 5, "15": 6, "16": 7, "17": 8, "18": 9, "19": 10, "20": 11, "21": 12, "22": 13) {
+    @each $hour, $hix in (
+                    "08": 0, "09": 1, "10": 2, "11": 3,
+                    "12": 4, "13": 5, "14": 6, "15": 7,
+                    "16": 8, "17": 9, "18": 10, "19": 11,
+                    "20": 12, "21": 13, "22": 14) {
         @each $minute, $mix in ("00": 0, "15": 1, "30": 2, "45": 3) {
             .offset-#{$hour}#{$minute} {
                 margin-top: -1 * ($event0 + $slot15 * ($hix * 4 + $mix));
