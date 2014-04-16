@@ -164,7 +164,7 @@
         <div id="{{ sdata.slug }}" class="schedule">
             <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             <div class="hhmm">
-                <div>TRACK</div>
+                <div>Track</div>
                 {% for time_, events in tt.iterOnTimes %}
                 {% with events|attrib_:"tags"|eval_:"set(sum(map(list, x), []))" as tlist %}
                 {% comment %}Se gli eventi sono solo special non metto l'ora (è ripetuta nel testo){% endcomment %}
@@ -191,7 +191,7 @@
                     <div class="maximized all-tags">
                         {% for tag in e.talk.tags %}<a class="tag">{{ tag }}</a>{% endfor %}
                     </div>
-                    <div class="maximized abstract cms"> </div>
+                    <div class="maximized abstract"> </div>
                     {% else %}
                     {% if not e.abstract %}
                     <h3 class="name">
@@ -202,7 +202,7 @@
                     </h3>
                     {% else %}
                     <h3 class="name"><a href="#">{{ e.name|safe }}</a></h3>
-                    <div class="maximized abstract cms">{{ e.abstract|safe }}</div>
+                    <div class="maximized abstract">{{ e.abstract|safe }}</div>
                     {% endif %}
                     {% if "poster" in e.tags %}
                         {% conference_talks type="p"  as posters %}

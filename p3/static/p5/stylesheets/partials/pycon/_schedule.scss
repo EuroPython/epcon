@@ -15,7 +15,7 @@ $cGreen: #d0d8bb;
 $cGreenLight: #D3DB9C;
 $cGray: #878181;
 $cPetrol: #4895A3;
-$cBeige: #e1dbc5;
+$cBeige: $lighterneutralcolor;
 $cBeigeDark: #4895A3;
 $cPink: #ff93c9;
 $cPinkLight: #FFF0EF;
@@ -42,12 +42,6 @@ $cSprint: #a9cb0f;
 $cTraining: #a4d4d4;
 $cKeynoteBackground: $cGreenLight;
 $cExtraEventInfoExpanded: $cBeigeDark;
-
-.box-sizing{
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
 
 @mixin setTrackColor($color){
     .title{
@@ -137,7 +131,6 @@ body#schedule > .page > .container {
 
     /* centra gli schedule (grazie al display di .schedule) */
     text-align: center;
-    width: 1090px;
     .schedule {
         position: relative;
         /* serve a limitare la larghezza al contenuto*/
@@ -174,24 +167,14 @@ body#schedule > .page > .container {
      */
     .event {
         overflow: hidden;
-
         box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        -o-box-sizing: border-box;
-        -ms-box-sizing: border-box;
         border: 2px solid white;
 
         padding: 3px;
         background: #FCFAD9;
-        font-variant: small-caps;
+        //font-variant: small-caps;
 
-        transition: all 0.4s ease 0s;
-        -moz-transition: all 0.4s ease 0s;
-        -webkit-transition: all 0.4s ease 0s;
-        -o-transition: all 0.4s ease 0s;
-        -ms-transition: all 0.4s ease 0s;
-
+        @include transition(all 0.4s ease);
         .maximized { display: none; }
 
         &.exposed {
@@ -215,18 +198,15 @@ body#schedule > .page > .container {
      * UI
      */
     .schedule {
-        font-size: 0.85em;
-        background: white;
+        background: $white;
         border: 10px solid white;
         margin: 0 0 40px;
         h3 {
-            //font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
             margin: 0 0 2px;
             text-transform: none;
         }
         .hhmm {
             color: #7d6f60;
-            //font: 13px/20px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
             span {
                 color: #301d1d;
                 font-size: 14px;
@@ -240,16 +220,15 @@ body#schedule > .page > .container {
 
         .track {
             .title {
-                font-variant: small-caps;
-                @extend .box-sizing;
-                height: 40px;
-                border: 2px solid #fff;
+                text-align: left;
+                @include font-size(16);
+                min-height: 40px;
+                border: 2px solid $white;                
+                box-sizing: border-box;
                 background-color: $cBeige;
-                padding: 2px;
-                line-height: 11px;
-                background-image: url("img/arrow.png");
-                background-position: bottom center;
-                background-repeat: no-repeat;
+                //background-image: url("img/arrow.png");
+                //background-position: bottom center;
+                //background-repeat: no-repeat;
             }
         }
         .track[data-track=sprint1], .track[data-track=sprint2], .track[data-track=sprint3]{
@@ -309,10 +288,6 @@ body#schedule > .page > .container {
             right: 5px;
         }
         .name {
-            font-variant: small-caps;
-            font-size: 1.3em;
-            border: 0;
-            padding: 0;
             text-align: center;
         }
         /*
@@ -322,6 +297,7 @@ body#schedule > .page > .container {
         .name {
             a {
                 border-bottom: 1px solid #0F2424;
+                @include font-size(14);
             }
         }
         &[data-talk] {
@@ -349,14 +325,13 @@ body#schedule > .page > .container {
         .tag {
             cursor: pointer;
             margin: 0 2px 2px 0;
-            font-size: 10px;
         }
         .speakers{
-            border-bottom: 1px dotted $cBeige;
-            margin-bottom: 5px;
-            line-height: 1.4em;
-            padding-bottom: 3px;
-            opacity: 0.7;
+            @include font-size(12);            
+            line-height: 1.2; // Multiple speakers may wrap, add some air
+            text-transform: uppercase;
+            margin-bottom: $baselineheight/4;
+            a { color: $neutralcolor; }
         }
         &.exposed {
             .hhmm {
@@ -675,7 +650,7 @@ body#schedule > .page > .container {
 
     .event.special {
         background-color: rgba($cBeige, .6);
-        background-image: url(../i/empty-track.png);
+        background-image: url(../images/schedule-track-empty.png);
         background-position: bottom left;
         border-left: none;
         .name {
