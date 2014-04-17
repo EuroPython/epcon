@@ -769,5 +769,6 @@ function highlighter(mode, option) {
         });
     });
     $('.special > *:first-child').verticalAlign();
+    $('.break > *:first-child').verticalAlign();
     $('.poster ul a').truncateText();
 })();
