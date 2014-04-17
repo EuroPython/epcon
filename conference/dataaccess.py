@@ -319,7 +319,11 @@ def talks_data(tids):
     for r in tags:
         preload[r['object_id']]['tags'].add(r['tag__name'])
     for r in abstracts:
-        preload[r.object_id]['abstract'] = r
+        if 'abstract' not in preload[r.object_id]:
+            preload[r.object_id]['abstract'] = r
+        else:
+            if settings.LANGUAGE_CODE.startswith(r.language):
+                preload[r.object_id]['abstract'] = r
     for r in comment_list:
         preload[int(r.object_pk)]['comments'].append(r)
     for r in events:
