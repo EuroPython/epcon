@@ -365,19 +365,22 @@ function highlighter(mode, option) {
     '   </div>' +
     '';
 
+    var EVENT_WIDTH_EXPOSED = 400;
+
     function expose(e) {
+        var schedule = e.parents('.schedule__body');
+        var track = e.parent();
+
+        var offset = track.position().left + EVENT_WIDTH_EXPOSED - schedule.width();
         e.addClass('exposed');
+        if (offset > 0) {
+            e.css('margin-left', -offset + 'px');
+        }
         e.trigger('exposed');
     }
     function unexpose(e) {
         e.removeClass('exposed');
-        var dim = e.data('original');
-        if(dim) {
-            e.width(dim.width);
-            e.height(dim.height);
-            e.css('left', dim.left);
-            e.css('top', dim.top);
-        }
+        e.css('margin-left', 0);
     }
     function event_url(base, evt) {
         var sch = evt.parents('.schedule');
