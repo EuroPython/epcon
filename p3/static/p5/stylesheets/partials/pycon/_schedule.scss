@@ -43,6 +43,11 @@ $cTraining: #a4d4d4;
 $cKeynoteBackground: $cGreenLight;
 $cExtraEventInfoExpanded: $cBeigeDark;
 
+$cEventDefaultBackground : #EFECDF;
+$cEventHighlighted       : #fff373;
+$cEventStarred           : #d7f5fa;
+
+
 @mixin setTrackColor($color){
     .title{
         background-color: $color;
@@ -209,8 +214,7 @@ body#schedule > .page > .container {
         border: 2px solid white;
 
         padding: 3px;
-        background: #FCFAD9;
-        //font-variant: small-caps;
+        background: $cEventDefaultBackground;
 
         @include transition(all 0.4s ease);
         .maximized { display: none; }
@@ -228,7 +232,6 @@ body#schedule > .page > .container {
             .maximized { display: block; }
             span.maximized {
                 display: inline;
-                font-weight: bold;
             }
         }
     }
@@ -241,8 +244,8 @@ body#schedule > .page > .container {
 
     %track-title {
         @include font-size(16);
-        min-height: 40px;
         border: 2px solid $white;
+        padding: $baselineheight/4 0;
         box-sizing: border-box;
         background-color: $cBeige;
 
@@ -264,10 +267,6 @@ body#schedule > .page > .container {
         margin: 0 0 40px;
     }
     .schedule__header {
-        &--hhmm {
-            font-size: 11px;
-            font-variant: small-caps;
-        }
         &--track {
             @extend %track-title;
         }
@@ -278,16 +277,7 @@ body#schedule > .page > .container {
             text-transform: none;
         }
         .hhmm {
-            color: #7d6f60;
-            span {
-                color: #301d1d;
-                font-size: 14px;
-            }
-            >div{
-                /* the first div to name the TRACK line */
-                font-size: 11px;
-                font-variant: small-caps;
-            }
+            @include font-size(14);
         }
 
         .track {
@@ -298,9 +288,6 @@ body#schedule > .page > .container {
                 border: 2px solid $white;
                 box-sizing: border-box;
                 background-color: $cBeige;
-                //background-image: url("img/arrow.png");
-                //background-position: bottom center;
-                //background-repeat: no-repeat;
             }
         }
         .track[data-track=sprint1], .track[data-track=sprint2], .track[data-track=sprint3]{
@@ -376,6 +363,8 @@ body#schedule > .page > .container {
             .name {
                 a {
                     border: none;
+                    @include font-size(16);     
+                    line-height: 1.2; // Talk titles may wrap, add some air
                 }
             }
         }
@@ -386,13 +375,10 @@ body#schedule > .page > .container {
             margin-right: 5px;
         }
         .abstract {
-            font-variant: normal;
-            line-height: 1.5em;
             overflow-y: auto;
             height: 200px;
-            border-top: 1px solid #B0AB63;
-            border-bottom: 1px solid #B0AB63;
-            padding: 2px;
+            background: $white;
+            padding: $baselineheight / 4 $gutterwidth / 2 ;
         }
         .tag {
             cursor: pointer;
@@ -438,9 +424,8 @@ body#schedule > .page > .container {
         &.exposed {
             .name {
                 height: auto;
-                font-weight: bold;
-                margin: 8px 0;
-                font-size: 12px;
+                margin: $baselineheight/2 0;
+                //font-size: 12px;
             }
         }
     }
@@ -507,7 +492,7 @@ body#schedule > .page > .container {
         }
         &.exposed {
             .status-bar {
-                height: 20px;
+                height: $baselineheight;
             }
         }
     }
@@ -633,7 +618,7 @@ body#schedule > .page > .container {
             .info.booked,.info.available,.info.sold-out {
                 @include transform(translate(0px, 0px) rotate(-30deg), left, top);
                 letter-spacing: -0.05em;
-                border: 4px dashed transparent;
+                border: 2px dotted transparent;
                 border-radius: 8px;
                 &:first-line{
                     font-size: 20px;
@@ -794,7 +779,7 @@ body#schedule > .page > .container {
 
     /* starred dall'utente (+1) */
     .event.interest-up {
-        background: #d7f5fa;
+        background: $cEventStarred;
     }
 
     /* downvoted dall'utente (-1) */
@@ -805,7 +790,7 @@ body#schedule > .page > .container {
 
     /* risultato di una ricerca */
     .event.highlighted {
-        box-shadow: 0px 0px 60px $cGreen;
+        background: $cEventHighlighted
     }
 
     /* escluso da una ricerca */

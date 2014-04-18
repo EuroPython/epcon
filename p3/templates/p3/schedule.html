@@ -121,7 +121,7 @@
                 <h2>{{ sdata.date|date:"l, j F Y" }}</h2>
             </div>
             <div class="schedule__header">
-                <div class="schedule__header--hhmm">Track</div>
+                <div class="schedule__header--hhmm">&nbsp;</div>
                 {% for track, events in tt.iterOnTracks %}
                 <div class="schedule__header--track" data-track="{{ track }}">
                     {{ sdata.tracks|attrib_:track|attrib_:"title"|safe }}
