@@ -89,43 +89,46 @@ body#schedule > .page > .container {
     }
 }
 .conference-schedules.list {
-    h2, table {
-        margin: 0;
-    }
+
     .schedule {
-        margin-bottom: 40px;
+        margin-bottom: $baselineheight * 2;
         th {
-            width: 70px;
+            width: 5em;
+            text-align: left;
         }
     }
     .event {
-        line-height: 24px;
         .talk-level, .name {
             display: inline-block;
-            vertical-align: middle;
+            //vertical-align: middle;
         }
+        .name {
+            margin-bottom: $baselineheight / 2;            
+        }
+        
         .talk-level {
-            width: 12px;
-            height: 12px;
+            width: 6px; // Width for colored bar
+            height: $baselineheight;
         }
         .speakers {
             display: inline;
         }
         .video-opener {
             display: inline;
-            height: 24px;
+            height: $baselineheight;
             a {
-                border: 0;
-            }
-            img {
-                vertical-align: middle;
+                border: none;
             }
         }
         .details {
-            padding: 4px;
-            > div {
-                margin-bottom: 10px 0;
+            background: $cEventDefaultBackground;            
+            margin: $baselineheight / 2 0;
+            padding: $baselineheight / 2 $gutterwidth / 2;
+            
+            .abstract {
+                @extend .cms;
             }
+            
         }
     }
 }
