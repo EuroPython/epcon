@@ -1,8 +1,11 @@
 {% extends "p3/base.html" %}
-{% load conference p3 %}
+{% load conference p3 i18n %}
 {% block MAIN_CONTENT %}
-<div class="cms">
-    <h1>{% block CONTENT_TITLE %}Europython schedule{% endblock %}</h1>
+<section class="full-page-height">
+    <div class="grid-container">
+    <div class="grid-100">
+
+    <h1>{% block CONTENT_TITLE %}{% trans 'PyCon schedule' %}{% endblock %}</h1>
     <div class="conference-schedules list"  data-conference="{{ CONFERENCE }}">
     {% schedules_data sids as schedules %}
     {% for sid, timet in timetables %}
@@ -28,11 +31,9 @@
                             </strong>
                         </div>
                         {% if e.talk %}
-                            <div class="talk-level {{ e.talk.level }}">&nbsp;</div>
+                            <span class="talk-level {{ e.talk.level }}">&nbsp;</span>
                             {% if e.talk.teaser_video %}
-                            <div class="video-opener">
-                                <img src="{{ STATIC_URL }}p5/i/tv.png" height="24" alt="" title="teaser video available" />
-                            </div>
+                                <div class="video-opener"><i class="fa fa-youtube-play" title="Teaser video available"></div>
                             {% endif %}
                             <div class="name">
                                 <a href="{% url "conference-talk" slug=e.talk.slug %}">{{ e.name }}</a>
@@ -56,8 +57,12 @@
         {% endwith %}
         {% endwith %}
     {% endfor %}
+    </div><!-- /conference-schedules -->
+    
+    
+    </div><!-- /grid -->
     </div>
-</div>
+</section>
 <script>
 (function() {
     $('.event .name a')
@@ -69,7 +74,7 @@
             else {
                 e.data('loaded', 1);
                 var url = $(this).attr('href') + '.xml';
-                var details = $('<div class="details">loading...</div>')
+                var details = $('<div class="details">Loading...</div>')
                     .appendTo(e);
                 $.ajax({
                     url: url,
@@ -81,7 +86,7 @@
                             .appendTo(details);
                         var v = $('talk teaser_video html', data);
                         if(v.length) {
-                            $('<div class="teaser_video"><h2>Teaser video</h2><div></div></div>')
+                            $('<div class="teaser_video"><h3>Teaser video</h3><div></div></div>')
                                 .appendTo(details)
                                 .find('div')
                                     .html(v.text());
