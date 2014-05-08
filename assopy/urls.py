@@ -1,16 +1,17 @@
 from django.conf import settings as dsettings
 from django.conf.urls import patterns, url, include
-from assopy.forms import LoginForm, PasswordResetForm, SetPasswordForm
+from django.contrib import auth
+from assopy.forms import LoginForm, SetPasswordForm
 
 urlpatterns = patterns('',
     url(r'^login/$', 'django.contrib.auth.views.login', kwargs={ 'authentication_form': LoginForm }),
     url(r'^logout/$', 'django.contrib.auth.views.logout'),
-    url(r'^password_change/$', 'django.contrib.auth.views.password_change'),
+    url(r'^password_change/$', 'django.contrib.auth.views.password_change', name='password_change'),
     url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done', name='password_change_done'),
-    url(r'^password_reset/$', 'django.contrib.auth.views.password_reset', kwargs={ 'password_reset_form': PasswordResetForm }, name='assopy-password-reset'),
-    url(r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
-    url(r'^reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm', kwargs={ 'set_password_form': SetPasswordForm }),
-    url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
+    url(r'^password_reset/$', 'django.contrib.auth.views.password_reset', kwargs={ 'password_reset_form': auth.forms.PasswordResetForm }, name='assopy-password-reset'),
+    url(r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm', kwargs={ 'set_password_form': SetPasswordForm }, name='password_reset_confirm'),
+    url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete', name='password_reset_complete'),
 
     url(r'^new-account/$', 'assopy.views.new_account', name='assopy-new-account'),
     url(r'^new-account/feedback$', 'assopy.views.new_account_feedback', name='assopy-new-account-feedback'),

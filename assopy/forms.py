@@ -45,32 +45,6 @@ class LoginForm(auth.forms.AuthenticationForm):
                 raise forms.ValidationError('This account is inactive.')
         return data
 
-class PasswordResetForm(auth.forms.PasswordResetForm):
-    def clean_email(self):
-        """
-        Validates that a user exists with the given e-mail address.
-        """
-        try:
-            return super(PasswordResetForm, self).clean_email()
-        except forms.ValidationError:
-            if not settings.GENRO_BACKEND:
-                raise
-
-            # v. assopy.auth_backends.EmailBackend
-            if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
-                raise
-            email = self.cleaned_data["email"]
-            rid = genro.users(email=email)['r0']
-            if rid is not None:
-                log.info('"%s" is a remote user; a local user is needed to reset the password', email)
-                # active=True non è un problema, perchè non uso una password e
-                # l'utente non può loggarsi e deve resettarla.
-                user = models.User.objects.create_user(email, assopy_id=rid, active=True, send_mail=False)
-                self.users_cache = auth.models.User.objects.filter(pk=user.user.pk)
-                return email
-            else:
-                raise
-
 class SetPasswordForm(auth.forms.SetPasswordForm):
     def save(self, *args, **kwargs):
         user = super(SetPasswordForm, self).save(*args, **kwargs)
