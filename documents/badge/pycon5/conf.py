@@ -76,7 +76,7 @@ def ticket(image, ticket, utils):
     if ticket.get('staff'):
         color_name = 162, 63, 45
         color_info = 51, 107, 154
-    else:   
+    else:
         color_name = 51, 107, 154
         color_info = 162, 63, 45
 
@@ -86,10 +86,10 @@ def ticket(image, ticket, utils):
         _FONTS['name'].getsize(last_name)[0])
     if name_width > w - 87:
         font = _FONTS['name_small']
-        name_y = 460, 540
+        name_y = 460, 560
     else:
         font = _FONTS['name']
-        name_y = 550, 680
+        name_y = 500, 680
 
     if ticket['badge_image']:
         logo = Image.open(ticket['badge_image'])
