@@ -5,6 +5,7 @@ from collections import defaultdict
 from conference.models import Conference, AttendeeProfile
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from p3 import models as p3models
 
 def conference_ticket_badge(tickets):
     """
@@ -26,7 +27,10 @@ def conference_ticket_badge(tickets):
                 'plugin': os.path.join(settings.OTHER_STUFF, 'badge', t.fare.conference, 'conf.py'),
                 'tickets': [],
             }
-        p3c = t.p3_conference
+        try:
+            p3c = t.p3_conference
+        except p3models.TicketConference.DoesNotExist:
+            p3c = None
         if p3c is None:
             tagline = ''
             days = '1'
