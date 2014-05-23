@@ -213,6 +213,10 @@ def tickets_status(conf, code=None):
             for x in qs:
                 # p3_conference può essere None perché viene costruito lazy al
                 # primo salvataggio del biglietto.
+                try:
+                    x.p3_conference
+                except models.TicketConference.DoesNotExist:
+                    continue
                 if x.p3_conference and x.p3_conference.assigned_to:
                     email = x.p3_conference.assigned_to
                     u = assignees.get(email)
