@@ -329,54 +329,80 @@ admin.site.register(models.Deadline, DeadlineAdmin)
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
-class MultiLingualAdminContent(admin.ModelAdmin):
+class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
+    def __new__(mcs, name, bases, attrs):
+        new_class = super(MultiLingualFormMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
-    multilingual_widget = forms.Textarea
-    
-    def _get_relation_field(self):
-        for name, f in self.model.__dict__.items():
+        multilingual_fields = new_class.multilingual_fields = []
+        model = new_class._meta.model
+        if not model:
+            return new_class
+
+        for name, f in model.__dict__.items():
             if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
                 if f.field.related.parent_model is models.MultilingualContent:
-                    yield name
+                    multilingual_fields.append(name)
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(MultiLingualAdminContent, self).get_form(request, obj, **kwargs)
-        for field_name in self._get_relation_field():
-            if obj:
-                contents =  dict(
-                    (c.language, c.body) for c in getattr(obj, field_name).all() if c.content == field_name
-                )
-            for l, _ in dsettings.LANGUAGES:
-                text = forms.CharField(widget=self.multilingual_widget, required=False)
-                if obj:
-                    text.initial = contents.get(l, '')
-                form.base_fields['%s_%s' % (field_name, l)] = text
-        return form
+        widget = attrs.get('multilingual_widget', forms.Textarea)
+        form_fields = {}
+        for field_name in multilingual_fields:
+            for lang, _ in dsettings.LANGUAGES:
+                text = forms.CharField(widget=widget, required=False)
+                full_name = u'{name}_{lang}'.format(name=field_name, lang=lang)
+                form_fields[full_name] = text
 
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        data = form.cleaned_data
-        for field_name in self._get_relation_field():
-            if change:
-                contents =  dict(
-                    (c.language, c) for c in getattr(obj, field_name).all() if c.content == field_name
-                )
+        new_class.declared_fields.update(form_fields)
+        new_class.base_fields.update(form_fields)
+        return new_class
+
+class MultiLingualForm(forms.ModelForm):
+    __metaclass__ = MultiLingualFormMetaClass
+
+    def __init__(self, *args, **kw):
+        super(MultiLingualForm, self).__init__(*args, **kw)
+        if self.instance:
+            self._init_multilingual_fields()
+
+    def _init_multilingual_fields(self):
+        for field_name in self.multilingual_fields:
+            translations = getattr(self.instance, field_name).filter(content=field_name)
+            for t in translations:
+                form_field = '{name}_{lang}'.format(name=field_name, lang=t.language)
+                self.fields[form_field].initial = t.body
+
+    def _save_translations(self, o):
+        for field_name in self.multilingual_fields:
             for l, _ in dsettings.LANGUAGES:
-                key =  '%s_%s' % (field_name, l)
-                if key in form.fields.keys():
-                    if change:
-                        try:
-                            instance = contents[l]
-                        except KeyError:
-                            instance = models.MultilingualContent()
-                    else:
-                        instance = models.MultilingualContent()
-                    if not instance.id:
-                        instance.content_object = obj
-                        instance.language = l
-                        instance.content = field_name
-                    instance.body = data.get(key, '')
-                    instance.save()
+                form_field = '{name}_{lang}'.format(name=field_name, lang=l)
+                text = self.cleaned_data[form_field]
+                try:
+                    translation = getattr(o, field_name).get(content=field_name, language=l)
+                except models.MultilingualContent.DoesNotExist:
+                    translation = models.MultilingualContent(
+                        content_object=o,
+                        language=l,
+                        content=field_name)
+                translation.body = text
+                translation.save()
+
+    def save(self, commit=True):
+        o = super(MultiLingualForm, self).save(commit=commit)
+        if not commit:
+            base_m2m = self.save_m2m
+            def save_m2m():
+                base_m2m()
+                self._save_translations(o)
+            self.save_m2m = save_m2m
+        else:
+            self._save_translations(o)
+        return o
+
+    @classmethod
+    def for_model(cls, model_class):
+        class Form(cls):
+            class Meta:
+                model = model_class
+        return Form
 
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
@@ -479,7 +505,7 @@ class SpeakerAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Speaker, SpeakerAdmin)
 
-class TalkAdminForm(forms.ModelForm):
+class TalkAdminForm(MultiLingualForm):
     class Meta:
         model = models.Talk
 
@@ -496,7 +522,7 @@ class TalkAdminForm(forms.ModelForm):
             self.cleaned_data['video'] = ''
         return self.cleaned_data['video']
 
-class TalkAdmin(MultiLingualAdminContent):
+class TalkAdmin(admin.ModelAdmin):
     actions = ('do_accept_talks_in_schedule', 'do_speakers_data',)
     list_display = ('title', 'conference', '_speakers', 'duration', 'status', '_slides', '_video')
     list_editable = ('status',)
@@ -924,9 +950,11 @@ class HotelAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Hotel, HotelAdmin)
 
-class DidYouKnowAdmin(MultiLingualAdminContent):
+class DidYouKnowAdmin(admin.ModelAdmin):
     list_display = ('_message', 'visible')
-    
+
+    form = MultiLingualForm.for_model(models.DidYouKnow)
+
     def _message(self, o):
         messages = dict( (c.language, c) for c in o.messages.all() if c.body)
         try:
