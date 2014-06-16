@@ -409,7 +409,7 @@ class SpeakerAdminForm(forms.ModelForm):
         super(SpeakerAdminForm, self).__init__(*args, **kwargs)
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
 
-class SpeakerAdmin(MultiLingualAdminContent):
+class SpeakerAdmin(admin.ModelAdmin):
     list_display = ('_avatar', '_user', '_email')
     search_fields = ('user__first_name', 'user__last_name', 'user__email')
     list_select_related = True
@@ -939,9 +939,9 @@ class DidYouKnowAdmin(MultiLingualAdminContent):
 
 admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 
-class QuoteAdmin(MultiLingualAdminContent):
+class QuoteAdmin(admin.ModelAdmin):
     list_display = ('who', 'conference', '_text')
-    
+
     def _text(self, o):
         return o.text[:80]
 
