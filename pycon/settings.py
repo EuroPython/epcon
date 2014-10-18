@@ -519,7 +519,6 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
 
 CONFERENCE_TICKET_BADGE_ENABLED = True
 CONFERENCE_TICKET_BADGE_PROG_ARGS = ['-e', '0', '-p', 'A4', '-n', '1']
-CONFERENCE_TICKET_BADGE_PROG_ARGS = ['-e', '0', '-n', '4']
 
 def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
     from p3.utils import conference_ticket_badge
