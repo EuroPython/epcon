@@ -4569,6 +4569,18 @@ body > div.draft {
 /* ============================================== */
 /* ! Custom styles for text pulled from the CMS   */
 /* ============================================== */
+.cms .archive .talk, .conference-schedules.list .event .details .abstract .archive .talk {
+  padding: 15px;
+  margin-bottom: 30px; }
+  .cms .archive .talk .abstract p, .conference-schedules.list .event .details .abstract .archive .talk .abstract p {
+    font-size: 80%; }
+  .cms .archive .talk .abstract .tags .tag, .conference-schedules.list .event .details .abstract .archive .talk .abstract .tags .tag {
+    font-size: 60%; }
+  .cms .archive .talk .speakers, .conference-schedules.list .event .details .abstract .archive .talk .speakers {
+    margin-top: 10px; }
+.cms .archive .talk:nth-child(even), .conference-schedules.list .event .details .abstract .archive .talk:nth-child(even) {
+  background: #e0dfdb; }
+
 .cms figure img, .conference-schedules.list .event .details .abstract figure img {
   display: block; }
 

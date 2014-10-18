@@ -31,6 +31,31 @@ body > div.draft {
 
 }
 
+.cms {
+    .archive {
+        .talk {
+            padding: 15px;
+            margin-bottom: 30px;
+            .abstract {
+                p {
+                    font-size: 80%;
+                }
+                .tags {
+                    .tag {
+                        font-size: 60%;
+                    }
+                }
+            }
+            .speakers {
+                margin-top: 10px;
+            }
+        }
+        .talk:nth-child(even) {
+            background: #e0dfdb;
+        }
+    }
+}
+
 .cms figure img {
     display: block;
 }
