@@ -4566,6 +4566,9 @@ body > div.draft {
   background-position: top left, top left;
   background-repeat: repeat-y, repeat; }
 
+.page .splash {
+  border: 0; }
+
 /* ============================================== */
 /* ! Custom styles for text pulled from the CMS   */
 /* ============================================== */

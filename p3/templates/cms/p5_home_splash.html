@@ -19,7 +19,9 @@ section.splash img {
 {% block TEASER %} {% endblock%}
 {% block SPONSORS %} {% endblock %}
 {% block TOP_NAV_BLOCK %} {% endblock %}
-{% block BOTTOM_NAV_BLOCK %} {% endblock %}
+{% block BOTTOM_NAV_BLOCK %}
+    <li><a href="/pycon5/">Pycon <span>5</span></a></li>
+{% endblock %}
 
 {% block MAIN_CONTENT %}
     {% imageplaceholder splash-image as imgsrc %}
@@ -32,31 +34,6 @@ section.splash img {
     {% placeholder text with markItUpMarkdown as text parsed %}
     {% render_page_template text as m %}
     {{ m|markdown }}
-
-    <section class="clearfix">
-        {% post_list count=3 as posts %}
-        <div class="blog border span-6">
-            <h2>From the blog</h2>
-            <ul>
-                {% for post in posts %}
-                {% get_post_data post.id as data %}
-                <li>
-                    <h3><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
-                    <div class="meta">Posted on <b>{{ post.date|date:"M j Y" }}</b>{% if data.comments %} &mdash; <a href="{{ data.url }}#comments">{{ data.comments|length }} comments</a>{% endif %}</div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="home-notice archives span-6 last">
-            <h2>Browse the <span>archives</h2>
-            <ul>
-                <li><a href="/ep2011/">EuroPython <span>2011</span></a></li>
-                <li><a href="/ep2012/">EuroPython <span>2012</span></a></li>
-                <li><a href="/ep2013/">EuroPython <span>2013</span></a></li>
-            </ul>
-        </div>
-    </section>
 {% endblock %}
 
 
