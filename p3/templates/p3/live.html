@@ -58,109 +58,18 @@
     {% endblock %}
     {% block MAIN_CONTENT %}
 <div id="live" class="cms">
-    <h1>EuroPython {{ tracks.0.schedule.date.year }} - Now Live!</h1>
-    {% for t in tracks %}
-    <div class="track" id="{{ t.track }}">
-        <h2>On Track "{{ t.title|safe }}"</h2>
-        <div class="span-4">
-            <div class="metadata"></div>
-        </div>
-        <div class="span-8 last">
-            <div class="video"></div>
-        </div>
+    <h1>Pycon {{ tracks.0.schedule.date.year }} - Now Live!</h1>
+    <div style="text-align: center;">
+        <h2>Track 1</h2>
+        <iframe width="640" height="360" src="https://live.top-ix.org/pycon5/iframe1.html" frameborder="0" allowfullscreen></iframe>
     </div>
-    <hr class="stars" />
-    {% endfor %}
+    <div style="text-align: center;">
+        <h2>Track 2</h2>
+        <iframe width="640" height="360" src="https://live.top-ix.org/pycon5/iframe2.html" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div style="text-align: center;">
+        <h3>Track 3</h3>
+        <iframe width="640" height="360" src="https://live.top-ix.org/pycon5/iframe3.html" frameborder="0" allowfullscreen></iframe>
+    </div>
 </div>
-<script>
-(function() {
-    function update_events_metadata() {
-        $.getJSON('/p3/live/events', function(data) {
-            $.each(data, function(track, evt) {
-                var t = $('#' + track);
-                var meta = t.find('.metadata');
-                var video = t.find('.video');
-                var current = meta.attr('data-event');
-
-                var eid = evt.id || 0;
-                if(current == eid) {
-                    return;
-                }
-                meta.html('');
-                video.html('');
-                if(!eid) {
-                    meta
-                        .append(''
-                            + '<div class="move-along">'
-                            + ' <h1 class="move-along">Nothing to see here. Move Along</h1>'
-                            + ' <div class="speakers"><h4>Presented by:</h4></div>'
-                            + '  <img src="/static/p5/i/nothing-to-see-here.jpg" height="85">'
-                            + '  <div class="name"><a href="https://en.wikipedia.org/wiki/Frank_Drebin">Frank Drebin</a></div>'
-                            + ' </div>'
-                            + '</div>'
-                        )
-                    video.html(evt.embed || '');
-                    meta.attr('data-event', 0);
-                    return;
-                }
-                if(evt.url) {
-                    var title = '<h3 class="title"><a href="' + evt.url + '">' + evt.name + '</a></h3>';
-                }
-                else {
-                    var title = '<h3 class="title">' + evt.name + '</h3>';
-                }
-                var tags = $('<div class="tags"></div>');
-                for(var ix=0, ex=evt.tags.length; ix<ex; ix++) {
-                    tags.append('<span class="tag">' + evt.tags[ix] + '</span>');
-                }
-                meta
-                    .append($(title))
-                    .append(tags)
-                    .append(''
-                        + '<div class="time">'
-                        + '<img src="/static/p5/i/icon-clock.png">'
-                        + ' Start: ' + evt.start.split(' ')[1].slice(0, -3)
-                        + ' → '
-                        + ' End: ' + evt.end.split(' ')[1].slice(0, -3)
-                        + '</div>'
-                    )
-                if(evt.speakers) {
-                    var speakers = $('<div class="speakers"><h4>Presented by:</h4></div>');
-                    for(var ix=0, ex=evt.speakers.length; ix<ex; ix++) {
-                        var s = evt.speakers[ix];
-                        speakers.append($(''
-                            + '<div class="speaker">'
-                            + '  <img src="' + s[2] + '" height="85">'
-                            + '  <div class="name"><a href="' + s[0] + '">' + s[1] + '</a></div>'
-                            + '</div>'
-                            ));
-                    }
-                    meta.append(speakers);
-                }
-                if(evt.next) {
-                    if(evt.next.url) {
-                        var title = '<h3><a href="' + evt.next.url + '">' + evt.next.name + '</a></h3>';
-                    }
-                    else {
-                        var title = '<h3>' + evt.next.name + '</h3>';
-                    }
-                    meta
-                        .append(''
-                            + '<div class="next">'
-                            + ' <h4>Next event - ' + evt.next.time.split(' ')[1].slice(0, -3) + '</h4>'
-                            + title
-                            + '</div>'
-                        )
-                }
-                meta.attr('data-event', evt.id);
-                if(evt.embed) {
-                    video.append(evt.embed);
-                }
-            })
-        });
-    }
-    update_events_metadata();
-    setInterval(update_events_metadata, 5000);
-})();
-</script>
 {% endblock %}
