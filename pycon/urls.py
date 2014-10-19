@@ -41,7 +41,8 @@ if settings.DEBUG:
 from pycon import patch
 patch.patch_pages()
 
-urlpatterns += patterns('', (r'', include('pages.urls')))
+#urlpatterns += patterns('', (r'', include('pages.urls')))
+urlpatterns += patterns('', url(r'^', include('cms.urls')),)
 
 from django.conf import settings
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):

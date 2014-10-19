@@ -44,8 +44,8 @@ LANGUAGE_CODE = 'it-it'
 
 ugettext = lambda s: s
 LANGUAGES = (
-    ('it', ugettext('Italiano')),
-    ('en', ugettext('English')),
+    ('it-it', ugettext('Italiano')),
+    ('en-us', ugettext('English')),
 )
 
 SITE_ID = 1
@@ -109,26 +109,39 @@ TEMPLATE_LOADERS = (
 
 from django.conf import global_settings
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.request",
+    "django.core.context_processors.media",
+    'django.core.context_processors.csrf',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'conference.context_processors.current_url',
     'conference.context_processors.stuff',
-    'pages.context_processors.media',
-    #'p3.context_processors.countdown',
     'p3.context_processors.settings',
+    "cms.context_processors.cms_settings",
+    "sekizai.context_processors.sekizai",
+    "django.core.context_processors.static",
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.doc.XViewMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
     'pycon.middleware.RisingResponse',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'pycon.urls'
@@ -152,6 +165,7 @@ INSTALLED_APPS = (
     'p3',
     'assopy',
 
+    'djangocms_admin_style',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -163,6 +177,11 @@ INSTALLED_APPS = (
     'django.contrib.redirects',
     'django.contrib.comments',
 
+    'djangocms_text_ckeditor',
+
+    'cms',
+    'menus',
+    'sekizai',
     'tagging',
     'taggit',
     'authority',
@@ -267,6 +286,14 @@ ROSETTA_EXCLUDED_APPLICATIONS = (
     'filebrowser',
     'pages',
     'rosetta',
+)
+
+CMS_LANGUAGES = PAGE_LANGUAGES
+CMS_TEMPLATES = (
+    ('django_cms/p5_homepage.html', 'Homepage'),
+    ('django_cms/content.html', 'Content page'),
+    ('django_cms/content-1col.html', 'Content page, single column'),
+    ('django_cms/p5_home_splash.html', 'Homepage, splash'),
 )
 
 MICROBLOG_LINK = 'http://www.pycon.it'

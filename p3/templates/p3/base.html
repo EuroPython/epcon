@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-{% load conference pages_tags i18n tagging_tags p3 %}
+{% load conference cms_tags i18n tagging_tags p3 %}
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
 <!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><![endif]-->
 <!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><!--<![endif]-->
 <head>
     <meta charset="UTF-8" />
-    <title>{% block PAGE_TITLE %}{% if current_page %}{% show_content current_page "title" %}{% endif %}{% endblock %} &middot; PyCon Cinque &middot; Firenze, 23–25 Maggio 2014</title>
+    <title>{% block PAGE_TITLE %}{% if current_page %}{% page_attribute "title" %}{% endif %}{% endblock %} &middot; PyCon Cinque &middot; Firenze, 23–25 Maggio 2014</title>
 
     {% block HEAD_VIEWPORT %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,9 +21,6 @@
     <link rel="shortcut icon" href="{{ STATIC_URL }}p5/images/favicon.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" sizes="144x144" href="{{ STATIC_URL }}p5/images/h/apple-touch-icon.png">
 
-    {% if current_page and request.user.is_staff %}
-        <link rel="alternate" type="application/x-wiki" title="Edit this page" href="{% url "admin:pages_page_change" current_page.pk %}"/>
-    {% endif %}
 
     <!-- For all browsers -->
     <!--[if (gt IE 8) | (IEMobile)]><!-->
@@ -68,7 +65,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/utils.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/rateit/src/jquery.rateit.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
-    {% if current_page|check_map %}
+    {% if False %}
         <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" src="{% url "p3-map-js" %}"></script>
     {% endif %}
@@ -103,7 +100,7 @@
             {% with request.META.PATH_INFO as pth %}
                 <li class="{% ifequal pth "/" %}current{% endifequal %}"><a href="/">Home</a></li>
             {% endwith %}
-            {% navigation "menu1" as pages %}
+            {#% navigation "menu1" as pages %#}
             {% for page in pages %}
                 <li class="{% ifequal current_page.slug page.slug %}current{% endifequal %}">
                     <a href="{{ page.url }}" title="">{{ page.title }}</a>
@@ -215,7 +212,7 @@
             <h5>{% trans "The site" %}</h5>
             <ul>
                 {% block BOTTOM_NAV_BLOCK %}
-                    {% navigation "menu3" as pages %}
+                    {#% navigation "menu3" as pages %#}
                     {% for page in pages %}
                         <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
                     {% endfor %}

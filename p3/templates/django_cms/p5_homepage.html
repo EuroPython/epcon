@@ -1,0 +1,116 @@
+{% extends "p3/base.html" %}
+{% load p3 microblog_tags conference i18n cms_tags %}
+{% block BODY_ID %}home{% endblock %}
+
+{% block TEASER %}
+
+{% placeholder lead_text as lead_text with Textarea %}
+{% if lead_text %}
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+        <div class="intro">
+            <p class="lead">{{ lead_text }}</p>
+        </div>
+    </div>
+    </div>
+</section>
+{% endif %}
+
+{% current_conference as conf %}
+<section>
+    <div class="grid-container">
+        <!-- NOTICE -->
+        <div class="grid-50 notice">
+            <div class="media">
+                {% if conf.cfp %}
+                <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
+                <div class="media-body">
+                    <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
+                    <p class="">{% placeholder "cfp_teaser_text" %}</p>
+                    <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
+                </div><!-- /media-body -->
+                {% else %}
+                <div class="pull-left"></div>
+                <div class="media-body"><p></p></div>
+                {% endif %}
+            </div>
+            <hr class="hide-on-desktop" />
+        </div><!-- /grid notice -->
+        <!-- NEXT DEADLINE -->
+        {% get_deadlines limit=1 as l %}
+        {% if l %}                        
+        <div class="grid-50 notice">
+            <div class="media">
+                <div class="pull-left"><i class="fa fa-calendar-o fa-3x"></i></div>
+                <div class="media-body calendar">
+                    <h3 class="media-heading">{% trans "Next deadline" %}</h3>
+                    <p class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>&emsp;{{ l.0.body|safe }}</p>
+                    <div class="more">
+                        <a href="/calendar">{% trans "All the deadlines &rarr;" %}</a>
+                    </div>
+                </div><!-- /media-body -->
+            </div>
+        </div><!-- /grid notice -->
+        {% endif %}
+    </div><!-- /grid-container -->
+</section>
+{% block SPONSORS %}
+{% conference_sponsor as sponsors %}
+{%if sponsors %}
+    <section>
+        <div class="grid-container">
+            <div class="grid-100">
+                <h2>{% trans 'Our Sponsors' %}</h2>
+            </div>
+            {% for s in sponsors %}
+                <div class="grid-20">
+                    <div class="sponsor">
+                        <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="190" height="90" /></a>
+                    </div>
+                </div><!-- /grid -->
+            {% endfor %}
+            <div class="grid-20">
+                <div class="sponsor sponsor-wanted">
+                    <a href="/sponsor/">{% trans 'Become a sponsor' %}</a>
+                </div>
+            </div><!-- /grid -->
+        </div><!-- /grid-container -->
+    </section>
+{%endif%}
+{% endblock %}
+{% placeholder main_text as main_text with Textarea %}
+{% if main_text %}
+<section>
+    {{ main_text }}
+</section>
+{% endif %}
+{% endblock%}
+
+{% block MAIN_CONTENT %}
+<section>
+<div class="grid-container">
+    <div class="grid-50">
+        {% box_latest_tweets %}
+    </div>
+    {% post_list count=3 as posts %}
+    <div class="blog-archive grid-50">
+        <h3>{% trans "PyCon blog" %}</h3>
+        <ul>
+            {% for post in posts %}
+            {% get_post_data post.id as data %}
+            <li>
+                <h3 class="h4"><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
+                <div class="meta">{{ post.date|date:"M j Y" }}&ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div><!-- /grid-container -->
+</section>
+
+{% endblock %}
+
+
+
+
