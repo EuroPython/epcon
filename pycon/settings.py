@@ -201,6 +201,10 @@ INSTALLED_APPS = (
     'recaptcha_works',
     'django_crontab',
     'formstyle',
+
+    'cms_migration',
+    'markitup',
+    'cms_utils',
 )
 
 RECAPTCHA_OPTIONS = {
@@ -295,6 +299,10 @@ CMS_TEMPLATES = (
     ('django_cms/content-1col.html', 'Content page, single column'),
     ('django_cms/p5_home_splash.html', 'Homepage, splash'),
 )
+CMS_PLUGIN_PROCESSORS = (
+    'cms_utils.processors.process_templatetags',
+)
+MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': True})
 
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconIT blog'

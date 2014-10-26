@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^p3/', include('p3.urls')),
+    url(r'^markitup/', include('markitup.urls'))
 )
 
 if settings.DEBUG:
