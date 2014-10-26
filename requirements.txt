@@ -23,3 +23,4 @@ django-cms==3.0.6
 -e git+https://github.com/pythonitalia/assopy.git#egg=assopy
 django-markitup==2.2.2
 markdown2==2.3.0
+djangocms_text_ckeditor==2.4.1
