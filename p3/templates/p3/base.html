@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load conference cms_tags i18n tagging_tags p3 %}
+{% load conference cms_tags menu_tags sekizai_tags i18n tagging_tags p3 %}
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
 <!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><![endif]-->
 <!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><![endif]-->
@@ -73,14 +73,15 @@
 
     <!-- verification for YouTube channel -->
     <meta name="google-site-verification" content="kBsSy1heDIyy-W34t57N5-RsOKonmK54u7zn0mC8mv8" />
-
+    {% render_block "css" %}
     {% block OPENGRAPH %}
     <meta property="og:image" content="{{ DEFAULT_URL_PREFIX }}{{ STATIC_URL }}p5/images/opengraph-pycon-logo.png" />
     <meta property="fb:admins" content="789244177" />
     {% endblock %}
 </head>
 <body id="{% block BODY_ID %}{% endblock %}">
-    {% if current_page.status == 0 or current_page.status == 2 or current_page.status == 3 %}
+    {% cms_toolbar %}
+    {% if request.toolbar.edit_mode %}
     <div class="draft"></div>
     {% endif %}
  <!--[if lt IE 8]>
@@ -97,20 +98,7 @@
     <a href="#navigation-toggle" class="navigation-toggle"><i title="Menu" class="fa fa-bars"></i></a>
     <nav id="navigation-toggle" role="navigation">
         <ul class="clearfix">
-            {% with request.META.PATH_INFO as pth %}
-                <li class="{% ifequal pth "/" %}current{% endifequal %}"><a href="/">Home</a></li>
-            {% endwith %}
-            {#% navigation "menu1" as pages %#}
-            {% for page in pages %}
-                <li class="{% ifequal current_page.slug page.slug %}current{% endifequal %}">
-                    <a href="{{ page.url }}" title="">{{ page.title }}</a>
-                </li>
-            {% endfor %}
-            {% with request.META.PATH_INFO|slice:"1:5" as f %}
-                <li class="{% ifequal f "blog" %}current{% endifequal %}">
-                    <a href="/blog/">Blog</a>
-                </li>
-            {% endwith %}
+            {% show_menu 0 1 1 1  %}
             <li class="right">
             {% if request.user.is_authenticated %}
                 <a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
@@ -212,10 +200,7 @@
             <h5>{% trans "The site" %}</h5>
             <ul>
                 {% block BOTTOM_NAV_BLOCK %}
-                    {#% navigation "menu3" as pages %#}
-                    {% for page in pages %}
-                        <li><a href="{{ page.url }}" title="">{{ page.title }}</a></li>
-                    {% endfor %}
+                    {% static_placeholder "bottom_menu" %}
                 {% endblock %}
             </ul>
         </nav>
@@ -283,6 +268,7 @@
     {% comment %}
     <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
     {% endcomment %}
+    {% render_block "js" %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
         document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -321,5 +307,32 @@
     <!-- @@TODO We should really use head.js -->
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/vendor/bootstrap-min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p5/javascripts/nav-patterns/responsive-nav.min.js""></script>
+    <script type="text/javascript">
+        // <![CDATA[
+        {% block script %}
+        {% endblock script %}
+        $(function () {
+            {% block script_ready %}
+
+            {% endblock %}
+            {% render_block "script_ready" %}
+        });
+        {% render_block "script" %}
+        // ]]>
+    </script>
+    {% block analytics %}
+        {% if GOOGLE_ANALYTICS and SITE_ACTIVE %}
+            <script>
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+                ga('create', '{{ GOOGLE_ANALYTICS }}', 'auto');
+                                ga('require', 'linkid', 'linkid.js');
+                ga('send', 'pageview');
+            </script>
+        {% endif %}
+    {% endblock analytics %}
 </body>
 </html>
