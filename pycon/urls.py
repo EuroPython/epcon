@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^p3/', include('p3.urls')),
+    url(r'^markitup/', include('markitup.urls'))
 )
 
 if settings.DEBUG:
@@ -41,7 +42,8 @@ if settings.DEBUG:
 from pycon import patch
 patch.patch_pages()
 
-urlpatterns += patterns('', (r'', include('pages.urls')))
+#urlpatterns += patterns('', (r'', include('pages.urls')))
+urlpatterns += patterns('', url(r'^', include('cms.urls')),)
 
 from django.conf import settings
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):

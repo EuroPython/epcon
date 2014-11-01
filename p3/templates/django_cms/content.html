@@ -1,0 +1,40 @@
+{% extends "p3/base.html" %}
+{% load cms_tags p3 conference %}
+
+{% block MAIN_CONTENT %}
+<section class="full-page-height">
+<div class="grid-container">
+    <div class="grid-100">
+        {% if current_page %}
+            <h1>{% page_attribute "title" %}</h1>
+        {% endif %}
+    </div> <!-- /grid -->
+    <div class="grid-60">
+        {% block PAGE_SUMMARY_TOP %}{% endblock %}
+        <div class="page-summary">
+            {% placeholder "subtitle"%} {# markdown #}
+        </div>
+        {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
+        {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
+        <div class="cms">
+            {% placeholder "text"%} {# markdown #} {# render_template #}
+        </div><!-- /cms -->
+        {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
+    </div> <!-- /grid -->
+    {% block PAGE__AFTER_MAIN_COLUMN %}
+        <aside class="grid-30 prefix-10">
+            {% render_fb_like ref="like_page_col" %}
+            <div class="slot cms">
+                {% block PAGE_SIDEBAR_TOP %}{% endblock %}
+                {% block PAGE_SIDEBAR %}
+                {% placeholder "right-column"%} {# markdown #}
+                {% endblock %}
+            </div>
+            {% box_didyouknow %}
+            {% box_newsletter %}
+        </aside> <!-- /aside grid -->
+    {% endblock %}
+</div><!-- /grid-container -->
+</section>
+{% endblock %}
+

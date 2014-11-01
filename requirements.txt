@@ -15,9 +15,13 @@ pytz
 Fabric
 django-crontab==0.4.2
 -e git+git://github.com/dcramer/django-paypal.git#egg=django-paypal
-
+BeautifulSoup
+django-cms==3.0.6
 -e git+https://github.com/pythonitalia/microblog.git#egg=microblog
 -e git+https://github.com/pythonitalia/hcomments.git#egg=hcomments
 -e git+https://github.com/pythonitalia/conference.git#egg=conference
 -e git+https://github.com/pythonitalia/assopy.git#egg=assopy
 BeautifulSoup==3.2.1
+django-markitup==2.2.2
+markdown2==2.3.0
+djangocms_text_ckeditor==2.4.1
