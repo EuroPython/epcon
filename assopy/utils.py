@@ -33,11 +33,12 @@ def dotted_import(path):
 
 def check_database_schema():
     """
-    Verifica che lo schema del tabase contenga i constraint attesi; nello
+    Verifica che lo schema del database contenga i constraint attesi; nello
     specifico deve esistere un indice sulla tabella auth_user che garantisca
     l'univocità dell'email a prescindere dal case.
     """
     rule = "CREATE UNIQUE INDEX auth_user_unique_email ON auth_user(email COLLATE NOCASE);"
+    import warnings
     from django.db import connection
 
     c = connection.cursor()
@@ -56,12 +57,15 @@ def check_database_schema():
             index = name
             break
     else:
-        raise RuntimeError("unique index on auth_user.email is missing, use: %s", rule)
+        msg = "unique index on auth_user.email is missing, use: %s" % rule
+        warnings.warn(msg, RuntimeWarning)
+        return
 
     c.execute("SELECT sql FROM sqlite_master WHERE name=%s", (index,))
     sql = c.fetchall()[0][0].lower()
     if "collate nocase" not in sql:
-        raise RuntimeError("unique index on auth_user.email found but without the nocase collation, replace with: %s" % rule)
+        msg = "unique index on auth_user.email found but without the nocase collation, replace with: %s" % rule
+        warnings.warn(msg, RuntimeWarning)
 
 def geocode(address, region=''):
     import json
