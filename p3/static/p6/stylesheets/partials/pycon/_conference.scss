@@ -1,0 +1,253 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+// TALKS =============================================================================
+
+#talk-voting {
+    @include zero;
+    list-style: none;
+    h3 {
+        margin-bottom: 0;
+    }        
+    > li {
+        margin: 0 0 $baselineheight / 2 0;
+        padding: 0 0 $baselineheight / 2 0;    
+        border-bottom: 1px dotted $bordercolor; }
+
+    .talk-speakers {
+        @extend .meta;
+        text-transform: uppercase;
+    }    
+
+    .accordion__group.abstract .accordion__inner * {
+        @include font-size(16);
+    }
+
+    // Talk in English
+    .international abbr {
+        background: $lighterneutralcolor;
+        padding: 1px 3px;
+        @include font-size(14);
+        border-radius: 2px;
+    }
+    
+    // Talk with teaser video
+    .video .fa {
+        color: $secondarycolor;
+    }
+
+    .rateit {
+        margin: $baselineheight / 2 0;
+    }
+    
+}
+
+#form-options {
+    
+    .control-group {
+        float: left;
+        margin-right: $gutterwidth;
+        
+/*
+        label {
+            @extend .meta;
+            text-transform: uppercase;            
+        }
+*/
+    }
+    
+    // Stop to float elements
+    .tagfield {
+        float: none;
+        clear: both;
+    }
+    
+}
+
+
+// CART ========================================================================
+
+#form-cart {
+
+// Totals 
+.total {
+    padding: $baselineheight/2 0;
+    text-align: center;
+    background: tint($primarycolor, 75%);
+}
+
+// Coupon field
+.coupon {
+    input { @extend .input-xlarge; }
+}
+.save {
+    color: $successstatecolor;
+    display: none;
+}
+
+.total.save {
+    background-color: transparent;
+}
+
+}
+
+/*
+
+.room-type.selected {
+    color: red;
+}
+
+.room-type.disabled {
+    background: gray;
+}
+*/
+
+// TICKETS =====================================================================
+
+.ticket {
+.preview {
+    background: $white;
+
+    margin: $baselineheight 0;    
+    border: 1px solid $bordercolor;    
+    border-radius: $borderradius;
+
+    position: relative;
+    min-height: $baselineheight*9;
+    box-shadow: 0 0 4px $neutralcolor;
+
+    .preview-inner {
+        padding: 0 $gutterwidth/2;
+        
+    }
+
+    h2 {
+        padding: $baselineheight/4 $gutterwidth/2;
+        color: $white;
+        /*
+         * background improbabile :) tutte le tariffe lo ridefiniscono, metto
+         * comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e
+         * ci scordiamo di aggiornare il css
+         */
+        background: thistle;
+    }
+
+    .media-heading {
+        text-transform: uppercase;
+        margin-bottom: 0;
+    }
+
+    .tagline {
+        color: $neutralcolor;    
+        font-style: italic;
+        margin-bottom: $baselineheight/2;
+    }
+    
+    .fa-star {
+        color: gold;
+        text-shadow: 0 1px 0 rgba(0,0,0,.4);
+    }
+}
+}
+
+.ticket.conference .preview h2 {
+    background: $primarycolor;
+}
+
+.ticket.partner .preview h2 {
+    background: #301D1D;
+}
+
+.ticket[data-fare=SIM01] .preview h2 {
+    background: #EC7324;
+}
+
+.ticket[data-fare=VOUPE01] .preview h2 {
+    background: #194175;
+}
+
+.ticket[data-fare=VOUPE02] .preview h2 {
+    background: #793f4b;
+}
+
+.ticket[data-fare=HB1] .preview h2,
+.ticket[data-fare=HB2] .preview h2,
+.ticket[data-fare=HB3] .preview h2,
+.ticket[data-fare=HB4] .preview h2,
+.ticket[data-fare=HR1] .preview h2,
+.ticket[data-fare=HR2] .preview h2,
+.ticket[data-fare=HR3] .preview h2,
+.ticket[data-fare=HR4] .preview h2
+{
+    background: #BB78FF;
+}
+
+.preview:hover .ticket-commands {
+    opacity: .85;
+}
+
+.ticket-commands {
+    position: absolute;    
+    top: 0;
+    left: 0;
+    z-index: 1;
+    
+    text-align: center;
+
+    min-height: 100%;
+    min-width: 100%;
+
+    background: $white;
+    @include transition(opacity .2s ease-out);
+    opacity: 0;
+
+    p {
+        margin: $baselineheight*3 0 0 0;
+        color: $neutralcolor;
+    }
+}
+
+.ticket-assigned-to.ticket-commands {
+    opacity: .8;
+}
+
+.ticket-footer {
+	position: absolute;
+	bottom: $baselineheight/2;
+	right: $gutterwidth/2;
+    color: $neutralcolor;  
+    @extend small;
+}
+
+// Tweaks to made it shorter
+
+#form-ticket-edit {
+    ul {
+        margin: 0;
+    }
+}
+
+
+// WHO'S COMING  ===============================================================
+
+.person-card {
+    background: $white;
+    padding: $baselineheight/2 $gutterwidth/2;
+    border: 1px solid $bordercolor;
+    border-radius: $borderradius;
+    margin-bottom: $baselineheight;
+
+    .see-more {
+        @extend .meta;
+    }
+    
+    .person-card-picture {
+        float: left;
+        margin-right: $gutterwidth/2;
+    }
+}
+
