@@ -1,7 +1,9 @@
 # Mandatory settings
 # ------------------
 
-SECRET_KEY = None
+DEBUG = True
+
+SECRET_KEY = "your-secret-key"
 
 # Put your google maps key here
 CONFERENCE_GOOGLE_MAPS = {
@@ -22,4 +24,4 @@ ASSOPY_JANRAIN = {
     'secret': '',
 }
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
