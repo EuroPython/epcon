@@ -14,7 +14,12 @@ class P3Apphook(CMSApp):
     name = _("P3")
     urls = ["p3.urls"]
 
+class BlogApphook(CMSApp):
+    name = _("Blog")
+    urls = ["microblog.urls"]
+
 
 apphook_pool.register(AssopyApphook)
 apphook_pool.register(ConferenceApphook)
 apphook_pool.register(P3Apphook)
+apphook_pool.register(BlogApphook)

@@ -99,8 +99,8 @@
     <nav id="navigation-toggle" role="navigation">
         <ul class="clearfix">
             {% show_menu 0 1 1 1  %}
+            {% language_chooser "p3/includes/langnav.html" "native" %}
             <li class="right">
-            <!--{% language_chooser "p3/includes/langnav.html" %}-->
             {% if request.user.is_authenticated %}
                 <a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
                 {% if request.user.is_staff %}
@@ -124,7 +124,7 @@
 {% block HEADER %}
 <header role="banner">
     <div class="grid-container">
-        <!--
+        {% comment %}
         <div class="grid-20">
         
             {% fares_available "conference" sort="price" as fares %}
@@ -138,7 +138,7 @@
                     <small>{% trans "Starting from" %} <b>{{ fares.0.price }}</b>€</small>
                 </div>
             {%else%}
-                {%comment%}If empty show an utility badge{%endcomment%}
+                { %comment%}If empty show an utility badge{%endcomment% }
                 <div class="badge badge-track">
                     <i class="fa fa-globe fa-3x hide-on-mobile"></i>
                     <a title="Learn more" href="/english/">{% trans "PyCon in English" %}</a>
@@ -147,14 +147,14 @@
             {% endif %}
             <hr class="hide-on-desktop" />
         </div>
-        -->
+        {% endcomment %}
         <div class="grid-60 prefix-20">
             <div class="branding hide-on-mobile"><a href="/" title="Home"><img src="{{STATIC_URL}}p6/images/pycon-sei-logo.png" alt="*" ></a></div>
             <hr class="hide-on-desktop" />
         </div>
 
         <!-- NEXT DEADLINE -->
-        <!--
+        {% comment %}
         {% get_deadlines limit=1 as l %}
         {% if l %}                        
         <div class="grid-20 notice-homepage">
@@ -170,7 +170,7 @@
             </div>
         </div>
         {% endif %}
-        -->
+        {% endcomment %}
 
     </div><!-- /grid-container -->
 </header>
@@ -203,7 +203,7 @@
 
 {% block FOOTER_BLOCK %}
 <footer role="contentinfo">
-{%comment%}
+{% comment %}
 <div class="grid-container">
 
     <div class="grid-25">
@@ -268,7 +268,7 @@
         <p><small>&copy; 2007&ndash;2014 <a href="/python-italia/">Python Italia</a> with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</small></p>
     </div>
 </div><!-- /grid-container -->
-{%endcomment%}
+{% endcomment %}
 <div class="bg-red">
     <a href="#"><img src="{% static 'p6/images/facebook.svg' %}" /></a>
     <a href="#"><img src="{% static 'p6/images/twitter.svg' %}" /></a>
