@@ -24,3 +24,4 @@ BeautifulSoup==3.2.1
 django-markitup==2.2.2
 markdown2==2.3.0
 djangocms_text_ckeditor==2.4.1
+easy_thumbnails==2.2

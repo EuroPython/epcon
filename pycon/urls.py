@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.conf.urls.i18n import i18n_patterns
 
 from django.contrib import admin
 admin.autodiscover()
@@ -25,7 +26,6 @@ urlpatterns = patterns('',
     url(r'^conference/speakers/(?P<slug>[\w-]+)', 'conference.views.speaker',
         {'speaker_form': pforms.P3SpeakerForm},
         name='conference-speaker'),
-    (r'^conference/', include('conference.urls')),
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^p3/', include('p3.urls')),
@@ -42,8 +42,7 @@ if settings.DEBUG:
 from pycon import patch
 patch.patch_pages()
 
-#urlpatterns += patterns('', (r'', include('pages.urls')))
-urlpatterns += patterns('', url(r'^', include('cms.urls')),)
+urlpatterns += i18n_patterns('', url(r'^', include('cms.urls')),)
 
 from django.conf import settings
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
