@@ -180,7 +180,6 @@ INSTALLED_APPS = (
     'django.contrib.comments',
 
     'djangocms_text_ckeditor',
-    'djangocms_picture',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
     'cmsplugin_filer_link',
