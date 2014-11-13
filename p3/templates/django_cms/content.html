@@ -9,7 +9,7 @@
             <h1>{% page_attribute "title" %}</h1>
         {% endif %}
     </div> <!-- /grid -->
-    <div class="grid-60">
+    <div class="grid-70">
         {% block PAGE_SUMMARY_TOP %}{% endblock %}
         <div class="page-summary">
             {% placeholder "subtitle"%} {# markdown #}
@@ -22,7 +22,7 @@
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
     </div> <!-- /grid -->
     {% block PAGE__AFTER_MAIN_COLUMN %}
-        <aside class="grid-30 prefix-10">
+        <aside class="grid-30">
             {% render_fb_like ref="like_page_col" %}
             <div class="slot cms">
                 {% block PAGE_SIDEBAR_TOP %}{% endblock %}

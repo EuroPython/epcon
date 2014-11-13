@@ -1,76 +1,83 @@
 {% extends "p3/base.html" %}
-{% load p3 microblog_tags conference i18n cms_tags %}
+{% load p3 microblog_tags conference i18n cms_tags static thumbnail %}
 {% block BODY_ID %}home{% endblock %}
 
 {% block TEASER %}
 
-{% placeholder lead_text as lead_text with Textarea %}
-{% if lead_text %}
-<section>
+<section class="bg-red">
     <div class="grid-container">
-    <div class="grid-100">
-        <div class="intro">
-            <p class="lead">{{ lead_text }}</p>
+        <div class="grid-100">
+            <div class="intro">
+                {% placeholder "lead_text" %}
+            </div>
         </div>
     </div>
-    </div>
 </section>
-{% endif %}
+
+<section class="deadlines">
+    {% get_deadlines limit=1 as l %}
+        {% if l %}          
+        <div class="grid-container">              
+            <div class="grid-50 prefix-25">
+                <div class="media grid-container">
+                    <div class="media-body calendar grid-100">
+                        <div class="calendar-icon">
+                            <i class="fa fa-calendar-o fa-3x"></i>
+                        </div>
+                        <div class="deadline-homepage">
+                            <h3 class="media-heading">{% trans "Next deadline" %}</h3>
+                            <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.body|safe }}</span>
+                        </div>
+                        <div class="deadline-button">
+                            <a class="btn btn-primary" href="/calendar">{% trans "All the deadlines" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+</section>
 
 {% current_conference as conf %}
-<section>
-    <div class="grid-container">
-        <!-- NOTICE -->
-        <div class="grid-50 notice">
-            <div class="media">
-                {% if conf.cfp %}
-                <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
-                <div class="media-body">
-                    <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
-                    <p class="">{% placeholder "cfp_teaser_text" %}</p>
-                    <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
-                </div><!-- /media-body -->
-                {% else %}
+{% if conf.cfp %}
+    <section>
+        <div class="grid-container">
+            <!-- NOTICE -->
+            <div class="grid-50 notice">
+                <div class="media">
+
+                    <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
+                    <div class="media-body">
+                        <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
+                        <p class="">{% placeholder "cfp_teaser_text" %}</p>
+                        <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
+                    </div><!-- /media-body -->
+{% else %}
                 <div class="pull-left"></div>
                 <div class="media-body"><p></p></div>
-                {% endif %}
-            </div>
+                </div>
             <hr class="hide-on-desktop" />
-        </div><!-- /grid notice -->
-        <!-- NEXT DEADLINE -->
-        {% get_deadlines limit=1 as l %}
-        {% if l %}                        
-        <div class="grid-50 notice">
-            <div class="media">
-                <div class="pull-left"><i class="fa fa-calendar-o fa-3x"></i></div>
-                <div class="media-body calendar">
-                    <h3 class="media-heading">{% trans "Next deadline" %}</h3>
-                    <p class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>&emsp;{{ l.0.body|safe }}</p>
-                    <div class="more">
-                        <a href="/calendar">{% trans "All the deadlines &rarr;" %}</a>
-                    </div>
-                </div><!-- /media-body -->
-            </div>
-        </div><!-- /grid notice -->
-        {% endif %}
-    </div><!-- /grid-container -->
-</section>
+            </div><!-- /grid notice -->
+        </div><!-- /grid-container -->
+    </section>
+{% endif %}
+        
 {% block SPONSORS %}
 {% conference_sponsor as sponsors %}
 {%if sponsors %}
     <section>
         <div class="grid-container">
             <div class="grid-100">
-                <h2>{% trans 'Our Sponsors' %}</h2>
+                <h2 class="border-title">{% trans 'Our Sponsors' %}</h2>
             </div>
             {% for s in sponsors %}
-                <div class="grid-20">
+                <div class="grid-25">
                     <div class="sponsor">
                         <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="190" height="90" /></a>
                     </div>
                 </div><!-- /grid -->
             {% endfor %}
-            <div class="grid-20">
+            <div class="grid-25">
                 <div class="sponsor sponsor-wanted">
                     <a href="/sponsor/">{% trans 'Become a sponsor' %}</a>
                 </div>
@@ -79,35 +86,140 @@
     </section>
 {%endif%}
 {% endblock %}
+<section class="quote-section">
+    <div id="quotes" class="quote-slider grid-container clearfix">
+        {% conference_quotes limit 3 as quotes %}
+        {% for quote in quotes %}
+        <div class="">
+            <div class="grid-20 prefix-10 quote-image">
+                {% thumbnail quote.image 150x150 crop=True upscale=True as thumbnail %}
+                <img src="{{ thumbnail.url }}" />
+            </div>
+            <div class="grid-60 suffix-10">
+                <q>{{ quote.text }}</q>
+                <p>- {{ quote.who }}, {{ quote.activity }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+
+
+<section class="learn-with-pycon">
+    <div class="grid-container">
+        <div class="grid-100">
+            <h2 class="border-title">{% trans "Scopri PyCon Italia" %}</h2>
+        </div>
+        <div class="grid-33">
+            <a href="#">
+                <div class="learn-icon">
+                    <img src="{% static 'p6/images/talk.svg' %}">
+                </div>
+                <h4>{% trans "Talk" %}</h4>
+                <p>{% trans "3 tracce parallele di talk per ascoltare e scoprire" %}
+            </a>
+        </div>
+        <div class="grid-33">
+            <a href="#">
+                <div class="learn-icon">
+                    <img src="{% static 'p6/images/training.svg' %}" />
+                </div>
+                <h4>{% trans "Training" %}</h4>
+                <p>{% trans "Sessioni di 4 ore, con le mani sulla tastiera: impara l'arte e mettila da parte" %}
+            </a>
+        </div>
+        <div class="grid-33">
+            <a href="#">
+                <div class="learn-icon">
+                    <img src="{% static 'p6/images/helpdesk.svg' %}" />
+                </div>
+                <h4>{% trans "Helpdesk" %}</h4>
+                <p>{% trans "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti" %}
+            </a>
+        </div>
+
+
+        <div class="grid-33">
+            <a href="#">
+                <div class="learn-icon">
+                    <img src="{% static 'p6/images/scopri_chi_viene.svg' %}" />
+                </div>
+                <h4>{% trans "Scopri chi viene" %}</h4>
+                <p>{% trans "Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro" %}
+            </a>
+        </div>
+        <div class="grid-33">
+            <a href="#">
+                <div class="learn-icon">
+                    <img src="{% static 'p6/images/recruiting.svg' %}" />
+                </div>
+                <h4>{% trans "Recruiting" %}</h4>
+                <p>{% trans "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate" %}
+            </a>
+        </div>
+        <div class="grid-33">
+            <a href="#">
+                <div class="learn-icon">
+                    <img src="{% static 'p6/images/eventi_sociali.svg' %}" />
+                </div>
+                <h4>{% trans "Eventi sociali" %}</h4>
+                <p>{% trans "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?" %}
+            </a>
+        </div>
+    </div>
+</section>
+
+
+
+
 {% placeholder main_text as main_text with Textarea %}
 {% if main_text %}
 <section>
-    {{ main_text }}
+{{ main_text }}
 </section>
 {% endif %}
+
 {% endblock%}
 
 {% block MAIN_CONTENT %}
 <section>
 <div class="grid-container">
-    <div class="grid-50">
-        {% box_latest_tweets %}
-    </div>
     {% post_list count=3 as posts %}
-    <div class="blog-archive grid-50">
-        <h3>{% trans "PyCon blog" %}</h3>
-        <ul>
-            {% for post in posts %}
-            {% get_post_data post.id as data %}
-            <li>
-                <h3 class="h4"><a href="{{ data.url }}">{{ data.content.headline }}</a></h3>
-                <div class="meta">{{ post.date|date:"M j Y" }}&ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}</div>
-            </li>
-            {% endfor %}
-        </ul>
+    <div class="grid-100">
+        <h2 class="border-title">{% trans "Ultimi post dal blog" %}</h2>
+    </div>     
+    {% for post in posts %}
+    {% get_post_data post.id as data %}
+    <div class="grid-33">
+        <h4><a href="{{ data.url }}">{{ data.content.headline }}</a></h4>
+        <p class="post-date">{{ post.date|date:"j F Y" }}</p>
+
+        <!--
+        &ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}
+        -->
+
+        <div class="post-abstract">{{ data.content.summary|safe }}</div>
     </div>
+    {% endfor %}
+    
+    
 </div><!-- /grid-container -->
 </section>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.quote-slider').slick({
+            autoplay: true,
+            dots: false,
+            arrows: false,
+            speed: 1000,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            infinite: true,
+        });
+    });
+</script>
 
 {% endblock %}
 

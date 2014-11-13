@@ -207,7 +207,7 @@
         var schedules = $('.schedule-wrapper')
         if(schedules.length) {
             var h3 = form_flags.prev();
-            h3.prepend('<img src="{{ STATIC_URL }}p5/i/ajax-loader.gif" width="16" />');
+            h3.prepend('<img src="{{ STATIC_URL }}p6/i/ajax-loader.gif" width="16" />');
             form_flags.attr('data-wait', schedules.length);
             schedules.each(function() {
                 var schedule = $(this);
