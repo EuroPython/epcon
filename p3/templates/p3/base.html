@@ -126,7 +126,7 @@
     <div class="grid-container">
         {% comment %}
         <div class="grid-20">
-        
+
             {% fares_available "conference" sort="price" as fares %}
             {% if not fares %}
                 {% fares_available "all" sort="price" as fares %}
@@ -156,7 +156,7 @@
         <!-- NEXT DEADLINE -->
         {% comment %}
         {% get_deadlines limit=1 as l %}
-        {% if l %}                        
+        {% if l %}
         <div class="grid-20 notice-homepage">
             <div class="media">
                 <i class="fa fa-calendar-o fa-3x"></i>
@@ -233,7 +233,7 @@
     </div><!-- /grid -->
 
 
-    
+
     <div class="grid-25">
         <h5>Edizioni precedenti</h5>
         <ul>
@@ -241,7 +241,7 @@
         </ul>
         <hr class="hide-on-desktop" />
     </div><!-- /grid -->
-    
+
 
     <div class="grid-50">
         <div class="donate">
