@@ -37,10 +37,9 @@ if settings.DEBUG:
         }),
    )
 
-from pycon import patch
-patch.patch_pages()
-
-urlpatterns += i18n_patterns('', url(r'^', include('cms.urls')),)
+urlpatterns += i18n_patterns('',
+    url(r'^', include('cms.urls')),
+)
 
 from django.conf import settings
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):

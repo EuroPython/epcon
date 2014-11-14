@@ -42,12 +42,12 @@ TIME_ZONE = 'Europe/Rome'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'it-it'
+LANGUAGE_CODE = 'it'
 
 ugettext = lambda s: s
 LANGUAGES = (
-    ('it-it', ugettext('Italiano')),
-    ('en-us', ugettext('English')),
+    ('it', ugettext('Italiano')),
+    ('en', ugettext('English')),
 )
 
 SITE_ID = 1
@@ -305,16 +305,16 @@ ROSETTA_EXCLUDED_APPLICATIONS = (
 CMS_LANGUAGES = {
     1: [
         {
-            'code': 'it-it',
+            'code': 'it',
             'name': ugettext('Italiano'),
         },
         {
-            'code': 'en-us',
+            'code': 'en',
             'name': ugettext('English'),
         },
     ],
     'default': {
-        'fallbacks': ['it-it', 'en-us'],
+        'fallbacks': ['it', 'en'],
         'redirect_on_fallback': True,
         'public': True,
         'hide_untranslated': False,

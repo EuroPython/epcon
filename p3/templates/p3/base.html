@@ -162,7 +162,7 @@
                 <i class="fa fa-calendar-o fa-3x"></i>
                 <div class="media-body calendar">
                     <h3 class="media-heading">{% trans "Next deadline" %}</h3>
-                    <p class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.body|safe }}</p>
+                    <p class="deadline"><time>{{ l.0.date|date:"d b" }}</time>{{ l.0.body|safe }}</p>
                     <div class="more">
                         <a href="/calendar">{% trans "All the deadlines &rarr;" %}</a>
                     </div>
