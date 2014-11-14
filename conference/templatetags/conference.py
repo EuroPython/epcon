@@ -4,6 +4,7 @@ import mimetypes
 import os
 import os.path
 import re
+from django.utils.translation import get_language_from_request
 import httplib2
 import random
 import sys
@@ -39,15 +40,7 @@ mimetypes.init()
 register = template.Library()
 
 def _lang(ctx, full=False):
-    try:
-        l = ctx['LANGUAGE_CODE']
-    except KeyError:
-        l = PAGE_DEFAULT_LANGUAGE
-    if hasattr(dsettings, 'PAGE_LANGUAGE_MAPPING'):
-        l = dsettings.PAGE_LANGUAGE_MAPPING(l)
-    if full:
-        return l
-    return l.split('-', 1)[0]
+    return get_language_from_request(ctx['request'], check_path=True)
 
 def _request_cache(request, key):
     """
@@ -780,16 +773,22 @@ def conference_multilingual_attribute(parser, token):
             try:
                 value = contents[context['LANGUAGE_CODE']]
             except KeyError:
-                if fallback is None or not contents:
-                    value = None
-                elif fallback != 'any':
-                    value = contents.get(fallback)
-                else:
-                    dlang = dsettings.LANGUAGES[0][0]
-                    if dlang in contents:
-                        value = contents[dlang]
+                try:
+                    value = contents[context['LANGUAGE_CODE'].split('-')[0]]
+                except KeyError:
+                    if fallback is None or not contents:
+                        value = None
+                    elif fallback != 'any':
+                        value = contents.get(fallback)
                     else:
-                        value = contents.values()[0]
+                        dlang = dsettings.LANGUAGES[0][0]
+                        dlang_single = dsettings.LANGUAGES[0][0].split('-')[0]
+                        if dlang in contents:
+                            value = contents[dlang]
+                        elif dlang_single in contents:
+                            value = contents[dlang_single]
+                        else:
+                            value = contents.values()[0]
             if self.var_name:
                 context[self.var_name] = value
                 return ''
