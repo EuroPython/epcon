@@ -11,10 +11,10 @@ function initGMAP(mapId, show, zoom) {
     if(!zoom)
         zoom = 15;
     var icons = {
-        'conf-hq': "{{ STATIC_URL }}p5/images/marker_pycon.png",
-        'pyevents': "{{ STATIC_URL }}p5/images/marker_pycon.png",
-        'hotel': "{{ STATIC_URL }}p5/images/marker_hotel.png",
-        'hotel_conv': "{{ STATIC_URL }}p5/images/marker_hotel_conv.png"
+        'conf-hq': "{{ STATIC_URL }}p6/images/marker_pycon.png",
+        'pyevents': "{{ STATIC_URL }}p6/images/marker_pycon.png",
+        'hotel': "{{ STATIC_URL }}p6/images/marker_hotel.png",
+        'hotel_conv': "{{ STATIC_URL }}p6/images/marker_hotel_conv.png"
     };
 
     var mapOptions = {

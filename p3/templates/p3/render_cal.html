@@ -1,13 +1,14 @@
 {% load conference %}
-{% get_deadlines not_expired=0 as deadlines %}
+{% get_deadlines not_expired=1 as deadlines %}
 <div class="calendar">
     {% for d in deadlines %}
         <p class="deadline {% if d.expired %}expired{% endif %}">
-            <time>{{ d.date|date:"d" }} {{ d.date|date:"b" }}</time>&emsp;
-                {% if d.headline and d.body %}
-                {% else %}
-                    {{ d.body|safe }}
-                {% endif %}
+            {% if d.headline and d.body %}
+                <h4><time>{{ d.date|date:"d b" }}</time>&emsp; {{ d.headline|safe }}</h4>
+                <div>{{ d.body|safe }}</div>
+            {% else %}
+                {{ d.body|safe }}
+            {% endif %}
         </p>
     {% endfor %}
 </div>

@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.conf.urls.i18n import i18n_patterns
 
 from django.contrib import admin
 admin.autodiscover()
@@ -17,7 +18,6 @@ urlpatterns = patterns('',
     (r'^admin/rosetta/', include('rosetta.urls')),
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
     (r'^admin/', include(admin.site.urls)),
-    (r'^blog/', include('microblog.urls')),
     (r'^comments/', include('django.contrib.comments.urls')),
     url(r'^conference/talks/(?P<slug>[\w-]+)$', 'conference.views.talk',
         {'talk_form': pforms.P3TalkForm},
@@ -25,10 +25,8 @@ urlpatterns = patterns('',
     url(r'^conference/speakers/(?P<slug>[\w-]+)', 'conference.views.speaker',
         {'speaker_form': pforms.P3SpeakerForm},
         name='conference-speaker'),
-    (r'^conference/', include('conference.urls')),
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
-    (r'^p3/', include('p3.urls')),
     url(r'^markitup/', include('markitup.urls'))
 )
 
@@ -39,11 +37,9 @@ if settings.DEBUG:
         }),
    )
 
-from pycon import patch
-patch.patch_pages()
-
-#urlpatterns += patterns('', (r'', include('pages.urls')))
-urlpatterns += patterns('', url(r'^', include('cms.urls')),)
+urlpatterns += i18n_patterns('',
+    url(r'^', include('cms.urls')),
+)
 
 from django.conf import settings
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
