@@ -25,3 +25,8 @@ ASSOPY_JANRAIN = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Sentry account
+RAVEN_CONFIG = {
+    'dsn': '',
+}

@@ -215,6 +215,8 @@ INSTALLED_APPS = (
     'cms_migration',
     'markitup',
     'cms_utils',
+
+    'raven.contrib.django.raven_compat',
 )
 
 RECAPTCHA_OPTIONS = {
