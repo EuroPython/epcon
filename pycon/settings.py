@@ -333,7 +333,7 @@ CMS_TEMPLATES = (
 CMS_PLUGIN_PROCESSORS = (
     'cms_utils.processors.process_templatetags',
 )
-MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': True})
+MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': False})
 
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconIT blog'
