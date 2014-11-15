@@ -30,7 +30,7 @@
                             <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.body|safe }}</span>
                         </div>
                         <div class="deadline-button">
-                            <a class="btn btn-primary" href="/calendar">{% trans "All the deadlines" %}</a>
+                            <a class="btn btn-primary" href="{% page_url 'calendar' %}">{% trans "All the deadlines" %}</a>
                         </div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                     <div class="media-body">
                         <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
                         <p class="">{% placeholder "cfp_teaser_text" %}</p>
-                        <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
+                        <a class="btn btn-primary" href="{% page_url 'cfp' %}">{% trans "Submit your proposal" %}</a>
                     </div><!-- /media-body -->
                 </div>
             <hr class="hide-on-desktop" />
@@ -83,7 +83,7 @@
             {% endfor %}
             <div class="grid-25">
                 <div class="sponsor sponsor-wanted">
-                    <a href="/sponsor/">{% trans 'Become a sponsor' %}</a>
+                    <a href="{% page_url 'sponsor' %}">{% trans 'Become a sponsor' %}</a>
                 </div>
             </div><!-- /grid -->
         </div><!-- /grid-container -->
