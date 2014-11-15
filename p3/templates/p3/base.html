@@ -79,7 +79,7 @@
     <meta property="fb:admins" content="789244177" />
     {% endblock %}
 </head>
-<body id="{% block BODY_ID %}{% endblock %}">
+<body id="{% block BODY_ID %}{% endblock %}" class="{% block body-class %}content-tpl{% endblock %}">
     {% cms_toolbar %}
     {% if request.toolbar.edit_mode %}
     <div class="draft"></div>
@@ -100,6 +100,7 @@
         <ul class="clearfix">
             {% show_menu 0 1 1 1  %}
             {% language_chooser "p3/includes/langnav.html" "native" %}
+            {% if request.user.is_authenticated %}
             <li class="right">
             {% if request.user.is_authenticated %}
                 <a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
@@ -114,6 +115,7 @@
                 <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
             {% endif %}
             </li>
+            {% endif %}
         </ul>
     </nav>
     {% endblock %}
@@ -203,76 +205,14 @@
 
 {% block FOOTER_BLOCK %}
 <footer role="contentinfo">
-{% comment %}
-<div class="grid-container">
-
-    <div class="grid-25">
-        <nav>
-            <h5>{% trans "The site" %}</h5>
-            <ul>
-                {% block BOTTOM_NAV_BLOCK %}
-                    {% static_placeholder "bottom_menu" %}
-                {% endblock %}
-            </ul>
-        </nav>
-        <hr class="hide-on-desktop" />
-    </div><!-- /grid -->
-
-    <div class="grid-25">
-        <h5>{% trans "Social" %}</h5>
-        <ul>
-            <li>
-                <i class="fa fa-facebook-square"></i>&ensp;
-                <a href="#">{% trans "PyCon on Facebook" %}</a></li>
-            <li><i class="fa fa-twitter-square"></i>&ensp;
-                <a href="http://twitter.com/pyconit">{% trans "Follow us on twitter" %}</a></li>
-            <li><i class="fa fa-rss-square"></i>&ensp;
-                <a href="/blog/feeds/latest/">{% trans "Latest posts" %}</a></li>
-        </ul>
-        <hr class="hide-on-desktop" />
-    </div><!-- /grid -->
-
-
-
-    <div class="grid-25">
-        <h5>Edizioni precedenti</h5>
-        <ul>
-            <li><a href="/ep2013/">EuroPython 2013</a></li>
-        </ul>
-        <hr class="hide-on-desktop" />
-    </div><!-- /grid -->
-
-
-    <div class="grid-50">
-        <div class="donate">
-            <h5>{% trans "Please donate" %}</h5>
-            <p>{% trans "This conference is organized by the Python Italia no-profit association. We are able to accept donations through PayPal and credit card, and we welcome any kind of contribution that will be exclusively used for improving the EuroPython event for everyone. Thanks!" %}</p>
-            <p>
-                <img src="{{ STATIC_URL }}p6/images/icon-visa.png" alt="Visa" width="32" height="32" />
-                <img src="{{ STATIC_URL }}p6/images/icon-mastercard.png" alt="Mastercard" width="32" height="32" />
-                <img src="{{ STATIC_URL }}p6/images/icon-amex.png" alt="Amex" width="32" height="32" />
-                <img src="{{ STATIC_URL }}p6/images/icon-paypal.png" alt="Paypal" width="32" height="32" />
-            </p>
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="POST">
-                <input type="hidden" name="cmd" value="_s-xclick" />
-                <input type="hidden" name="hosted_button_id" value="PDVV2CL2WVLLG" />
-                <button class="btn btn-small" type="submit" name="" style="margin-left: 0" title="PayPal - The safer, easier way to pay online!">{% trans "Donate now (via PayPal)" %}</button>
-                <img alt="" src="https://www.paypal.com/it_IT/i/scr/pixel.gif" width="1" height="1" />
-            </form>
-        </div>
-    </div><!-- /grid -->
-
-    <div class="grid-100">
-
-        <hr>
-        <p><small>&copy; 2007&ndash;2014 <a href="/python-italia/">Python Italia</a> with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</small></p>
-    </div>
-</div><!-- /grid-container -->
-{% endcomment %}
 <div class="bg-red">
-    <a href="https://www.facebook.com/pyconitalia" target="_blank"><img src="{% static 'p6/images/facebook.svg' %}" /></a>
-    <a href="https://twitter.com/pyconit" target="_blank"><img src="{% static 'p6/images/twitter.svg' %}" /></a>
-    <a href="/blog/feeds/latest/"><img src="{% static 'p6/images/rss.svg' %}" /></a>
+    <div class="grid-container">
+        <div class="grid-50 prefix-25">
+            <a href="https://www.facebook.com/pyconitalia" target="_blank"><img src="{% static 'p6/images/facebook.svg' %}" /></a>
+            <a href="https://twitter.com/pyconit" target="_blank"><img src="{% static 'p6/images/twitter.svg' %}" /></a>
+            <a href="/blog/feeds/latest/"><img src="{% static 'p6/images/rss.svg' %}" /></a>
+        </div>
+    </div>
 </div>
 <div class="bg-grey">
     <ul class="footer-menu">
@@ -281,6 +221,13 @@
         <li><a href="{% page_url 'privacy' %}">{% trans "Informativa Privacy" %}</a></li>
         <li><a href="{% page_url 'conduct-code' %}">{% trans "Codice di condotta" %}</a></li>
     </ul>
+</div>
+<div class="">
+    <div class="grid-container">
+        <div class="grid-100 help-text">
+            {% static_placeholder "help_text" %}
+        </div>
+    </div>
 </div>
 <div class="copyright">
     <p>&copy; 2007&ndash;2014 <a href="/python-italia/">Python Italia</a> with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
@@ -355,20 +302,5 @@
         {% render_block "script" %}
         // ]]>
     </script>
-
-    {% block analytics %}
-        {% if GOOGLE_ANALYTICS %}
-            <script>
-                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-                ga('create', '{{ GOOGLE_ANALYTICS }}', 'auto');
-                                ga('require', 'linkid', 'linkid.js');
-                ga('send', 'pageview');
-            </script>
-        {% endif %}
-    {% endblock analytics %}
 </body>
 </html>

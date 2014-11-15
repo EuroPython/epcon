@@ -2,10 +2,12 @@
 
 {% if languages|length > 1 %}
 {% for language in languages %}
-<li class="lang{% if current_language = language.0 %} active{% endif %}">
+{% if current_language != language.0 %}
+<li class="right lang{% if current_language = language.0 %} active{% endif %}">
 	{% language language.0 %}
-	<a href="{{ request.current_page.get_absolute_url}}" title="{% trans 'Change to language:' %} {{ language.1 }}">{{ language.1 }}</a>
+	<a href="{{ request.current_page.get_absolute_url}}" title="{% trans 'Change to language:' %} {{ language.1 }}">&raquo; {{ language.1 }}</a>
 	{% endlanguage %}
 </li>
+{% endif %}
 {% endfor %}
 {% endif %}

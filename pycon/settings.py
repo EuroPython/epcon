@@ -335,6 +335,16 @@ CMS_PLUGIN_PROCESSORS = (
 )
 MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': False})
 
+CKEDITOR_SETTINGS = {
+    'height': 300,
+    'stylesSet': 'default:/static/p6/javascripts/ckeditor.wysiwyg.js',
+    'contentsCss': ['/static/css/base.css'],
+    'language': '{{ language }}',
+    'toolbar': 'CMS',
+    'skin': 'moono',
+    'extraPlugins': 'cmsplugins',
+}
+
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconIT blog'
 MICROBLOG_DESCRIPTION = 'latest news from pycon.it'
