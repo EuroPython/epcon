@@ -17,13 +17,13 @@
                 'remove': "{% url "hcomments-delete-comment" %}"
             });
             hcomments.onCommentModerated = function(comment) {
-                var e = comment ? comment : $('.form-box');
+                var e = comment ? comment : $('.new-comment');
                 var msg = $('<div class="comment-moderated">{% trans "Lo staff sta controllando il tuo commento, a breve verrà pubblicato." %}</div>');
                 e.prepend(msg)
                 setTimeout(function() {
                     $('.comment-moderated', e).remove();
                 }, 10000);
-                $('.form-box form').get(0).reset();
+                $('.new-comment').get(0).reset();
             }
         });
     //]]>
