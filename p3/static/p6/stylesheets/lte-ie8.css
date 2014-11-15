@@ -2121,7 +2121,13 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 
 .calendar h4 { text-align: left; }
 
-h3 { font-weight: bold; }
+h1 { font-weight: bold; }
+
+h2 { font-size: 25px; font-weight: bold; margin-top: 30px; }
+
+h3 { font-weight: bold; margin-top: 30px; }
+
+.deadline time { margin-right: 10px; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
 .avatar { /*     border: 2px solid $lightneutralcolor; */ display: block; }
