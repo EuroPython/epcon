@@ -27,7 +27,7 @@
                         </div>
                         <div class="deadline-homepage">
                             <h3 class="media-heading">{% trans "Next deadline" %}</h3>
-                            <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.body|safe }}</span>
+                            <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.header|safe }}</span>
                         </div>
                         <div class="deadline-button">
                             <a class="btn btn-primary" href="{% page_url 'calendar' %}">{% trans "All the deadlines" %}</a>
