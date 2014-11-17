@@ -76,9 +76,17 @@ class PyconLayout(object):
     def virtualenv(self):
         return '/srv/pycon.it/virtualenvs/{}/'.format(self.project_name)
 
+class ProcessManager(object):
+    def __init__(self, upstart_name):
+        self.name = upstart_name
+
+    def restart(self):
+        return api.run('sudo restart {}'.format(self.name))
+
 class DjangoSite(object):
-    def __init__(self, project_layout, dvcs):
+    def __init__(self, project_layout, process_manager, dvcs):
         self.project_layout = project_layout
+        self.process_manager = process_manager
         self.dvcs = dvcs
 
     def run(self, revision=None):
@@ -94,7 +102,7 @@ class DjangoSite(object):
 
     def restart_site(self):
         with hide('output'):
-            result = api.run('sudo restart beta-pyconit')
+            result = self.process_manager.restart()
             if result.failed:
                 print result
                 utils.abort(red("{} failed with code {}".format(result.real_command, result.return_code)))
@@ -180,7 +188,13 @@ class DjangoSite(object):
 @api.task
 def deploy_beta(revision='develop'):
     site = PyconLayout('beta')
-    remote = DjangoSite(site, Git())
+    remote = DjangoSite(site, ProcessManager('beta-pyconit'), Git())
+    remote.run(revision=revision)
+
+@api.task
+def deploy(revision='HEAD'):
+    site = PyconLayout('production')
+    remote = DjangoSite(site, ProcessManager('pyconit'), Git())
     remote.run(revision=revision)
 
 #@api.task
