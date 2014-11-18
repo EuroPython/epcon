@@ -6,6 +6,7 @@ def settings(request):
     names = (
         'NEWSLETTER_SUBSCRIBE_URL',
         'TWITTER_USER',
+        'GOOGLE_ANALYTICS',
     )
     output = {}
     for x in names:

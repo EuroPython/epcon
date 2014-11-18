@@ -1,6 +1,7 @@
 {% extends "p3/base.html" %}
 {% load p3 microblog_tags conference i18n cms_tags static thumbnail %}
 {% block BODY_ID %}home{% endblock %}
+{% block body-class %}home-tpl{% endblock %}
 
 {% block TEASER %}
 
@@ -14,10 +15,10 @@
     </div>
 </section>
 
+{% get_deadlines limit=1 as l %}
+{% if l %}
 <section class="deadlines">
-    {% get_deadlines limit=1 as l %}
-        {% if l %}          
-        <div class="grid-container">              
+        <div class="grid-container">
             <div class="grid-50 prefix-25">
                 <div class="media grid-container">
                     <div class="media-body calendar grid-100">
@@ -26,40 +27,45 @@
                         </div>
                         <div class="deadline-homepage">
                             <h3 class="media-heading">{% trans "Next deadline" %}</h3>
-                            <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.body|safe }}</span>
+                            <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.headline|safe }}</span>
                         </div>
                         <div class="deadline-button">
-                            <a class="btn btn-primary" href="/calendar">{% trans "All the deadlines" %}</a>
+                            <a class="btn btn-primary" href="{% page_url 'calendar' %}">{% trans "All the deadlines" %}</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {% endif %}
 </section>
+{% endif %}
 
+{% if request.toolbar.edit_mode %}
 {% current_conference as conf %}
-{% if conf.cfp %}
-    <section>
-        <div class="grid-container">
-            <!-- NOTICE -->
-            <div class="grid-50 notice">
-                <div class="media">
+<section>
+    <div class="grid-container">
+        <!-- NOTICE -->
 
-                    <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
-                    <div class="media-body">
-                        <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
-                        <p class="">{% placeholder "cfp_teaser_text" %}</p>
-                        <a class="btn btn-primary" href="/call-for-proposals/">{% trans "Submit your proposal" %}</a>
-                    </div><!-- /media-body -->
+{% if conf.cfp %}
+        <div class="grid-50 notice">
+            <div class="media">
+                <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
+                <div class="media-body">
+                    <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
+                    <p class="">{% placeholder "cfp_teaser_text" %}</p>
+                    <a class="btn btn-primary" href="{% page_url 'cfp' %}">{% trans "Submit your proposal" %}</a>
+                </div><!-- /media-body -->
+            </div>
+        <hr class="hide-on-desktop" />
+        </div><!-- /grid notice -->
 {% else %}
-                <div class="pull-left"></div>
-                <div class="media-body"><p></p></div>
-                </div>
-            <hr class="hide-on-desktop" />
-            </div><!-- /grid notice -->
-        </div><!-- /grid-container -->
-    </section>
+        <div class="grid-100 general-notice">
+            <div class="pull-left"></div>
+            <div class="media-body">{% placeholder "home_teaser_text" %}</div>
+        <hr class="hide-on-desktop" />
+        </div><!-- /grid notice -->
+{% endif %}
+    </div><!-- /grid-container -->
+</section>
 {% endif %}
         
 {% block SPONSORS %}
@@ -79,7 +85,7 @@
             {% endfor %}
             <div class="grid-25">
                 <div class="sponsor sponsor-wanted">
-                    <a href="/sponsor/">{% trans 'Become a sponsor' %}</a>
+                    <a href="{% page_url 'sponsor' %}">{% trans 'Become a sponsor' %}</a>
                 </div>
             </div><!-- /grid -->
         </div><!-- /grid-container -->
@@ -208,6 +214,7 @@
 </section>
 
 <script type="text/javascript">
+    {% if not request.toolbar.edit_mode %}
     $(document).ready(function(){
         $('.quote-slider').slick({
             autoplay: true,
@@ -219,6 +226,7 @@
             infinite: true,
         });
     });
+    {% endif %}
 </script>
 
 {% endblock %}

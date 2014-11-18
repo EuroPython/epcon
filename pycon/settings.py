@@ -10,6 +10,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     ('dvd', 'dvd@gnx.it'),
     ('c8e', 'carlo.miron@gmail.com'),
+    ('yakky', 'github@spalletti.it'),
 )
 
 MANAGERS = ADMINS
@@ -215,6 +216,8 @@ INSTALLED_APPS = (
     'cms_migration',
     'markitup',
     'cms_utils',
+
+    'raven.contrib.django.raven_compat',
 )
 
 RECAPTCHA_OPTIONS = {
@@ -330,7 +333,17 @@ CMS_TEMPLATES = (
 CMS_PLUGIN_PROCESSORS = (
     'cms_utils.processors.process_templatetags',
 )
-MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': True})
+MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': False})
+
+CKEDITOR_SETTINGS = {
+    'height': 300,
+    'stylesSet': 'default:/static/p6/javascripts/ckeditor.wysiwyg.js',
+    'contentsCss': ['/static/css/base.css'],
+    'language': '{{ language }}',
+    'toolbar': 'CMS',
+    'skin': 'moono',
+    'extraPlugins': 'cmsplugins',
+}
 
 MICROBLOG_LINK = 'http://www.pycon.it'
 MICROBLOG_TITLE = 'PyconIT blog'
