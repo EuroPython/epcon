@@ -211,8 +211,8 @@ def tickets_status(conf, code=None):
                         .values('p3_conference__assigned_to'))])
             data = output['data']
             for x in qs:
-                # p3_conference può essere None perché viene costruito lazy al
-                # primo salvataggio del biglietto.
+                # p3_conference can be None because it's filled lazily when
+                # the ticket is saved for the first time
                 if x.p3_conference and x.p3_conference.assigned_to:
                     email = x.p3_conference.assigned_to
                     u = assignees.get(email)
@@ -559,22 +559,20 @@ def hotel_tickets(conf, code=None):
                 'orderitem__order__user__user__attendeeprofile__p3_profile',
                 'p3_conference_room')
 
-    # biglietti hotel non compilati
-    # -----------------------------
-    # È l'unione tra i biglietti che hanno name o document vuoti (e non sono
-    # stati marcati come unused) e quelli che contengono il campo name uguale
-    # al nome del compratore.
+    # unfilled hotel tickets
+    # ----------------------
+    # It's the union between tickets with empty name or document (and haven't
+    # been marked as unused) and the ones with the same name as the buyer.
     #
-    # Dato che è leggitimo per una persona comprarsi un biglietto hotel per se
-    # stessa, la seconda condizione evidenzia solo i biglietti in cui il nome
-    # del compratore compare per più di una volta.
+    # Being valid for a person to buy an hotel ticket for him/herself, the second
+    # condition only triggers if the name of the buyer is present more than once.
     #
-    # La seconda query (che risolve il secondo vincolo) è particolarmente
-    # lunga, devo ripetere le condizioni nel where (e di conseguenza le join)
-    # per poter individuare con esatezza tra tutti i biglietti di un certo
-    # utente quali sono quelli con il problema.
+    # The second query (for the second check) is quite long because I've to repeat
+    # in the where parts the conditions (and consequently the joins) to be able to
+    # identify exactly in all the tickets of a certain user which are the
+    # ones with the problem.
     #
-    # Mettiamo caso che un utente abbia acquistato 4 biglietti
+    # Suppose someone bought 4 tickets:
     #
     # . buyer   ticket_name
     # 1 Mr. X   Mr. X
@@ -582,11 +580,11 @@ def hotel_tickets(conf, code=None):
     # 3 Mr. X   Mrs. X
     # 4 Mr. X   Mr. X
     #
-    # La prima parte della query individua la riga numero 2 mentre la seconda
-    # le righe 1 e 4; senza la ripetizioni delle condizioni la seconda query
-    # ritornerebbe anche la riga 3.
+    # The first part of the query selects row number 2 while the second will
+    # select row 1 and 4; without repeating the conditions the second query
+    # would also return row 3.
     #
-    # Se e quando sqlite supporterà la clausola WITH ne potremo riparlare.
+    # When (and if) sqlite will support WITH clause this could be rediscussed.
     not_compiled_sql = """
     select p3t.id
     from p3_ticketroom p3t inner join conference_ticket ct

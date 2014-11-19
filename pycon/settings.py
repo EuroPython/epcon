@@ -143,8 +143,8 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'filebrowser',
-    # attenzione l'ordine tra p3/assopy/admin è importante per risolvere
-    # correttamente i templates
+    # Warning: the sequence p3/assopy/admin is important to be able to
+    # resolve correctly templates
     'p3',
     'assopy',
 
@@ -321,11 +321,11 @@ def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     return tickets
 
 def CONFERENCE_VOTING_OPENED(conf, user):
-    # possono accedere alla pagina:
-    #   chiunque durante il community voting
-    #   i superuser
-    #   gli speaker (della conferenza in corso)
-    #   chi ha il gruppo special "pre_voting"
+    # Can access the page:
+    #   anyone during community voting
+    #   superusers
+    #   speakers (of current conference)
+    #   who is in the special "pre_voting" group
     if conf.voting() or user.is_superuser:
         return True
     from conference.models import TalkSpeaker, Speaker
@@ -355,8 +355,8 @@ def CONFERENCE_VOTING_ALLOWED(user):
 
     from p3 import models
     from django.db.models import Q
-    # può votare chi ha almeno un biglietto confermato e che non ha
-    # assegnato a qualcun'altro
+    # Can vote who has at least one confirmed ticket that has
+    # not been assigned tosomeone else
     tickets = models.TicketConference.objects\
         .available(user, CONFERENCE_CONFERENCE)\
         .filter(Q(orderitem__order___complete=True)|Q(orderitem__order__method='admin'))\
@@ -401,10 +401,10 @@ def CONFERENCE_VIDEO_COVER_EVENTS(conference):
     def valid(e):
         if e['tags'] & set(['special', 'break']):
             return False
-        # gli ultimi due giorni si tengono gli sprint
+        # sprints are in the last two days
         if e['time'].date() >= conf.conference_end - timedelta(days=1):
             return False
-        # gli eventi serali non vengono ripresi
+        # evening events are not recorded
         if e['time'].hour >= 20:
             return False
         if len(e['tracks']) == 1 and (e['tracks'][0] in ('helpdesk1', 'helpdesk2')):
@@ -481,8 +481,8 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
 
         title = event['name']
         if event.get('custom'):
-            # questo è un evento custom, se inizia con un anchor posso
-            # estrane il riferimento
+            # this is a custom event, if starts with an anchor we can
+            # extract the reference
             m = re.match(r'<a href="(.*)">(.*)</a>', title)
             if m:
                 title = m.group(2)
@@ -686,7 +686,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
         raise ValueError('track or event, not both')
 
     if event:
-        # ep2012, tutti i keynote vengono trasmessi dalla track "lasagne"
+        # ep2012, all keynotes are recorded in track "lasagne"
         if 'keynote' in event['tags'] or len(event['tracks'])>1:
             track = 'track2'
         else:
@@ -790,9 +790,9 @@ from settings_locale import *
 
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
-# i file sotto SECURE_MEDIA_ROOT devono essere serviti da django, questo if
-# serve ad evitare che vengano messi in una subdir di MEDIA_ROOT che
-# normalmente è servita da un webserver esterno.
+# files under SECURE_MEDIA_BOOT must be served by django, this if
+# is needed to avoid they end up in a subdir of MEDIA_ROOT that is
+# normally served by an external webserver
 import os.path
 check = os.path.commonprefix((MEDIA_ROOT, SECURE_MEDIA_ROOT))
 if check.startswith(MEDIA_ROOT):

@@ -39,8 +39,8 @@ if settings.DEBUG:
    )
 
 from pages import views as pviews
-# Questa view reimplementa il vecchio supporto di pages per le richieste ajax.
-# Se una richiesta è ajax viene utilizzato un template ad hoc
+# This view reimplements the old support of pages for ajax requests.
+# If a request is ajax there is an ad-ho template to handle it.
 class DetailsWithAjaxSupport(pviews.Details):
     def get_template(self, request, context):
         tpl = super(DetailsWithAjaxSupport, self).get_template(request, context)

@@ -32,10 +32,9 @@ class P3BillingData(aforms.BillingData):
             vat = self.cleaned_data.get('vat_number', '')
             country = self.cleaned_data['country']
             if country and country.pk == 'IT':
-               # il cf è di 16 caratteri per le persone fisiche, le aziende
-               # possono averlo più corto
+               # the tax id is 16 characters for persons, for companies it can be shorter
                if not cf_code or (len(cf_code) != 16 and not vat):
-                   # hack per associare l'errore al campo cf_code
+                   # hack to tie the error to the cf_code field
                    e = forms.ValidationError('"Codice Fiscale" is required for Italian customers')
                    self._errors['cf_code'] = self.error_class(e.messages)
                    del self.cleaned_data['cf_code']
@@ -49,7 +48,7 @@ class P3BillingDataCompany(P3BillingData):
         widget=forms.Textarea(attrs={'rows': 3}),
     )
 
-    # la derivazione non è un errore, voglio riappropriarmi del vat_number
+    # deriving is not an error, I need to get vat_number
     class Meta(aforms.BillingData.Meta):
         exclude = aforms.BillingData.Meta.exclude + ('cf_code',)
 
@@ -59,7 +58,7 @@ class P3BillingDataCompany(P3BillingData):
         self.fields['address'].required = True
 
 #    def clean_vat_number(self):
-#        # Posso verificare solo i codici europei tramite vies
+#        # I can verify only european ids using vies
 #        vat = self.cleaned_data['vat_number']
 #        country = self.instance.country
 #        if vat and country and country.vat_company_verify == 'v':
@@ -67,8 +66,8 @@ class P3BillingDataCompany(P3BillingData):
 #            try:
 #                check = vies.check_vat(country.pk, vat)
 #            except Exception:
-#                # il servizio VIES può fallire per motivi suoi, non voglio
-#                # perdermi un ordine a causa loro
+#                # VIES servicy may fail for unknown reasons, I don't want
+#                # to lose an order because of that.
 #                pass
 #            else:
 #                if not check:
@@ -84,9 +83,9 @@ def cart(request):
             pass
     at = 'p'
 
-    # user-cart serve alla pagina di conferma con i dati di fatturazione,
-    # voglio essere sicuro che l'unico modo per impostarlo sia quando viene
-    # fatta una POST valida
+    # user-cart is needed for the confirmation page with invoce data,
+    # I want to be suer that the only way to set it is when there is
+    # a valid POST request
     request.session.pop('user-cart', None)
     if request.method == 'POST':
         if not request.user.is_authenticated():
@@ -123,8 +122,8 @@ def calculator(request):
     if request.method == 'POST':
         form = p3forms.P3FormTickets(data=request.POST, user=request.user.assopy_user)
         if not form.is_valid():
-            # se la form non valida a causa del coupon lo elimino dai dati per
-            # dare cmq un feedback all'utente
+            # if the fom is not validate because of the coupon I'm deleting it
+            # from the data to be able to give the user a feedback anyway
             if 'coupon' in form.errors:
                 qdata = request.POST.copy()
                 del qdata['coupon']
@@ -139,15 +138,14 @@ def calculator(request):
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
             def _fmt(x):
                 if x == 0:
-                    # x è un Decimal e ottengo una rappresentazione diversa tra 0 e -0
+                    # x is a Decimal and 0 and -0 are different
                     return '0'
                 else:
                     return '%.2f' % x
 
             grand_total = 0
-            # per permettere al client di associare ad ogni biglietto il giusto
-            # costo, riscrivo le informazioni nello stesso "formato" in cui mi
-            # sono state inviate.
+            # to allow the client to associate each ticket with the correct price
+            # infos are rewritten inthe same "format" that has been used to send them.
             tickets = []
             for row in totals['tickets']:
                 fcode = row[0].code
@@ -176,8 +174,8 @@ def billing(request):
     try:
         tickets = request.session['user-cart']['tickets']
     except KeyError:
-        # la sessione non ha più la chiave user-cart, invece che sollevare un
-        # errore 500 rimando l'utente sul carrello
+        # the session is missing the user-cart key, instead of raising a
+        # 500 error I'm sending back the user to the cart.
         return redirect('p3-cart')
 
     recipient = 'p'
@@ -186,8 +184,7 @@ def billing(request):
         if fare.recipient_type == 'c':
             recipient = 'c'
         if fare.ticket_type == 'conference':
-            # non si possono comprare biglietti destinati ad entità diverse
-            # (persone/ditte)
+            # you cannot buy tickets for different entity types (user/company)
             conference_recipients.add('c' if fare.recipient_type == 'c' else 'p')
     if len(conference_recipients) > 1:
         raise ValueError('mismatched fares: %s' % ','.join(x[0].code for x in tickets))
@@ -207,15 +204,14 @@ def billing(request):
 
         order_data = None
         if totals['total'] == 0:
-            # free order, mi interessa solo sapere che l'utente ha accettato il
-            # code of conduct
+            # free order, I'm only interested in knowing the user accepted the code of conduct.
             if 'code_conduct' in request.POST:
                 order_data = {
                     'payment': 'bank',
                 }
             else:
-                # se non lo ha accettato, preparo la form, e l'utente si
-                # troverà la checkbox colorata in rosso
+                # if it wasn't accepted the form is prepared and the user
+                # will see the checkbox in red
                 form = cform(instance=auser, data=post_data)
                 form.is_valid()
         else:
