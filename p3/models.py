@@ -60,7 +60,7 @@ class TicketConferenceManager(models.Manager):
             restituisce il qs con i biglietti disponibili per l'utente;
             disponibili significa comprati dall'utente o assegnati a lui.
             """
-            # TODO: drop in favore di dataaccess.user_tickets
+            # TODO: drop in favor of dataaccess.user_tickets
             q1 = user.ticket_set.all()
             if conference:
                 q1 = q1.conference(conference)
@@ -98,8 +98,8 @@ class TicketConference(models.Model):
 
 def _ticket_sim_upload_to(instance, filename):
     subdir = 'p3/personal_documents'
-    # inserisco anche l'id del biglietto nel nome del file perché un utente può
-    # acquistare più sim e probabilmente non sono tutte per lui.
+    # Adding the ticket id in the filename because a single user can
+    # buy multiple sims and probably they're not all for the same person.
     fname = '%s-%s' % (instance.ticket.user.username, instance.ticket.id)
     fdir = os.path.join(dsettings.SECURE_MEDIA_ROOT, subdir)
     for f in os.listdir(fdir):
@@ -107,10 +107,10 @@ def _ticket_sim_upload_to(instance, filename):
             os.unlink(os.path.join(fdir, f))
             break
     fpath = os.path.join(subdir, fname + os.path.splitext(filename)[1].lower())
-    # c'è un qualche balletto strano tra django e python e se ritorno una
-    # stringa non unicode con caratteri non ascii ad un certo punto viene
-    # trasformata in unicode correttamente ma poi passata alla os.stat che ci
-    # applica una `str()`. Mi limito a tornare una stringa ascii.
+    # There's some strange interaction between django and python, and if
+    # a non-unicode string containing non-ascii chars is used it's transformed
+    # in unicode correctly, but later it's passed to os.stat that will
+    # call str() on it. The solution is to return only an ascii string.
     if not isinstance(fpath, unicode):
         fpath = unicode(fpath, 'utf-8')
     return fpath.encode('ascii', 'ignore')
@@ -212,9 +212,9 @@ class HotelRoom(models.Model):
 
 class TicketRoomManager(models.Manager):
     def valid_tickets(self):
-        # prima di tutto individuo i biglietti validi; sono quelli il cui
-        # ordine è confermato o, nel caso di ordini con bonifico bancario, sono
-        # avvenuti di "recente"...
+        # First of all valid tickets are selected; only the ones for which
+        # the order has been confirmed or, in case of bank transfer payment,
+        # happened "recently"...
         incomplete_limit = datetime.date.today() - datetime.timedelta(days=60)
         return TicketRoom.objects\
             .filter(ticket__fare__conference=dsettings.CONFERENCE_CONFERENCE)\
@@ -283,26 +283,25 @@ class TicketRoomManager(models.Manager):
         start, end = period
         inc = datetime.timedelta(days=1)
 
-        # la presenza di un periodo ben definito ci può suggerire di usare una
-        # query ad hoc (come faceva l'implementazione precedente), bisogna però
-        # stare attenti alle prenotazioni adiacenti; cioè quelle prenotazioni
-        # che possono condividere il periodo selezionato perché una termina
-        # prima dell'altra. Ad esempio:
+        # the presence of a well defined period could suggest touse an ad-hoc
+        # query (like it was done in previous implementation), it's important
+        # however to pay attention to adjacent bookings, i.e. those bookings
+        # that may share the same selected period because one is ending before
+        # the other. For example:
         #
         # start = 2/7
         # end = 6/7
         #
-        # biglietti:
+        # tickets:
         #   1, 2/7 -> 8/7
         #   2, 30/6 -> 3/7
         #   3, 5/7 -> 10/7
         #
-        # sebbene ci siano 3 biglietti nel periodo richiesto i posti letto
-        # effettivamente occupati sono 2 perché i biglietti #2 e #3 possono
-        # condividere la stessa stanza.
+        # despite there are 3 tickets in the selected period the used beds
+        # are only 2 because ticket #2 and #3 can share the same room.
         #
-        # Per questo motivo si utilizza la `overall_status` che sebbene un po'
-        # più lenta tiene già conto di questi casi.
+        # For this reason the `overall_status` is used as, even if being a
+        # little slower, it handles correctly these cases.
         reservations = self.overall_status()
         output = reservations[start]
 
@@ -441,8 +440,8 @@ class P3Profile(models.Model):
     def send_user_message(self, from_, subject, message):
         from conference.models import Conference, AttendeeLink
         if not self.spam_user_message:
-            # esiste un link tra i due utenti, il messaggio è consentito
-            # nonostante spam_user_message
+            # If there's a link between the two users the message is allowed
+            # despite spam_user_message
             try:
                 AttendeeLink.objects.getLink(from_.id, self.profile_id)
             except AttendeeLink.DoesNotExist:

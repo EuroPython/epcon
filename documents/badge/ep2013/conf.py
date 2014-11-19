@@ -80,7 +80,7 @@ def ticket(image, ticket, utils):
 
     first_name = first_name.upper().strip()
     last_name = string.capwords(last_name.strip())
-    # irlandesi! scozzesi!
+    # irish and scotch
     last_name = last_name.replace('Mcc', 'McC')
 
     color_name = 74, 57, 50

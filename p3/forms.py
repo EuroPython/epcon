@@ -485,15 +485,15 @@ class P3ProfileSpamControlForm(forms.ModelForm):
 class HotelReservationsFieldWidget(forms.Widget):
     def value_from_datadict(self, data, files, name):
         if name in data:
-            # data è l'initial_data, contiene i dati già in forma normalizzata
+            # data is initial_data, with content already in normalized form
             return data[name]
-        # data è un QueryDict, o cmq proviene da una request
+        # data is a QueryDict, or it's coming from a request anyway
         fares = data.getlist(name + '_fare')
         qtys = data.getlist(name + '_qty')
         periods = data.getlist(name + '_period')
 
-        # qualcuno si è messo a giocare con i dati in ingresso, interrompo
-        # tutto inutile passare per la validazione
+        # Someone has been playing with input data, stopping here as
+        # it's pointless to attempt validation.
         if len(fares) != len(qtys) or len(periods) != len(fares) * 2:
             raise ValueError('')
 
@@ -572,15 +572,17 @@ class HotelReservationsFieldWidget(forms.Widget):
 
             rows.append(ctx)
 
-        # XXX schifezza!
-        # per come ho implementato il rendering del widget ho bisogno di sapere
-        # qui e adesso se ci sono errori per mostrarli nel posto giusto.
-        # Purtroppo gli errori sono una proprietà del BoundField non del field
-        # ne tantomeno del widget. Questo codice è un accrocchio funziona
-        # perché nel templatetag aggancio al widget gli errori della form. Il
-        # modo pulito sarebbe implementare il rendering dei subwidget come
-        # avviene per il RadioInput, passare dal filtro |field e inserire li
-        # gli errori.
+        # XXX crappy hack!
+        # given the way I've implemented widget rendering I need to
+        # know here and now if there are errors, to be able to show
+        # them in the correct position.
+        # Unfortunately the errors are a property of BoundField, not
+        # of Field or of the widget.
+        # This bad hack works just because in the templatetag I'm
+        # connecting to the widget the errors of the form.
+        # The clean way would be instead reimplementing the rendering
+        # of subwidget as it's done for RadioInput, passing from
+        # filter |field and inserting the error at that point.
         errors = [None] * len(rows)
         if hasattr(self, '_errors'):
             print self._errors
@@ -632,17 +634,17 @@ class P3FormTickets(aforms.FormTickets):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(P3FormTickets, self).__init__(*args, **kwargs)
-        # cancello il campo pagamento perché voglio posticipare questa scelta
+        # Deleting payment field because I want to delay this choice
         del self.fields['payment']
 
-        # i field relativi alle prenotazioni alberghiere si comportano in
-        # maniera speciale; innanzitutto possono essere "multipli" nel senso
-        # che per la stesso tipo di fare (ad esempio HB3 - posto letto in
-        # tripla) posso avere entry in periodi diversi (ogni entry può già
-        # specificare il numero di posti letto disponibili).
-        # Inoltre per ogni prenotazione deve essere specificato anche il "periodo".
+        # Fields related to hotel reservations behave differently;
+        # first of all the can be "multiple" in the sense that for the
+        # same fare type (e.g. HB3 - bed in triple room) there could
+        # entries for different periods (each entry can specify the
+        # number of available beds).
+        # Moreover each reservation must specify the "period".
 
-        # Decido di gestire questi casi con del codice custom nella clean
+        # These cases will be handled in custom code of clean
         for k in self.fields.keys():
             if k.startswith('H'):
                 del self.fields[k]
@@ -682,7 +684,7 @@ class P3FormTickets(aforms.FormTickets):
                 row['period'],
             ))
 
-        # voglio permettere l'acquisito solo ai partecipanti
+        # Only partecipants are allowed to buy
         conference_tickets = 0
         for k, v in self.cleaned_data.items():
             if k[0] == 'T' and v:
@@ -740,7 +742,7 @@ class P3EventBookingForm(cforms.EventBookingForm):
         data = super(P3EventBookingForm, self).clean_value()
         if not data:
             return data
-        # per prenotare un training è necessario un biglietto "standard" o "daily"
+        # A "standard" or "daily" ticket is required to book a training
         tt = cmodels.Event.objects\
             .filter(id=self.event)\
             .values('talk__type')[0]['talk__type']
@@ -752,7 +754,7 @@ class P3EventBookingForm(cforms.EventBookingForm):
         else:
             raise forms.ValidationError('ticket error')
 
-        # non posso prenotare piŭ di un helpdesk dello stesso tipo
+        # No more than one helpdesk per type can be booked
         helpdesk = None
         for t in cmodels.EventTrack.objects\
                     .filter(event=self.event)\

@@ -43,12 +43,11 @@ urlpatterns += i18n_patterns('',
 
 from django.conf import settings
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
-    # XXX questo codice starebbe bene in settings.py, purtroppo li non posso
-    # importare rosetta.signals (a causa di un problema di dipendenze
-    # circolari). urls.py non è il posto perfetto ma dovrebbe funzionare sempre
-    # (tranne che con i management command)
+    # XXX this code would be better in settings.py, unfortunately there
+    # it's impossible to import rosetta.signals because of a circular
+    # dependency problem. urls.py is not the perfect place, but should
+    # work always (with the exception of management commands).
     import rosetta.signals
     def on_rosetta_post_save(sender, **kw):
         settings.ROSETTA_AFTER_SAVE(sender=sender, **kw)
     rosetta.signals.post_save.connect(on_rosetta_post_save)
-

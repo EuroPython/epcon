@@ -74,7 +74,7 @@ def _build_timetables(schedules, events=None, partner=None):
                 try:
                     sid = cmodels.Schedule.objects.get(date=date).id
                 except cmodels.Schedule.DoesNotExist:
-                    # sarebbe meglio riuscire a mostrarlo lo stesso
+                    # it would be better to be able to show it anyway
                     continue
                 tt = TimeTable2.fromEvents(sid, [])
                 tts.append((sid, tt))
@@ -82,8 +82,8 @@ def _build_timetables(schedules, events=None, partner=None):
                 e['schedule_id'] = sid
                 tt.addEvents([e])
     def key(o):
-        # la timetable ha un riferimento indiretto al giorno, devo andare a
-        # prenderlo da uno degli eventi
+        # timetable has an indirect reference to the day, I need to get it
+        # from one of the events.
         tt = o[1]
         ev0 = tt.events.values()[0][0]
         return ev0['time']
@@ -94,8 +94,8 @@ def _conference_timetables(conference):
     """
     Restituisce le TimeTable relative alla conferenza.
     """
-    # Le timetable devono contenere sia gli eventi presenti nel db sia degli
-    # eventi "artificiali" del partner program
+    # The timetables must contain both events in the db and "artificial"
+    # events from partner program
     sids = cmodels.Schedule.objects\
         .filter(conference=conference)\
         .values_list('id', flat=True)

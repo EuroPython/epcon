@@ -156,8 +156,8 @@ def conference2ical(conf, user=None, abstract=False):
             if hotel:
                 data['coordinates'] = [hotel.lat, hotel.lng]
             if not isinstance(data['summary'], tuple):
-                # questo è un evento custom, se inizia con un anchor posso
-                # estrane il riferimento
+                # this is a custom event, if it starts with an anchor I can
+                # extract the reference
                 import re
                 m = re.match(r'<a href="(.*)">(.*)</a>', data['summary'])
                 if m:
