@@ -24,13 +24,7 @@ margin-bottom: $baselineheight / 2;
 font-weight: 300; 
 text-transform: uppercase; }
 
-h2,
-.h2 {
 
-&:after {
-
-    }
-}
 
 h2.border-title {
     @include font-size(48);
