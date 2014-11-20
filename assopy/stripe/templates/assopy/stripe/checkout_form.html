@@ -1,0 +1,6 @@
+{% load stripe_tags %}
+
+<form action="{% url "assopy-stripe-checkout" order.pk %}" method="POST">
+    {% csrf_token %}
+    {% stripe_checkout_script order company_name company_logo %}
+</form>

@@ -33,5 +33,6 @@ setup(name='assopy',
     },
     install_requires=[
         'suds',
+        'stripe==1.19.1',
     ],
 )
