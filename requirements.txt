@@ -1,0 +1,10 @@
+django<1.6
+django-tagging==0.3.1
+simplejson==3.6.5
+Pillow==2.6.1
+django-page-cms==1.5.3
+stripe==1.19.1
+
+-e git+https://github.com/djangoitalia/email_template.git#egg=email_template
+-e git+https://github.com/pythonitalia/conference.git#egg=conference
+-e git+https://github.com/pythonitalia/microblog.git#egg=microblog
