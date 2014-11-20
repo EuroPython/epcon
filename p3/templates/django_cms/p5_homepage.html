@@ -4,20 +4,19 @@
 {% block body-class %}home-tpl{% endblock %}
 
 {% block TEASER %}
-
-<section class="bg-red">
-    <div class="grid-container">
-        <div class="grid-100">
-            <div class="intro">
-                {% placeholder "lead_text" %}
+    <section class="bg-red">
+        <div class="grid-container">
+            <div class="grid-100">
+                <div class="intro">
+                    {% placeholder "lead_text" %}
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-{% get_deadlines limit=1 as l %}
-{% if l %}
-<section class="deadlines">
+    {% get_deadlines limit=1 as l %}
+    {% if l %}
+    <section class="deadlines">
         <div class="grid-container">
             <div class="grid-60 prefix-20">
                 <div class="media grid-container">
@@ -36,181 +35,172 @@
                 </div>
             </div>
         </div>
-</section>
-{% endif %}
+    </section>
+    {% endif %}
 
-{% if request.toolbar.edit_mode %}
-{% current_conference as conf %}
-<section>
-    <div class="grid-container">
-        <!-- NOTICE -->
-
-{% if conf.cfp %}
-        <div class="grid-50 notice">
-            <div class="media">
-                <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
-                <div class="media-body">
-                    <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
-                    <p class="">{% placeholder "cfp_teaser_text" %}</p>
-                    <a class="btn btn-primary" href="{% page_url 'cfp' %}">{% trans "Submit your proposal" %}</a>
-                </div><!-- /media-body -->
-            </div>
-        <hr class="hide-on-desktop" />
-        </div><!-- /grid notice -->
-{% else %}
-        <div class="grid-100 general-notice">
-            <div class="pull-left"></div>
-            <div class="media-body">{% placeholder "home_teaser_text" %}</div>
-        <hr class="hide-on-desktop" />
-        </div><!-- /grid notice -->
-{% endif %}
-    </div><!-- /grid-container -->
-</section>
-{% endif %}
-        
-{% block SPONSORS %}
-{% conference_sponsor as sponsors %}
-{%if sponsors %}
+    {% current_conference as conf %}
     <section>
         <div class="grid-container">
-            <div class="grid-100">
-                <h2 class="border-title">{% trans 'Our Sponsors' %}</h2>
-            </div>
-            {% for s in sponsors %}
-                <div class="grid-25">
-                    <div class="sponsor">
-                        <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="190" height="90" /></a>
+            <!-- NOTICE -->
+            {% if conf.cfp %}
+                <div class="grid-50 notice">
+                    <div class="media">
+                        <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
+                        <div class="media-body">
+                            <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
+                            <p class="">{% placeholder "cfp_teaser_text" %}</p>
+                            <a class="btn btn-primary" href="{% page_url 'cfp' %}">{% trans "Submit your proposal" %}</a>
+                        </div><!-- /media-body -->
                     </div>
-                </div><!-- /grid -->
-            {% endfor %}
-            <div class="grid-25">
-                <div class="sponsor sponsor-wanted">
-                    <a href="{% page_url 'sponsor' %}">{% trans 'Become a sponsor' %}</a>
-                </div>
-            </div><!-- /grid -->
+                <hr class="hide-on-desktop" />
+                </div><!-- /grid notice -->
+            {% else %}
+            <div class="grid-100 general-notice">
+                <div class="pull-left"></div>
+                <div class="media-body">{% placeholder "home_teaser_text" %}</div>
+            <hr class="hide-on-desktop" />
+            </div><!-- /grid notice -->
+            {% endif %}
         </div><!-- /grid-container -->
     </section>
-{%endif%}
-{% endblock %}
-<section class="quote-section">
-    <div id="quotes" class="quote-slider grid-container clearfix">
-        {% conference_quotes limit 3 as quotes %}
-        {% for quote in quotes %}
-        <div class="">
-            <div class="grid-20 prefix-10 quote-image">
-                {% thumbnail quote.image 150x150 crop=True upscale=True as thumbnail %}
-                <img src="{{ thumbnail.url }}" />
+
+    {% block SPONSORS %}
+        {% conference_sponsor as sponsors %}
+        {%if sponsors %}
+        <section>
+            <div class="grid-container">
+                <div class="grid-100">
+                    <h2 class="border-title">{% trans 'Our Sponsors' %}</h2>
+                </div>
+                {% for s in sponsors %}
+                    <div class="grid-25">
+                        <div class="sponsor">
+                            <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="190" height="90" /></a>
+                        </div>
+                    </div><!-- /grid -->
+                {% endfor %}
+                <div class="grid-25">
+                    <div class="sponsor sponsor-wanted">
+                        <a href="{% page_url 'sponsor' %}">{% trans 'Become a sponsor' %}</a>
+                    </div>
+                </div><!-- /grid -->
+            </div><!-- /grid-container -->
+        </section>
+        {%endif%}
+    {% endblock SPONSORS %}
+
+    <section class="quote-section">
+        <div id="quotes" class="quote-slider grid-container clearfix">
+            {% conference_quotes limit 3 as quotes %}
+            {% for quote in quotes %}
+            <div class="">
+                <div class="grid-20 prefix-10 quote-image">
+                    {% thumbnail quote.image 150x150 crop=True upscale=True as thumbnail %}
+                    <img src="{{ thumbnail.url }}" />
+                </div>
+                <div class="grid-60 suffix-10">
+                    <q>{{ quote.text }}</q>
+                    <p>- {{ quote.who }}, {{ quote.activity }}</p>
+                </div>
             </div>
-            <div class="grid-60 suffix-10">
-                <q>{{ quote.text }}</q>
-                <p>- {{ quote.who }}, {{ quote.activity }}</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="learn-with-pycon">
+        <div class="grid-container">
+            <div class="grid-100">
+                <h2 class="border-title">{% trans "Scopri PyCon Italia" %}</h2>
+            </div>
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/talk.svg' %}">
+                    </div>
+                    <h4>{% trans "Talk" %}</h4>
+                    <p>{% trans "3 tracce parallele di talk per ascoltare e scoprire" %}
+                </a>
+            </div>
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/training.svg' %}" />
+                    </div>
+                    <h4>{% trans "Training" %}</h4>
+                    <p>{% trans "Sessioni di 4 ore, con le mani sulla tastiera: impara l'arte e mettila da parte" %}
+                </a>
+            </div>
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/helpdesk.svg' %}" />
+                    </div>
+                    <h4>{% trans "Helpdesk" %}</h4>
+                    <p>{% trans "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti" %}
+                </a>
+            </div>
+
+
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/scopri_chi_viene.svg' %}" />
+                    </div>
+                    <h4>{% trans "Scopri chi viene" %}</h4>
+                    <p>{% trans "Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro" %}
+                </a>
+            </div>
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/recruiting.svg' %}" />
+                    </div>
+                    <h4>{% trans "Recruiting" %}</h4>
+                    <p>{% trans "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate" %}
+                </a>
+            </div>
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/eventi_sociali.svg' %}" />
+                    </div>
+                    <h4>{% trans "Eventi sociali" %}</h4>
+                    <p>{% trans "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?" %}
+                </a>
             </div>
         </div>
-        {% endfor %}
-    </div>
-</section>
+    </section>
 
+    {% placeholder main_text as main_text %}
+    {% if main_text %}
+    <section>
+        {{ main_text }}
+    </section>
+    {% endif %}
+{% endblock TEASER %}
 
-
-<section class="learn-with-pycon">
-    <div class="grid-container">
-        <div class="grid-100">
-            <h2 class="border-title">{% trans "Scopri PyCon Italia" %}</h2>
-        </div>
-        <div class="grid-33">
-            <a href="#">
-                <div class="learn-icon">
-                    <img src="{% static 'p6/images/talk.svg' %}">
-                </div>
-                <h4>{% trans "Talk" %}</h4>
-                <p>{% trans "3 tracce parallele di talk per ascoltare e scoprire" %}
-            </a>
-        </div>
-        <div class="grid-33">
-            <a href="#">
-                <div class="learn-icon">
-                    <img src="{% static 'p6/images/training.svg' %}" />
-                </div>
-                <h4>{% trans "Training" %}</h4>
-                <p>{% trans "Sessioni di 4 ore, con le mani sulla tastiera: impara l'arte e mettila da parte" %}
-            </a>
-        </div>
-        <div class="grid-33">
-            <a href="#">
-                <div class="learn-icon">
-                    <img src="{% static 'p6/images/helpdesk.svg' %}" />
-                </div>
-                <h4>{% trans "Helpdesk" %}</h4>
-                <p>{% trans "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti" %}
-            </a>
-        </div>
-
-
-        <div class="grid-33">
-            <a href="#">
-                <div class="learn-icon">
-                    <img src="{% static 'p6/images/scopri_chi_viene.svg' %}" />
-                </div>
-                <h4>{% trans "Scopri chi viene" %}</h4>
-                <p>{% trans "Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro" %}
-            </a>
-        </div>
-        <div class="grid-33">
-            <a href="#">
-                <div class="learn-icon">
-                    <img src="{% static 'p6/images/recruiting.svg' %}" />
-                </div>
-                <h4>{% trans "Recruiting" %}</h4>
-                <p>{% trans "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate" %}
-            </a>
-        </div>
-        <div class="grid-33">
-            <a href="#">
-                <div class="learn-icon">
-                    <img src="{% static 'p6/images/eventi_sociali.svg' %}" />
-                </div>
-                <h4>{% trans "Eventi sociali" %}</h4>
-                <p>{% trans "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?" %}
-            </a>
-        </div>
-    </div>
-</section>
-
-
-
-
-{% placeholder main_text as main_text with Textarea %}
-{% if main_text %}
-<section>
-{{ main_text }}
-</section>
-{% endif %}
-
-{% endblock%}
 
 {% block MAIN_CONTENT %}
 <section>
-<div class="grid-container">
-    {% post_list count=3 as posts %}
-    <div class="grid-100">
-        <h2 class="border-title">{% trans "Ultimi post dal blog" %}</h2>
-    </div>     
-    {% for post in posts %}
-    {% get_post_data post.id as data %}
-    <div class="grid-33">
-        <h4><a href="{{ data.url }}">{{ data.content.headline }}</a></h4>
-        <p class="post-date">{{ post.date|date:"j F Y" }}</p>
+    <div class="grid-container">
+        {% post_list count=3 as posts %}
+        <div class="grid-100">
+            <h2 class="border-title">{% trans "Ultimi post dal blog" %}</h2>
+        </div>
+        {% for post in posts %}
+            {% get_post_data post.id as data %}
+            <div class="grid-33">
+                <h4><a href="{{ data.url }}">{{ data.content.headline }}</a></h4>
+                <p class="post-date">{{ post.date|date:"j F Y" }}</p>
 
-        <!--
-        &ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}
-        -->
+                <!--
+                &ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}
+                -->
 
-        <div class="post-abstract">{{ data.content.summary|safe }}</div>
-    </div>
-    {% endfor %}
-    
-    
-</div><!-- /grid-container -->
+                <div class="post-abstract">{{ data.content.summary|safe }}</div>
+            </div>
+        {% endfor %}
+    </div><!-- /grid-container -->
 </section>
 
 <script type="text/javascript">
@@ -230,7 +220,3 @@
 </script>
 
 {% endblock %}
-
-
-
-

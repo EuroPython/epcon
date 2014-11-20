@@ -23,8 +23,8 @@
     </div> <!-- /grid -->
     {% block PAGE__AFTER_MAIN_COLUMN %}
         <aside class="grid-30 prefix-10">
-            {% render_fb_like ref="like_page_col" %}
             <div class="slot cms">
+                {% render_fb_like ref="like_page_col" %}
                 {% block PAGE_SIDEBAR_TOP %}{% endblock %}
                 {% block PAGE_SIDEBAR %}
                 {% placeholder "right-column"%} {# markdown #}

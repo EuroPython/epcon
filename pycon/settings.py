@@ -112,40 +112,42 @@ TEMPLATE_LOADERS = (
 
 from django.conf import global_settings
 
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
+    'django.contrib.messages.context_processors.messages',
     "django.core.context_processors.i18n",
     "django.core.context_processors.debug",
     "django.core.context_processors.request",
     "django.core.context_processors.media",
     'django.core.context_processors.csrf',
     'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
+    "django.core.context_processors.tz",
+    'p3.context_processors.settings',
     'conference.context_processors.current_url',
     'conference.context_processors.stuff',
-    'p3.context_processors.settings',
-    "cms.context_processors.cms_settings",
     "sekizai.context_processors.sekizai",
+    "cms.context_processors.cms_settings",
     "django.core.context_processors.static",
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
     'pycon.middleware.RisingResponse',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
 )
 
 ROOT_URLCONF = 'pycon.urls'
@@ -195,7 +197,7 @@ INSTALLED_APPS = (
     'tagging',
     'taggit',
     'authority',
-    'pages',
+    #'pages',
     'mptt',
     'conference',
     'microblog',
@@ -368,10 +370,10 @@ SOUTH_MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
 }
 
-ATHUMBNAIL_PROCESSORS = (
+THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
-#    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
 

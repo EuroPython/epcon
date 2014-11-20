@@ -80,127 +80,59 @@
     {% endblock %}
 </head>
 <body id="{% block BODY_ID %}{% endblock %}" class="{% block body-class %}content-tpl{% endblock %}">
-    {% cms_toolbar %}
-    {% if request.toolbar.edit_mode %}
-    <div class="draft"></div>
-    {% endif %}
- <!--[if lt IE 8]>
-    <div id="promptChromeFrame">
-    </div>
-  <![endif]-->
+{% cms_toolbar %}
+{% if request.toolbar.edit_mode %}<div class="draft"></div>{% endif %}
+<!--[if lt IE 8]>
+<div id="promptChromeFrame">
+</div>
+<![endif]-->
 {% block HEADER_BLOCK %}
     {% if messages %}
     {% for m in messages %}
         <div class="feedback{% if m.tags %} {{ m.tags }}{% endif %}">{{ m }}</div>
     {% endfor %}
-{% endif %}
+    {% endif %}
     {% block TOP_NAV_BLOCK %}
-    <a href="#navigation-toggle" class="navigation-toggle"><i title="Menu" class="fa fa-bars"></i></a>
-    <nav id="navigation-toggle" role="navigation">
-        <ul class="clearfix">
-            {% show_menu 0 1 1 1  %}
-            {% language_chooser "p3/includes/langnav.html" "native" %}
-            {% if request.user.is_authenticated %}
-            <li class="right">
-            {% if request.user.is_authenticated %}
-                <a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
-                {% if request.user.is_staff %}
-                    <a title="Enter admin" href="/admin/"><i class="fa fa-wrench"></i></a>
+        <a href="#navigation-toggle" class="navigation-toggle"><i title="Menu" class="fa fa-bars"></i></a>
+        <nav id="navigation-toggle" role="navigation">
+            <ul class="clearfix">
+                {% if request.user.is_authenticated %}
+                <li class="right">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
+                    {% if request.user.is_staff %}
+                        <a title="Enter admin" href="/admin/"><i class="fa fa-wrench"></i></a>
+                    {% endif %}
+                    {% if request.session.doppelganger %}
+                        <a href="{% url "admin:auser-kill-doppelganger" %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a>
+                    {% endif %}
+                        <a href="/accounts/logout/?next=/">Log out</a>
+                {% else %}
+                    <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
                 {% endif %}
-                {% if request.session.doppelganger %}
-                    <a href="{% url "admin:auser-kill-doppelganger" %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a>
+                </li>
                 {% endif %}
-                    <a href="/accounts/logout/?next=/">Log out</a>
-            {% else %}
-                <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
-            {% endif %}
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
+            </ul>
+        </nav>
     {% endblock %}
 {% endblock %}
 
 <div class="container">
 
 {% block HEADER %}
-<header role="banner">
-    <div class="grid-container">
-        {% comment %}
-        <div class="grid-20">
-
-            {% fares_available "conference" sort="price" as fares %}
-            {% if not fares %}
-                {% fares_available "all" sort="price" as fares %}
-            {% endif %}
-            {% if fares %}
-                <div class="badge badge-buy">
-                    <i class="fa fa-ticket fa-3x hide-on-mobile"></i>
-                    <a href="/registration/">{% trans "Buy tickets" %}</a>
-                    <small>{% trans "Starting from" %} <b>{{ fares.0.price }}</b>€</small>
-                </div>
-            {%else%}
-                { %comment%}If empty show an utility badge{%endcomment% }
-                <div class="badge badge-track">
-                    <i class="fa fa-globe fa-3x hide-on-mobile"></i>
-                    <a title="Learn more" href="/english/">{% trans "PyCon in English" %}</a>
-                    <small>{% trans "PyCon Italy also has an English track" %}</small>
-                </div>
-            {% endif %}
-            <hr class="hide-on-desktop" />
-        </div>
-        {% endcomment %}
-        <div class="grid-60 prefix-20">
-            <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p6/images/pycon-sei-logo-retina.png" alt="*" ></a></div>
-        </div>
-
-        <!-- NEXT DEADLINE -->
-        {% comment %}
-        {% get_deadlines limit=1 as l %}
-        {% if l %}
-        <div class="grid-20 notice-homepage">
-            <div class="media">
-                <i class="fa fa-calendar-o fa-3x"></i>
-                <div class="media-body calendar">
-                    <h3 class="media-heading">{% trans "Next deadline" %}</h3>
-                    <p class="deadline"><time>{{ l.0.date|date:"d b" }}</time>{{ l.0.body|safe }}</p>
-                    <div class="more">
-                        <a href="/calendar">{% trans "All the deadlines &rarr;" %}</a>
-                    </div>
-                </div>
+    <header role="banner">
+        <div class="grid-container">
+            <div class="grid-60 prefix-20">
+                <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p6/images/pycon-sei-logo-retina.png" alt="*" ></a></div>
             </div>
-        </div>
-        {% endif %}
-        {% endcomment %}
-
-    </div><!-- /grid-container -->
-</header>
+        </div><!-- /grid-container -->
+    </header>
 {% endblock %}
 
-
-    {% comment %}
-    <section class="notice countdown">
-        <div class="baron"></div>
-        {% if COUNTDOWN.conference > 1 %}
-        <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} tickets left
-        {% elif COUNTDOWN.conference == 1 %}
-        <strong>Hurry up!</strong> only {{ COUNTDOWN.conference }} ticket left
-        {% else %}
-        <strong>Conference SOLD OUT!</strong>
-        {% endif %}
-        <a href="https://ep2013.europython.eu/blog/2013/05/20/enjoy-your-evenings">PyBarbecue</a>
-        {% if COUNTDOWN.pyfiorentina >= 0 %}
-        seats left: <strong>{{ COUNTDOWN.pyfiorentina }}</strong>!
-        {% else %}
-        few seats left!
-        {% endif %}
-    </section>
-    {% endcomment %}
-
-    <div class="page clearfix">
-        {% block TEASER %}{% endblock %}
-        {% block MAIN_CONTENT %}{% endblock %}
-    </div>
+<div class="page clearfix">
+    {% block TEASER %}{% endblock %}
+    {% block MAIN_CONTENT %}{% endblock %}
+</div>
 
 {% block FOOTER_BLOCK %}
 <footer role="contentinfo">
@@ -240,9 +172,6 @@
     <script type="text/javascript">
         setup_fragment();
     </script>
-    {% comment %}
-    <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
-    {% endcomment %}
     {% render_block "js" %}
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -266,7 +195,6 @@
         $('#habla-unavailable').hide();
     });
     </script>
-    {% comment %}Twitter library used by the follow button{% endcomment %}
     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
     <script type="text/javascript">
         var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
