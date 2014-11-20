@@ -3,3 +3,6 @@ Thumbs.db
 *.tmproj
 *.mo
 .bzr
+*.egg-info
+.idea
+*.sqlite
