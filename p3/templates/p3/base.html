@@ -96,6 +96,8 @@
         <a href="#navigation-toggle" class="navigation-toggle"><i title="Menu" class="fa fa-bars"></i></a>
         <nav id="navigation-toggle" role="navigation">
             <ul class="clearfix">
+                {% show_menu 0 1 1 1  %}
+                {% language_chooser "p3/includes/langnav.html" "native" %}
                 {% if request.user.is_authenticated %}
                 <li class="right">
                 {% if request.user.is_authenticated %}

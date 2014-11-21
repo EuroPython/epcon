@@ -150,6 +150,9 @@ a {
         text-align: center;
         color: $secondarycolor;
     }
+    h2 {
+        margin: 0 0 0.5em 0;
+    }
     h4 {
         color: $secondarycolor;
         font-weight: 600;
@@ -287,5 +290,32 @@ header {
             text-transform: uppercase;
             margin: 0 0 0.2em 0;
         }
+    }
+}
+
+.subcommunities {
+    background-color: #FAFAFA;
+    h3 {
+        text-align: center;
+        width: 80%;
+        display: block;
+        margin: 0 auto 0.5em auto;
+    }
+    .subcommunity-container {
+        @extend .learn-icon;
+        padding: 15px;
+        width: 100%;
+        height: auto;
+        border: 5px solid #EEE;
+        &:hover {
+            @include transition(all 80ms linear);
+            background-color: #EEE;
+        }
+    }
+}
+
+.blog-container {
+    h2 {
+        margin: 0 0 0.5em 0;
     }
 }

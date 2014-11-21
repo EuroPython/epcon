@@ -39,7 +39,7 @@
     {% endif %}
 
     {% current_conference as conf %}
-    <section>
+    <section class="subcommunities">
         <div class="grid-container">
             <!-- NOTICE -->
             {% if conf.cfp %}
@@ -181,7 +181,7 @@
 
 
 {% block MAIN_CONTENT %}
-<section>
+<section class="blog-container">
     <div class="grid-container">
         {% post_list count=3 as posts %}
         <div class="grid-100">
