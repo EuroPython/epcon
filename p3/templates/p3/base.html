@@ -32,7 +32,7 @@
     <!--<![endif]-->
     <!--[if (lt IE 9) & (!IEMobile)]>
         <script src='{{ STATIC_URL }}p6/javascripts/vendor/selectivizr-min.js'></script>
-        <link rel='stylesheet' href='{{ STATIC_URL }p5/stylesheets/lte-ie8.css'>
+        <link rel='stylesheet' href='{{ STATIC_URL }}p5/stylesheets/lte-ie8.css'>
     <![endif]-->
 
     <link rel="alternate" type="application/rss+xml" title="Ultimi post" href="/blog/feeds/latest/" />
@@ -125,10 +125,7 @@
     <header role="banner">
         <div class="grid-container">
             <div class="grid-60 prefix-20">
-                {{ STATIC_URL }}p6/images/pycon-sei-logo-retina.png
-                
-                {% thumbnail path 657x436 crop=True as image %}
-                    <div class="branding"><a href="/" title="Home"><img src="/{{ image.url }}" alt="*" ></a></div>
+                <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p6/images/pycon-sei-logo.png" alt="*" ></a></div>
             </div>
         </div><!-- /grid-container -->
     </header>
@@ -233,5 +230,6 @@
         {% render_block "script" %}
         // ]]>
     </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/vendor/retina.js"></script>
 </body>
 </html>
