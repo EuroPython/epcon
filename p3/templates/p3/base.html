@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load conference cms_tags menu_tags sekizai_tags i18n tagging_tags p3 static %}
+{% load conference cms_tags menu_tags sekizai_tags i18n tagging_tags p3 static thumbnail %}
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
 <!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><![endif]-->
 <!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><![endif]-->
@@ -125,7 +125,10 @@
     <header role="banner">
         <div class="grid-container">
             <div class="grid-60 prefix-20">
-                <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p6/images/pycon-sei-logo-retina.png" alt="*" ></a></div>
+                {{ STATIC_URL }}p6/images/pycon-sei-logo-retina.png
+                
+                {% thumbnail path 657x436 crop=True as image %}
+                    <div class="branding"><a href="/" title="Home"><img src="/{{ image.url }}" alt="*" ></a></div>
             </div>
         </div><!-- /grid-container -->
     </header>
