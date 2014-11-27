@@ -7,9 +7,6 @@
 
 {% block PAGE_TITLE %}{% p3_profile_data profile.user_id as profile_data %}{{ profile_data.name }}{% endblock %}
 
-{% block HEADER %}
-    {%comment%}Remove header completely to save space. In the future we may want to design a mini header instead?{%endcomment%}
-{% endblock %}
 
 {% block MAIN_CONTENT %}
 {% p3_profile_data profile.user_id as profile_data %}

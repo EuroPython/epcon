@@ -1618,7 +1618,7 @@ a {
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover {
   color: #e61f4b;
-  background-color: white;
+  background-color: #fad7de;
   border: 1px solid #bcbab2;
   border-bottom-color: transparent;
   cursor: default; }
