@@ -15,9 +15,9 @@
 NAME AND PROFILE VISIBILITY
 -->
 
-<section id="profile-user-identity">
+<section class="profile-name" id="profile-user-identity">
     <div class="grid-container">
-        <div class="grid-100">
+        <div class="grid-70 prefix-15">
             <h1>{{ profile_data.name }}{% if full_access %} &mdash; {% trans "It’s you!" %}{% endif %}</h1>
             {% if full_access %}
                 {% include "conference/profile_visibility_form.html" %}
@@ -30,35 +30,36 @@ NAME AND PROFILE VISIBILITY
 AVATAR AND PERSONAL INFORMATION
 -->
 
-<section id="profile-user-identity">
+<section class="profile-details" id="profile-user-identity">
     <div class="grid-container">
-    <div class="grid-20">
-        {% include "conference/profile_picture_form.html" %}
+        <div class="grid-70 prefix-15 details-container">    
+            <div class="grid-30">
+                {% include "conference/profile_picture_form.html" %}
+            </div>
+            <div class="grid-70">
+                {% include "conference/profile_publicdata_form.html" %}
+            </div>
+            <div class="grid-70 prefix-30">
+                {% include "conference/profile_bio_form.html" %}
+            </div>
+        </div>
     </div>
-    <div class="grid-80">
-        {% include "conference/profile_publicdata_form.html" %}
-    </div>
-   </div>
 </section>
 
 <!--
 BIO
 -->
 
-<section>
-    <div class="grid-container">
-    <div class="grid-80 prefix-20">
-        {% include "conference/profile_bio_form.html" %}
-   </div>
-   </div>
+<section class="profile-biography">
+    
 </section>
 
 <!--
 TALKS AND TWITTER
 -->
-<section>
+<section class="profile-talk">
     <div class="grid-container">
-    <div class="grid-50">
+    <div class="grid-50 prefix-15">
         {% current_conference as conf %}
         {% if conf.voting %}
             {% sum_ "talks" profile_data.talks.by_conf|attrib_:conf.code profile_data.talks.accepted.all %}

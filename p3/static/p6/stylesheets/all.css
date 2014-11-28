@@ -313,6 +313,39 @@ header {
 .blog-container h2 {
   margin: 0 0 0.5em 0; }
 
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003328}}
+.profile-name, .profile-details, .profile-talk {
+  padding-bottom: 1em; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003332}}
+.profile-details, .profile-talk {
+  padding-top: 1em; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003337}}
+.profile-details .details-container {
+  background-color: #EEE;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
+  padding: 20px 20px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003341}}
+  .profile-details .details-container dt {
+    width: 40%; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003344}}
+  .profile-details .details-container dd {
+    margin-left: 40%; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003347}}
+  .profile-details .details-container .form-actions {
+    padding-left: 40%;
+    margin-top: 0.5em; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003351}}
+  .profile-details .details-container .avatar {
+    margin: 0 auto; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_site\.scss}line{font-family:\00003354}}
+  .profile-details .details-container .trigger-overlay {
+    display: block;
+    text-align: center; }
+
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/vendor\/bourbon\/addons\/_clearfix\.scss}line{font-family:\0000315}}
 [role="banner"]:after {
   content: "";

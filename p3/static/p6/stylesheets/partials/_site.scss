@@ -322,3 +322,38 @@ header {
         margin: 0 0 0.5em 0;
     }
 }
+
+// Profile section
+
+.profile-name, .profile-details, .profile-talk {
+    padding-bottom: 1em;
+}
+
+.profile-details, .profile-talk {
+    padding-top: 1em;
+}
+
+.profile-details {
+    .details-container {
+        background-color: #EEE;
+        @include border-radius(20px);
+        padding: 20px 20px;
+        dt {
+            width: 40%;
+        }
+        dd {
+            margin-left: 40%;
+        }
+        .form-actions {
+            padding-left: 40%;
+            margin-top: 0.5em;
+        }
+        .avatar {
+            margin: 0 auto;
+        }
+        .trigger-overlay {
+            display: block;
+            text-align: center;
+        }
+    }
+}
