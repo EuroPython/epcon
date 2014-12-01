@@ -92,7 +92,7 @@ def live_events(request):
             curr['next'] = dict(tevts[1])
         except IndexError:
             pass
-        # Ho eliminato gli eventi special, t0 potrebbe cadere su uno di questi
+        # I've deleted all special events, t0 could be on one of them
         if curr and (curr['time'] + datetime.timedelta(seconds=curr['duration']*60)).time() < t0:
             curr = None
 

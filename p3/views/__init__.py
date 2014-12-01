@@ -41,15 +41,15 @@ def tickets(request):
     }
 
 def _reset_ticket(ticket):
-    # cancello il nome così il ticket compare nelle statistiche "biglietti non
-    # compilati" fino a quando non viene modificato
+    # deleting the name so the ticket will be in the "unfilled tickets" until
+    # it's modified.
     ticket.name = ''
     ticket.save()
     try:
         p3c = ticket.p3_conference
     except models.TicketConference.DoesNotExist:
         return
-    # reimposto i default
+    # resetting default
     p3c.shirt_size = 'l'
     p3c.python_experience = 0
     p3c.diet = 'omnivorous'
@@ -63,14 +63,14 @@ def _assign_ticket(ticket, email):
         recipient = auth.models.User.objects.get(email__iexact=email)
     except auth.models.User.DoesNotExist:
         try:
-            # qui uso filter + [0] invece che .get perchè potrebbe accadere,
-            # anche se non dovrebbe, che due identità abbiano la stessa email
-            # (ad esempio se una persona a usato la stessa mail su più servizi
-            # remoti ma ha collegato questi servizi a due utenti locali
-            # diversi). Non è un problema se più identità hanno la stessa email
-            # (nota che il backend di autenticazione già verifica che la stessa
-            # email non venga usata due volte per creare utenti django) perché
-            # in ogni caso si tratta di email verificate da servizi esterni.
+            # Here I'm using filter + [0] instead of .get because it could happen,
+            # even if it shouldn't, that two identities have the same email
+            # (e.g. if someone used the same email on multiple remote services
+            # but connected these services to two local users).
+            # It's not a problem if more identities have the same email (note
+            # that the authentication backend already checks that the same email
+            # won't be used twice to create django users) because anway they're
+            # email validated by external services.
             recipient = amodels.UserIdentity.objects.filter(email__iexact=email)[0].user.user
         except IndexError:
             recipient = None
@@ -78,11 +78,11 @@ def _assign_ticket(ticket, email):
         from assopy.clients import genro
         rid = genro.users(email)['r0']
         if rid is not None:
-            # l'email non è associata ad un utente django ma genropy la
-            # conosce.  Se rid è assegnato ad un utente assopy riutilizzo
-            # l'utente collegato.  Questo check funziona quando un biglietto
-            # viene assegnato ad un utente, quest'ultimo cambia email ma poi il
-            # biglietto viene riassegnato nuovamente all'email originale.
+            # the email it's not associated to a django user, but genropy
+            # knows it. If rid is assigned to an assopy user I'll reuse the
+            # connected user. This check works when the ticket is assigned
+            # to a user, the user modifies its email but later the ticket
+            # is reassigned to the original email.
             try:
                 recipient = amodels.User.objects.get(assopy_id=rid).user
             except amodels.User.DoesNotExist:
@@ -110,8 +110,8 @@ def _assign_ticket(ticket, email):
         try:
             auser = recipient.assopy_user
         except amodels.User.DoesNotExist:
-            # uff, ho un utente su django che non è un assopy user, sicuramente
-            # strascichi prima dell'introduzione dell'app assopy
+            # doh... this django user is not an assopy user, surely something
+            # coming from before the introduction of assopy app.
             auser = amodels.User(user=recipient)
             auser.save()
         if not auser.token:
@@ -157,14 +157,13 @@ def ticket(request, tid):
             t = cmodels.Ticket.objects.get(id=t.id)
         elif t.fare.ticket_type == 'conference':
             data = request.POST.copy()
-            # vogliamo massimizzare il numero dei biglietti assegnati, e per
-            # farlo scoraggiamo le persone nel compilare i biglietti di altri.
-            # Se il biglietto non è assegnato lo forzo ad avere lo stesso nome
-            # del profilo.
+            # We want to maximize the number of assigned tickets, and to do
+            # this we discurage users from filling in tickets for others.
+            # If the ticket is unassigned I'm forcing the name to be the same
+            # of the profile.
             #
-            # Se l'utente è quello che ha comprato il biglietto e non lo sta
-            # assegnando allora per questa POST utilizzo il nome dell'utente
-            # corrente
+            # If the user is the one that bought the ticket and it's not assigning
+            # it then for this POST I'll use the name of current user.
             if t.user == request.user and not data.get('assigned_to'):
                 data['t%d-ticket_name' % t.id] = '%s %s' % (t.user.first_name, t.user.last_name)
             form = p3forms.FormTicket(
@@ -177,14 +176,14 @@ def ticket(request, tid):
                 return http.HttpResponseBadRequest(str(form.errors))
 
             data = form.cleaned_data
-            # prima di tutto sistemo il ticket di conference...
+            # first of all I'm fixing conference tickets...
             t.name = data['ticket_name'].strip()
             t.save()
-            # ...poi penso alle funzionalità aggiuntive dei biglietti p3
+            # ...later I take care of extras of tickets p3
             x = form.save(commit=False)
             x.ticket = t
             if t.user != request.user:
-                # solo il proprietario del biglietto può riassegnarlo
+                # only the owner can reassign a ticket
                 x.assigned_to = assigned_to
             x.save()
 
@@ -205,10 +204,9 @@ def ticket(request, tid):
                         _reset_ticket(t)
 
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
-                # l'utente non ha, nel suo profilo, né il nome né il cognome (e
-                # tra l'altro non è la persona che ha comprato il biglietto)
-                # posso usare il nome che ha inserito per il biglietto nei dati
-                # del profilo
+                # the user has neither first or last name inthe progle (and also
+                # it's not the person who bought the ticket). I can use the name
+                # used for the ticket to fill the profile.
 
                 try:
                     f, l = data['ticket_name'].strip().split(' ', 1)
@@ -251,8 +249,7 @@ def ticket(request, tid):
                 return http.HttpResponseBadRequest(str(form.errors))
             form.save()
 
-    # restituisco il rendering del nuovo biglietto, così il chiamante può
-    # mostrarlo facilmente
+    # returning the rendering of the new ticket, so the caller can easily show it
     tpl = Template('{% load p3 %}{% render_ticket t %}')
     return http.HttpResponse(tpl.render(RequestContext(request, {'t': t})))
 
@@ -362,8 +359,8 @@ def sprint(request, sid):
 def whos_coming(request, conference=None):
     if conference is None:
         return redirect('p3-whos-coming-conference', conference=settings.CONFERENCE_CONFERENCE)
-    # i profili possono essere o pubblici o accessibili solo ai partecipanti,
-    # nel secondo caso li possono vedere solo chi ha un biglietto.
+    # profiles can be public or only visible for partecipants, in the second
+    # case only who has a ticket can see them
     access = ('p',)
     if request.user.is_authenticated():
         t = dataaccess.all_user_tickets(request.user.id, conference)

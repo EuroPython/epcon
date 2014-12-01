@@ -54,7 +54,7 @@ def profile_data(uid, preload=None):
     return profile
 
 def _i_profile_data(sender, **kw):
-    # l'invalidazione tramite segnale viene gestita da cachef
+    # invalidation signal is handled by cachef
     return 'profile:%s' % (kw['instance'].profile_id,)
 
 profile_data = cache_me(
@@ -113,20 +113,20 @@ def _user_ticket(user, conference):
     return qs
 
 def _ticket_complete(t):
-    # considero come complete i ticket pagati tramite bonifico bancario o via
-    # admin; poiché la notifica IPN è quasi contestuale al ritorno dell'utente
-    # sul nostro sito, filtrando via gli ordini non confermati elimino di fatto
-    # vecchi record rimasti nel db dopo che l'utente non ha confermato il
-    # pagamento sul sito paypal o dopo che è tornato indietro utilizzando il
-    # pulsante back
+    # considering complete tickets paid with bank transfer or by
+    # admin.  Being the IPN notification almost simultaneous with the
+    # user coming back on our site, by filtering out unconfirmed orders
+    # I'm also excluding old records sitting in the db because of
+    # unconfirmed paypal payments or because the user came back to
+    # our site using the back button.
     order = t.orderitem.order
     return (order.method in ('bank', 'admin')) or order.complete()
 
 def all_user_tickets(uid, conference):
     """
-    Versione cache-friendly della user_tickets, restituisce un elenco di
+    Cache-friendly version of user_tickets: returns a list of
         (ticket_id, fare_type, fare_code, complete)
-    per ogni biglietto associato all'utente
+    for each ticket associated to the user.
     """
     qs = _user_ticket(User.objects.get(id=uid), conference)
     output = []
@@ -169,19 +169,19 @@ all_user_tickets = cache_me(
 
 def user_tickets(user, conference, only_complete=False):
     """
-    Restituisce i biglietti associati all'utente (perché li ha comprati o
-    perché gli sono stati assegnati).
+    Returns the tickets associated with the user (because s/he bought them
+    or because they've been assigned to him/her)
     """
     qs = _user_ticket(user, conference)
     if not only_complete:
         return qs
     else:
-        # non mostro i biglietti associati ad ordini paypal che non risultano
-        # ancora "completi"; poiché la notifica IPN è quasi contestuale al ritorno
-        # dell'utente sul nostro sito, filtrando via gli ordini non confermati
-        # elimino di fatto vecchi record rimasti nel db dopo che l'utente non ha
-        # confermato il pagamento sul sito paypal o dopo che è tornato indietro
-        # utilizzando il pulsante back
+        # I'm not showing tickets associated to paypal orders that are not yet
+        # "complete"; as the IPN notification is almost simultaneous with the
+        # return on our site, by filtering out the unconfirmed orders
+        # I'm also ignoring old records sitting inthe db after the user
+        # didn't confirm the paypal payment or after returning to our site
+        # using the back button.
         tickets = list(qs)
         for ix, t in list(enumerate(tickets))[::-1]:
             if not _ticket_complete(t):
@@ -190,12 +190,12 @@ def user_tickets(user, conference, only_complete=False):
 
 def conference_users(conference, speakers=True):
     """
-    Restituisce l'elenco degli user_id che partecipano alla conferenza.
+    Returns the list of all user_ids partecipating to the conference.
     """
     ticket_qs = cmodels.Ticket.objects\
         .filter(fare__conference=conference)\
         .filter(fare__code__startswith='T')\
-    # I biglietti non assegnati
+    # Unassigned tickets
     q1 = User.objects\
         .filter(id__in=\
             ticket_qs\
@@ -204,7 +204,7 @@ def conference_users(conference, speakers=True):
         )\
         .values_list('id', flat=True)
 
-    # e i biglietti assegnati
+    # Assigned tickets
     q2 = User.objects\
         .filter(email__in=\
             ticket_qs\
@@ -227,8 +227,8 @@ def conference_users(conference, speakers=True):
 
 def tags():
     """
-    Fa la stessa cosa di `conference.dataaccess.tags` ma elimina le
-    informazioni sui tag associati ad un profilo non pubblico.
+    Same as `conference.dataaccess.tags` but removing data about
+    tags associated to a non-public profile.
     """
     from conference.dataaccess import tags as ctags
     cid = ContentType.objects.get(app_label='p3', model='p3profile').id

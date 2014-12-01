@@ -56,13 +56,13 @@ def sim_report(request):
 
     tickets = list(tickets.iterator())
 
-    # dict che associa ad ogni compratore l'elenco dei suoi biglietti.
+    # dict to associate each buyer with the list of owned tickets
     #
-    # Il numero di telefono lo vogliamo chiedere solo per gli speaker, ma uno
-    # speaker potrebbe aver comprato più di una SIM. Se esiste una
-    # corrispondenza esatta tra il nome dello speaker e quello riportato sul
-    # biglietto abbiamo trovato quello che cercavamo, altrimenti chiedo il
-    # numero di telefono di ogni SIM acquistata.
+    # We want to ask the phone number only for speakers, but a speaker could
+    # have bought more than one SIM. If there is a perfect correspondence
+    # between the speaker name and the ticket name then we found what we were
+    # looking for, otherwise I'm going to sk a phone number for each SIM
+    # that has been bought.
     tickets_by_buyer = defaultdict(list)
 
     compiled = dict([ (x[0], { 'label': x[1], 'total': 0, 'done': 0 }) for x in models.TICKET_SIM_TYPE ])
@@ -121,8 +121,8 @@ def hotel_report(request):
             if key not in g:
                 g[key] = {}
 
-            # oid/order_key servono solo a raggruppare graficamente i biglietti
-            # per la stessa camera
+            # oid/order_key are used only for graphical grouping of tickets
+            # for the same room
             oid = '%s:%s' % (t.ticket.orderitem.order_id, fcode)
             order_key = oid + ('_%d' % (omap[oid] / int(fcode[2])))
             omap[oid] += 1
