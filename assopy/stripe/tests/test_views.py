@@ -6,8 +6,10 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, LiveServerTestCase
 from django.utils import timezone
 
-import stripe
 from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.support.wait import WebDriverWait
+
+import stripe
 
 from assopy.models import Order
 
@@ -250,7 +252,7 @@ class TestLiveStripeCheckoutPayment(LiveServerTestCase):
         submit_button = self.selenium.find_element_by_id("submitButton")
         submit_button.click()
 
-    def atest_order_charge_completed_with_success(self):
+    def test_order_charge_completed_with_success(self):
         self.login(username=self.john.user.username, password="123456")
 
         fare = f.FareFactory()
@@ -261,6 +263,20 @@ class TestLiveStripeCheckoutPayment(LiveServerTestCase):
 
         # fill the stripe form and submit
         self.stripe_token()
+
+        # wait for the redirect
+        success_url = '%s%s' % (self.live_server_url, reverse("assopy-stripe-success"))
+        
+        class current_url_is_equal_to(object):
+            def __init__(self, url):
+                self.url = url
+
+            def __call__(self, driver):
+                return driver.current_url == self.url
+
+        WebDriverWait(self.selenium, 20).until(
+            current_url_is_equal_to(success_url)
+        )
 
         order = Order.objects.get(pk=order.pk)
         self.assertEqual(order._complete, True)
