@@ -27,11 +27,13 @@ setup(name='assopy',
         'assopy.management.commands',
         'assopy.migrations',
         'assopy.templatetags',
+        'assopy.stripe',
     ],
     package_data={
         'assopy': sum(map(recurse, ('deps', 'locale', 'static', 'templates', 'fixtures')), []),
     },
     install_requires=[
         'suds',
+        'stripe==1.19.1',
     ],
 )

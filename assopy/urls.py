@@ -70,3 +70,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
         url(r'^paypal/standard-ipn/', include('paypal.standard.ipn.urls')),
     )
 
+if 'assopy.stripe' in dsettings.INSTALLED_APPS:
+    urlpatterns += patterns(
+        '', url(r'^stripe/', include('assopy.stripe.urls')),
+    )
