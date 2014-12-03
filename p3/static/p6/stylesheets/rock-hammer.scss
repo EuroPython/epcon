@@ -91,13 +91,13 @@ header {
 .notice {
     // Icons
     .fa {
-        color: $neutralcolor;
+        color: white;
     }
     h3 {
         text-transform: uppercase;
         margin-bottom: $baselineheight/2;
         span {
-            color: $secondarycolor;
+            color: white;
         }
     }   
     // Adjust media styles

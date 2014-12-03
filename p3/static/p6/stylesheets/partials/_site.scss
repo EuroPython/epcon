@@ -137,6 +137,10 @@ a {
     float: left;
 }
 
+.media-body {
+    h3 { padding-top: 5px; }
+}
+
 .learn-with-pycon {
     background-image: url("../images/bg-learn-with-pycon.jpg");
     background-size: cover;
@@ -317,6 +321,10 @@ header {
     }
 }
 
+.notice {
+    padding-top: 20px;
+}
+
 .blog-container {
     h2 {
         margin: 0 0 0.5em 0;
@@ -355,5 +363,11 @@ header {
             display: block;
             text-align: center;
         }
+    }
+}
+
+.talk-form {
+    section {
+        padding-bottom: 0;
     }
 }
