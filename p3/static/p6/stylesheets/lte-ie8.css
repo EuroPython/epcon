@@ -70,6 +70,7 @@ footer .bg-grey .footer-menu li a:hover, footer .deadlines .footer-menu li a:hov
 footer .copyright { background-color: #CCC; color: #555555; padding: 15px 0; text-transform: uppercase; text-align: center; }
 footer .copyright p { font-size: 10px; font-size: 1rem; letter-spacing: 1px; margin: 0; }
 footer .copyright a { font-weight: 800; text-decoration: none; }
+footer table { margin: 0 auto; }
 
 #navigation-toggle { border-bottom: 5px solid #e61f4b; }
 
@@ -96,6 +97,24 @@ header { background-image: url("../images/bg-learn-with-pycon.jpg"); background-
 .subcommunities .subcommunity-container:hover { -webkit-transition: all 80ms linear; -moz-transition: all 80ms linear; transition: all 80ms linear; background-color: #EEE; }
 
 .blog-container h2 { margin: 0 0 0.5em 0; }
+
+.profile-name, .profile-details, .profile-talk { padding-bottom: 1em; }
+
+.profile-details, .profile-talk { padding-top: 1em; }
+
+.profile-details .details-container { background-color: #EEE; -moz-border-radius: 20px; -webkit-border-radius: 20px; border-radius: 20px; padding: 20px 20px; }
+.profile-details .details-container dt { width: 40%; }
+.profile-details .details-container dd { margin-left: 40%; }
+.profile-details .details-container .form-actions { padding-left: 40%; margin-top: 0.5em; }
+.profile-details .details-container .avatar { margin: 0 auto; }
+.profile-details .details-container .trigger-overlay { display: block; text-align: center; }
+.profile-details .details-container .dl-horizontal { margin-bottom: 0.4em; }
+
+.profile-details .details-container h2 { margin-top: 0; }
+.profile-details .details-container dt { width: 15%; }
+.profile-details .details-container dd { margin-left: 15%; }
+.profile-details .details-container ul { margin: 0; padding: 0; }
+.profile-details .details-container ul li { list-style: none; }
 
 [role="banner"]:after { content: ""; display: table; clear: both; }
 
@@ -504,7 +523,7 @@ a:hover, a:active { outline: 0; }
 .nav-tabs > li > a { padding-top: 8px; padding-bottom: 8px; line-height: 1.5em; border: 1px solid transparent; border-radius: 4px 4px 0 0; }
 .nav-tabs > li > a:hover { border-color: #d4d2cd #d4d2cd #bcbab2; border-bottom-color: transparent; }
 
-.nav-tabs > .active > a, .nav-tabs > .active > a:hover { color: #e61f4b; background-color: white; border: 1px solid #bcbab2; border-bottom-color: transparent; cursor: default; }
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover { color: #e61f4b; background-color: #fad7de; border: 1px solid #bcbab2; border-bottom-color: transparent; cursor: default; }
 
 .nav-pills > li > a { padding-top: 8px; padding-bottom: 8px; margin-top: 2px; margin-bottom: 2px; border-radius: 16px; color: #e61f4b; }
 
@@ -2004,12 +2023,18 @@ nav[role=navigation].active { max-height: 25em; }
 #navigation-toggle ul { list-style: none; margin: 0; padding: 0; }
 .lt-ie9 #navigation-toggle ul { margin: 0 auto; }
 .lt-ie9 #navigation-toggle li { float: left; margin: 0 15px 0 0; }
-#navigation-toggle li a { display: block; padding: 15px 7.5px; border-top: 1px solid #e61f4b; color: #e61f4b; text-transform: uppercase; }
+#navigation-toggle li a { vertical-align: middle; display: block; padding: 15px 7.5px; border-top: 1px solid #e61f4b; color: #e61f4b; text-transform: uppercase; letter-spacing: .5px; }
 .lt-ie9 #navigation-toggle li a { display: inline-block; border: none; font-size: 16px; font-size: 1.6rem; }
 #navigation-toggle li a:hover { color: #555555; text-decoration: none; }
 #navigation-toggle li.current a { color: #555555; }
+#navigation-toggle li.right { margin: 0 0 0 15px; }
 .lt-ie9 #navigation-toggle li.right { float: right; }
-#navigation-toggle li.right a { text-transform: none; }
+#navigation-toggle li.right a { color: #555555; text-transform: none; font-size: 14px; font-size: 1.4rem; }
+#navigation-toggle li.right a.username { font-weight: 600; }
+#navigation-toggle li.right a:hover { color: #222222; }
+#navigation-toggle li.right a i { color: #e61f4b; margin-right: 4px; }
+#navigation-toggle li.right.lang a { text-transform: uppercase; background-color: #F5F5F5; padding-left: 15px; padding-right: 15px; }
+#navigation-toggle li.right.lang a:hover { background-color: #EEE; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
 .janrain-box { width: 400px; display: block; /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */ min-height: 240px; }
@@ -2155,6 +2180,8 @@ h4 { font-size: 20px; font-size: 2rem; font-weight: bold; margin: 1em 0 0.5em 0;
 .live-edit .autosubmit { display: none; }
 
 #chart-div { margin-left: 29%; }
+
+.btn-centered { display: block; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
 #talk-voting { margin: 0; padding: 0; list-style: none; }

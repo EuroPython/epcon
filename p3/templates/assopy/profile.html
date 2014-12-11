@@ -30,7 +30,7 @@
         </div>
     {% endif %}
 
-    <div class="grid-80 grid-parent">
+    <div class="grid-75 grid-parent">
 
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#account-personal-data">{% trans "Personal data" %}</a></li>
@@ -160,10 +160,10 @@
             </div>
         </div>
     </div> <!-- /tab-content -->
-    <div class="grid-20">
+    <div class="grid-25">
         <div class="slot">
             <p>{% blocktrans with url="/find-out-whos-coming" %}Partecipate in <a href="{{ url }}">Find out who's coming</a>: let people know that you will be coming to this conference.{% endblocktrans %}</p>
-            <a class="btn btn-small" href="{% url "conference-profile" slug=profile.slug %}">{% trans "View your public profile" %}</a>
+            <a class="btn btn-small btn-centered" href="{% url "conference-profile" slug=profile.slug %}">{% trans "View your public profile" %}</a>
         </div>
     </div>
    </div><!-- /grid -->
