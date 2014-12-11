@@ -141,17 +141,23 @@ body {
     @extend .bg-grey;
 }
 
-.deadline-homepage {
-    float: left;
-}
-
-.deadline-button {
-    float: right;
+.deadline-homepage, .deadline-button {
+    display: inline-block;
+    padding-left: 10px;
+    i {
+        padding-left: 10px;
+    }
 }
 
 .calendar-icon {
-    margin-right: 15px;
-    float: left;
+    display: inline-block;    
+}
+
+.media-body {
+    text-align: center;
+    h3 { 
+        padding-top: 5px; 
+    }
 }
 
 .learn-with-pycon {
@@ -291,6 +297,14 @@ header {
     margin-top: 3em;
 }
 
+.media-heading {
+    @include font-size(20);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+    display: inline-block;
+}
+
 .sponsor {
     img {
         @include grayscale();
@@ -331,6 +345,14 @@ header {
             @include transition(all 80ms linear);
             background-color: #EEE;
         }
+    }
+}
+
+.notice {
+    padding-top: 20px;
+    h3.media-heading {
+        @include font-size(28);
+        padding-bottom: 0;
     }
 }
 
@@ -398,4 +420,14 @@ header {
         }
 
     }
+}
+
+.talk-form {
+    section {
+        padding-bottom: 0;
+    }
+}
+
+.btn {
+    text-transform: uppercase;
 }
