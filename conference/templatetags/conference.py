@@ -56,12 +56,20 @@ def _request_cache(request, key):
     return request._conf_cache[key]
 
 @fancy_tag(register, takes_context=True)
-def get_deadlines(context, year=None, limit=None, not_expired=True):
-    if year is None:
-        year = date.today().year
-    data = dataaccess.deadlines(_lang(context), year)
+def get_deadlines(context, limit=None, not_expired=True):
+    deadlines = dataaccess.deadlines(_lang(context))
+    try:
+        prev = models.Conference.objects\
+            .all()\
+            .order_by('-conference_start')[1]
+    except IndexError:
+        pass
+    else:
+        deadlines = [
+            d for d in deadlines
+            if d['date'] > prev.conference_end]
     output = []
-    for d in data:
+    for d in deadlines:
         if not_expired and d['expired']:
             continue
         output.append(d)
