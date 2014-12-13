@@ -177,7 +177,7 @@ header {
         time {
             @include font-size(16);
             color: white;
-            background: none;
+            background: $primarycolor;
             font-style: normal;
             border-radius: 0;
             padding: 0;
