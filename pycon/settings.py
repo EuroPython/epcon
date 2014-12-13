@@ -169,6 +169,7 @@ INSTALLED_APPS = (
     # resolve correctly templates
     'p3',
     'assopy',
+    'assopy.stripe',
 
     'djangocms_admin_style',
     'django.contrib.auth',
@@ -947,6 +948,12 @@ CRONTAB_COMMAND_PREFIX = 'DATA_DIR=%s OTHER_STUFF=%s' % (DATA_DIR, OTHER_STUFF)
 CRONJOBS = [
     ('@weekly', 'pycon.settings.cron_cleanup')
 ]
+
+STRIPE_ENABLED = True
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+STRIPE_COMPANY_NAME = os.environ.get("STRIPE_COMPANY_NAME")
+STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
 
 from settings_locale import *
 
