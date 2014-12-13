@@ -455,6 +455,10 @@ def p3_profile_data(uid):
 def p3_profiles_data(uids):
     return dataaccess.profiles_data(uids)
 
+@fancy_tag(register)
+def p3_talk_data(tid):
+    return dataaccess.talk_data(tid)
+
 @fancy_tag(register, takes_context=True)
 def get_form(context, name, bound="auto", bound_field=None):
     if '.' in name:

@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load i18n conference hcomments_tags formstyle %}
+{% load i18n conference p3 hcomments_tags formstyle %}
 
 {% block PAGE_TITLE %}{{ talk.title }}{% endblock %}
 
@@ -44,7 +44,7 @@
 
 
 {% block MAIN_CONTENT %}
-    {% talk_data talk.id as talk_data %}
+    {% p3_talk_data talk.id as talk_data %}
 
 
 <section class="full-page-height">
@@ -63,6 +63,7 @@
         {% with talk.event_set.all as events %}
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
+                {% if talk_data.sub_community.0 %}Sub Community: {{ talk_data.sub_community.1 }}{% endif %}
                 <p>{{ talk_data.abstract|markdown2:"smarty-pants,code-color" }}</p>
             </div>
             {% if talk_data.teaser_video %}
@@ -105,9 +106,11 @@
         <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
             <form class="talk-details talk-form" action="{% url "conference-talk" slug=talk.slug %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <fieldset>
+                    {{ form.errors }}
                 {{ form.title|form_field }}
                 {% if cfp %}
                 {{ form.type|form_field }}
+                {{ form.sub_community|form_field }}
                 {{ form.duration|form_field }}
                 {{ form.language|form_field }}
                 {{ form.level|form_field }}
