@@ -517,7 +517,7 @@ class TalkManager(models.Manager):
         talk.level = level
         talk.training_available = training_available
         talk.type = type
-        with transaction.atomic():
+        with transaction.commit_on_success():
             count = 0
             check = slug
             while True:
