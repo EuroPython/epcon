@@ -311,3 +311,9 @@ padding : 0; }
     -webkit-filter: grayscale(0%);
     -webkit-backface-visibility: hidden; /* Fix for transition flickering */
 }
+
+@mixin border-radius($radius) {
+-moz-border-radius: $radius;
+-webkit-border-radius: $radius;
+border-radius: $radius;
+}

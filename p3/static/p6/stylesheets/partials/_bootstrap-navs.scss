@@ -102,7 +102,7 @@ border-bottom-color : transparent; }
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover {
 color : $linkcolor;
-background-color : $bodycolor;
+background-color : lighten($primarycolor, 40%);
 border : $borderwidth $borderstyle $bordercolor;
 border-bottom-color : transparent;
 cursor : default; }

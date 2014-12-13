@@ -18,21 +18,32 @@
     {% if l %}
     <section class="deadlines">
         <div class="grid-container">
-            <div class="grid-60 prefix-20">
-                <div class="media grid-container">
-                    <div class="media-body calendar grid-100">
-                        <div class="calendar-icon">
-                            <i class="fa fa-calendar-o fa-3x"></i>
-                        </div>
-                        <div class="deadline-homepage">
-                            <h3 class="media-heading">{% trans "Next deadline" %}</h3>
-                            <span class="deadline"><time>{{ l.0.date|date:"d" }} {{ l.0.date|date:"b" }}</time>{{ l.0.headline|safe }}</span>
-                        </div>
-                        <div class="deadline-button">
-                            <a class="btn btn-primary" href="{% page_url 'calendar' %}">{% trans "All the deadlines" %}</a>
-                        </div>
-                    </div>
+            <div class="grid-100 media-body calendar">
+                <div class="calendar-icon">
+                    <i class="fa fa-calendar-o fa-2x"></i>
                 </div>
+                <div class="deadline-homepage">
+                    <h3 class="media-heading">{% trans "Next deadline:" %}</h3>
+                    <span class="deadline"><time>{{ l.0.date|date:"d" }} / {{ l.0.date|date:"m" }} / {{ l.0.date|date:"Y" }} - </time>{{ l.0.headline|safe }}</span>
+                </div>
+                <div class="deadline-button">
+                    <a class="btn btn-primary" href="{% page_url 'calendar' %}">{% trans "All the deadlines" %}<i class="fa fa-long-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+            <!-- NOTICE -->
+        <div class="grid-container">
+            <div class="grid-100 media-body notice">
+                <div class="deadline-homepage">
+                    <h3 class="media-heading">{% trans "Call for Proposals is <span>open</span>" %}</h3>
+                    {% placeholder "cfp_teaser_text" as cfp_text %}
+                    {% if cfp_text %}
+                        <p class="">{{ cfp_text }}</p>
+                    {% endif %} 
+                </div><!-- /media-body -->
+            <div>
+            <div class="deadline-button">
+                <a class="btn btn-primary" href="{% page_url 'cfp' %}">{% trans "Submit your proposal" %}</a>
             </div>
         </div>
     </section>
@@ -41,26 +52,11 @@
     {% current_conference as conf %}
     <section class="subcommunities">
         <div class="grid-container">
-            <!-- NOTICE -->
-            {% if conf.cfp %}
-                <div class="grid-50 notice">
-                    <div class="media">
-                        <div class="pull-left"><i class="fa fa-file-text fa-3x"></i></div>
-                        <div class="media-body">
-                            <h3 class="media-heading">{% trans "Call for Proposal is <span>open</span>" %}</h3>
-                            <p class="">{% placeholder "cfp_teaser_text" %}</p>
-                            <a class="btn btn-primary" href="{% page_url 'cfp' %}">{% trans "Submit your proposal" %}</a>
-                        </div><!-- /media-body -->
-                    </div>
-                <hr class="hide-on-desktop" />
-                </div><!-- /grid notice -->
-            {% else %}
             <div class="grid-100 general-notice">
                 <div class="pull-left"></div>
                 <div class="media-body">{% placeholder "home_teaser_text" %}</div>
             <hr class="hide-on-desktop" />
             </div><!-- /grid notice -->
-            {% endif %}
         </div><!-- /grid-container -->
     </section>
 
