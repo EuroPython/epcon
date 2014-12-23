@@ -7,15 +7,37 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-01 23:36+0200\n"
-"PO-Revision-Date: 2014-04-01 23:45+0100\n"
-"Last-Translator: Giovanni Bajo <giovannibajo@gmail.com>\n"
+"POT-Creation-Date: 2014-11-15 18:11+0100\n"
+"PO-Revision-Date: 2014-11-15 19:04+0050\n"
+"Last-Translator: Mena  <mena.marotta@gmail.com>\n"
 "Language-Team: it <pycon-organization@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 "X-Translated-Using: django-rosetta 0.7.4\n"
+
+#: cms_utils/cms_app.py:7
+msgid "Assopy"
+msgstr ""
+
+#: cms_utils/cms_app.py:12
+#, fuzzy
+msgid "Conference"
+msgstr "Biglietti per la conferenza"
+
+#: cms_utils/cms_app.py:17
+msgid "P3"
+msgstr ""
+
+#: cms_utils/cms_app.py:22
+#, fuzzy
+msgid "Blog"
+msgstr "Dal Blog"
+
+#: cms_utils/cms_plugins.py:9
+msgid "MarkItUp"
+msgstr ""
 
 #: p3/forms.py:19
 msgid "30 minutes inc Q&A"
@@ -379,14 +401,6 @@ msgstr "Descriviti con una frase"
 msgid "Cannot find the requested page"
 msgstr ""
 
-#: p3/templates/admin/base_site.html:10
-msgid "Django site admin"
-msgstr ""
-
-#: p3/templates/admin/base_site.html:13
-msgid "Django administration"
-msgstr ""
-
 #: p3/templates/assopy/bank_feedback_ok.html:7
 msgid "Order completed"
 msgstr "Ordine completato"
@@ -664,6 +678,7 @@ msgstr ""
 "funzionalità avanzata che puoi voler attivare."
 
 #: p3/templates/assopy/profile_spam_control.html:14
+#: p3/templates/django_cms/p5_homepage.html:161
 msgid "Recruiting"
 msgstr "Recruiting"
 
@@ -834,32 +849,37 @@ msgstr "Continua &rarr;"
 msgid "Archivio blog"
 msgstr "Archivio blog"
 
-#: p3/templates/cms/p5_homepage.html:27
+#: p3/templates/cms/p5_homepage.html:29
+#: p3/templates/django_cms/p5_homepage.html:52
 msgid "Call for Proposal is <span>open</span>"
 msgstr "Il Call for proposal è <span>aperto</span>"
 
-#: p3/templates/cms/p5_homepage.html:29
+#: p3/templates/cms/p5_homepage.html:31
+#: p3/templates/django_cms/p5_homepage.html:54
 msgid "Submit your proposal"
 msgstr "Inviaci i tuoi talk"
 
-#: p3/templates/cms/p5_homepage.html:41 p3/templates/p3/box_cal.html:3
+#: p3/templates/cms/p5_homepage.html:47
+#: p3/templates/django_cms/p5_homepage.html:29 p3/templates/p3/box_cal.html:3
 msgid "Next deadline"
 msgstr "La prossima scadenza"
 
-#: p3/templates/cms/p5_homepage.html:44
+#: p3/templates/cms/p5_homepage.html:50
 #, fuzzy
 msgid "All the deadlines &rarr;"
 msgstr "Vedi tutte le scadenze &rarr;"
 
-#: p3/templates/cms/p5_homepage.html:58
+#: p3/templates/cms/p5_homepage.html:64
+#: p3/templates/django_cms/p5_homepage.html:75
 msgid "Our Sponsors"
 msgstr "I nostri sponsor"
 
-#: p3/templates/cms/p5_homepage.html:69
+#: p3/templates/cms/p5_homepage.html:75
+#: p3/templates/django_cms/p5_homepage.html:86
 msgid "Become a sponsor"
 msgstr "Diventa uno sponsor"
 
-#: p3/templates/cms/p5_homepage.html:92
+#: p3/templates/cms/p5_homepage.html:98
 msgid "PyCon blog"
 msgstr "Blog di PyCon"
 
@@ -1128,6 +1148,68 @@ msgstr ""
 msgid "Sorry, no talks match your query."
 msgstr ""
 
+#: p3/templates/django_cms/p5_homepage.html:33
+#, fuzzy
+msgid "All the deadlines"
+msgstr "Vedi tutte le scadenze &rarr;"
+
+#: p3/templates/django_cms/p5_homepage.html:116
+msgid "Scopri PyCon Italia"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:123
+#, fuzzy
+msgid "Talk"
+msgstr "Tipo di presentazione"
+
+#: p3/templates/django_cms/p5_homepage.html:124
+msgid "3 tracce parallele di talk per ascoltare e scoprire"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:132
+msgid "Training"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:133
+msgid ""
+"Sessioni di 4 ore, con le mani sulla tastiera: impara l'arte e mettila da "
+"parte"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:141
+msgid "Helpdesk"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:142
+msgid ""
+"Risolvi un problema: fissa un appuntamento e parla con i nostri esperti"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:152
+msgid "Scopri chi viene"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:153
+msgid ""
+"Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:162
+msgid "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:170
+msgid "Eventi sociali"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:171
+msgid "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:194
+msgid "Ultimi post dal blog"
+msgstr ""
+
 #: p3/templates/hcomments/show_comment_form.html:4
 #, fuzzy
 msgid "New comment"
@@ -1193,84 +1275,6 @@ msgstr "Reazioni"
 msgid "Condividi questo post"
 msgstr ""
 
-#: p3/templates/p3/base.html:152
-msgid "Buy tickets"
-msgstr "Compra un biglietto"
-
-#: p3/templates/p3/base.html:153
-msgid "Starting from"
-msgstr "A partire da"
-
-#: p3/templates/p3/base.html:160
-#, fuzzy
-msgid "PyCon in English"
-msgstr "Inglese"
-
-#: p3/templates/p3/base.html:161
-msgid "PyCon Italy also has an English track"
-msgstr ""
-
-#: p3/templates/p3/base.html:175
-msgid "Open chat window"
-msgstr "Apri la chat"
-
-#: p3/templates/p3/base.html:175
-msgid "Supporto online"
-msgstr ""
-
-#: p3/templates/p3/base.html:176
-msgid "Chat with organizers"
-msgstr "Chat con gli organizzatori"
-
-#: p3/templates/p3/base.html:180
-msgid "Supporto offline"
-msgstr ""
-
-#: p3/templates/p3/base.html:181
-#, fuzzy
-msgid "Please try again later"
-msgstr "Fai una donazione"
-
-#: p3/templates/p3/base.html:220
-msgid "The site"
-msgstr "Il sito"
-
-#: p3/templates/p3/base.html:234
-msgid "Social"
-msgstr "Social media"
-
-#: p3/templates/p3/base.html:238
-msgid "PyCon on Facebook"
-msgstr "PyCon su Facebook"
-
-#: p3/templates/p3/base.html:240
-msgid "Follow us on twitter"
-msgstr "Seguici su Twitter"
-
-#: p3/templates/p3/base.html:242
-msgid "Latest posts"
-msgstr "Ultimi post"
-
-#: p3/templates/p3/base.html:261
-msgid "Please donate"
-msgstr "Fai una donazione"
-
-#: p3/templates/p3/base.html:262
-msgid ""
-"This conference is organized by the Python Italia no-profit association. We "
-"are able to accept donations through PayPal and credit card, and we welcome "
-"any kind of contribution that will be exclusively used for improving the "
-"EuroPython event for everyone. Thanks!"
-msgstr ""
-"Questa conferenza è organizzata dall'associazione no-profit Python Italia. "
-"Accettiamo donazioni tramite PayPal e Carta di Credito; ogni contributo è "
-"benvenuto e verrà usato esclusivamente per migliorare PyCon Italia per "
-"tutti. Grazie!"
-
-#: p3/templates/p3/base.html:272
-msgid "Donate now (via PayPal)"
-msgstr "Dona ora (via PayPal)"
-
 #: p3/templates/p3/billing.html:4 p3/templates/p3/billing.html.py:14
 msgid "Buy tickets (2 of 2)"
 msgstr "Compra un biglietto (pag. 2 di 2)"
@@ -1330,7 +1334,7 @@ msgstr "Conferma l'ordine &rarr;"
 
 #: p3/templates/p3/box_didyouknow.html:4
 msgid "Did you know"
-msgstr "Forse non sai che"
+msgstr "Lo sapevi che..."
 
 #: p3/templates/p3/box_latest_tweets.html:3
 msgid "Le ultime da Twitter"
@@ -1441,6 +1445,15 @@ msgstr "Nessun biglietto disponibile"
 msgid "Submit"
 msgstr ""
 
+#: p3/templates/p3/schedule.html:4
+msgid "Schedule"
+msgstr ""
+
+#: p3/templates/p3/schedule_list.html:8
+#, fuzzy
+msgid "PyCon schedule"
+msgstr "Sito personale"
+
 #: p3/templates/p3/sprint_submission.html:4
 msgid "Propose a Sprint"
 msgstr ""
@@ -1529,6 +1542,10 @@ msgstr "Sei sicuro di volerti riprendere questo biglietto?"
 #, fuzzy
 msgid "ticket reclaimed"
 msgstr "Biglietto assegnato a"
+
+#: p3/templates/p3/whos_coming.html:4 p3/templates/p3/whos_coming.html:16
+msgid "Who's coming?"
+msgstr ""
 
 #: p3/templates/p3/fragments/render_cart_og_ticket_row.html:13
 msgid "Goodies name"
@@ -1671,6 +1688,10 @@ msgid ""
 "                            "
 msgstr ""
 
+#: p3/templates/p3/includes/langnav.html:8
+msgid "Change to language:"
+msgstr ""
+
 #: p3/templates/registration/login.html:9
 msgid "Log into PyCon"
 msgstr "Effettua il login"
@@ -1785,17 +1806,67 @@ msgstr ""
 msgid "Company Name"
 msgstr "Ragione sociale"
 
-#: pycon/settings.py:47
+#: pycon/settings.py:50 pycon/settings.py:312
 msgid "Italiano"
 msgstr "Italiano"
 
-#: pycon/settings.py:48 pycon/settings.py:256
+#: pycon/settings.py:51 pycon/settings.py:292 pycon/settings.py:316
 msgid "English"
 msgstr "Inglese"
 
-#: pycon/settings.py:255
+#: pycon/settings.py:291
 msgid "Italian"
 msgstr "Italiano"
+
+#~ msgid "Buy tickets"
+#~ msgstr "Compra un biglietto"
+
+#~ msgid "Starting from"
+#~ msgstr "A partire da"
+
+#~ msgid "PyCon in English"
+#~ msgstr "Inglese"
+
+#~ msgid "Open chat window"
+#~ msgstr "Apri la chat"
+
+#~ msgid "Chat with organizers"
+#~ msgstr "Chat con gli organizzatori"
+
+#~ msgid "Please try again later"
+#~ msgstr "Fai una donazione"
+
+#~ msgid "The site"
+#~ msgstr "Il sito"
+
+#~ msgid "Social"
+#~ msgstr "Social media"
+
+#~ msgid "PyCon on Facebook"
+#~ msgstr "PyCon su Facebook"
+
+#~ msgid "Follow us on twitter"
+#~ msgstr "Seguici su Twitter"
+
+#~ msgid "Latest posts"
+#~ msgstr "Ultimi post"
+
+#~ msgid "Please donate"
+#~ msgstr "Fai una donazione"
+
+#~ msgid ""
+#~ "This conference is organized by the Python Italia no-profit association. We "
+#~ "are able to accept donations through PayPal and credit card, and we welcome "
+#~ "any kind of contribution that will be exclusively used for improving the "
+#~ "EuroPython event for everyone. Thanks!"
+#~ msgstr ""
+#~ "Questa conferenza è organizzata dall'associazione no-profit Python Italia. "
+#~ "Accettiamo donazioni tramite PayPal e Carta di Credito; ogni contributo è "
+#~ "benvenuto e verrà usato esclusivamente per migliorare PyCon Italia per "
+#~ "tutti. Grazie!"
+
+#~ msgid "Donate now (via PayPal)"
+#~ msgstr "Dona ora (via PayPal)"
 
 #~ msgid "Other personal pages"
 #~ msgstr "Sito personale"
