@@ -48,18 +48,18 @@ AVATAR AND PERSONAL INFORMATION
 
 <!--
 BIO
--->
+--
 
 <section class="profile-biography">
     
 </section>
 
-<!--
+<--
 TALKS AND TWITTER
 -->
-<section class="profile-talk">
+<section class="profile-details profile-talk">
     <div class="grid-container">
-    <div class="grid-50 prefix-15">
+    <div class="grid-70 prefix-15 details-container">
         {% current_conference as conf %}
         {% if conf.voting %}
             {% sum_ "talks" profile_data.talks.by_conf|attrib_:conf.code profile_data.talks.accepted.all %}

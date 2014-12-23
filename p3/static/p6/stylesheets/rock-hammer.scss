@@ -91,13 +91,14 @@ header {
 .notice {
     // Icons
     .fa {
-        color: $neutralcolor;
+        color: white;
     }
     h3 {
+        display: inline-block;
         text-transform: uppercase;
         margin-bottom: $baselineheight/2;
         span {
-            color: $secondarycolor;
+            color: $primarycolor;
         }
     }   
     // Adjust media styles
@@ -171,6 +172,16 @@ header {
 .calendar {
 
     .deadline {
+        font-style: italic;
+        font-weight: 300;
+        time {
+            @include font-size(16);
+            color: white;
+            background: $primarycolor;
+            font-style: normal;
+            border-radius: 0;
+            padding: 0;
+        }
         
     }
 
@@ -183,7 +194,7 @@ header {
         background: $primarycolor;
         padding: 3px 6px;
         text-transform: uppercase;
-        color: $white;
+        color: $primarycolor;
         @include font-size(14);
         border-radius: $borderradius;
     }    

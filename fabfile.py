@@ -4,7 +4,14 @@ env.user = 'pyconwww'
 env.hosts = ['pycon.it']
 env.forward_agent = True
 
+import sys
+sys.path.insert(0, '')
+from fabric.contrib import django
+django.settings_module('pycon.settings')
+from django.conf import settings
+
 import os
+import os.path
 from fabric import api, utils
 from fabric.colors import red, green, cyan
 from fabric.context_managers import cd, hide, prefix, warn_only
@@ -197,8 +204,10 @@ def deploy(revision='HEAD'):
     remote = DjangoSite(site, ProcessManager('pyconit'), Git())
     remote.run(revision=revision)
 
-#@api.task
-#def sync_db():
-#    api.get(
-#        os.path.join(REMOTE_DATA_DIR, 'site', 'p3.db'),
-#        settings.DATABASES['default']['NAME'])
+@api.task
+def sync_db():
+    site = PyconLayout('production')
+    remote_db = os.path.join(site.working_copy(), 'data', 'site', 'p3.db')
+    api.get(
+        remote_db,
+        settings.DATABASES['default']['NAME'])

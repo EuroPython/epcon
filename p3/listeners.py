@@ -26,9 +26,8 @@ def on_order_created(sender, **kwargs):
 
     ritems = kwargs['raw_items']
     for fare, params in ritems:
-        # se l'ordine contiene delle prenotazione alberghiere devo creare i
-        # relativi ticket adesso, perchè le informazioni sul periodo le ho solo
-        # tramite ritems
+        # if the order contains hotel bookings I've to create the tickets
+        # now, because information about periods is only available using ritems
         if fare.code[0] == 'H':
             log.info(
                 'The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".',
@@ -81,12 +80,11 @@ post_save.connect(on_profile_created, sender=AttendeeProfile)
 
 def on_user_created(sender, **kw):
     if kw['profile_complete']:
-        # L'utente è stato creato utilizzando la form email+password, non avrò
-        # altri dati
+        # The user has been created using email+password form, I won't get other data
         AttendeeProfile.objects.getOrCreateForUser(sender.user)
     else:
-        # L'utente ha utilizzato janrain, non creo il profilo ora ma aspetto la
-        # prima identità
+        # The user has been created using janrain, I don't create the profile now
+        # waiting for the first identity
         pass
 
 user_created.connect(on_user_created)
@@ -95,8 +93,8 @@ def on_user_identity_created(sender, **kw):
     identity = kw['identity']
     profile = AttendeeProfile.objects.getOrCreateForUser(sender.user)
     if identity.user.identities.count() > 1:
-        # non è la prima identità non copio niente per non sovrascrivere
-        # i dati cambiati dall'utente
+        # If it's not the first identity I'm not copying anything to
+        # avoiding overwriting manually edited data
         return
 
 user_identity_created.connect(on_user_identity_created)
@@ -104,7 +102,7 @@ user_identity_created.connect(on_user_identity_created)
 def calculate_hotel_reservation_price(sender, **kw):
     if sender.code[0] != 'H':
         return
-    # il costo di una prenotazione alberghiera varia in funzione del periodo
+    # the cost of an hotel booking depends on the period
     calc = kw['calc']
     period = calc['params']['period']
     room = models.HotelRoom.objects.get(conference=sender.conference, room_type='t' + sender.code[2])
@@ -115,8 +113,8 @@ def calculate_hotel_reservation_price(sender, **kw):
 fare_price.connect(calculate_hotel_reservation_price)
 
 def create_hotel_tickets(sender, **kw):
-    # solo per le prenotazioni di intere camere devo creare più biglietti, per
-    # tutti gli altri casi mi va bene il comportamento standard
+    # only for bookings of full rooms I need to create multiple tickets, in
+    # all other cases it's ok the default behavior
     if sender.code[:2] == 'HR':
         room_size = int(sender.code[2])
         for ix in range(room_size):
@@ -127,13 +125,13 @@ def create_hotel_tickets(sender, **kw):
 
 fare_tickets.connect(create_hotel_tickets)
 
-# ridefinisco la user_tickets di assopy per includere i biglietti assegnati
+# redefining user_tickets of assopy to include assined tickets
 from assopy import dataaccess as cd
 _original = cd.user_tickets
 def _user_tickets(u):
     data = _original(u)
-    # aggiungo ai biglietti già individuati l'email della persona a cui sono
-    # stati assegnati
+    # adding to already selected tickets the email of the person to who
+    # they've been assigned to
     from p3.models import TicketConference
     tids = [ x['id'] for x in data ]
     info = dict([
@@ -148,7 +146,7 @@ def _user_tickets(u):
         except KeyError:
             continue
 
-    # aggiungo i biglietti assegnati all'utente
+    # adding tickets assigned to the user
     qs = Ticket.objects\
         .filter(p3_conference__assigned_to__iexact=u.email)\
         .order_by('-fare__conference')\

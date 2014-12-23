@@ -2,13 +2,9 @@
 {% get_deadlines not_expired=1 as deadlines %}
 <div class="calendar">
     {% for d in deadlines %}
-        <p class="deadline {% if d.expired %}expired{% endif %}">
-            {% if d.headline and d.body %}
-                <h4><time>{{ d.date|date:"d b" }}</time>&emsp; {{ d.headline|safe }}</h4>
-                <div>{{ d.body|safe }}</div>
-            {% else %}
-                {{ d.body|safe }}
-            {% endif %}
-        </p>
+        <div class="deadline {% if d.expired %}expired{% endif %}">
+            <h4><time>{{ d.date|date:"d b" }}</time>&emsp; {{ d.headline|safe }}</h4>
+            <p>{{ d.body|safe }}</p>
+        </div>
     {% endfor %}
 </div>

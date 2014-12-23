@@ -166,9 +166,8 @@ admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
 class SpeakerAdmin(cadmin.SpeakerAdmin):
     def queryset(self, request):
-        # XXX: in attesa di passare a django 1.4 implemento in questo modo
-        # barbaro un filtro per limitare gli speaker a quelli della conferenza
-        # in corso
+        # XXX: waiting to upgrade to django 1.4, I'm implementing
+        # this bad hack filter to keep only speakers of current conference.
         qs = super(SpeakerAdmin, self).queryset(request)
         qs = qs.filter(user__in=(
             cmodels.TalkSpeaker.objects\
