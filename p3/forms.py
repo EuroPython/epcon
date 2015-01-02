@@ -549,14 +549,23 @@ class HotelReservationsFieldWidget(forms.Widget):
             elif f['code'][:2] == 'HB':
                 fares['HB'].append(f)
 
-        if not fares['HR'] or not fares['HB']:
+        if not fares['HR'] and not fares['HB']:
             return ''
 
         if not value:
-            value = [
-                {'fare': fares['HB'][0]['code'], 'qty': 0, 'period': settings.P3_HOTEL_RESERVATION['default']},
-                {'fare': fares['HR'][0]['code'], 'qty': 0, 'period': settings.P3_HOTEL_RESERVATION['default']},
-            ]
+            value = []
+            if fares['HB']:
+                value.append({
+                    'fare': fares['HB'][0]['code'],
+                    'qty': 0,
+                    'period': settings.P3_HOTEL_RESERVATION['default']
+                })
+            if fares['HR']:
+                value.append({
+                    'fare': fares['HR'][0]['code'],
+                    'qty': 0,
+                    'period': settings.P3_HOTEL_RESERVATION['default']
+                })
 
         types = getattr(self, 'types', ['HR', 'HB'])
         rows = []
@@ -718,7 +727,10 @@ class P3FormTickets(aforms.FormTickets):
         try:
             models.TicketRoom.objects.can_be_booked(checks)
         except ValueError:
-            raise forms.ValidationError('0:Not available in this period (<a href="/hotel-concession/rooms-not-available" class="trigger-overlay">info</a>)')
+            raise forms.ValidationError((
+                '0:Not available in this period '
+                '(<a href="/hotel-concession/rooms-not-available" class="trigger-overlay">'
+                'info</a>)'))
 
         return data
 

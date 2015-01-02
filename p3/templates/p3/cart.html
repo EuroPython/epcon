@@ -114,76 +114,82 @@
     </div><!--/grid -->
 </div><!-- /grid-container -->
 </section>
-            {% comment %}
-            <fieldset class="tickets hotel-reservations">
-                {% if room_sharing_fares %}
-                <legend>{% trans "Room sharing at Grand Hotel Mediterraneo" %}</legend>
-                <p>
-                    {% blocktrans with url="/hotel-concession"%}
-                    Book single beds in shared rooms, save money and get to meet other Pythoners!
-                    See all details of our <a href="{{ url }}">concession</a> with the conference hotel.
-                    Rooms are limited, book now!
-                    {% endblocktrans %}
-                </p>
-                <p><b>{% trans "Minimum stay: 3 nights" %}</b></p>
-                <div class="">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Reservation type" %}</th>
-                                <th>{% trans "Reservation detail" %}</th>
-                                <th>{% trans "# of beds" %}</th>
-                                <th>{% trans "Price" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% render_cart_rows "hotel-room-sharing" form %}
-                        </tbody>
-                    </table>
-                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">{% trans "Add another" %}</a></div>
-                </div>
-                <div class="total">
-                    {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
-                </div>
-                {% else %}
-                <h3>{% trans "Hotel rooms are currently sold out" %}</h3>
-                {% endif %}
-            </fieldset>
-            <fieldset class="tickets hotel-reservations">
-                {% if room_fares %}
-                <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
-                <p>
-                    {% blocktrans with url="/hotel-concession"%}
-                    Book a room in the conference hotel, including wifi and breakfast.
-                    See all details of our <a href="{{ url }}">concession</a> with the conference hotel.
-                    Rooms are limited, book now!
-                    {% endblocktrans %}
-                </p>
-                <p><b>{% trans "Minimum stay: 3 nights" %}</b></p>
-                <div class="">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Reservation type" %}</th>
-                                <th>{% trans "Reservation detail" %}</th>
-                                <th>{% trans "# of rooms" %}</th>
-                                <th>{% trans "Price" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% render_cart_rows "hotel-room" form %}
-                        </tbody>
-                    </table>
-                    <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">{% trans "Add another" %}</a></div>
-                </div>
-                <div class="total">
-                    {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
-                </div>
-                {% else %}
-                <h3>{% trans "Hotel rooms are currently sold out" %}</h3>
-                {% endif %}
-            </fieldset>
-            {% endcomment %}
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+        {% comment %}
+        <fieldset class="tickets hotel-reservations">
+            {% if room_sharing_fares %}
+            <legend>{% trans "Room sharing at Grand Hotel Mediterraneo" %}</legend>
+            <p>
+                {% blocktrans with url="/hotel-concession"%}
+                Book single beds in shared rooms, save money and get to meet other Pythoners!
+                See all details of our <a href="{{ url }}">concession</a> with the conference hotel.
+                Rooms are limited, book now!
+                {% endblocktrans %}
+            </p>
+            <p><b>{% trans "Minimum stay: 3 nights" %}</b></p>
+            <div class="">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Reservation type" %}</th>
+                            <th>{% trans "Reservation detail" %}</th>
+                            <th>{% trans "# of beds" %}</th>
+                            <th>{% trans "Price" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% render_cart_rows "hotel-room-sharing" form %}
+                    </tbody>
+                </table>
+                <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="bed">{% trans "Add another" %}</a></div>
+            </div>
+            <div class="total">
+                {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
+            </div>
+            {% else %}
+            <h3>{% trans "Hotel rooms are currently sold out" %}</h3>
+            {% endif %}
+        </fieldset>
+        {% endcomment %}
+        <fieldset class="tickets hotel-reservations">
+            {% if room_fares %}
+            <legend>{% trans "Hotel Rooms at Grand Hotel Mediterraneo" %}</legend>
+            <p>
+                {% blocktrans with url="/hotel-concession"%}
+                Book a room in the conference hotel, including wifi and breakfast.
+                See all details of our <a href="{{ url }}">concession</a> with the conference hotel.
+                Rooms are limited, book now!
+                {% endblocktrans %}
+            </p>
+            <p><b>{% trans "Minimum stay: 3 nights" %}</b></p>
+            <div class="">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Reservation type" %}</th>
+                            <th>{% trans "Reservation detail" %}</th>
+                            <th>{% trans "# of rooms" %}</th>
+                            <th>{% trans "Price" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% render_cart_rows "hotel-room" form %}
+                    </tbody>
+                </table>
+                <div class="button"><a href="#" class="cart-hotel-another-reservation" data-type="room">{% trans "Add another" %}</a></div>
+            </div>
+            <div class="total">
+                {% trans "Hotel reservations total (inc. VAT & city tax)" %}: <b>€ 0</b>
+            </div>
+            {% else %}
+            <h3>{% trans "Hotel rooms are currently sold out" %}</h3>
+            {% endif %}
+        </fieldset>
+    </div>
+    </div>
+</section>
 
 {% comment %}
 <!--

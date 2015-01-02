@@ -260,18 +260,21 @@ class TicketRoomManager(models.Manager):
             .filter(conference=dsettings.CONFERENCE_CONFERENCE)
 
         period = {}
+        start = dsettings.P3_HOTEL_RESERVATION['period'][0]
+        while start <= dsettings.P3_HOTEL_RESERVATION['period'][1]:
+            period[start] = {}
+            for hr in rooms:
+                period[start][hr.room_type] = {
+                    'available': hr.quantity * hr.beds(),
+                    'reserved': 0,
+                    'free': 0,
+                }
+            start += inc
+
         for t in qs:
             rt = t['room_type__room_type']
             start = t['checkin']
             while start < t['checkout']:
-                if start not in period:
-                    period[start] = s = {}
-                    for hr in rooms:
-                        s[hr.room_type] = {
-                            'available': hr.quantity * hr.beds(),
-                            'reserved': 0,
-                            'free': 0,
-                        }
                 period[start][rt]['reserved'] += 1
                 start += inc
 
