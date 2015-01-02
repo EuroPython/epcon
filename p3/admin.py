@@ -215,6 +215,11 @@ class DonationAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Donation, DonationAdmin)
 
+class HotelBookingAdmin(admin.ModelAdmin):
+    list_display = ('conference', 'booking_start', 'booking_end', 'minimum_night')
+
+admin.site.register(models.HotelBooking, HotelBookingAdmin)
+
 class HotelRoomAdmin(admin.ModelAdmin):
     list_display = ('conference', 'room_type', 'quantity', 'amount',)
     list_editable = ('quantity', 'amount',)

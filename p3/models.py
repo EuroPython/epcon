@@ -159,6 +159,22 @@ class TicketSIM(models.Model):
     number = models.CharField(
         max_length=20, blank=True, help_text=_("Telephone number"))
 
+class HotelBooking(models.Model):
+    """
+    Hotel booking rules for a given conference.
+    """
+    conference = models.ForeignKey('conference.Conference')
+    booking_start = models.DateField(help_text=_("first bookable day"))
+    booking_end = models.DateField(help_text=_("last bookable day"))
+    default_start = models.DateField(
+        help_text=_("suggested first bookable day (used in the cart as the default start day)"))
+    default_end = models.DateField(
+        help_text=_("suggested last bookable day (used in the cart as the default last day)"))
+    minimum_night = models.PositiveIntegerField(default=1)
+
+    def __unicode__(self):
+        return '{}: {}-{}'.format(self.conference_id, self.booking_start, self.booking_end)
+
 HOTELROOM_ROOM_TYPE = (
     ('t1', _('Single room')),
     ('t2', _('Double room')),
