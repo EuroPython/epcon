@@ -584,6 +584,7 @@ class HotelReservationsFieldWidget(forms.Widget):
                 'period': map(lambda x: (x-start).days, entry['period']),
                 'fare': entry['fare'],
                 'fares': [],
+                'minimum_night': self.booking.minimum_night,
             }
             if k == 'HB':
                 ctx['label'] = _('Room sharing')
