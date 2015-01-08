@@ -496,6 +496,11 @@ class P3ProfileSpamControlForm(forms.ModelForm):
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
 
 class HotelReservationsFieldWidget(forms.Widget):
+    def __init__(self, *args, **kw):
+        super(HotelReservationsFieldWidget, self).__init__(*args, **kw)
+        self.booking = models.HotelBooking.objects\
+            .get(conference=settings.CONFERENCE_CONFERENCE)
+
     def value_from_datadict(self, data, files, name):
         if name in data:
             # data is initial_data, with content already in normalized form
@@ -516,7 +521,7 @@ class HotelReservationsFieldWidget(forms.Widget):
             args = [iter(iterable)] * n
             return izip_longest(fillvalue=fillvalue, *args)
 
-        start = settings.P3_HOTEL_RESERVATION['period'][0]
+        start = self.booking.booking_start
         values = []
         for row in zip(fares, qtys, grouper(2, periods)):
             values.append({
@@ -528,10 +533,7 @@ class HotelReservationsFieldWidget(forms.Widget):
         return values
 
     def render(self, name, value, attrs=None):
-        try:
-            start = settings.P3_HOTEL_RESERVATION['period'][0]
-        except:
-            raise TypeError('P3_HOTEL_RESERVATION not set')
+        start = self.booking.booking_start
 
         from django.template.loader import render_to_string
         from conference import dataaccess as cdataaccess
@@ -558,13 +560,13 @@ class HotelReservationsFieldWidget(forms.Widget):
                 value.append({
                     'fare': fares['HB'][0]['code'],
                     'qty': 0,
-                    'period': settings.P3_HOTEL_RESERVATION['default']
+                    'period': (self.booking.default_start, self.booking.default_end),
                 })
             if fares['HR']:
                 value.append({
                     'fare': fares['HR'][0]['code'],
                     'qty': 0,
-                    'period': settings.P3_HOTEL_RESERVATION['default']
+                    'period': (self.booking.default_start, self.booking.default_end),
                 })
 
         types = getattr(self, 'types', ['HR', 'HB'])
@@ -582,6 +584,7 @@ class HotelReservationsFieldWidget(forms.Widget):
                 'period': map(lambda x: (x-start).days, entry['period']),
                 'fare': entry['fare'],
                 'fares': [],
+                'minimum_night': self.booking.minimum_night,
             }
             if k == 'HB':
                 ctx['label'] = _('Room sharing')
@@ -623,7 +626,7 @@ class HotelReservationsFieldWidget(forms.Widget):
 
         ctx = {
             'start': start,
-            'days': (settings.P3_HOTEL_RESERVATION['period'][1]-start).days,
+            'days': (self.booking.booking_end-start).days,
             'rows': rows,
             'name': name,
         }

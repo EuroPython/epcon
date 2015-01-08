@@ -47,6 +47,11 @@
          */
         var inputs = $('input[type=hidden]', e.parent());
         /*
+         * differenza minima tra i due handle dello slider (numero minimo di
+         * notti)
+         */
+        var min_diff = e.parents('tr').data('minimum-night');
+        /*
          * questa funzione viene chiamata anche su elementi clonati dove è già
          * presente il markup dello slider; la chiamata .html('') anche se poco
          * elegante mi permette di fare tabula rasa e ripartire da zero.
@@ -56,17 +61,17 @@
             var max = slider.slider('option', 'max');
             var min = slider.slider('option', 'min');
             if(hix == 1) {
-                values = [ values[1] - 3, values[1] ];
+                values = [ values[1] - min_diff, values[1] ];
             }
             else {
-                values = [ values[0], values[0] + 3 ];
+                values = [ values[0], values[0] + min_diff ];
             }
             if(values[0] <= min) {
                 values[0] = min;
-                values[1] = min + 3;
+                values[1] = min + min_diff;
             }
             else if(values[1] >= max) {
-                values[0] = max - 3;
+                values[0] = max - min_diff;
                 values[1] = max;
             }
             return values;
@@ -79,7 +84,7 @@
             slide: function(evt, ui) {
                 var values = ui.values;
                 var diff = values[1] - values[0];
-                if(diff < 3) {
+                if(diff < min_diff) {
                     var w = $(this);
                     w.slider('values', cap_values(w, $(ui.handle), values));
                 }
@@ -96,7 +101,7 @@
                 var w = $(this);
                 var values = ui.values;
                 var diff = values[1] - values[0];
-                if(diff < 3) {
+                if(diff < min_diff) {
                     values = cap_values(w, $(ui.handle), values);
                     w.slider('values', values);
                 }

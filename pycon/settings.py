@@ -706,15 +706,9 @@ DEFAULT_URL_PREFIX = 'https://www.pycon.it'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 
-from datetime import date
-
 P3_FARES_ENABLED = lambda u: True
 P3_NEWSLETTER_SUBSCRIBE_URL = "http://groups.google.com/group/python-italia-aps/boxsubscribe"
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
-P3_HOTEL_RESERVATION = {
-    'period': (date(2013, 6, 28), date(2013, 7, 9)),
-    'default': (date(2013, 7, 2), date(2013, 7, 6)),
-}
 P3_USER_MESSAGE_FOOTER = '''
 
 This message was sent from a participant at the conference PyconITalia.

@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext as _
 from p3 import forms as p3forms
+from p3 import models
 
 class P3BillingData(aforms.BillingData):
     payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='paypal')
@@ -138,6 +139,12 @@ def calculator(request):
                 coupons.append(data['coupon'])
             totals = amodels.Order\
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
+            try:
+                booking = models.HotelBooking.objects\
+                    .get(conference=settings.CONFERENCE_CONFERENCE)
+            except models.HotelBooking.DoesNotExist:
+                booking = None
+
             def _fmt(x):
                 if x == 0:
                     # x is a Decimal and 0 and -0 are different
@@ -154,7 +161,7 @@ def calculator(request):
                 total = row[2]
                 params = row[1]
                 if 'period' in params:
-                    start = settings.P3_HOTEL_RESERVATION['period'][0]
+                    start = booking.booking_start
                     params['period'] = map(lambda x: (x-start).days, params['period'])
                 tickets.append((fcode, params, _fmt(total)))
                 grand_total += total

@@ -1,5 +1,5 @@
 {% for row in rows %}
-    <tr class="hotel-reservation-type{% if row.error %} error{% endif %}" data-period-start="{{ start|date:"Y/m/d" }}" data-reservation-type="{{ row.type }}">
+<tr class="hotel-reservation-type{% if row.error %} error{% endif %}" data-period-start="{{ start|date:"Y/m/d" }}" data-reservation-type="{{ row.type }}" data-minimum-night="{{ row.minimum_night }}">
         <td rowspan="1" class="room-type">
             <select name="{{ name }}_fare">
                 {% for f in row.fares %}

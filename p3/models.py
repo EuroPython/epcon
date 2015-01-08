@@ -159,6 +159,22 @@ class TicketSIM(models.Model):
     number = models.CharField(
         max_length=20, blank=True, help_text=_("Telephone number"))
 
+class HotelBooking(models.Model):
+    """
+    Hotel booking rules for a given conference.
+    """
+    conference = models.ForeignKey('conference.Conference')
+    booking_start = models.DateField(help_text=_("first bookable day"))
+    booking_end = models.DateField(help_text=_("last bookable day"))
+    default_start = models.DateField(
+        help_text=_("suggested first bookable day (used in the cart as the default start day)"))
+    default_end = models.DateField(
+        help_text=_("suggested last bookable day (used in the cart as the default last day)"))
+    minimum_night = models.PositiveIntegerField(default=1)
+
+    def __unicode__(self):
+        return '{}: {}-{}'.format(self.conference_id, self.booking_start, self.booking_end)
+
 HOTELROOM_ROOM_TYPE = (
     ('t1', _('Single room')),
     ('t2', _('Double room')),
@@ -166,7 +182,7 @@ HOTELROOM_ROOM_TYPE = (
     ('t4', _('Quadruple room')),
 )
 class HotelRoom(models.Model):
-    conference = models.ForeignKey('conference.Conference')
+    booking = models.ForeignKey(HotelBooking)
     room_type = models.CharField(max_length=2, choices=HOTELROOM_ROOM_TYPE)
     quantity = models.PositiveIntegerField()
     amount = models.CharField(max_length=100, help_text='''
@@ -179,7 +195,7 @@ class HotelRoom(models.Model):
     ''')
 
     class Meta:
-        unique_together = (('conference', 'room_type'),)
+        unique_together = (('booking', 'room_type'),)
 
     def __unicode__(self):
         return '%s: %s' % (self.conference, self.get_room_type_display())
@@ -257,11 +273,14 @@ class TicketRoomManager(models.Manager):
         inc = datetime.timedelta(days=1)
 
         rooms = HotelRoom.objects\
-            .filter(conference=dsettings.CONFERENCE_CONFERENCE)
+            .filter(booking__conference=dsettings.CONFERENCE_CONFERENCE)
+
+        booking = HotelBooking.objects\
+            .get(conference=dsettings.CONFERENCE_CONFERENCE)
 
         period = {}
-        start = dsettings.P3_HOTEL_RESERVATION['period'][0]
-        while start <= dsettings.P3_HOTEL_RESERVATION['period'][1]:
+        start = booking.booking_start
+        while start <= booking.booking_end:
             period[start] = {}
             for hr in rooms:
                 period[start][hr.room_type] = {

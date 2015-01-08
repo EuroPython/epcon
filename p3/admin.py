@@ -215,10 +215,19 @@ class DonationAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Donation, DonationAdmin)
 
+class HotelBookingAdmin(admin.ModelAdmin):
+    list_display = ('conference', 'booking_start', 'booking_end', 'minimum_night')
+
+admin.site.register(models.HotelBooking, HotelBookingAdmin)
+
 class HotelRoomAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'room_type', 'quantity', 'amount',)
+    list_display = ('_conference', 'room_type', 'quantity', 'amount',)
     list_editable = ('quantity', 'amount',)
-    list_filter = ('conference',)
+    list_filter = ('booking__conference',)
+    list_select_related = True
+
+    def _conference(self, o):
+        return o.booking.conference_id
 
     def get_urls(self):
         urls = super(HotelRoomAdmin, self).get_urls()
