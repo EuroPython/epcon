@@ -40,6 +40,7 @@ settings.configure(
     STRIPE_PUBLISHABLE_KEY="pk_test_qRUg4tJTFJgUiLz0FxKnuOXO",
     STRIPE_COMPANY_NAME="Foo Bar",
     STRIPE_COMPANY_LOGO="foo-bar-logo-url",
+    STRIPE_CURRENCY="EUR",
 )
 
 from django.contrib import admin

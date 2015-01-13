@@ -10,7 +10,7 @@ from . import factories as f
 
 class TestStripeTemplateTags(TestCase):
     def setUp(self):
-       # clean fares
+        # clean fares
         from conference.models import Fare
         Fare.objects.all().delete()
 
@@ -30,6 +30,7 @@ class TestStripeTemplateTags(TestCase):
         self.assertIn('data-name="Foo Bar"', data)
         self.assertIn('data-description="%s"' % order.orderitem_set.all()[0].description, data)
         self.assertIn('data-image="foo-bar-logo-url"', data)
+        self.assertIn('data-currency="EUR"', data)
 
     def test_stripe_checkout_form_template_tag(self):
         """
@@ -49,3 +50,4 @@ class TestStripeTemplateTags(TestCase):
         self.assertIn('data-name="Foo Bar"', data)
         self.assertIn('data-description="%s"' % order.orderitem_set.all()[0].description, data)
         self.assertIn('data-image="foo-bar-logo-url"', data)
+        self.assertIn('data-currency="EUR"', data)
