@@ -551,8 +551,8 @@ order_created = dispatch.Signal(providing_args=['raw_items'])
 purchase_completed = dispatch.Signal(providing_args=[])
 
 ORDER_PAYMENT = (
-    ('paypal', 'PayPal'),
     ('cc', 'Credit Card'),
+    ('paypal', 'PayPal'),
     ('bank', 'Bank'),
 )
 class Order(models.Model):
