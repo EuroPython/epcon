@@ -82,6 +82,7 @@
                     <legend>{% trans "Billing data" %}</legend>
                     {{ form.card_name|form_field }}
                     {{ form.payment|form_field }}
+                    <!--
                     <div id="id_payment_cc" class="help-block" style="display:none;">
                         {% blocktrans %}
                         Paypal is used for credit card transactions.<br />
@@ -91,6 +92,7 @@
                         and then fill in the form.
                         {% endblocktrans %}
                     </div>
+                    -->
                     {{ form.country|form_field }}
                     {{ form.address|form_field }}
 
