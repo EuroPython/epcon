@@ -28,6 +28,7 @@ def stripe_checkout_script(order, company_name=None, company_logo=None):
         "company_logo": company_logo,
         "amount": total_amount,
         "description": description,
+        "currency": settings.STRIPE_CURRENCY
     }
 
 
