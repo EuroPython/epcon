@@ -30,6 +30,7 @@ def stripe_checkout_script(order, company_name=None, company_logo=None):
         "description": description,
         "currency": settings.STRIPE_CURRENCY,
         "allow_remember_me": settings.STRIPE_ALLOW_REMEMBER_ME,
+        "user_email": order.user.user.email,
     }
 
 
