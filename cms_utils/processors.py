@@ -7,5 +7,8 @@ def process_templatetags(instance, placeholder, rendered_content, original_conte
     This plugin processor render the resulting content to parse for templatetags
     in the plugin output
     """
-    template = Template(rendered_content)
+    try:
+        template = Template(rendered_content)
+    except Exception, e:
+        return u'<p><strong>Template Error: {}</strong></p>{}'.format(str(e), rendered_content)
     return template.render(original_context)
