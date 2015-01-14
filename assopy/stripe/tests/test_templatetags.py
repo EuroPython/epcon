@@ -31,6 +31,8 @@ class TestStripeTemplateTags(TestCase):
         self.assertIn('data-description="%s"' % order.orderitem_set.all()[0].description, data)
         self.assertIn('data-image="foo-bar-logo-url"', data)
         self.assertIn('data-currency="EUR"', data)
+        self.assertIn('data-allow-remember-me="false"', data)
+        self.assertIn('data-email="%s"' % order.user.user.email, data)
 
     def test_stripe_checkout_form_template_tag(self):
         """
@@ -51,3 +53,5 @@ class TestStripeTemplateTags(TestCase):
         self.assertIn('data-description="%s"' % order.orderitem_set.all()[0].description, data)
         self.assertIn('data-image="foo-bar-logo-url"', data)
         self.assertIn('data-currency="EUR"', data)
+        self.assertIn('data-allow-remember-me="false"', data)
+        self.assertIn('data-email="%s"' % order.user.user.email, data)

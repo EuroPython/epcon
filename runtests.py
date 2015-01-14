@@ -41,6 +41,7 @@ settings.configure(
     STRIPE_COMPANY_NAME="Foo Bar",
     STRIPE_COMPANY_LOGO="foo-bar-logo-url",
     STRIPE_CURRENCY="EUR",
+    STRIPE_ALLOW_REMEMBER_ME=False,
 )
 
 from django.contrib import admin

@@ -14,6 +14,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     username = fuzzy.FuzzyText()
     password = factory.PostGenerationMethodCall("set_password", "123456")
     is_active = True
+    email = fuzzy.FuzzyText(suffix="@bar.it")
 
 
 class AssopyUserFactory(factory.django.DjangoModelFactory):

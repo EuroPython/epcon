@@ -234,8 +234,6 @@ class TestLiveStripeCheckoutPayment(LiveServerTestCase):
         # move to the proper iframe
         self.selenium.switch_to.frame("stripe_checkout_app")
 
-        email_input = self.selenium.find_element_by_id("email")
-        email_input.send_keys("foo@bar.com")
         card_number_input = self.selenium.find_element_by_id("card_number")
         card_number_input.send_keys("4012")
         card_number_input.send_keys("8888")
