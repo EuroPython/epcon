@@ -148,8 +148,12 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
         talk.duration = self.cleaned_data['duration']
         talk.qa_duration = self.cleaned_data['qa_duration']
         talk.save()
-        talk.p3_talk.sub_community = self.cleaned_data['sub_community']
-        talk.p3_talk.save()
+        try:
+            talk.p3_talk.sub_community = self.cleaned_data['sub_community']
+            talk.p3_talk.save()
+        except models.P3Talk.DoesNotExist:
+            models.P3Talk.objects\
+                .create(talk=talk, sub_community=self.cleaned_data['sub_community'])
         return talk
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
