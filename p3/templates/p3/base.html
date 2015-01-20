@@ -127,6 +127,7 @@
                     {% endif %}
                         <a href="/accounts/logout/?next=/"><i class="fa fa-sign-out"></i>Log out</a>
                 {% else %}
+                    <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
                     <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
                 {% endif %}
                 </li>

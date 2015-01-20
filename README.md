@@ -35,6 +35,6 @@ Edit `pycon/settings_locale.py` to your taste!
 The next step is the database setup; the pycon site uses sqlite so the only
 needed thing is to create the directory where the db will be placed.
 
->>> mdirk -p data/site
+>>> mkdir -p data/site
 >>> ./manage.py syncdb
 >>> ./manage.py migrate

@@ -29,7 +29,11 @@ urlpatterns = patterns('',
         name='conference-speaker'),
     (r'^hcomments/', include('hcomments.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^markitup/', include('markitup.urls'))
+    url(r'^markitup/', include('markitup.urls')),
+
+
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url('', include('django.contrib.auth.urls', namespace='auth')),
 )
 
 if settings.DEBUG:

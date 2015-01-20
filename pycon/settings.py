@@ -112,6 +112,12 @@ TEMPLATE_LOADERS = (
 
 from django.conf import global_settings
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '672999261902-vi58eghq2jjf6ai1fio1a6t7d7q1c76n.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '0OnGot_90JjGeppVAKIghPgU'
+LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '672999261902-vi58eghq2jjf6ai1fio1a6t7d7q1c76n.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '0OnGot_90JjGeppVAKIghPgU'
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     'django.contrib.messages.context_processors.messages',
@@ -128,6 +134,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "sekizai.context_processors.sekizai",
     "cms.context_processors.cms_settings",
     "django.core.context_processors.static",
+
+
+   'social.apps.django_app.context_processors.backends',
+   'social.apps.django_app.context_processors.login_redirect',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -167,9 +177,14 @@ INSTALLED_APPS = (
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
+    'conference',
     'p3',
     'assopy',
     'assopy.stripe',
+
+
+
+   'social.apps.django_app.default',
 
     'djangocms_admin_style',
     'django.contrib.auth',
@@ -200,7 +215,7 @@ INSTALLED_APPS = (
     'authority',
     #'pages',
     'mptt',
-    'conference',
+
     'microblog',
     'hcomments',
     'django_xmlrpc',
@@ -270,7 +285,13 @@ AUTHENTICATION_BACKENDS = (
     'assopy.auth_backends.EmailBackend',
     'assopy.auth_backends.JanRainBackend',
     'django.contrib.auth.backends.ModelBackend',
+
+    'social.backends.facebook.FacebookOAuth2',
+   'social.backends.google.GoogleOAuth2',
+   'social.backends.twitter.TwitterOAuth',
+   # 'django.contrib.auth.backends.ModelBackend',
 )
+
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -404,7 +425,7 @@ CONFERENCE_GOOGLE_MAPS = {
     'country': 'it',
 }
 
-CONFERENCE_CONFERENCE = 'pycon6'
+CONFERENCE_CONFERENCE = 'ep2015'
 CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
 CONFERENCE_VOTING_DISALLOWED = 'https://www.pycon.it/voting-disallowed'
 
@@ -587,7 +608,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
             lines[ix] = line
         return lines
 
-    if conference in ('ep2012', 'ep2013'):
+    if conference in ('ep2012', 'ep2013', 'ep2015'):
         master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert(
             'RGBA')
 
@@ -602,7 +623,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
                 os.path.join(stuff, 'Arial_Unicode.ttf'),
                 21, encoding="unic")
             y = 175
-        elif conference == 'ep2013':
+        elif conference in ('ep2013', 'ep2015'):
             ftitle = ImageFont.truetype(
                 os.path.join(stuff, 'League_Gothic.otf'),
                 36, encoding="unic")
@@ -948,8 +969,6 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
 STRIPE_COMPANY_NAME = os.environ.get("STRIPE_COMPANY_NAME")
 STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
-STRIPE_CURRENCY = "EUR"
-STRIPE_ALLOW_REMEMBER_ME = False
 
 from settings_locale import *
 
