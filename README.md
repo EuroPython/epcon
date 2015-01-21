@@ -48,3 +48,15 @@ RUN
 
 >>> python manage.py runserver
 
+START SETTING
+-----
+
+The first thing you need to do is add 4 pages:
+
+- HOME (home)
+- CONTACTS (contacts)
+- PRIVACY (privacy)
+- CONDUCT-CODE (conduct-code)
+
+If you don't do that you'll start to see some errors like broken url reference.
+
