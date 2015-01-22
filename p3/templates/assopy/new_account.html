@@ -1,12 +1,13 @@
 {% extends "assopy/base.html" %}
 {% load assopy_tags %}
+{% load assopy_tags i18n %}
 {% block ASSOPY_MAIN_CONTENT %}
 <section>
    <div class="grid-container">
-       <div class="grid-100">      
-            <h1>Crea un nuovo account</h1> 
+       <div class="grid-100">
+            <h1>{% trans "Create a new account" %}</h1>
        </div><!-- /grid -->
-       <div class="grid-50">      
+       <div class="grid-50">
             <div class="well">
                 <form action=".?next={{ next }}" method="post">
                     <fieldset>
@@ -22,6 +23,11 @@
                 </form>
             </div>
        </div><!-- /grid -->
+       <div class="grid-50">
+        <h2>{% trans "By using one of your existing web accounts" %}</h2>
+        <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
+        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
+    </div>
    </div><!-- /grid -->
    </div><!-- /grid-container -->
 </section>

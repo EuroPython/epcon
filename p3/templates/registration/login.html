@@ -11,23 +11,11 @@
     <div class="grid-50">
         <h2>{% trans "By using one of your existing web accounts" %}</h2>
         <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
+        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
     </div>
     <div class="grid-50">
-        {% render_janrain_box next "embed" %}
-    </div>
-    </div>
-</section>
-
-<section>
-    <div class="grid-container">
-    <div class="grid-100">
         <h2>{% trans "Or use your email and password" %}</h2>
         <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
-    </div>
-
-    <hr />
-
-    <div class="grid-50">
         <div class="well">
             {% if form.errors %}
                 <div class="alert alert-error">{% trans "Invalid credentials" %}</div>
@@ -44,7 +32,9 @@
         </div>
     </div>
 
-    <div class="grid-40 prefix-10">
+    <hr />
+
+    <div class="grid-50 prefix-50">
         <h3>{% trans "Don&#8217;t you have an account?" %}</h3>
         <div>
             <a href="{% url "assopy-new-account" %}?next={{ next }}" class="btn">{% trans "Create a new account" %}</a>
@@ -57,7 +47,9 @@
             <a href="{% url "assopy-password-reset" %}" class="btn">{% trans "Recover your password" %}</a>
         </div>
     </div>
+
     </div>
 </section>
+
 
 {% endblock %}
