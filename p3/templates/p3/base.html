@@ -115,7 +115,10 @@
         <nav id="navigation-toggle" role="navigation">
             <ul class="clearfix">
                 {% show_menu 0 1 1 1  %}
+                {% comment %}
+                # If you want to enable more languages remove this comment
                 {% language_chooser "p3/includes/langnav.html" "native" %}
+                {% endcomment %}
                 <li class="right">
                 {% if request.user.is_authenticated %}
                     <a class="username" href="{% url "assopy-profile" %}"><i class="fa fa-user"></i>&nbsp;{{ request.user.assopy_user.name }}</a>
