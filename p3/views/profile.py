@@ -7,6 +7,7 @@ from conference import models as cmodels
 from conference.views import profile_access, json_dumps
 from django import http
 from django import forms
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -161,3 +162,31 @@ def p3_account_spam_control(request):
         if form.is_valid():
             form.save()
     return render(request, "assopy/profile_spam_control.html", ctx)
+
+def connect_profile_to_assopy(backend, user, response, *args, **kwargs):
+    """ CB to be filled in the python-social-auth pipeline in order to
+    verify if user is a new user and (if not) assopy and conference
+    profiles are created.
+
+    For more details about the reason for adding this method look at
+    assopy.views.janrain_token that should be doing the same but for a
+    janrain backend instead of python-social-auth.
+
+    Params: Refer to http://python-social-auth.readthedocs.org/en/latest/pipeline.html
+        for more details
+
+    """
+    if backend.name.startswith('google'):
+        email = kwargs['details']['email']
+
+    try:
+        # check if assopy user have already been created for this user
+        asso_user = user.assopy_user
+    except amodels.User.DoesNotExist:
+        # create it if not...s
+        log.debug('the current user "%s" will become an assopy user', user)
+        asso_user = amodels.User(user=user)
+        asso_user.save()
+
+    # same for conference profile...
+    profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(user)
