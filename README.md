@@ -10,7 +10,6 @@ Some CSS files (within directories `p3/static/p4/s` and `p3/static/p5/s`) are in
 
 You are thus welcome to fork away and reuse/enhance this project, as long as you use it to publish a website with a new design (without reusing the current EuroPython design).
 
-
 INSTALL
 =======
 
@@ -51,12 +50,14 @@ RUN
 START SETTING
 -----
 
-The first thing you need to do is add 4 pages:
+The first thing you need to do is add 4 pages with the following **ids**:
 
-- HOME (home)
-- CONTACTS (contacts)
-- PRIVACY (privacy)
-- CONDUCT-CODE (conduct-code)
+- HOME (advanced settings->id:home)
+- CONTACTS (advanced settings->id:contacts, template: content)
+- PRIVACY (advanced settings->id:privacy, template: content page, single column)
+- CONDUCT-CODE (advanced settings->id:conduct-code)
 
-If you don't do that you'll start to see some errors like broken url reference.
+If you don't do that you'll start to see some errors like broken url reference. 
+NOTE: You may need to restart the server after adding the pages to let the system
+detect them.
 
