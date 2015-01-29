@@ -25,7 +25,21 @@ sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
 
 SITE_DATA_ROOT = DATA_DIR + '/site'
 
-DATABASES = {
+DATABASE_TYPE = os.environ.get('DATABASE')
+
+if DATABASE_TYPE == "postgres":
+    user = os.environ.get('DATABASE_USER')
+    password = os.environ.get('DATABASE_PASSWORD')
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ep2015_testing',
+        'USER': user,
+        'PASSWORD': password,
+    }
+}
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': SITE_DATA_ROOT + '/p3.db',
