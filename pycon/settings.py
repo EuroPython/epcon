@@ -30,10 +30,11 @@ DATABASE_TYPE = os.environ.get('DATABASE')
 if DATABASE_TYPE == "postgres":
     user = os.environ.get('DATABASE_USER')
     password = os.environ.get('DATABASE_PASSWORD')
+    dbname = password = os.environ.get('DATABASE_NAME')
     DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ep2015_testing',
+        'NAME': dbname,
         'USER': user,
         'PASSWORD': password,
     }
