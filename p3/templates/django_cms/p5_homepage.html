@@ -3,6 +3,20 @@
 {% block BODY_ID %}home{% endblock %}
 {% block body-class %}home-tpl{% endblock %}
 
+{% block HEADER %}
+    <header role="banner">
+            <div class="header-wrap full-row">
+                <div class="header-image header-m">
+                    <div class="captions-wrap">
+                        <div class="caption-1 border-text-2"><span>EuroPython 2015</span></div>
+                        <div class="caption-2 italic-text"><span>Bilbao 20-26 July</span></div>
+
+                    </div>
+                </div>
+            </div>
+    </header>
+{% endblock %}
+
 {% block TEASER %}
     <section class="bg-red">
         <div class="grid-container">
@@ -13,6 +27,7 @@
             </div>
         </div>
     </section>
+
 
     {% get_deadlines limit=1 as l %}
     {% if l %}
@@ -105,16 +120,16 @@
 
     <section class="learn-with-pycon">
         <div class="grid-container">
-            <div class="grid-100">
-                <h2 class="border-title">{% trans "Scopri PyCon Italia" %}</h2>
-            </div>
+{#            <div class="grid-100">#}
+{#                <h2 class="border-title">{% trans "Scopri PyCon Italia" %}</h2>#}
+{#            </div>#}
             <div class="grid-33">
                 <a href="#">
                     <div class="learn-icon">
                         <img src="{% static 'p6/images/talk.svg' %}">
                     </div>
-                    <h4>{% trans "Talk" %}</h4>
-                    <p>{% trans "3 tracce parallele di talk per ascoltare e scoprire" %}
+                    <h4>{% trans "Talks" %}</h4>
+                    <p>{% trans "5 paralel tracks" %}
                 </a>
             </div>
             <div class="grid-33">
@@ -123,45 +138,46 @@
                         <img src="{% static 'p6/images/training.svg' %}" />
                     </div>
                     <h4>{% trans "Training" %}</h4>
-                    <p>{% trans "Sessioni di 4 ore, con le mani sulla tastiera: impara l'arte e mettila da parte" %}
+                    <p>{% trans "2 paralels of 4 hours long training" %}
                 </a>
             </div>
-            <div class="grid-33">
-                <a href="#">
-                    <div class="learn-icon">
-                        <img src="{% static 'p6/images/helpdesk.svg' %}" />
-                    </div>
-                    <h4>{% trans "Helpdesk" %}</h4>
-                    <p>{% trans "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti" %}
-                </a>
-            </div>
+{#            <div class="grid-33">#}
+{#                <a href="#">#}
+{#                    <div class="learn-icon">#}
+{#                        <img src="{% static 'p6/images/helpdesk.svg' %}" />#}
+{#                    </div>#}
+{#                    <h4>{% trans "Helpdesk" %}</h4>#}
+{#                    <p>{% trans "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti" %}#}
+{#                </a>#}
+{#            </div>#}
 
-
-            <div class="grid-33">
-                <a href="#">
-                    <div class="learn-icon">
-                        <img src="{% static 'p6/images/scopri_chi_viene.svg' %}" />
-                    </div>
-                    <h4>{% trans "Scopri chi viene" %}</h4>
-                    <p>{% trans "Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro" %}
-                </a>
-            </div>
             <div class="grid-33">
                 <a href="#">
                     <div class="learn-icon">
                         <img src="{% static 'p6/images/recruiting.svg' %}" />
                     </div>
                     <h4>{% trans "Recruiting" %}</h4>
-                    <p>{% trans "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate" %}
+                    <p>{% trans "Looking for a job? Hiring? Take part to our recruiting sessions!" %}
                 </a>
             </div>
+
+            <div class="grid-33">
+                <a href="#">
+                    <div class="learn-icon">
+                        <img src="{% static 'p6/images/scopri_chi_viene.svg' %}" />
+                    </div>
+                    <h4>{% trans "Who's coming?" %}</h4>
+                    <p>{% trans "Discover our great speakers and enjoy a great community!" %}
+                </a>
+            </div>
+
             <div class="grid-33">
                 <a href="#">
                     <div class="learn-icon">
                         <img src="{% static 'p6/images/eventi_sociali.svg' %}" />
                     </div>
-                    <h4>{% trans "Eventi sociali" %}</h4>
-                    <p>{% trans "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?" %}
+                    <h4>{% trans "Social Events" %}</h4>
+                    <p>{% trans "EuroPython is more the programming and technology! Meet new friends, socialize and enjoy Bilbao great food and drinks!" %}
                 </a>
             </div>
         </div>

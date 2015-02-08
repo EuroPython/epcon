@@ -754,7 +754,7 @@ ASSOPY_OTC_CODE_HANDLERS = {
     'e': 'p3.views.OTCHandler_E',
 }
 
-DEFAULT_URL_PREFIX = 'https://www.pycon.it'
+DEFAULT_URL_PREFIX = 'http://devlocal.europython.eu:8000'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 
