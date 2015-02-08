@@ -1,0 +1,140 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+
+// Post lists
+.blog-archive {
+    ul {
+        list-style: none;     
+        li {
+            margin-bottom: $baselineheight; }
+    }
+    .h4 {
+        margin-bottom: 0;
+        text-align: left;
+    }    
+    .summary {
+        color: $neutralcolor;
+    }
+}
+
+// Alter view if in homepage
+#home .blog-archive {
+    ul {
+        li {
+            margin-bottom: $baselineheight / 2; }
+    }    
+}
+
+// Year browser on sidebar
+#blog-archives-browser ul {
+    list-style: none;
+}
+
+// Share section
+.share {
+	margin: $baselineheight 0;
+    padding: $baselineheight/2 0;
+    border-top: 2px dotted $bordercolor; 
+    border-bottom: 2px dotted $bordercolor; 
+    p {
+        @include columns(2);
+        span.brand {
+            @include font-size(16);
+            display: block;
+            margin-bottom: $baselineheight/4;
+        }
+    }
+}
+
+// COMMENTS ================================================
+
+// @@TODO: use alert alert--info instead
+.comment-moderated {    
+    padding: $baselineheight/2 $gutterwidth/2;
+    color: #D7CEF5;
+    background: #161E33;
+    margin: 0 0 10px 0;
+}
+
+#comments {
+    .gravatar {
+        float: left;
+        margin-right: $gutterwidth/2;    
+        border: 2px solid $lightneutralcolor;
+        display: block;    
+        @extend .img-rounded;
+    }
+
+    .body {
+        // Gravatar size plus its right margin
+        margin-left: 40px + $gutterwidth/2;                    
+    }
+    
+    li.comment-level-0 {
+        padding-left: 0;
+    }
+    
+    li.comment-level-1,
+    li.comment-level-2,
+    li.comment-level-3,
+    li.comment-level-4 {
+        background: transparent url(../images/comment-reply.png) 0 top no-repeat;
+    }
+    
+    li.comment-level-1 {
+        padding-left: $gutterwidth;    
+    }
+    
+    li.comment-level-2 {
+        padding-left: $gutterwidth * 2;
+        background-position: $gutterwidth top;
+    }
+    
+    li.comment-level-3 {
+        padding-left: $gutterwidth * 3;
+        background-position: $gutterwidth*2 top;    
+    }
+    
+    li.comment-level-4 {
+        padding-left: $gutterwidth * 4;
+        background-position: $gutterwidth*3 top;
+    }
+    
+    li.user-comment {
+    }
+    
+    li.replying {
+    }
+    
+    li.owner-comment {
+        background: $lightneutralcolor;
+    }
+
+}
+
+
+#add-comment,
+#reactions,
+#comments {
+	margin: $baselineheight 0 0 0;
+}
+ 
+#reactions,
+#comments {
+ol {
+    @include zero;
+    list-style: none; }
+
+li {
+    margin: 0 0 $baselineheight / 2 0;
+    padding: 0 0 $baselineheight / 2 0;    
+    border-bottom: 1px dotted $bordercolor; }
+}
+
+
+

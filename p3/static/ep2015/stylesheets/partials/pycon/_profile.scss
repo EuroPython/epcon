@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+// Avatar class, used in profile, ticket and talk pages
+.avatar {    
+/*     border: 2px solid $lightneutralcolor; */
+    display: block;    
+    @extend .img-circle;
+}
+
+#form_profile_picture {
+    .field > label {
+        // in questa form le label adiacenti ai field non si devono vedere, ce
+        // ne sono altre all'esterno del div.field per guidare l'utente.
+        display: none;
+    }
+}
+
+.speaker-talks {
+dt {
+    text-transform: uppercase;
+    margin-bottom: $baselineheight/4; }
+li {
+    margin: 0 0 $baselineheight/4 $gutterwidth; }     
+}
+
+// Inline edit for profile sections and other user-related forms
+
+.live-edit {
+    .live-edit-toggle {
+        display: none;
+    }
+    .autosubmit {
+        display: none;
+    }
+}
+
+// Location map in public profile
+
+#chart-div {
+    // Align with horizonal form input fields
+    margin-left: $formlabelwidth;
+}
+
+.btn-centered {
+    display: block;
+}
