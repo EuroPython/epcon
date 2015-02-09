@@ -46,6 +46,7 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 .bg-red { background-color: #e61f4b; color: white; }
 .bg-theme-color { background-color: #f5ad58; color: #555555; } /*Dark color, shadow red, almost black*/
 
+/* DEADLINES THEME COLOR : GRAY */
 .bg-grey, .deadlines { background-color: #555555; color: white; }
 
 .deadlines { padding: 1em 0; }
@@ -65,6 +66,14 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 .learn-with-pycon h4 { color: #555555; font-weight: 600; font-size: 32px; font-size: 3.2rem; margin-bottom: 0; }
 
 .learn-icon, .subcommunities .subcommunity-container { background-color: white; border-radius: 50%; width: 100px; height: 100px; border: 5px solid #f5ad58; margin: 0 auto; margin-bottom: 20px; margin-top: 15px; padding: 21px; }
+
+/* SPOTS */
+.spot1 { background-image: url("../images/spot1.png"); background-size: cover ; background-repeat: no-repeat; /*background-attachment: fixed;*/ background-position: left; }
+.spot2 { background-image: url("../images/spot2.png"); background-size: cover ; background-repeat: no-repeat; background-position: right; }
+.spot3 { background-image: url("../images/spot3.png"); background-size: cover ; background-repeat: no-repeat; background-position: left; }
+.spot4 { background-image: url("../images/spot4.png"); background-size: cover ; background-repeat: no-repeat; background-position: right; }
+
+
 
 footer .bg-red { padding: 70px; text-align: center; }
 footer .bg-red a { display: inline-block; }
