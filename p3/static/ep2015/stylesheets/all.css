@@ -28,6 +28,7 @@ html { box-sizing: border-box; }
 
 html { background: white; font-size: 62.5%; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: #e0dfdb; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
+
 /*body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; color: #555555; }*/
 body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-family: 'Open Sans', sans-serif; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; color: #646464; }
 
@@ -39,8 +40,11 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 [role="contentinfo"] a:hover { color: white; }
 [role="contentinfo"] a:visited { color: #e61f4b; }
 
+/* RED THEME COLOR*/
+/* BILBAO : #FF0000 */
+/* ITALY: #e61f4b */
 .bg-red { background-color: #e61f4b; color: white; }
-.bg-theme-color { background-color: #f5ad58; color: #555555; }
+.bg-theme-color { background-color: #f5ad58; color: #555555; } /*Dark color, shadow red, almost black*/
 
 .bg-grey, .deadlines { background-color: #555555; color: white; }
 
@@ -83,8 +87,11 @@ footer table { margin: 0 auto; }
 
 /*#navigation-toggle { border-bottom: 5px solid #646464; }*/
 
-header { background-image: url("../images/bg-learn-with-pycon.jpg"); background-size: cover; }
+/*header { background-image: url("../images/bg-learn-with-pycon.jpg"); background-size: cover; }*/
+header { background-image: url("../images/bg-euskalduna.png"); background-size: cover; background-repeat: no-repeat; background-attachment: fixed; background-position: center; }
 
+/*QUOTE THEME COLOR*/
+/* BLUE */
 .quote-section { background: #555; color: white; }
 .quote-section q { font-size: 30px; font-size: 3rem; line-height: 1.2; font-weight: 500; text-transform: uppercase; margin-bottom: 30px; display: block; }
 .quote-section q:before { background-image: url("../images/quote.png"); content: ""; display: inline-block; background-repeat: no-repeat; width: 50px; height: 32px; margin-left: -50px; position: relative; top: 0; }
@@ -98,10 +105,14 @@ header { background-image: url("../images/bg-learn-with-pycon.jpg"); background-
 .sponsor img { filter: gray; /* IE6-9 */ -webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */ -webkit-backface-visibility: hidden; /* Fix for transition flickering */ filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='grayscale'><feColorMatrix type='matrix' values='0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0'/></filter></svg>#grayscale"); }
 .sponsor img:hover { filter: none; filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='grayscale'><feColorMatrix type='matrix' values='1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0'/></filter></svg>#grayscale"); -webkit-filter: grayscale(0%); -webkit-backface-visibility: hidden; /* Fix for transition flickering */ -webkit-transition: all 80ms linear; -moz-transition: all 80ms linear; transition: all 80ms linear; }
 
+/* JOINUS THEME COLOR*/
+/* PURPLE */
 .join-us { background-color: #888; }
 .join-us .help-text { color: white; }
 .join-us .help-text h3 { text-transform: uppercase; margin: 0 0 0.2em 0; }
 
+/* SUBCOMUNITIES THEME COLOR*/
+/* GRAY */
 .subcommunities { background-color: #FAFAFA; }
 .subcommunities h3 { text-align: center; width: 80%; display: block; margin: 0 auto 0.5em auto; }
 .subcommunities .subcommunity-container { padding: 15px; width: 100%; height: auto; border: 5px solid #EEE; }
@@ -116,6 +127,8 @@ header { background-image: url("../images/bg-learn-with-pycon.jpg"); background-
 
 .profile-details, .profile-talk { padding-top: 1em; }
 
+/* PROFILE-DETAILS THEME COLOR*/
+/* PINK */
 .profile-details .details-container { background-color: #EEE; -moz-border-radius: 20px; -webkit-border-radius: 20px; border-radius: 20px; padding: 20px 20px; }
 .profile-details .details-container dt { width: 40%; }
 .profile-details .details-container dd { margin-left: 40%; }
@@ -150,6 +163,8 @@ figure { margin-bottom: 1.5em; }
 figure img { margin-bottom: 0.375em; }
 figure figcaption { display: block; font-weight: normal; font-size: 14px; font-size: 1.4rem; font-style: italic; color: #656257; }
 
+/* SPEAKER THEME COLOR */
+/* GRAY */
 .meta, #talk-voting .talk-speakers, .person-card .see-more { color: #807c6f; }
 .meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited { color: #807c6f; }
 

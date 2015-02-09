@@ -118,7 +118,7 @@ def template_cache_name(fragment_name, *variables):
     args = md5_constructor(u':'.join([urlquote(var) for var in variables]))
     return 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
 
-def invalidate_template_cache(fragment_name, *variables):
+p3modedef invalidate_template_cache(fragment_name, *variables):
     args = md5_constructor(u':'.join([urlquote(var) for var in variables]))
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
