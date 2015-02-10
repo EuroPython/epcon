@@ -1,6 +1,13 @@
 {% load stripe_tags %}
-
-<form action="{% url "assopy-stripe-checkout" order.pk %}" method="POST">
-    {% csrf_token %}
-    {% stripe_checkout_script order company_name company_logo %}
-</form>
+{% load i18n %}
+<div class="stripe-checkout">
+    <h1>{% trans "Please enter your credit card details." %}</h1>
+    <form action="{% url "assopy-stripe-checkout" order.pk %}" method="POST">
+        {% csrf_token %}
+        {% stripe_checkout_script order company_name company_logo %}
+    </form>
+    <div class="stripe-checkout-footer">
+        <p>{% trans "Payment processed by Stripe.com" %}</p>
+        <p>{% trans "Credit cards details are not stored" %}</p>
+    </div>
+</div>
