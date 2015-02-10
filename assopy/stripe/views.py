@@ -31,6 +31,11 @@ class StripeCheckoutView(LoginRequiredMixin, DetailView):
         qs = Order.objects.filter(user__user=self.request.user)  # get only the orders for the current user
         return qs
 
+    def get_context_data(self, **kwargs):
+        context = super(StripeCheckoutView, self).get_context_data(**kwargs)
+        context["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
+        return context
+
     def get(self, request, *args, **kwargs):
         """
         Display the checkout view to pay with stripe
@@ -73,7 +78,7 @@ class StripeCheckoutView(LoginRequiredMixin, DetailView):
                     amount=amount,
                     currency="eur",
                     card=token,
-                    description=email
+                    description="payment for order %s by %s" % (order.pk, email)
                 )
                 order.confirm_order(timezone.now())
 
