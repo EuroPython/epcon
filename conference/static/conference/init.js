@@ -80,7 +80,7 @@ function select_tag(field, tags, mode) {
 
     var input = field
         .parents('.field')
-        .children('input');
+        .find('input');
 
     if(mode == "exclusive") {
         field
