@@ -3,6 +3,10 @@
 {% block BODY_ID %}home{% endblock %}
 {% block body-class %}home-tpl{% endblock %}
 
+
+
+
+
 {% block HEADER %}
     <header role="banner">
            <!--<div class="header-wrap full-row">
@@ -14,14 +18,25 @@
                     </div>
                 </div>
             </div>-->
+            <div>&nbsp;&nbsp;</div>
             <div class="header full-row">
+                       <!-- <picture>
+                            <source src="../../static/ep2015/images/ep2015-logo3.png" media="(max-width: 150px)">
+                            <source src="../../static/ep2015/images/ep2015-logo2.png" media="(max-width: 450px)">
+                            <source src="../../static/ep2015/images/ep2015-logo@2x.png" >
+                            <img src="../../static/ep2015/images/ep2015-logo3.png" alt="Ep2015 Bilbao Logo">
+                        </picture>-->
+
                 <div class="captions-wrap" align="center" >
-                        <img src="../../static/ep2015/images/ep2015-normal.png" align="Center"  />
+                        <img
+                             srcset="{{STATIC_URL}}ep2015/images/ep2015-logo2@2x.png 1x, {{STATIC_URL}}ep2015/images/ep2015-logo3.png 2x"
+                             src="{{STATIC_URL}}ep2015/images/ep2015-logo2@2x.png"
+                             alt="yah" />
                 </div>
             </div>
+        <div>&nbsp;&nbsp;</div>
     </header>
 {% endblock %}
-
 
 
 
@@ -39,7 +54,7 @@
 
     {% get_deadlines limit=1 as l %}
     {% if l %}
-    <section class="spot1 deadlines">
+    <section class="deadlines">
         <div class="grid-container">
             <div class="grid-100 media-body calendar">
                 <div class="calendar-icon">
@@ -75,7 +90,7 @@
     {% endif %}
 
     {% current_conference as conf %}
-    <section class="spot2 subcommunities">
+    <section class="subcommunities">
         <div class="grid-container">
             <div class="grid-100 general-notice">
                 <div class="pull-left"></div>
@@ -203,11 +218,11 @@
 
 
 {% block MAIN_CONTENT %}
-<section class="spot3 blog-container">
+<section class="blog-container">
     <div class="grid-container">
         {% post_list count=3 as posts %}
         <div class="grid-100">
-            <h2 class="border-title">{% trans "Ultimi post dal blog" %}</h2>
+            <h2 class="border-title">{% trans "Last blog posts" %}</h2>
         </div>
         {% for post in posts %}
             {% get_post_data post.id as data %}

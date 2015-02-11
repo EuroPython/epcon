@@ -278,7 +278,6 @@
     {% endfor %}
     {% endif %}
     {% block TOP_NAV_BLOCK %}
-        <header id="top">
             <div class="top-menu">
                 <div class="full-row">
                     <div class="top-bar">
@@ -308,18 +307,23 @@
                                 </li>
                             </ul>
                         </nav>
-                    </div>
+                     </div>
                 </div>
             </div>
 
-
-        </header>
     {% endblock %}
 {% endblock %}
 
 <div class="container">
 
 {% block HEADER %}
+     <header role="banner">
+        <div class="grid-container">
+            <div align="center">
+                <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}ep2015/images/ep2015-logo.png" alt="*" ></a></div>
+            </div>
+        </div><!-- /grid-container -->
+    </header>
 {% endblock %}
 
 <div class="page clearfix">
