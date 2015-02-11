@@ -141,6 +141,15 @@ TALK_DURATION = getattr(
     )
 )
 
+DEFAULT_VOTING_TALK_TYPES = (
+    ('all', 'All'),
+    ('s', 'Talks'),
+    ('t', 'Trainings'),
+    ('p', 'Poster'),
+)
+
+TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES', DEFAULT_VOTING_TALK_TYPES)
+
 # absolute path of a file used to log the email sent from the admin (tickets
 # stats section); the log file is also used to show a list of "last recently
 # sent email" in the admin page.

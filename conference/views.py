@@ -620,7 +620,7 @@ def voting(request):
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             talk_type = forms.ChoiceField(
-                choices=(('all', 'All'), ('s', 'Talks'), ('t', 'Trainings'), ('p', 'Poster'),),
+                choices=settings.TALK_TYPES_TO_BE_VOTED,
                 required=False,
                 initial='all',
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
