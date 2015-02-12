@@ -21,7 +21,7 @@ article, aside, figure, footer, header, hgroup, nav, section { display: block; }
 @-moz-viewport { width: device-width; }
 @-ms-viewport { width: device-width; }
 @-o-viewport { width: device-width; }
-@viewport { width: device-width; }
+@viewport { width: device-width; }bg
 html { box-sizing: border-box; }
 
 @font-face{ font-family: 'logo_ep2015'; src: url('../fonts/DK Lemon Yellow Sun.otf') format("embeded-opentype"); }
@@ -69,9 +69,19 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 .learn-with-pycon a:hover { text-decoration: none; }
 .learn-with-pycon p { text-align: center; color: #333333; } /*CHANGED: to DARK GRAY*/
 .learn-with-pycon h2 { margin: 0 0 0.5em 0; }
-.learn-with-pycon h4 { color: #333333; font-weight: 600; font-size: 32px; font-size: 3.2rem; margin-bottom: 0; }
+.learn-with-pycon h4 { color: white; font-weight: 450; font-size: 32px; margin-bottom: 0; }
 
-.learn-icon, .subcommunities .subcommunity-container { background-color: white; border-radius: 50%; width: 100px; height: 100px; border: 5px solid #f5ad58; margin: 0 auto; margin-bottom: 20px; margin-top: 15px; padding: 21px; }
+/*.learn-icon,*/ .subcommunities .subcommunity-container { background-color: white; border-radius: 50%; width: 100px; height: 100px; border: 5px solid #f5ad58; margin: 0 auto; margin-bottom: 20px; margin-top: 15px; padding: 21px; }
+.learn-icon { background-color: white; border-radius: 50%; width: 150px; height: 150px; /*border: 0px solid #f5ad58;*/ margin: 0 auto; margin-bottom: 0px; margin-top: 15px; padding: 21px; }
+.learn-bg-blue { background-image: url("../images/ep-bg-blue.svg"); background-size: cover ; background-repeat: no-repeat; background-position: center; }
+.learn-bg-green { background-image: url("../images/ep-bg-green.svg"); background-size: cover ; background-repeat: no-repeat; background-position: center; }
+.learn-bg-orange { background-image: url("../images/ep-bg-orange.svg"); background-size: cover ; background-repeat: no-repeat; background-position: center; }
+.learn-bg-purple { background-image: url("../images/ep-bg-purple.svg"); background-size: cover ; background-repeat: no-repeat; background-position: center; }
+.learn-bg-yellow { background-image: url("../images/ep-bg-yellow.svg"); background-size: cover ; background-repeat: no-repeat; background-position: center; }
+
+/* container bacgrounds */
+.container-bg-orange { background-image: url("../images/ep-bg-orange.svg"); background-size: 300px ; background-repeat: no-repeat; background-position: left; }
+/*.container-header {color: white;}*/
 
 /* SPOTS */
 .spot-h1 { background-image: url("../images/spot1.png"); background-size: contain
