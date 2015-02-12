@@ -124,14 +124,15 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
         return talk
 
+
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
-    duration = P3SubmissionForm.base_fields['duration']
+    duration         = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
-    video_agreement = P3SubmissionForm.base_fields['video_agreement']
-    type = P3SubmissionForm.base_fields['type']
-    abstract = P3SubmissionForm.base_fields['abstract']
-    language = P3SubmissionForm.base_fields['language']
-    sub_community = P3SubmissionForm.base_fields['sub_community']
+    video_agreement  = P3SubmissionForm.base_fields['video_agreement']
+    type             = P3SubmissionForm.base_fields['type']
+    abstract         = P3SubmissionForm.base_fields['abstract']
+    language         = P3SubmissionForm.base_fields['language']
+    sub_community    = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
@@ -156,10 +157,11 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
                 .create(talk=talk, sub_community=self.cleaned_data['sub_community'])
         return talk
 
+
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
-    duration = P3SubmissionForm.base_fields['duration']
-    type = P3SubmissionForm.base_fields['type']
-    abstract = P3SubmissionForm.base_fields['abstract']
+    duration      = P3SubmissionForm.base_fields['duration']
+    type          = P3SubmissionForm.base_fields['type']
+    abstract      = P3SubmissionForm.base_fields['abstract']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
@@ -180,11 +182,13 @@ class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
         talk.p3_talk.save()
         return talk
 
+
 class P3SpeakerForm(cforms.SpeakerForm):
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,)
+
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='Name of the attendee')

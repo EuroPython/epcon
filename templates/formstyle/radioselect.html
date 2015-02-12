@@ -1,5 +1,6 @@
+{% load i18n %}
 <div class="control-group {% if field.errors %}has-error {% endif %}{{ classes }}">
-    <label class="control-label">{{ field.label|safe }}{% if field.field.required %} <span>(richiesto)</span>{% endif %}</label>
+    <label class="control-label">{{ field.label|safe }}{% if field.field.required %} <span>({% trans "required" %})</span>{% endif %}</label>
     <div class="controls">
         {% for value in field.field.choices %}
         <label class="radio"><input type="radio" name="{{ field.html_name }}" value="{{ value.0 }}" {% if value.0 == field.value %}checked{% endif %}>{{ value.1 }}</label>
@@ -9,5 +10,3 @@
         {% endif %}
     </div>
 </div>
-
-

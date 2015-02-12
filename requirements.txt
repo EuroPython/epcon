@@ -30,6 +30,6 @@ easy_thumbnails==2.2
 raven==5.1.1
 djangocms-grid==1.1
 python-social-auth
-
 # new
-psycopg2==2.5.4
+#psycopg2==2.5.4
+simplejson

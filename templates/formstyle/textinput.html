@@ -1,5 +1,6 @@
+{% load i18n %}
 <div class="control-group {% if field.errors %}has-error {% endif %}{{ classes }}">
-    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %} <span>(richiesto)</span>{% endif %}</label>
+    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %} <span>({% trans "required" %})</span>{% endif %}</label>
     <div class="controls">
         {{ field }}
         {% if field.help_text %}
@@ -7,4 +8,3 @@
         {% endif %}
     </div>
 </div>
-

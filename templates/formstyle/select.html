@@ -1,5 +1,6 @@
+{% load i18n %}
 <div class="control-group {% if field.errors %}has-error {% endif %}{{ classes }}">
-    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %} <span>(richiesto)</span>{% endif %}</label>
+    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}{% if field.field.required %} <span>({% trans "required" %})</span>{% endif %}</label>
     <div class="controls">
         <select name="{{ field.html_name }}" class="input-xlarge" id="{{ field.auto_id }}">
             {% for value in field.field.choices %}
@@ -11,5 +12,3 @@
         {% endif %}
     </div>
 </div>
-
-
