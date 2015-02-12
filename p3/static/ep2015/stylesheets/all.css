@@ -836,7 +836,7 @@ label, input, button, select, textarea { font-family: "Lato", "Helvetica Neue", 
 label { display: block; margin-bottom: 0.375em; font-size: 18px; font-size: 1.8rem; }
 label span { font-size: 13.5; color: #807c6f; }
 
-select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"] { display: inline-block; margin-bottom: 0.75em; padding: 6px 6px; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; color: inherit; border-radius: 4px; vertical-align: middle; }
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"] { display: inline-block; margin-bottom: 0.75em; padding: 6px 6px; font-size: 18px; line-height: 1.5em; color: inherit; border-radius: 4px; vertical-align: middle; }
 
 input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="time"], input[type="week"] { display: -webkit-inline-flex; }
 
@@ -884,6 +884,11 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { font-siz
 .input-xlarge, #form-cart .coupon input { width: 270px; }
 
 .input-xxlarge { width: 530px; }
+
+/* NEED THIS CRUFT BECAUSE OF estentheme-1.1b.css playing god with !important */
+td.disabled {
+    display: inline !important;
+}
 
 input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] { opacity: .65; }
 
