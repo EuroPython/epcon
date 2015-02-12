@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/epcon/badge/?version=latest)](https://readthedocs.org/projects/epcon/?badge=latest)
+
 README
 ======
 This project (and its dependencies) contains the EuroPython website source code.
