@@ -14,6 +14,7 @@ from filebrowser.sites import site as fsite
 
 urlpatterns = patterns('',
     (r'^accounts/', include('assopy.urls')),
+    (r'^en/accounts/', include('assopy.urls')),
     (r'^admin/filebrowser/', include(fsite.urls)),
     (r'^admin/rosetta/', include('rosetta.urls')),
     (r'^admin/templatesadmin/', include('templatesadmin.urls')),
