@@ -22,6 +22,7 @@ TALK_DURATION = (
     (90, _('90 minutes inc Q&A')),
 )
 
+
 class P3TalkFormMixin(object):
     def clean(self):
         data = super(P3TalkFormMixin, self).clean()
@@ -42,6 +43,7 @@ class P3TalkFormMixin(object):
             data['qa_duration'] = 0
 
         return data
+
 
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
@@ -126,13 +128,13 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
 
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
-    duration         = P3SubmissionForm.base_fields['duration']
+    duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
-    video_agreement  = P3SubmissionForm.base_fields['video_agreement']
-    type             = P3SubmissionForm.base_fields['type']
-    abstract         = P3SubmissionForm.base_fields['abstract']
-    language         = P3SubmissionForm.base_fields['language']
-    sub_community    = P3SubmissionForm.base_fields['sub_community']
+    video_agreement = P3SubmissionForm.base_fields['video_agreement']
+    type = P3SubmissionForm.base_fields['type']
+    abstract = P3SubmissionForm.base_fields['abstract']
+    language = P3SubmissionForm.base_fields['language']
+    sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
@@ -159,9 +161,9 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
-    duration      = P3SubmissionForm.base_fields['duration']
-    type          = P3SubmissionForm.base_fields['type']
-    abstract      = P3SubmissionForm.base_fields['abstract']
+    duration = P3SubmissionForm.base_fields['duration']
+    type = P3SubmissionForm.base_fields['type']
+    abstract = P3SubmissionForm.base_fields['abstract']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
@@ -252,11 +254,13 @@ class FormTicket(forms.ModelForm):
             forms.ValidationError('invalid name')
         return data
 
+
 class FormTicketPartner(forms.ModelForm):
     name = forms.CharField(max_length=60, required=False, help_text='Real name of the person that will attend this specific event.')
     class Meta:
         model = cmodels.Ticket
         fields = ('name',)
+
 
 class FormTicketSIM(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, help_text='The SIM owner')
@@ -265,6 +269,7 @@ class FormTicketSIM(forms.ModelForm):
         exclude = ('ticket',)
         fields = ('ticket_name', 'sim_type', 'plan_type', 'document',)
 
+
 class FormTicketRoom(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, help_text='The person who will stay at the hotel')
     class Meta:
@@ -272,10 +277,12 @@ class FormTicketRoom(forms.ModelForm):
         exclude = ('ticket',)
         fields = ('ticket_name', 'document', 'unused')
 
+
 class FormSprint(forms.ModelForm):
     class Meta:
         model = models.Sprint
         exclude = ('user', 'conference',)
+
 
 class P3ProfileForm(cforms.ProfileForm):
     bio = forms.CharField(
@@ -370,6 +377,7 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         p3p.interests.set(*data.get('interests', ''))
         return profile
 
+
 class P3ProfileBioForm(P3ProfileForm):
     bio = forms.CharField(
         label=_('Compact biography'),
@@ -385,6 +393,7 @@ class P3ProfileBioForm(P3ProfileForm):
         profile.setBio(data.get('bio', ''))
         return profile
 
+
 class P3ProfileVisibilityForm(P3ProfileForm):
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect)
     class Meta:
@@ -393,6 +402,7 @@ class P3ProfileVisibilityForm(P3ProfileForm):
 
     def clean_bio(self):
         return getattr(self.instance.getBio(), 'body', '')
+
 
 class P3ProfilePictureForm(P3ProfileForm):
     opt = forms.ChoiceField(choices=(
@@ -440,6 +450,7 @@ class P3ProfilePictureForm(P3ProfileForm):
         p3p.save()
         return profile
 
+
 class P3ProfilePersonalDataForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
@@ -482,6 +493,7 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
                 raise forms.ValidationError(_('This field is required for a speaker'))
         return value
 
+
 class P3ProfileEmailContactForm(forms.Form):
     email = forms.EmailField(label="Enter new email")
 
@@ -496,6 +508,7 @@ class P3ProfileEmailContactForm(forms.Form):
                 raise forms.ValidationError(_('Email already registered'))
         return value
 
+
 class P3ProfileSpamControlForm(forms.ModelForm):
     spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through PyCon.'), required=False)
     spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other partecipants.'), required=False)
@@ -503,6 +516,7 @@ class P3ProfileSpamControlForm(forms.ModelForm):
     class Meta:
         model = models.P3Profile
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
+
 
 class HotelReservationsFieldWidget(forms.Widget):
     def __init__(self, *args, **kw):
@@ -641,6 +655,7 @@ class HotelReservationsFieldWidget(forms.Widget):
         }
         return render_to_string(tpl, ctx)
 
+
 class HotelReservationsField(forms.Field):
     widget = HotelReservationsFieldWidget
 
@@ -657,6 +672,7 @@ class HotelReservationsField(forms.Field):
             if not entry['qty']:
                 del value[ix]
         return value
+
 
 class P3FormTickets(aforms.FormTickets):
     coupon = forms.CharField(
@@ -773,6 +789,7 @@ class P3FormTickets(aforms.FormTickets):
             raise forms.ValidationError('No tickets')
 
         return data
+
 
 class P3EventBookingForm(cforms.EventBookingForm):
     def clean_value(self):
