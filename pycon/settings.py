@@ -208,12 +208,10 @@ INSTALLED_APPS = (
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
-    'conference',
     'p3',
     'assopy',
     'assopy.stripe',
-
-
+    'conference',
 
    'social.apps.django_app.default',
 
