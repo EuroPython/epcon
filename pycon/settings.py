@@ -8,9 +8,10 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('dvd', 'dvd@gnx.it'),
-    ('c8e', 'carlo.miron@gmail.com'),
-    ('yakky', 'github@spalletti.it'),
+    ('alexsavio', 'alexsavio@gmail.com'),
+    ('oiertwo'  , 'badtrex@gmail.com'),
+    ('fpliger'  , 'fabio.pliger@gmail.com'),
+    ('barrachri', 'barrachri@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -54,7 +55,7 @@ DEFAULT_FROM_EMAIL = 'info@pycon.it'
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/Rome'
+TIME_ZONE = 'Europe/Madrid'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -64,6 +65,8 @@ ugettext = lambda s: s
 LANGUAGES = (
     # disabled italian
     #('it', ugettext('Italiano')),
+    ('es', ugettext('Spanish')),
+    ('eus', ugettext('Basque')),
     ('en', ugettext('English')),
 )
 
@@ -208,14 +211,12 @@ INSTALLED_APPS = (
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
-    'conference',
     'p3',
     'assopy',
     'assopy.stripe',
+    'conference',
 
-
-
-   'social.apps.django_app.default',
+    'social.apps.django_app.default',
 
     'djangocms_admin_style',
     'django.contrib.auth',
@@ -473,7 +474,7 @@ CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
-    from conference import models
+    from p3 import models
 
     tickets = models.Ticket.objects \
         .filter(fare__conference=conf, orderitem__order___complete=True)
@@ -495,7 +496,7 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     #   who is in the special "pre_voting" group
     if conf.voting() or user.is_superuser:
         return True
-    from conference.models import TalkSpeaker, Speaker
+    from p3.models import TalkSpeaker, Speaker
 
     try:
         count = TalkSpeaker.objects.filter(
@@ -515,7 +516,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
     if user.is_superuser:
         return True
 
-    from conference.models import TalkSpeaker, Speaker
+    from p3.models import TalkSpeaker, Speaker
 
     try:
         count = TalkSpeaker.objects.filter(
@@ -542,7 +543,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
 
 def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     from p3.stats import presence_days
-    from conference.models import Schedule
+    from p3.models import Schedule
 
     if not isinstance(schedule, Schedule):
         output = {}
@@ -574,8 +575,8 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
 
 
 def CONFERENCE_VIDEO_COVER_EVENTS(conference):
-    from conference import dataaccess
-    from conference import models
+    from p3 import dataaccess
+    from p3 import models
     from datetime import timedelta
 
     conf = models.Conference.objects.get(code=conference)
@@ -601,7 +602,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
     import re
     import os.path
     from PIL import Image, ImageDraw, ImageFont
-    from conference import dataaccess
+    from p3 import dataaccess
 
     event = dataaccess.event_data(eid)
     conference = event['conference']
@@ -710,7 +711,7 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
     u = request.user
     if u.is_anonymous():
         return False
-    from conference.models import Ticket
+    from p3.models import Ticket
 
     qs = Ticket.objects \
         .filter(id__in=[x.id for x in u.assopy_user.tickets()]) \
@@ -782,7 +783,7 @@ def HCOMMENTS_RECAPTCHA(request):
 
 
 def HCOMMENTS_THREAD_OWNERS(o):
-    from conference.models import Talk
+    from p3.models import Talk
     from microblog.models import Post
 
     if isinstance(o, Talk):
