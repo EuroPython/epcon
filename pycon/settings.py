@@ -9,14 +9,18 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('alexsavio', 'alexsavio@gmail.com'),
+    ('oiertwo'  , 'badtrex@gmail.com'),
+    ('fpliger'  , 'fabio.pliger@gmail.com'),
+    ('barrachri', 'barrachri@gmail.com'),
 )
 
 MANAGERS = ADMINS
 
-PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(os.path.join(os.path.dirname(__file__), '..')))
-
-DATA_DIR    = os.environ.get('DATA_DIR',    os.path.join(PROJECT_DIR, 'data'))
-OTHER_STUFF = os.environ.get('OTHER_STUFF', os.path.join(PROJECT_DIR, 'documents'))
+PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
+    os.path.join(os.path.dirname(__file__), '..')))
+DATA_DIR = os.environ.get('DATA_DIR', os.path.join(PROJECT_DIR, 'data'))
+OTHER_STUFF = os.environ.get('OTHER_STUFF',
+                             os.path.join(PROJECT_DIR, 'documents'))
 
 sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
 
@@ -62,6 +66,7 @@ LANGUAGES = (
     # disabled italian
     #('it', ugettext('Italiano')),
     ('es', ugettext('Spanish')),
+    ('eus', ugettext('Basque')),
     ('en', ugettext('English')),
 )
 
@@ -267,8 +272,8 @@ INSTALLED_APPS = (
 )
 
 RECAPTCHA_OPTIONS = {
-    'theme':    'clean',
-    'lang' :    'en',
+    'theme': 'clean',
+    'lang': 'en',
     'tabindex': 0,
     # 'custom_translations': {},
     #'custom_theme_widget': None
