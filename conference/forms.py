@@ -184,7 +184,7 @@ class SubmissionForm(forms.Form):
         if profile:
             data.update({
                 'phone': profile.phone,
-                'birthday': profile.birthday,
+                'birthday': profile.birthday.strftime('%Y-%m-%d'),
                 'job_title': profile.job_title,
                 'company': profile.company,
                 'company_homepage': profile.company_homepage,
@@ -222,7 +222,7 @@ class SubmissionForm(forms.Form):
         talk = models.Talk.objects.createFromTitle(
             title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', duration=data['duration'], language=data['language'],
-            level=data['level'], type=data['type'],
+            level=data['level'], type=data['type']
         )
         talk.qa_duration = data.get('qa_duration', 0)
         talk.save()
@@ -287,7 +287,7 @@ class TalkForm(forms.ModelForm):
             self.instance = models.Talk.objects.createFromTitle(
                 title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', duration=data['duration'], language=data['language'],
-                level=data['level'],
+                level=data['level']
             )
         inst = super(TalkForm, self).save(commit=commit)
         inst.setAbstract(data['abstract'])
