@@ -9,7 +9,7 @@
        </div><!-- /grid -->
        <div class="grid-50">
             <div class="well">
-                <form action=".?next={{ next }}" method="post">
+                <form action=".?next= {{next}}" method="post">
                     <fieldset>
                         {% if form.non_field_errors %}
                             <p class="errornote">{{ form.non_field_errors }}</p>
@@ -17,7 +17,7 @@
                         {% for f in form %}{{ f|field }}{% endfor %}
                     </fieldset>
                     <fieldset>
-                        <button name="" value="" class="btn btn-primary" type="submit">Crea il tuo account</button>
+                        <button name="" value="" class="btn btn-primary" type="submit" >Create account</button>
                     </fieldset>
                     {% csrf_token %}
                 </form>
@@ -27,7 +27,7 @@
         <h2>{% trans "By using one of your existing web accounts" %}</h2>
         <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Facebook account to buy tickets for your company and the Facebook name will not appear anywhere." %}</p>
         <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
-    </div>
+        </div>
    </div><!-- /grid -->
    </div><!-- /grid-container -->
 </section>

@@ -1,4 +1,4 @@
-{% extends "p3/base.html" %}
+{% extends "p3/ase.html" %}
 {% load i18n conference assopy_tags formstyle %}
 
 {% block EXTRA_HEAD %}{{ form.media }}{% endblock %}
@@ -11,10 +11,10 @@
     <section>
         <div class="grid-container">
         <div class="grid-100">
-            <h2>Profilo speaker</h2>
+            <h2>Speaker profile</h2>
 
             <fieldset>
-                <legend>Dati personali</legend>
+                <legend>Personal</legend>
                 {{ form.first_name|form_field }}
                 {{ form.last_name|form_field }}
                 {{ form.job_title|form_field }}
@@ -22,12 +22,12 @@
                 {{ form.phone|form_field }}
             </fieldset>
             <fieldset>
-                <legend>Azienda</legend>
+                <legend>Address</legend>
                 {{ form.company|form_field }}
                 {{ form.company_homepage|form_field }}
             </fieldset>
             <fieldset>
-                <legend>Su di te</legend>
+                <legend>Biography</legend>
 
                 {{ form.bio|form_field }}
             </fieldset>
@@ -43,7 +43,7 @@
 <section>
     <div class="grid-container">
     <div class="grid-100">
-        <h2>Invia un nuovo talk</h2>
+        <h2>Send new Talk</h2>
 
     {% if proposed_talks %}
         <div class="alert alert--info">
@@ -78,8 +78,8 @@
         </fieldset>
 
         <div class="alert alert--info">
-            <b>Note</b>: if you are available to give the same talk both in Italian and English,
-            please submit the talk twice, with fully translated title and abstract.</div>
+            <b>Note</b>: if you are available to give the same in Basque, Spanish and English,
+            please submit the talk three times, with fully translated title and abstract.</div>
     </div><!-- /grid -->
     </div><!-- /grid-container -->
 </section>
