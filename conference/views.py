@@ -10,6 +10,7 @@ from conference import models
 from conference import settings
 from conference import utils
 from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
+from conference.forms import OptionForm
 
 from django import forms
 from django import http
@@ -563,19 +564,105 @@ def paper_submission(request):
         'proposed_talks': proposed,
     }, context_instance=RequestContext(request))
 
-def voting(request):
+
+def filter_talks_in_context(request, talks, voting_allowed):
+    # voglio poter associare ad ogni talk un numero "univoco" da mostrare
+    # accanto al titolo per poterlo individuare facilmente.
+    ordinal = dict()
+    for ix, t in enumerate(talks.order_by('created').values_list('id', flat=True)):
+        ordinal[t] = ix
+    user_votes = models.VotoTalk.objects.filter(user=request.user.id)
+    talks = talks.order_by('speakers__user__first_name', 'speakers__user__last_name')
+    if request.GET:
+        form = OptionForm(data=request.GET)
+        form.is_valid()
+        options = form.cleaned_data
+    else:
+        form = OptionForm()
+        options = {
+            'abstracts': 'not-voted',
+            'talk_type': '',
+            'language': '',
+            'tags': '',
+            'order': 'vote',
+        }
+    if options['abstracts'] != 'all':
+        talks = talks.exclude(id__in=user_votes.values('talk_id'))
+    if options['talk_type'] in ('s', 't', 'p'):
+        talks = talks.filter(type=options['talk_type'])
+    if options['language'] in ('en', 'it'):
+        talks = talks.filter(language=options['language'])
+    if options['tags']:
+        # se in options['tags'] ci finisce un tag non associato ad alcun
+        # talk ho come risultato una query che da zero risultati; per
+        # evitare questo limito i tag usabili come filtro a quelli
+        # associati ai talk.
+        allowed = set()
+        ctt = ContentType.objects.get_for_model(models.Talk)
+        for t, usage in dataaccess.tags().items():
+            for cid, oid in usage:
+                if cid == ctt.id:
+                    allowed.add(t.name)
+                    break
+        tags = set(options['tags']) & allowed
+        if tags:
+            talks = talks.filter(id__in=models.ConferenceTaggedItem.objects \
+                                 .filter(
+                content_type__app_label='conference', content_type__model='talk',
+                tag__name__in=tags) \
+                                 .values('object_id')
+            )
+    talk_order = options['order']
+    votes = dict((x.talk_id, x) for x in user_votes)
+    # Poichè talks è ordinato per un modello collegato tramite una
+    # ManyToMany posso avere dei talk ripetuti, e il distinct non si
+    # applica in questi casi.
+    #
+    # Non mi rimane che filtrare in python, a questo punto ne approfitto
+    # per agganciare i voti dell'utente utilizzando un unico loop.
+    dups = set()
+
+    def filter_vote(t):
+        if t['id'] in dups:
+            return False
+        dups.add(t['id'])
+        t['user_vote'] = votes.get(t['id'])
+        t['ordinal'] = ordinal[t['id']]
+        return True
+
+    talks = filter(filter_vote, talks.values('id'))
+    if talk_order != 'speaker':
+        def key(x):
+            if x['user_vote']:
+                return x['user_vote'].vote
+            else:
+                return Decimal('-99.99')
+
+        talks = reversed(sorted(reversed(talks), key=key))
+    ctx = {
+        'voting_allowed': voting_allowed,
+        'talks': list(talks),
+        'form': form,
+    }
+    return ctx
+
+
+def get_data_for_context(request):
     conf = models.Conference.objects.current()
+    voting_allowed = settings.VOTING_ALLOWED(request.user)
+    talks = models.Talk.objects.proposed(conference=conf.code)
+    return conf, talks, voting_allowed
+
+
+def voting(request):
+
+    conf, talks, voting_allowed = get_data_for_context(request)
 
     if not settings.VOTING_OPENED(conf, request.user):
         if settings.VOTING_CLOSED:
             return redirect(settings.VOTING_CLOSED)
         else:
             raise http.Http404()
-
-    voting_allowed = settings.VOTING_ALLOWED(request.user)
-
-    talks = models.Talk.objects\
-                .proposed(conference=conf.code)
 
     if request.method == 'POST':
         if not voting_allowed:
@@ -611,121 +698,7 @@ def voting(request):
         else:
             return HttpResponseRedirectSeeOther(reverse('conference-voting') + '?' + request.GET.urlencode())
     else:
-        from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioRenderer
-        class OptionForm(forms.Form):
-            abstracts = forms.ChoiceField(
-                choices=(('not-voted', 'To be voted'), ('all', 'All'),),
-                required=False,
-                initial='not-voted',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
-            )
-            talk_type = forms.ChoiceField(
-                choices=settings.TALK_TYPES_TO_BE_VOTED,
-                required=False,
-                initial='all',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
-            )
-            language = forms.ChoiceField(
-                choices=(('all', 'All'), ('en', 'English'), ('it', 'Italian'),),
-                required=False,
-                initial='all',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
-            )
-            order = forms.ChoiceField(
-                choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
-                required=False,
-                initial='vote',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
-            )
-            tags = TagField(
-                required=False,
-                widget=ReadonlyTagWidget(),
-            )
-
-        # voglio poter associare ad ogni talk un numero "univoco" da mostrare
-        # accanto al titolo per poterlo individuare facilmente.
-        ordinal = dict()
-        for ix, t in enumerate(talks.order_by('created').values_list('id', flat=True)):
-            ordinal[t] = ix
-
-        user_votes = models.VotoTalk.objects.filter(user=request.user.id)
-        talks = talks.order_by('speakers__user__first_name', 'speakers__user__last_name')
-
-        if request.GET:
-            form = OptionForm(data=request.GET)
-            form.is_valid()
-            options = form.cleaned_data
-        else:
-            form = OptionForm()
-            options = {
-                'abstracts': 'not-voted',
-                'talk_type': '',
-                'language': '',
-                'tags': '',
-                'order': 'vote',
-            }
-        if options['abstracts'] != 'all':
-            talks = talks.exclude(id__in=user_votes.values('talk_id'))
-        if options['talk_type'] in ('s', 't', 'p'):
-            talks = talks.filter(type=options['talk_type'])
-
-        if options['language'] in ('en', 'it'):
-            talks = talks.filter(language=options['language'])
-
-        if options['tags']:
-            # se in options['tags'] ci finisce un tag non associato ad alcun
-            # talk ho come risultato una query che da zero risultati; per
-            # evitare questo limito i tag usabili come filtro a quelli
-            # associati ai talk.
-            allowed = set()
-            ctt = ContentType.objects.get_for_model(models.Talk)
-            for t, usage in dataaccess.tags().items():
-                for cid, oid in usage:
-                    if cid == ctt.id:
-                        allowed.add(t.name)
-                        break
-            tags = set(options['tags']) & allowed
-            if tags:
-                talks = talks.filter(id__in=models.ConferenceTaggedItem.objects\
-                    .filter(
-                        content_type__app_label='conference', content_type__model='talk',
-                        tag__name__in=tags)\
-                    .values('object_id')
-                )
-
-        talk_order = options['order']
-
-        votes = dict((x.talk_id, x) for x in user_votes)
-
-        # Poichè talks è ordinato per un modello collegato tramite una
-        # ManyToMany posso avere dei talk ripetuti, e il distinct non si
-        # applica in questi casi.
-        #
-        # Non mi rimane che filtrare in python, a questo punto ne approfitto
-        # per agganciare i voti dell'utente utilizzando un unico loop.
-        dups = set()
-        def filter_vote(t):
-            if t['id'] in dups:
-                return False
-            dups.add(t['id'])
-            t['user_vote'] = votes.get(t['id'])
-            t['ordinal'] = ordinal[t['id']]
-            return True
-        talks = filter(filter_vote, talks.values('id'))
-
-        if talk_order != 'speaker':
-            def key(x):
-                if x['user_vote']:
-                    return x['user_vote'].vote
-                else:
-                    return Decimal('-99.99')
-            talks = reversed(sorted(reversed(talks), key=key))
-
-        ctx = {
-            'voting_allowed': voting_allowed,
-            'talks': list(talks),
-            'form': form,
-        }
+        ctx = filter_talks_in_context(request, talks, voting_allowed)
         if request.is_ajax():
             tpl = 'conference/ajax/voting.html'
         else:

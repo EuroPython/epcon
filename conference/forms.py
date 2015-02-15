@@ -477,3 +477,34 @@ sent to:
 
 class AttendeeLinkDescriptionForm(forms.Form):
     message = forms.CharField(label='A note to yourself (when you met this persone, why you want to stay in touch)', widget=forms.Textarea)
+
+# -- Custom Option Form used for Talk Voting Filters
+class OptionForm(forms.Form):
+    abstracts = forms.ChoiceField(
+        choices=(('not-voted', 'To be voted'), ('all', 'All'),),
+        required=False,
+        initial='not-voted',
+        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+    )
+    talk_type = forms.ChoiceField(
+        choices=settings.TALK_TYPES_TO_BE_VOTED,
+        required=False,
+        initial='all',
+        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+    )
+    language = forms.ChoiceField(
+        choices=(('all', 'All'), ('en', 'English'), ('it', 'Italian'),),
+        required=False,
+        initial='all',
+        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+    )
+    order = forms.ChoiceField(
+        choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
+        required=False,
+        initial='vote',
+        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+    )
+    tags = TagField(
+        required=False,
+        widget=ReadonlyTagWidget(),
+    )
