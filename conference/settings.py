@@ -51,6 +51,16 @@ TALKS_RANKING_FILE = getattr(settings, 'CONFERENCE_TALKS_RANKING_FILE', None)
 
 VIDEO_DOWNLOAD_FALLBACK = getattr(settings, 'CONFERENCE_VIDEO_DOWNLOAD_FALLBACK', True)
 
+DEFAULT_VOTING_TALK_TYPES = (
+    ('all', 'All'),
+    ('s', 'Talks'),
+    ('t', 'Trainings'),
+    ('p', 'Poster'),
+)
+
+TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES',
+                                 DEFAULT_VOTING_TALK_TYPES)
+
 def _CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from conference import models
     tickets = models.Ticket.objects\
