@@ -186,7 +186,7 @@ class SubmissionForm(forms.Form):
                 birthday_value = None
             else:
                 birthday_value = profile.birthday.strftime('%Y-%m-%d')
-                
+
             data.update({
                 'phone': profile.phone,
                 'birthday': birthday_value,
