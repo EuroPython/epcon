@@ -21,7 +21,7 @@ django-cms==3.0.6
 -e git+https://github.com/pythonitalia/microblog.git#egg=microblog
 -e git+https://github.com/pythonitalia/hcomments.git#egg=hcomments
 #-e git+https://github.com/pythonitalia/conference.git#egg=conference
-git+https://github.com/EuroPython/conference.git
+-e git+https://github.com/EuroPython/conference.git#egg=conference
 -e git+https://github.com/pythonitalia/assopy.git#egg=assopy
 BeautifulSoup==3.2.1
 django-markitup==2.2.2
