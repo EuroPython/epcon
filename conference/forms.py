@@ -182,9 +182,14 @@ class SubmissionForm(forms.Form):
             'last_name': user.last_name,
         }
         if profile:
+            if profile.birthday is None:
+                birthday_value = None
+            else:
+                birthday_value = profile.birthday.strftime('%Y-%m-%d')
+                
             data.update({
                 'phone': profile.phone,
-                'birthday': profile.birthday.strftime('%Y-%m-%d'),
+                'birthday': birthday_value,
                 'job_title': profile.job_title,
                 'company': profile.company,
                 'company_homepage': profile.company_homepage,
