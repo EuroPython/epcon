@@ -31,13 +31,6 @@ class P3BillingData(aforms.BillingData):
             cf_code = self.cleaned_data['cf_code']
             vat = self.cleaned_data.get('vat_number', '')
             country = self.cleaned_data['country']
-            if country and country.pk == 'IT':
-               # the tax id is 16 characters for persons, for companies it can be shorter
-               if not cf_code or (len(cf_code) != 16 and not vat):
-                   # hack to tie the error to the cf_code field
-                   e = forms.ValidationError(_('"Codice Fiscale" is required for Italian customers'))
-                   self._errors['cf_code'] = self.error_class(e.messages)
-                   del self.cleaned_data['cf_code']
         return data
 
 class P3BillingDataCompany(P3BillingData):
