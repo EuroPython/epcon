@@ -1,6 +1,6 @@
 {% load stripe_tags %}
 {% load i18n %}
-<div class="stripe-checkout">
+<div align="center" class="stripe-checkout">
     <h1>{% trans "Please enter your credit card details." %}</h1>
     <form action="{% url "assopy-stripe-checkout" order.pk %}" method="POST">
         {% csrf_token %}
