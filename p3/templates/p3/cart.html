@@ -68,7 +68,7 @@
             {% if conference_fares %}
             <legend>{% trans "Conference tickets" %}</legend>
                 <p>{% trans "All prices are 22% VAT included." %}</p>
-                <table class="table">
+                <table id="ticket_table" class="table">
                     <col />
 
                     <col style="background: #E5E2D3" />
@@ -97,6 +97,27 @@
                             <th>{% trans "Q.ty" %}</th>
                         </tr>
                     </thead>
+
+                <script type="text/javascript">
+                    $("#ticket_table").change(max_tickets);
+                    function max_tickets() {
+                        //alert("The text has been changed.");
+                        t = document.getElementById("ticket_table");
+                        inp_list = t.getElementsByTagName("input");
+                        var changed = (1<0)
+                        for (i = 0; i < inp_list.length; i++) {
+                            val = inp_list[i].value
+                                if (val > 5) {
+                                    inp_list[i].value = 5
+                                    changed = (1>0);
+                                }
+                        }
+                        if (changed) {
+                            location.reload();
+                        }
+                    }
+                </script>
+
                     <tbody>
                         {% render_cart_rows "conference" form %}
                     </tbody>
