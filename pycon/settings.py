@@ -402,9 +402,9 @@ CKEDITOR_SETTINGS = {
     'extraPlugins': 'cmsplugins',
 }
 
-MICROBLOG_LINK = 'http://www.pycon.it'
+MICROBLOG_LINK = 'http://dev.europython.eu'
 MICROBLOG_TITLE = 'PyconIT blog'
-MICROBLOG_DESCRIPTION = 'latest news from pycon.it'
+MICROBLOG_DESCRIPTION = 'latest news from europython'
 MICROBLOG_DEFAULT_LANGUAGE = 'it'
 MICROBLOG_POST_LIST_PAGINATION = True
 MICROBLOG_POST_PER_PAGE = 10
@@ -755,7 +755,7 @@ ASSOPY_OTC_CODE_HANDLERS = {
     'e': 'p3.views.OTCHandler_E',
 }
 
-DEFAULT_URL_PREFIX = 'http://127.0.0.1:8000'
+DEFAULT_URL_PREFIX = 'http://dev.europython.eu'
 PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
 COMMENTS_APP = 'hcomments'
 
