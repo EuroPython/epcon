@@ -218,7 +218,7 @@
                             {% if real %}
                             <td>
                                 <div class="cell-legend">
-                                    {{ document.0 }} <span class="alt-language">{{ document.1 }}</span>
+                                    N. de Factura <span class="alt-language"> Invoice N.</span>
                                 </div>
                                 <div class="cell-content">
                                     {{ code|default:'' }}
@@ -226,7 +226,7 @@
                             </td>
                             <td>
                                 <div class="cell-legend">
-                                    Data <span class="alt-language">Date</span>
+                                    Fecha <span class="alt-language">Date</span>
                                 </div>
                                 <div class="cell-content">
                                     {{ emit_date|default:'' }}
@@ -252,7 +252,7 @@
                             {% endif %}
                             <td>
                                 <div class="cell-legend">
-                                    Valuta <span class="alt-language">Currency</span>
+                                    Divisa <span class="alt-language">Currency</span>
                                 </div>
                                 <div class="cell-content">
                                     Euro
@@ -292,7 +292,7 @@
                         <tr>
                             <th class="invoice-items-w1">
                                 <div class="cell-legend">
-                                    Codice
+                                    Código
                                 </div>
                                 <div class="cell-legend alt-language">
                                     Code
@@ -300,7 +300,7 @@
                             </th>
                             <th>
                                 <div class="cell-legend">
-                                    Descrizione
+                                    Descripción
                                 </div>
                                 <div class="cell-legend alt-language">
                                     Description
@@ -308,7 +308,7 @@
                             </th>
                             <th class="invoice-items-w0">
                                 <div class="cell-legend">
-                                    Quantità
+                                    Cantidad
                                 </div>
                                 <div class="cell-legend alt-language">
                                     Quantity
@@ -316,7 +316,7 @@
                             </th>
                             <th class="invoice-items-w1">
                                 <div class="cell-legend">
-                                    Totale
+                                    Total
                                 </div>
                                 <div class="cell-legend alt-language">
                                     Amount
@@ -355,7 +355,7 @@
                         <tr>
                             <td>
                                 <div class="cell-legend">
-                                    Imponibile <span class="alt-language">Net price</span>
+                                    Base Imponible <span class="alt-language">Net price</span>
                                 </div>
                                 <div class="cell-content">
                                     <div class="currency">{{ price.net|floatformat:2 }}</div>
@@ -379,7 +379,7 @@
                             </td>
                             <td>
                                 <div class="cell-legend">
-                                    Totale <span class="alt-language">Total</span>
+                                    Total <span class="alt-language">Total</span>
                                 </div>
                                 <div class="cell-content">
                                     <div class="currency">{{ price.total|floatformat:2 }}</div>
