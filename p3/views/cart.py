@@ -12,7 +12,7 @@ from p3 import forms as p3forms
 from p3 import models
 
 class P3BillingData(aforms.BillingData):
-    payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='paypal')
+    payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='cc')
     code_conduct = forms.BooleanField(
         label=_('I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.'))
 
@@ -31,13 +31,6 @@ class P3BillingData(aforms.BillingData):
             cf_code = self.cleaned_data['cf_code']
             vat = self.cleaned_data.get('vat_number', '')
             country = self.cleaned_data['country']
-            if country and country.pk == 'IT':
-               # the tax id is 16 characters for persons, for companies it can be shorter
-               if not cf_code or (len(cf_code) != 16 and not vat):
-                   # hack to tie the error to the cf_code field
-                   e = forms.ValidationError(_('"Codice Fiscale" is required for Italian customers'))
-                   self._errors['cf_code'] = self.error_class(e.messages)
-                   del self.cleaned_data['cf_code']
         return data
 
 class P3BillingDataCompany(P3BillingData):

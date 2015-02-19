@@ -111,7 +111,17 @@
                         {{ form.vat_number|form_field }}
                     {% endif %}
                     {% if 'cf_code' in form.fields %}
-                        <div style="display: none;">{{ form.cf_code|form_field }}</div>
+
+                        <div style="display: none;">
+                        <div class="control-group  field textinput charfield">
+                            <label class="control-label" for="id_cf_code">Identity card Number</label>
+                            <div class="controls">
+                                <input id="id_cf_code" maxlength="16" name="cf_code" type="text" />
+                                    <span class="help-block">Optional</span>
+                            </div>
+                        </div>
+                        </div>
+
                     {% endif %}
                     {% if 'billing_notes' in form.fields %}
                         {{ form.billing_notes|form_field }}
@@ -188,12 +198,8 @@
     function _cfCode() {
         var country = $('#id_country').val().toLowerCase();
         var div = $('#id_cf_code').parents('div[style]').eq(0);
-        if(country == 'it') {
-            div.show();
-        }
-        else {
-            div.hide();
-        }
+        div.show();
+
     }
     $('#id_country')
         .change(_geoCode)
