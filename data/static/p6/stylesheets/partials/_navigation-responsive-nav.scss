@@ -1,0 +1,128 @@
+/*! responsive-nav.js v1.0.14 by @viljamis */
+
+.js nav[role=navigation] {
+    clip: rect(0 0 0 0);
+    max-height: 0;
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    zoom: 1;
+    
+    @include media-query-bp($bp3){
+        max-height : none;}
+    
+    .opened {
+      max-height: 9999px;
+    }
+}
+
+// Added via JS
+#nav-toggle {
+    float : right;
+    display : block;
+    padding : $baselineheight / 2 $gutterwidth / 2;
+    background-color: $navigationbackgroundcolor; 
+    color: $navigationlinkcolor;
+    border-bottom-left-radius: $borderradius;
+    
+    @include media-query-bp($bp3){
+        display : none;}
+}
+
+.navigation-toggle { display: none; }
+
+// Common styles
+nav[role=navigation] {
+    clear : both;
+    background-color : $navigationbackgroundcolor;
+    @include transition (all $transitionduration ease); 
+}
+
+nav[role=navigation].active {
+    max-height : 25em; 
+}
+
+#navigation-toggle {
+    list-style-type : none;
+    @include zero;
+    
+    @include media-query-bp($bp4) {
+        width : 100%;
+        ul {
+            margin : 0 auto;
+            max-width : $maxwidth; }
+    }
+
+    ul {
+        list-style : none;
+        @include zero; 
+        @include media-query-bp($bp3){
+            margin : 0 auto;}
+    }
+    
+    li {
+        @include media-query-bp($bp3){
+            //display : inline-block;
+            float: left;
+            margin : 0 $gutterwidth / 2 0 0;}
+        
+        a {
+            vertical-align: middle;
+            display: block;
+            padding : $gutterwidth / 2 $gutterwidth / 4;
+            border-top : $navigationborderwidth $navigationborderstyle $navigationbordercolor;
+            color : $navigationlinkcolor;
+            text-transform : uppercase;
+            letter-spacing: .5px;
+            
+            @include media-query-bp($bp3){
+                display : inline-block;
+                border : none;
+                @include font-size(16);}
+        
+            &:hover {
+                color : $secondarycolor;
+                text-decoration : none;
+            }
+        }
+        
+        // Current nav item 
+        &.current a {
+            color : $secondarycolor;
+        }
+        
+        // Special user-related nav items
+        &.right {
+            margin: 0 0 0 15px;
+            @include media-query-bp($bp3) {
+                float: right; 
+            }
+            a { 
+                color: $secondarycolor;
+                text-transform : none; 
+                @include font-size(14);
+                &.username {
+                    font-weight: 600;
+                }
+                &:hover {
+                    color: darken($secondarycolor, 20%);
+                }
+                i {
+                    color: $primarycolor;
+                    margin-right: 4px;
+                }
+            }
+        }
+        //
+        &.right.lang a {
+            text-transform: uppercase;
+            background-color: #F5F5F5;
+            padding-left: 15px;
+            padding-right: 15px;  
+            &:hover {
+                background-color: #EEE;
+            }
+        }
+    }
+    
+}

@@ -1,0 +1,70 @@
+PROJEKKTOR - simply mighty <video>
+http://www.projekktor.com
+
+
+V0.7.10
+=======
+
+ fixes:
+ * Fixed general load-progress bar issues  
+ * Improved "seek" accuracy
+ * Fixed filetype detection issues
+
+V0.7.9
+======
+
+ additions:
+ * made big "play" invisible on autoplay
+
+
+V0.7.8
+======
+
+ additions:
+ * "enableFlashFallback" config option allows to enable/disable automatic flash fallback (default: true), http://code.google.com/p/projekktor-zwei/issues/detail?id=35
+ * "controlsTemplateFilter" config option allows assignment of custom string rewrite functions for time- & title strings.
+ 
+ changes:
+ * improved file type detection and fallback decision stuff, http://code.google.com/p/projekktor-zwei/issues/list?cursor=26
+ * removed flashVar parameters for MP4 Flash fallback component, http://code.google.com/p/projekktor-zwei/issues/detail?id=34
+ * set default Flash fallback component´s stage quality to HIGH and enabled video smoothing, http://code.google.com/p/projekktor-zwei/issues/detail?id=36
+ 
+ fixes:
+ * IE7, IE8 issues, http://code.google.com/p/projekktor-zwei/issues/detail?id=32&can=1
+ * fixed opera fallback issues
+ * fixed testcard´s "click display to continue" bug 
+
+
+V0.7.6
+======
+ 
+ additions:
+ * Added WEBM support
+ * Added experimental native audio support (flash fallback pending)
+ * Core: dynamic IE7, IE8 HTML5 fix, makes the xmlns="http://www.w3.org/1999/xhtml/video" workaround obsolete
+ * Controlbar Plugin: Volume slider is now clickable (and the knob still draggable)
+ * Flash video component: added "time" and "loaded" attribute, http://code.google.com/p/projekktor-zwei/issues/detail?id=21
+ 
+ changes:
+ * removed automatic CSS inclusion (too much fuzz and user complaints - e.g. http://code.google.com/p/projekktor-zwei/issues/detail?id=27)
+ * "Totally Looks Like..." Theme overhauled
+ * Workaround for Firefox flash resize bug simplified
+ 
+ fixes:
+ * fixed some strange buffer-icon behavior
+ * fixed multi-instance issues on flash-fallback
+ * fixed FLV issue, http://code.google.com/p/projekktor-zwei/issues/detail?id=22
+ * fixed poster issue, http://code.google.com/p/projekktor-zwei/issues/detail?id=25
+ * fixed IE youtube issue, http://code.google.com/p/projekktor-zwei/issues/detail?id=30
+
+V0.7.2
+======
+ * fixed, added and altered that much, you shouldn´t use 0.6.1 anymore
+
+V0.6.1
+======
+ * initial release - it works
+
+
+free the princess of agentia!
++++

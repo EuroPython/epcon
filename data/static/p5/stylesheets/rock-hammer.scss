@@ -1,0 +1,297 @@
+@charset "UTF-8";
+/* 
+
+Built on Rock Hammer by Stuff and Nonsense
+URL: http://stuffandnonsense.co.uk/projects/rock-hammer/ 
+
+*/
+
+// Media query support required?
+$media-queries-supported : true;
+
+// Opacity support in IE required via the proprietry ActiveX?
+$ie8-opacity-supported 	 : false;
+
+// Import all SASS imports
+@import 'imports';
+
+
+// PYCON ==============================================================================
+
+html {
+    background-image: url(../images/texture-page.jpg);
+    background-attachment: fixed;
+}
+
+
+
+footer {
+    background: $navigationbackgroundcolor;    
+    hr {
+        border-color: $primarycolor;
+    }
+    p, li {
+        @include font-size(16);
+    }
+}
+
+section {
+    padding: $baselineheight*2 0;        
+}
+
+// Zebra stripes
+.page section:nth-child(odd) {
+    background: $white; // Fallback for older browsers
+    background: url('../images/texture-section-top.jpg') top center repeat-x, 
+        url('../images/texture-section-bottom.jpg') bottom center repeat-x, 
+        url('../images/texture-section-center.jpg') center center;    
+}
+
+// Covers the whole page (see content.html template)
+.page section.full-page-height {
+    background: $white url('../images/texture-section-top.jpg') top center repeat-x;   
+}
+
+
+header {
+    padding: $baselineheight*2 0;
+    text-align: center;
+
+    h1 {
+        color: $secondarycolor;
+        text-transform: uppercase;
+        font-weight: 300;
+        margin-bottom: 0;
+        span { 
+            color: $primarycolor; }
+
+        @include font-size($basefontsize * 2.5);
+        @include media-query-bp($bp3) {
+            @include font-size($basefontsize * 3.5);
+        }    
+    }
+    
+    .subhead {
+        @include media-query-bp($bp3) {
+            // Like h3 
+            @include font-size($basefontsize * 1.3);
+        }    
+        font-weight: 300;
+        color: $neutralcolor; }    
+}
+
+.page-summary {
+    p {
+        @extend .lead;        
+    }
+}
+
+// Slot are used as sidebar items and profile pages
+
+.slot {
+    @extend .well;
+    h4 {
+        @extend .h6;              
+        @extend .spaced;
+        margin: 0 0 $baselineheight / 2 0;    
+        text-transform: uppercase;
+    }    
+    ul, ol, p {
+        @include font-size(16);
+        line-height: $altlineheight;
+    }
+
+}
+
+// HOME ==============================================================================
+
+.intro .lead {
+    color: $textcolor;
+}
+
+.notice {
+    // Icons
+    .fa {
+        color: $neutralcolor;
+    }
+    h3 {
+        text-transform: uppercase;
+        margin-bottom: $baselineheight/2;
+        span {
+            color: $secondarycolor;
+        }
+    }   
+    // Adjust media styles
+    .pull-left {
+        margin-right: $gutterwidth;
+    }
+}
+
+
+
+.badge {
+    // Top margins only if grid is activated
+    @include media-query-bp($bpdesktopmin) {
+        margin-top: $baselineheight * 2;
+    }       
+
+    text-align: center;
+    a {
+        border: 1px solid $buttonbordercolor;
+        padding: $baselineheight/2 $gutterwidth/2;
+        background: $buttonbackgroundcolor;
+        @include buttongrad;
+        border-radius: $buttonborderradius;
+        text-transform: uppercase;  
+        display: block;        
+        width: 90%;
+        margin: $baselineheight/4 auto;
+        letter-spacing: 1px;
+        text-shadow: 0 1px 0 rgba(255,255,255,.55);        
+
+    }
+    small { 
+        color: $neutralcolor;
+        margin-bottom: 0;
+    }
+    // Icons
+    .fa {
+        color: $neutralcolor;
+    }
+}
+
+.badge-buy {
+    // Special styles for buy badge
+}
+
+.badge-chat {
+    // Special styles for chat badge
+}
+
+.sponsor {
+    margin-bottom: $baselineheight;    
+}
+
+.sponsor-wanted {
+    background: $white;
+    text-align: center;
+    border: 1px dotted $lightneutralcolor;    
+    text-transform: uppercase;
+    @include font-size(16);
+    box-sizing: border-box;
+    padding-top: $baselineheight*1.3;
+        
+    // Matches sponsor logo
+    min-height: 90px; 
+    max-width: 190px;
+
+}
+
+// CALENDAR ==========================================================================
+
+.calendar {
+
+    .deadline {
+        
+    }
+
+    .deadline.expired {
+        text-decoration: line-through;       
+        color: $neutralcolor;        
+    }
+
+    time {
+        background: $primarycolor;
+        padding: 3px 6px;
+        text-transform: uppercase;
+        color: $white;
+        @include font-size(14);
+        border-radius: $borderradius;
+    }    
+}
+
+
+
+// MISC. =============================================================================
+
+// Clickable UI icons
+
+span.icon {
+    cursor: pointer;
+}
+
+span.icon-remove {
+    color: $errorcolor;
+}
+
+// Invisible label in forms
+
+form .no-label {
+    label {
+        @include hidden;
+    }
+}
+
+
+// Autocomplete (used for cart Google-guess'ed billing address)
+
+.autocomplete {
+    background: $lightestneutralcolor;
+    padding: $baselineheight/2 $gutterwidth/2 0 $gutterwidth/2;
+    h4 {
+        @extend .h6;              
+        @extend .spaced;
+        margin: 0 0 $baselineheight / 2 0;    
+        text-transform: uppercase;        
+    }
+    
+    ul {
+        @include zero;   
+    }    
+    li {
+        padding: 0 0 $baselineheight / 2 0;    
+    }
+}
+
+// Toggle elements 
+
+.toggle, 
+.tag-toggle {
+    padding: 0 0 0 $gutterwidth/2;
+    cursor: pointer;
+    background: transparent url(../images/icon-arr-down.png) left center no-repeat;
+}
+
+.toggle.trigger-expanded {
+    background-image: url(../images/icon-arr-up.png);
+}
+
+dt.toggle {
+    font-weight: bold;
+    margin: $baselineheight/2 0 0 0;
+}
+
+dt.toggle img {
+    vertical-align: middle;
+}
+
+dt.toggle+dd {
+    @include font-size(14);
+    color: $neutralcolor;    
+    margin: $baselineheight/2 0 0 $gutterwidth/2;    
+}
+
+// Notice which disappears after while
+.async-feedback {
+    display: none;
+    position: fixed;
+    top: $baselineheight;
+    left: 50%;
+    right: 0;
+    width: 50%;
+    margin-left: -25%; // Half the width
+    text-align: center;
+}
+
+
+

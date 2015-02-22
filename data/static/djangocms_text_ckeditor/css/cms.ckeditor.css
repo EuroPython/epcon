@@ -1,0 +1,20 @@
+@charset "utf-8";
+/*
+ * @copyright:	https://github.com/divio/djangocms-text-ckeditor
+ */
+
+/* float left with the label */
+.cke_chrome { float:left; width:100%; }
+
+/* special case when inside a text plugin */
+.djangocms_text_ckeditor-text .form-row label { display:none; }
+.djangocms_text_ckeditor-text .cke_chrome { float: none; }
+
+/* insure dialog has relative positioning for absolute positioned content */
+.cke_dialog_contents_body { position:relative; }
+
+/* show cmsplugin label */
+.cke_button__cmsplugins .cke_button_label { padding-left:5px; padding-right:5px;  display:inline; }
+
+/* make dropdow larger */
+.cke_combopanel { min-width:200px; }

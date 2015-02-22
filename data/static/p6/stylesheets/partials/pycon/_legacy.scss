@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+
+.janrain-box {
+    width: 400px;
+    display: block;
+/*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
+    min-height: 240px;
+}
+
+// This is for legacy simpler forms like log in and signup
+
+form .field.error {
+   @extend .has-error;    
+   .errorlist {
+       @include zero;
+       color: $errorcolor;
+   }
+}
+
+// @@REMOVEME: use new .help-block
+.help-text {
+    @extend .help-block;
+}
+
+
+// OVERLAY =============================================================================
+
+.overlay {
+	position: absolute !important;
+	display: none;	
+	z-index: 10000;	
+	background: $white;
+	padding: $baselineheight/2 $gutterwidth;	
+	width: 35em;	
+	min-height: $baselineheight * 10;	
+	box-shadow: 0 0 15px $darkneutralcolor;
+}
+
+.overlay .close {
+    position: absolute;
+    background: transparent url(../images/icon-close.png) center center no-repeat;
+    width: 36px;    
+    height: 36px;
+    top: -18px;
+    right: -18px;
+}
+
+
+#global-overlay {
+	padding: $baselineheight/2 $gutterwidth;
+}
+
+#global-overlay .contentWrap {
+    height: 450px;
+    overflow-y: auto;
+}
