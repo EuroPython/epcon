@@ -1,0 +1,103 @@
+// Rock Hammer by Stuff and Nonsense
+// Version: <!-- $version -->
+// URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
+// Version: <!-- $license -->
+
+@-webkit-viewport { 
+width : device-width; }
+
+@-moz-viewport { 
+width : device-width; }
+
+@-ms-viewport { 
+width : device-width; }
+
+@-o-viewport { 
+width : device-width; }
+
+// This can cause issues with Chrome Dev Tools on both stable and Canary (tested on v29 and v31).
+// For more, see https://code.google.com/p/chromium/issues/detail?id=232102
+// Therefore, you may wish to comment out this declaration for now.
+@viewport { 
+width : device-width; }
+
+html {
+background : $bodycolor;
+font-size : 62.5%;
+-webkit-overflow-scrolling : touch;
+-webkit-tap-highlight-color : $lightestneutralcolor;
+-webkit-text-size-adjust : 100%;
+-ms-text-size-adjust : 100%; }
+
+body {
+@include zero;
+width : 100%;
+background-color : transparent;
+font-family : $basefontfamily;
+@include font-size($basefontsize);
+line-height : $baselineheight;
+color : $textcolor; }
+
+
+@if $show-breakpoint {
+    body:after {
+    content : 'base';
+    position: fixed;
+    left: $gutterwidth;
+    bottom: $baselineheight;
+    color: green;
+    z-index: 1;
+    
+    @include media-query-bp($bp2) {
+    content : 'bp2'; }
+    
+    @include media-query-bp($bp3) {
+    content : 'bp3'; }
+    
+    @include media-query-bp($bp4) {
+    content : 'bp4'; }
+    
+    @include media-query-bp($bp5) {
+    content : 'bp5'; }
+    
+    @include media-query-bp($bp6) {
+    content : 'bp6'; }
+
+    }
+
+    body:before {
+    content : '';
+    position: fixed;
+    left: $gutterwidth;
+    bottom: $baselineheight * 2;
+    color: blue;
+    z-index: 1;
+
+    @include media-query-bp($bpmobilemax, max) {
+    content : 'mobile'; }
+    
+    @include media-query-bp($bpdesktopmin) {
+    content : 'desktop'; }
+
+    }
+}
+
+.m-hide {
+    @include hidden;
+}
+
+
+[role="contentinfo"] {
+color: $lightestneutralcolor;
+padding : $baselineheight 0;
+
+ul {
+@include zero;
+list-style: none;    
+}
+a {
+    color : $navigationlinkcolor;
+    &:hover { color : $navigationlinkcolorhover; }
+    &:visited { color : $navigationlinkcolor; }
+}  
+}

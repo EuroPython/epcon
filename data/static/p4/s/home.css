@@ -1,0 +1,441 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+
+#welcome-non-italian {
+/*     margin: 0 0 40px 0; */
+    min-height: 130px;        
+    _height: 130px;
+
+    
+}
+
+#welcome-non-italian  p{
+    
+    background: transparent url(../i/bg-non-italian.png) center left no-repeat;    
+    padding: 10px 0 10px 60px;
+    
+    
+}
+
+
+
+/* ========== */
+/* ! splash   */
+/* ========== */
+
+#splash {
+    position: relative;
+}
+
+#splash h3 {
+
+    position: absolute;
+    
+    top: 120px;
+    left: 535px;
+    
+    text-indent: -999em;
+    background: transparent url(../i/splash-h3-it.png) top left no-repeat;
+    
+    height: 35px;
+    width: 210px;
+}
+
+#splash ul {
+    position: absolute;
+    
+    top: 150px;
+    left: 535px;
+    
+    list-style: none;
+}
+
+
+#splash a {
+    border: none;
+    opacity: .8;
+    
+    display: block;    
+    
+   -webkit-transition: opacity .2s ease; 
+}
+
+#splash a:hover {
+    opacity: 1;
+    
+    
+}
+
+#splash img {
+    display: block;
+}
+
+/* ========= */
+/* ! intro   */
+/* ========= */
+
+#intro {
+
+    padding: 0 0 20px 0;
+    margin: 0 0 20px 0;	
+    
+/*     background: transparent url(../i/bg-sep.png) bottom left  repeat-x; */
+    
+}
+
+
+#intro p {
+
+
+	font: bold  18px/30px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+    color: #4d5e5f;
+    
+	text-shadow: rgba(228, 245, 245, 0.95) 1px 1px 1px; 
+	   
+}
+
+/* ========== */
+/* ! quotes   */
+/* ========== */
+
+#quotes {
+    margin: 0 0 40px 0;	
+    
+/*     background: transparent url(../i/bg-sep.png) bottom left  repeat-x; */
+    
+}
+
+#quotes q {
+
+    background: transparent  url(../i/bg-quotes.png) bottom left no-repeat;
+
+	font: italic 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+	color: #454424;
+		    
+/* 	text-shadow: rgba(228, 245, 245, 0.75) 1px 1px 1px;   */
+
+    display: block;
+
+    margin: 0 0 10px 0;
+    padding: 0 0 20px 0;
+
+    min-height: 120px;
+    _height: 120px;
+}
+
+#quotes p {
+
+    
+    font-weight: bold;
+    color: #0F2424;
+
+}
+
+
+#quotes p img {
+    float: left;    
+    margin: 0 10px 0 0;
+}
+
+
+
+#quotes p span {
+
+    color: #78764C;
+
+    font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+    
+    display: block;
+    
+}
+
+
+/* =========== */
+/* ! section   */
+/* =========== */
+
+
+.section  {
+
+
+}
+
+.section h2 {
+
+    font: normal 21px/30px  "League Gothic", "Arial Narrow", sans-serif;
+    	
+    color: #96204B;
+    
+    margin: 0 0 15px 0;
+/* 	padding: 0 0 5px 0; */
+
+	text-transform: uppercase;
+	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px; 	
+	
+	
+	
+	background:  transparent url(../i/bg-section-h2.png) bottom left no-repeat;
+}
+
+
+/* ======= */
+/* ! cal   */
+/* ======= */
+
+
+
+#cal {
+    background: transparent url(../i/bg-cal.png) left center no-repeat;    
+
+    padding: 30px 0 0 0;    
+        
+    min-height: 80px;
+    _height: 80px;
+    
+}
+
+#cal h3 {
+
+    float: left;
+    width: 90px;
+    
+    padding: 0 0 0 20px;
+    margin: 0 10px 0 0;
+    
+    text-align: center;
+
+    font: normal 21px/24px  "League Gothic", "Arial Narrow", sans-serif;        
+    text-transform: uppercase;    
+    
+    text-shadow: #1a2b2b 1px 1px 1px;  
+    
+    color: #9fc4c4;    
+    
+}
+
+/*
+#cal h2 {
+    font: normal 18px/20px  "League Gothic", "Arial Narrow", sans-serif;        
+    color: #96204B;    
+    
+    text-transform: uppercase; 
+    
+}
+*/
+
+#cal h3 span {
+
+	font: bold italic 24px/24px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+    text-transform: none;
+/*     color: #96204B; */
+
+    color: #F5FECA;  
+}
+
+#cal p {
+    float: right;
+    width: 350px;    
+}
+
+
+#cal p .more {
+
+    padding: 1px 2px;
+/*     text-transform: uppercase; */
+
+    margin: 5px 0 0 0;
+    display: inline-block;
+    
+    background: #C4C3A3;
+    
+}
+
+#cal p .more a {
+
+
+
+    border: none;    
+    font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+        
+}
+
+    
+
+/* ========== */
+/* ! signup   */
+/* ========== */
+
+
+#signup-button {
+    background: transparent  url(../i/bg-register.png) left center no-repeat;
+
+}
+
+#submit-button a,
+#signup-button a {
+    font-size: 16px;
+    font-weight: bold;
+       
+    text-transform: uppercase;
+    padding:  15px 0 15px 80px;
+    
+	text-shadow: #33421a 1px 1px 2px; 
+	
+	border: none;   
+	
+	color: #fff;
+	display: block;
+	
+
+/* 	font-weight: bold; */
+}
+
+#submit-button {
+    background: transparent  url(../i/bg-submit.png) left center no-repeat;
+    height: 50px;
+}
+
+#submit-button a {
+    text-transform: uppercase;
+    padding:  15px 0 15px 0;
+    
+    font-size: 14px;
+    
+    text-align: center;
+    
+    
+}
+
+
+
+
+
+
+
+
+/* ======== */
+/* ! blog   */
+/* ======== */
+
+
+#blog-latest p {
+
+}
+
+#blog-latest p.metadata {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+
+    color: #474727;
+
+}
+
+
+#blog-latest p.metadata a {
+    color: #474727;
+    border-bottom-color: #7a7a5c;    
+}
+
+#blog-latest p.metadata a:hover {
+    color: #630b2b;
+    border-bottom-color: #9babab;
+}
+
+#blog-latest h3 {
+    font: normal 21px/30px  "League Gothic", "Arial Narrow", sans-serif;         
+}
+
+
+#blog-latest h3 a {
+
+    
+}
+
+#blog-latest h3 a:hover {
+}
+
+
+#blog-latest .more {
+ 
+ 
+ 
+    margin: 20px 0 0 0;   
+    padding: 1px 2px;
+
+    width: 120px;
+
+    text-align: center;    
+/*     text-transform: uppercase; */
+    
+    background: #C4C3A3;
+}
+
+#blog-latest .more a {
+
+    border: none;    
+    font: normal 13px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+        
+}
+
+#blog-latest .more a:hover {
+/*     color: #fff; */
+}
+
+/* =========== */
+/* ! twitter   */
+/* =========== */
+
+
+#twitter {
+
+}
+
+#twitter #latest-tweet {
+    background: transparent url(../i/bg-twitter.png) top center no-repeat;
+    padding: 10px;
+    
+/*     color: #d7cef5; */
+    
+    min-height: 135px;
+    _height: 135px;
+    
+}
+
+
+
+#twitter h2 {
+    background: none;
+    
+    margin: 0;
+}
+
+
+#twitter #follow-us {
+    background: transparent url(../i/bg-twitter-follow-us.png) top left no-repeat;
+    min-height: 90px;
+    _height: 90px;    
+}
+
+
+#twitter #follow-us p {
+    margin: 0 0 0 110px;
+
+    text-align: center;    
+    padding: 25px 0 0 0; 
+}
+#twitter #follow-us a  {
+    display: inline-block;
+    
+    margin: 0 0 5px 0;
+}
+
+
+#twitter #follow-us p span {
+    color: #78764C;
+    font-size: 13px;
+}

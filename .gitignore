@@ -3,7 +3,7 @@
 settings_locale.py
 Session.vim
 penv/*
-data/*
+data/site
 p3/static/p5/stylesheets/.sass-cache/*
 p3/static/p6/stylesheets/.sass-cache/*
 p3/static/p6/.sass-cache/*

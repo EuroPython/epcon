@@ -1,0 +1,241 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+table.schedule {
+	border-collapse: collapse;
+	width: 100%;
+
+    margin: 0 0 40px 0;
+
+    border: 10px solid #ebead8;
+    background: #ebead8;
+    
+}
+
+table.schedule caption {
+	text-align: left;	
+/*     text-transform: capitalize; */
+    text-transform: uppercase;
+	
+	caption-side: top;
+
+	font: normal 21px/30px "League Gothic", "Arial Narrow", sans-serif;	
+	
+	margin: 0 0 25px 0;
+/*     padding: 0 0 5px 0; */
+	
+	color: #96204B;
+
+	text-shadow: rgba(228, 245, 245, .75) 1px 1px 1px; 
+
+	background:  transparent url(../i/bg-section-h2.png) bottom left no-repeat;
+		
+}
+
+
+.schedule thead th {
+	border-bottom: 5px solid #4D5E5F;			
+	padding: 0 0 5px 0;
+
+	font: bold 13px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+
+    text-transform: uppercase;
+	
+/* 	color: #365757; */
+
+    letter-spacing: 1px;
+}
+
+.schedule thead th.t-scoprire {
+    border-bottom-color: #749091;	
+}
+
+.schedule thead th.t-diffondere {
+
+    border-bottom-color: #96204B;	
+}
+
+.schedule thead th.t-imparare {
+    border-bottom-color: #94946f;	
+}
+
+.schedule thead th.t-openspace {
+    border-bottom-color: #94946f;	
+}
+
+.schedule thead th.hhmm {
+	border-bottom-width: 1px;			
+
+
+}
+
+
+.schedule tbody td {
+	padding: 5px 20px 20px 0;	
+	
+	border-bottom: none;
+}
+
+
+/* talk title */
+.schedule h3 {
+	
+	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+			
+	margin: 0 0 5px 0;
+	text-transform: none;
+		
+}
+
+/* talk speaker(s) */
+.schedule .s a {
+	color: #5e5c32;
+    border-bottom-color:#9BABAB;	
+}
+
+
+.schedule td.hhmm {
+	font: normal 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
+	
+    border-top: 1px solid #749091;	    	
+}
+
+.schedule td.hhmm span {
+    font-size: 16px;    
+}
+
+
+ 
+.schedule td.track {
+	font-size: 13px;	
+	
+	background: transparent url(../i/bg-empty-track.png) bottom left;	
+}
+
+
+
+
+.schedule td.t-apertura {
+    text-align: center;
+    background: none;
+    border-top: 3px solid #4D5E5F;
+}
+
+.schedule td.t-openspace {
+    text-align: center;
+    background: none;
+    border-top: 3px solid #94946f;	
+}
+
+
+.schedule td.t-scoprire  {
+
+    background: none;
+    border-top: 3px solid #749091;	
+
+}
+
+/* cont'd */
+.schedule td.t-scoprire  .c  {
+/*     color: #D7CEF5; */
+}
+
+.schedule td.t-scoprire  h3 a {
+/*
+    color: #D7CEF5;
+    border-bottom: 1px solid #D7CEF5;
+*/
+}
+
+
+
+.schedule td.t-diffondere {
+
+    background: none;
+    border-top: 3px solid #96204B;	
+
+}
+
+/* cont'd */
+.schedule td.t-diffondere .c  {
+/*     color: #9dcc4f; */
+}
+
+.schedule td.t-diffondere h3 a {
+
+}
+
+
+.schedule td.t-imparare {
+
+    background: none;
+    border-top: 3px solid #94946f;	
+}
+
+/* cont'd */
+.schedule td.t-imparare .c  {
+/*     color: #9dcc4f; */
+}
+
+.schedule td.t-imparare h3 a {
+ /*
+   color: #9dcc4f;
+    border-bottom: 1px solid #9dcc4f;
+*/
+}
+
+
+
+.schedule td.t-special, 
+.schedule td.t-break {
+
+    border-top: 3px solid #679191;
+    
+    vertical-align: middle;
+    text-align: center;
+
+    text-transform: uppercase;
+
+    letter-spacing: 2px;
+    
+    color: #435e5e;
+    
+    
+	padding: 0;
+	    
+}
+
+.schedule .sponsored-talk {
+    text-transform: uppercase;
+    
+    font-size: 12px;
+    
+    margin: 5px 0 0 0;
+}
+
+
+
+.schedule .sponsored-talk a {
+/*
+	color: #8396cc;
+	border-bottom: 1px solid #8396cc;
+*/
+
+}
+
+
+
+.schedule .sponsored-talk a:hover,
+.schedule td.t-workshop h3 a:hover,
+.schedule td.t-auditorium h3 a:hover,
+.schedule .s a:hover {
+/*
+	color: #fff;
+	border-bottom-color: #fff;
+*/
+	
+}

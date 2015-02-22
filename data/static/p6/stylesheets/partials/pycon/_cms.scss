@@ -1,0 +1,260 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+/*
+ * editors must notice that the page is a draft and so not accessibile by anonymous users
+ *
+ * DON'T REMOVE AND DON'T TOUCH MY FLAMES :)
+ */
+body > div.draft {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    bottom: 0;
+    z-index: 100;
+    background-image: url(../images/flames.gif);
+    background-position: top left, top left;
+    background-repeat: repeat-y, repeat;
+}
+
+.page {
+    .splash {
+        border: 0;
+    }
+}
+
+/* ============================================== */
+/* ! Custom styles for text pulled from the CMS   */
+/* ============================================== */
+
+.cms {
+
+}
+
+.cms {
+    .archive {
+        .talk {
+            padding: 15px;
+            margin-bottom: 30px;
+            .abstract {
+                p {
+                    font-size: 80%;
+                }
+                .tags {
+                    .tag {
+                        font-size: 60%;
+                    }
+                }
+            }
+            .speakers {
+                margin-top: 10px;
+            }
+        }
+        .talk:nth-child(even) {
+            background: #e0dfdb;
+        }
+    }
+}
+
+.cms figure img {
+    display: block;
+}
+
+.cms figure.border img {
+    border: 5px solid $lightneutralcolor;
+}
+
+.cms .floated {
+    float: left;
+    margin-right: $gutterwidth/2;
+}
+
+.cms .floated img {
+    display: block;
+}
+
+.cms .floated.right {
+    float: right;
+    margin: 0 0 0 10px;
+}
+
+.cms li {
+    margin: 0 0 $baselineheight/4 $gutterwidth;
+    color: $midneutralcolor;
+}
+
+.cms dd {
+    margin-bottom: $baselineheight/2;
+}
+
+/* ============== */
+/* ! highlights   */
+/* ============== */
+
+.cms .highlights {
+
+    padding: 10px;
+    border-top: 2px dotted #aba18f;
+    border-bottom: 2px dotted #aba18f;
+
+    margin: 20px 0;
+
+    background: #fff;
+}
+
+.cms .highlights h3 {
+
+    color: #4895a3;
+    margin: 0 0 10px 0;
+    font-size: 21px;
+
+    text-align: center;
+}
+
+.cms .highlights ul {
+    margin-bottom: 0;
+}
+
+.cms .highlights li {
+
+    margin: 0 0 10px 20px;
+
+    color: inherit;
+}
+
+/* ================== */
+/* ! call-to-action   */
+/* ================== */
+
+.cms .call-to-action {
+
+    margin: $baselineheight 0;
+    text-align: center;
+}
+
+.cms .call-to-action a {
+    @extend .btn;
+}
+
+/* ============== */
+/* ! where page   */
+/* ============== */
+
+.cms .hotels th {
+    /*     border: none; */
+}
+
+.cms .hotels tr.affiliated {
+    /*     color: #96204B; */
+}
+
+.cms .hotels tr.info td {
+
+    border-top: 3px solid #c4b9a5;
+    padding: 10px 10px 10px 0;
+}
+
+.cms .hotels tr.info td h4 {
+
+    font-size: 21px;
+    margin: 0 0 5px 0;
+    /* 	text-transform: none; */
+}
+
+.cms .hotels tr.affiliated h4 {
+    color: #96204B;
+}
+
+.cms .hotels tr.note td {
+    /*     font-style: italic; */
+    color: #63584d;
+
+    padding: 5px 10px 5px 20px;
+    border-top: 1px dotted #94946F;
+}
+
+.cms .hotels tr.note td p.last-contact {
+    margin-bottom: 0;
+}
+
+.cms .place {
+}
+
+.cms .place h1 {
+    background: none;
+    margin: 0 0 10px 0;
+    padding: 0;
+    /* 	font: bold 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif; */
+    text-shadow: none;
+}
+
+.cms .place table {
+    background: #fff;
+    border: none;
+    margin: 0;
+    width: auto;
+}
+
+.cms .place th,
+.cms .place td {
+    font-size: 13px;
+    padding: 3px 0 3px 0;
+}
+
+.cms .place th {
+    border-bottom: 1px dotted #94946F;
+    text-transform: capitalize;
+    padding-right: 10px;
+}
+
+
+.help-text {
+    color: $textcolor;
+    margin: 40px 0;
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.general-notice {
+}
+
+.content-tpl {
+    header {
+        padding: 1.5em;
+    }
+    .branding img {
+        height: 100px;
+    }
+}
+.calendar {
+    h4 {
+        text-align: left;
+    }
+}
+
+h1 {
+    font-weight: bold;
+}
+
+h2 {
+    @include font-size(28);
+    font-weight: bold;
+    margin: 1em 0 0.5em 0;
+}
+h3 {
+    @include font-size(24);
+    font-weight: bold;
+    margin: 1em 0 0.5em 0;
+}
+h4 {
+    @include font-size(20);
+    font-weight: bold;
+    margin: 1em 0 0.5em 0;
+}
+

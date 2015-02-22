@@ -1,0 +1,189 @@
+/*
+ * Copyright (C) 2009-2013, Python Italia APS
+ * All rights reserved.
+ *
+ * This file is non-free. See README.md for an explanation.
+ */
+
+.form-box {
+	background: #cbc9ae;
+    padding: 10px;
+    
+    
+    border: 2px solid   #999774;
+}
+
+.form-box fieldset {
+}
+
+/*
+form p.tip {
+	font-size: 13px;
+}
+*/
+
+form .field {
+	margin: 0 0 10px 0;
+}
+
+
+
+fieldset {    
+}
+
+fieldset.border {
+	padding: 10px 0 0 0;
+/* 	border-top: 1px solid #384b80;	    */
+
+    background: transparent url(../i/bg-sep.png) top left repeat-x;
+}
+
+
+
+legend {
+			
+	padding: 0 5px 0 0;	
+	color:#4e69b2;	
+	
+    /* IE */
+	background: transparent;
+			
+	/* IE 6-7 */
+	*margin: 0 0 0 -7px;	
+}
+
+
+label {
+    	
+	display: block; 
+
+    font-size: 13px;
+/* 	color: #d7cef5; */
+
+/*     text-transform: uppercase; */
+}
+
+label.inline {
+	display: inline; 
+    font-size: 14px;
+
+	color: #fff;
+    
+    text-transform: none;
+}
+
+
+label span {
+	color: #8396cc;
+    text-transform: none;
+
+}
+
+
+.error label {
+	color: #bf2640;
+	
+}
+
+
+input, 
+select, 
+textarea {        
+
+	color: #0f2424;
+		
+	font: normal 12px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+
+	padding: 2px 2px;
+	background: #fff;
+}
+
+textarea {		
+	width: 95%;
+}
+
+
+input[type='text'], 
+input[type='password'], 
+textarea,
+select {    
+	border: 2px solid #4c5e5e;
+}
+
+.error input[type='text'],
+.error input[type='password'], 
+.error textarea,
+.error select 	
+{
+	border-color: #bf2640;
+	background: #fae6e9;
+}
+
+
+
+/*
+input[type='text']:focus, 
+input[type='password']:focus,
+select:focus,
+textarea:focus {    
+	background: #e1f1fa;
+	
+	border-color: #075982;
+}
+
+*/
+
+
+
+
+
+/* applied to check and radio buttons 
+*/
+input.reset {
+	
+	/* IE 6  and 7, see http://snook.ca/archives/html_and_css/targetting_ie7/ */
+	*padding: 0;       	
+	*background: transparent;   
+	
+	*border: none;
+}
+
+
+
+
+button {
+
+ 	cursor: pointer;
+	
+	font: bold 12px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
+
+	text-transform: uppercase;
+
+	
+	background: #4c5e5e  url(../i/bg-button.png) top left repeat-x;
+	border: none;
+
+	color: #fff;	
+	text-shadow: #1f2b2b 1px 1px 2px;
+	
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
+	padding: 5px 10px;	
+}
+
+button.mini {
+
+	
+	padding: 2px 7px;	
+	
+}
+
+
+
+
+
+
+
+
