@@ -33,3 +33,4 @@ python-social-auth
 # new
 #psycopg2==2.5.4
 simplejson
+gunicorn
