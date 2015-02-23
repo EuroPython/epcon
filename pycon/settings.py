@@ -1002,6 +1002,7 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
 STRIPE_COMPANY_NAME = os.environ.get("STRIPE_COMPANY_NAME")
 STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
+STRIPE_CURRENCY = os.environ.get("STRIPE_CURRENCY")
 
 from settings_locale import *
 
