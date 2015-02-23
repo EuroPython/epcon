@@ -981,8 +981,7 @@ class SpecialPlaceAdmin(admin.ModelAdmin):
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
 class FareAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'code', 'name', 'price', 'recipient_type', 'start_validity', 'end_validity',
-                    'max_tickets')
+    list_display = ('conference', 'code', 'name', 'price', 'recipient_type', 'start_validity', 'end_validity')
     list_filter = ('conference', )
     list_editable = ('price',)
     ordering = ('conference', 'start_validity', 'code')
