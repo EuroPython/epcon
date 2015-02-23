@@ -211,6 +211,7 @@ INSTALLED_APPS = (
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
+
     'p3',
     'assopy',
     'assopy.stripe',
