@@ -1,5 +1,6 @@
 # Mandatory settings
 # ------------------
+import os
 
 DEBUG = True
 
