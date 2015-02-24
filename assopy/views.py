@@ -538,7 +538,10 @@ def _pdf(request, url):
         stderr=subprocess.PIPE
     )
 
-    raw, _ = popen.communicate()
+    raw, err = popen.communicate()
+    
+    print err
+    
     return raw
 
 @login_required
