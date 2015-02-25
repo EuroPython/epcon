@@ -239,7 +239,9 @@ INSTALLED_APPS = (
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
     'djangocms_grid',
-
+    #'djangocms_googlemap',
+    'djangocms_gmaps',
+	  
     'cms',
     'menus',
     'sekizai',
