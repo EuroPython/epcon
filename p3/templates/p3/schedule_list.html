@@ -5,7 +5,7 @@
     <div class="grid-container">
     <div class="grid-100">
 
-    <h1>{% block CONTENT_TITLE %}{% trans 'PyCon schedule' %}{% endblock %}</h1>
+    <h1>{% block CONTENT_TITLE %}{% trans 'EuroPython schedule' %}{% endblock %}</h1>
     <div class="conference-schedules list"  data-conference="{{ CONFERENCE }}">
     {% schedules_data sids as schedules %}
     {% for sid, timet in timetables %}

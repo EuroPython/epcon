@@ -2,7 +2,7 @@
 {% if NEWSLETTER_SUBSCRIBE_URL %}
 <div class="slot slot-newsletter">
     <h4>{% trans "Newsletter" %}</h4>
-    <p>{% trans "If you want to stay updated with news about thie conference, sign-up to the official low-traffic PyCon mailing-list:" %}</p>
+    <p>{% trans "If you want to stay updated with news about thie conference, sign-up to the official low-traffic EuroPython mailing-list:" %}</p>
     <form action="{{ NEWSLETTER_SUBSCRIBE_URL }}" method="post">
         <label><input placeholder="Your email address" type="text" name="email" value="" size="20" /></label>
         <button type="submit" class="btn btn-small" name="" value="">{% trans "Sign up" %}</button>
