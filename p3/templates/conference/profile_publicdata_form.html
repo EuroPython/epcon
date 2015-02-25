@@ -100,12 +100,14 @@
 
         {% include "conference/profile_publicdata_company_form.html" %}
 
+
         {% if full_access %}
             <fieldset class="form-actions">
                 <a href="#" class="btn btn-small live-edit-switch"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
                 <button class="btn btn-primary autosubmit">{% trans "Save" %}</a>
             </fieldset>
         {% endif %}
+
         {% csrf_token %}
         <input type="hidden" name="section" value="public-data" />
     </form>

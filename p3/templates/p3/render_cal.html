@@ -1,5 +1,6 @@
 {% load conference %}
 {% get_deadlines not_expired=1 as deadlines %}
+
 <div class="calendar">
     {% for d in deadlines %}
         <div class="deadline {% if d.expired %}expired{% endif %}">

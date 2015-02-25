@@ -177,6 +177,7 @@
 
 
 {% block MAIN_CONTENT %}
+{% if posts %}
 <section class="blog-container">
     <div class="grid-container">
         {% post_list count=3 as posts %}
@@ -198,6 +199,7 @@
         {% endfor %}
     </div><!-- /grid-container -->
 </section>
+{% endif %}
 
 <script type="text/javascript">
     {% if not request.toolbar.edit_mode %}
