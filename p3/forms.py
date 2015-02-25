@@ -510,7 +510,7 @@ class P3ProfileEmailContactForm(forms.Form):
 
 
 class P3ProfileSpamControlForm(forms.ModelForm):
-    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through PyCon.'), required=False)
+    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'), required=False)
     spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other partecipants.'), required=False)
     spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'), required=False)
     class Meta:

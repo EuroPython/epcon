@@ -49,7 +49,7 @@ else:
 }
 
 SERVER_EMAIL = 'wtf@python.it'
-DEFAULT_FROM_EMAIL = 'info@pycon.it'
+DEFAULT_FROM_EMAIL = 'info@euroython.eu'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -131,6 +131,9 @@ TEMPLATE_LOADERS = (
 
 from django.conf import global_settings
 
+#
+# XXX THESE SHOULD GO INTO THE OS.ENVIRON !
+#
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '672999261902-vi58eghq2jjf6ai1fio1a6t7d7q1c76n.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '0OnGot_90JjGeppVAKIghPgU'
 LOGIN_REDIRECT_URL = '/'
@@ -405,10 +408,14 @@ CKEDITOR_SETTINGS = {
     'extraPlugins': 'cmsplugins',
 }
 
-MICROBLOG_LINK = 'http://dev.europython.eu'
-MICROBLOG_TITLE = 'PyconIT blog'
-MICROBLOG_DESCRIPTION = 'latest news from europython'
-MICROBLOG_DEFAULT_LANGUAGE = 'it'
+
+#
+# We're not going to use this feature for EuroPython 2015:
+#
+MICROBLOG_LINK = 'http://blog.europython.eu'
+MICROBLOG_TITLE = 'EuroPython Blog'
+MICROBLOG_DESCRIPTION = 'Latest news from EuroPython'
+MICROBLOG_DEFAULT_LANGUAGE = 'en'
 MICROBLOG_POST_LIST_PAGINATION = True
 MICROBLOG_POST_PER_PAGE = 10
 MICROBLOG_MODERATION_TYPE = 'akismet'
@@ -416,7 +423,7 @@ MICROBLOG_AKISMET_KEY = '56c34997206c'
 MICROBLOG_EMAIL_RECIPIENTS = ['pycon-organization@googlegroups.com']
 MICROBLOG_EMAIL_INTEGRATION = True
 
-MICROBLOG_TWITTER_USERNAME = 'pyconit'
+MICROBLOG_TWITTER_USERNAME = 'europython'
 MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
 MICROBLOG_TWITTER_INTEGRATION = False
 
@@ -451,18 +458,21 @@ def MICROBLOG_POST_FILTER(posts, user):
 
 SESSION_COOKIE_NAME = 'p5_sessionid'
 
+#
+# XXX THESE NEED TO GO INTO OS.ENVIRON !!!
+#
 CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
 CONFERENCE_GOOGLE_MAPS = {
-    # chiave info@pycon.it per http://localhost
+    # chiave info@euroython.eu per http://localhost
     # 'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSCRpOQNQwH5i15toJmp6eLWzSKPg',
-    # chiave info@pycon.it per http://pycon.it
+    # chiave info@euroython.eu per http://euroython.eu
     'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
-    'country': 'it',
+    'country': 'es',
 }
 
 CONFERENCE_CONFERENCE = 'ep2015'
-CONFERENCE_SEND_EMAIL_TO = [ 'pycon-organization@googlegroups.com', ]
-CONFERENCE_VOTING_DISALLOWED = 'https://www.pycon.it/voting-disallowed'
+CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
+CONFERENCE_VOTING_DISALLOWED = 'https://www.euroython.eu/voting-disallowed'
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -739,17 +749,20 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
     return item.order._complete
 
 
+#
+# XXX What is this AssoPy stuff ?
+#
 GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
-ASSOPY_BACKEND = 'http://assopy.pycon.it/conference/externalcall'
+ASSOPY_BACKEND = 'http://assopy.euroython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
 ASSOPY_TICKET_PAGE = 'p3-tickets'
-ASSOPY_SEND_EMAIL_TO = ['log@pycon.it']
+ASSOPY_SEND_EMAIL_TO = ['log@euroython.eu']
 ASSOPY_REFUND_EMAIL_ADDRESS = {
-    'approve': ['info@pycon.it'],
+    'approve': ['info@euroython.eu'],
     'execute': {
         None: ['dvd@gnx.it'],
-        'bank': ['matteo@pycon.it'],
+        'bank': ['matteo@euroython.eu'],
     },
     'credit-note': ['michele.bertoldi@gmail.com'],
 }
@@ -759,18 +772,18 @@ ASSOPY_OTC_CODE_HANDLERS = {
 }
 
 DEFAULT_URL_PREFIX = 'http://dev.europython.eu'
-PINGBACK_TARGET_DOMAIN = 'www.pycon.it'
+PINGBACK_TARGET_DOMAIN = 'www.euroython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
-P3_NEWSLETTER_SUBSCRIBE_URL = "http://groups.google.com/group/python-italia-aps/boxsubscribe"
+P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 P3_USER_MESSAGE_FOOTER = '''
 
-This message was sent from a participant at the conference PyconITalia.
+This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://www.pycon.it/accounts/profile/
+https://www.euroython.eu/accounts/profile/
 '''
 
 TEMPLATESADMIN_EDITHOOKS = (

@@ -507,7 +507,7 @@ class P3Profile(models.Model):
             from_email=from_.email,
             to=[self.profile.user.email],
             headers={
-                'Sender': 'info@pycon.it',
+                'Sender': 'info@euroython.eu',
             }
         ).send()
         log.info('email from "%s" to "%s" sent', from_.email, self.profile.user.email)

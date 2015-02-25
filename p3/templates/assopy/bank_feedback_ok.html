@@ -11,7 +11,7 @@
         {% url "assopy-tickets" as u %}
         {% with order.code as ocode %}
             <p>
-            {% blocktrans with url="mailto:info@pycon.it?subject="|add:ocode code=ocode %}
+            {% blocktrans with url="mailto:info@euroython.eu?subject="|add:ocode code=ocode %}
             If you don't receive this email please check yout spam folder and <a href="{{ url }}">write to us</a> specifying your order number: <b>{{ code }}</b>
             {% endblocktrans %}
             </p>
