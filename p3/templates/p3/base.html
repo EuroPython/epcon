@@ -87,12 +87,10 @@
     <script type="text/javascript" src="{% url "p3-map-js" %}"></script>
     {% block EXTRA_HEAD %}{% endblock %}
 
-    <!-- verification for YouTube channel -->
-    <meta name="google-site-verification" content="kBsSy1heDIyy-W34t57N5-RsOKonmK54u7zn0mC8mv8" />
     {% render_block "css" %}
     {% block OPENGRAPH %}
-    <meta property="og:image" content="https://www.pycon.it/media/filer_public/68/44/6844ea4f-0676-4cfc-a6e7-11559dc95639/pycon6_150.png" />
-    <meta property="fb:admins" content="789244177" />
+    <!--<meta property="og:image" content="https://www.euroython.eu/og-image.png" />-->
+    <!--<meta property="fb:admins" content="789244177" />-->
     {% endblock %}
 </head>
 <body id="{% block BODY_ID %}{% endblock %}" class="{% block body-class %}content-tpl{% endblock %}">
@@ -176,7 +174,7 @@
 
 <div class="copyright">
 
-    <p>&copy; 2007&ndash;2014 <a href="/python-italia/">Python Italia</a> with <a href="http://creativecommons.org/licenses/by-nd/3.0/">some rights reserved</a>.</p>
+    <p>&copy; 2015 <a href="http://www.europython-society.org/">EuroPython Society (EPS)</a> | <a href="http://www.europython-society.org/trademarks">Trademarks</a> | <a href="/imprint">Imprint</a> | <a href="/coc">CoC</a> | <a href="/imprint">Photo References</a></p>
 </div>
 
 </footer>
@@ -195,7 +193,8 @@
     </script>
     <script type="text/javascript">
         try {
-            var pageTracker = _gat._getTracker("UA-1860245-1");
+            // TODO: Adjust tracker ID
+            var pageTracker = _gat._getTracker("UA-xxxxxxx-x");
             pageTracker._trackPageview();
         } catch(err) {
         }
@@ -223,8 +222,7 @@
         });
     </script>
     <script type="text/javascript">
-
-        $('.learn-with-pycon').parallax({
+        $('.learn-with-europython').parallax({
             speed : 0.3
         });
     </script>

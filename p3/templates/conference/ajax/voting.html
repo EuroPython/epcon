@@ -126,8 +126,8 @@
             var tweet = 'Just voted ' + vote + '/10 "' + title + '" by ' + speaker + ' #europython';
             RPXNOW.loadAndRun(['Social'], function () {
                 var activity = new RPXNOW.Social.Activity('Share your vote', tweet, url);
-                activity.setTitle('PyCon - Community voting');
-                activity.setDescription('Community voting allows all PyCon attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
+                activity.setTitle('EuroPython - Community voting');
+                activity.setDescription('Community voting allows all EuroPython attendees to take part in the voting process, which ultimately decides which of the talks submitted during the Call For Papers will become part of the schedule.');
                 {% url "conference-voting" as u %}
                 activity.addActionLink('Vote a talk', '{{ u|full_url }}');
                 var media = new RPXNOW.Social.ImageMediaCollection();

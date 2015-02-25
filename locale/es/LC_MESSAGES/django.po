@@ -198,7 +198,7 @@ msgid "Email already registered"
 msgstr ""
 
 #: p3/forms.py:500
-msgid "I want to receive a few selected job offers through PyCon."
+msgid "I want to receive a few selected job offers through EuroPython."
 msgstr ""
 
 #: p3/forms.py:501
@@ -559,7 +559,7 @@ msgstr ""
 
 #: p3/templates/assopy/profile.html:82
 msgid ""
-"Cannot remove the requested account, please contact info@pycon.it for "
+"Cannot remove the requested account, please contact info@euroython.eu for "
 "assistance"
 msgstr ""
 
@@ -872,7 +872,7 @@ msgstr ""
 
 #: p3/templates/conference/profile_visibility_form.html:15
 msgid ""
-"Your profile is <b>publicly visible</b> because you are a PyCon speaker."
+"Your profile is <b>publicly visible</b> because you are a EuroPython speaker."
 msgstr ""
 
 #: p3/templates/conference/profile_visibility_form.html:17
@@ -1090,7 +1090,7 @@ msgid "Become a sponsor"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:109
-msgid "Scopri PyCon Italia"
+msgid "Scopri EuroPython Italia"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:116
@@ -1137,7 +1137,7 @@ msgid "Eventi sociali"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:164
-msgid "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?"
+msgid "Ribollita, bistecca e vino: che EuroPython è senza una bella mangiata?"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:184
@@ -1288,7 +1288,7 @@ msgstr ""
 #: p3/templates/p3/box_newsletter.html:5
 msgid ""
 "If you want to stay updated with news about thie conference, sign-up to the "
-"official low-traffic PyCon mailing-list:"
+"official low-traffic EuroPython mailing-list:"
 msgstr ""
 
 #: p3/templates/p3/box_newsletter.html:8
@@ -1429,7 +1429,7 @@ msgid "Schedule"
 msgstr ""
 
 #: p3/templates/p3/schedule_list.html:8
-msgid "PyCon schedule"
+msgid "EuroPython schedule"
 msgstr ""
 
 #: p3/templates/p3/sprint_submission.html:4
@@ -1438,7 +1438,7 @@ msgstr ""
 
 #: p3/templates/p3/sprints.html:56
 msgid ""
-"Cannot save the form.\\nUse the web chat, or contact info@pycon.it, for "
+"Cannot save the form.\\nUse the web chat, or contact info@euroython.eu, for "
 "assistance."
 msgstr ""
 
@@ -1483,7 +1483,7 @@ msgstr ""
 
 #: p3/templates/p3/tickets.html:83
 msgid ""
-"Cannot save the ticket.\\nUse the web chat, or contact info@pycon.it, for "
+"Cannot save the ticket.\\nUse the web chat, or contact info@euroython.eu, for "
 "assistance."
 msgstr ""
 
@@ -1664,7 +1664,7 @@ msgid "Change to language:"
 msgstr ""
 
 #: p3/templates/registration/login.html:9
-msgid "Log into PyCon"
+msgid "Log into EuroPython"
 msgstr ""
 
 #: p3/templates/registration/login.html:17

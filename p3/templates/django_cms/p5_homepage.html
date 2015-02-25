@@ -103,10 +103,10 @@
         </div>
     </section>
 
-    <section class="learn-with-pycon">
+    <section class="learn-with-europython">
         <div class="grid-container">
             <div class="grid-100">
-                <h2 class="border-title">{% trans "Scopri PyCon Italia" %}</h2>
+                <h2 class="border-title">{% trans "Discover EuroPython" %}</h2>
             </div>
             <div class="grid-33">
                 <a href="#">
@@ -114,7 +114,7 @@
                         <img src="{% static 'p6/images/talk.svg' %}">
                     </div>
                     <h4>{% trans "Talk" %}</h4>
-                    <p>{% trans "3 tracce parallele di talk per ascoltare e scoprire" %}
+                    <p>{% trans "Enjoy 5 parallel tracks, over 100 talks, plenty of hallway sessions" %}
                 </a>
             </div>
             <div class="grid-33">
@@ -123,7 +123,7 @@
                         <img src="{% static 'p6/images/training.svg' %}" />
                     </div>
                     <h4>{% trans "Training" %}</h4>
-                    <p>{% trans "Sessioni di 4 ore, con le mani sulla tastieraaa: impara l'arte e mettila da parte" %}
+                    <p>{% trans "Professional trainers to teach you Python and how to use it effectively" %}
                 </a>
             </div>
             <div class="grid-33">
@@ -132,7 +132,7 @@
                         <img src="{% static 'p6/images/helpdesk.svg' %}" />
                     </div>
                     <h4>{% trans "Helpdesk" %}</h4>
-                    <p>{% trans "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti" %}
+                    <p>{% trans "Get help for solving your problems directly from the experts" %}
                 </a>
             </div>
 
@@ -142,8 +142,8 @@
                     <div class="learn-icon">
                         <img src="{% static 'p6/images/scopri_chi_viene.svg' %}" />
                     </div>
-                    <h4>{% trans "Scopri chi viene" %}</h4>
-                    <p>{% trans "Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro" %}
+                    <h4>{% trans "Who's coming" %}</h4>
+                    <p>{% trans "Check the public profiles and arrange meetings" %}
                 </a>
             </div>
             <div class="grid-33">
@@ -152,7 +152,7 @@
                         <img src="{% static 'p6/images/recruiting.svg' %}" />
                     </div>
                     <h4>{% trans "Recruiting" %}</h4>
-                    <p>{% trans "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate" %}
+                    <p>{% trans "Find excellent Python jobs" %}
                 </a>
             </div>
             <div class="grid-33">
@@ -160,8 +160,8 @@
                     <div class="learn-icon">
                         <img src="{% static 'p6/images/eventi_sociali.svg' %}" />
                     </div>
-                    <h4>{% trans "Eventi sociali" %}</h4>
-                    <p>{% trans "Ribollita, bistecca e vino: che PyCon è senza una bella mangiata?" %}
+                    <h4>{% trans "Social Events" %}</h4>
+                    <p>{% trans "Enjoy lounge events, dinners, boar trips, etc." %}
                 </a>
             </div>
         </div>
@@ -181,7 +181,7 @@
     <div class="grid-container">
         {% post_list count=3 as posts %}
         <div class="grid-100">
-            <h2 class="border-title">{% trans "Ultimi post dal blog" %}</h2>
+            <h2 class="border-title">{% trans "Watch our blog for updates" %}</h2>
         </div>
         {% for post in posts %}
             {% get_post_data post.id as data %}
