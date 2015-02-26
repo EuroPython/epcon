@@ -1024,6 +1024,8 @@ STRIPE_ALLOW_REMEMBER_ME = False
 
 from settings_locale import *
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
 # files under SECURE_MEDIA_BOOT must be served by django, this if
