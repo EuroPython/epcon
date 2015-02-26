@@ -49,7 +49,7 @@ else:
 }
 
 # europython mail server
-EMAIL_HOST = "mail.europython.eu"
+EMAIL_HOST = "mail.europython.io"
 
 SERVER_EMAIL = 'wtf@europython.eu'
 DEFAULT_FROM_EMAIL = 'info@euroython.eu'
