@@ -48,8 +48,12 @@ else:
     }
 }
 
-SERVER_EMAIL = 'wtf@python.it'
+# europython mail server
+EMAIL_HOST = "mail.europython.eu"
+
+SERVER_EMAIL = 'wtf@euroython.eu'
 DEFAULT_FROM_EMAIL = 'info@euroython.eu'
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -242,7 +246,7 @@ INSTALLED_APPS = (
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
     'djangocms_grid',
-	  
+
     'cms',
     'menus',
     'sekizai',
