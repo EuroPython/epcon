@@ -780,7 +780,11 @@ PINGBACK_TARGET_DOMAIN = 'www.euroython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
-P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
+
+# Disabled until we find out how to use europython-announce for this:
+#P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
+P3_NEWSLETTER_SUBSCRIBE_URL = ""
+
 P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
 P3_USER_MESSAGE_FOOTER = '''
 
