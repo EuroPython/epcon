@@ -73,7 +73,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     )
     slides_agreement = forms.BooleanField(
         label=_('I agree to release all the talk material after the event.'),
-        help_text=_('If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site.'),
+        help_text=_('If the talk is accepted, speakers are required to timely release all the talk material (including slides) for publishing on this web site.'),
     )
     video_agreement = forms.BooleanField(
         label=_('I agree to let the organization record my talk and publish the video.'),
