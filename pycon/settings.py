@@ -55,7 +55,7 @@ EMAIL_HOST = "mail.europython.io"
 SERVER_EMAIL = 'noreply@europython.eu'
 
 # Email sender address used per default for emails to e.g. attendees
-DEFAULT_FROM_EMAIL = 'info@euroython.eu'
+DEFAULT_FROM_EMAIL = 'info@europython.eu'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
