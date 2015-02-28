@@ -7803,7 +7803,7 @@ footer {
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\0000338}}
 section {
-  padding: 3em 0; }
+  padding: 1.5em 0; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\0000343}}
 .page section:nth-child(odd) {
@@ -7816,7 +7816,7 @@ section {
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\0000356}}
 header {
-  padding: 3em 0;
+  padding: 9em 0;
   text-align: center; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\0000360}}
   header h1 {

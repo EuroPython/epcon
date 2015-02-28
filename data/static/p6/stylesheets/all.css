@@ -2092,7 +2092,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 #reactions li, #comments li { margin: 0 0 0.75em 0; padding: 0 0 0.75em 0; border-bottom: 1px dotted #bcbab2; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
-/* editors must notice that the page is a draft and so not accessibile by anonymous users  DON'T REMOVE AND DON'T TOUCH MY FLAMES :) */
+/* editors must notice that the page is a draft and so not accessibile by anonymous users */
 body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-index: 100; background-image: url(../images/draft.png); background-position: top left, top left; background-repeat: repeat-y, repeat; }
 
 .page .splash { border: 0; }
@@ -2719,9 +2719,9 @@ footer { background: white; }
 footer hr { border-color: #E5781E; }
 footer p, footer li { font-size: 16px; font-size: 1.6rem; }
 
-section { padding: 3em 0; }
+section { padding: 1.5em 0; }
 
-header { padding: 3em 0; text-align: center; }
+header { padding: 9em 0; text-align: center; }
 header h1 { color: #555555; text-transform: uppercase; font-weight: 300; margin-bottom: 0; font-size: 45px; font-size: 4.5rem; }
 header h1 span { color: #E5781E; }
 @media (min-width: 37.5em) { header h1 { font-size: 63px; font-size: 6.3rem; } }
