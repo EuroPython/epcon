@@ -2719,9 +2719,9 @@ footer { background: white; }
 footer hr { border-color: #E5781E; }
 footer p, footer li { font-size: 16px; font-size: 1.6rem; }
 
-section { padding: 3em 0; }
+section { padding: 1.5em 0; }
 
-header { padding: 3em 0; text-align: center; }
+header { padding: 9em 0; text-align: center; }
 header h1 { color: #555555; text-transform: uppercase; font-weight: 300; margin-bottom: 0; font-size: 45px; font-size: 4.5rem; }
 header h1 span { color: #E5781E; }
 @media (min-width: 37.5em) { header h1 { font-size: 63px; font-size: 6.3rem; } }
