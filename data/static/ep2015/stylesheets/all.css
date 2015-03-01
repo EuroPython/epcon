@@ -63,13 +63,13 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 .media-body { text-align: center; }
 .media-body h3 { padding-top: 5px; }
 
-.learn-with-europython { background-image: url("../images/bg-learn-with-europython.jpg"); background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: fixed; }
-/*.learn-with-europython { background-image: url("../images/bg-us.jpg"); background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: fixed; }*/
+.discover-europython { background-image: url("../images/discover-background.jpg"); background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: fixed; }
+/*.discover-europython { background-image: url("../images/bg-us.jpg"); background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: fixed; }*/
 
-.learn-with-europython a:hover { text-decoration: none; }
-.learn-with-europython p { text-align: center; color: #333333; } /*CHANGED: to DARK GRAY*/
-.learn-with-europython h2 { margin: 0 0 0.5em 0; }
-.learn-with-europython h4 { color: #333333; font-weight: 600; font-size: 32px; font-size: 3.2rem; margin-bottom: 0; }
+.discover-europython a:hover { text-decoration: none; }
+.discover-europython p { text-align: center; color: #333333; } /*CHANGED: to DARK GRAY*/
+.discover-europython h2 { margin: 0 0 0.5em 0; }
+.discover-europython h4 { color: #333333; font-weight: 600; font-size: 32px; font-size: 3.2rem; margin-bottom: 0; }
 
 .learn-icon, .subcommunities .subcommunity-container { background-color: white; border-radius: 50%; width: 100px; height: 100px; border: 5px solid #f5ad58; margin: 0 auto; margin-bottom: 20px; margin-top: 15px; padding: 21px; }
 
@@ -108,7 +108,7 @@ footer table { margin: 0 auto; }
 
 /*#navigation-toggle { border-bottom: 5px solid #646464; }*/
 
-/*header { background-image: url("../images/bg-learn-with-europython.jpg"); background-size: cover; }*/
+/*header { background-image: url("../images/background-1.jpg"); background-size: cover; }*/
 header { background-image: url("../images/bg-gug-new.png"); background-size: cover; background-repeat: no-repeat; background-attachment: fixed; background-position: center; }
 
 /*QUOTE THEME COLOR*/
