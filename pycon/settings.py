@@ -92,11 +92,8 @@ USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 
-#MEDIA_ROOT = DATA_DIR + '/media_public'
-#SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
-
-MEDIA_ROOT = '/www/ep2015/media_public'
-SECURE_MEDIA_ROOT = '/www/ep2015/media_private'
+MEDIA_ROOT = DATA_DIR + '/media_public'
+SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
