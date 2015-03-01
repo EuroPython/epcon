@@ -4,7 +4,7 @@ import os
 import os.path
 import sys
 
-DEBUG = os.environ.get('DEBUG') or True
+DEBUG = os.environ.get('DEBUG', True)
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -127,7 +127,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
