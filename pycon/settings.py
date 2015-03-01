@@ -4,7 +4,7 @@ import os
 import os.path
 import sys
 
-DEBUG = False
+DEBUG = os.environ.get('DEBUG') or True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -91,8 +91,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = DATA_DIR + '/media_public'
-SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
+
+#MEDIA_ROOT = DATA_DIR + '/media_public'
+#SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
+
+MEDIA_ROOT = '/www/ep2015/media_public'
+SECURE_MEDIA_ROOT = '/www/ep2015/media_private'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -126,7 +130,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = ''
+SECRET_KEY = os.environ.get('SECRETE_KEY') or 'your-secret-key'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -1028,9 +1032,34 @@ STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
 
-from settings_locale import *
+
+# Put your google maps key here
+CONFERENCE_GOOGLE_MAPS = {
+    'key': '',
+    'country': 'es',
+}
+
+# Paypal merchant email
+PAYPAL_RECEIVER_EMAIL = ''
+
+# If the merchant account is a debug one set this flag to True
+PAYPAL_TEST = False
+
+# Janrain account
+ASSOPY_JANRAIN = {
+    'domain': '',
+    'app_id': '',
+    'secret': '',
+}
+
+# Sentry account
+RAVEN_CONFIG = {
+    'dsn': '',
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
