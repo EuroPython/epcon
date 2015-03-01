@@ -141,11 +141,9 @@ from django.conf import global_settings
 #
 # XXX THESE SHOULD GO INTO THE OS.ENVIRON !
 #
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '672999261902-vi58eghq2jjf6ai1fio1a6t7d7q1c76n.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '0OnGot_90JjGeppVAKIghPgU'
 LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '672999261902-vi58eghq2jjf6ai1fio1a6t7d7q1c76n.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '0OnGot_90JjGeppVAKIghPgU'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
 
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',
