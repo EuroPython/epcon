@@ -783,7 +783,7 @@ ASSOPY_OTC_CODE_HANDLERS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2015.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2015.europython.eu/'
 
 PINGBACK_TARGET_DOMAIN = 'www.euroython.eu'
 COMMENTS_APP = 'hcomments'
