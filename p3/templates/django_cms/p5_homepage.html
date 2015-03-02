@@ -77,7 +77,10 @@
                 {% for s in sponsors %}
                     <div class="grid-25">
                         <div class="sponsor">
+                        <!--
                             <a href="{{ s.url }}"><img src="{{ s.logo|image_resized }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="190" height="90" /></a>
+                        -->
+                            <a href="{{ s.url }}"><img src="{{ s.logo }}" alt="{{ s.alt_text }}" title="{% firstof s.title_text s.sponsor %}" width="190" height="90" /></a>
                         </div>
                     </div><!-- /grid -->
                 {% endfor %}
