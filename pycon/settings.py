@@ -4,7 +4,10 @@ import os
 import os.path
 import sys
 
-DEBUG = os.environ.get('DEBUG', True)
+if os.environ.get('DEBUG') == 'False':
+    DEBUG = False
+else:
+    DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
