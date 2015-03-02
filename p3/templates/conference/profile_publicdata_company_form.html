@@ -27,12 +27,12 @@
     </dd>
 </dl>
 
-<!--{% if full_access %}-->
+{% if full_access %}
     <fieldset>
-        {{ form.company|form_field }}
-        {{ form.job_title|form_field }}    
-        {{ form.company_homepage|form_field }}
+        {{ form.company }}
+        {{ form.job_title }}
+        {{ form.company_homepage }}
     </fieldset>
-<!-- {% endif %} -->
+{% endif %}
 
 
