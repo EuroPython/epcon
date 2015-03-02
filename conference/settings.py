@@ -30,7 +30,7 @@ FORMS.update(getattr(settings, 'CONFERENCE_FORMS', {}))
 
 import os
 #MAX_TICKETS =  os.environ.get("MAX_TICKETS")
-MAX_TICKETS = 100
+MAX_TICKETS = 350
 
 # url a cui rimandare un utente che prova ad accedere alla paper submission
 # quando il cfp è chiuso. Se None viene ritornato un 404
