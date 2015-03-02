@@ -777,7 +777,9 @@ ASSOPY_OTC_CODE_HANDLERS = {
     'e': 'p3.views.OTCHandler_E',
 }
 
-DEFAULT_URL_PREFIX = 'http://dev.europython.eu'
+#DEFAULT_URL_PREFIX = 'http://dev.europython.eu'
+DEFAULT_URL_PREFIX = ''
+
 PINGBACK_TARGET_DOMAIN = 'www.euroython.eu'
 COMMENTS_APP = 'hcomments'
 
