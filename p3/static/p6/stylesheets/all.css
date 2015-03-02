@@ -2747,7 +2747,7 @@ header .subhead { font-weight: 300; color: #807c6f; }
 
 .sponsor { margin-bottom: 1.5em; }
 
-.sponsor-wanted { background: white; text-align: center; border: 1px dotted #bcbab2; text-transform: uppercase; font-size: 16px; font-size: 1.6rem; box-sizing: border-box; padding-top: 1.95em; min-height: 90px; max-width: 190px; }
+.sponsor-wanted { background: white; text-align: center; text-transform: uppercase; font-size: 16px; font-size: 1.6rem; min-height: 90px; max-width: 190px; }
 
 .calendar .deadline { font-style: italic; font-weight: 300; }
 .calendar .deadline time { font-size: 16px; font-size: 1.6rem; color: white; background: #E5781E; font-style: normal; border-radius: 0; padding: 0; }
