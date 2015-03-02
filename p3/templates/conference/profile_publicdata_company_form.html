@@ -1,4 +1,4 @@
-{% load conference i18n p3 assopy_tags %}
+{% load conference i18n p3 assopy_tags formstyle%}
 {% p3_profile_data profile.user_id as profile_data %}
 <dl class="dl-horizontal">
     <dt>Azienda</dt>        
@@ -29,9 +29,9 @@
 
 {% if full_access %}
     <fieldset>
-        {{ form.company }}
-        {{ form.job_title }}
-        {{ form.company_homepage }}
+        {{ form.company|form_field}}
+        {{ form.job_title|form_field }}
+        {{ form.company_homepage|form_field }}
     </fieldset>
 {% endif %}
 
