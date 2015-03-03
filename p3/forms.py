@@ -89,9 +89,9 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
-        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
         choices=cmodels.TALK_LANGUAGES,
-        initial='it', required=False)
+        initial='en', required=False)
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
@@ -455,13 +455,13 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     phone = forms.CharField(
-        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This number will <i>never</i> be published.'),
+        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +99-012-3456789.<br/>This number will <i>never</i> be published.'),
         max_length=30,
         required=False,
     )
     birthday = forms.DateField(
         label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
+        help_text=_('We require date of birth for speakers to accomodate for local laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
         input_formats=('%Y-%m-%d',),
         widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
         required=False,
