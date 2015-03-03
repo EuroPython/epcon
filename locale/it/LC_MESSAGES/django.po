@@ -229,7 +229,7 @@ msgid "I want to receive a few selected job offers through EuroPython."
 msgstr ""
 
 #: p3/forms.py:479
-msgid "I want to receive private messages from other partecipants."
+msgid "I want to receive private messages from other participants."
 msgstr ""
 
 #: p3/forms.py:480
