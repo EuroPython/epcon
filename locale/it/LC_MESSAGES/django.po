@@ -486,7 +486,7 @@ msgstr "Il tuo profilo pubblico"
 #: p3/templates/assopy/profile.html:13
 #, fuzzy, python-format
 msgid ""
-"Partecipate in <a href=\"%(url)s\">Find out who's coming</a>: let people "
+"Join and <a href=\"%(url)s\">find out who's coming</a>: let people "
 "know that you will be coming to this conference."
 msgstr ""
 "Fai sapere a tutti che verrai a EuroPython: compila il tuo profilo e pubblicalo "
