@@ -19,3 +19,4 @@ django-crontab==0.4.2
 -e git+https://github.com/pythonitalia/hcomments.git#egg=hcomments
 -e git+https://github.com/pythonitalia/conference.git#egg=conference
 -e git+https://github.com/pythonitalia/assopy.git#egg=assopy
+simplejson
