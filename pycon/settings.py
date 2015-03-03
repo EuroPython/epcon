@@ -1063,8 +1063,11 @@ RAVEN_CONFIG = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# MAL 2015-03-03: We need the emails going out rather than to the
+# console, so commenting this out for now.
+#if DEBUG:
+#    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
