@@ -2,34 +2,34 @@
 {% p3_profile_data profile.user_id as profile_data %}
 
 {% if profile_data.company or full_access %}
-<dt>Company</dt>        
+<dt>{% trans "Company" %}</dt>        
 <dd>
     {% if profile_data.company %}
         <span>{{ profile_data.company }}</span>
     {% else %}
-        <span class="not-set">&mdash; Not set &mdash;</span>
+        <span class="not-set">&mdash; {% trans "Not set" %} &mdash;</span>
     {% endif %}
     {% if full_access %}{{ form.company|field:"tpl:no_label" }}{% endif %}
 </dd>
 {% endif %}
 
 {% if profile_data.job_title or full_access %}
-<dt>Job title</dt>
+<dt>{% trans "Job title" %}</dt>
 <dd>
     {% if profile_data.job_title %}
         <span>{{ profile_data.job_title }}</span>
     {% else %}
-        <span class="not-set">&mdash; Not set &mdash;</span>
+        <span class="not-set">&mdash; {% trans "Not set" %} &mdash;</span>
     {% endif %}
     {% if full_access %}{{ form.job_title|field:"tpl:no_label" }}{% endif %}
 </dd>
 {% if profile_data.company_homepage or full_access %}
-<dt>Company web site</dt>
+<dt>{% trans "Company web site" %}</dt>
 <dd>
     {% if profile_data.company_homepage %}
         <span>{{ profile_data.company_homepage|beautify_url }}</span>
     {% else %}
-        <span class="not-set">&mdash; Not set &mdash;</span>
+        <span class="not-set">&mdash; {% trans "Not set" %} &mdash;</span>
     {% endif %}
     {% if full_access %}{{ form.company_homepage|field:"tpl:no_label" }}{% endif %}
 </dd>
