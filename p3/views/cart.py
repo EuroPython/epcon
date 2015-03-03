@@ -14,7 +14,7 @@ from p3 import models
 class P3BillingData(aforms.BillingData):
     payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='cc')
     code_conduct = forms.BooleanField(
-        label=_('I have read and accepted the <a class="trigger-overlay" href="/code-of-conduct" target="blank">code of conduct</a>.'))
+        label=_('I have read and accepted the <a class="trigger-overlay" href="/coc" target="blank">code of conduct</a>.'))
 
     def __init__(self, *args, **kwargs):
         super(P3BillingData, self).__init__(*args, **kwargs)
