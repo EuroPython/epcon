@@ -359,7 +359,7 @@ def sprint(request, sid):
 def whos_coming(request, conference=None):
     if conference is None:
         return redirect('p3-whos-coming-conference', conference=settings.CONFERENCE_CONFERENCE)
-    # profiles can be public or only visible for partecipants, in the second
+    # profiles can be public or only visible for participants, in the second
     # case only who has a ticket can see them
     access = ('p',)
     if request.user.is_authenticated():

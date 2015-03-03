@@ -511,7 +511,7 @@ class P3ProfileEmailContactForm(forms.Form):
 
 class P3ProfileSpamControlForm(forms.ModelForm):
     spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'), required=False)
-    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other partecipants.'), required=False)
+    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other participants.'), required=False)
     spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'), required=False)
     class Meta:
         model = models.P3Profile
@@ -734,7 +734,7 @@ class P3FormTickets(aforms.FormTickets):
                 row['period'],
             ))
 
-        # Only partecipants are allowed to buy
+        # Only participants are allowed to buy
         conference_tickets = 0
         for k, v in self.cleaned_data.items():
             if k[0] == 'T' and v:
