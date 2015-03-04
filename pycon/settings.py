@@ -20,6 +20,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", [])
+APPEND_SLASH = False
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..')))
@@ -1052,7 +1053,10 @@ CONFERENCE_GOOGLE_MAPS = {
 PAYPAL_RECEIVER_EMAIL = os.environ.get("PAYPAL_RECEIVER_EMAIL")
 
 # If the merchant account is a debug one set this flag to True
-PAYPAL_TEST = os.environ.get("PAYPAL_TEST")
+if os.environ.get('PAYPAL_TEST') == 'False':
+    PAYPAL_TEST = False
+else:
+    PAYPAL_TEST = True
 
 # Janrain account
 ASSOPY_JANRAIN = {
