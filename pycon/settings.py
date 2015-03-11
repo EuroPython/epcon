@@ -20,7 +20,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '').split(',')
-APPEND_SLASH = False
+#APPEND_SLASH = False
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..')))
