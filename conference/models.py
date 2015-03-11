@@ -679,7 +679,7 @@ class Fare(models.Model):
     def valid(self):
         #numb = len(list(Ticket.objects.all()))
         today = datetime.date.today()
-        validity = (self.start_validity <= today <= self.end_validity)
+        validity = self.start_validity <= today <= self.end_validity
         #validity = numb < settings.MAX_TICKETS
         return validity
 
