@@ -677,11 +677,10 @@ class Fare(models.Model):
         unique_together = (('conference', 'code'),)
 
     def valid(self):
-        numb = len(list(Ticket.objects.all()))
-        #today = datetime.date.today()
-        #if(self.start_validity <= today <= self.end_validity):
-        #    ret = numb < settings.MAX_TICKETS
-        validity = numb < settings.MAX_TICKETS
+        #numb = len(list(Ticket.objects.all()))
+        today = datetime.date.today()
+        validity = (self.start_validity <= today <= self.end_validity)
+        #validity = numb < settings.MAX_TICKETS
         return validity
 
     def calculated_price(self, qty=1, **kw):
