@@ -69,7 +69,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     )
     first_time = forms.BooleanField(
         label=_('I\'m a first-time speaker'),
-        help_text=_('We are planning a special program to help first time speaker, check this if you\'d like to join'),
+        help_text=_('We would love to have more first time speakers at the conference. This setting will be visible for the Program WG to use in their talk selection.'),
         required=False,
     )
     type = forms.TypedChoiceField(
@@ -81,8 +81,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
     personal_agreement = forms.BooleanField(
-        label=_('I agree to let you publish my data (excluding birth date and phone number).'),
-        help_text=_('This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <i>never</i> be published'),
+        label=_('I agree to let you publish my profile data (excluding birth date and phone number).'),
+        help_text=_('The speaker profile will be publicly accessible if one of your talks is accepted. Your mobile phone and date of birth will <i>never</i> be published'),
     )
     slides_agreement = forms.BooleanField(
         label=_('I agree to upload my presentation material after the event to this web site.'),
@@ -99,7 +99,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     abstract = forms.CharField(
         max_length=5000,
         label=_('Talk abstract'),
-        help_text=_('<p>Short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        help_text=_('<p>Short description of the talk you are submitting. Be sure to include the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
@@ -109,7 +109,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
-        help_text=_('Select the sub community this talk is intended for.'),
+        help_text=_('Select the sub community this talk is intended for, if any.'),
         choices=models.TALK_SUBCOMMUNITY,
         initial='',
         required=False)
