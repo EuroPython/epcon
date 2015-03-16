@@ -15,13 +15,26 @@ from p3 import models
 
 import datetime
 
-TALK_DURATION = (
-    (30, _('30 minutes inc Q&A')),
-    (45, _('45 minutes inc Q&A')),
-    (60, _('60 minutes inc Q&A')),
-    (90, _('90 minutes inc Q&A')),
+### Globals
+
+## These should really be changes in the conference package:
+
+# Talk lanuages, mapping ISO code to language
+TALK_LANGUAGES = (
+    ('en', _('English')),
+    ('es', _('Spanish')),
+    ('eu', _('Basque')),
 )
 
+# Available talk durations
+TALK_DURATION = (
+    (30, _('30 minute talk incl. Q&A')),
+    (45, _('45 minute talk incl. Q&A')),
+    (60, _('60 minute talk incl. Q&A')),
+#    (90, _('90 minute talk incl. Q&A')),
+    (150, _('2.5 hours training')),
+    (180, _('3 hours training')),
+)
 
 class P3TalkFormMixin(object):
     def clean(self):
@@ -48,7 +61,7 @@ class P3TalkFormMixin(object):
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
-        help_text=_('This is the <i>desired duration</i> of the talk'),
+        help_text=_('This is the <i>desired duration</i> of the talk/training'),
         choices=TALK_DURATION,
         coerce=int,
         initial=60,
@@ -60,8 +73,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         required=False,
     )
     type = forms.TypedChoiceField(
-        label=_('Talk Type'),
-        help_text='Choose between a standard talk, a 4-hours in-depth training, a poster session or an help desk session',
+        label=_('Submission type'),
+        help_text='Choose between a standard talk, an in-depth training, a poster session or an help desk session',
         choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'), ('h', 'Help Desk')),
         initial='s',
         required=True,
@@ -91,7 +104,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=cmodels.TALK_LANGUAGES,
+        choices=TALK_LANGUAGES,
         initial='en', required=False)
 
     sub_community = forms.ChoiceField(
