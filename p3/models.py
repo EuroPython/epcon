@@ -19,9 +19,7 @@ log = logging.getLogger('p3.models')
 
 TALK_SUBCOMMUNITY = (
     ('', _('All')),
-    ('django', _('DjangoVillage')),
     ('pydata', _('PyData')),
-    ('odoo', _('Odoo')),
 )
 
 class P3Talk(models.Model):
