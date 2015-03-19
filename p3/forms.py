@@ -9,6 +9,7 @@ import assopy.models as amodels
 import assopy.forms as aforms
 import conference.forms as cforms
 import conference.models as cmodels
+import conference.settings as csettings
 
 from p3 import dataaccess
 from p3 import models
@@ -19,24 +20,18 @@ import datetime
 
 ## These should really be changes in the conference package:
 
-# Talk lanuages, mapping ISO code to language
-TALK_LANGUAGES = (
-    ('en', _('English')),
-    ('es', _('Spanish')),
-    ('eu', _('Basque')),
-)
+# Talk lanuages, mapping ISO code to languageT
+TALK_LANGUAGES = getattr(settings,
+                         'CONFERENCE_TALK_LANGUAGES',
+                         # TBD: Should add TALK_LANGUAGES to conference.settings
+                         #csettings.TALK_LANGUAGES
+                         settings.LANGUAGES
+                         )
 
 # Available talk durations
-TALK_DURATION = (
-    (30, _('30 minute talk incl. Q&A')),
-    (45, _('45 minute talk incl. Q&A')),
-    (60, _('60 minute talk incl. Q&A')),
-#    (90, _('90 minute talk incl. Q&A')),
-    (150, _('2.5 hours training')),
-    (180, _('3 hours training')),
-# Not yet enabled: waiting for confirmation
-#    (240, _('4 hours helpdesk')),
-)
+TALK_DURATION = getattr(settings,
+                         'CONFERENCE_TALK_DURATION',
+                         csettings.TALK_DURATION)
 
 ###
 
