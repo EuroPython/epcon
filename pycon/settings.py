@@ -4,6 +4,9 @@ import os
 import os.path
 import sys
 
+#from django.utils.translation import ugettext as _
+_ = lambda x:x
+
 if os.environ.get('DEBUG') == 'False':
     DEBUG = False
 else:
@@ -73,15 +76,18 @@ TIME_ZONE = 'Europe/Madrid'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en'
 
-ugettext = lambda s: s
+# TBD: Not sure why we have three language settings, one called
+# LANGUAGES, the other CONFERENCE_TALK_LANGUAGES and yet another
+# CMS_LANGUAGES
 LANGUAGES = (
     # disabled italian
-    #('it', ugettext('Italiano')),
-    ('es', ugettext('Spanish')),
-    ('eus', ugettext('Basque')),
-    ('en', ugettext('English')),
+    #('it', _('Italiano')),
+    ('es', _('Spanish')),
+    ('eu', _('Basque')),
+    ('en', _('English')),
 )
 
+# Site ID
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -360,8 +366,8 @@ PAGE_TEMPLATES = (
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_LANGUAGES = (
-    ('it-it', ugettext('Italian')),
-    ('en-us', ugettext('English')),
+    ('it-it', _('Italian')),
+    ('en-us', _('English')),
 )
 PAGE_DEFAULT_LANGUAGE = PAGE_LANGUAGES[0][0]
 PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]
@@ -381,11 +387,11 @@ CMS_LANGUAGES = {
     1: [
         {
             'code': 'it',
-            'name': ugettext('Italiano'),
+            'name': _('Italiano'),
         },
         {
             'code': 'en',
-            'name': ugettext('English'),
+            'name': _('English'),
         },
     ],
     'default': {
@@ -494,6 +500,24 @@ CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
+# Available talk durations
+CONFERENCE_TALK_DURATION = (
+    (30, _('30 minute talk incl. Q&A')),
+    (45, _('45 minute talk incl. Q&A')),
+    (60, _('60 minute talk incl. Q&A')),
+#    (90, _('90 minute talk incl. Q&A')),
+    (150, _('2.5 hours training')),
+    (180, _('3 hours training')),
+# Not yet enabled: waiting for confirmation
+#    (240, _('4 hours helpdesk')),
+)
+
+# Talk lanuages, mapping ISO code to language
+CONFERENCE_TALK_LANGUAGES = (
+    ('en', _('English')),
+    ('es', _('Spanish')),
+    ('eu', _('Basque')),
+)
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from p3 import models
