@@ -949,7 +949,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
             'stream': url.rsplit('/', 1)[1],
             'url': url,
         }
-        html = """
+        html = ("""
         <div>
             <div class="button" style="float: left; margin-right: 20px;">
                 <h5><a href="rtsp://%(url)s">RTSP</a></h5>
@@ -991,7 +991,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
                 }
             </script>
         </div>
-        """ % data
+        """ % data) #" (makes emacs highlighting happy)
         return html
     else:
         data = cache.get('p3_live_embed_%s' % track)
@@ -1103,3 +1103,14 @@ if not SECRET_KEY:
     else:
         print
         'WARN, SECRET_KEY not set'
+
+
+### Override any settings with local settings
+
+try:
+    from pycon.settings_locale import *
+except ImportError, reason:
+    #import sys
+    #sys.stderr.write('Could not import local settings: %s\n' % reason)
+    pass
+
