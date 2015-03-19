@@ -34,25 +34,36 @@ TALK_DURATION = (
 #    (90, _('90 minute talk incl. Q&A')),
     (150, _('2.5 hours training')),
     (180, _('3 hours training')),
+# Not yet enabled: waiting for confirmation
+#    (240, _('4 hours helpdesk')),
 )
 
 class P3TalkFormMixin(object):
     def clean(self):
         data = super(P3TalkFormMixin, self).clean()
-        if data['type'] in ('t', 'h'):
-            data['duration'] = 240
 
+        # You can select the right duration now, so this is no longer
+        # needed
+        #if data['type'] in ('t', 'h'):
+        #    data['duration'] = 240
+
+        # Set default duration
         if not data.get('duration'):
             data['duration'] = 45
 
+        # Set default language
         if not data.get('language') or data['type'] != 's':
             data['language'] = 'en'
 
-        if data['duration'] in (45, 60):
-            data['qa_duration'] = 15
+        # Set Q&A duration
+        if data['duration'] < 45:
+            data['qa_duration'] = 5
+        elif data['duration'] < 90:
+            data['qa_duration'] = 10
         elif data['duration'] == 90:
-            data['qa_duration'] = 20
+            data['qa_duration'] = 15
         else:
+            # Trainings and helpdesk don't get Q&A time
             data['qa_duration'] = 0
 
         return data
