@@ -38,6 +38,11 @@ TALK_DURATION = (
 #    (240, _('4 hours helpdesk')),
 )
 
+###
+
+# TBD: These forms need some cleanup. Probably best to merge the
+# conference repo into epcon and then remove all this subclassing.
+
 class P3TalkFormMixin(object):
     def clean(self):
         data = super(P3TalkFormMixin, self).clean()
@@ -69,6 +74,10 @@ class P3TalkFormMixin(object):
         return data
 
 
+# This form is used for new talk submissions and only when the speaker
+# has not yet submitted another talk; see P3SubmissionAdditionalForm
+# for talk editing and additional talks.
+
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
@@ -91,6 +100,11 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         required=True,
         widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
+
+    # Note: These three fields are *not* saved in the talk record,
+    # they are just used to show the checkboxes when first submitting
+    # a talk and required, so that no talk can be submitted without
+    # checking them.
     personal_agreement = forms.BooleanField(
         label=_('I agree to let you publish my profile data (excluding birth date and phone number).'),
         help_text=_('The speaker profile will be publicly accessible if one of your talks is accepted. Your mobile phone and date of birth will <i>never</i> be published'),
@@ -103,6 +117,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         label=_('I agree to have my presentation recorded and have read, understood and agree to the <a href="/speaker-release-agreement/">EuroPython Speaker Release Agreement</a>'),
         help_text=_('We will be recording the conference talks and publish them on the EuroPython YouTube channel and archive.org.'),
     )
+
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
@@ -146,12 +161,18 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         p3s.first_time = data['first_time']
         p3s.save()
 
+        # Set additional fields added in this form (compared to
+        # cforms.SubmissionForm)
         models.P3Talk.objects\
-            .create(talk=talk, sub_community=data['sub_community'])
-
+            .create(talk=talk,
+                    sub_community=data['sub_community'])
         return talk
 
 
+
+# This form is used in case the speaker has already proposed a talk
+# and for editing talks
+    
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
@@ -170,6 +191,10 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
             self.fields['duration'].initial = self.instance.duration
             if self.instance.id:
                 self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
+            # The speaker has already agreed to these when submitting
+            # the first talk, so preset them
+            self.fields['slides_agreement'].initial = True
+            self.fields['video_agreement'].initial = True
 
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
@@ -181,7 +206,8 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
             talk.p3_talk.save()
         except models.P3Talk.DoesNotExist:
             models.P3Talk.objects\
-                .create(talk=talk, sub_community=self.cleaned_data['sub_community'])
+                .create(talk=talk,
+                        sub_community=self.cleaned_data['sub_community'])
         return talk
 
 
