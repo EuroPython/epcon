@@ -506,8 +506,9 @@ CONFERENCE_TALK_DURATION = (
     (45, _('45 minute talk incl. Q&A')),
     (60, _('60 minute talk incl. Q&A')),
 #    (90, _('90 minute talk incl. Q&A')),
+    (90, _('1.5 hours poster session')),
     (150, _('2.5 hours training')),
-    (180, _('3 hours training')),
+    (180, _('3 hours training/helpdesk')),
 # Not yet enabled: waiting for confirmation
 #    (240, _('4 hours helpdesk')),
 )

@@ -79,7 +79,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         help_text=_('This is the <i>desired duration</i> of the talk/training'),
         choices=TALK_DURATION,
         coerce=int,
-        initial=60,
+        initial=30,
         required=False,
     )
     first_time = forms.BooleanField(
@@ -119,8 +119,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         widget=cforms.MarkEditWidget,)
     abstract = forms.CharField(
         max_length=5000,
-        label=_('Talk abstract'),
-        help_text=_('<p>Short description of the talk you are submitting. Be sure to include the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        label=_('Abstract/description'),
+        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
