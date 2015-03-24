@@ -120,7 +120,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     abstract = forms.CharField(
         max_length=5000,
         label=_('Abstract/description'),
-        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section "Submitting Your Talk, Trainings, Helpdesk or Poster“ of the CFP for further details.</p><p>Suggested size: two or three paragraphs.</p>'),
+        help_text=_('<p>
+Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section "Submitting Your Talk, Trainings, Helpdesk or Poster“ of the CFP for further details.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
