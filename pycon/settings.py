@@ -9,6 +9,9 @@ if os.environ.get('DEBUG') == 'False':
 else:
     DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+DEBUG=True
+APPEND_SLASH=False
+ALLOWED_HOSTS = ['*']
 
 ADMINS = (
     ('alexsavio', 'alexsavio@gmail.com'),
@@ -19,7 +22,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", [])
+#ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", [])
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..')))
