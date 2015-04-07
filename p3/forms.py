@@ -9,93 +9,128 @@ import assopy.models as amodels
 import assopy.forms as aforms
 import conference.forms as cforms
 import conference.models as cmodels
+import conference.settings as csettings
 
 from p3 import dataaccess
 from p3 import models
 
 import datetime
 
-TALK_DURATION = (
-    (30, _('30 minutes inc Q&A')),
-    (45, _('45 minutes inc Q&A')),
-    (60, _('60 minutes inc Q&A')),
-    (90, _('90 minutes inc Q&A')),
-)
+### Globals
 
+## These should really be changes in the conference package:
+
+# Talk lanuages, mapping ISO code to languageT
+TALK_LANGUAGES = getattr(settings,
+                         'CONFERENCE_TALK_LANGUAGES',
+                         # TBD: Should add TALK_LANGUAGES to conference.settings
+                         #csettings.TALK_LANGUAGES
+                         settings.LANGUAGES
+                         )
+
+# Available talk durations
+TALK_DURATION = getattr(settings,
+                         'CONFERENCE_TALK_DURATION',
+                         csettings.TALK_DURATION)
+
+###
+
+# TBD: These forms need some cleanup. Probably best to merge the
+# conference repo into epcon and then remove all this subclassing.
 
 class P3TalkFormMixin(object):
     def clean(self):
         data = super(P3TalkFormMixin, self).clean()
-        if data['type'] in ('t', 'h'):
-            data['duration'] = 240
 
+        # You can select the right duration now, so this is no longer
+        # needed
+        #if data['type'] in ('t', 'h'):
+        #    data['duration'] = 240
+
+        # Set default duration
         if not data.get('duration'):
             data['duration'] = 45
 
+        # Set default language
         if not data.get('language') or data['type'] != 's':
             data['language'] = 'en'
 
-        if data['duration'] in (45, 60):
-            data['qa_duration'] = 15
+        # Set Q&A duration
+        if data['duration'] < 45:
+            data['qa_duration'] = 5
+        elif data['duration'] < 90:
+            data['qa_duration'] = 10
         elif data['duration'] == 90:
-            data['qa_duration'] = 20
+            data['qa_duration'] = 15
         else:
+            # Trainings and helpdesk don't get Q&A time
             data['qa_duration'] = 0
 
         return data
 
 
+# This form is used for new talk submissions and only when the speaker
+# has not yet submitted another talk; see P3SubmissionAdditionalForm
+# for talk editing and additional talks.
+
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     duration = forms.TypedChoiceField(
         label=_('Duration'),
-        help_text=_('This is the <i>desired duration</i> of the talk'),
+        help_text=_('This is the <i>desired duration</i> of the talk/training'),
         choices=TALK_DURATION,
         coerce=int,
-        initial=60,
+        initial=30,
         required=False,
     )
     first_time = forms.BooleanField(
         label=_('I\'m a first-time speaker'),
-        help_text=_('We are planning a special program to help first time speaker, check this if you\'d like to join'),
+        help_text=_('We would love to have more first time speakers at the conference. This setting will be visible for the Program WG to use in their talk selection.'),
         required=False,
     )
     type = forms.TypedChoiceField(
-        label=_('Talk Type'),
-        help_text='Choose between a standard talk, a 4-hours in-depth training, a poster session or an help desk session',
+        label=_('Submission type'),
+        help_text='Choose between a standard talk, an in-depth training, a poster session or an help desk session',
         choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'), ('h', 'Help Desk')),
         initial='s',
         required=True,
         widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
+
+    # Note: These three fields are *not* saved in the talk record,
+    # they are just used to show the checkboxes when first submitting
+    # a talk and required, so that no talk can be submitted without
+    # checking them.
     personal_agreement = forms.BooleanField(
-        label=_('I agree to let you publish my data (excluding birth date and phone number).'),
-        help_text=_('This speaker profile will be publicly accesible if one of your talks is accepted. Your mobile phone and date of birth will <i>never</i> be published'),
+        label=_('I agree to let you publish my profile data (excluding birth date and phone number).'),
+        help_text=_('The speaker profile will be publicly accessible if one of your talks is accepted. Your mobile phone and date of birth will <i>never</i> be published'),
     )
     slides_agreement = forms.BooleanField(
-        label=_('I agree to release all the talk material after the event.'),
-        help_text=_('If the talk is accepted, speakers a required to timely release all the talk material (including slides) for publishing on this web site.'),
+        label=_('I agree to upload my presentation material after the event to this web site.'),
+        help_text=_('If the talk is accepted, speakers are encouraged to upload their talk slides to make them available to users of this web site.'),
     )
     video_agreement = forms.BooleanField(
-        label=_('I agree to let the organization record my talk and publish the video.'),
+        label=_('I agree to have my presentation recorded and have read, understood and agree to the <a href="/speaker-release-agreement/">EuroPython Speaker Release Agreement</a>'),
+        help_text=_('We will be recording the conference talks and publish them on the EuroPython YouTube channel and archive.org.'),
     )
+
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,)
     abstract = forms.CharField(
         max_length=5000,
-        label=_('Talk abstract'),
-        help_text=_('<p>Short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        label=_('Abstract/description'),
+        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: two or three paragraphs.</p>'),
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=cmodels.TALK_LANGUAGES,
+        choices=TALK_LANGUAGES,
         initial='en', required=False)
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
-        help_text=_('Select the sub community this talk is intended for.'),
+        help_text=_('Select the sub community this talk is intended for, if any.'),
         choices=models.TALK_SUBCOMMUNITY,
         initial='',
         required=False)
@@ -121,12 +156,18 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         p3s.first_time = data['first_time']
         p3s.save()
 
+        # Set additional fields added in this form (compared to
+        # cforms.SubmissionForm)
         models.P3Talk.objects\
-            .create(talk=talk, sub_community=data['sub_community'])
-
+            .create(talk=talk,
+                    sub_community=data['sub_community'])
         return talk
 
 
+
+# This form is used in case the speaker has already proposed a talk
+# and for editing talks
+    
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
@@ -145,6 +186,10 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
             self.fields['duration'].initial = self.instance.duration
             if self.instance.id:
                 self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
+            # The speaker has already agreed to these when submitting
+            # the first talk, so preset them
+            self.fields['slides_agreement'].initial = True
+            self.fields['video_agreement'].initial = True
 
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
@@ -156,7 +201,8 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
             talk.p3_talk.save()
         except models.P3Talk.DoesNotExist:
             models.P3Talk.objects\
-                .create(talk=talk, sub_community=self.cleaned_data['sub_community'])
+                .create(talk=talk,
+                        sub_community=self.cleaned_data['sub_community'])
         return talk
 
 

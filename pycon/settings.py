@@ -4,6 +4,9 @@ import os
 import os.path
 import sys
 
+#from django.utils.translation import ugettext as _
+_ = lambda x:x
+
 if os.environ.get('DEBUG') == 'False':
     DEBUG = False
 else:
@@ -22,7 +25,9 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-#ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", [])
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '').split(',')
+#APPEND_SLASH = False
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..')))
@@ -75,15 +80,18 @@ TIME_ZONE = 'Europe/Madrid'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en'
 
-ugettext = lambda s: s
+# TBD: Not sure why we have three language settings, one called
+# LANGUAGES, the other CONFERENCE_TALK_LANGUAGES and yet another
+# CMS_LANGUAGES
 LANGUAGES = (
     # disabled italian
-    #('it', ugettext('Italiano')),
-    ('es', ugettext('Spanish')),
-    ('eus', ugettext('Basque')),
-    ('en', ugettext('English')),
+    #('it', _('Italiano')),
+    ('es', _('Spanish')),
+    ('eu', _('Basque')),
+    ('en', _('English')),
 )
 
+# Site ID
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -362,8 +370,8 @@ PAGE_TEMPLATES = (
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_LANGUAGES = (
-    ('it-it', ugettext('Italian')),
-    ('en-us', ugettext('English')),
+    ('it-it', _('Italian')),
+    ('en-us', _('English')),
 )
 PAGE_DEFAULT_LANGUAGE = PAGE_LANGUAGES[0][0]
 PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]
@@ -383,11 +391,11 @@ CMS_LANGUAGES = {
     1: [
         {
             'code': 'it',
-            'name': ugettext('Italiano'),
+            'name': _('Italiano'),
         },
         {
             'code': 'en',
-            'name': ugettext('English'),
+            'name': _('English'),
         },
     ],
     'default': {
@@ -496,6 +504,25 @@ CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
+# Available talk durations
+CONFERENCE_TALK_DURATION = (
+    (30, _('30 minute talk incl. Q&A')),
+    (45, _('45 minute talk incl. Q&A')),
+    (60, _('60 minute talk incl. Q&A')),
+#    (90, _('90 minute talk incl. Q&A')),
+    (90, _('1.5 hours poster session')),
+    (150, _('2.5 hours training')),
+    (180, _('3 hours training/helpdesk')),
+# Not yet enabled: waiting for confirmation
+#    (240, _('4 hours helpdesk')),
+)
+
+# Talk lanuages, mapping ISO code to language
+CONFERENCE_TALK_LANGUAGES = (
+    ('en', _('English')),
+    ('es', _('Spanish')),
+    ('eu', _('Basque')),
+)
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from p3 import models
@@ -828,6 +855,7 @@ def HCOMMENTS_THREAD_OWNERS(o):
         return [s.user for s in o.get_all_speakers()]
     elif isinstance(o, Post):
         return [o.author, ]
+        return [o.author, ]
     return None
 
 
@@ -951,7 +979,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
             'stream': url.rsplit('/', 1)[1],
             'url': url,
         }
-        html = """
+        html = ("""
         <div>
             <div class="button" style="float: left; margin-right: 20px;">
                 <h5><a href="rtsp://%(url)s">RTSP</a></h5>
@@ -993,7 +1021,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
                 }
             </script>
         </div>
-        """ % data
+        """ % data) #" (makes emacs highlighting happy)
         return html
     else:
         data = cache.get('p3_live_embed_%s' % track)
@@ -1055,7 +1083,10 @@ CONFERENCE_GOOGLE_MAPS = {
 PAYPAL_RECEIVER_EMAIL = os.environ.get("PAYPAL_RECEIVER_EMAIL")
 
 # If the merchant account is a debug one set this flag to True
-PAYPAL_TEST = os.environ.get("PAYPAL_TEST")
+if os.environ.get('PAYPAL_TEST') == 'False':
+    PAYPAL_TEST = False
+else:
+    PAYPAL_TEST = True
 
 # Janrain account
 ASSOPY_JANRAIN = {
@@ -1102,3 +1133,14 @@ if not SECRET_KEY:
     else:
         print
         'WARN, SECRET_KEY not set'
+
+
+### Override any settings with local settings
+
+try:
+    from pycon.settings_locale import *
+except ImportError, reason:
+    #import sys
+    #sys.stderr.write('Could not import local settings: %s\n' % reason)
+    pass
+
