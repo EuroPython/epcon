@@ -648,7 +648,7 @@ if not settings.GENRO_BACKEND:
         list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
         date_hierarchy = 'payment_date'
         search_fields = (
-            'code', 'order__code', 'order__card_name'
+            'code', 'order__code', 'order__card_name',
             'order__user__user__first_name', 'order__user__user__last_name', 'order__user__user__email',
             'order__billing_notes',)
         form = InvoiceAdminForm
