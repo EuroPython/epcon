@@ -69,7 +69,7 @@ def user_orders(u):
 
 def user_coupons(u):
     assigned_coupon = models.Coupon.objects\
-        .filter(user=u)\
+        .filter(user__user=u)\
         .values('code')
     user_coupon = models.OrderItem.objects\
         .filter(price__lt=0, order__user__user=u)\
