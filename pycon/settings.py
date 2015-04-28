@@ -844,10 +844,10 @@ def HCOMMENTS_RECAPTCHA(request):
 
 
 def HCOMMENTS_THREAD_OWNERS(o):
-    from p3.models import Talk
+    from p3.models import P3Talk
     from microblog.models import Post
 
-    if isinstance(o, Talk):
+    if isinstance(o, P3Talk):
         return [s.user for s in o.get_all_speakers()]
     elif isinstance(o, Post):
         return [o.author, ]
