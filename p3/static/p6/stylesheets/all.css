@@ -2052,8 +2052,12 @@ nav[role=navigation].active { max-height: 25em; }
 /* dropdown desktop */
 @media (min-width: 37.5em) {
     #navigation-toggle { overflow: visible; }
-    #navigation-toggle ul ul { display: none; position: absolute; }
-    #navigation-toggle ul:hover ul { display: block; }
+    #navigation-toggle ul ul { display: none; position: absolute; min-width: 100%; }
+    #navigation-toggle li { position: relative; }
+    #navigation-toggle li:hover ul { display: block; }
+    #navigation-toggle li li { display: block; float: none; }
+    #navigation-toggle li li a { width: 100%; vertical-align: middle; display: block; border-top: 1px solid #E5781E; color: #E5781E; text-transform: uppercase; letter-spacing: .5px; }
+    #navigation-toggle li li:first-child a { border-top: none; }
 }
 
 
