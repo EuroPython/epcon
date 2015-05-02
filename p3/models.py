@@ -11,7 +11,8 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext as _
 
-from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
+from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile, \
+    TalkSpeaker, Speaker
 from taggit.managers import TaggableManager
 
 import logging
