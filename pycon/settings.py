@@ -487,7 +487,7 @@ CONFERENCE_GOOGLE_MAPS = {
 
 CONFERENCE_CONFERENCE = 'ep2015'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
-CONFERENCE_VOTING_DISALLOWED = 'https://www.euroython.eu/voting-disallowed'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2015.europython.eu/en/talk-voting/'
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
