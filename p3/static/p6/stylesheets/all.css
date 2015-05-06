@@ -1,14 +1,14 @@
 @charset "UTF-8";
-/* 
+/*
 
 Built on Rock Hammer by Stuff and Nonsense
-URL: http://stuffandnonsense.co.uk/projects/rock-hammer/ 
+URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
-/* 
+/*
 
 Built on Rock Hammer by Stuff and Nonsense
-URL: http://stuffandnonsense.co.uk/projects/rock-hammer/ 
+URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
 @import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
@@ -2048,13 +2048,16 @@ nav[role=navigation].active { max-height: 25em; }
 #navigation-toggle li.right a i { color: #E5781E; margin-right: 4px; }
 #navigation-toggle li.right.lang a { text-transform: uppercase; background-color: #F5F5F5; padding-left: 15px; padding-right: 15px; }
 #navigation-toggle li.right.lang a:hover { background-color: #EEE; }
+#navigation-toggle li .fa-caret-down { display: none; }
 
 /* dropdown desktop */
 @media (min-width: 37.5em) {
     #navigation-toggle { overflow: visible; }
-    #navigation-toggle ul ul { display: none; position: absolute; min-width: 100%; }
-    #navigation-toggle li { position: relative; }
+    #navigation-toggle ul ul { display: none; position: absolute; max-width: 400px; }
+    /*#navigation-toggle li { position: relative; }*/
     #navigation-toggle li:hover ul { display: block; }
+    #navigation-toggle li .fa-caret-down { margin-left: .4em; display: inline-block; }
+    #navigation-toggle li:hover .fa-caret-down { opacity: 0; }
     #navigation-toggle li li { display: block; float: none; }
     #navigation-toggle li li a { width: 100%; vertical-align: middle; display: block; border-top: 1px solid #E5781E; color: #E5781E; text-transform: uppercase; letter-spacing: .5px; }
     #navigation-toggle li li:first-child a { border-top: none; }
@@ -2702,8 +2705,8 @@ body#schedule > .page > .container { margin-left: 60px; }
 
 * navigazione - effetto "disabled" per link (ad esempio "My Schedule") da poter utilizzare anche nei sotto menu - quando attivo una voce forse potremmo selezionarla? - sotto menu Filters, serve una classe "selected" per i filtri sulla track - sotto menu Filters, spaziature e titolo - iconcina per chiudere i sottomenu (la riuserei anche nello zoom degli eventi)
 * highlight - eventi evidenziati (apri un evento a caso e scegli un tag) - eventi "dimmed" opacizzati è il contrario del precedente potremmo usarlo nelle ricerchè per "nascondere" i risultati $('.event').dim() - +1 (e -1 anche se forse non lo useremo)
-* colori - come ti piace di più, possiamo selezionare gli eventi per: # tipo di track # tipo di evento (special, keynote, normale) 
-OK - stellina gialla        
+* colori - come ti piace di più, possiamo selezionare gli eventi per: # tipo di track # tipo di evento (special, keynote, normale)
+OK - stellina gialla
 OK - Nomi delle tracce da stilare
 ?? - Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli
