@@ -541,21 +541,34 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     #   superusers
     #   speakers (of current conference)
     #   who is in the special "pre_voting" group
-    if conf.voting() or user.is_superuser:
+    if user.is_superuser:
         return True
-    from p3.models import TalkSpeaker, Speaker
 
-    try:
-        count = TalkSpeaker.objects.filter(
-            talk__conference=CONFERENCE_CONFERENCE,
-            speaker=user.speaker).count()
-    except (AttributeError, Speaker.DoesNotExist):
-        pass
+    # Only allow access during talk voting period
+    if conf.voting():
+        return True
     else:
-        if count > 0:
-            return True
-    return user.groups.filter(name='pre_voting').exists()
+        return False
 
+    # XXX Disabled these special cases, since it's not clear
+    #     what they are used for
+    if 0:
+        from p3.models import TalkSpeaker, Speaker
+        try:
+            count = TalkSpeaker.objects.filter(
+                talk__conference=CONFERENCE_CONFERENCE,
+                speaker=user.speaker).count()
+        except (AttributeError, Speaker.DoesNotExist):
+            pass
+        else:
+            if count > 0:
+                return True
+
+        # Special case for "pre_voting" group members;
+        if user.groups.filter(name='pre_voting').exists():
+            return True
+
+    return False
 
 def CONFERENCE_VOTING_ALLOWED(user):
     if not user.is_authenticated():
@@ -563,8 +576,8 @@ def CONFERENCE_VOTING_ALLOWED(user):
     if user.is_superuser:
         return True
 
+    # Speakers are always allowed to vote
     from p3.models import TalkSpeaker, Speaker
-
     try:
         count = TalkSpeaker.objects.filter(
             talk__conference=CONFERENCE_CONFERENCE,
