@@ -18,6 +18,7 @@ ADMINS = (
     ('oiertwo'  , 'badtrex@gmail.com'),
     ('fpliger'  , 'fabio.pliger@gmail.com'),
     ('barrachri', 'barrachri@gmail.com'),
+    ('malemburg', 'mal@europython.eu'),
 )
 
 MANAGERS = ADMINS
