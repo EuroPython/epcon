@@ -541,11 +541,13 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     #   superusers
     #   speakers (of current conference)
     #   who is in the special "pre_voting" group
-    if conf.voting() or user.is_superuser:
+    if user.is_superuser:
         return True
 
-    # Dissallow voting access outside the talk voting period
-    if not conf.voting():
+    # Only allow access during talk voting period
+    if conf.voting():
+        return True
+    else:
         return False
 
     # XXX Disabled these special cases, since it's not clear
