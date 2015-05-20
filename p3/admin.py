@@ -324,3 +324,13 @@ class VotoTalkAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
+class TalkAdmin(cadmin.TalkAdmin):
+    list_filter = ('conference', 'status', 'duration', 'type')
+    search_fields = [ 'title',
+                      'talkspeaker__speaker__user__last_name',
+                      'talkspeaker__speaker__user__first_name',
+                      ]
+
+admin.site.unregister(cmodels.Talk)
+admin.site.register(cmodels.Talk, TalkAdmin)
+
