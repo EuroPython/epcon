@@ -802,8 +802,8 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
 #
 GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
-ASSOPY_BACKEND = 'http://assopy.euroython.eu/conference/externalcall'
-ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = True
+ASSOPY_BACKEND = 'https://assopy.euroython.eu/conference/externalcall'
+ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 ASSOPY_REFUND_EMAIL_ADDRESS = {
