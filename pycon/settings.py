@@ -11,6 +11,8 @@ if os.environ.get('DEBUG') == 'False':
     DEBUG = False
 else:
     DEBUG = True
+
+
 TEMPLATE_DEBUG = DEBUG
 DEBUG=True
 APPEND_SLASH=False
