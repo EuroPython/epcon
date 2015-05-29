@@ -293,6 +293,7 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
 )
 
+# Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
     'theme': 'clean',
     'lang': 'en',
@@ -300,6 +301,15 @@ RECAPTCHA_OPTIONS = {
     # 'custom_translations': {},
     #'custom_theme_widget': None
 }
+RECAPTCHA_PRIVATE_KEY = os.environ.get(
+    'RECAPTCHA_PRIVATE_KEY',
+    # This needs to be passed in via the OS env:
+    'no-private-key-set')
+RECAPTCHA_PUBLIC_KEY = os.environ.get(
+    'RECAPTCHA_PUBLIC_KEY',
+    # Registered for EuroPython domains:
+    '6LdFmQcTAAAAAN1xx4M5UN6yg4TwFRXUwIrH5iGh')
+RECAPTCHA_USE_SSL = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
