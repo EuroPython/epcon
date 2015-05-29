@@ -314,3 +314,23 @@ class InvoiceAdmin(aadmin.InvoiceAdmin):
 
 admin.site.unregister(amodels.Invoice)
 admin.site.register(amodels.Invoice, InvoiceAdmin)
+
+class VotoTalkAdmin(admin.ModelAdmin):
+    list_display = ('user', 'talk', 'vote')
+    list_filter = ( )
+    search_fields = [ 'talk__title',
+                      'user__username',
+                      'user__last_name', 'user__first_name' ]
+
+admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
+
+class TalkAdmin(cadmin.TalkAdmin):
+    list_filter = ('conference', 'status', 'duration', 'type')
+    search_fields = [ 'title',
+                      'talkspeaker__speaker__user__last_name',
+                      'talkspeaker__speaker__user__first_name',
+                      ]
+
+admin.site.unregister(cmodels.Talk)
+admin.site.register(cmodels.Talk, TalkAdmin)
+

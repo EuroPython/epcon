@@ -74,7 +74,8 @@ def _assign_ticket(ticket, email):
             recipient = amodels.UserIdentity.objects.filter(email__iexact=email)[0].user.user
         except IndexError:
             recipient = None
-    if recipient is None:
+    # Look in the "genro" backend, if possible
+    if settings.GENRO_BACKEND and recipient is None:
         from assopy.clients import genro
         rid = genro.users(email)['r0']
         if rid is not None:
@@ -443,6 +444,9 @@ def genro_invoice_pdf(request, assopy_id):
     import urllib
     from assopy.clients import genro
     from assopy.models import OrderItem
+
+    if not settings.GENRO_BACKEND:
+        raise http.Http404()
 
     data = genro.invoice(assopy_id)
 
