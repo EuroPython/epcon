@@ -36,6 +36,17 @@ def speaker_listing(talk):
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
 
+def talk_title(talk):
+
+    # Remove whitespace
+    title = talk.title.strip()
+
+    # Remove quotes
+    if title[0] == '"' and title[-1] == '"':
+        title = title[1:-1]
+
+    return title
+
 ###
 
 class Command(BaseCommand):
@@ -79,14 +90,14 @@ class Command(BaseCommand):
             if not bag:
                 continue
             # Sort by talk title using title case
-            bag.sort(key=lambda talk: talk.title.title())
+            bag.sort(key=lambda talk: talk_title(talk).title())
             print ('')
             print ('<h3>%ss</h3>' % type_name)
             print ('<ul>')
             for talk in bag:
                 print ((u'<li><a href="%s">%s</a> by %s</li>' % (
                     talk.get_absolute_url(),
-                    talk.title,
+                    talk_title(talk),
                     speaker_listing(talk))
                     ).encode('utf-8'))
             print ('</ul>')
