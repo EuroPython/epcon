@@ -14,11 +14,20 @@ import operator
 ### Globals
 
 TYPE_NAMES = (
-    (('keynote', 'Keynote'),
-     ) +
-    tuple(models.TALK_TYPE)[:] +
-    (('europython', 'EuroPython session'),
-     ))
+    ('keynote', 'Keynotes'),
+    ('s', 'Talks'),
+    ('t', 'Trainings'),
+    ('p', 'Poster sessions'),
+    ('h', 'Help desks'),
+    ('europython', 'EuroPython sessions'),
+    ('i', 'Other sessions'),
+    )
+
+def _check_talk_types(type_names):
+    d = dict(type_names)
+    for code, entry in models.TALK_TYPE:
+        assert code in d, 'Talk type code %r is missing' % code
+_check_talk_types(TYPE_NAMES)
 
 ### Helpers
 
@@ -92,7 +101,7 @@ class Command(BaseCommand):
             # Sort by talk title using title case
             bag.sort(key=lambda talk: talk_title(talk).title())
             print ('')
-            print ('<h3>%ss</h3>' % type_name)
+            print ('<h3>%s</h3>' % type_name)
             print ('<ul>')
             for talk in bag:
                 print ((u'<li><a href="%s">%s</a> by %s</li>' % (
