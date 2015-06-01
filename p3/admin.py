@@ -44,12 +44,23 @@ def ticketConferenceForm():
     return TicketConferenceForm
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
-    list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
+    list_display = cadmin.TicketAdmin.list_display + (
+        '_order',
+        '_assigned',
+        '_shirt_size',
+        '_diet',
+        '_python_experience',
+        #'_tagline',
+        )
     list_filter = cadmin.TicketAdmin.list_filter + (
         'orderitem__order___complete',
         'p3_conference__shirt_size',
         'p3_conference__diet',
         'p3_conference__python_experience',
+        )
+    search_fields = cadmin.TicketAdmin.search_fields + (
+        'orderitem__order__code',
+        'fare__code',
         )
 
     form = ticketConferenceForm()
@@ -65,6 +76,27 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             return o.p3_conference.assigned_to
         else:
             return ''
+
+    def _shirt_size(self, o):
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
+            return ''
+        return p3c.shirt_size
+
+    def _diet(self, o):
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
+            return ''
+        return p3c.diet
+
+    def _python_experience(self, o):
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
+            return ''
+        return p3c.python_experience
 
     def _tagline(self, o):
         try:
