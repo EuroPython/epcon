@@ -85,7 +85,8 @@ def _build_timetables(schedules, events=None, partner=None):
         # timetable has an indirect reference to the day, I need to get it
         # from one of the events.
         tt = o[1]
-        ev0 = tt.events.values()[0][0]
+        events = tt.events.values()
+        ev0 = events[0][0]
         return ev0['time']
     tts.sort(key=key)
     return tts
