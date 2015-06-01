@@ -45,7 +45,12 @@ def ticketConferenceForm():
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
-    list_filter = cadmin.TicketAdmin.list_filter + ('orderitem__order___complete',)
+    list_filter = cadmin.TicketAdmin.list_filter + (
+        'orderitem__order___complete',
+        'p3_conference__shirt_size',
+        'p3_conference__diet',
+        'p3_conference__python_experience',
+        )
 
     form = ticketConferenceForm()
 
