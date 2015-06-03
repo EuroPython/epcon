@@ -103,6 +103,7 @@ class Command(BaseCommand):
                 sessions[type_name][talk.id] = {
                 'talk_id':   talk.id,
                 'duration':  talk.duration,
+                'tags':      talk.tags,
                 'title':     talk_title(talk).encode('utf-8'),
                 'speakers':  speaker_listing(talk).encode('utf-8'),
                 'abstracts': talk.abstracts}
