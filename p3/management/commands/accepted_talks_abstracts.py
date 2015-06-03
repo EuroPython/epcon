@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Print out a listing of accepted talks.
+""" Print out a JSON of accepted talks with the abstracts
 
 """
 from django.core.management.base import BaseCommand, CommandError
@@ -32,14 +32,11 @@ _check_talk_types(TYPE_NAMES)
 
 ### Helpers
 
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
 
 def speaker_listing(talk):
     return u', '.join(
         u'{} {}'.format(speaker.user.first_name, speaker.user.last_name) for speaker in talk.get_all_speakers())
+
 
 def talk_title(talk):
 
@@ -106,7 +103,7 @@ class Command(BaseCommand):
                 sessions[type_name][talk.id] = {
                 'talk_id':   talk.id,
                 'duration':  talk.duration,
-                'title':     talk.title.encode('utf-8'),
+                'title':     talk_title(talk).encode('utf-8'),
                 'speakers':  speaker_listing(talk).encode('utf-8'),
                 'abstracts': talk.abstracts}
 
