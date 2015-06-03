@@ -103,9 +103,9 @@ class Command(BaseCommand):
                 sessions[type_name][talk.id] = {
                 'talk_id':   talk.id,
                 'duration':  talk.duration,
-                'tags':      talk.tags,
+                'tags':      [str(t) for t in talk.tags.all()],
                 'title':     talk_title(talk).encode('utf-8'),
                 'speakers':  speaker_listing(talk).encode('utf-8'),
-                'abstracts': talk.abstracts}
+                'abstracts': [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
 
-        print(json.dumps(sessions))
+        print(json.dumps(sessions, indent=2))
