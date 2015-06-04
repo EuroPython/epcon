@@ -12,6 +12,30 @@ from conference import models as cmodels
 from p3 import models
 from p3 import dataaccess
 
+### Customg list filters
+
+class DiscountListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'discounts'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'discounts'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'With discounts'),
+            ('no', 'Regular order'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(orderitem__price__lt=0)
+        elif self.value() == 'no':
+            return queryset.exclude(orderitem__price__lt=0)
+
+###
+
 _TICKET_CONFERENCE_COPY_FIELDS = ('shirt_size', 'python_experience', 'diet', 'tagline', 'days', 'badge_image')
 def ticketConferenceForm():
     class _(forms.ModelForm):
@@ -53,6 +77,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         #'_tagline',
         )
     list_filter = cadmin.TicketAdmin.list_filter + (
+        'fare__code',
         'orderitem__order___complete',
         'p3_conference__shirt_size',
         'p3_conference__diet',
@@ -370,4 +395,16 @@ class TalkAdmin(cadmin.TalkAdmin):
 
 admin.site.unregister(cmodels.Talk)
 admin.site.register(cmodels.Talk, TalkAdmin)
+
+class OrderAdmin(aadmin.OrderAdmin):
+    list_display = aadmin.OrderAdmin.list_display + (
+        'country',
+        )
+    list_filter = aadmin.OrderAdmin.list_filter + (
+        DiscountListFilter,
+        'country',
+        )
+
+admin.site.unregister(amodels.Order)
+admin.site.register(amodels.Order, OrderAdmin)
 
