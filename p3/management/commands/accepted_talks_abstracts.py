@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from conference import models
 from conference import utils
+from p3 import models as p3_models
 
 from collections import defaultdict, OrderedDict
 from optparse import make_option
@@ -37,6 +38,28 @@ def speaker_listing(talk):
     return u', '.join(
         u'{} {}'.format(speaker.user.first_name, speaker.user.last_name) for speaker in talk.get_all_speakers())
 
+
+def speaker_emails(talk):
+    return u', '.join(
+        u'{}'.format(speaker.user.email) for speaker in talk.get_all_speakers())
+
+def have_tickets(tickets, talk):
+    usrs = talk.get_all_speakers()
+    have_tkt = []
+    for usr in usrs:
+        #has_tkt = False
+        if tickets.filter(assigned_to=usr.user.email):
+        #for tkt in tickets.usr.user.ticket_set.values(): #usr.user.assopy_user.tickets():
+        #    if tkt['user_id'] == usr.user_id:
+            has_tkt = True
+            print(usr.user.email)
+        else:
+            has_tkt = False
+        have_tkt.append(has_tkt)
+
+    from IPython.core.debugger import Tracer
+    Tracer()()
+    return have_tkt
 
 def talk_title(talk):
 
@@ -74,6 +97,8 @@ class Command(BaseCommand):
                  .filter(conference=conference,
                          status='accepted'))
 
+        tickets = p3_models.TicketConference.objects
+
         # Group by types
         talk_types = {}
         for talk in talks:
@@ -100,12 +125,15 @@ class Command(BaseCommand):
             # Sort by talk title using title case
             bag.sort(key=lambda talk: talk_title(talk).title())
             for talk in bag:
+
                 sessions[type_name][talk.id] = {
-                'talk_id':   talk.id,
-                'duration':  talk.duration,
-                'tags':      [str(t) for t in talk.tags.all()],
-                'title':     talk_title(talk).encode('utf-8'),
-                'speakers':  speaker_listing(talk).encode('utf-8'),
-                'abstracts': [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
+                'talk_id':      talk.id,
+                'duration':     talk.duration,
+                'tags':         [str(t) for t in talk.tags.all()],
+                'title':        talk_title(talk).encode('utf-8'),
+                'speakers':     speaker_listing(talk).encode('utf-8'),
+                'emails':       speaker_emails(talk).encode('utf-8'),
+                'have_tickets': have_tickets(tickets, talk),
+                'abstracts':    [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
 
         print(json.dumps(sessions, indent=2))
