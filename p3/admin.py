@@ -227,6 +227,13 @@ admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
 class SpeakerAdmin(cadmin.SpeakerAdmin):
+
+    list_display = cadmin.SpeakerAdmin.list_display + (
+        )
+    list_filter = (
+        'p3_speaker__first_time',
+        )
+
     def queryset(self, request):
         # XXX: waiting to upgrade to django 1.4, I'm implementing
         # this bad hack filter to keep only speakers of current conference.
@@ -237,6 +244,7 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
                 .values('speaker')
         ))
         return qs
+    
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         sids = queryset.values_list('user', flat=True)
         profiles = dataaccess.profiles_data(sids)
