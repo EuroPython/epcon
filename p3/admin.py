@@ -70,18 +70,21 @@ def ticketConferenceForm():
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + (
         '_order',
+        '_order_date',
         '_assigned',
         '_shirt_size',
         '_diet',
         '_python_experience',
         #'_tagline',
         )
+    list_select_related = True
     list_filter = cadmin.TicketAdmin.list_filter + (
         'fare__code',
         'orderitem__order___complete',
         'p3_conference__shirt_size',
         'p3_conference__diet',
         'p3_conference__python_experience',
+        'orderitem__order__created',
         )
     search_fields = cadmin.TicketAdmin.search_fields + (
         'orderitem__order__code',
@@ -95,6 +98,9 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def _order(self, o):
         return o.orderitem.order.code
+
+    def _order_date(self, o):
+        return o.orderitem.order.created
 
     def _assigned(self, o):
         if o.p3_conference:
