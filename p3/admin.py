@@ -101,13 +101,15 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def _order_date(self, o):
         return o.orderitem.order.created
+    _order_date.admin_order_field = 'orderitem__order__created'
 
     def _assigned(self, o):
         if o.p3_conference:
             return o.p3_conference.assigned_to
         else:
             return ''
-
+    _assigned.admin_order_field = 'p3_conference__assigned_to'
+    
     def _shirt_size(self, o):
         try:
             p3c = o.p3_conference
@@ -128,6 +130,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         except models.TicketConference.DoesNotExist:
             return ''
         return p3c.python_experience
+    _python_experience.admin_order_field = 'p3_conference__python_experience'
 
     def _tagline(self, o):
         try:
