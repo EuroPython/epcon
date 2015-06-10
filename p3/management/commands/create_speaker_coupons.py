@@ -6,6 +6,8 @@
 
     Write the created coupons as CSV data to stdout.
 
+    Use --dry-run to test drive the script.
+
 """
 import string
 import random
