@@ -4,7 +4,10 @@
     Talk     - 25%
     Training - 100%
 
-    Write the created coupons as CSV data to stdout.
+    Write the created coupons as CSV data to stdout. The script makes
+    sure that no duplicate coupons are created. If you want a coupon
+    to get recreated, deleted it in the database first and then run
+    the script.
 
     Use --dry-run to test drive the script.
 
@@ -96,15 +99,33 @@ class Command(BaseCommand):
                     ticket_type='conference')
 
         # Get set of existing codes
-        codes = set([c['code'] for c in Coupon.objects\
+        codes = set(c['code'] for c in Coupon.objects\
             .filter(conference=conference.code)\
-            .values('code')])
+            .values('code'))
+
+        # Get coupon emails of already issued coupons
+        existing_coupon_emails = set(
+            c['user__user__email']
+            for c in Coupon.objects\
+            .filter(conference=conference.code)\
+            .select_related('user')\
+            .values('user__user__email', 'code')
+            if (c['code'].startswith(tuple(COUPON_PREFIX.values()))
+                and c['user__user__email'])
+            )
 
         # Create coupons
         data = []
         for sid, entry in speakers.items():
-            # Coupon type
+
+            # Get coupon data
             type = entry['type']
+            user = entry['spk'].user
+            value = entry['discount']
+
+            # Check if we have already issued a coupon
+            if user.email in existing_coupon_emails:
+                continue
 
             # Determine a new code
             coupon_prefix = COUPON_PREFIX[type]
@@ -116,11 +137,7 @@ class Command(BaseCommand):
                     codes.add(code)
                     break
 
-            # Coupon value
-            value = entry['discount']
-
-            # Get user data
-            user = entry['spk'].user
+            # Build CSV data
             name = u'%s %s' % (user.first_name, user.last_name)
             data_row = (
                 user.email,
