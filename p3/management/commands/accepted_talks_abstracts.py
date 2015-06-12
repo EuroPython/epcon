@@ -2,16 +2,19 @@
 """ Print out a JSON of accepted talks with the abstracts
 
 """
-from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
-from conference import models
-from conference import utils
-from p3 import models as p3_models
+from   django.core.management.base import BaseCommand, CommandError
+from   django.core  import urlresolvers
+from   conference   import models
+from   conference   import utils
 
-from collections import defaultdict, OrderedDict
-from optparse import make_option
+from   p3           import models as p3_models
+from   assopy       import models as assopy_models
+
+from   collections  import defaultdict, OrderedDict
+from   optparse     import make_option
 import operator
-import simplejson as json
+import simplejson   as json
+import traceback
 
 ### Globals
 
@@ -32,8 +35,6 @@ def _check_talk_types(type_names):
 _check_talk_types(TYPE_NAMES)
 
 ### Helpers
-
-
 def speaker_listing(talk):
     return u', '.join(
         u'{} {}'.format(speaker.user.first_name, speaker.user.last_name) for speaker in talk.get_all_speakers())
@@ -43,23 +44,83 @@ def speaker_emails(talk):
     return u', '.join(
         u'{}'.format(speaker.user.email) for speaker in talk.get_all_speakers())
 
-def have_tickets(tickets, talk):
+def get_orders_from(user):
+    return assopy_models.Order.objects.filter(_complete=True, user=user.id)
+
+def get_tickets_assigned_to(user):
+    return p3_models.TicketConference.objects.filter(assigned_to=user.email)
+
+def is_ticket_assigned_to_someone_else(ticket, user):
+    tickets = p3_models.TicketConference.objects.filter(ticket_id=ticket.id)
+
+    #if user.email == u'fabio.pliger@gmail.com':
+    #    from IPython.core.debugger import Tracer
+    #    Tracer()()
+    #print(user.email)
+
+    if not tickets:
+        return False
+        #from IPython.core.debugger import Tracer
+        #Tracer()()
+        #raise RuntimeError('Could not find any ticket with ticket_id {}.'.format(ticket))
+
+    if len(tickets) > 1:
+        raise RuntimeError('You got more than one ticket from a ticket_id.'
+                           'Tickets obtained: {}.'.format(tickets))
+
+    tkt = tickets[0]
+    if tkt.ticket.user_id != user.id:
+        return True
+
+    #if not hasattr(tkt, 'assigned_to'):
+    #    return False
+
+    if not tkt.assigned_to:
+        return False
+
+    if tkt.assigned_to == user.email:
+        return False
+    else:
+        return True
+
+
+def has_ticket(user):
+    tickets = get_tickets_assigned_to(user)
+    if tickets:
+        return True
+
+    user_tickets = list(user.ticket_set.all())
+    orders = get_orders_from(user)
+    if orders:
+        order_tkts = [ordi.ticket for order in orders for ordi in order.orderitem_set.all() if ordi.ticket is not None]
+        user_tickets.extend(order_tkts)
+
+    for tkt in user_tickets:
+        if not hasattr(tkt, 'fare'):
+            from IPython.core.debugger import Tracer
+            Tracer()()
+
+        if tkt.fare.code.startswith('T'):
+            if not is_ticket_assigned_to_someone_else(tkt, user):
+                return True
+
+    return False
+
+
+def have_tickets(talk):
     usrs = talk.get_all_speakers()
     have_tkt = []
-    for usr in usrs:
-        #has_tkt = False
-        if tickets.filter(assigned_to=usr.user.email):
-        #for tkt in tickets.usr.user.ticket_set.values(): #usr.user.assopy_user.tickets():
-        #    if tkt['user_id'] == usr.user_id:
-            has_tkt = True
-            print(usr.user.email)
-        else:
-            has_tkt = False
-        have_tkt.append(has_tkt)
+    for user in usrs:
+        #from IPython.core.debugger import Tracer
+        #Tracer()()
+        try:
+            have_tkt.append(has_ticket(user.user))
+        except:
+            print(traceback.format_exc())
+            raise
 
-    from IPython.core.debugger import Tracer
-    Tracer()()
     return have_tkt
+
 
 def talk_title(talk):
 
@@ -74,6 +135,17 @@ def talk_title(talk):
         title = title[1:-1]
 
     return title
+
+
+def talk_schedule(talk):
+    event = talk.get_event()
+
+    if not event:
+        print('ERROR: Talk {} is not scheduled.'.format(talk))
+        return ''
+
+    timerange = event.get_time_range()
+    return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
 
 ###
 
@@ -96,8 +168,6 @@ class Command(BaseCommand):
         talks = (models.Talk.objects
                  .filter(conference=conference,
                          status='accepted'))
-
-        tickets = p3_models.TicketConference.objects
 
         # Group by types
         talk_types = {}
@@ -129,11 +199,13 @@ class Command(BaseCommand):
                 sessions[type_name][talk.id] = {
                 'talk_id':      talk.id,
                 'duration':     talk.duration,
+                'type':         type,
+                'timerange':    talk_schedule(talk),
                 'tags':         [str(t) for t in talk.tags.all()],
                 'title':        talk_title(talk).encode('utf-8'),
                 'speakers':     speaker_listing(talk).encode('utf-8'),
                 'emails':       speaker_emails(talk).encode('utf-8'),
-                'have_tickets': have_tickets(tickets, talk),
+                'have_tickets': have_tickets(talk),
                 'abstracts':    [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
 
         print(json.dumps(sessions, indent=2))
