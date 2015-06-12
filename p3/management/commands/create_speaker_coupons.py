@@ -11,6 +11,9 @@
 
     Use --dry-run to test drive the script.
 
+    WARNING: This script will create coupons for all speakers,
+    including ones which are giving sponsored talks.
+
 """
 import string
 import random
@@ -145,6 +148,8 @@ class Command(BaseCommand):
                 entry['type'],
                 code,
                 value,
+                '', # donated (date)
+                '', # donated amount
                 entry['title'],
                 entry['duration'],
                 )
@@ -166,7 +171,8 @@ class Command(BaseCommand):
         # Output CSV data, UTF-8 encoded
         data.insert(0, (
             # Header
-            'email', 'name', 'type', 'code', 'discount', 'title', 'duration'))
+            'email', 'name', 'type', 'code', 'discount', 'donated', 'amount',
+            'title', 'duration'))
         for row in data:
             csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
                         for x in row)
