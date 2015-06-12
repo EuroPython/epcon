@@ -53,11 +53,6 @@ def get_tickets_assigned_to(user):
 def is_ticket_assigned_to_someone_else(ticket, user):
     tickets = p3_models.TicketConference.objects.filter(ticket_id=ticket.id)
 
-    #if user.email == u'fabio.pliger@gmail.com':
-    #    from IPython.core.debugger import Tracer
-    #    Tracer()()
-    #print(user.email)
-
     if not tickets:
         return False
         #from IPython.core.debugger import Tracer
@@ -71,9 +66,6 @@ def is_ticket_assigned_to_someone_else(ticket, user):
     tkt = tickets[0]
     if tkt.ticket.user_id != user.id:
         return True
-
-    #if not hasattr(tkt, 'assigned_to'):
-    #    return False
 
     if not tkt.assigned_to:
         return False
@@ -96,10 +88,6 @@ def has_ticket(user):
         user_tickets.extend(order_tkts)
 
     for tkt in user_tickets:
-        if not hasattr(tkt, 'fare'):
-            from IPython.core.debugger import Tracer
-            Tracer()()
-
         if tkt.fare.code.startswith('T'):
             if not is_ticket_assigned_to_someone_else(tkt, user):
                 return True
@@ -111,8 +99,6 @@ def have_tickets(talk):
     usrs = talk.get_all_speakers()
     have_tkt = []
     for user in usrs:
-        #from IPython.core.debugger import Tracer
-        #Tracer()()
         try:
             have_tkt.append(has_ticket(user.user))
         except:
