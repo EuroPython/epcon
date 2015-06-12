@@ -11,6 +11,9 @@
 
     Use --dry-run to test drive the script.
 
+    WARNING: This script will create coupons for all speakers,
+    including ones which are giving sponsored talks.
+
 """
 import string
 import random
