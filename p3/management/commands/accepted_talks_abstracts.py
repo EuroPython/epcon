@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Print out a JSON of accepted talks with the abstracts
+""" Print out a JSON of accepted talks with the abstracts, schedule and speaker tickets status.
 
 """
 from   django.core.management.base import BaseCommand, CommandError
@@ -185,7 +185,6 @@ class Command(BaseCommand):
                 sessions[type_name][talk.id] = {
                 'talk_id':      talk.id,
                 'duration':     talk.duration,
-                'type':         type,
                 'timerange':    talk_schedule(talk),
                 'tags':         [str(t) for t in talk.tags.all()],
                 'title':        talk_title(talk).encode('utf-8'),
