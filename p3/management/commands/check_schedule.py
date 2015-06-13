@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Print out a JSON of accepted talks with the abstracts
+""" Print accepted talks not scheduled and not accepted talks which have been scheduled.
 
 """
 from   django.core.management.base import BaseCommand, CommandError
