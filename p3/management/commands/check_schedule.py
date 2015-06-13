@@ -38,6 +38,8 @@ def talk_schedule(talk):
         #print('ERROR: Talk ({}) {} is not scheduled.'.format(talk.type, talk))
         return ''
 
+    #TODO: should also check if the talk has more than one event.
+
     timerange = event.get_time_range()
     return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
 
