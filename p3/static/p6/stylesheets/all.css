@@ -2307,6 +2307,10 @@ body#schedule > .page > .container { margin-left: 60px; }
 
 .conference-schedules.timetable { /* layout della timetable */ /* centra gli schedule (grazie al display di .schedule) */ text-align: center; /* z-index madness; ---------------- Questo blocco serve a creare uno stacking context in modo che titolo ed header dello schedule siano posti "sopra" (z-index) al body; in questo modo posso spostare il body usando margin-top e tagliarne l'overflow.  Vedi: https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Understanding_z_index/The_stacking_context  La proprietà z-index viene presa in considerazione solo per gli elementi "posizionati" (il che vuol dire no position static) per questo ho ripetuto qui le varie position, insieme a questo commento la ripetizione serva da documentazione. */ /* layout dell'evento; un evento può trovarsi in due stati: - normale - esposto (.exposed)  Lo stato normale ha una dimensione contenuta e mostra un sottoinsieme dei dati dell'evento; lo stato esposto, attivato dall'utente, aumenta la dimensione dell'evento e rivela più dettagli.  La classe .maximized può essere applicata a i figli dell'evento per renderli visibili solo nella versione esposta. La classe .minimized ha il comportamento opposto. */ }
 .conference-schedules.timetable .schedule { /* serve a limitare la larghezza al contenuto*/ display: inline-block; width: 80%; }
+@media (max-width: 1300px) {
+    .conference-schedules.timetable .schedule { width: 100%;  min-width: 780px; }
+}
+
 .conference-schedules.timetable .schedule .schedule__header div { display: inline-block; float: left; }
 .conference-schedules.timetable .schedule .schedule__body { min-width: 440px; }
 .conference-schedules.timetable .schedule { position: relative; overflow: hidden; }
