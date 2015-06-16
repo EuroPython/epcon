@@ -14,17 +14,17 @@ import operator
 ### Globals
 
 TYPE_NAMES = (
-    ('keynote', 'Keynotes'),
-    ('s', 'Talks'),
-    ('t', 'Trainings'),
-    ('p', 'Poster sessions'),
-    ('h', 'Help desks'),
-    ('europython', 'EuroPython sessions'),
-    ('i', 'Other sessions'),
+    ('keynote', 'Keynotes', ''),
+    ('s', 'Talks', ''),
+    ('t', 'Trainings', ''),
+    ('p', 'Poster sessions', ''),
+    ('h', 'Help desks', 'Help desks provide slots for attendee to discuss their problems one-on-one with experts from the projects.'),
+    ('europython', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
+    ('i', 'Other sessions', ''),
     )
 
 def _check_talk_types(type_names):
-    d = dict(type_names)
+    d = set(x[0] for x in type_names)
     for code, entry in models.TALK_TYPE:
         assert code in d, 'Talk type code %r is missing' % code
 _check_talk_types(TYPE_NAMES)
@@ -94,7 +94,7 @@ class Command(BaseCommand):
 
         # Print list of submissions
         print ('<h2>Accepted submissions</h2>')
-        for type, type_name in TYPE_NAMES:
+        for type, type_name, description in TYPE_NAMES:
             bag = talk_types.get(type, [])
             if not bag:
                 continue
@@ -102,6 +102,8 @@ class Command(BaseCommand):
             bag.sort(key=lambda talk: talk_title(talk).title())
             print ('')
             print ('<h3>%s</h3>' % type_name)
+            if description:
+                print ('<p>%s</p>' % description)
             print ('<ul>')
             for talk in bag:
                 print ((u'<li><a href="%s">%s</a> by %s</li>' % (
