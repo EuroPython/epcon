@@ -483,7 +483,7 @@ function highlighter(mode, option) {
                         && !e.hasClass('keynote')) {
                         e.addClass('overbooked');
                         e.append('<div class="warning overbook">'
-                            +'<img src="' + STATIC_URL + 'p5/i/warning.png" title="our estimate of attendance exceeds the room size" />'
+                            +'<img src="' + STATIC_URL + 'p6/images/warning.png" title="our estimate of attendance exceeds the room size" />'
                             +'</div>');
                     }
                 }
