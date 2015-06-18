@@ -425,3 +425,37 @@ class OrderAdmin(aadmin.OrderAdmin):
 admin.site.unregister(amodels.Order)
 admin.site.register(amodels.Order, OrderAdmin)
 
+class EventTrackInlineAdmin(admin.TabularInline):
+    model = cmodels.EventTrack
+    extra = 3
+
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('schedule',
+                    'start_time',
+                    'duration',
+                    '_title',
+                    '_tracks')
+    ordering = ('schedule',
+                'start_time',
+                'tracks',
+                )
+    list_filter = ('schedule',
+                   'tracks')
+    search_fields = ['talk__title',
+                     'custom',
+                     ]
+    inlines = (EventTrackInlineAdmin,
+               )
+
+    def _tracks(self, obj):
+        return ", ".join([track.track
+                          for track in obj.tracks.all()])
+
+    def _title(self, obj):
+        if obj.custom:
+            return obj.custom
+        else:
+            return obj.talk
+
+admin.site.register(cmodels.Event, EventAdmin)
+
