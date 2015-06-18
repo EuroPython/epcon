@@ -459,3 +459,40 @@ class EventAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.Event, EventAdmin)
 
+class TrackAdmin(admin.ModelAdmin):
+    list_display = ('schedule',
+                    '_slug',
+                    '_date',
+                    'track',
+                    'title',
+                    )
+    ordering = ('schedule',
+                'track',
+                )
+    list_filter = ('schedule',
+                   'schedule__slug',
+                   'track',
+                   'title')
+    search_fields = ['schedule__conference',
+                     'schedule__slug',
+                     'track',
+                     'title',
+                     ]
+    inlines = (EventTrackInlineAdmin,
+               )
+    list_select_related = True
+
+    def _slug(self, obj):
+        return obj.schedule.slug
+
+    def _date(self, obj):
+        return obj.schedule.date
+
+admin.site.register(cmodels.Track, TrackAdmin)
+
+class ScheduleAdmin(cadmin.ScheduleAdmin):
+    pass
+
+admin.site.unregister(cmodels.Schedule)
+admin.site.register(cmodels.Schedule, ScheduleAdmin)
+
