@@ -142,6 +142,8 @@ body#schedule > .page > .container {
     .schedule {
         /* serve a limitare la larghezza al contenuto*/
         display: inline-block;
+        width: 90%;
+        min-width: 780px; 
 
         .schedule__title {
         }
@@ -153,9 +155,13 @@ body#schedule > .page > .container {
         }
         .schedule__body {
             display: flex;
-            min-width: 440px;
+            min-width: 600px;
         }
     }
+    @media (max-width: 1300px) {
+        .schedule { width: 100%;  min-width: 780px; }
+    }
+
     /* z-index madness;
      * ----------------
      * Questo blocco serve a creare uno stacking context in modo che titolo ed
@@ -943,7 +949,7 @@ body#schedule > .page > .container {
     $height: $event0 + $slot15 * 52;
     .schedule > .hhmm {
         float: left;
-        width: 40px;
+        width: 5%;
         height: $height;
     }
     .schedule:after {
@@ -1083,7 +1089,7 @@ body#schedule > .page > .container {
     $height: $event0 + $slot15 * 49;
     .schedule__header {
         &--hhmm {
-            width: 40px;
+            width: 5%;
         }
         &--track {
             width: $trackW;
@@ -1094,7 +1100,7 @@ body#schedule > .page > .container {
         height: $height;
         > .hhmm {
             float: left;
-            width: 40px;
+            width: 5%;
             height: $height;
         }
     }
