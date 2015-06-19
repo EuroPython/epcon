@@ -2315,8 +2315,8 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable .schedule .schedule__body { min-width: 600px; }
 .conference-schedules.timetable .schedule { position: relative; overflow: hidden; }
 .conference-schedules.timetable .schedule .schedule__title { position: relative; z-index: 10; }
-.conference-schedules.timetable .schedule .schedule__header { display: flex; position: relative; z-index: 10; overflow: hidden; }
-.conference-schedules.timetable .schedule .schedule__body { display: flex; position: relative; z-index: 9; }
+.conference-schedules.timetable .schedule .schedule__header { display: flex; display: -webkit-flex; position: relative; z-index: 10; overflow: hidden; }
+.conference-schedules.timetable .schedule .schedule__body { display: flex; display: -webkit-flex; position: relative; z-index: 9; }
 .conference-schedules.timetable .track { /* ripristino il default in modo da minimizzare l'impatto del text-align utilizzato per centrare gli schedule */ text-align: left; }
 .conference-schedules.timetable .event { position: absolute; z-index: 100; }
 .conference-schedules.timetable .event.special, .conference-schedules.timetable .track[data-track=sprint1] .event.special, .conference-schedules.timetable .track[data-track=sprint2] .event.special, .conference-schedules.timetable .track[data-track=sprint3] .event.special, .conference-schedules.timetable .event.break { z-index: 101; }
