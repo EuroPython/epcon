@@ -282,7 +282,7 @@ body#schedule > .page > .container {
             text-transform: none;
         }
         .hhmm {
-            @include font-size(12);
+            @include font-size(14);
         }
 
         .track {
@@ -361,7 +361,7 @@ body#schedule > .page > .container {
         .name {
             a {
                 border-bottom: 1px solid #0F2424;
-                @include font-size(12);
+                @include font-size(14);
             }
         }
         &[data-talk] {
@@ -390,7 +390,7 @@ body#schedule > .page > .container {
             margin: 0 2px 2px 0;
         }
         .speakers{
-            @include font-size(12);            
+            @include font-size(14);            
             line-height: 1.2; // Multiple speakers may wrap, add some air
             text-transform: uppercase;
             margin-bottom: $baselineheight/4;
@@ -430,7 +430,7 @@ body#schedule > .page > .container {
             .name {
                 height: auto;
                 margin: $baselineheight/2 0;
-                //font-size: 12px;
+                //font-size: 14px;
             }
         }
     }
