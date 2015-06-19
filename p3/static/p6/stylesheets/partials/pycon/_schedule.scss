@@ -149,12 +149,14 @@ body#schedule > .page > .container {
         }
         .schedule__header {
             display: flex;
+            display: -webkit-flex;
             div {
                 display: inline-block;
             }
         }
         .schedule__body {
             display: flex;
+            display: -webkit-flex;
             min-width: 600px;
         }
     }
