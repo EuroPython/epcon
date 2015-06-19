@@ -11,106 +11,103 @@
     Beta version, small changes could be introduced to meet speakers' necessities.
 </div>
 {% schedules_data sids as schedules %}
-<nav id="schedule-navigator">
-    <div>NAV</div>
+<div>NAV</div>
+<div>
+    <a href="#">Jump to</a>
     <div>
-        <a href="#">Jump to</a>
-        <div>
-            <ul>
-            {% for row in timetables %}
-                {% with schedules|attrib_:forloop.counter0 as sdata %}
-                <li><a href="#{{ sdata.slug }}">{{ sdata.date|date:"l, j F" }}</a></li>
-                {% endwith %}
-            {% endfor %}
-            </ul>
-        </div>
+        <ul>
+        {% for row in timetables %}
+            {% with schedules|attrib_:forloop.counter0 as sdata %}
+            <li><a href="#{{ sdata.slug }}">{{ sdata.date|date:"l, j F" }}</a></li>
+            {% endwith %}
+        {% endfor %}
+        </ul>
     </div>
+</div>
+<div>
+    <a href="#">Schedule view</a>
     <div>
-        <a href="#">Schedule view</a>
-        <div>
-            <ul>
-                <li><a href="{% url "p3-whos-coming-conference" conference=conference %}?speaker=on">Speakers list</a></li>
-                <li>
-                    <a href="{% url "p3-schedule-list" conference=conference %}">List view</a>
-                    <a href="{% url "p3-schedule-ics" conference=conference %}">
-                        <i class="fa fa-calendar"></i>
-                    </a>
-                </li>
-                <li><a href="{% url "p3-schedule-my-schedule" conference=conference %}">My schedule</a></li>
-            </ul>
-        </div>
+        <ul>
+            <li><a href="{% url "p3-whos-coming-conference" conference=conference %}?speaker=on">Speakers list</a></li>
+            <li>
+                <a href="{% url "p3-schedule-list" conference=conference %}">List view</a>
+                <a href="{% url "p3-schedule-ics" conference=conference %}">
+                    <i class="fa fa-calendar"></i>
+                </a>
+            </li>
+            <li><a href="{% url "p3-schedule-my-schedule" conference=conference %}">My schedule</a></li>
+        </ul>
     </div>
-    {% comment %}
+</div>
+{% comment %}
+<div>
+    <a href="#">Filters</a>
     <div>
-        <a href="#">Filters</a>
-        <div>
-            <h3>Tracks</h3>
-            <ul>
-                <li><a href="#" class="track-toggle" data-tracks="track-ita">Italian track</a></li>
-                <li><a href="#" class="track-toggle" data-tracks="training1,training2">Trainings</a></li>
-                <li><a href="#" class="track-toggle" data-tracks="helpdesk1,helpdesk2">Help desk</a></li>
-                <li><a href="#" class="track-toggle" data-tracks="partner0,partner1">Partner program</a></li>
-                <li><a href="#" class="track-toggle" data-tracks="sprint1,sprint2,sprint3">Sprint</a></li>
-            </ul>
-            <h3>Highlight</h3>
-            <ul class="highlights">
-                <li><a href="#" class="highlight-chart">Using my votes</a></li>
-                <li>
-                    <a href="#" class="highlight-tag">By tag</a>
-                    <div class="tag-list">
-                    {% tags_for_talks as taglist %}
-                    {% for category, tags in taglist|group_tags %}
-                        <h2 class="toggle">{{ category }}</h2>
-                        <div>
-                            {% for tag in tags %}
-                            <a class="tag" data-tag="{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
+        <h3>Tracks</h3>
+        <ul>
+            <li><a href="#" class="track-toggle" data-tracks="track-ita">Italian track</a></li>
+            <li><a href="#" class="track-toggle" data-tracks="training1,training2">Trainings</a></li>
+            <li><a href="#" class="track-toggle" data-tracks="helpdesk1,helpdesk2">Help desk</a></li>
+            <li><a href="#" class="track-toggle" data-tracks="partner0,partner1">Partner program</a></li>
+            <li><a href="#" class="track-toggle" data-tracks="sprint1,sprint2,sprint3">Sprint</a></li>
+        </ul>
+        <h3>Highlight</h3>
+        <ul class="highlights">
+            <li><a href="#" class="highlight-chart">Using my votes</a></li>
+            <li>
+                <a href="#" class="highlight-tag">By tag</a>
+                <div class="tag-list">
+                {% tags_for_talks as taglist %}
+                {% for category, tags in taglist|group_tags %}
+                    <h2 class="toggle">{{ category }}</h2>
+                    <div>
+                        {% for tag in tags %}
+                        <a class="tag" data-tag="{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
+                        {% endfor %}
                     </div>
-                </li>
-                <li><a href="#" class="highlight-remove">Remove highlight</a></li>
-            </ul>
-        </div>
+                {% endfor %}
+                </div>
+            </li>
+            <li><a href="#" class="highlight-remove">Remove highlight</a></li>
+        </ul>
     </div>
-    {% endcomment %}
-</nav>
+</div>
+{% endcomment %}
 
 {% comment %}
-<nav id="schedule-navigator">
-    <div class="opener closed"> </div>
-    <div class="content">
-        <div class="wrapper">
-            <h3>Search</h3>
-            <form class="search">
-                <input name="q" value="" />
-            </form>
-            <h3>Show</h3>
-            <form class="show-flags" action="" method="get">
-                <label class="active"><input type="hidden" name="show-track-ita" value="1" />Italian Track</label>
-                <label class="active"><input type="hidden" name="show-training" value="1" />Trainings</label>
-                <label class="active"><input type="hidden" name="show-partner-program" value="1" />Partner Program</label>
-                <label class="active"><input type="hidden" name="show-sprint" value="1" />Sprint</label>
-            </form>
-            <h3>Jump to</h3>
-            <ul class="jump-list">
-                {% for schedule in schedules %}
-                <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l d" }}</a></li>
-                {% endfor %}
-            </ul>
-            <div class="button mini" style="margin-top: 10px;">
-                <a href="{% url "p3-schedule-list" conference=CONFERENCE %}">List view</a>
-            </div>
-            <div class="button mini" style="margin-top: 10px;">
-                <a href="{% url "p3-my-schedule" %}">My schedule</a>
-            </div>
-            <div class="button mini" style="margin-top: 10px;">
-                <a href="{% url "p3-schedule-speakers" conference=CONFERENCE %}">Speakers list</a>
-            </div>
-            <a class="trigger-overlay schedule-help" href="/schedule-help">How to use</a>
+<div class="opener closed"> </div>
+<div class="content">
+    <div class="wrapper">
+        <h3>Search</h3>
+        <form class="search">
+            <input name="q" value="" />
+        </form>
+        <h3>Show</h3>
+        <form class="show-flags" action="" method="get">
+            <label class="active"><input type="hidden" name="show-track-ita" value="1" />Italian Track</label>
+            <label class="active"><input type="hidden" name="show-training" value="1" />Trainings</label>
+            <label class="active"><input type="hidden" name="show-partner-program" value="1" />Partner Program</label>
+            <label class="active"><input type="hidden" name="show-sprint" value="1" />Sprint</label>
+        </form>
+        <h3>Jump to</h3>
+        <ul class="jump-list">
+            {% for schedule in schedules %}
+            <li><a href="#{{ schedule.slug }}">{{ schedule.date|date:"l d" }}</a></li>
+            {% endfor %}
+        </ul>
+        <div class="button mini" style="margin-top: 10px;">
+            <a href="{% url "p3-schedule-list" conference=CONFERENCE %}">List view</a>
         </div>
+        <div class="button mini" style="margin-top: 10px;">
+            <a href="{% url "p3-my-schedule" %}">My schedule</a>
+        </div>
+        <div class="button mini" style="margin-top: 10px;">
+            <a href="{% url "p3-schedule-speakers" conference=CONFERENCE %}">Speakers list</a>
+        </div>
+        <a class="trigger-overlay schedule-help" href="/schedule-help">How to use</a>
     </div>
-</nav>
+</div>
+
 {% endcomment %}
 <div class="page clearfix">
     <div class="conference-schedules timetable vertical"  data-conference="{{ conference }}">
@@ -241,4 +238,3 @@
 </script>
 <script src="{{ STATIC_URL }}p6/javascripts/schedule.js"></script>
 {% endblock %}
-
