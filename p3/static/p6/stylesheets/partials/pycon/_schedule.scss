@@ -143,6 +143,7 @@ body#schedule > .page > .container {
         /* serve a limitare la larghezza al contenuto*/
         display: inline-block;
         width: 90%;
+        min-width: 780px; 
 
         .schedule__title {
         }
@@ -157,6 +158,10 @@ body#schedule > .page > .container {
             min-width: 600px;
         }
     }
+    @media (max-width: 1300px) {
+        .schedule { width: 100%;  min-width: 780px; }
+    }
+
     /* z-index madness;
      * ----------------
      * Questo blocco serve a creare uno stacking context in modo che titolo ed
