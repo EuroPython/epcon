@@ -142,6 +142,7 @@ body#schedule > .page > .container {
     .schedule {
         /* serve a limitare la larghezza al contenuto*/
         display: inline-block;
+        width: 90%;
 
         .schedule__title {
         }
@@ -153,7 +154,7 @@ body#schedule > .page > .container {
         }
         .schedule__body {
             display: flex;
-            min-width: 440px;
+            min-width: 600px;
         }
     }
     /* z-index madness;
@@ -943,7 +944,7 @@ body#schedule > .page > .container {
     $height: $event0 + $slot15 * 52;
     .schedule > .hhmm {
         float: left;
-        width: 40px;
+        width: 5%;
         height: $height;
     }
     .schedule:after {
@@ -1083,7 +1084,7 @@ body#schedule > .page > .container {
     $height: $event0 + $slot15 * 49;
     .schedule__header {
         &--hhmm {
-            width: 40px;
+            width: 5%;
         }
         &--track {
             width: $trackW;
@@ -1094,7 +1095,7 @@ body#schedule > .page > .container {
         height: $height;
         > .hhmm {
             float: left;
-            width: 40px;
+            width: 5%;
             height: $height;
         }
     }
