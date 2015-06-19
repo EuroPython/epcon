@@ -146,11 +146,13 @@ body#schedule > .page > .container {
         .schedule__title {
         }
         .schedule__header {
+            display: flex;
             div {
                 display: inline-block;
             }
         }
         .schedule__body {
+            display: flex;
             min-width: 440px;
         }
     }
@@ -280,7 +282,7 @@ body#schedule > .page > .container {
             text-transform: none;
         }
         .hhmm {
-            @include font-size(14);
+            @include font-size(12);
         }
 
         .track {
@@ -359,7 +361,7 @@ body#schedule > .page > .container {
         .name {
             a {
                 border-bottom: 1px solid #0F2424;
-                @include font-size(14);
+                @include font-size(12);
             }
         }
         &[data-talk] {
@@ -880,7 +882,7 @@ body#schedule > .page > .container {
             h3 {
                 padding: $baselineheight/4 $gutterwidth/4;
                 margin-bottom: 0;
-                @include font-size(14);
+                @include font-size(12);
                 text-transform: uppercase;
                 background: $lighterneutralcolor;
             }

@@ -2315,8 +2315,8 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable .schedule .schedule__body { min-width: 440px; }
 .conference-schedules.timetable .schedule { position: relative; overflow: hidden; }
 .conference-schedules.timetable .schedule .schedule__title { position: relative; z-index: 10; }
-.conference-schedules.timetable .schedule .schedule__header { position: relative; z-index: 10; overflow: hidden; }
-.conference-schedules.timetable .schedule .schedule__body { position: relative; z-index: 9; }
+.conference-schedules.timetable .schedule .schedule__header { display: flex; position: relative; z-index: 10; overflow: hidden; }
+.conference-schedules.timetable .schedule .schedule__body { display: flex; position: relative; z-index: 9; }
 .conference-schedules.timetable .track { /* ripristino il default in modo da minimizzare l'impatto del text-align utilizzato per centrare gli schedule */ text-align: left; }
 .conference-schedules.timetable .event { position: absolute; z-index: 100; }
 .conference-schedules.timetable .event.special, .conference-schedules.timetable .track[data-track=sprint1] .event.special, .conference-schedules.timetable .track[data-track=sprint2] .event.special, .conference-schedules.timetable .track[data-track=sprint3] .event.special, .conference-schedules.timetable .event.break { z-index: 101; }
@@ -2334,8 +2334,8 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable [data-track=track1].schedule__header--track, .conference-schedules.timetable [data-track=track2].schedule__header--track, .conference-schedules.timetable [data-track=track3].schedule__header--track, .conference-schedules.timetable [data-track=track4].schedule__header--track, .conference-schedules.timetable [data-track=track-ita].schedule__header--track { background: #d4d2cd; }
 .conference-schedules.timetable [data-track=training1].schedule__header--track, .conference-schedules.timetable [data-track=training2].schedule__header--track { background: #a4d4d4; }
 .conference-schedules.timetable .schedule { background: white; border: 10px solid white; margin: 0 0 40px; }
-.conference-schedules.timetable .schedule__body h3 { margin: 0 0 2px; text-transform: none; }
-.conference-schedules.timetable .schedule__body .hhmm { font-size: 14px; font-size: 1.4rem; }
+.conference-schedules.timetable .schedule__body h3 { margin: 0 0 2px; text-transform: none; font-size: 12px; font-size: 1.2rem; }
+.conference-schedules.timetable .schedule__body .hhmm { font-size: 12px; font-size: 1.2rem; }
 .conference-schedules.timetable .schedule__body .track .title { text-align: left; font-size: 16px; font-size: 1.6rem; min-height: 40px; border: 2px solid white; box-sizing: border-box; background-color: #d4d2cd; }
 .conference-schedules.timetable .schedule__body .track[data-track=sprint1] .title, .conference-schedules.timetable .schedule__body .track[data-track=sprint2] .title, .conference-schedules.timetable .schedule__body .track[data-track=sprint3] .title { background-color: #a9cb0f; }
 .conference-schedules.timetable .schedule__body .track[data-track=sprint1] .event, .conference-schedules.timetable .schedule__body .track[data-track=sprint2] .event, .conference-schedules.timetable .schedule__body .track[data-track=sprint3] .event { border-right: 2px solid #a9cb0f; }
@@ -2354,8 +2354,8 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable .event a { border: none; }
 .conference-schedules.timetable .event .close-event { position: absolute; right: 5px; }
 .conference-schedules.timetable .event .name { text-align: center; }
-.conference-schedules.timetable .event .name a { border-bottom: 1px solid #0F2424; font-size: 14px; font-size: 1.4rem; }
-.conference-schedules.timetable .event[data-talk] .name a, .conference-schedules.timetable .event.partner-program .name a, .conference-schedules.timetable .track[data-track=sprint1] .event .name a, .conference-schedules.timetable .track[data-track=sprint2] .event .name a, .conference-schedules.timetable .track[data-track=sprint3] .event .name a { border: none; font-size: 16px; font-size: 1.6rem; line-height: 1.2; }
+.conference-schedules.timetable .event .name a { border-bottom: 1px solid #0F2424; font-size: 12px; font-size: 1.2rem; }
+.conference-schedules.timetable .event[data-talk] .name a, .conference-schedules.timetable .event.partner-program .name a, .conference-schedules.timetable .track[data-track=sprint1] .event .name a, .conference-schedules.timetable .track[data-track=sprint2] .event .name a, .conference-schedules.timetable .track[data-track=sprint3] .event .name a { border: none; font-size: 12px; font-size: 1.2rem; line-height: 1.2; }
 .conference-schedules.timetable .event .hhmm { position: static; height: auto; width: auto; margin-right: 5px; }
 .conference-schedules.timetable .event .abstract { overflow-y: auto; height: 200px; background: white; padding: 0.375em 15px; }
 .conference-schedules.timetable .event .tag { cursor: pointer; margin: 0 2px 2px 0; }
@@ -2423,7 +2423,7 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable .event.special .name .hhmm span, .conference-schedules.timetable .event.break .name .hhmm span { font-size: inherit; }
 .conference-schedules.timetable .event.special .name .hhmm:after, .conference-schedules.timetable .event.break .name .hhmm:after { content: " - "; }
 .conference-schedules.timetable .event.poster { padding-top: 0; }
-.conference-schedules.timetable .event.poster h3 { margin: 10px 0; font-size: 16px; text-align: center; }
+.conference-schedules.timetable .event.poster h3 { margin: 10px 0; font-size: 12px; text-align: center; }
 .conference-schedules.timetable .event.poster ul { columns: 2; -moz-columns: 2; -webkit-columns: 2; -o-columns: 2; -ms-columns: 2; list-style: disc; margin-left: 15px; }
 .conference-schedules.timetable .event.poster ul li a { /* necessario per far funzionare l'height */ display: inline-block; height: 16px; line-height: 16px; overflow: hidden; text-transform: lowercase; }
 .conference-schedules.timetable .event.partner-program .abstract { height: 260px; }
