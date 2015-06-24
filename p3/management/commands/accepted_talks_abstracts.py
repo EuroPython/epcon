@@ -203,7 +203,7 @@ class Command(BaseCommand):
             for talk in bag:
 
                 sessions[type_name][talk.id] = {
-                'talk_id':      talk.id,
+                'id':           talk.id,
                 'duration':     talk.duration,
                 'track_title':  talk_track_title(talk).encode('utf-8'),
                 'timerange':    talk_schedule(talk).encode('utf-8'),
