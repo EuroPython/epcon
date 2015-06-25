@@ -17,6 +17,7 @@ import simplejson   as json
 import traceback
 
 ### Globals
+VERBOSE = False
 
 TYPE_NAMES = (
     ('keynote', 'Keynotes'),
@@ -123,11 +124,21 @@ def talk_title(talk):
     return title
 
 
+def talk_track_title(talk):
+    event = talk.get_event()
+
+    if not event:
+        return ''
+
+    return ', '.join([tr.title for tr in event.tracks.all()])
+
+
 def talk_schedule(talk):
     event = talk.get_event()
 
     if not event:
-        print('ERROR: Talk {} is not scheduled.'.format(talk))
+        if VERBOSE:
+            print('ERROR: Talk {} is not scheduled.'.format(talk))
         return ''
 
     timerange = event.get_time_range()
@@ -137,6 +148,12 @@ def talk_schedule(talk):
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
+        make_option('--verbose',
+             action='store_true',
+             dest='verbose',
+             default=False,
+             help='Verbose will print further check results on the status of talks.',
+        ),
         # make_option('--option',
         #     action='store',
         #     dest='option_attr',
@@ -150,6 +167,9 @@ class Command(BaseCommand):
             conference = args[0]
         except IndexError:
             raise CommandError('conference not specified')
+
+        if options['verbose']:
+            VERBOSE = True
 
         talks = (models.Talk.objects
                  .filter(conference=conference,
@@ -183,9 +203,10 @@ class Command(BaseCommand):
             for talk in bag:
 
                 sessions[type_name][talk.id] = {
-                'talk_id':      talk.id,
+                'id':           talk.id,
                 'duration':     talk.duration,
-                'timerange':    talk_schedule(talk),
+                'track_title':  talk_track_title(talk).encode('utf-8'),
+                'timerange':    talk_schedule(talk).encode('utf-8'),
                 'tags':         [str(t) for t in talk.tags.all()],
                 'title':        talk_title(talk).encode('utf-8'),
                 'speakers':     speaker_listing(talk).encode('utf-8'),
