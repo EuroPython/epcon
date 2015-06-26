@@ -142,18 +142,28 @@ body#schedule > .page > .container {
     .schedule {
         /* serve a limitare la larghezza al contenuto*/
         display: inline-block;
+        width: 90%;
+        min-width: 780px; 
 
         .schedule__title {
         }
         .schedule__header {
+            display: flex;
+            display: -webkit-flex;
             div {
                 display: inline-block;
             }
         }
         .schedule__body {
-            min-width: 440px;
+            display: flex;
+            display: -webkit-flex;
+            min-width: 600px;
         }
     }
+    @media (max-width: 1300px) {
+        .schedule { width: 100%;  min-width: 780px; }
+    }
+
     /* z-index madness;
      * ----------------
      * Questo blocco serve a creare uno stacking context in modo che titolo ed
@@ -388,7 +398,7 @@ body#schedule > .page > .container {
             margin: 0 2px 2px 0;
         }
         .speakers{
-            @include font-size(12);            
+            @include font-size(14);            
             line-height: 1.2; // Multiple speakers may wrap, add some air
             text-transform: uppercase;
             margin-bottom: $baselineheight/4;
@@ -428,7 +438,7 @@ body#schedule > .page > .container {
             .name {
                 height: auto;
                 margin: $baselineheight/2 0;
-                //font-size: 12px;
+                //font-size: 14px;
             }
         }
     }
@@ -880,7 +890,7 @@ body#schedule > .page > .container {
             h3 {
                 padding: $baselineheight/4 $gutterwidth/4;
                 margin-bottom: 0;
-                @include font-size(14);
+                @include font-size(12);
                 text-transform: uppercase;
                 background: $lighterneutralcolor;
             }
@@ -941,7 +951,7 @@ body#schedule > .page > .container {
     $height: $event0 + $slot15 * 52;
     .schedule > .hhmm {
         float: left;
-        width: 40px;
+        width: 5%;
         height: $height;
     }
     .schedule:after {
@@ -1081,7 +1091,7 @@ body#schedule > .page > .container {
     $height: $event0 + $slot15 * 49;
     .schedule__header {
         &--hhmm {
-            width: 40px;
+            width: 5%;
         }
         &--track {
             width: $trackW;
@@ -1092,7 +1102,7 @@ body#schedule > .page > .container {
         height: $height;
         > .hhmm {
             float: left;
-            width: 40px;
+            width: 5%;
             height: $height;
         }
     }

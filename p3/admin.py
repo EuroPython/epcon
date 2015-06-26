@@ -12,6 +12,30 @@ from conference import models as cmodels
 from p3 import models
 from p3 import dataaccess
 
+### Customg list filters
+
+class DiscountListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'discounts'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'discounts'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'With discounts'),
+            ('no', 'Regular order'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(orderitem__price__lt=0)
+        elif self.value() == 'no':
+            return queryset.exclude(orderitem__price__lt=0)
+
+###
+
 _TICKET_CONFERENCE_COPY_FIELDS = ('shirt_size', 'python_experience', 'diet', 'tagline', 'days', 'badge_image')
 def ticketConferenceForm():
     class _(forms.ModelForm):
@@ -44,8 +68,28 @@ def ticketConferenceForm():
     return TicketConferenceForm
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
-    list_display = cadmin.TicketAdmin.list_display + ('_order', '_assigned', '_tagline',)
-    list_filter = cadmin.TicketAdmin.list_filter + ('orderitem__order___complete',)
+    list_display = cadmin.TicketAdmin.list_display + (
+        '_order',
+        '_order_date',
+        '_assigned',
+        '_shirt_size',
+        '_diet',
+        '_python_experience',
+        #'_tagline',
+        )
+    list_select_related = True
+    list_filter = cadmin.TicketAdmin.list_filter + (
+        'fare__code',
+        'orderitem__order___complete',
+        'p3_conference__shirt_size',
+        'p3_conference__diet',
+        'p3_conference__python_experience',
+        'orderitem__order__created',
+        )
+    search_fields = cadmin.TicketAdmin.search_fields + (
+        'orderitem__order__code',
+        'fare__code',
+        )
 
     form = ticketConferenceForm()
 
@@ -55,11 +99,38 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
     def _order(self, o):
         return o.orderitem.order.code
 
+    def _order_date(self, o):
+        return o.orderitem.order.created
+    _order_date.admin_order_field = 'orderitem__order__created'
+
     def _assigned(self, o):
         if o.p3_conference:
             return o.p3_conference.assigned_to
         else:
             return ''
+    _assigned.admin_order_field = 'p3_conference__assigned_to'
+    
+    def _shirt_size(self, o):
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
+            return ''
+        return p3c.shirt_size
+
+    def _diet(self, o):
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
+            return ''
+        return p3c.diet
+
+    def _python_experience(self, o):
+        try:
+            p3c = o.p3_conference
+        except models.TicketConference.DoesNotExist:
+            return ''
+        return p3c.python_experience
+    _python_experience.admin_order_field = 'p3_conference__python_experience'
 
     def _tagline(self, o):
         try:
@@ -165,6 +236,13 @@ admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
 class SpeakerAdmin(cadmin.SpeakerAdmin):
+
+    list_display = cadmin.SpeakerAdmin.list_display + (
+        )
+    list_filter = (
+        'p3_speaker__first_time',
+        )
+
     def queryset(self, request):
         # XXX: waiting to upgrade to django 1.4, I'm implementing
         # this bad hack filter to keep only speakers of current conference.
@@ -175,6 +253,7 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
                 .values('speaker')
         ))
         return qs
+    
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         sids = queryset.values_list('user', flat=True)
         profiles = dataaccess.profiles_data(sids)
@@ -333,4 +412,87 @@ class TalkAdmin(cadmin.TalkAdmin):
 
 admin.site.unregister(cmodels.Talk)
 admin.site.register(cmodels.Talk, TalkAdmin)
+
+class OrderAdmin(aadmin.OrderAdmin):
+    list_display = aadmin.OrderAdmin.list_display + (
+        'country',
+        )
+    list_filter = aadmin.OrderAdmin.list_filter + (
+        DiscountListFilter,
+        'country',
+        )
+
+admin.site.unregister(amodels.Order)
+admin.site.register(amodels.Order, OrderAdmin)
+
+class EventTrackInlineAdmin(admin.TabularInline):
+    model = cmodels.EventTrack
+    extra = 3
+
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('schedule',
+                    'start_time',
+                    'duration',
+                    '_title',
+                    '_tracks')
+    ordering = ('schedule',
+                'start_time',
+                'tracks',
+                )
+    list_filter = ('schedule',
+                   'tracks')
+    search_fields = ['talk__title',
+                     'custom',
+                     ]
+    inlines = (EventTrackInlineAdmin,
+               )
+
+    def _tracks(self, obj):
+        return ", ".join([track.track
+                          for track in obj.tracks.all()])
+
+    def _title(self, obj):
+        if obj.custom:
+            return obj.custom
+        else:
+            return obj.talk
+
+admin.site.register(cmodels.Event, EventAdmin)
+
+class TrackAdmin(admin.ModelAdmin):
+    list_display = ('schedule',
+                    '_slug',
+                    '_date',
+                    'track',
+                    'title',
+                    )
+    ordering = ('schedule',
+                'track',
+                )
+    list_filter = ('schedule',
+                   'schedule__slug',
+                   'track',
+                   'title')
+    search_fields = ['schedule__conference',
+                     'schedule__slug',
+                     'track',
+                     'title',
+                     ]
+    inlines = (EventTrackInlineAdmin,
+               )
+    list_select_related = True
+
+    def _slug(self, obj):
+        return obj.schedule.slug
+
+    def _date(self, obj):
+        return obj.schedule.date
+
+admin.site.register(cmodels.Track, TrackAdmin)
+
+class ScheduleAdmin(cadmin.ScheduleAdmin):
+    pass
+
+admin.site.unregister(cmodels.Schedule)
+admin.site.register(cmodels.Schedule, ScheduleAdmin)
 
