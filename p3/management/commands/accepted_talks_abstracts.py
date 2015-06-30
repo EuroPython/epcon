@@ -124,28 +124,35 @@ def talk_title(talk):
     return title
 
 
-def talk_track_title(talk):
-    event = talk.get_event()
+def get_talk_events(talk):
+    return [event for event in talk.event_set.all() if event.tracks.all()]
 
-    if not event:
+
+def talk_track_title(talk):
+    events = get_talk_events(talk)
+    if not events:
         return ''
 
-    return ', '.join([tr.title for tr in event.tracks.all()])
+    tracks = [track for event in events for track in event.tracks.all() if event.tracks.all()]
+    return ', '.join([tr.title for tr in tracks])
 
 
 def talk_schedule(talk):
-    event = talk.get_event()
+    events = get_talk_events(talk)
 
-    if not event:
+    if not events:
         if VERBOSE:
             print('ERROR: Talk {} is not scheduled.'.format(talk))
         return ''
 
-    timerange = event.get_time_range()
-    return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
+    timeranges = []
+    for event in events:
+        timerange = event.get_time_range()
+        timeranges.append('{}, {}'.format(str(timerange[0]), str(timerange[1])))
+
+    return '; '.join(timeranges)
 
 ###
-
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--verbose',
@@ -174,6 +181,9 @@ class Command(BaseCommand):
         talks = (models.Talk.objects
                  .filter(conference=conference,
                          status='accepted'))
+
+        #from IPython.core.debugger import Tracer
+        #Tracer()()
 
         # Group by types
         talk_types = {}
@@ -205,7 +215,7 @@ class Command(BaseCommand):
                 sessions[type_name][talk.id] = {
                 'id':           talk.id,
                 'duration':     talk.duration,
-                'track_title':  talk_track_title(talk).encode('utf-8'),
+                'track_title':  talk_track_title(talk),
                 'timerange':    talk_schedule(talk).encode('utf-8'),
                 'tags':         [str(t) for t in talk.tags.all()],
                 'title':        talk_title(talk).encode('utf-8'),

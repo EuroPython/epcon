@@ -30,31 +30,6 @@ def get_assigned_ticket(ticket_id):
 
 def has_assigned_ticket(ticket_id):
     return bool(get_assigned_ticket(ticket_id))
-#
-# def is_ticket_assigned_to_someone_else(ticket, user):
-#     tickets = p3_models.TicketConference.objects.filter(ticket_id=ticket.id)
-#
-#     if not tickets:
-#         return False
-#         #from IPython.core.debugger import Tracer
-#         #Tracer()()
-#         #raise RuntimeError('Could not find any ticket with ticket_id {}.'.format(ticket))
-#
-#     if len(tickets) > 1:
-#         raise RuntimeError('You got more than one ticket from a ticket_id.'
-#                            'Tickets obtained: {}.'.format(tickets))
-#
-#     tkt = tickets[0]
-#     if tkt.ticket.user_id != user.id:
-#         return True
-#
-#     if not tkt.assigned_to:
-#         return False
-#
-#     if tkt.assigned_to == user.email:
-#         return False
-#     else:
-#         return True
 
 
 ###
