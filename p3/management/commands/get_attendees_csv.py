@@ -25,16 +25,16 @@ class Command(BaseCommand):
         #for t in talks:
         #     |= set(t.get_all_speakers())
 
-        COL_NAME = "Name"
-        COL_SURNAME = "Surname"
-        COL_TAG = "Tagline"
-        COL_AFILIATION = "Affiliation"
-        COL_EXP = "Python experience"
-        COL_SHIRT = "T-shirt"
-        COL_EMAIL = "Email"
-        COL_PHONE = "Phone"
-        COL_COMWEB = "Company homepage"
-        COL_PERWEB = "Personal homepage"
+        COL_NAME        = "Name"
+        COL_SURNAME     = "Surname"
+        COL_TAG         = "Tagline"
+        COL_AFILIATION  = "Affiliation"
+        COL_EXP         = "Python experience"
+        COL_SHIRT       = "T-shirt"
+        COL_EMAIL       = "Email"
+        COL_PHONE       = "Phone"
+        COL_COMWEB      = "Company homepage"
+        COL_PERWEB      = "Personal homepage"
 
         columns = (
             COL_NAME, COL_SURNAME, COL_TAG, COL_AFILIATION, COL_EXP, COL_SHIRT, COL_EMAIL, COL_PHONE,  COL_COMWEB, COL_PERWEB
@@ -56,7 +56,21 @@ class Command(BaseCommand):
 
         for t in attendees:
             #profile = models.AttendeeProfile.objects.get(user=s.user)
-            profile = t.profile()
+            try:
+                profile = t.profile()
+            except models.AttendeeProfile.DoesNotExist:
+                pass
+            except Exception as ex:
+                print(type(ex))
+                from IPython.core.debugger import Tracer
+                Tracer()()
+
+#                raise
+#                pass
+            except:
+                from IPython.core.debugger import Tracer
+                Tracer()()
+
             if profile.job_title and profile.company:
                 affiliation = profile.job_title + " @ " + profile.company
             elif profile.job_title:
