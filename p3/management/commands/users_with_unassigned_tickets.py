@@ -31,7 +31,6 @@ def get_assigned_ticket(ticket_id):
 def has_assigned_ticket(ticket_id):
     return bool(get_assigned_ticket(ticket_id))
 
-
 ###
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (

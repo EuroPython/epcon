@@ -1,5 +1,5 @@
 {% extends "assopy/base.html" %}
-{% load i18n p3 assopy_tags %}
+{% load assopy_tags conference i18n p3 formstyle %}
 
 {% block PAGE_TITLE %}{% trans "Your tickets" %}{% endblock %}
 
@@ -53,6 +53,7 @@
         </div><!-- /overlay -->
 </div><!-- /grid-container -->
 </section>
+
 
 <script type="text/javascript">//<![CDATA[
 (function() {
@@ -142,40 +143,67 @@
             error: _error
         });
     });
+
     function ticket_field(form, field_name) {
         var tid = $(form).parents('div.ticket').attr('data-ticket');
-        return $('input[name=t' + tid + '-' + field_name + ']', form);
+        return $("input[name=t" + tid + "-" + field_name + "]", form);
     }
+
+
     $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
+
         {% trans "Enter the email of the person you want to assign the ticket" as t_enter_email %}
         var email = $.trim(prompt("{{ t_enter_email|escapejs }}"));
-        if(!email)
+
+        if(!email){
+            alert("no email");
             return;
+        }
+
         if(email == "{{ request.user.email }}") {
             {% trans "Please don't use your email address." as t_not_email %}
             alert("{{ t_not_email|escapejs }}");
             return;
         }
+
         var ticket = $(e.target).parents('.ticket');
         var form = $('form', ticket);
+
         ticket_field(form, 'assigned_to').val(email);
+        alert(ticket_field(form, 'assigned_to').val());
+        //var tid = $(form).parents('div.ticket').attr('data-ticket');
+        //$("input[name=t" + tid + "-assigned_to]", form).value = email;
+
+
         form.ajaxSubmit({
             target: form.parents('div.ticket'),
             replaceTarget: true,
             success: function() {
+                alert("bien");
+
                 {% trans "ticket assigned to" as t_assigned %}
                 feedback("{{ t_assigned|escapejs }}" + " " + email);
-            }
+
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Status:="+textStatus + " Error:="+errorThrown);
+                }
         });
     });
+
+
     $('div.ticket .reclaim-button').live('click', function(e) {
         e.preventDefault();
         {% trans "Are you sure to reclaim this ticket" as t_reclaim %}
         if(window.confirm("{{ t_reclaim|escapejs }}")) {
             var ticket = $(e.target).parents('.ticket');
             var form = $('form', ticket);
-            ticket_field(form, 'assigned_to').val('');
+
+            ticket_field(form, 'assigned_to').val('')
+            //alert(ticket_field(form, 'assigned_to').val());
+
+
             form.ajaxSubmit({
                 target: form.parents('div.ticket'),
                 replaceTarget: true,

@@ -11,7 +11,12 @@ if os.environ.get('DEBUG') == 'False':
     DEBUG = False
 else:
     DEBUG = True
+
+
 TEMPLATE_DEBUG = DEBUG
+DEBUG=True
+APPEND_SLASH=False
+ALLOWED_HOSTS = ['*']
 
 ADMINS = (
     ('alexsavio', 'alexsavio@gmail.com'),
@@ -22,6 +27,7 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '').split(',')
 #APPEND_SLASH = False
@@ -874,6 +880,7 @@ def HCOMMENTS_THREAD_OWNERS(o):
     if isinstance(o, P3Talk):
         return [s.user for s in o.get_all_speakers()]
     elif isinstance(o, Post):
+        return [o.author, ]
         return [o.author, ]
     return None
 

@@ -1,5 +1,5 @@
 {% load assopy_tags conference i18n p3 formstyle %}
-<div data-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}" data-order="{{ ticket.orderitem.order.id }}" data-orderitem="{{ ticket.orderitem.id }}">
+<div data-ticket="{{ ticket.id }}" assign-ticket="{{ ticket.id }}" class="ticket {{ ticket.fare.ticket_type }}" data-fare="{{ ticket.fare.code }}" data-order="{{ ticket.orderitem.order.id }}" data-orderitem="{{ ticket.orderitem.id }}">
     {% order_complete ticket.orderitem.order_id as ocomplete %}
     {% if ticket.frozen %}
         <div class="alert alert--info">
@@ -155,6 +155,7 @@
     {% endif %}
     </div>
 
+
     <div class="overlay">
         {% if not ticket.frozen %}
         <form id="form-ticket-edit" action="{% url "p3-ticket" tid=ticket.id %}" class="form-horizontal" method="post"{% if ticket.fare.code == 'SIM01' %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
@@ -225,6 +226,7 @@
         </form>
         {% endif %}
     </div>
+
     <script type='text/javascript'>
         try {
             $('div[data-ticket={{ ticket.id }}] .edit-button').overlay();
@@ -232,6 +234,9 @@
         catch(e) {
         }
     </script>
+
+
+
 </div>
 
 
