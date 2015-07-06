@@ -30,7 +30,7 @@ def get_assigned_ticket(ticket_id):
 
 def has_assigned_ticket(ticket_id):
     return bool(get_assigned_ticket(ticket_id))
-#
+
 # def is_ticket_assigned_to_someone_else(ticket, user):
 #     tickets = p3_models.TicketConference.objects.filter(ticket_id=ticket.id)
 #
