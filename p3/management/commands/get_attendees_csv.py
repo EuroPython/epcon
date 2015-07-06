@@ -56,7 +56,20 @@ class Command(BaseCommand):
 
         for t in attendees:
             #profile = models.AttendeeProfile.objects.get(user=s.user)
-            profile = t.profile()
+            try:
+                profile = t.profile()
+            except models.AttendeeProfile.DoesNotExist:
+                pass
+            except Exception as ex:
+                print(type(ex))
+                from IPython.core.debugger import Tracer
+                Tracer()()
+            except:
+                from IPython.core.debugger import Tracer
+                Tracer()()
+
+
+
             if profile.job_title and profile.company:
                 affiliation = profile.job_title + " @ " + profile.company
             elif profile.job_title:
@@ -65,6 +78,7 @@ class Command(BaseCommand):
                 affiliation = profile.company
             else:
                 affiliation = ""
+
             #tickets = TicketConference.objects.available(s.user, conference).filter(fare__ticket_type='conference')
             row = {
                 COL_NAME: profile.user.first_name,
