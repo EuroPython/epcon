@@ -2,12 +2,14 @@
 """ Export a Guidebook schedule CSV file with the currently accepted
     talks.
 
-Guidebook CSV format (UTF-8 encoded):
+    Usage: manage.py guidebook_csv ep2015 gb.csv
 
-Don't change any of these headers! ,Session Title,Date,Time Start,Time End,Room/Location,Schedule Track (Optional),Description (Optional)
-Don't forget to delete these rows!,Sample Session:  Opening Remarks,4/21/11,10:00 AM,11:00 AM,Main Events,Key Event,The conference chairman will be kicking off the event with opening remarks.
-Don't forget to delete these rows!,Sample Session:  Presentation XYZ,4/21/11,4:00 PM,6:00 PM,Room 101,Key Event; Track 1,John Doe will be presenting on XYZ.
+    Guidebook CSV format (UTF-8 encoded):
+    -------------------------------------
 
+    Session Title,Date,Time Start,Time End,Room/Location,Schedule Track (Optional),Description (Optional)
+    Sample Session:  Opening Remarks,4/21/11,10:00 AM,11:00 AM,Main Events,Key Event,The conference chairman will be kicking off the event with opening remarks.
+    Sample Session:  Presentation XYZ,4/21/11,4:00 PM,6:00 PM,Room 101,Key Event; Track 1,John Doe will be presenting on XYZ.
 
 """
 from django.core.management.base import BaseCommand, CommandError
@@ -63,36 +65,92 @@ def profile_url(user):
     return urlresolvers.reverse('conference-profile',
                                 args=[user.attendeeprofile.slug])
 
-def speaker_listing(talk):
+def format_text(text):
 
-    return u', '.join(
-        u'<a href="%s"><i>%s %s</i></a>' % (
-            profile_url(speaker.user),
-            speaker.user.first_name,
-            speaker.user.last_name)
-        for speaker in talk.get_all_speakers())
+    # Remove whitespace
+    text = text.strip()
+    if not text:
+        return text
+
+    # Remove quotes
+    if text[0] == '"' and text[-1] == '"':
+        text = text[1:-1]
+
+    return text    
 
 def talk_title(talk):
 
-    # Remove whitespace
-    title = talk.title.strip()
-
-    # Remove quotes
-    if title[0] == '"' and title[-1] == '"':
-        title = title[1:-1]
-
-    return title
+    return format_text(talk.title)
 
 def talk_abstract(talk):
 
-    # Remove whitespace
-    abstract = talk.getAbstract().body.strip()
+    return format_text(talk.getAbstract().body)
 
-    # Remove quotes
-    if abstract[0] == '"' and abstract[-1] == '"':
-        abstract = abstract[1:-1]
+def event_title(event):
 
-    return abstract
+    return format_text(event.custom)
+
+def event_abstract(event):
+
+    return format_text(event.abstract)
+
+def add_event(data, talk=None, event=None, session_type='', talk_events=None):
+
+    # Determine title and abstract
+    title = ''
+    abstract = ''
+    if talk is None:
+        if event is None:
+            raise TypeError('need either talk or event given')
+        title = event_title(event)
+        abstract = event_abstract(event)
+    else:
+        title = talk_title(talk)
+        abstract = talk_abstract(talk)
+        if event is None:
+            event = talk.get_event()
+
+    # Determine time_range and room
+    if event is None:
+        if type == 'p':
+            # Poster session
+            time_range = (POSTER_START,
+                          POSTER_START + POSTER_DURATION)
+            room = POSTER_ROOM
+        else:
+            print ('Talk %r does not have an event '
+                   'associated with it; skipping' %
+                   title)
+            return
+    else:
+        time_range = event.get_time_range()
+        tracks = event.tracks.all()
+        if tracks:
+            room = tracks[0].title
+        else:
+            room = u''
+        if talk_events is not None:
+            talk_events[event.pk] = event
+        
+    # Don't add entries for events without title
+    if not title:
+        return
+
+    # Format time entries
+    date = time_range[0].strftime('%m/%d/%Y')
+    start_time = time_range[0].strftime('%I:%M %p')
+    stop_time = time_range[1].strftime('%I:%M %p')
+    
+    data.append((
+        title,
+        date,
+        start_time,
+        stop_time,
+        room,
+        session_type,
+        abstract,
+        ))
+    
 
 ###
 
@@ -136,6 +194,7 @@ class Command(BaseCommand):
 
         # Create CSV
         data = []
+        talk_events = {}
         for type, type_name, description in TYPE_NAMES:
 
             # Get bag with talks
@@ -148,39 +207,14 @@ class Command(BaseCommand):
 
             # Add talks from bag to csv
             for talk in bag:
-                title = talk_title(talk)
-                abstract = talk_abstract(talk)
-                event = talk.get_event()
-                if event is None:
-                    if type == 'p':
-                        # Poster session
-                        time_range = (POSTER_START,
-                                      POSTER_START + POSTER_DURATION)
-                        room = POSTER_ROOM
-                    else:
-                        print ('Talk %r does not have an event '
-                               'associated with it; skipping' %
-                               title)
-                        continue
-                else:
-                    time_range = event.get_time_range()
-                    tracks = event.tracks.all()
-                    if tracks:
-                        room = tracks[0].title
-                    else:
-                        room = u''
-                date = time_range[0].strftime('%m/%d/%Y')
-                start_time = time_range[0].strftime('%I:%M %p')
-                stop_time = time_range[1].strftime('%I:%M %p')
-                data.append((
-                    title,
-                    date,
-                    start_time,
-                    stop_time,
-                    room,
-                    type_name,
-                    abstract,
-                    ))
+                add_event(data, talk=talk, talk_events=talk_events, session_type=type_name)
+
+        # Add events which are not talks
+        for schedule in models.Schedule.objects.filter(conference=conference):
+            for event in models.Event.objects.filter(schedule=schedule):
+                if event.pk in talk_events:
+                    continue
+                add_event(data, event=event)
                 
         # Output CSV data, UTF-8 encoded
         data.insert(0, GB_HEADERS)
