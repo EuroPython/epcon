@@ -1,12 +1,16 @@
 # -*- coding: UTF-8 -*-
+from collections import defaultdict
+from decimal import Decimal
 from django import forms
 from django import http
 from django.conf import settings
 from django.conf.urls import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
+from django.db.models import Q
 from assopy import admin as aadmin
 from assopy import models as amodels
+from assopy import stats as astats
 from conference import admin as cadmin
 from conference import models as cmodels
 from p3 import models
@@ -495,4 +499,110 @@ class ScheduleAdmin(cadmin.ScheduleAdmin):
 
 admin.site.unregister(cmodels.Schedule)
 admin.site.register(cmodels.Schedule, ScheduleAdmin)
+
+### Orders Stats
+
+# For simplicity, we monkey patch the
+# assopy.stats.prezzo_biglietti_ricalcolato() function here.
+#
+# This is poor style, but until we have merged the packages into the
+# epcon package, this is the easiest way forward.
+
+def prezzo_biglietti_ricalcolato(**kw):
+    """
+    Ricalcola il ricavo dei biglietti eliminando quelli gratuiti e
+    ridistribuendo il prezzo sui rimanenti.
+    """
+    # mi interessano solo gli ordini che riguardano acquisti di biglietti
+    # "conferenza"
+    orders = amodels.Order.objects\
+        .filter(id__in=astats._orders(**kw))\
+        .values('id')\
+        .distinct()
+    fares = set(cmodels.Fare.objects\
+        .values_list('code', flat=True))
+
+    def _calc_prices(order_id, items):
+        """
+        Elimina gli item degli sconti e riduce in maniera proporzionale
+        il valore dei restanti.
+        """
+        prices = set()
+        discount = Decimal('0')
+        total = Decimal('0')
+        for item in items:
+            if item['price'] > 0:
+                prices.add(item['price'])
+                total += item['price']
+            else:
+                discount += item['price'] * -1
+
+        for ix, item in reversed(list(enumerate(items))):
+            if item['price'] > 0:
+                item['price'] = item['price'] * (total - discount) / total
+            else:
+                del items[ix]
+
+    grouped = defaultdict(list)
+    for ticket_type, ticket_type_description in cmodels.FARE_TICKET_TYPES:
+        qs = amodels.OrderItem.objects\
+            .filter(Q(ticket__isnull=True) |
+                    Q(ticket__fare__ticket_type=ticket_type),
+                    order__in=orders)\
+            .values_list('ticket__fare__code',
+                         'ticket__fare__name',
+                         'price',
+                         'order')
+        for fcode, fname, price, oid in qs:
+            if fcode in fares or price < 0:
+                grouped[oid].append({
+                    'code': fcode,
+                    'name': fname,
+                    'price': price,
+                })
+    for oid, items in grouped.items():
+        _calc_prices(oid, items)
+
+    # dopo l'utilizzo di _calc_prices ottengo dei prezzi che non trovo
+    # più tra le tariffe ordinarie, raggruppo gli OrderItem risultanti
+    # per codice tariffa e nuovo prezzo
+    tcp = {}
+    for rows in grouped.values():
+        for item in rows:
+            code = item['code']
+            if code not in tcp:
+                tcp[code] = {
+                    'code': code,
+                    'name': item['name'],
+                    'prices': {}
+                }
+            price = item['price']
+            if price not in tcp[code]['prices']:
+                tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
+            tcp[code]['prices'][price]['count'] += 1
+    return tcp.values()
+prezzo_biglietti_ricalcolato.template = '''
+<table>
+    <tr>
+        <th>Code</th>
+        <th>Qty</th>
+        <th style="width: 70px;">Price</th>
+    </tr>
+    {% for ticket in data %}
+        {% for p in ticket.prices.values %}
+        <tr>
+            {% if forloop.counter == 1 %}
+            <td title="{{ ticket.name }}" rowspan="{{ ticket.prices|length }}">{{ ticket.code }}</td>
+            {% endif %}
+            <td>{{ p.count }}</td>
+            <td>€ {{ p.price|floatformat:"2" }}</td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+'''
+
+# Monkey patch our version into assopy package:
+if 0:
+    astats.prezzo_biglietti_ricalcolato = prezzo_biglietti_ricalcolato
 
