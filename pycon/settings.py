@@ -7,10 +7,10 @@ import sys
 #from django.utils.translation import ugettext as _
 _ = lambda x:x
 
-if os.environ.get('DEBUG') == 'False':
-    DEBUG = False
-else:
+if os.environ.get('DEBUG') == 'True':
     DEBUG = True
+else:
+    DEBUG = False
 
 
 TEMPLATE_DEBUG = DEBUG

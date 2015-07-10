@@ -14,6 +14,7 @@
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
+from django.utils.html import strip_tags
 from conference import models
 from conference import utils
 
@@ -65,12 +66,16 @@ def profile_url(user):
     return urlresolvers.reverse('conference-profile',
                                 args=[user.attendeeprofile.slug])
 
-def format_text(text):
+def format_text(text, remove_tags=False):
 
     # Remove whitespace
     text = text.strip()
     if not text:
         return text
+
+    # Remove links, tags, etc.
+    if remove_tags:
+        text = strip_tags(text)
 
     # Remove quotes
     if text[0] == '"' and text[-1] == '"':
@@ -80,7 +85,7 @@ def format_text(text):
 
 def talk_title(talk):
 
-    return format_text(talk.title)
+    return format_text(talk.title + ' [%s]' % talk.pk, remove_tags=True)
 
 def talk_abstract(talk):
 
@@ -88,7 +93,7 @@ def talk_abstract(talk):
 
 def event_title(event):
 
-    return format_text(event.custom)
+    return format_text(event.custom + ' [%s]' % event.pk, remove_tags=True)
 
 def event_abstract(event):
 
@@ -112,15 +117,15 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 
     # Determine time_range and room
     if event is None:
-        if type == 'p':
+        if talk.type and talk.type == 'p':
             # Poster session
             time_range = (POSTER_START,
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r does not have an event '
+            print ('Talk %r (type %r) does not have an event '
                    'associated with it; skipping' %
-                   title)
+                   (title, type))
             return
     else:
         time_range = event.get_time_range()
