@@ -14,7 +14,7 @@ else:
 
 
 TEMPLATE_DEBUG = DEBUG
-DEBUG=True
+#DEBUG=True
 APPEND_SLASH=False
 ALLOWED_HOSTS = ['*']
 
