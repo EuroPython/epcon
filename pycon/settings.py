@@ -495,9 +495,9 @@ SESSION_COOKIE_NAME = 'p5_sessionid'
 #
 CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
 CONFERENCE_GOOGLE_MAPS = {
-    # chiave info@euroython.eu per http://localhost
+    # chiave info@europython.eu per http://localhost
     # 'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSCRpOQNQwH5i15toJmp6eLWzSKPg',
-    # chiave info@euroython.eu per http://euroython.eu
+    # chiave info@europython.eu per http://europython.eu
     'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
     'country': 'es',
 }
@@ -818,15 +818,15 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
 #
 GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
-ASSOPY_BACKEND = 'https://assopy.euroython.eu/conference/externalcall'
+ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 ASSOPY_REFUND_EMAIL_ADDRESS = {
-    'approve': ['info@euroython.eu'],
+    'approve': ['info@europython.eu'],
     'execute': {
         None: ['dvd@gnx.it'],
-        'bank': ['matteo@euroython.eu'],
+        'bank': ['matteo@europython.eu'],
     },
     'credit-note': ['michele.bertoldi@gmail.com'],
 }
@@ -843,7 +843,7 @@ ASSOPY_OTC_CODE_HANDLERS = {
 #
 DEFAULT_URL_PREFIX = 'https://ep2015.europython.eu'
 
-PINGBACK_TARGET_DOMAIN = 'www.euroython.eu'
+PINGBACK_TARGET_DOMAIN = 'ep2015.europython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
@@ -858,7 +858,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://www.euroython.eu/accounts/profile/
+https://ep2015.europython.eu/accounts/profile/
 '''
 
 TEMPLATESADMIN_EDITHOOKS = (
