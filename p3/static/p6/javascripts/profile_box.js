@@ -48,7 +48,7 @@ $('.person-card-bio a.see-more')
         });
         return false;
     });
-$('.user-message img')
+$('.user-message i')
     .live('click', function(ev) {
         var p = $(this).next();
         p.toggle();
