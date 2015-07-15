@@ -69,8 +69,7 @@ def profile_url(user):
 def speaker_listing(talk):
 
     return u', '.join(
-        u'<a href="%s"><i>%s %s</i></a>' % (
-            profile_url(speaker.user),
+        u'<i>%s %s</i>' % (
             speaker.user.first_name,
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
