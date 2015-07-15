@@ -66,6 +66,15 @@ def profile_url(user):
     return urlresolvers.reverse('conference-profile',
                                 args=[user.attendeeprofile.slug])
 
+def speaker_listing(talk):
+
+    return u', '.join(
+        u'<a href="%s"><i>%s %s</i></a>' % (
+            profile_url(speaker.user),
+            speaker.user.first_name,
+            speaker.user.last_name)
+        for speaker in talk.get_all_speakers())
+
 def format_text(text, remove_tags=False):
 
     # Remove whitespace
@@ -89,7 +98,9 @@ def talk_title(talk):
 
 def talk_abstract(talk):
 
-    return format_text(talk.getAbstract().body)
+    return 'By %s\n\n%s' % (
+        speaker_listing(talk),
+        format_text(talk.getAbstract().body))
 
 def event_title(event):
 
