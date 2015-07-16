@@ -93,7 +93,10 @@ def format_text(text, remove_tags=False):
 
 def talk_title(talk):
 
-    return format_text(talk.title + ' [%s]' % talk.pk, remove_tags=True)
+    title = format_text(talk.title, remove_tags=True)
+    if not title:
+        return title
+    return title + ' [%s]' % talk.pk
 
 def talk_abstract(talk):
 
@@ -103,7 +106,10 @@ def talk_abstract(talk):
 
 def event_title(event):
 
-    return format_text(event.custom + ' [%s]' % event.pk, remove_tags=True)
+    title = format_text(event.custom, remove_tags=True)
+    if not title:
+        return title
+    return title + ' [%s]' % event.pk
 
 def event_abstract(event):
 
