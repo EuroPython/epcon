@@ -264,13 +264,29 @@ def render_cart_rows(context, fare_type, form):
         # The correct time ordering is guaranteed implicitly by
         # excluding expired fares (it's not permitted to have overlaps
         # of validity periods).
+        #
+        # Ticket code conventions:
+        # - all ticket codes must start with 'T'
+        # - second letter stands for ticket type:
+        #   'E' - early bird
+        #   'R' - normal
+        #   'D' - on-desk
+        # - third letter: ticket variant
+        #   'S' - standard
+        #   'L' - standard light (without trainings)
+        #   'D' - day pass
+        # - fourth letter: group type
+        #   'S' - student
+        #   'P' - personal
+        #   'C' - company
+        #
         fares = dict((f['code'][2:], f) for f in fares_list if f['code'][0] == 'T')
         rows = []
         for t in ('S', 'L', 'D'):
             # To simplify the template fares are packed in triplets:
             # student, private, company.
             #
-            # Each raw is a tuple with three elements:
+            # Each row is a tuple with three elements:
             #    1. Fare
             #    2. FormField
             #    3. Boolean flag telling if the price can be applied to the user
