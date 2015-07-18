@@ -61,12 +61,16 @@ def ticketConferenceForm():
         def __init__(self, *args, **kw):
             if 'instance' in kw:
                 o = kw['instance']
-                p3c = o.p3_conference
-                if p3c:
-                    initial = kw.pop('initial', {})
-                    for k in _TICKET_CONFERENCE_COPY_FIELDS:
-                        initial[k] = getattr(p3c, k)
-                    kw['initial'] = initial
+                try:
+                    p3c = o.p3_conference
+                except models.TicketConference.DoesNotExist:
+                    pass
+                else:
+                    if p3c:
+                        initial = kw.pop('initial', {})
+                        for k in _TICKET_CONFERENCE_COPY_FIELDS:
+                            initial[k] = getattr(p3c, k)
+                        kw['initial'] = initial
             return super(TicketConferenceForm, self).__init__(*args, **kw)
 
     return TicketConferenceForm
