@@ -13,3 +13,4 @@ p3/static/p6/.sass-cache/*
 .idea/*
 vendor/
 .DS_Store
+*.db
