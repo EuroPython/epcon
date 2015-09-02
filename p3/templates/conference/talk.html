@@ -63,7 +63,7 @@
         {% with talk.event_set.all as events %}
         <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
             <div class="cms">
-                {% if talk_data.sub_community.0 %}Sub Community: {{ talk_data.sub_community.1 }}{% endif %}
+                {% if talk_data.sub_community.0 %}{% trans "Sub Community:" %} {{ talk_data.sub_community.1 }}{% endif %}
                 <p>{{ talk_data.abstract|markdown2:"smarty-pants,code-color" }}</p>
             </div>
             {% if talk_data.teaser_video %}
@@ -146,7 +146,7 @@
             <h3>Comments</h3>
             {% show_comment_list talk %}
         {% else %}
-            <h3>Do you have some questions on this talk?</h3>
+            <h3>{% trans "Do you have some questions on this talk?" %}</h3>
         {% endif %}
         {% show_comment_form talk %}
     </div><!-- /grid -->
@@ -156,28 +156,28 @@
             <div class="talk details">
                 {% if talk.slides %}
                     {% stuff_info talk.slides as info %}
-                    <a class="btn btn-small" href="{{ talk.slides.url }}">Download slide ({{ info.0 }})</a>
-                    (Size: {{ info.1|filesizeformat }})
+                    <a class="btn btn-small" href="{{ talk.slides.url }}">{% trans "Download slide" %} ({{ info.0 }})</a>
+                    ({% trans "Size:" %} {{ info.1|filesizeformat }})
                     <hr />
                 {% endif %}
                 <dl>
-                    <dt>{% trans "Lingua" %}</dt>
+                    <dt>{% trans "Languages" %}</dt>
                     <dd>{{ talk.language|upper }}</dd>
 
                     {% if talk.type != "p" %}
-                    <dt>{% trans "Durata" %}</dt>
+                    <dt>{% trans "Duration" %}</dt>
                     <dd>
                         {% if talk.duration == 480 %}
-                            Full day (8h)
+                            {%  trans "Full day (8h)" %}
                         {% else %}
-                            {{ talk.duration }} {% trans "minuti" %} (inc. Q&amp;A)
+                            {{ talk.duration }} {% trans "minutes" %} (inc. Q&amp;A)
                         {% endif %}
                     </dd>
                     {% endif %}
 
                     {% if track.translate %}
-                        <dt>{% trans "Traduzione simultanea" %}</dt>
-                        <dd>{% trans "Disponibile" %}</dd>
+                        <dt>{% trans "Simultaneous Translation" %}</dt>
+                        <dd>{% trans "Available" %}</dd>
                     {% endif %}
                 </dl>
                 {% if talk_data.tags %}
@@ -190,18 +190,18 @@
                 {% if voting and user.is_authenticated and talk.conference == CONFERENCE %}
                 <hr />
                 <div id="talk-voting">
-                    <h4>Community voting is open</h4>
+                    <h4>{% trans "Community voting is open" %}</h4>
                     {% user_votes talk_id=talk.id as vote %}
                     <form action="{% url "conference-voting" %}" method="post">{% csrf_token %}
-                        Vote this talk:
+                        {% trans "Vote this talk" %}:
                         <input name="vote-{{ talk.id }}" id="id_vote-{{ talk.id }}" type="range" min="0" max="10" value="{% firstof vote "0" %}" step="0.5" style="width: 0"/>
                         <div class="rateit" data-rateit-backingfld="#id_vote-{{ talk.id }}"></div>
                         <div>
                             {% url "conference-voting" as u %}
                             {% if u|full_url in request.META.HTTP_REFERER %}
-                                <a href="{{ request.META.HTTP_REFERER }}">Back to the voting list</a>
+                                <a href="{{ request.META.HTTP_REFERER }}">{% trans "Back to the voting list" %}</a>
                             {% else %}
-                                <a href="{{ u }}">Back to the voting list</a>
+                                <a href="{{ u }}">{% trans "Back to the voting list" %}</a>
                             {% endif %}
                         </div>
                     </form>
