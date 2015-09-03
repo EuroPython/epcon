@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-12 22:36+0100\n"
+"POT-Creation-Date: 2015-09-03 21:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgstr ""
 msgid "P3"
 msgstr ""
 
-#: cms_utils/cms_app.py:22
+#: cms_utils/cms_app.py:22 p3/templates/404.html:19
 msgid "Blog"
 msgstr ""
 
@@ -54,178 +54,178 @@ msgstr ""
 msgid "90 minutes inc Q&A"
 msgstr ""
 
-#: p3/forms.py:48
+#: p3/forms.py:50 p3/templates/conference/talk.html:169
 msgid "Duration"
 msgstr ""
 
-#: p3/forms.py:49
+#: p3/forms.py:51
 msgid "This is the <i>desired duration</i> of the talk"
 msgstr ""
 
-#: p3/forms.py:56
+#: p3/forms.py:58
 msgid "I'm a first-time speaker"
 msgstr ""
 
-#: p3/forms.py:57
+#: p3/forms.py:59
 msgid ""
 "We are planning a special program to help first time speaker, check this if "
 "you'd like to join"
 msgstr ""
 
-#: p3/forms.py:61
+#: p3/forms.py:63
 msgid "Talk Type"
 msgstr ""
 
-#: p3/forms.py:69
+#: p3/forms.py:71
 msgid ""
 "I agree to let you publish my data (excluding birth date and phone number)."
 msgstr ""
 
-#: p3/forms.py:70
+#: p3/forms.py:72
 msgid ""
 "This speaker profile will be publicly accesible if one of your talks is "
 "accepted. Your mobile phone and date of birth will <i>never</i> be published"
 msgstr ""
 
-#: p3/forms.py:73
+#: p3/forms.py:75
 msgid "I agree to release all the talk material after the event."
 msgstr ""
 
-#: p3/forms.py:74
+#: p3/forms.py:76
 msgid ""
 "If the talk is accepted, speakers a required to timely release all the talk "
 "material (including slides) for publishing on this web site."
 msgstr ""
 
-#: p3/forms.py:77
+#: p3/forms.py:79
 msgid "I agree to let the organization record my talk and publish the video."
 msgstr ""
 
-#: p3/forms.py:80 p3/forms.py:188 p3/forms.py:282 p3/forms.py:375
+#: p3/forms.py:82 p3/forms.py:190 p3/forms.py:289 p3/forms.py:383
 #: p3/templates/conference/profile_bio_form.html:8
 msgid "Compact biography"
 msgstr ""
 
-#: p3/forms.py:81 p3/forms.py:189 p3/forms.py:283 p3/forms.py:376
+#: p3/forms.py:83 p3/forms.py:191 p3/forms.py:290 p3/forms.py:384
 msgid "Short biography (one or two paragraphs). Do not paste your CV"
 msgstr ""
 
-#: p3/forms.py:85
+#: p3/forms.py:87
 msgid "Talk abstract"
 msgstr ""
 
-#: p3/forms.py:86
+#: p3/forms.py:88
 msgid ""
 "<p>Short description of the talk you are submitting. Be sure to includes the "
 "goals of your talk and any prerequisite required to fully understand it.</"
 "p><p>Suggested size: two or three paragraphs.</p>"
 msgstr ""
 
-#: p3/forms.py:90
+#: p3/forms.py:92
 msgid "Select Italian only if you are not comfortable in speaking English."
 msgstr ""
 
-#: p3/forms.py:95
+#: p3/forms.py:97
 msgid "Sub community"
 msgstr ""
 
-#: p3/forms.py:96
+#: p3/forms.py:98
 msgid "Select the sub community this talk is intended for."
 msgstr ""
 
-#: p3/forms.py:195
+#: p3/forms.py:197
 msgid "Probable days of attendance"
 msgstr ""
 
-#: p3/forms.py:195
+#: p3/forms.py:197
 msgid ""
 "This ticket grants you full access to the conference. The above selection is "
 "just for helping out the organizers"
 msgstr ""
 
-#: p3/forms.py:219
+#: p3/forms.py:221
 msgid "Days"
 msgstr ""
 
-#: p3/forms.py:287 p3/templates/conference/profile_publicdata_form.html:10
+#: p3/forms.py:294 p3/templates/conference/profile_publicdata_form.html:10
 msgid "Tagline"
 msgstr ""
 
-#: p3/forms.py:288
+#: p3/forms.py:295
 msgid "Describe yourself in one line"
 msgstr ""
 
-#: p3/forms.py:399
+#: p3/forms.py:409
 msgid "no picture"
 msgstr ""
 
-#: p3/forms.py:400
+#: p3/forms.py:410
 msgid "use gravatar"
 msgstr ""
 
-#: p3/forms.py:401
+#: p3/forms.py:411
 msgid "use url"
 msgstr ""
 
-#: p3/forms.py:402
+#: p3/forms.py:412
 msgid "upload file"
 msgstr ""
 
-#: p3/forms.py:447
+#: p3/forms.py:458
 msgid ""
 "If you opt-in the privacy settings, we can send you important communications "
 "via SMS.<br />Use the international format, eg: +39-055-123456.<br/>This "
 "number will <i>never</i> be published."
 msgstr ""
 
-#: p3/forms.py:452 p3/templates/assopy/profile_personal_data.html:29
+#: p3/forms.py:463 p3/templates/assopy/profile_personal_data.html:29
 msgid "Date of birth"
 msgstr ""
 
-#: p3/forms.py:453
+#: p3/forms.py:464
 msgid ""
 "We require date of birth for speakers to accomodate for Italian laws "
 "regarding minors.<br />Format: YYYY-MM-DD<br />This date will <i>never</i> "
 "be published."
 msgstr ""
 
-#: p3/forms.py:471 p3/forms.py:482
+#: p3/forms.py:482 p3/forms.py:493
 msgid "This field is required for a speaker"
 msgstr ""
 
-#: p3/forms.py:496
+#: p3/forms.py:508
 msgid "Email already registered"
 msgstr ""
 
-#: p3/forms.py:500
+#: p3/forms.py:513
 msgid "I want to receive a few selected job offers through EuroPython."
 msgstr ""
 
-#: p3/forms.py:501
+#: p3/forms.py:514
 msgid "I want to receive private messages from other participants."
 msgstr ""
 
-#: p3/forms.py:502
+#: p3/forms.py:515
 msgid "I want to receive SMS during the conference for main communications."
 msgstr ""
 
-#: p3/forms.py:599
+#: p3/forms.py:613
 msgid "Room sharing"
 msgstr ""
 
-#: p3/forms.py:603
+#: p3/forms.py:617
 msgid "Full room"
 msgstr ""
 
-#: p3/forms.py:663
+#: p3/forms.py:679
 msgid "Insert your discount code and save money!"
 msgstr ""
 
-#: p3/forms.py:694 p3/forms.py:698 p3/forms.py:700
+#: p3/forms.py:710 p3/forms.py:714 p3/forms.py:716
 msgid "invalid coupon"
 msgstr ""
 
-#: p3/forms.py:813
+#: p3/forms.py:830
 msgid "already booked"
 msgstr ""
 
@@ -404,6 +404,102 @@ msgstr ""
 msgid "Cannot find the requested page"
 msgstr ""
 
+#: p3/templates/404.html:14
+msgid "Oops! We are sorry, the page you requested does not exist."
+msgstr ""
+
+#: p3/templates/404.html:17
+msgid "Here are a few useful links:"
+msgstr ""
+
+#: p3/templates/404.html:19
+msgid "Our "
+msgstr ""
+
+#: p3/templates/404.html:20
+msgid "The "
+msgstr ""
+
+#: p3/templates/404.html:20
+msgid "conference schedule"
+msgstr ""
+
+#: p3/templates/404.html:21
+msgid "Our page about"
+msgstr ""
+
+#: p3/templates/404.html:21
+msgid "sponsorship opportunities"
+msgstr ""
+
+#: p3/templates/404.html:23
+msgid "Frequently asked questions"
+msgstr ""
+
+#: p3/templates/404.html:24
+msgid "... or get back to the"
+msgstr ""
+
+#: p3/templates/404.html:24
+msgid "EuroPython Home Page"
+msgstr ""
+
+#: p3/templates/500.html:5
+msgid "Blam! A 5xx error occured"
+msgstr ""
+
+#: p3/templates/500.html:30
+msgid ""
+"\n"
+"    <h1>Blam! A 5xx error occured</h1>\n"
+"    <hr />\n"
+"    <h2>Canto III: The Gate of Hell</h2>\n"
+"    <blockquote>\n"
+"    Through me you go to the grief wracked city;<br />\n"
+"    Through me you go to everlasting pain;<br />\n"
+"    Through me you go a pass among lost souls.<br />\n"
+"    Justice inspired my exalted Creator:<br />\n"
+"    I am a creature of the Holiest Power,<br />\n"
+"    of Wisdom in the Highest and of Primal Love.<br />\n"
+"    Nothing till I was made was made,<br />\n"
+"    only eternal beings. And I endure eternally.<br />\n"
+"    Abandon all hope - Ye Who Enter Here\n"
+"    "
+msgstr ""
+
+#: p3/templates/500.html:46
+msgid "from "
+msgstr ""
+
+#: p3/templates/500.html:46
+#: p3/templates/conference/render_schedule_timetable.html:80
+#: p3/templates/conference/talk_body.html:7
+#: p3/templates/p3/schedule_list.html:41
+msgid "by"
+msgstr ""
+
+#: p3/templates/500.html:48
+msgid ""
+"While you are enjoying a fine piece of Italian art, we are trying to find "
+"the bug that had caused the display of this page."
+msgstr ""
+
+#: p3/templates/post_detail.html:13 p3/templates/post_list.html:21
+msgid "blog feed"
+msgstr ""
+
+#: p3/templates/post_detail.html:14 p3/templates/post_list.html:22
+msgid "Blog feed"
+msgstr ""
+
+#: p3/templates/post_list.html:7
+msgid "EuroPython Blog"
+msgstr ""
+
+#: p3/templates/admin/p3/hotelroom/change_list.html:35
+msgid "Booking Status (Beds)"
+msgstr ""
+
 #: p3/templates/assopy/bank_feedback_ok.html:7
 msgid "Order completed"
 msgstr ""
@@ -441,6 +537,10 @@ msgstr ""
 msgid "Create a new account"
 msgstr ""
 
+#: p3/templates/assopy/new_account.html:20
+msgid "Create new account"
+msgstr ""
+
 #: p3/templates/assopy/new_account.html:27
 #: p3/templates/registration/login.html:12
 msgid "By using one of your existing web accounts"
@@ -452,6 +552,11 @@ msgid ""
 "You will be able to specify billing and personal info later; e.g.: you can "
 "use your personal Facebook account to buy tickets for your company and the "
 "Facebook name will not appear anywhere."
+msgstr ""
+
+#: p3/templates/assopy/new_account.html:29
+#: p3/templates/registration/login.html:14
+msgid "Login with Google"
 msgstr ""
 
 #: p3/templates/assopy/paypal_cancel.html:7
@@ -594,8 +699,8 @@ msgstr ""
 #: p3/templates/assopy/profile.html:167
 #, python-format
 msgid ""
-"Join and <a href=\"%(url)s\">find out who's coming</a>: let people "
-"know that you will be coming to this conference."
+"Join and <a href=\"%(url)s\">find out who's coming</a>: let people know that "
+"you will be coming to this conference."
 msgstr ""
 
 #: p3/templates/assopy/profile.html:168
@@ -629,7 +734,7 @@ msgstr ""
 #: p3/templates/assopy/profile_personal_data.html:44
 #: p3/templates/conference/profile_bio_form.html:24
 #: p3/templates/conference/profile_picture_form.html:12
-#: p3/templates/conference/profile_publicdata_form.html:105
+#: p3/templates/conference/profile_publicdata_form.html:106
 #: p3/templates/conference/profile_visibility_form.html:21
 #: p3/templates/conference/talk.html:131
 msgid "Edit"
@@ -638,8 +743,9 @@ msgstr ""
 #: p3/templates/assopy/profile_email_contact.html:31
 #: p3/templates/assopy/profile_personal_data.html:45
 #: p3/templates/conference/profile_bio_form.html:25
+#: p3/templates/conference/profile_link.html:50
 #: p3/templates/conference/profile_picture_form.html:30
-#: p3/templates/conference/profile_publicdata_form.html:106
+#: p3/templates/conference/profile_publicdata_form.html:107
 #: p3/templates/conference/talk.html:126
 #: p3/templates/p3/fragments/render_ticket.html:214
 #: p3/templates/p3/fragments/render_ticket.html:223
@@ -672,7 +778,7 @@ msgid ""
 msgstr ""
 
 #: p3/templates/assopy/profile_spam_control.html:14
-#: p3/templates/django_cms/p5_homepage.html:154
+#: p3/templates/django_cms/p5_homepage.html:163
 msgid "Recruiting"
 msgstr ""
 
@@ -756,6 +862,10 @@ msgid ""
 "that you don't care about it...)."
 msgstr ""
 
+#: p3/templates/assopy/render_profile_last_block.html:3
+msgid "Your schedule"
+msgstr ""
+
 #: p3/templates/conference/genro_wrapper.html:6
 msgid "genro-account"
 msgstr ""
@@ -777,6 +887,7 @@ msgid "Personal information"
 msgstr ""
 
 #: p3/templates/conference/paper_submission.html:26
+#: p3/templates/conference/profile_publicdata_company_form.html:4
 msgid "Company"
 msgstr ""
 
@@ -821,6 +932,33 @@ msgstr ""
 msgid "It’s you!"
 msgstr ""
 
+#: p3/templates/conference/profile.html:75
+#, python-format
+msgid "%(name)s’s Talks"
+msgstr ""
+
+#: p3/templates/conference/profile_bio_form.html:14
+msgid "Why don’t you write something about you?"
+msgstr ""
+
+#: p3/templates/conference/profile_link.html:32
+#: p3/templates/p3/ajax/whos_coming.html:29
+#: p3/templates/p3/fragments/render_profile_box.html:28
+msgid "and"
+msgstr ""
+
+#: p3/templates/conference/profile_link.html:32
+msgid "you are now connected"
+msgstr ""
+
+#: p3/templates/conference/profile_link.html:32
+msgid "you were already connected"
+msgstr ""
+
+#: p3/templates/conference/profile_link.html:70
+msgid "See who you have met!"
+msgstr ""
+
 #: p3/templates/conference/profile_picture_form.html:20
 msgid "Profile picture"
 msgstr ""
@@ -841,6 +979,11 @@ msgstr ""
 msgid "Use this picture"
 msgstr ""
 
+#: p3/templates/conference/profile_publicdata_company_form.html:12
+msgid "Job title"
+msgstr ""
+
+#: p3/templates/conference/profile_publicdata_company_form.html:20
 #: p3/templates/conference/profile_publicdata_form.html:20
 msgid "Website"
 msgstr ""
@@ -897,13 +1040,77 @@ msgstr ""
 msgid "Prezzo"
 msgstr ""
 
+#: p3/templates/conference/render_hotels.html:14
+msgid "Affiliated hotel, please specify EUROPYTHON concession"
+msgstr ""
+
 #: p3/templates/conference/render_hotels.html:29
 #, python-format
 msgid "Contattato il %(d)s"
 msgstr ""
 
+#: p3/templates/conference/render_schedule.html:24
+msgid "di"
+msgstr ""
+
+#: p3/templates/conference/render_schedule.html:26
+msgid "e"
+msgstr ""
+
 #: p3/templates/conference/render_schedule.html:33
 msgid "sponsorizzato da"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:5
+msgid "TimeTable errors"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:10
+msgid "Error at"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:10
+msgid "overwrite"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:13
+msgid "Warning at"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:13
+msgid "overlap"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:77
+msgid "Teaser Talk"
+msgstr ""
+
+#: p3/templates/conference/render_schedule_timetable.html:98
+msgid "our estimate of attendance exceeds the room size"
+msgstr ""
+
+#: p3/templates/conference/schedule_body.html:5
+#: p3/templates/conference/schedule_body.html:7
+msgid "Morning"
+msgstr ""
+
+#: p3/templates/conference/schedule_body.html:14
+#: p3/templates/conference/schedule_body.html:16
+msgid "Afternoon"
+msgstr ""
+
+#: p3/templates/conference/speaker.html:9
+msgid ""
+"This page is currently private. It will become public when at least one of "
+"the proposed talks will be accepted."
+msgstr ""
+
+#: p3/templates/conference/speaker.html:15
+msgid "Edit profile"
+msgstr ""
+
+#: p3/templates/conference/speaker.html:39
+msgid "Contacts"
 msgstr ""
 
 #: p3/templates/conference/speaker.html:46
@@ -912,6 +1119,10 @@ msgstr ""
 
 #: p3/templates/conference/speaker.html:50
 msgid "Company website"
+msgstr ""
+
+#: p3/templates/conference/speaker.html:68
+msgid "Save Changes"
 msgstr ""
 
 #: p3/templates/conference/talk.html:25
@@ -927,36 +1138,126 @@ msgstr ""
 msgid "By"
 msgstr ""
 
+#: p3/templates/conference/talk.html:66
+msgid "Sub Community:"
+msgstr ""
+
+#: p3/templates/conference/talk.html:72
+msgid "There is also a teaser video."
+msgstr ""
+
+#: p3/templates/conference/talk.html:81
+msgid "Teaser talk"
+msgstr ""
+
 #: p3/templates/conference/talk.html:84
 msgid "in"
 msgstr ""
 
+#: p3/templates/conference/talk.html:85
+msgid "on"
+msgstr ""
+
+#: p3/templates/conference/talk.html:86
+#: p3/templates/conference/user_conferences.html:43
+msgid "at"
+msgstr ""
+
+#: p3/templates/conference/talk.html:92
+msgid "See schedule"
+msgstr ""
+
 #: p3/templates/conference/talk.html:99
+#: p3/templates/conference/talk_preview.html:18
 msgid "Video"
 msgstr ""
 
-#: p3/templates/conference/talk.html:165
-msgid "Lingua"
+#: p3/templates/conference/talk.html:147
+msgid "Comments"
 msgstr ""
 
-#: p3/templates/conference/talk.html:169
-msgid "Durata"
+#: p3/templates/conference/talk.html:150
+msgid "Do you have some questions on this talk?"
+msgstr ""
+
+#: p3/templates/conference/talk.html:160
+#: p3/templates/conference/talk_preview.html:33
+msgid "Download slide"
+msgstr ""
+
+#: p3/templates/conference/talk.html:161
+#: p3/templates/conference/talk_preview.html:34
+msgid "Size:"
+msgstr ""
+
+#: p3/templates/conference/talk.html:165
+msgid "Languages"
+msgstr ""
+
+#: p3/templates/conference/talk.html:172
+msgid "Full day (8h)"
 msgstr ""
 
 #: p3/templates/conference/talk.html:174
-msgid "minuti"
+msgid "minutes"
+msgstr ""
+
+#: p3/templates/conference/talk.html:174
+msgid "inc. Q&A"
 msgstr ""
 
 #: p3/templates/conference/talk.html:180
-msgid "Traduzione simultanea"
+msgid "Simultaneous Translation"
 msgstr ""
 
 #: p3/templates/conference/talk.html:181
-msgid "Disponibile"
+msgid "Available"
 msgstr ""
 
-#: p3/templates/conference/talk_body.html:7
-msgid "by"
+#: p3/templates/conference/talk.html:186
+msgid "Tag"
+msgstr ""
+
+#: p3/templates/conference/talk.html:194
+msgid "Community voting is open"
+msgstr ""
+
+#: p3/templates/conference/talk.html:197
+msgid "Vote this talk"
+msgstr ""
+
+#: p3/templates/conference/talk.html:203 p3/templates/conference/talk.html:205
+msgid "Back to the voting list"
+msgstr ""
+
+#: p3/templates/conference/talk_body.html:26
+#: p3/templates/conference/talk_preview.html:37
+msgid "Go to the talk full page"
+msgstr ""
+
+#: p3/templates/conference/talk_preview.html:6
+#: p3/templates/conference/ajax/voting.html:48
+msgid "Abstract"
+msgstr ""
+
+#: p3/templates/conference/talk_preview.html:15
+msgid "Video &amp; Slide"
+msgstr ""
+
+#: p3/templates/conference/talk_preview.html:21
+msgid "Slide"
+msgstr ""
+
+#: p3/templates/conference/user_conferences.html:35
+msgid "People you have met"
+msgstr ""
+
+#: p3/templates/conference/user_conferences.html:43
+msgid "Met on:"
+msgstr ""
+
+#: p3/templates/conference/user_conferences.html:48
+msgid "Remove connection"
 msgstr ""
 
 #: p3/templates/conference/voting.html:5
@@ -983,6 +1284,10 @@ msgstr ""
 
 #: p3/templates/conference/voting.html:22
 msgid "Talk Voting"
+msgstr ""
+
+#: p3/templates/conference/voting.html:30
+msgid "Filters"
 msgstr ""
 
 #: p3/templates/conference/voting.html:41
@@ -1057,91 +1362,113 @@ msgid ""
 "                "
 msgstr ""
 
+#: p3/templates/conference/ajax/voting.html:30
+msgid "for"
+msgstr ""
+
 #: p3/templates/conference/ajax/voting.html:31
+#: p3/templates/p3/schedule_list.html:36
 msgid "Teaser video available"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:31
+msgid "Vidoe"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:38
+msgid "Thank you!"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:38
+msgid "Now share your vote"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:53
+msgid "Questions on this talk?"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:53
+msgid "Leave a comment"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:53
+msgid "to the speaker"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:53
+msgid "comment"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:53
+msgid "now"
+msgstr ""
+
+#: p3/templates/conference/ajax/voting.html:64
+msgid "Tags"
 msgstr ""
 
 #: p3/templates/conference/ajax/voting.html:96
 msgid "Sorry, no talks match your query."
 msgstr ""
 
-#: p3/templates/django_cms/p5_homepage.html:26
-msgid "Next deadline:"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:30
-msgid "All the deadlines"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:38
-msgid "Call for Proposals is <span>open</span>"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:46
-msgid "Submit your proposal"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:69
+#: p3/templates/django_cms/p5_homepage.html:75
 msgid "Our Sponsors"
 msgstr ""
 
-#: p3/templates/django_cms/p5_homepage.html:80
+#: p3/templates/django_cms/p5_homepage.html:89
 msgid "Become a sponsor"
 msgstr ""
 
-#: p3/templates/django_cms/p5_homepage.html:109
-msgid "Scopri EuroPython Italia"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:116
-msgid "Talk"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:117
-msgid "3 tracce parallele di talk per ascoltare e scoprire"
+#: p3/templates/django_cms/p5_homepage.html:118
+msgid "Discover EuroPython"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:125
-msgid "Training"
+msgid "Talk"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:126
-msgid ""
-"Sessioni di 4 ore, con le mani sulla tastiera: impara l'arte e mettila da "
-"parte"
+msgid "Enjoy 5 parallel tracks, over 100 talks, plenty of hallway sessions"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:134
-msgid "Helpdesk"
+msgid "Training"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:135
-msgid "Risolvi un problema: fissa un appuntamento e parla con i nostri esperti"
+msgid "Professional trainers to teach you Python and how to use it effectively"
 msgstr ""
 
-#: p3/templates/django_cms/p5_homepage.html:145
-msgid "Scopri chi viene"
+#: p3/templates/django_cms/p5_homepage.html:143
+msgid "Helpdesk"
 msgstr ""
 
-#: p3/templates/django_cms/p5_homepage.html:146
-msgid ""
-"Guarda chi ha già comprato un biglietto, contattalo, organizza un incontro"
+#: p3/templates/django_cms/p5_homepage.html:144
+msgid "Get help for solving your problems directly from the experts"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:154
+msgid "Who's coming"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:155
-msgid "Cerchi lavoro su Python? Partecipa alle nostre sessioni dedicate"
-msgstr ""
-
-#: p3/templates/django_cms/p5_homepage.html:163
-msgid "Eventi sociali"
+msgid "Check the public profiles and arrange meetings"
 msgstr ""
 
 #: p3/templates/django_cms/p5_homepage.html:164
-msgid "Ribollita, bistecca e vino: che EuroPython è senza una bella mangiata?"
+msgid "Find excellent Python jobs"
 msgstr ""
 
-#: p3/templates/django_cms/p5_homepage.html:184
-msgid "Ultimi post dal blog"
+#: p3/templates/django_cms/p5_homepage.html:172
+msgid "Social Events"
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:173
+msgid "Enjoy lounge events, dinners, boat trips, etc."
+msgstr ""
+
+#: p3/templates/django_cms/p5_homepage.html:194
+msgid "Watch our blog for updates"
 msgstr ""
 
 #: p3/templates/hcomments/show_comment_form.html:4
@@ -1177,6 +1504,10 @@ msgstr ""
 msgid "Archivio"
 msgstr ""
 
+#: p3/templates/microblog/list_by_year.html:5
+msgid "Posts of"
+msgstr ""
+
 #: p3/templates/microblog/post_list.html:5
 msgid "Archivio Blog"
 msgstr ""
@@ -1210,6 +1541,38 @@ msgstr ""
 msgid "Condividi questo post"
 msgstr ""
 
+#: p3/templates/p3/base.html:9
+msgid "20–26 July 2015"
+msgstr ""
+
+#: p3/templates/p3/base.html:128
+msgid "Log out"
+msgstr ""
+
+#: p3/templates/p3/base.html:131 p3/templates/registration/login.html:28
+msgid "Log in"
+msgstr ""
+
+#: p3/templates/p3/base.html:132 p3/templates/p3/box_newsletter.html:8
+msgid "Sign up"
+msgstr ""
+
+#: p3/templates/p3/base.html:179
+msgid "Trademarks"
+msgstr ""
+
+#: p3/templates/p3/base.html:180
+msgid "Imprint"
+msgstr ""
+
+#: p3/templates/p3/base.html:181
+msgid "Code of Conduct"
+msgstr ""
+
+#: p3/templates/p3/base.html:182
+msgid "Photo References"
+msgstr ""
+
 #: p3/templates/p3/billing.html:4 p3/templates/p3/billing.html.py:14
 msgid "Buy tickets (2 of 2)"
 msgstr ""
@@ -1224,13 +1587,12 @@ msgstr ""
 
 #: p3/templates/p3/billing.html:42 p3/templates/p3/cart.html:93
 #: p3/templates/p3/cart.html.py:95 p3/templates/p3/cart.html:97
-#: p3/templates/p3/fragments/render_cart_og_ticket_row.html:16
 msgid "Q.ty"
 msgstr ""
 
 #: p3/templates/p3/billing.html:43 p3/templates/p3/cart.html:92
 #: p3/templates/p3/cart.html.py:94 p3/templates/p3/cart.html:96
-#: p3/templates/p3/cart.html.py:175
+#: p3/templates/p3/cart.html.py:196
 #: p3/templates/p3/fragments/render_cart_og_ticket_row.html:15
 msgid "Price"
 msgstr ""
@@ -1261,11 +1623,19 @@ msgstr ""
 msgid "Google says"
 msgstr ""
 
-#: p3/templates/p3/billing.html:122
+#: p3/templates/p3/billing.html:118
+msgid "Identity card Number"
+msgstr ""
+
+#: p3/templates/p3/billing.html:121
+msgid "Optional"
+msgstr ""
+
+#: p3/templates/p3/billing.html:132
 msgid "You have nothing to pay"
 msgstr ""
 
-#: p3/templates/p3/billing.html:127
+#: p3/templates/p3/billing.html:137
 msgid "Place Order &rarr;"
 msgstr ""
 
@@ -1291,8 +1661,16 @@ msgid ""
 "official low-traffic EuroPython mailing-list:"
 msgstr ""
 
-#: p3/templates/p3/box_newsletter.html:8
-msgid "Sign up"
+#: p3/templates/p3/box_sponsor.html:3
+msgid "Sponsor EuroPython"
+msgstr ""
+
+#: p3/templates/p3/box_sponsor.html:4
+msgid ""
+"\n"
+"      Please help us create an affordable conference for everyone by <a href="
+"\"/sponsor\">sponsoring EuroPython</a>!\n"
+"      "
 msgstr ""
 
 #: p3/templates/p3/box_talks_conference.html:3
@@ -1332,7 +1710,7 @@ msgstr ""
 
 #: p3/templates/p3/cart.html:70
 #, python-format
-msgid "All prices are 22%% VAT included."
+msgid "All prices are 10%% VAT included. (Max. 5 tickets)"
 msgstr ""
 
 #: p3/templates/p3/cart.html:86
@@ -1340,26 +1718,28 @@ msgid "Student"
 msgstr ""
 
 #: p3/templates/p3/cart.html:87
+#: p3/templates/p3/fragments/render_cart_og_ticket_row.html:8
 msgid "Personal"
 msgstr ""
 
 #: p3/templates/p3/cart.html:88
+#: p3/templates/p3/fragments/render_cart_og_ticket_row.html:8
 msgid "Business"
 msgstr ""
 
-#: p3/templates/p3/cart.html:105
+#: p3/templates/p3/cart.html:126
 msgid "Conference tickets total (VAT inc.)"
 msgstr ""
 
-#: p3/templates/p3/cart.html:109
+#: p3/templates/p3/cart.html:130
 msgid "Conference tickets - SOLD OUT"
 msgstr ""
 
-#: p3/templates/p3/cart.html:159
+#: p3/templates/p3/cart.html:180
 msgid "Hotel Rooms at Grand Hotel Mediterraneo"
 msgstr ""
 
-#: p3/templates/p3/cart.html:161
+#: p3/templates/p3/cart.html:182
 #, python-format
 msgid ""
 "\n"
@@ -1371,52 +1751,116 @@ msgid ""
 "                "
 msgstr ""
 
-#: p3/templates/p3/cart.html:167
+#: p3/templates/p3/cart.html:188
 msgid "Minimum stay: 3 nights"
 msgstr ""
 
-#: p3/templates/p3/cart.html:172
+#: p3/templates/p3/cart.html:193
 msgid "Reservation type"
 msgstr ""
 
-#: p3/templates/p3/cart.html:173
+#: p3/templates/p3/cart.html:194
 msgid "Reservation detail"
 msgstr ""
 
-#: p3/templates/p3/cart.html:174
+#: p3/templates/p3/cart.html:195
 msgid "# of rooms"
 msgstr ""
 
-#: p3/templates/p3/cart.html:182
+#: p3/templates/p3/cart.html:203
 msgid "Add another"
 msgstr ""
 
-#: p3/templates/p3/cart.html:185
+#: p3/templates/p3/cart.html:206
 msgid "Hotel reservations total (inc. VAT & city tax)"
 msgstr ""
 
-#: p3/templates/p3/cart.html:188
+#: p3/templates/p3/cart.html:209
 msgid "Hotel rooms are currently sold out"
 msgstr ""
 
-#: p3/templates/p3/cart.html:251
+#: p3/templates/p3/cart.html:272
 msgid "Coupon code"
 msgstr ""
 
-#: p3/templates/p3/cart.html:253
+#: p3/templates/p3/cart.html:274
 msgid "You save (VAT inc.)"
 msgstr ""
 
-#: p3/templates/p3/cart.html:271
+#: p3/templates/p3/cart.html:292
 msgid "Grand total (VAT inc.)"
 msgstr ""
 
-#: p3/templates/p3/cart.html:276
+#: p3/templates/p3/cart.html:297
 msgid "Proceed to Checkout &rarr;"
 msgstr ""
 
-#: p3/templates/p3/cart.html:301
+#: p3/templates/p3/cart.html:322
 msgid "Sorry, no tickets are available"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:13
+msgid "Stanze prenotate"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:17 p3/templates/p3/hotel_report.html:74
+msgid "Room Type"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:18 p3/templates/p3/hotel_report.html:75
+msgid "Check in"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:19 p3/templates/p3/hotel_report.html:76
+msgid "Check out"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:20
+msgid "Person #1"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:21
+msgid "Person #2"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:22
+msgid "Person #3"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:23
+msgid "Person #4"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:70
+msgid "Posti letto in room sharing"
+msgstr ""
+
+#: p3/templates/p3/hotel_report.html:77
+msgid "Quantity"
+msgstr ""
+
+#: p3/templates/p3/my_schedule.html:2
+msgid "My Europython schedule"
+msgstr ""
+
+#: p3/templates/p3/render_single_sprint.html:5
+msgid "edit"
+msgstr ""
+
+#: p3/templates/p3/render_single_sprint.html:8
+msgid "people want to take part in this sprint"
+msgstr ""
+
+#: p3/templates/p3/render_single_sprint.html:13
+msgid "you"
+msgstr ""
+
+#: p3/templates/p3/render_single_sprint.html:25
+msgid "I will attend this sprint"
+msgstr ""
+
+#: p3/templates/p3/render_single_sprint.html:27
+msgid "Cancel my registration"
 msgstr ""
 
 #: p3/templates/p3/render_single_sprint.html:39
@@ -1428,15 +1872,222 @@ msgstr ""
 msgid "Schedule"
 msgstr ""
 
+#: p3/templates/p3/schedule.html:11
+msgid ""
+"Beta version, small changes could be introduced to meet speakers' "
+"necessities."
+msgstr ""
+
+#: p3/templates/p3/schedule.html:15
+msgid "NAV"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:17
+msgid "Jump to"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:29
+msgid "Schedule view"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:32
+msgid "Speakers list"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:34
+msgid "List view"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:39
+msgid "My schedule"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:205
+msgid "Recruiting session"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:206
+msgid ""
+"Are you a professional looking for a job? Is your company looking for "
+"proficient programmers? EuroPython is your greatest opportunity to hire the "
+"best Python programmers!"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:206 p3/templates/p3/schedule.html.py:212
+#: p3/templates/p3/schedule.html:218
+msgid "More details"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:211
+msgid "Lightning talks"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:212
+msgid ""
+"A lightning talk is a short talk, typically only five minutes in duration, "
+"providing an opportunity for participants to deliver a presentation on a "
+"subject of their choosing."
+msgstr ""
+
+#: p3/templates/p3/schedule.html:217
+msgid "Poster session"
+msgstr ""
+
+#: p3/templates/p3/schedule.html:218
+msgid ""
+"We are glad to introduce a poster session at EuroPython for the first time, "
+"to provide an alternative and innovative way to discuss and share your "
+"experiences with other people."
+msgstr ""
+
 #: p3/templates/p3/schedule_list.html:8
 msgid "EuroPython schedule"
+msgstr ""
+
+#: p3/templates/p3/schedule_list.html:26
+msgid "In"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:5
+msgid "Ticket SIM"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:6
+msgid ""
+"Ricarica iniziale per tutti: <b>€15</b>.<br/>Tariffe da attivare per tutti: "
+"<b>Internet No Stop</b> (o Blackberry No Stop), <b>Call your Country</b>.<br/"
+">Credito residuo sulla SIM: <b>€6</b>"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:8
+msgid "Totale SIM compilate"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:11
+msgid "Tipo SIM"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:12
+msgid "Totale richieste"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:13
+msgid "SIM da preparare"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:24
+msgid "Dettaglio SIM"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:43
+msgid "Attendee"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:44
+msgid "SIM type"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:45
+msgid "Internet"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:46
+msgid "Document"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:47 p3/templates/p3/sim_report.html.py:69
+msgid "Numero di telefono"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:56
+msgid "Internet No Stop"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:56
+msgid "Blackberry No Stop"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:59
+msgid "document"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:61
+msgid "missing"
+msgstr ""
+
+#: p3/templates/p3/sim_report.html:83
+#, python-format
+msgid "Ticket not compiled (buyer: %(name)s)"
 msgstr ""
 
 #: p3/templates/p3/sprint_submission.html:4
 msgid "Propose a Sprint"
 msgstr ""
 
-#: p3/templates/p3/sprints.html:56
+#: p3/templates/p3/sprints.html:5
+msgid "Sprints"
+msgstr ""
+
+#: p3/templates/p3/sprints.html:6
+msgid ""
+"Come to the wonderful hacking sessions during the weekend (July 6th-7th), "
+"learn from expert Python developers, and contribute to the Python ecosystem!"
+msgstr ""
+
+#: p3/templates/p3/sprints.html:8
+#, python-format
+msgid ""
+"\n"
+"\t<h2>What is a sprint</h2>\n"
+"\t<p>A sprint is a self-organized session where programmers join together to "
+"work on a specific project, usually open-source and connected to the Python "
+"ecosystem. The sprint is usually proposed and driven by one or more "
+"programmers who are already expert on the specific project (maybe even "
+"maintainers), and are willing to help out more programmers to introduce them "
+"into the project.</p>\n"
+"\t<h2>Requirements</h2>\n"
+"    <p>The EuroPython sprints are open for everybody to join, and are "
+"<b>totally free</b>. While we assume that most people there will have a "
+"ticket for the conference days (held in the previous days), having a ticket "
+"for the conference is <b>not required</b> to join a sprint.</p>\n"
+"    <p>The EuroPython staff will organize different tables with power plugs, "
+"ethernet cables with Internet access, wifi, whiteboards and will generally "
+"help out with logistic tasks. Participants are required to <b>bring their "
+"own laptops</b> to take part into the sprint</p>\n"
+"    <h2>Sprint submission</h2>\n"
+"    <p>Sprint submission is open to everybody, by using the <a href=\"%(url)s"
+"\">online form</a>. Please submit a sprint only if you really intend to hold "
+"it and help out other people joining it.</p>\n"
+"    <h2>Registering for a sprint</h2>\n"
+"    <p>If you are interested in a specific sprint, join it by clicking the "
+"corresponding button (after <a href=\"/accounts/login/\">login</a>). "
+"Registration is not mandatory, and will not be enforced by organizers in any "
+"way, but it will help us out understanding how many people will be present, "
+"and at the same time will help sprint organizers setting up a list of tasks "
+"for their project. If you think that you might join a sprint (even if you "
+"are not 100%% sure yet), <b>please register</b>.</p>\n"
+"\n"
+"\t<h2>Sprint teasers</h2>\n"
+"\t<p>The 3 sprints with more registered people will be selected to give a "
+"sprint teaser on Friday afternoon (see the <a href=\"/schedule/\">conference "
+"schedule</a>). Sprint teasers are just technical sessions where the sprint "
+"is introduced and can be openly discussed with all the people that will join "
+"it in the following two days.</p>\n"
+msgstr ""
+
+#: p3/templates/p3/sprints.html:24
+msgid "List of sprints"
+msgstr ""
+
+#: p3/templates/p3/sprints.html:37
+msgid "Have you got an idea?"
+msgstr ""
+
+#: p3/templates/p3/sprints.html:38
+msgid "Submit a sprint"
+msgstr ""
+
+#: p3/templates/p3/sprints.html:57
 msgid ""
 "Cannot save the form.\\nUse the web chat, or contact info@euroython.eu, for "
 "assistance."
@@ -1483,8 +2134,8 @@ msgstr ""
 
 #: p3/templates/p3/tickets.html:83
 msgid ""
-"Cannot save the ticket.\\nUse the web chat, or contact info@euroython.eu, for "
-"assistance."
+"Cannot save the ticket.\\nUse the web chat, or contact info@euroython.eu, "
+"for assistance."
 msgstr ""
 
 #: p3/templates/p3/tickets.html:135
@@ -1511,12 +2162,106 @@ msgstr ""
 msgid "ticket reclaimed"
 msgstr ""
 
-#: p3/templates/p3/whos_coming.html:4 p3/templates/p3/whos_coming.html:16
+#: p3/templates/p3/whos_coming.html:4 p3/templates/p3/whos_coming.html.py:16
 msgid "Who's coming?"
+msgstr ""
+
+#: p3/templates/p3/whos_coming.html:18
+msgid "Nobody so far."
+msgstr ""
+
+#: p3/templates/p3/whos_coming.html:22
+msgid "participants have published their profiles!"
+msgstr ""
+
+#: p3/templates/p3/whos_coming.html:24
+msgid "Discover how to see them all!"
+msgstr ""
+
+#: p3/templates/p3/whos_coming.html:30
+msgid "Filter by"
+msgstr ""
+
+#: p3/templates/p3/whos_coming.html:39
+msgid "Use my tags"
+msgstr ""
+
+#: p3/templates/p3/admin/index.html:5
+msgid "Goodies"
+msgstr ""
+
+#: p3/templates/p3/admin/index.html:7
+msgid "rosetta"
+msgstr ""
+
+#: p3/templates/p3/admin/index.html:8
+msgid "templates admin"
+msgstr ""
+
+#: p3/templates/p3/admin/index.html:9
+msgid "file browser"
+msgstr ""
+
+#: p3/templates/p3/ajax/whos_coming.html:22
+#: p3/templates/p3/fragments/render_profile_box.html:20
+msgid "Follow"
+msgstr ""
+
+#: p3/templates/p3/ajax/whos_coming.html:29
+#: p3/templates/p3/fragments/render_profile_box.html:28
+msgid "more"
+msgstr ""
+
+#: p3/templates/p3/ajax/whos_coming.html:41
+#: p3/templates/p3/fragments/render_profile_box.html:40
+msgid "See more"
+msgstr ""
+
+#: p3/templates/p3/ajax/whos_coming.html:51
+#: p3/templates/p3/fragments/render_profile_box.html:50
+msgid "speaker"
+msgstr ""
+
+#: p3/templates/p3/ajax/whos_coming.html:53
+#: p3/templates/p3/fragments/render_profile_box.html:52
+msgid "Talks"
+msgstr ""
+
+#: p3/templates/p3/fragments/archive.html:19
+msgid "Continue reading"
 msgstr ""
 
 #: p3/templates/p3/fragments/render_cart_og_ticket_row.html:13
 msgid "Goodies name"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_cart_og_ticket_row.html:16
+msgid "Qty"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_cart_og_ticket_row.html:25
+#: p3/templates/p3/fragments/render_cart_partner_ticket_row.html:9
+msgid "details"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_cart_partner_ticket_row.html:7
+msgid "Min. booking required"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_partner_program.html:6
+msgid "Share this"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_partner_program.html:9
+msgid "Cost per person: "
+msgstr ""
+
+#: p3/templates/p3/fragments/render_partner_program.html:12
+msgid "Includes:"
+msgstr ""
+
+#: p3/templates/p3/fragments/render_partner_program.html:17
+msgid "Departure:"
 msgstr ""
 
 #: p3/templates/p3/fragments/render_ticket.html:6
@@ -1681,10 +2426,6 @@ msgstr ""
 msgid "Invalid credentials"
 msgstr ""
 
-#: p3/templates/registration/login.html:28
-msgid "Log in"
-msgstr ""
-
 #: p3/templates/registration/login.html:38
 msgid "Don&#8217;t you have an account?"
 msgstr ""
@@ -1708,7 +2449,7 @@ msgid ""
 msgstr ""
 
 #: p3/templates/registration/password_reset_form.html:8
-msgid "Ripristina la tua password"
+msgid "Reset your password"
 msgstr ""
 
 #: p3/templates/registration/password_reset_form.html:12
@@ -1718,13 +2459,13 @@ msgid ""
 msgstr ""
 
 #: p3/templates/registration/password_reset_form.html:19
-msgid "Invia nuova password"
+msgid "Send new password"
 msgstr ""
 
 #: p3/views/cart.py:17
 msgid ""
-"I have read and accepted the <a class=\"trigger-overlay\" href=\"/code-of-"
-"conduct\" target=\"blank\">code of conduct</a>."
+"I have read and accepted the <a class=\"trigger-overlay\" href=\"/coc\" "
+"target=\"blank\">code of conduct</a>."
 msgstr ""
 
 #: p3/views/cart.py:21
@@ -1732,37 +2473,37 @@ msgid "Your Name"
 msgstr ""
 
 #: p3/views/cart.py:38
-msgid "\"Codice Fiscale\" is required for Italian customers"
-msgstr ""
-
-#: p3/views/cart.py:45
 msgid "Additional billing information"
 msgstr ""
 
-#: p3/views/cart.py:47
+#: p3/views/cart.py:40
 msgid ""
 "If your company needs some information to appear on the invoice in addition "
 "to those provided above (eg. PO number, etc.), write them here.<br />We "
 "reserve the right to review the contents of this box."
 msgstr ""
 
-#: p3/views/cart.py:60
+#: p3/views/cart.py:53
 msgid "Company Name"
 msgstr ""
 
-#: pycon/settings.py:64
+#: pycon/settings.py:79
 msgid "Spanish"
 msgstr ""
 
-#: pycon/settings.py:65 pycon/settings.py:344 pycon/settings.py:368
+#: pycon/settings.py:80
+msgid "Basque"
+msgstr ""
+
+#: pycon/settings.py:81 pycon/settings.py:363 pycon/settings.py:387
 msgid "English"
 msgstr ""
 
-#: pycon/settings.py:343
+#: pycon/settings.py:362
 msgid "Italian"
 msgstr ""
 
-#: pycon/settings.py:364
+#: pycon/settings.py:383
 msgid "Italiano"
 msgstr ""
 
