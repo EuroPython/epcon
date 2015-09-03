@@ -29,11 +29,7 @@
 {% p3_profile_data user.id as p1 %}
 {% p3_profile_data profile2 as p2 %}
 {% if linked %}
-    {% if created %}
-    <h1>{{ p1.name }} and {{ p2.name }}: you are now connected</h1>
-    {% else %}
-    <h1>{{ p1.name }} and {{ p2.name }}: you were already connected</h1>
-    {% endif %}
+    <h1>{{ p1.name }} {% trans "and" %} {{ p2.name }}: {% if created %}{% trans "you are now connected" %}{% else %}{% trans "you were already connected" %}{% endif %}</h1>
 {% endif %}
 <div class="clearfix">
     <div class="span-6">
@@ -51,7 +47,7 @@
             {{ form.message|field }}
         </fieldset>
         <fieldset class="border">
-            <button name="" value="" type="submit">Save</button>
+            <button name="" value="" type="submit">{% trans "Save" %}</button>
         </fieldset>
     </form>
     <script>
@@ -71,7 +67,7 @@
 <hr class="stars" />
 <div class="clearfix">
     <div class="button" style="text-align: center;">
-        <a href="{% url "conference-profile-conferences" %}">See who you have met!</a>
+        <a href="{% url "conference-profile-conferences" %}">{% trans "See who you have met!" %}</a>
     </div>
 </div>
 {% endblock %}

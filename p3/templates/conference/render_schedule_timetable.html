@@ -2,15 +2,15 @@
 {% overbooked_events schedule.conference as overbooked %}
 {% if request.user.is_staff and timetable.errors %}
 <div class="error-notice">
-    <h2>TimeTable errors</h2>
+    <h2>{% trans "TimeTable errors" %}</h2>
     <ul>
         {% for e in timetable.errors %}
         <li style="margin-bottom: 10px;">
             {% if e.type == "overlap-event" %}
-            Error at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overwrite <b>{{ e.previous.get_description }}</b>.
+            {% trans "Error at" %} <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> {% trans "overwrite" %} <b>{{ e.previous.get_description }}</b>.
             {% endif %}
             {% if e.type == "overlap-reference" %}
-            Warning at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overlap <b>{{ e.previous.get_description }}</b>.
+            {% trans "Warning at" %} <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> {% trans "overlap" %} <b>{{ e.previous.get_description }}</b>.
             {% endif %}
         </li>
         {% endfor %}
@@ -74,10 +74,10 @@
                             {% if teaser %}
                             data-overlay-onload="$('#global-overlay h1').prepend('<a href=&quot;/training#teaser-talks&quot;>Teaser Talk:</a> ')"
                             {% endif %}
-                            title="{% if teaser %}Teaser Talk - {% endif %}{{ ref.talk.title }}">{% if teaser %}{{ ref.talk.title|truncate_chars:30 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a>
+                            title="{% if teaser %}{% trans "Teaser Talk" %} - {% endif %}{{ ref.talk.title }}">{% if teaser %}{{ ref.talk.title|truncate_chars:30 }}{% else %}{{ ref.talk.title|truncate_chars:50 }}{% endif %}</a>
                     </h3>
                     {% if not teaser %}
-                    by 
+                    {% trans "by" %}
                     {% get_talk_speakers ref.talk as speakers %}
                     {% for ts in speakers %}
                     <a href="{% url "conference-speaker" slug=ts.speaker.slug %}">{{ ts.speaker.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
@@ -95,7 +95,7 @@
                         {% endif %}
                         {% if ref in overbooked %}
                         <div class="room-full">
-                            <img src="{{ STATIC_URL }}p6/i/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
+                            <img src="{{ STATIC_URL }}p6/i/warning.png" title="{% trans 'our estimate of attendance exceeds the room size' %}" alt="warning" />
                         </div>
                         {% endif %}
                     </div>

@@ -5,7 +5,7 @@
         <tr>
             <th></th>
             {% for t in recipient_types %}
-            <th colspan="2">{% if t == "p" %}Personal{% else %}Business{% endif %}</th>
+            <th colspan="2">{% if t == "p" %}{% trans "Personal" %}{% else %}{% trans "Business" %}{% endif %}</th>
             {% endfor %}
         </tr>
         {% endif %}
@@ -13,7 +13,7 @@
             <th>{% trans "Goodies name" %}</th>
             {% for t in recipient_types %}
             <th>{% trans "Price" %}</th>
-            <th>{% trans "Q.ty" %}</th>
+            <th>{% trans "Qty" %}</th>
             {% endfor %}
         </tr>
     </thead>
@@ -22,7 +22,7 @@
     {% with recipients.values.0 as f0 %}
     <tr>
         <td>
-            {{ f0.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f0.code }}]">(details)</a>
+            {{ f0.name }} <a href="#" class="trigger-overlay" rel="div[data-fare={{ f0.code }}]">({% trans "details" %})</a>
             <div class="overlay" data-fare="{{ f0.code }}"><h1>{{ f0.name }}</h1>{{ f0.description|safe }}</div>
         </td>
         {% for t in recipient_types %}

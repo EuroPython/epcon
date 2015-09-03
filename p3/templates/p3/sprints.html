@@ -2,9 +2,10 @@
 {% load i18n assopy_tags %}
 {% block MAIN_CONTENT %}
 <div class="cms">
-	<h1>Sprints</h1>
-	<div class="page-summary"><p>Come to the wonderful hacking sessions during the weekend (July 6th-7th), learn from expert Python developers, and contribute to the Python ecosystem!</p></div>
-	
+	<h1>{% trans "Sprints" %}</h1>
+	<div class="page-summary"><p>{% trans "Come to the wonderful hacking sessions during the weekend (July 6th-7th), learn from expert Python developers, and contribute to the Python ecosystem!" %}</p></div>
+
+{% blocktrans %}
 	<h2>What is a sprint</h2>
 	<p>A sprint is a self-organized session where programmers join together to work on a specific project, usually open-source and connected to the Python ecosystem. The sprint is usually proposed and driven by one or more programmers who are already expert on the specific project (maybe even maintainers), and are willing to help out more programmers to introduce them into the project.</p>
 	<h2>Requirements</h2>
@@ -17,10 +18,10 @@
 
 	<h2>Sprint teasers</h2>
 	<p>The 3 sprints with more registered people will be selected to give a sprint teaser on Friday afternoon (see the <a href="/schedule/">conference schedule</a>). Sprint teasers are just technical sessions where the sprint is introduced and can be openly discussed with all the people that will join it in the following two days.</p>
-
+{% endblocktrans %}
 	<br/>
 
-    <h1 id="list">List of sprints</h1>
+    <h1 id="list">{% trans "List of sprints" %}</h1>
 	
     <div class="sprints">
     {% for data in events %}
@@ -33,8 +34,8 @@
         <hr />
     </div>
     <div class="badge">
-      <b>Have you got an idea?</b>
-      <h5><a href="{% url "p3-sprint-submission" %}">Submit a sprint</a></h5>
+      <b>{% trans "Have you got an idea?" %}</b>
+      <h5><a href="{% url "p3-sprint-submission" %}">{% trans "Submit a sprint" %}</a></h5>
     </div>
 </div>
 <script type="text/javascript">//<![CDATA[

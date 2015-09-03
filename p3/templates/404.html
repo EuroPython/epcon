@@ -11,17 +11,17 @@
         <h1>{% trans 'Cannot find the requested page' %}</h1>
         
         <div class="page-summary">
-            <p>Oops! We are sorry, the page you requested does not exist.</p>
+            <p>{% trans "Oops! We are sorry, the page you requested does not exist." %}</p>
         </div>
 
-        <p>Here are a few useful links:</p>
+        <p>{% trans "Here are a few useful links:" %}</p>
         <ul>
-            <li>Our <a href="/blog/">Blog</a>;</li>
-            <li>The <a href="/schedule/">conference schedule</a>;</li>
-            <li>Our page about<a href="/sponsor/">sponsorship opportunities</a>;
+            <li>{% trans "Our " %}<a href="/blog/">{% trans "Blog" %}</a>;</li>
+            <li>{% trans "The " %}<a href="/schedule/">{% trans "conference schedule" %}</a>;</li>
+            <li>{% trans "Our page about" %}<a href="/sponsor/">{% trans "sponsorship opportunities" %}</a>;
             </li>
-            <li><a href="/faq/">Frequently asked questions</a> (F.A.Q.);</li>
-            <li>... or get back to the<a href="/">EuroPython Home Page</a></li>
+            <li><a href="/faq/">{% trans "Frequently asked questions" %}</a> (F.A.Q.);</li>
+            <li>{% trans "... or get back to the" %}<a href="/">{% trans "EuroPython Home Page" %}</a></li>
         </ul>
 
     </div> <!-- /grid -->

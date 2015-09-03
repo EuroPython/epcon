@@ -4,9 +4,9 @@
         <td>
             {{ f.name }}
             {% if f|fare_blob:"minimum" == "1" %}
-                <b>Min. booking required</b>
+                <b>{% trans "Min. booking required" %}</b>
             {% endif %}
-            <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]" tabindex="-1">(details)</a>
+            <a href="#" class="trigger-overlay" rel="div[data-fare={{ f.code }}]" tabindex="-1">({% trans "details" %})</a>
             <div class="overlay" data-fare="{{ f.code }}">
                 <h1>{{ f.name }}</h1>
                 {{ f.description|safe }}

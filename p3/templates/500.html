@@ -2,7 +2,7 @@
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
     <meta charset="UTF-8" />
-    <title>Blam! A 5xx error occured</title>    
+    <title>{% trans "Blam! A 5xx error occured" %}</title>
     <style type="text/css">
 
 body {
@@ -27,23 +27,25 @@ blockquote {
 </head> 
 <body>
 <div class="wrapper">
-<h1>Blam! A 5xx error occured</h1>
-<hr />
-<h2>Canto III: The Gate of Hell</h2>
-<blockquote>
-Through me you go to the grief wracked city;<br />
-Through me you go to everlasting pain;<br />
-Through me you go a pass among lost souls.<br />
-Justice inspired my exalted Creator:<br />
-I am a creature of the Holiest Power,<br />
-of Wisdom in the Highest and of Primal Love.<br />
-Nothing till I was made was made,<br />
-only eternal beings. And I endure eternally.<br />
-Abandon all hope - Ye Who Enter Here
+    {% blocktrans %}
+    <h1>Blam! A 5xx error occured</h1>
+    <hr />
+    <h2>Canto III: The Gate of Hell</h2>
+    <blockquote>
+    Through me you go to the grief wracked city;<br />
+    Through me you go to everlasting pain;<br />
+    Through me you go a pass among lost souls.<br />
+    Justice inspired my exalted Creator:<br />
+    I am a creature of the Holiest Power,<br />
+    of Wisdom in the Highest and of Primal Love.<br />
+    Nothing till I was made was made,<br />
+    only eternal beings. And I endure eternally.<br />
+    Abandon all hope - Ye Who Enter Here
+    {% endblocktrans %}
 </blockquote>
-<p>— from <i><a href="http://en.wikipedia.org/wiki/The_Divine_Comedy">The Divine Comedy</a></i> by <a href="http://en.wikipedia.org/wiki/Dante_Alighieri">Dante Alighieri</a></p>
+<p>— {% trans "from " %}<i><a href="http://en.wikipedia.org/wiki/The_Divine_Comedy">The Divine Comedy</a></i> {%trans "by"%} <a href="http://en.wikipedia.org/wiki/Dante_Alighieri">Dante Alighieri</a></p>
 <hr />        
-<p>While you are enjoying a fine piece of Italian art, we are trying to find the bug that had caused the display of this page.</p>
+<p>{%  trans "While you are enjoying a fine piece of Italian art, we are trying to find the bug that had caused the display of this page." %}</p>
 <hr />    
 <p>The <a href="http://euroython.eu/">EuroPython</a> team &lt;<a href="mailto:info@euroython.eu">info@euroython.eu</a>&gt;</p>
 </div><!-- /wrapper -->

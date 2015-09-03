@@ -4,7 +4,7 @@
 {% block PAGE_ENTRY %}
     <div id="page">
         <div id="page-title">
-            <h1>EuroPython Blog</h1>
+            <h1>{% trans "EuroPython Blog" %}</h1>
         </div>
         <ul class="archive">
         {% for post in object_list %}
@@ -18,8 +18,8 @@
 
 {% block PAGE_SIDEBAR_TOP %}
   <div class="blog-feed">
-    <img src="{{ MEDIA_URL }}p3/feed.png" alt="" title="blog feed" />
-    <a href="http://feeds.feedburner.com/pyconit">Blog feed</a>
+    <img src="{{ MEDIA_URL }}p3/feed.png" alt="" title="{% trans 'blog feed' %}" />
+    <a href="http://feeds.feedburner.com/pyconit">{% trans "Blog feed" %}</a>
   </div>
   {% box_didyouknow %}
 {% endblock %}

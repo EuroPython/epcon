@@ -72,7 +72,7 @@ TALKS AND TWITTER
         {% endif %}
         {% if talks %}
         <div class="speaker-talks well">
-            <h2>{{ profile_data.name }}’s Talks</h2>
+            <h2>{% blocktrans with name=profile_data.name %}{{ name }}’s Talks{% endblocktrans %}</h2>
             <dl>
             {% for conf, talks_list in talks|ordered_talks %}
                 <dt>{{ conf }}</dt>

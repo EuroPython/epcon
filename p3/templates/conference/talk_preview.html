@@ -3,7 +3,7 @@
     <h1 class="title">{{ talk.title }}</h1>
     <div class="span-5">
         <div class="cms">
-            <h2>Abstract</h2>
+            <h2>{% trans "Abstract" %}</h2>
             {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
             <p>{{ ab.body|markdown2:"smarty-pants,code-color"  }}</p>
         </div>
@@ -12,13 +12,13 @@
         <div class="talk details">
             {% embed_video talk args="width=460,height=400" as h %}
             {% if h and talk.slides %}
-            <h2>Video &amp; Slide</h2>
+            <h2>{% trans "Video &amp; Slide" %}</h2>
             {% else %}
             {% if h %}
-            <h2>Video</h2>
+            <h2>{% trans "Video" %}</h2>
             {% endif %}
             {% if slide %}
-            <h2>Slide</h2>
+            <h2>{% trans "Slide" %}</h2>
             {% endif %}
             {% endif %}
 
@@ -30,11 +30,11 @@
             {% if talk.slides %}
             <div class="button mini">
                 {% stuff_info talk.slides as info %}
-                <a href="{{ talk.slides.url }}">Download slide ({{ info.0 }})</a><br />
-                (Size: {{ info.1|filesizeformat }})
+                <a href="{{ talk.slides.url }}">{% trans "Download slide" %} ({{ info.0 }})</a><br />
+                ({% trans "Size:" %} {{ info.1|filesizeformat }})
             </div>
             {% endif %}
-            <a href="{% url "conference-talk" slug=talk.slug %}">Go to the talk full page</a>
+            <a href="{% url "conference-talk" slug=talk.slug %}">{% trans "Go to the talk full page" %}</a>
         </div>
     </div>
 </div>

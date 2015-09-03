@@ -6,7 +6,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="it" xml:lang="it" xmlns="http://www.w3.org/1999/xhtml"><!--<![endif]-->
 <head>
     <meta charset="UTF-8" />
-    <title>{% block PAGE_TITLE %}{% if current_page %}{% page_attribute "title" %}{% endif %}{% endblock %} &middot; EuroPython 2015 &middot; Bilbao, 20–26 July 2015</title>
+    <title>{% block PAGE_TITLE %}{% if current_page %}{% page_attribute "title" %}{% endif %}{% endblock %} &middot; EuroPython 2015 &middot; Bilbao, {% trans "20–26 July 2015" %}</title>
 
     {% block HEAD_VIEWPORT %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -124,11 +124,11 @@
                     {% if request.session.doppelganger %}
                         <a href="{% url "admin:auser-kill-doppelganger" %}" title="Kill doppelganger"><i class="fa fa-bolt"></i></a>
                     {% endif %}
-                        <a href="/accounts/logout/?next=/"><i class="fa fa-sign-out"></i>Log out</a>
+                        <a href="/accounts/logout/?next=/"><i class="fa fa-sign-out"></i>{% trans "Log out" %}</a>
                 {% else %}
 
-                    <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
-                    <a href="{% url "assopy-new-account" %}?next={{ next }}">Sign up</a>
+                    <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">{% trans "Log in" %}</a>
+                    <a href="{% url "assopy-new-account" %}?next={{ next }}">{% trans "Sign up" %}</a>
                 {% endif %}
                 </li>
             </ul>
@@ -174,7 +174,12 @@
 </div>
 
 <div class="copyright">
-    <p>&copy; 2015 <a href="http://www.europython-society.org/">EuroPython Society (EPS)</a> | <a href="http://www.europython-society.org/trademarks">Trademarks</a> | <a href="/imprint">Imprint</a> | <a href="/coc">Code of Conduct</a> | <a href="/imprint">Photo References</a></p>
+    <p>&copy; 2015 <a href="http://www.europython-society.org/">EuroPython Society (EPS)</a>
+        | <a href="http://www.europython-society.org/trademarks">{% trans "Trademarks" %}</a>
+        | <a href="/imprint">{% trans "Imprint" %}</a>
+        | <a href="/coc">{% trans "Code of Conduct" %}</a>
+        | <a href="/imprint">{% trans "Photo References" %}</a>
+    </p>
 </div>
 
 </footer>

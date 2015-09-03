@@ -23,7 +23,7 @@
                     {% endif %}
                     <td class="event"{% if e.talk %} data-talk="{{ e.talk.id }}"{% endif %}>
                         <div>
-                            In
+                            {% trans "In" %}
                             <strong>
                                 {% for t in e.tracks %}
                                 <i>{{ sdata.tracks|attrib_:t|attrib_:"title"|safe }}</i>{% if not forloop.last %}, {% endif %}
@@ -33,12 +33,12 @@
                         {% if e.talk %}
                             <span class="talk-level {{ e.talk.level }}">&nbsp;</span>
                             {% if e.talk.teaser_video %}
-                                <div class="video-opener"><i class="fa fa-youtube-play" title="Teaser video available"></div>
+                                <div class="video-opener"><i class="fa fa-youtube-play" title='{% trans "Teaser video available" %}'></div>
                             {% endif %}
                             <div class="name">
                                 <a href="{% url "conference-talk" slug=e.talk.slug %}">{{ e.name }}</a>
                             </div>
-                            by
+                            {% trans "by" %}
                             <div class="speakers">
                                 {% for s in e.talk.speakers %}
                                 <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}

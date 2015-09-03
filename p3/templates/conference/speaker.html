@@ -6,13 +6,13 @@
 {% with speaker.user.assopy_user as auser %}
     {% if accepted|length == 0 and full_access %}
     <section class="notice">
-        <p>This page is currently private. It will become public when at least one of the proposed talks will be accepted.</p>
+        <p>{% trans "This page is currently private. It will become public when at least one of the proposed talks will be accepted." %}</p>
     </section>
     {% endif %}
     <div class="column span-8">
         <h1>{{ auser.name }}
         {% if full_access %}
-        <span class="action edit"><a href="#">(Edit profile)</a></span>
+        <span class="action edit"><a href="#">({% trans "Edit profile" %})</a></span>
         <script type="text/javascript">//<![CDATA[
         $('.action a').click(function(e) {
             e.preventDefault();
@@ -36,7 +36,7 @@
             </div>
             {% if auser.twitter or auser.www or speaker.company_homepage %}
             <section class="speaker contacts">
-                <h2>Contacts</h2>
+                <h2>{% trans "Contacts" %}</h2>
                 <dl>
                     {% if auser.twitter %}
                     <dt>{% trans "Twitter" %}</dt>
@@ -65,7 +65,7 @@
                 {{ form.bio|field }}
                 </fieldset>
                 <fieldset class="border">
-                    <button type="submit">Save Changes</button>
+                    <button type="submit">{% trans "Save Changes" %}</button>
                 </fieldset>
             </form>
         </div>

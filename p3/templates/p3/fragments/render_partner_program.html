@@ -3,18 +3,18 @@
 {% for slug, group in fares %}
     <div class="event">
     {% with group.0 as fare0 %}
-        <h2 id="{{ fare0.name|slugify }}" class="name"><a href="/partner-program/#{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span></a><a href="#" class="share" style="float: right;">Share this</a></h2>
+        <h2 id="{{ fare0.name|slugify }}" class="name"><a href="/partner-program/#{{ fare0.name|slugify }}"><span>{{ fare0.name }}</span></a><a href="#" class="share" style="float: right;">{% trans "Share this" %}</a></h2>
         <div>{{ fare0.description|safe }}</div>
         <ul>
-            <li>Cost per person: <strong>€{{ fare0|fare_blob:"prezzo" }}</strong></li>
+            <li>{% trans "Cost per person: " %}<strong>€{{ fare0|fare_blob:"prezzo" }}</strong></li>
             {% with fare0|fare_blob:"include" as t %}
             {% if t %}
-            <li>Includes: <strong>{{ t }}</strong></li>
+            <li>{% trans "Includes:" %} <strong>{{ t }}</strong></li>
             {% endif %}
             {% endwith %}
             {% with fare0|fare_blob:"departure" as t %}
             {% if t %}
-            <li>Departure: <strong>{{ t }}</strong></li>
+            <li>{% trans "Departure:" %} <strong>{{ t }}</strong></li>
             {% endif %}
             {% endwith %}
         </ul>

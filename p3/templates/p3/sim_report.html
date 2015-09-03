@@ -2,15 +2,15 @@
 {% load i18n assopy_tags conference %}
 {% block MAIN_CONTENT %}
 <div id="sim-report" class="cms">
-    <h1>Ticket SIM</h1>
-    <p>Ricarica iniziale per tutti: <b>€15</b>.<br/>Tariffe da attivare per tutti: <b>Internet No Stop</b> (o Blackberry No Stop), <b>Call your Country</b>.<br/>Credito residuo sulla SIM: <b>€6</b></p>
+    <h1>{% trans "Ticket SIM" %}</h1>
+    <p>{% blocktrans %}Ricarica iniziale per tutti: <b>€15</b>.<br/>Tariffe da attivare per tutti: <b>Internet No Stop</b> (o Blackberry No Stop), <b>Call your Country</b>.<br/>Credito residuo sulla SIM: <b>€6</b>{% endblocktrans %}</p>
     <p>
-        <h2>Totale SIM compilate</h2>
+        <h2>{% trans "Totale SIM compilate" %}</h2>
         <table>
             <tr>
-                <th>Tipo SIM</th>
-                <th>Totale richieste</th>
-                <th>SIM da preparare</th>
+                <th>{% trans "Tipo SIM" %}</th>
+                <th>{% trans "Totale richieste" %}</th>
+                <th>{% trans "SIM da preparare" %}</th>
             </tr>
             {% for sim_type, data in compiled.items %}
             <tr>
@@ -21,7 +21,7 @@
             {% endfor %}
         </table>
     </p>
-    <h2>Dettaglio SIM</h2>
+    <h2>{% trans "Dettaglio SIM" %}</h2>
     <script>
         function freeze(e) {
             var form = $(this);
@@ -40,11 +40,11 @@
     <table>
         <tr>
             <th style="width: 30px">#</th>
-            <th>Attendee</th>
-            <th>SIM type</th>
-            <th>Internet</th>
-            <th>Document</th>
-            <th>Numero di telefono</th>
+            <th>{% trans "Attendee" %}</th>
+            <th>{% trans "SIM type" %}</th>
+            <th>{% trans "Internet" %}</th>
+            <th>{% trans "Document" %}</th>
+            <th>{% trans "Numero di telefono" %}</th>
             <th>&nbsp;</th>
         </tr>
         {% for t in tickets %}
@@ -53,12 +53,12 @@
             {% if t.p3_conference_sim %}
             <td>{{ t.name }}</td>
             <td>{{ t.p3_conference_sim.get_sim_type_display }}</td>
-            <td>{% if t.p3_conference_sim.plan_type == "std" %}Internet No Stop{% else %}Blackberry No Stop{% endif %}</td>
+            <td>{% if t.p3_conference_sim.plan_type == "std" %}{% trans "Internet No Stop" %}{% else %}{% trans "Blackberry No Stop" %}{% endif %}</td>
             <td>
                 {% if t.p3_conference_sim.document %}
-                <a href="{{ t.p3_conference_sim.document.url }}">document</a>
+                <a href="{{ t.p3_conference_sim.document.url }}">{% trans "document" %}</a>
                 {% else %}
-                <strong>missing</strong>
+                    <strong>{% trans "missing" %}</strong>
                 {% endif %}
             </td>
             <td>
@@ -66,7 +66,7 @@
                     {% if t.frozen %}
                         {{ t.p3_conference_sim.number }}
                     {% else %}
-                    <input type="tel" placeholder="Numero di telefono" value="{{ t.p3_conference_sim.number }}" />
+                    <input type="tel" placeholder='{% trans "Numero di telefono" %}' value="{{ t.p3_conference_sim.number }}" />
                     {% endif %}
                 {% endif %}
             </td>
@@ -80,7 +80,7 @@
                 {% endif %}
             </td>
             {% else %}
-            <td colspan="6"><strong>Ticket not compiled (buyer: {{ t.orderitem.order.user.name }})</strong></td>
+            <td colspan="6"><strong>{% blocktrans with name=t.orderitem.order.user.name %}Ticket not compiled (buyer: {{ name }}){% endblocktrans %}</strong></td>
             {% endif %}
         </tr>
         {% endfor %}

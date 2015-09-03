@@ -27,7 +27,7 @@
         <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
 
                 <fieldset class="clearfix">
-                    <legend>Filters</legend>
+                    <legend>{% trans "Filters" %}</legend>
 
                     {{ form.abstracts|form_field:"autosubmit" }}
                     {{ form.talk_type|form_field:"autosubmit" }}

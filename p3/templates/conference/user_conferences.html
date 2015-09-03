@@ -31,7 +31,7 @@ hr.border {
     </ul>
     <hr class="stars" />
     {% endcomment %}
-    <h1>People you have met</h1>
+    <h1>{% trans "People you have met" %}</h1>
     <div class="clearfix">
         {% for p in people %}
         <div class="span-6 {% cycle '' 'last' %}">
@@ -39,12 +39,12 @@ hr.border {
                 {% p3_profile_data p.other as profile %}
                 {% render_profile_box profile user_message="always" %}
                 <hr class="border" />
-                <h3>Met on: {{ p.timestamp|date:"dS M Y" }} at {{ p.timestamp|date:"H.i" }}</h3>
+                <h3>{% trans "Met on:" %} {{ p.timestamp|date:"dS M Y" }} {% trans "at" %} {{ p.timestamp|date:"H.i" }}</h3>
                 <p class="message">{{ p.message }}</p>
                 <form class="async unlink" action="{% url "conference-profile-link" uuid=profile.uuid %}" method="POST">{% csrf_token %}
                     <input type="hidden" name="delete" value="1" />
                     <fieldset>
-                        <a href="#" class="">Remove connection</a>
+                        <a href="#" class="">{% trans "Remove connection" %}</a>
                     </fieldset>
                 </form>
             </div>

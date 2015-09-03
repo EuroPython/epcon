@@ -8,13 +8,13 @@
 
 {% block MAIN_CONTENT %}
 <div class="alert alert--info">
-    Beta version, small changes could be introduced to meet speakers' necessities.
+    {% trans "Beta version, small changes could be introduced to meet speakers' necessities." %}
 </div>
 {% schedules_data sids as schedules %}
 <nav id="schedule-navigator">
-    <div>NAV</div>
+    <div>{% trans "NAV" %}</div>
     <div>
-        <a href="#">Jump to</a>
+        <a href="#">{% trans "Jump to" %}</a>
         <div>
             <ul>
             {% for row in timetables %}
@@ -26,17 +26,17 @@
         </div>
     </div>
     <div>
-        <a href="#">Schedule view</a>
+        <a href="#">{% trans "Schedule view" %}</a>
         <div>
             <ul>
-                <li><a href="{% url "p3-whos-coming-conference" conference=conference %}?speaker=on">Speakers list</a></li>
+                <li><a href="{% url "p3-whos-coming-conference" conference=conference %}?speaker=on">{% trans "Speakers list" %}</a></li>
                 <li>
-                    <a href="{% url "p3-schedule-list" conference=conference %}">List view</a>
+                    <a href="{% url "p3-schedule-list" conference=conference %}">{% trans "List view" %}</a>
                     <a href="{% url "p3-schedule-ics" conference=conference %}">
                         <i class="fa fa-calendar"></i>
                     </a>
                 </li>
-                <li><a href="{% url "p3-schedule-my-schedule" conference=conference %}">My schedule</a></li>
+                <li><a href="{% url "p3-schedule-my-schedule" conference=conference %}">{% trans "My schedule" %}</a></li>
             </ul>
         </div>
     </div>
@@ -199,20 +199,20 @@
                         </div>
                         {% if "recruiting" in e.tags %}
                         <div class="notice">
-                            <h3>Recruiting session</h3>
-                            <p>Are you a professional looking for a job? Is your company looking for proficient programmers? EuroPython is your greatest opportunity to hire the best Python programmers! <a href="/recruiting">More details</a></p>
+                            <h3>{% trans "Recruiting session" %}</h3>
+                            <p>{% trans "Are you a professional looking for a job? Is your company looking for proficient programmers? EuroPython is your greatest opportunity to hire the best Python programmers!"%} <a href="/recruiting">{% trans "More details" %}</a></p>
                         </div>
                         {% endif %}
                         {% if "lightning" in e.tags %}
                         <div class="notice">
-                            <h3>Lightning talks</h3>
-                            <p>A lightning talk is a short talk, typically only five minutes in duration, providing an opportunity for participants to deliver a presentation on a subject of their choosing. <a href="/talks/lightning-talks">More details</a></p>
+                            <h3>{% trans "Lightning talks" %}</h3>
+                            <p>{% trans "A lightning talk is a short talk, typically only five minutes in duration, providing an opportunity for participants to deliver a presentation on a subject of their choosing." %} <a href="/talks/lightning-talks">{% trans "More details" %}</a></p>
                         </div>
                         {% endif %}
                         {% if "poster" in e.tags %}
                         <div class="notice">
-                            <h3>Poster session</h3>
-                            <p>We are glad to introduce a poster session at EuroPython for the first time, to provide an alternative and innovative way to discuss and share your experiences with other people. <a href="/poster-session">More details</a></p>
+                            <h3>{% trans "Poster session" %}</h3>
+                            <p>{% trans "We are glad to introduce a poster session at EuroPython for the first time, to provide an alternative and innovative way to discuss and share your experiences with other people." %} <a href="/poster-session">{% trans "More details" %}</a></p>
                         </div>
                         {% endif %}
                     </div>

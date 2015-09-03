@@ -1,7 +1,7 @@
 {% load conference i18n p3 assopy_tags formstyle%}
 {% p3_profile_data profile.user_id as profile_data %}
 <dl class="dl-horizontal">
-    <dt>Azienda</dt>        
+    <dt>{% trans "Company" %}</dt>
     <dd>
         {% if profile_data.company %}
             <span>{{ profile_data.company }}</span>
@@ -9,7 +9,7 @@
             <span>&mdash;</span>
         {% endif %}
     </dd>
-    <dt>Job title</dt>
+    <dt>{% trans "Job title" %}</dt>
     <dd>
         {% if profile_data.job_title %}
             <span>{{ profile_data.job_title }}</span>
@@ -17,7 +17,7 @@
             <span>&mdash;</span>
         {% endif %}
     </dd>
-    <dt>Sito web</dt>
+    <dt>{% trans "Website" %}</dt>
     <dd>
         {% if profile_data.company_homepage %}
             <span>{{ profile_data.company_homepage|beautify_url }}</span>

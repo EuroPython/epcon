@@ -20,13 +20,13 @@
             {% if e %}
             <td class="track{% for t in e.tags %} t-{{ t }}{% endfor %}" rowspan="{{ e.time_slots }}" colspan="{{ e.track_slots }}">
                 {% if e.talk %}
-                <h3><a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a></h3>
-                di
+                    <h3><a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a></h3>
+                {% trans "di" %}
                 {% for s in e.talk.get_all_speakers %}
-                    <span class="s"><a href="{{ s.get_absolute_url }}">{{ s.name }}</a></span>{% if not forloop.last %} e {% endif %}
+                    <span class="s"><a href="{{ s.get_absolute_url }}">{{ s.name }}</a></span>{% if not forloop.last %} {% trans "e" %} {% endif %}
                 {% endfor %}
                 {% else %}
-                <span class="c">{{ e.title|safe }}</span>
+                    <span class="c">{{ e.title|safe }}</span>
                 {% endif %}
                 
                 {% if e.sponsor %}

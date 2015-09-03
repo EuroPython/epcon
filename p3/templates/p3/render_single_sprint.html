@@ -2,15 +2,15 @@
     {% load i18n assopy_tags %}
     <h2 class="toggle">
         <span class="title">{{ data.object.title }}</span>
-        {% if data.form %} <a href="#" class="trigger-overlay" rel="div[data-form={{ data.form.prefix }}]">(edit)</a>{% endif %}
+        {% if data.form %} <a href="#" class="trigger-overlay" rel="div[data-form={{ data.form.prefix }}]">({% trans "edit" %})</a>{% endif %}
     </h2>
     <p class="abstract" style="display:none">{{ data.object.abstract|linebreaksbr }}</p>
-    <h3>{{ data.attendees|length }} people want to take part in this sprint</h3>
+    <h3>{{ data.attendees|length }} {% trans "people want to take part in this sprint" %}</h3>
     <ol>
         {% for u in data.attendees %}
         <li>
             {% if u.user == request.user %}
-            <strong>{{ u.name }} <span class="user-attend">&lArr; you</span></strong>
+            <strong>{{ u.name }} <span class="user-attend">&lArr; {% trans "you" %}</span></strong>
             {% else %}
             {{ u.name }}
             {% endif %}
@@ -22,9 +22,9 @@
         <input type="hidden" name="user-attend" />
         <fieldset class="border">
         {% if not data.user_attend %}
-        <button type="submit">I will attend this sprint</button>
+        <button type="submit">{% trans "I will attend this sprint" %}</button>
         {% else %}
-        <button type="submit" class="negate">Cancel my registration</button>
+        <button type="submit" class="negate">{% trans "Cancel my registration" %}</button>
         {% endif %}
         </fieldset>
     </form>

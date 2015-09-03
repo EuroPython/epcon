@@ -2,7 +2,7 @@
 {% load i18n microblog_tags %}
 {% block PAGE_TITLE %}{% trans "Archivio" %} {{ year }}{% endblock %}
 {% block BLOG_HEADER %}
-  <h1>Posts of {{ year }}{% if month %}/{{ month }}{% endif %}</h1>
+  <h1>{% trans "Posts of" %} {{ year }}{% if month %}/{{ month }}{% endif %}</h1>
 {% endblock %}
 {% block BLOG_CONTENT %}
     {% post_list year=year as posts %}
