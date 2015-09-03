@@ -15,7 +15,7 @@
         <h1>{% trans "Waiting for Paypal response..." %}</h1>
         <div class="page-summary" role="contentinfo">
             <p>{% blocktrans with code=order.code url="mailto:info@euroython.eu" %}
-            {% trans "Are you waiting for too long? "%}<a href="{{ url }}">{% trans "Write to us" %}</a> {% trans "specifying your order number " %}{{ code }}
+            Are you waiting for too long? <a href="{{ url }}">Write to us</a> specifying your order number {{ code }}
             {% endblocktrans %}</p>
         </div>
         {% else %}

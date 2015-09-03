@@ -5,14 +5,14 @@
 	<h1>{% trans "Sprints" %}</h1>
 	<div class="page-summary"><p>{% trans "Come to the wonderful hacking sessions during the weekend (July 6th-7th), learn from expert Python developers, and contribute to the Python ecosystem!" %}</p></div>
 
-{% blocktrans %}
+{% blocktrans with url=url "p3-sprint-submission" %}
 	<h2>What is a sprint</h2>
 	<p>A sprint is a self-organized session where programmers join together to work on a specific project, usually open-source and connected to the Python ecosystem. The sprint is usually proposed and driven by one or more programmers who are already expert on the specific project (maybe even maintainers), and are willing to help out more programmers to introduce them into the project.</p>
 	<h2>Requirements</h2>
     <p>The EuroPython sprints are open for everybody to join, and are <b>totally free</b>. While we assume that most people there will have a ticket for the conference days (held in the previous days), having a ticket for the conference is <b>not required</b> to join a sprint.</p>
     <p>The EuroPython staff will organize different tables with power plugs, ethernet cables with Internet access, wifi, whiteboards and will generally help out with logistic tasks. Participants are required to <b>bring their own laptops</b> to take part into the sprint</p>
     <h2>Sprint submission</h2>
-    <p>Sprint submission is open to everybody, by using the <a href="{% url "p3-sprint-submission" %}">online form</a>. Please submit a sprint only if you really intend to hold it and help out other people joining it.</p>
+    <p>Sprint submission is open to everybody, by using the <a href="{{  url }}">online form</a>. Please submit a sprint only if you really intend to hold it and help out other people joining it.</p>
     <h2>Registering for a sprint</h2>
     <p>If you are interested in a specific sprint, join it by clicking the corresponding button (after <a href="/accounts/login/">login</a>). Registration is not mandatory, and will not be enforced by organizers in any way, but it will help us out understanding how many people will be present, and at the same time will help sprint organizers setting up a list of tasks for their project. If you think that you might join a sprint (even if you are not 100% sure yet), <b>please register</b>.</p>
 
