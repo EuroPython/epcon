@@ -20,34 +20,37 @@ installed using `pip`.
 
 Although not required the use virtualenv is highly recommended.
 
->>> virtualenv pycon-env
-
->>> source pycon-env/bin/activate
-
->>> pip install -r requirements.txt
+```bash
+virtualenv pycon-env
+source pycon-env/bin/activate
+pip install -r requirements.txt
+```
 
 SETUP
 -----
 
 When the install completes you must setup your pycon installation.
 
->>> cp pycon/settings_locale.py.in pycon/settings_locale.py
+```bash
+cp pycon/settings_locale.py.in pycon/settings_locale.py
+```
 
 Edit `pycon/settings_locale.py` to your taste!
 
 The next step is the database setup; the pycon site uses sqlite so the only
 needed thing is to create the directory where the db will be placed.
 
->>> mkdir -p data/site
-
->>> python manage.py syncdb
-
->>> python manage.py migrate
-
+```bash
+mkdir -p data/site
+python manage.py syncdb
+python manage.py migrate
+```
 RUN
 -----
 
->>> python manage.py runserver
+```bash
+python manage.py runserver
+```
 
 START SETTING
 -----
