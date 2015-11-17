@@ -1,0 +1,91 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+{% block result_list %}
+<div style="position: relative;margin-right: 160px;">
+    <div id="plot-legend" style="height: 100px"></div>
+    <div id="markers-text" style="position: absolute; bottom: 0; right: 10px; height: 16px;"></div>
+</div>
+<div id="plot" style="height: 300px; margin-right: 160px;"></div>
+{{ block.super }}
+<script type="text/javascript">
+(function() {
+    var url = "{% url "admin:conference-ticket-stats-data" %}";
+    function accumulate(data) {
+        var t = 0;
+        for(var ix=0; ix<data.length; ix++) {
+            var e = data[ix];
+            t += e[1];
+            e[1] = t;
+        }
+        return data;
+    }
+    var _colors = [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#f0f000',
+        '#00f0f0',
+        '#f000f0',
+    ]
+    $.getJSON(url, function(data) {
+        var conferences = [];
+        for(var k in data) {
+            conferences.push(k);
+        }
+        conferences.sort();
+
+        var series = [];
+        var markers = [];
+        $(conferences).each(function(ix, conf) {
+            for(var key in data[conf].data) {
+                var serie = {
+                    label: key + ' (' + conf + ')',
+                    data: accumulate(data[conf].data[key])
+                };
+                series.push(serie);
+            }
+            $(data[conf].markers).each(function(iy, marker) {
+                markers.push({
+                    xaxis: { from: marker[0], to: marker[0] },
+                    color: _colors[ix]
+                });
+            });
+        });
+        var options = {
+            legend: {
+                position: 'no',
+                container: '#plot-legend',
+                noColumns: 4
+            },
+            series: {
+                lines: {
+                    fill: true
+                }
+            },
+            grid: {
+                hoverable: true,
+                markings: markers
+            }
+        };
+        var obj = $.plot('#plot', series, options);
+        $('#plot').bind('plothover', function(event, pos, item) {
+            var x = Math.round(pos.x);
+            var markers = [];
+            for(var ic=0; ic<conferences.length; ic++) {
+                var conf=conferences[ic];
+                for(var im=0; im<data[conf].markers.length; im++) {
+                    var m = data[conf].markers[im];
+                    if(m[0] == x) {
+                        markers.push(conf + ' - ' + m[1]);
+                    }
+                }
+            }
+            if(item) {
+                markers.push('VAL: ' + item.datapoint[1]);
+            }
+            $('#markers-text').html(markers.join(', '));
+        });
+    });
+})();
+</script>
+{% endblock %}

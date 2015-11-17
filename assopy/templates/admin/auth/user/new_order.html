@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../../">Home</a> &rsaquo;
+     <a href="../../../">Auth</a> &rsaquo;
+     <a href="../../">Users</a>&rsaquo;
+     <a href="../">{{ user.name }}</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <h2>Fill a new order for: {{ user.name }}</h2>
+    <form action="{% url "admin:auser-order" uid=user.user_id%}" method="post">{% csrf_token %}
+        <table>
+            {% for field in form %}
+            {% if not field.field.fare %}
+            <tr>
+                <td colspan="2">{{ field.label }}</td>
+                <td colspan="3">{{ field }}{% if field.help_text %}<br />{{ field.help_text }}{% endif %}{% if field.errors %}<br />{{ field.errors }}{% endif %}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            <tr>
+                <th></th>
+                <th>Fare</th>
+                <th>Type</th>
+                <th>Q.ty</th>
+                <th>Price</th>
+            </tr>
+            {% for field in form %}
+            {% if field.field.fare %}
+            <tr>
+                <td>{{ field.name }}</td>
+                <td>{{ field.label }}</td>
+                <td>{{ field.field.fare.ticket_type }}</td>
+                <td>{{ field }}{% if field.errors %}<br />{{ field.errors }}{% endif %}</td>
+                <td>{{ field.field.fare.price|floatformat:"2" }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+        <hr />
+        <div>
+            <input type="submit" value="submit" />
+        </div>
+    </form>
+{% endblock %}

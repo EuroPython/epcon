@@ -1,0 +1,29 @@
+{% load conference %}
+<html>
+<head>
+    <meta charset="UTF-8" />
+</head>
+<body>
+    <h1>Talk voting</h1>
+    <form action="{% url "conference-voting" %}" method="get">
+        {{ form }}
+        <input type="submit" />
+    </form>
+    <form action="{% url "conference-voting" %}?{{ request.GET.urlencode }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table style="width: 500px">
+        {% for t in talks %}
+            <tr>
+                <td style="padding-top: 20px">{{ t.title }}</td>
+                <td><input type="text" size="2" name="vote-{{ t.id }}" value="{{ t.user_vote.vote }}" />
+            </tr>
+            <tr>
+                {% conference_multilingual_attribute t "abstracts" as ab fallback "any" %}
+                <td colspan="2" style="padding-left: 10px; font-size: 0.8em;">{{ ab.body|linebreaks }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <input type="submit" />
+    </form>
+</body>
+</html>
+

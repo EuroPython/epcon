@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+       
+  <title>Documentation for VoteEngine</title>
+</head>
+  <body>
+   
+<p><a href="../index.html">home</a>  </p>
+   
+<p></p>
+   
+<h1>Documentation for VoteEngine 0.99</h1>
+      
+<p><b>VoteEngine comes with no warranty.  It may not work.  See the notice
+ at the bottom of this document.</b>  </p>
+   
+<p>VoteEngine is actually made up of a few Python scripts.  As a result,
+you need to have both Python, and the Numeric python package (Numpy) installed
+ to use VoteEngine.&nbsp;  </p>
+  <br>
+ There are multiple ways to run VoteEngine. &nbsp;How you choose to do so 
+will depend both on your own preference, and on the operating system you are
+using.<br>
+ <br>
+ <b>Linux/Unix</b><br>
+ 
+<blockquote>You'll probably want to run VoteEngine from the console/shell. 
+&nbsp;You can do this by typing<br>
+   
+  <blockquote>python voteengine.py<br>
+     </blockquote>
+ VoteEngine uses the standard input and output. &nbsp;These may be re-directed 
+as usual. &nbsp;If the execution bit is set for voteengine.py, you may be 
+able to run it like this<br>
+     
+    <blockquote>./voteengine.py &lt;inputfile &gt;outputfile<br>
+       </blockquote>
+ If your system can run python scripts in that way.<br>
+       </blockquote>
+       
+      <p></p>
+       
+      <p><b>Windows</b><br>
+       </p>
+       
+      <blockquote>         
+        <p>To run VoteEngine in Windows, double-click the ve.py script. &nbsp;This 
+script looks for a file named "input.txt" and produces an output file called 
+"output.txt". &nbsp;Just put whatever input you want into the "input.txt" 
+file.<br>
+         </p>
+         </blockquote>
+         
+        <p><b>Python</b></p>
+         
+        <blockquote>           
+          <p>If you have some knowledge of python, you can use the python 
+console to run VoteEngine.<br>
+           </p>
+           
+          <blockquote>from votemain import vote_engine<br>
+ vote_engine(open("inputfile"),open("outputfile","w"),"-m borda")<br>
+             </blockquote>
+             </blockquote>
+               
+            <p>   </p>
+               
+            <p></p>
+               
+            <h2>Input File</h2>
+                  
+            <p></p>
+               
+            <h3>Comments</h3>
+                  
+            <p>Comments may appear anywhere in the input file.  Any part of
+an input line after a "#" is ignored.  </p>
+               
+            <p></p>
+               
+            <dir>-cands A-C # this comment will be ignored</dir>
+                  
+            <p></p>
+               
+            <h3>Commands</h3>
+                  
+            <p>Any line beginning with a "-" is interpreted as one or more 
+commands.  Each new command on a line begins with its own "-" following a 
+space of tab.  For example  </p>
+               
+            <p></p>
+               
+            <dir>-m minmax -cands A-C -tie A B C</dir>
+                  
+            <p>This line provides three different commands.  Notice that the
+hyphen in "A-C" does not introduce a new command, because there is no space
+before it.  </p>
+               
+            <p>You may also place commands as initial arguments on the command 
+line, for example  </p>
+               
+            <p></p>
+               
+            <dir>python voteengine.py &lt;test -m tideman -cands A-C</dir>
+                  
+            <p></p>
+               
+            <h3>-m ### choose method</h3>
+                  
+            <p>This command is required, and must precede all other commands, 
+as well as the ballots.  This command allows you to choose the method for 
+tabulation.  The following methods are available.  See <a href="http://www.fortunecity.com/meltingpot/harrow/124/methods.html">
+  Method Definitions</a>  </p>
+               
+            <p>borda  </p>
+               
+            <p>borda-elim  </p>
+               
+            <p>bucklin  </p>
+               
+            <p>c//irv &nbsp; &nbsp; Condorcet winner if one exists.  Otherwise
+IRV  </p>
+               
+            <p>copeland  </p>
+               
+            <p>irv &nbsp; &nbsp; Commonly used successive lowest plurality
+elimination method  </p>
+               
+            <p>minmax&nbsp;  </p>
+               
+            <p>nanson &nbsp; &nbsp; Nansons's orginal method  </p>
+               
+            <p>pw_elim &nbsp; &nbsp; successively eliminate candidate with
+greatest pairwise defeat.   </p>
+               
+            <p>s//irv &nbsp; &nbsp; eliminates candidates outside the Smith
+set, then does IRV.  </p>
+               
+            <p>s//minmax&nbsp;  </p>
+               
+            <p>schulze &nbsp; &nbsp; Apply the minmax floyd algorithm.  </p>
+               
+            <p>smith  </p>
+               
+            <p>table &nbsp; &nbsp; Not actually a method.  Just prints the
+pairwise table.  </p>
+               
+            <p>rp &nbsp; &nbsp; Ranked Pairs  </p>
+               
+            <p>ukvt &nbsp; &nbsp; apply the rules used by the uk.* usenet
+hierarchy.              </p>
+               
+            <p>  </p>
+               
+            <p></p>
+               
+            <h3>-cands ### Designate candidates</h3>
+                  
+            <p>The "-cands" command is required.  It should come after the 
+"-m" command, but before everything else.  </p>
+               
+            <p>The "-cands" command must be given a list of candidate designations 
+that will be used in the various printouts provided by the programming.  Candidates
+actual names would be too long, so instead each candidate is assigned a letter
+or number.  This command allows you to specify a range for use by the candidates.
+ For example  </p>
+               
+            <p></p>
+               
+            <dir>-cands 1-12</dir>
+                  
+            <p>means that the numbers 1 through 12 will be used to designate 
+candidates.  You can also use letters.  </p>
+               
+            <p></p>
+               
+            <dir>-cands A-F</dir>
+                  
+            <p>designates the candidates as A through F.  To allow more that 
+26 candidates, VoteEngine allows you to make use of a letter sequence that 
+proceeds A to Z, then AA to ZZ, then AAA to ZZZ and so on.  So, you can say, 
+ </p>
+               
+            <p></p>
+               
+            <dir>-cands V-RS</dir>
+                  
+            <p>which means V, W, X, Y, Z, AA, AB, AC, AD &#8230; AZ, ZA, ZB, &#8230; RS
+ </p>
+               
+            <p>You can also use special ranges that combine a letter and number
+series, as follows  </p>
+               
+            <p></p>
+               
+            <dir>-cands A1-C3</dir>
+                  
+            <p>This produces the sequence, A1, A2, A3, B1, B2, B3, C1, C2, 
+C3.  </p>
+               
+            <p>It is important to note that only the &lt;letter&gt;&lt;number&gt; 
+form is supported.  </p>
+               
+            <p>You don&#8217;'t have to use ranges, however, you can specify specific 
+candidates, like  </p>
+               
+            <p></p>
+               
+            <dir>-cands 7A AB Q R+ C&#8217; D</dir>
+                  
+            <p>More characters and sequences are legal in this form than in
+a range. You can also combine ranges with separately specified candidates. 
+ </p>
+               
+            <p></p>
+               
+            <dir>-cands A-F SQ RO</dir>
+                  
+            <p>For, example if you have designations with a special meaning. 
+ For example "SQ" for Status Quo, or "RO" for re-open discussion.  </p>
+               
+            <p></p>
+               
+            <h3>-tie ### tie breaking order</h3>
+                  
+            <p>It is possible that the ballots listed will result in a tie 
+for the particular method chosen.  The "-tie" command allows you to list candidates
+in an order that will be used to break ties, with the preferred candidates
+listed earlier.  You must list all candidates.  </p>
+               
+            <p>/dir -tie A B C D  </p>
+               
+            <p>Just how the tie-breaking order will be used is dependent on
+the method chosen.  </p>
+               
+            <p></p>
+               
+            <h3>-table ## enter a table</h3>
+                  
+            <p>The table command allows you to enter pairwise data in the 
+form of a table, rather than as ballots.  The table data is added to any other
+data entered, so you could use this to sum two or more tables, if you wanted
+to.  It only works if the selected method is exclusively a pairwise method.
+ This includes the "table" method, which can be used to add up tables.  </p>
+               
+            <p></p>
+               
+            <dir>-table                
+            <p>#    A  B  C  D  </p>
+               
+            <p>A   X  5  3   7    # comments are allowed here  </p>
+               
+            <p>B   4   X  9   2  </p>
+               
+            <p>C  8   7   X  6  </p>
+               
+            <p>D 5   3   9   X</p>
+  </dir>
+                  
+            <p>The table entry format is meant to be forgiving.  It counts 
+back from the end of the line to determine how many words or numbers it reads 
+in.  This means that you can put whatever you want at the beginning of the 
+line and it will be ignored.  Similarly, you can put any single word in the 
+long diagonal where the row and column are equal.  I prefer "X", as above, 
+but you could also use "N/A" or 0, or anything else that is one word long. 
+ </p>
+               
+            <p>You can also use comments to provide extra information, for 
+example, column headers as above, or comments after the information on the 
+line.</p>
+            <h3>-zd ## zero out defeats</h3>
+            <p>When a method uses a pairwise table, it normally uses the
+marginal pairwise table. &nbsp;However, with this option you can cause the
+procedure to zero-out defeats, resulting in a "winning-votes" table. &nbsp;
+So, for example, 10 to 9 is treated like 10 to 0.<br>
+  </p>
+               
+            <p></p>
+               
+            <h2>Ballots</h2>
+                  
+            <p>Here is an example ballot line.  </p>
+               
+            <p></p>
+               
+            <dir>30: A B= C &gt; D E # comments allowed</dir>
+                  
+            <p>An "=" declares that two candidates are ranked as equal.  If
+no equal sign is present, candidates are assumed to be listed in descending 
+preference.  You may use a "&gt;" sign to express this, but one is not required. 
+ Any candidates not listed are ranked as equal to one another, but lesser 
+than all listed candidates.  </p>
+               
+            <p>The "30" says that 30 votes will be scored according to the 
+ranking given.   </p>
+               
+            <p>If the number and colon are omitted, then it is assumed that 
+only one ballot is being counted.  </p>
+               
+            <p></p>
+               
+            <dir>A B C                
+            <p>B C A  </p>
+               
+            <p>A C B</p>
+  </dir>
+                  
+            <p>Each of the ballots above is scored as 1 vote.  </p>
+               
+            <p></p>
+               
+            <h2>Output</h2>
+                  
+            <p>The output produced by VoteEngine varies with the method being 
+used.  If you don&#8217;t use any method, the pairwise table is calculated, and 
+the program exits.  </p>
+               
+            <p>Most methods will provide a ranking of the candidates.  Usually, 
+this ranking will be straightforward.  </p>
+               
+            <p></p>
+               
+            <dir>A &gt; B &gt; C &gt; D</dir>
+                  
+            <p>This simply orders the candidates from highest (A) to lowest 
+(D).  However, if some form of tie results, the ranking may be more complicated. 
+ In this case, the "," is used to remain non-committal about the relative 
+value of two candidates.  For example.  </p>
+               
+            <p>If a complete ranking cannot be determined, VoteEngine prints 
+a Win/Loss/Unknown table.  </p>
+               
+            <p></p>
+               
+            <h2>Future Directions</h2>
+                  
+            <p>I hope to improve this program over time.  If you have any 
+suggestions, especially of actual code, please let me know.  I don't expect 
+many people to use this program, so I'm interested in hearing from anyone 
+who does.  In any case, I hope you find VoteEngine useful.  </p>
+               
+            <p></p>
+               
+            <h2>Disclaimer of all warranty</h2>
+   IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR 
+ DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
+ EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+               
+            <p>THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. THIS SOFTWARE IS PROVIDED
+ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
+PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
+               
+            </body>
+            </html>

@@ -1,0 +1,37 @@
+<html>
+<body>
+    <h1>{{ talk.titolo }}</h1>
+    <table>
+        <tr>
+            <th>speaker</th>
+            <td><a href="{% url "conference-speaker" slug=talk.speaker.slug %}">{{ talk.speaker }}</a></td>
+        </tr>
+        <tr>
+            <th>durata</th>
+            <td>{{ talk.durata }} minuti</td>
+        </tr>
+        <tr>
+            <th>lingua</th>
+            <td>{{ talk.lingua }}</td>
+        </tr>
+        <tr>
+            <th>slides</th>
+            <td>{% if talk.slides %}<a href="{{ MEDIA_URL }}stuff/slides/{{ talk.slides }}">{{ talk.slides }}</a>{% endif %}</td>
+        </tr>
+        <tr>
+            <th>video type</th>
+            <td>{{ talk.video_type }}</td>
+        </tr>
+        <tr>
+            <th>video url</th>
+            <td>{{ talk.video_url }}</td>
+        </tr>
+        {% for b in talk.abstracts.all %}
+        <tr>
+            <th>abstract {{ b.language|upper }}</th>
+            <td>{{ b.body }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

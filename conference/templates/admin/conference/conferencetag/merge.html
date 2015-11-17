@@ -1,0 +1,17 @@
+{% load conference %}
+<form method="POST">{% csrf_token %}
+    <table>
+        <tr>
+            <th>Tag</th>
+            <th>Usage</th>
+            <th></th>
+        </tr>
+        {% for t in tags %}
+        <tr>
+            <td>{{ t.name }}</td>
+            <td>{{ t.usage }}</td>
+            <td><button type="submit" name="target" value="{{ t.id }}">Use this</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</form>

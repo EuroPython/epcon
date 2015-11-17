@@ -1,0 +1,8 @@
+-cands A B C D
+12:  A>B>C>D
+21:  B>A>C>D
+12:  B>A>D>C
+6:   B>D>A>C
+21:  C>D>A>B
+3:   D>A>C>B
+25:  D>C>A>B

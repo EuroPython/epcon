@@ -1,0 +1,18 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+{% block ASSOPY_MAIN_CONTENT %}
+    <h1>{% trans "You have canceled the order from paypal" %}</h1>
+    <div class="span-12 append-1">
+        <div class="cms">
+            <ul>
+                <li>
+                    <a href="{{ form.paypal_url }}?{{ form.as_url_args }}"><h2>{% trans "back to paypal" %}</h2></a>
+                </li>
+                <li>
+                    <a href="/"><h2>{% trans "back to home page" %}</h2></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+

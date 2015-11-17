@@ -1,0 +1,144 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+
+{% block EXTRA_HEAD %}
+<style type="text/css">
+
+h1 span {
+    color: #635443;
+}
+
+.profile-picture {
+    border: 5px solid #aba18f;
+}
+
+.coupon span {
+    font-weight: bold;
+}
+
+.coupon.invalid {
+    text-decoration: line-through;
+}
+
+</style>
+{% endblock %}
+
+{% block ASSOPY_MAIN_CONTENT %}
+    <h1>{{ user.name }} <span>({% trans "Your profile" %})</span></h1>
+    <div class="span-5">
+        <div class="form-box">
+            <form action="{% url "assopy-profile" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <fieldset>
+                    {% for f in form %}{{ f|field }}{% endfor %}
+                </fieldset>
+                <fieldset class="border">
+                    <button name="" value="" type="submit">{% trans "Save Changes" %}</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="span-2 append-1">
+            {% with user.photo_url as u %}
+            {% if u %}
+            <div class="profile-picture">
+                <img class="block" src="{{ u }}" alt="{{ user.name }}" width="98" />
+            </div>
+            {% endif %}
+            {% endwith %}
+    </div>
+    <div class="span-4 last">
+        {% block PROFILE_SIDEBAR %}
+        <aside>
+            <div class="cms">
+                {% block WEB_ACCOUNTS %}
+                <h4>{% trans "Web accounts for login" %}</h4>
+                <ul id="web-accounts">
+                    {% for i in user.identities.all %}
+                    <li data-identifier="{{ i.identifier }}"><span class="show-tooltip" title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}</span>&nbsp;<img class="clickable delete" src="{{ STATIC_URL }}assopy/i/icon-delete.png" title="{% trans "Delete account" %}" /></li>
+                    {% endfor %}
+                </ul>
+                <form id="remove-identity" action="{% url "assopy-profile-identities" %}" method="post">
+                    <input type="hidden" name="identifier" value="" />
+                </form>
+                <script type="text/javascript">
+                    $('#web-accounts img.delete').click(function(e) {
+                        if(!confirm('Are you sure?')) {
+                            return;
+                        }
+                        var parent = $(e.target).parents('li');
+                        var id = parent.attr('data-identifier');
+                        var form = $('form#remove-identity');
+                        $('input[name=identifier]', form).val(id);
+                        form.ajaxSubmit({
+                            success: function() {
+                                feedback('{% trans "Web access removed" %}');
+                                parent.remove();
+                            },
+                            error: function(xhr, status, error) {
+                                alert('{% trans "Cannot remove the requested item, please contact info@pycon.it for assistance" %}');
+                            }
+                        });
+                    });
+                </script>
+                <p>
+                    {% url "assopy-profile" as u %}
+                    {% render_janrain_box u "overlay" %}
+                </p>
+                {% endblock %}
+
+                {% block SPEAKER_PROFILE %}
+                {% if request.user.speaker %}
+                <h4>{% trans "Speaker profile" %}</h4>
+                <p>
+                    <a href="{% url "conference-myself-profile" %}">{% trans "Your public page" %}</a>
+                </p>
+                {% endif %}
+                {% endblock %}
+
+                {% block USER_COUPONS %}
+                {% with request.user.assopy_user|user_coupons as coupons %}
+                    {% if coupons.valid|length or coupons.invalid|length%}
+                    <h4>{% trans "Your Coupons" %}</h4>
+                    {% for c in coupons.valid %}
+                    <p class="coupon valid"><span>Code: {{ c.code }}</span><br />{{ c.description }}</p>
+                    {% endfor %}
+                    {% for c in coupons.invalid %}
+                    <p class="coupon invalid"><span>Code: {{ c.code }}</span><br />{{ c.description }}</p>
+                    {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+
+                {% block USER_TICKETS %}
+                {% with request.user.assopy_user.tickets as tickets %}
+                    {% if tickets|length %}
+                    <h4>{% trans "Utilities" %}</h4>
+                    <p><a href="{% url "assopy-tickets" %}">{% trans "Your tickets" %}</a></p>
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+
+                {% block USER_INVOICES %}
+                {% with request.user.assopy_user.invoices as invoices %}
+                    {% if invoices|length %}
+                    <h4>{% trans "Your invoices" %}</h4>
+                    <ul>
+                    {% for i in invoices %}
+                        {% with i.order.code as ocode %}
+                        {% with i.order.created|date:"d M Y" as odate %}
+                        <li><a href="{{ i.get_absolute_url }}">{% blocktrans %}Order: {{ ocode }} of {{ odate }}{% endblocktrans %}</a></li>
+                        {% endwith %}
+                        {% endwith %}
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+
+                {% render_profile_last_block %}
+            </div>
+        </aside>
+        {% endblock %}
+    </div>
+{% endblock %}
+

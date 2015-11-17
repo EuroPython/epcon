@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+{% block extrahead %}
+{{ block.super }}
+{% comment %}
+ridefinisco questo blocco per ridurre le textarea,
+lo schedule ne mostra troppe e la pagina diventa inutilizzabile.
+{% endcomment %}
+<style>
+.vLargeTextField, .vXMLLargeTextField {
+    height: 3em;
+}
+</style>
+{% endblock %}

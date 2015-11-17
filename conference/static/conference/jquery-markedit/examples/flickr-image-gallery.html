@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>MarkEdit Basic Example</title>
+    <link rel="stylesheet" type="text/css" href="../jquery.markedit.css" />
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/redmond/jquery-ui.css" />
+    <style type="text/css">
+        textarea { min-height: 250px; }
+        .markedit { width: 75%; }
+        
+        .gallery { font-size: 0.75em; }
+        .gallery span { margin-right: 20px; }
+        .gallery button { margin-left: 10px; }
+        .gallery input { width: 50%; }
+        .gallery .results { overflow: auto; margin-top: 20px; }
+        .gallery .results a { margin: 15px; }
+    </style>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../showdown.js"></script>
+    <script type="text/javascript" src="../jquery.markedit.js"></script>
+
+    <script type="text/javascript">
+    
+        var flickrKey = 'c9eba8561b3eced414517b87b18270e0';
+
+        // Create a MarkEdit editor on page load
+        $(function(){
+            $('textarea').markedit({
+                'preview': 'below',
+                'toolbar' : {
+                    'layout' : 'bold italic | link quote code flickr-gallery | numberlist bulletlist heading line',
+                    'buttons' : [
+                        { 'id':'flickr-gallery', 'tip':'Insert Flickr Image', 'css':'image', 'click': flickrGalleryClick }
+                    ]
+                }
+            });
+            
+            function flickrGalleryClick() {
+                // Create dialog to show user
+                var win = $('<div class="gallery"></div>');
+                var searchBox = $('<input type="text" value="tree"></input>');
+                var results = $('<div class="results"></div>');
+                $(win).append('<span>Search:</span>').append(searchBox).append('<button>Go</button>');
+                $(win).append(results);
+                
+                $(win).dialog({
+                    'autoshow': true,
+                    'bgiframe': true,
+                    'title': 'Flickr Image Gallery',
+                    'closeOnEscape': true,
+                    'height': 500,
+                    'width': 850
+                });
+                
+                $(win).children().filter('button').click(function() {
+                    $(results).html();
+                    searchFlickrPhotos($(searchBox).val(), function(i, item) {                        
+                        var a = $('<a></a>').attr('href', item.url_m).attr('title', item.title);
+                        var img = $('<img />').attr('src', item.url_s);
+                        a.append(img);
+                        $(results).append(a);
+                    }, function() {
+                        // Now that the results are done, map the anchors to insert the image
+                        $(results).children().filter('a').each(function() {                            
+                            $(this).click(function() {
+                                $('textarea').markeditSetLinkOrImage(true, $(this).attr('href'), $(this).attr('title'));
+                                $(win).dialog('close');
+                                $(win).remove();
+                                return false; 
+                            });
+                        });
+                    });
+                });                
+                
+            }
+            
+            function searchFlickrPhotos(query, resultCallback, completedCallback) {
+                $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photos.search&text=tree&format=json&jsoncallback=?&per_page=30&extras=url_s,url_m&api_key='+flickrKey, function(data, textStatus){                    
+                    $.each(data.photos.photo, function(i, item){
+                       resultCallback(i, item);
+                    });
+                    completedCallback();
+                });
+            }
+            
+        });
+
+    </script>
+</head>
+<body>
+    <textarea>
+Click the regular image button to insert an image.
+    </textarea>
+</body>
+</html>

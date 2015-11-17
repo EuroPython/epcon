@@ -10,7 +10,14 @@ p3/static/p6/.sass-cache/*
 *.mo
 .bundle
 ._*
-.idea/*
 vendor/
 .DS_Store
 *.db
+Thumbs.db
+*.tmproj
+*.mo
+.bzr
+*.egg-info
+.idea
+*.sqlite
+build/
