@@ -1,0 +1,38 @@
+{% extends "admin/change_form.html" %}
+{% load conference %}
+
+{% block content %}
+    {{ block.super }}
+    <div>
+        <h1>Tagged items</h1>
+        <table>
+            <tr>
+                <th>Type</th>
+                <th style="width: 100%">Object</th>
+            </tr>
+            {% tagged_items original as objects %}
+            {% for cid, o in objects %}
+            {% with cid|content_type as ct %}
+            <tr>
+                <td>{{ ct.model }}</td>
+                <td>
+                {% admin_urlname_fromct ct "change" o as aurl %}
+                {% if aurl %}
+                <a href="{{ aurl }}">
+                    {% if ct.model == "talk" %}
+                        {% talk_data o as t %}
+                        {{ t.title }}
+                    {% else %}
+                        {{ o }}
+                    {% endif %}
+                </a>
+                {% else %}
+                {{ o }}
+                {% endif %}
+                </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

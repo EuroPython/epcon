@@ -1,0 +1,39 @@
+CHANGELOG
+
+0.99 Feb 12 2001
+ Fixed some bugs introduced by 0.95.  Changed how method options
+ are done.
+
+0.95 Nov 14 2001
+ Fixed a bug, and made major internal changes
+
+0.94 Nov 10 2001
+ Windows compatability changes.
+
+0.93 Nov 10 2001
+ Added Nanson's original method. 
+
+0.92 Aug 23 2001
+ I changed the way multiple ballots per line are handled.  Instead of the
+ old "-each" command, I now use the colon.
+
+0.91 Aug 13 2001
+ Changed name of Nanson to borda-elim in a desperate 
+ attempt to avoid confusion
+
+0.90 Apr 23 2001
+ Changed RP tiebreaker to be the same as Zavist and Tideman's
+ 
+0.85-0.88 Feb 21 2001 - Mar 13 2001
+ Correction of RP algorithm
+
+0.8 Feb 04 2001
+ Some bug fixes/algorithm improvements
+
+0.11
+ Changed name of Tideman's method to Ranked Pairs.
+
+0.1
+ The introduction of version numbers
+ The introduction of a change log
+ Major internal revisions.  Introduction of some non-pairwise methods.

@@ -1,0 +1,5 @@
+-cands A B C D E F
+-tie A F B E C D
+A B C D E F
+B C A E F D
+C A B F D E

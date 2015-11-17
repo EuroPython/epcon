@@ -1,0 +1,13 @@
+<h1>{{ conference }}</h1>
+<div>
+    {% for day, data in events %}
+    <h2>{{ day }}</h2>
+    <ul class="schedule">
+        {% for e in data %}
+        <li class="event{% if e.talk %} talk{% endif %}">
+            <strong>{{ e.time|time:"H:i" }}</strong> &mdash; {{ e.name|safe }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>

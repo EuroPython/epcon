@@ -1,0 +1,113 @@
+{% load conference %}
+{% if request.user.is_staff and timetable.errors %}
+<div class="error-notice">
+    <h2>TimeTable errors</h2>
+    <ul>
+        {% for e in timetable.errors %}
+        <li style="margin-bottom: 10px;">
+            {% if e.type == "overlap-event" %}
+            Error at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overwrite <b>{{ e.previous.get_description }}</b>.
+            {% endif %}
+            {% if e.type == "overlap-reference" %}
+            Warning at <b>{{ e.time }}</b>:<br /> <b>{{ e.event.get_description }}</b> overwrite <b>{{ e.previous.get_description }}</b>.
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% randint as r %}
+<table id="s{{ r }}" class="schedule tracks-{{ timetable.rows|length }}">
+    <thead>
+        <tr>
+            <th class="hhmm">&nbsp;</th>
+            {% for t in timetable.columns %}
+            <th class="hhmm"><span>{{ t|time:"H" }}</span>:{{ t|time:"i" }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row, columns in timetable.byRows %}
+        <tr data-track="{{ row.track }}">
+            <td>{{ row }}</td>
+            {% for col in columns %}
+            {% if not col.data %}
+            <td
+                data-time="{{ col.time|time:"H:i" }}"
+                class="event"
+                colspan="{{ col.data.columns }}"
+                rowspan="{{ col.data.rows }}">
+            </td>
+            {% endif %}
+            {% if col.data.ref %}
+            {% with col.data.ref|user_interest:request.user as interest %}
+            <td
+                data-time="{{ col.time|time:"H:i" }}"
+                data-event-url="{% url "conference-schedule-event" conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}"
+                class="event{% for t in col.data.ref.get_all_tracks_names %} t-{{ t }}{% endfor %}{% if interest > 0 %} highlighted{% endif %}{% if interest < 0 %} shadowed{% endif %}"
+                colspan="{{ col.data.columns }}"
+                rowspan="{{ col.data.rows }}">
+                {% if col.data.ref.talk %}
+                    {% with col.data.ref.talk as talk %}
+    <!--
+                <div class="star">
+                    <img src="/static/p5/i/icon-star.png" alt="Star this" width="16" height="16" />
+                </div>  
+    -->             
+                    <h3 data-talk="{{ talk.id }}"><a href="{% url "conference-talk" slug=talk.slug %}">{{ talk.title }}</a></h3>
+                    of 
+                    {% for s in talk.get_all_speakers %}
+                    <a href="{% url "conference-speaker" slug=s.slug %}">{{ s.name }}</a>
+                    {% endfor %}
+                    <div class="talk-vote">#{% talk_vote talk as x %}{{ x.vote}}</div>
+                    <div class="talk-level">{{ talk.get_level_display }}</div>
+                    <div class="talk-interest" data-url="{% url "conference-schedule-event-interest" conference=schedule.conference slug=schedule.slug eid=col.data.ref.id %}">
+                        <button class="down {% if interest < 0 %}active{% endif %}">Down</button>
+                        <button class="up {% if interest > 0 %}active{% endif %}">Up</button>
+                    </div>
+                    {% endwith %}
+                {% else %}
+                    <div class="custom-event">{{ col.data.ref.custom|safe }}</div>
+                {% endif %}
+            </td>
+            {% endwith %}
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script type="text/javascript">
+    (function() {
+        var table = $('#s{{ r }}');
+        $('.talk-interest button', table).click(function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var wrap = $(this).parents('.talk-interest'); 
+            var val = 0;
+            if(!btn.hasClass('active')) {
+                val = btn.hasClass('up') ? 1 : -1;
+            }
+            $.ajax({
+                url: wrap.attr('data-url'),
+                type: 'POST',
+                data: {
+                    interest: val
+                },
+                success: function() {
+                    $('button', wrap).removeClass('active');
+                    var td = wrap.parents('td');
+                    td.removeClass('highlighted').removeClass('shadowed');
+                    if(val > 0) {
+                        $('button.up', wrap).addClass('active');
+                        td.addClass('highlighted');
+                    }
+                    else if(val < 0) {
+                        $('button.down', wrap).addClass('active');
+                        td.addClass('shadowed');
+                    }
+                }
+            });
+        });
+    })();
+</script>

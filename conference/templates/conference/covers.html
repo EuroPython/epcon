@@ -1,0 +1,59 @@
+{% load conference %}
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <style>
+    body {
+        font-size: 11pt;
+    }
+    h1 {
+        text-align: center;
+    }
+    .schedule {
+        margin: 40px 0;
+    }
+    .track:after {
+        content: " ";
+        display: block;
+        clear: both;
+    }
+    .event {
+        float: left;
+        margin: 0 5px;
+    }
+    .event p {
+        width: 128px;
+        word-wrap: break-word;
+        height: 80px;
+        overflow: hidden;
+    }
+    .event .download {
+        text-align: right;
+        font-size: 80%;
+        font-variant: small-caps;
+        padding: 5px 0;
+    }
+    </style>
+</head>
+<body>
+    {% for schedule, data in events %}
+        <section class="schedule">
+            <h1>{{ schedule.date|date:"jS N Y" }}</h1>
+            {% for track, evts in data %}
+                <div class="track">
+                    <h2>{{ track|safe }}</h2>
+                    {% for e in evts %}
+                    <div class="event">
+                        <img src="{% video_cover_url e thumb=1 %}" width="128" height="128" />
+                        <div class="download">
+                            <a href="{% video_cover_url e thumb=0 %}">front</a>
+                        </div>
+                        <p>{{ e.time|date:"H:i" }}<br />{{ e.name|safe }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </section>
+    {% endfor %}
+</body>
+</html>
