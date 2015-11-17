@@ -1,0 +1,191 @@
+{% extends "admin/change_form.html" %}
+{% block object-tools %}
+    <ul class="object-tools">
+        <li>
+            <a class="historylink" href="history/">History</a>
+        </li>
+        <li>
+            <a class="" href="{% url "admin:auser-order" uid=object_id %}">New order</a>
+        </li>
+        <li>
+            <a class="" href="{% url "admin:auser-create-doppelganger" uid=object_id %}">Doppelganger!</a>
+        </li>
+    </ul>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <script>
+    (function($) {
+        /*
+         * rendo i moduli di auth.user collassabili
+         */
+        $('.module').each(function(ix) {
+            if(ix<=1)
+                return;
+            var h2 = $(this).children('h2');
+            if(h2.length == 0)
+                return;
+
+            function toggle(header) {
+                var h = $(header);
+                var siblings = h
+                    .parent()
+                    .children()
+                    .not(h);
+                if(siblings.is(':visible')) {
+                    var msg = "show";
+                    siblings.hide();
+                }
+                else {
+                    var msg = "hide";
+                    siblings.show();
+                }
+                h
+                    .find('.toggle')
+                        .remove()
+                        .end()
+                    .append('<span class="toggle" style="margin-left: 20px; font-variant: small-caps;">[' + msg + ']</span>');
+            }
+
+            toggle(h2);
+            $(h2).click(function(ev) {
+                toggle(this);
+                return false;
+            });
+        })
+    })(django.jQuery);
+    </script>
+    <div>
+        <div>
+            <h2>User info</h2>
+            <table>
+                {% with user_data.user as d %}
+                <tr>
+                    <th>Name:</th>
+                    <td>{{ d.name }}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td>{{ d.email }}</td>
+                </tr>
+                {% endwith %}
+                {% with user_data.identities as d %}
+                    {% for x in d %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <th rowspan="{{ d|length }}">Identities:</th>
+                        {% endif %}
+                        <td>
+                            <div title="{{ x.identifier }}">{{ x.provider }}</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endwith %}
+            </table>
+        </div>
+        <div>
+            {% with user_data.orders as d %}
+            <h2>Orders #{{ d|length }} </h2>
+            {% if d %}
+            <table>
+                <tr>
+                    <th>Order #</th>
+                    <th>Complete</th>
+                    <th>Date</th>
+                    <th>Method</th>
+                    <th>Total (gross)</th>
+                    <th>Total (net)</th>
+                    <th>Billing notes/address</th>
+                </tr>
+                {% for x in d %}
+                <tr>
+                    <td><a href="{{ x.url }}">{{ x.code }}</a></td>
+                    <td>{{ x.complete }}</td>
+                    <td>{{ x.created }}</td>
+                    <td>{{ x.method }}</td>
+                    <td style="text-align: right;">{{ x.total.gross }}</td>
+                    <td style="text-align: right;">{{ x.total.net }}</td>
+                    <td>
+                        <span>{{ x.billing.notes }}</span>
+                        <a href="#" onclick="django.jQuery(this).hide().next().show(); return false;">Show address</a>
+                        <div style="display: none; margin-top: 10px;">{{ x.billing.address }}</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+            {% endwith %}
+        </div>
+        <div>
+            {% with user_data.coupons as d %}
+            <h2>Coupons #{{ d|length }}</h2>
+            {% if d %}
+            <table>
+                <tr>
+                    <th>Coupon #</th>
+                    <th>Conference</th>
+                    <th>Value</th>
+                    <th>Used</th>
+                    <th>Orders</th>
+                </tr>
+                {% for x in d %}
+                <tr>
+                    <td><a href="{{ x.url }}">{{ x.code }}</a></td>
+                    <td>{{ x.conference }}</td>
+                    <td>{{ x.value }}</td>
+                    <td>{% if x.valid %}No{% else %}Yes{% endif %}</td>
+                    <td>
+                        {% if x.orders %}
+                        <table>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Date</th>
+                            <tr>
+                            {% for o in x.orders %}
+                            <tr>
+                                <td><a href="{{ o.url }}">{{ o.code }}</a></td>
+                                <td>{{ o.created }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+            {% endwith %}
+        </div>
+        <div>
+            {% with user_data.tickets as d %}
+            <h2>Tickets #{{ d|length }}</h2>
+            {% if d %}
+            <table>
+                <tr>
+                    <th>Ticket #</th>
+                    <th>Type</th>
+                    <th>Conference</th>
+                    <th>Fare</th>
+                    <th>Recipient</th>
+                    <th>Note</th>
+                    <th>Order</th>
+                    <th>Order date</th>
+                </tr>
+                {% for x in d %}
+                <tr>
+                    <td>{{ x.id }}</td>
+                    <td>{{ x.type }}</td>
+                    <td>{{ x.fare.conference }}</td>
+                    <td>{{ x.fare.code }}</td>
+                    <td>{{ x.fare.recipient }}</td>
+                    <td>{{ x.note }}</td>
+                    <td><a href="{{ x.order.url }}">{{ x.order.code }}</a></td>
+                    <td>{{ x.order.created }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+{% endblock %}
