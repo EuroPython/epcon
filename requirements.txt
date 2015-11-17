@@ -19,7 +19,6 @@ django-crontab==0.4.2
 django-cms==3.0.6
 -e git+https://github.com/pythonitalia/microblog.git#egg=microblog
 -e git+https://github.com/pythonitalia/hcomments.git#egg=hcomments
--e git+https://github.com/EuroPython/conference.git#egg=conference
 BeautifulSoup==3.2.1
 django-markitup==2.2.2
 markdown2==2.3.0
@@ -27,7 +26,7 @@ djangocms_text_ckeditor==2.4.1
 easy_thumbnails==2.2
 raven==5.1.1
 djangocms-grid==1.1
-python-social-auth
+python-social-auth==0.2.2
 gunicorn==19.2.1
 simplejson==3.6.5
 Pillow==2.6.1
