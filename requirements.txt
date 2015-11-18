@@ -6,7 +6,7 @@ django-authority==0.4 #serve a django-page-cms ma non è incluso nelle sue dipen
 django-taggit==0.9.3
 django-rosetta==0.7.4
 akismet==0.2.0
-git+git://github.com/smacker/django-filebrowser-no-grappelli-django14.git#egg=django-filebrowser
+django-filebrowser-no-grappelli
 django-templatesadmin==0.7
 django-tagging==0.3.1
 python-memcached==1.48
@@ -15,7 +15,7 @@ cmsplugin-filer==0.10.1
 pytz
 Fabric
 django-crontab==0.4.2
--e git+git://github.com/dcramer/django-paypal.git#egg=django-paypal
+-e git+https://github.com/dcramer/django-paypal.git#egg=django-paypal
 django-cms==3.0.6
 -e git+https://github.com/pythonitalia/microblog.git#egg=microblog
 -e git+https://github.com/pythonitalia/hcomments.git#egg=hcomments
