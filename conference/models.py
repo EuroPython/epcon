@@ -114,13 +114,13 @@ class Conference(models.Model):
     def clean(self):
         if self.conference_start and self.conference_end:
             if self.conference_start > self.conference_end:
-                raise exceptions.ValidationError('range di date per la conferenza non valido') 
+                raise exceptions.ValidationError('range di date per la conferenza non valido')
         if self.cfp_start and self.cfp_end:
             if self.cfp_start > self.cfp_end:
-                raise exceptions.ValidationError('range di date per il cfp non valido') 
+                raise exceptions.ValidationError('range di date per il cfp non valido')
         if self.voting_start and self.voting_end:
             if self.voting_start > self.voting_end:
-                raise exceptions.ValidationError('range di date per la votazione non valido') 
+                raise exceptions.ValidationError('range di date per la votazione non valido')
 
     def cfp(self):
         today = datetime.date.today()
@@ -538,12 +538,24 @@ TALK_TYPE = (
     ('i', 'Interactive'),
     ('t', 'Training'),
     ('p', 'Poster session'),
+    ('n', 'Panel'),
     ('h', 'Help desk'),
 )
+
+TALK_ADMIN_TYPE = (
+    ('o', 'Opening session'),
+    ('c', 'Closing session'),
+    ('l', 'Ligthing talk'),
+    ('k', 'Keynote'),
+)
+
 class Talk(models.Model, UrlMixin):
-    title = models.CharField(_('Talk title'), max_length=100)
+    title = models.CharField(_('Talk title'), max_length=80)
+    sub_title = models.CharField(_('Sub title'), max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
+    prerequesites = models.CharField(_('prerequesites'), help_text="What should attendees know already", max_length=150)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
+    admin_type = models.CharField(max_length=1, choices=TALK_ADMIN_TYPE, blank=True)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
     # durata totale del talk (include la sessione di Q&A)
     duration = models.IntegerField(
@@ -551,13 +563,13 @@ class Talk(models.Model, UrlMixin):
         choices=TALK_DURATION,
         help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'))
     # durata della sessione di Q&A
-    qa_duration = models.IntegerField(
-        _('Q&A duration'),
-        default=0)
     language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES)
     abstracts = generic.GenericRelation(
         MultilingualContent,
         verbose_name=_('Talk abstract'),
+        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
+    abstracts_short = models.TextField(
+        verbose_name=_('Talk abstract short'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
@@ -1073,7 +1085,7 @@ class Event(models.Model):
         ritorna la prima istanza di track tra quelle specificate o None se l'evento
         è di tipo speciale
         """
-        # XXX: utilizzare il template tag get_event_track che cacha la query 
+        # XXX: utilizzare il template tag get_event_track che cacha la query
         dbtracks = dict( (t.track, t) for t in self.schedule.track_set.all())
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:

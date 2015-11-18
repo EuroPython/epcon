@@ -502,7 +502,7 @@ CONFERENCE_GOOGLE_MAPS = {
     'country': 'es',
 }
 
-CONFERENCE_CONFERENCE = 'ep2015'
+CONFERENCE_CONFERENCE = 'ep2016'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2015.europython.eu/en/talk-voting/'
 
@@ -517,15 +517,20 @@ CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
+
+
+
 # Available talk durations
 CONFERENCE_TALK_DURATION = (
+    (5,   _('Lighthing talks, 5 minutes')),
+    (15,  _('15 minutes')),
     (30, _('30 minute talk incl. Q&A')),
     (45, _('45 minute talk incl. Q&A')),
     (60, _('60 minute talk incl. Q&A')),
-#    (90, _('90 minute talk incl. Q&A')),
-    (90, _('1.5 hours poster session')),
+    (90, _('1.5 hours')),
     (150, _('2.5 hours training')),
     (180, _('3 hours training/helpdesk')),
+    (210, _('210 minutes')),
 # Not yet enabled: waiting for confirmation
 #    (240, _('4 hours helpdesk')),
 )
@@ -1169,4 +1174,3 @@ except ImportError, reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
-
