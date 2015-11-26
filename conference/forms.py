@@ -66,7 +66,7 @@ class ReadonlyTagWidget(widgets.TextInput):
             final_attrs['value'] = force_unicode(self._format_value(value))
         return mark_safe(u'<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
-# MarkEditWidget adattameto del codice di esempio presente in 
+# MarkEditWidget adattameto del codice di esempio presente in
 # http://tstone.github.com/jquery-markedit/
 
 class MarkEditWidget(forms.Textarea):
@@ -156,10 +156,6 @@ class SubmissionForm(forms.Form):
         choices=models.TALK_DURATION,
         coerce=int,
         initial='30',)
-    qa_duration = forms.IntegerField(
-        label=_('Q&A duration'),
-        initial='0',
-        required=False,)
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
@@ -229,7 +225,7 @@ class SubmissionForm(forms.Form):
             status='proposed', duration=data['duration'], language=data['language'],
             level=data['level'], type=data['type']
         )
-        talk.qa_duration = data.get('qa_duration', 0)
+
         talk.save()
         talk.setAbstract(data['abstract'])
         talk.tags.set(*data['tags'])
@@ -266,7 +262,7 @@ class TalkForm(forms.ModelForm):
 
     class Meta:
         model = models.Talk
-        fields = ('title', 'duration', 'qa_duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
+        fields = ('title', 'duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
         widgets = {
             'tags': TagWidget,
         }
