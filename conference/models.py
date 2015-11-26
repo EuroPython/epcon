@@ -114,13 +114,13 @@ class Conference(models.Model):
     def clean(self):
         if self.conference_start and self.conference_end:
             if self.conference_start > self.conference_end:
-                raise exceptions.ValidationError('range di date per la conferenza non valido')
+                raise exceptions.ValidationError('Conference end must be > of conference start')
         if self.cfp_start and self.cfp_end:
             if self.cfp_start > self.cfp_end:
-                raise exceptions.ValidationError('range di date per il cfp non valido')
+                raise exceptions.ValidationError('Cfp end must be > of cfp start')
         if self.voting_start and self.voting_end:
             if self.voting_start > self.voting_end:
-                raise exceptions.ValidationError('range di date per la votazione non valido')
+                raise exceptions.ValidationError('Voting end must be > of voting start')
 
     def cfp(self):
         today = datetime.date.today()
@@ -545,7 +545,7 @@ TALK_TYPE = (
 TALK_ADMIN_TYPE = (
     ('o', 'Opening session'),
     ('c', 'Closing session'),
-    ('l', 'Ligthing talk'),
+    ('l', 'Lightning talk'),
     ('k', 'Keynote'),
 )
 
