@@ -551,9 +551,9 @@ TALK_ADMIN_TYPE = (
 
 class Talk(models.Model, UrlMixin):
     title = models.CharField(_('Talk title'), max_length=80)
-    sub_title = models.CharField(_('Sub title'), max_length=100)
+    sub_title = models.CharField(_('Sub title'), max_length=100, default="", blank=True)
     slug = models.SlugField(max_length=100, unique=True)
-    prerequesites = models.CharField(_('prerequesites'), help_text="What should attendees know already", max_length=150)
+    prerequesites = models.CharField(_('prerequesites'), help_text="What should attendees know already",default="", blank=True, max_length=150)
     conference = models.CharField(help_text='nome della conferenza', max_length=20)
     admin_type = models.CharField(max_length=1, choices=TALK_ADMIN_TYPE, blank=True)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
@@ -570,7 +570,7 @@ class Talk(models.Model, UrlMixin):
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
     abstracts_short = models.TextField(
         verbose_name=_('Talk abstract short'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
+        help_text=_('<p>Please enter a short description of the talk you are submitting.</p>'), default="")
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
     video_url = models.TextField(blank=True)
