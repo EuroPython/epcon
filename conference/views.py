@@ -230,7 +230,6 @@ def talk(request, slug, talk, full_access, talk_form=None):
             data = request.POST.copy()
             data['level'] = talk.level
             data['duration'] = talk.duration
-            data['qa_duration'] = talk.qa_duration
             data['language'] = talk.language
             data['type'] = talk.type
             data['tags'] = ','.join([ x.name for x in talk.tags.all() ])

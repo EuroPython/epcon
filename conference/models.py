@@ -506,10 +506,14 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-    def createFromTitle(self, title, conference, speaker, status='proposed', duration=30, language='en', level='beginner', training_available=False, type='s'):
+    def createFromTitle(self, title, sub_title, conference, speaker, prerequisites, abstract_short,
+        status='proposed', duration=30, language='en', level='beginner', training_available=False, type='s'):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
+        talk.sub_title = sub_title
+        talk.prerequisites = prerequisites
+        talk.abstract_short = abstract_short
         talk.conference = conference
         talk.status = status
         talk.duration = duration
@@ -568,7 +572,7 @@ class Talk(models.Model, UrlMixin):
         MultilingualContent,
         verbose_name=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
-    abstracts_short = models.TextField(
+    abstract_short = models.TextField(
         verbose_name=_('Talk abstract short'),
         help_text=_('<p>Please enter a short description of the talk you are submitting.</p>'), default="")
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)

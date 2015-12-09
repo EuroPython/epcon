@@ -90,7 +90,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     type = forms.TypedChoiceField(
         label=_('Submission type'),
         help_text='Choose between a standard talk, an in-depth training, a poster session or an help desk session',
-        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'), ('h', 'Help Desk')),
+        choices=cmodels.TALK_TYPE,
         initial='s',
         required=True,
         widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
@@ -117,6 +117,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
         widget=cforms.MarkEditWidget,)
+
     abstract = forms.CharField(
         max_length=5000,
         label=_('Abstract/description'),
@@ -167,7 +168,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
 # This form is used in case the speaker has already proposed a talk
 # and for editing talks
-    
+
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
@@ -178,7 +179,7 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
-        exclude = ('duration', 'qa_duration',)
+        exclude = ('duration')
 
     def __init__(self, *args, **kwargs):
         super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)
@@ -194,7 +195,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
         talk.duration = self.cleaned_data['duration']
-        talk.qa_duration = self.cleaned_data['qa_duration']
         talk.save()
         try:
             talk.p3_talk.sub_community = self.cleaned_data['sub_community']
@@ -224,7 +224,6 @@ class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     def save(self, *args, **kwargs):
         talk = super(P3TalkForm, self).save(*args, **kwargs)
         talk.duration = self.cleaned_data['duration']
-        talk.qa_duration = self.cleaned_data['qa_duration']
         talk.save()
         talk.p3_talk.sub_community = self.cleaned_data['sub_community']
         talk.p3_talk.save()

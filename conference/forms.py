@@ -144,12 +144,21 @@ class SubmissionForm(forms.Form):
         widget=forms.Textarea(),)
 
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
-    type = forms.TypedChoiceField(
-        label=_('Talk Type'),
-        help_text=_('Talk Type description'),
-        choices=models.TALK_TYPE,
-        initial='s',
-        required=True,)
+
+    sub_title = forms.CharField(label=_('Sub title'),
+        help_text=_('The sub title for your talk'),
+        max_length=100, widget=forms.TextInput(attrs={'size': 40}), required=False)
+    prerequisites = forms.CharField(label=_('Prerequisites'),
+        help_text=_('What should attendees know already'),
+        max_length=150, widget=forms.TextInput(attrs={'size': 40}), required=False)
+
+    abstract_short = forms.CharField(
+        max_length=2000,
+        label=_('Abstract short version'),
+        help_text=_('<p>Please enter a short version of your abstract'),
+        widget=MarkEditWidget,
+        )
+
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
         help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
@@ -161,6 +170,9 @@ class SubmissionForm(forms.Form):
         choices=models.TALK_LANGUAGES,
         initial='en',)
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
+
+    tags = TagField(widget=TagWidget)
+
     abstract = forms.CharField(
         max_length=5000,
         label=_('Talk abstract'),
@@ -221,7 +233,8 @@ class SubmissionForm(forms.Form):
             speaker.save()
 
         talk = models.Talk.objects.createFromTitle(
-            title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
+            title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
+            abstract_short=data['abstract_short'],conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', duration=data['duration'], language=data['language'],
             level=data['level'], type=data['type']
         )
@@ -260,9 +273,16 @@ class TalkForm(forms.ModelForm):
         help_text='',
         widget=forms.Textarea(),)
 
+    abstract_short = forms.CharField(
+        max_length=2000,
+        label=_('Abstract short version'),
+        help_text=_('<p>Please enter a short version of your abstract'),
+        widget=MarkEditWidget,
+        )
+
     class Meta:
         model = models.Talk
-        fields = ('title', 'duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
+        fields = ('title', 'sub_title','prerequisites', 'abstract_short', 'duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
         widgets = {
             'tags': TagWidget,
         }
