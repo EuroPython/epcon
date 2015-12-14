@@ -66,7 +66,7 @@ class ReadonlyTagWidget(widgets.TextInput):
             final_attrs['value'] = force_unicode(self._format_value(value))
         return mark_safe(u'<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
-# MarkEditWidget adattameto del codice di esempio presente in 
+# MarkEditWidget adattameto del codice di esempio presente in
 # http://tstone.github.com/jquery-markedit/
 
 class MarkEditWidget(forms.Textarea):
@@ -144,27 +144,35 @@ class SubmissionForm(forms.Form):
         widget=forms.Textarea(),)
 
     title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
-    type = forms.TypedChoiceField(
-        label=_('Talk Type'),
-        help_text=_('Talk Type description'),
-        choices=models.TALK_TYPE,
-        initial='s',
-        required=True,)
+
+    sub_title = forms.CharField(label=_('Sub title'),
+        help_text=_('The sub title for your talk'),
+        max_length=100, widget=forms.TextInput(attrs={'size': 40}), required=False)
+    prerequisites = forms.CharField(label=_('Prerequisites'),
+        help_text=_('What should attendees know already'),
+        max_length=150, widget=forms.TextInput(attrs={'size': 40}), required=False)
+
+    abstract_short = forms.CharField(
+        max_length=2000,
+        label=_('Abstract short version'),
+        help_text=_('<p>Please enter a short version of your abstract'),
+        widget=MarkEditWidget,
+        )
+
     duration = forms.TypedChoiceField(
         label=_('Suggested duration'),
         help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
         choices=models.TALK_DURATION,
         coerce=int,
         initial='30',)
-    qa_duration = forms.IntegerField(
-        label=_('Q&A duration'),
-        initial='0',
-        required=False,)
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
         initial='en',)
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
+
+    tags = TagField(widget=TagWidget)
+
     abstract = forms.CharField(
         max_length=5000,
         label=_('Talk abstract'),
@@ -225,11 +233,12 @@ class SubmissionForm(forms.Form):
             speaker.save()
 
         talk = models.Talk.objects.createFromTitle(
-            title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
+            title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
+            abstract_short=data['abstract_short'],conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', duration=data['duration'], language=data['language'],
             level=data['level'], type=data['type']
         )
-        talk.qa_duration = data.get('qa_duration', 0)
+
         talk.save()
         talk.setAbstract(data['abstract'])
         talk.tags.set(*data['tags'])
@@ -264,9 +273,16 @@ class TalkForm(forms.ModelForm):
         help_text='',
         widget=forms.Textarea(),)
 
+    abstract_short = forms.CharField(
+        max_length=2000,
+        label=_('Abstract short version'),
+        help_text=_('<p>Please enter a short version of your abstract'),
+        widget=MarkEditWidget,
+        )
+
     class Meta:
         model = models.Talk
-        fields = ('title', 'duration', 'qa_duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
+        fields = ('title', 'sub_title','prerequisites', 'abstract_short', 'duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
         widgets = {
             'tags': TagWidget,
         }
