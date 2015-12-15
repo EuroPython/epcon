@@ -506,7 +506,7 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-    def createFromTitle(self, title, sub_title, conference, speaker, prerequisites, abstract_short,
+    def createFromTitle(self, title, sub_title, conference, speaker, prerequisites, abstract_short, abstract_extra,
         status='proposed', duration=30, language='en', level='beginner', training_available=False, type='s'):
         slug = slugify(title)
         talk = Talk()
@@ -519,6 +519,7 @@ class TalkManager(models.Manager):
         talk.duration = duration
         talk.language = language
         talk.level = level
+        talk.abstract_extra = abstract_extra
         talk.training_available = training_available
         talk.type = type
         with transaction.commit_on_success():
@@ -575,6 +576,11 @@ class Talk(models.Model, UrlMixin):
     abstract_short = models.TextField(
         verbose_name=_('Talk abstract short'),
         help_text=_('<p>Please enter a short description of the talk you are submitting.</p>'), default="")
+
+    abstract_extra = models.TextField(
+        verbose_name=_('Talk abstract extra'),
+        help_text=_('<p>Please enter extra description of the talk you are submitting.</p>'), default="")
+
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
     video_url = models.TextField(blank=True)
