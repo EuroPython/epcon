@@ -60,6 +60,18 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 
 .learn-icon, .subcommunities .subcommunity-container { background-color: white; border-radius: 50%; width: 100px; height: 100px; border: 5px solid #2e9bdd; margin: 0 auto; margin-bottom: 20px; margin-top: 15px; padding: 21px; }
 
+.learn-icon:hover{
+            behavior:url(-ms-transform.htc);
+            /* Firefox */
+            -moz-transform:rotate(45deg);
+            /* Safari and Chrome */
+            -webkit-transform:rotate(45deg);
+            /* Opera */
+            -o-transform:rotate(45deg);
+            /* IE9 */
+            -ms-transform:rotate(45deg);
+            /* IE6,IE7 */}
+
 footer .bg-red { padding: 70px; text-align: center; }
 footer .bg-red a { display: inline-block; }
 footer .bg-red img { height: 32px; padding-left: 10px; padding-right: 10px; }
