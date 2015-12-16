@@ -2048,7 +2048,7 @@ nav[role=navigation].active { max-height: 25em; }
 @media (min-width: 37.5em) { #navigation-toggle ul { margin: 0 auto; } }
 @media (min-width: 37.5em) { #navigation-toggle li { float: left; margin: 0 15px 0 0; } }
 #navigation-toggle li a { vertical-align: middle; display: block; padding: 15px 7.5px; border-top: 1px solid #2e9bdd; color: #2e9bdd; text-transform: uppercase; letter-spacing: .5px; }
-#navigation-toggle li li a { padding-left: 1em; background-color: #FAE9DB; }
+#navigation-toggle li li a { padding-left: 1em; background-color: #FFFFFF; }
 @media (min-width: 37.5em) { #navigation-toggle li a { display: inline-block; border: none; font-size: 16px; font-size: 1.6rem; } }
 #navigation-toggle li a:hover { color: #555555; text-decoration: none; }
 #navigation-toggle li.current a { color: #555555; }
