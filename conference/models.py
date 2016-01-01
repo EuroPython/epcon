@@ -507,7 +507,7 @@ class TalkManager(models.Manager):
             return qs
 
     def createFromTitle(self, title, sub_title, conference, speaker, prerequisites, abstract_short, abstract_extra,
-        status='proposed', duration=30, language='en', level='beginner', training_available=False, type='s'):
+        status='proposed', language='en', level='beginner', training_available=False, type='t_30'):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
@@ -516,7 +516,6 @@ class TalkManager(models.Manager):
         talk.abstract_short = abstract_short
         talk.conference = conference
         talk.status = status
-        talk.duration = duration
         talk.language = language
         talk.level = level
         talk.abstract_extra = abstract_extra
@@ -547,6 +546,18 @@ TALK_TYPE = (
     ('h', 'Help desk'),
 )
 
+TALK_TYPE = (
+    ('t_30', 'Talk (30 mins)'),
+    ('t_45', 'Talk (45 mins)'),
+    ('t_60', 'Talk (60 mins)'),
+    ('i_60', 'Interactive (60 mins)'),
+    ('r_180', 'Training (180 mins)'),
+    ('p_180', 'Poster session (180 mins)'),
+    ('p_60', 'Panel (60 mins)'),
+    ('p_90', 'Panel (90 mins)'),
+    ('h_180', 'Help desk (180 mins)'),
+)
+
 TALK_ADMIN_TYPE = (
     ('o', 'Opening session'),
     ('c', 'Closing session'),
@@ -556,18 +567,12 @@ TALK_ADMIN_TYPE = (
 
 class Talk(models.Model, UrlMixin):
     title = models.CharField(_('Talk title'), max_length=80)
-    sub_title = models.CharField(_('Sub title'), max_length=100, default="", blank=True)
+    sub_title = models.CharField(_('Sub title'), max_length=1000, default="", blank=True)
     slug = models.SlugField(max_length=100, unique=True)
     prerequisites = models.CharField(_('prerequisites'), help_text="What should attendees know already",default="", blank=True, max_length=150)
     conference = models.CharField(help_text='name of the conference', max_length=20)
     admin_type = models.CharField(max_length=1, choices=TALK_ADMIN_TYPE, blank=True)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
-    # durata totale del talk (include la sessione di Q&A)
-    duration = models.IntegerField(
-        _('Suggested duration'),
-        choices=TALK_DURATION,
-        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'))
-    # durata della sessione di Q&A
     language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES)
     abstracts = generic.GenericRelation(
         MultilingualContent,
@@ -579,7 +584,7 @@ class Talk(models.Model, UrlMixin):
 
     abstract_extra = models.TextField(
         verbose_name=_('Talk abstract extra'),
-        help_text=_('<p>Please enter extra description of the talk you are submitting.</p>'), default="")
+        help_text=_('<p>Please enter instructions for attendees.</p>'), default="")
 
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
     video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
@@ -596,7 +601,19 @@ class Talk(models.Model, UrlMixin):
         max_length=12,
         choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
-    type = models.CharField(max_length=1, choices=TALK_TYPE, default='s')
+    type = models.CharField(max_length=5, choices=TALK_TYPE, default='t_30')
+
+    #def _talk_duration(self):
+    #    "Returns talk duration"
+    #    duration = self.type
+    #    return int(duration.split("_")[1])
+    #duration = property(_talk_duration)
+    # Old duration code
+    # durata totale del talk (include la sessione di Q&A)T
+    duration = models.IntegerField(
+        _('Duration'),
+        help_text=_('This is the duration of the talk'))
+    # durata della sessione di Q&A
     # Questi sono i tag che lo speaker suggerisce per il proprio talk, li ho
     # messi qui per una questione di tempo (il cfp di BSW2011 incombe) ma la
     # cosa giusta sarebbe creare un nuovo modello "Submission" legato al Talk e
@@ -609,6 +626,11 @@ class Talk(models.Model, UrlMixin):
 
     class Meta:
         ordering = ['title']
+
+    def save(self, *args, **kwargs):
+        # the duration is taken directly from talk's type
+        self.duration = int(self.type.split("_")[1])
+        super(Talk, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)

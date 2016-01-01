@@ -143,7 +143,7 @@ class SubmissionForm(forms.Form):
         help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
         widget=forms.Textarea(),)
 
-    title = forms.CharField(label=_('Talk title'), max_length=100, widget=forms.TextInput(attrs={'size': 40}))
+    title = forms.CharField(label=_('Talk title'), max_length=80, widget=forms.TextInput(attrs={'size': 40}))
 
     sub_title = forms.CharField(label=_('Sub title'),
         help_text=_('The sub title for your talk'),
@@ -153,18 +153,12 @@ class SubmissionForm(forms.Form):
         max_length=150, widget=forms.TextInput(attrs={'size': 40}), required=False)
 
     abstract_short = forms.CharField(
-        max_length=2000,
+        max_length=500,
         label=_('Abstract short version'),
-        help_text=_('<p>Please enter a short version of your abstract'),
+        help_text=_('<p>Please enter a short version of your abstract (500 chars)'),
         widget=MarkEditWidget,
         )
 
-    duration = forms.TypedChoiceField(
-        label=_('Suggested duration'),
-        help_text=_('This is the <b>net duration</b> of the talk, excluding Q&A'),
-        choices=models.TALK_DURATION,
-        coerce=int,
-        initial='30',)
     language = forms.TypedChoiceField(
         help_text=_('Select Italian only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
@@ -174,10 +168,17 @@ class SubmissionForm(forms.Form):
     tags = TagField(widget=TagWidget)
 
     abstract = forms.CharField(
-        max_length=5000,
+        max_length=1500,
         label=_('Talk abstract'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'),
+        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: 1500 chars.</p>'),
         widget=forms.Textarea(),)
+
+    abstract_extra = forms.CharField(
+        max_length=500,
+        label=_('Talk instructions'),
+        help_text=_('<p>Please enter instructions for attendees.</p>'),
+        widget=MarkEditWidget,)
+
     tags = TagField(widget=TagWidget)
 
     def __init__(self, user, *args, **kwargs):
@@ -234,8 +235,8 @@ class SubmissionForm(forms.Form):
 
         talk = models.Talk.objects.createFromTitle(
             title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
-            abstract_short=data['abstract_short'],conference=settings.CONFERENCE, speaker=speaker,
-            status='proposed', duration=data['duration'], language=data['language'],
+            abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
+            status='proposed', language=data['language'],
             level=data['level'], type=data['type']
         )
 
@@ -280,9 +281,15 @@ class TalkForm(forms.ModelForm):
         widget=MarkEditWidget,
         )
 
+    abstract_extra = forms.CharField(
+        max_length=500,
+        label=_('Talk instructions'),
+        help_text=_('<p>Please enter instructions for attendees.</p>'),
+        widget=MarkEditWidget,)
+
     class Meta:
         model = models.Talk
-        fields = ('title', 'sub_title','prerequisites', 'abstract_short', 'duration', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
+        fields = ('title', 'sub_title','prerequisites', 'abstract_short', 'abstract_extra', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
         widgets = {
             'tags': TagWidget,
         }
@@ -306,9 +313,10 @@ class TalkForm(forms.ModelForm):
         if not pk:
             assert speaker is not None
             self.instance = models.Talk.objects.createFromTitle(
-                title=data['title'], conference=settings.CONFERENCE, speaker=speaker,
-                status='proposed', duration=data['duration'], language=data['language'],
-                level=data['level']
+                title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
+                abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
+                status='proposed', language=data['language'],
+                level=data['level'], type=data['type']
             )
         inst = super(TalkForm, self).save(commit=commit)
         inst.setAbstract(data['abstract'])

@@ -499,7 +499,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         except models.AttendeeProfile.DoesNotExist:
             img = None
         if not img:
-            return '<div style="height: 32px; width: 32px"> </div>' 
+            return '<div style="height: 32px; width: 32px"> </div>'
         return '<img src="%s" height="32" />' % (img.url,)
     _avatar.allow_tags = True
 
@@ -977,7 +977,7 @@ admin.site.register(models.Quote, QuoteAdmin)
 
 class SpecialPlaceAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'email')
-    
+
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
 class FareAdmin(admin.ModelAdmin):

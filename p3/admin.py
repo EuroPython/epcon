@@ -117,7 +117,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         else:
             return ''
     _assigned.admin_order_field = 'p3_conference__assigned_to'
-    
+
     def _shirt_size(self, o):
         try:
             p3c = o.p3_conference
@@ -261,7 +261,7 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
                 .values('speaker')
         ))
         return qs
-    
+
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         sids = queryset.values_list('user', flat=True)
         profiles = dataaccess.profiles_data(sids)
@@ -609,4 +609,3 @@ prezzo_biglietti_ricalcolato.template = '''
 # Monkey patch our version into assopy package:
 if 0:
     astats.prezzo_biglietti_ricalcolato = prezzo_biglietti_ricalcolato
-
