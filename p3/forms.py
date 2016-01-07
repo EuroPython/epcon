@@ -28,12 +28,6 @@ TALK_LANGUAGES = getattr(settings,
                          settings.LANGUAGES
                          )
 
-# Available talk durations
-TALK_DURATION = getattr(settings,
-                         'CONFERENCE_TALK_DURATION',
-                         csettings.TALK_DURATION)
-
-###
 
 # TBD: These forms need some cleanup. Probably best to merge the
 # conference repo into epcon and then remove all this subclassing.
@@ -46,26 +40,9 @@ class P3TalkFormMixin(object):
         # needed
         #if data['type'] in ('t', 'h'):
         #    data['duration'] = 240
-
-        # Set default duration
-        if not data.get('duration'):
-            data['duration'] = 45
-
         # Set default language
-        if not data.get('language') or data['type'] != 's':
+        if not data.get('language'):
             data['language'] = 'en'
-
-        # Set Q&A duration
-        if data['duration'] < 45:
-            data['qa_duration'] = 5
-        elif data['duration'] < 90:
-            data['qa_duration'] = 10
-        elif data['duration'] == 90:
-            data['qa_duration'] = 15
-        else:
-            # Trainings and helpdesk don't get Q&A time
-            data['qa_duration'] = 0
-
         return data
 
 
@@ -73,15 +50,12 @@ class P3TalkFormMixin(object):
 # has not yet submitted another talk; see P3SubmissionAdditionalForm
 # for talk editing and additional talks.
 
+# The sense of these lines of code is to have a not valid default
+# choice for the talk type, and the user must check the right option
+TALK_TYPE_FORM = list(cmodels.TALK_TYPE)
+TALK_TYPE_FORM.insert(0, ("", "----------------"))
+
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
-    duration = forms.TypedChoiceField(
-        label=_('Duration'),
-        help_text=_('This is the <i>desired duration</i> of the talk/training'),
-        choices=TALK_DURATION,
-        coerce=int,
-        initial=30,
-        required=False,
-    )
     first_time = forms.BooleanField(
         label=_('I\'m a first-time speaker'),
         help_text=_('We would love to have more first time speakers at the conference. This setting will be visible for the Program WG to use in their talk selection.'),
@@ -90,10 +64,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     type = forms.TypedChoiceField(
         label=_('Submission type'),
         help_text='Choose between a standard talk, an in-depth training, a poster session or an help desk session',
-        choices=cmodels.TALK_TYPE,
-        initial='s',
+        choices=TALK_TYPE_FORM,
         required=True,
-        widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
 
     # Note: These three fields are *not* saved in the talk record,
@@ -119,9 +91,15 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         widget=cforms.MarkEditWidget,)
 
     abstract = forms.CharField(
-        max_length=5000,
+        max_length=1500,
         label=_('Abstract/description'),
-        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: two or three paragraphs.</p>'),
+        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
+        widget=cforms.MarkEditWidget,)
+
+    abstract_extra = forms.CharField(
+        max_length=500,
+        label=_('Talk instructions'),
+        help_text=_('<p>Please enter instructions for attendees.</p>'),
         widget=cforms.MarkEditWidget,)
 
     language = forms.TypedChoiceField(
@@ -170,7 +148,6 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 # and for editing talks
 
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
-    duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
     video_agreement = P3SubmissionForm.base_fields['video_agreement']
     type = P3SubmissionForm.base_fields['type']
@@ -184,7 +161,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     def __init__(self, *args, **kwargs):
         super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)
         if self.instance:
-            self.fields['duration'].initial = self.instance.duration
             if self.instance.id:
                 self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
             # The speaker has already agreed to these when submitting
@@ -194,7 +170,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
-        talk.duration = self.cleaned_data['duration']
         talk.save()
         try:
             talk.p3_talk.sub_community = self.cleaned_data['sub_community']
@@ -207,7 +182,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
-    duration = P3SubmissionForm.base_fields['duration']
     type = P3SubmissionForm.base_fields['type']
     abstract = P3SubmissionForm.base_fields['abstract']
     sub_community = P3SubmissionForm.base_fields['sub_community']
@@ -218,12 +192,11 @@ class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     def __init__(self, *args, **kwargs):
         super(P3TalkForm, self).__init__(*args, **kwargs)
         if self.instance:
-            self.fields['duration'].initial = self.instance.duration
+            #self.fields['duration'].initial = self.instance.duration
             self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
 
     def save(self, *args, **kwargs):
         talk = super(P3TalkForm, self).save(*args, **kwargs)
-        talk.duration = self.cleaned_data['duration']
         talk.save()
         talk.p3_talk.sub_community = self.cleaned_data['sub_community']
         talk.p3_talk.save()

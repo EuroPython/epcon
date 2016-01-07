@@ -518,23 +518,6 @@ CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_email
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
 
-
-
-# Available talk durations
-CONFERENCE_TALK_DURATION = (
-    (5,   _('Lighthing talks, 5 minutes')),
-    (15,  _('15 minutes')),
-    (30, _('30 minute talk incl. Q&A')),
-    (45, _('45 minute talk incl. Q&A')),
-    (60, _('60 minute talk incl. Q&A')),
-    (90, _('1.5 hours')),
-    (150, _('2.5 hours training')),
-    (180, _('3 hours training/helpdesk')),
-    (210, _('210 minutes')),
-# Not yet enabled: waiting for confirmation
-#    (240, _('4 hours helpdesk')),
-)
-
 # Talk lanuages, mapping ISO code to language
 CONFERENCE_TALK_LANGUAGES = (
     ('en', _('English')),
