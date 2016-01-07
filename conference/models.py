@@ -558,6 +558,19 @@ TALK_TYPE = (
     ('h_180', 'Help desk (180 mins)'),
 )
 
+# Available talk durations
+TALK_DURATION = {
+    't_30': 30,
+    't_45': 45,
+    't_60': 60,
+    'i_60': 60,
+    'r_180': 180,
+    'p_180': 180,
+    'p_60': 60,
+    'p_90': 90,
+    'h_180': 180,
+}
+
 TALK_ADMIN_TYPE = (
     ('o', 'Opening session'),
     ('c', 'Closing session'),
@@ -629,7 +642,7 @@ class Talk(models.Model, UrlMixin):
 
     def save(self, *args, **kwargs):
         # the duration is taken directly from talk's type
-        self.duration = int(self.type.split("_")[1])
+        self.duration = TALK_DURATION[self.type]
         super(Talk, self).save(*args, **kwargs)
 
     def __unicode__(self):

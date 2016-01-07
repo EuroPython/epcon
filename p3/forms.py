@@ -28,12 +28,6 @@ TALK_LANGUAGES = getattr(settings,
                          settings.LANGUAGES
                          )
 
-# Available talk durations
-TALK_DURATION = getattr(settings,
-                         'CONFERENCE_TALK_DURATION',
-                         csettings.TALK_DURATION)
-
-###
 
 # TBD: These forms need some cleanup. Probably best to merge the
 # conference repo into epcon and then remove all this subclassing.
