@@ -93,7 +93,7 @@ class Fare(models.Model):
 
 	def is_soldout(self):
 		"""
-		Return true if the difference between the ticket qty and the numer of
+		Return true if the difference between the ticket qty and the number of
 		admissions is equal to 0. I want to control if fare is still available
 		or not.
 		"""
@@ -177,8 +177,6 @@ TICKET_CONFERENCE_SHIRT_SIZES = (
 TICKET_CONFERENCE_DIETS = (
 	('omnivorous', _('Omnivorous')),
 	('vegetarian', _('Vegetarian')),
-	#('vegan', _('Vegan')),
-	#('kosher', _('Kosher')),
 )
 
 TICKET_CONFERENCE_EXPERIENCES = (
@@ -240,55 +238,3 @@ class TicketConference(models.Model):
 			return AttendeeProfile.objects.get(user__email=self.assigned_to)
 		else:
 			return AttendeeProfile.objects.get(user=self.ticket.user)
-
-
-def _ticket_sim_upload_to(instance, filename):
-	subdir = 'p3/personal_documents'
-	# Adding the ticket id in the filename because a single user can
-	# buy multiple sims and probably they're not all for the same person.
-	fname = '%s-%s' % (instance.ticket.user.username, instance.ticket.id)
-	fdir = os.path.join(settings.SECURE_MEDIA_ROOT, subdir)
-	for f in os.listdir(fdir):
-		if os.path.splitext(f)[0] == fname:
-			os.unlink(os.path.join(fdir, f))
-			break
-	fpath = os.path.join(subdir, fname + os.path.splitext(filename)[1].lower())
-	# There's some strange interaction between django and python, and if
-	# a non-unicode string containing non-ascii chars is used it's transformed
-	# in unicode correctly, but later it's passed to os.stat that will
-	# call str() on it. The solution is to return only an ascii string.
-	if not isinstance(fpath, unicode):
-		fpath = unicode(fpath, 'utf-8')
-	return fpath.encode('ascii', 'ignore')
-
-TICKET_SIM_TYPE = (
-	('std', _('Standard SIM (USIM)')),
-	('micro', _('Micro SIM')),
-	('nano', _('Nano SIM')),
-)
-TICKET_SIM_PLAN_TYPE = (
-	('std', _('Standard Plan')),
-	('bb', _('BlackBerry Plan')),
-)
-
-
-class TicketSIM(models.Model):
-	ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
-	document = models.FileField(
-		verbose_name=_('ID Document'),
-		upload_to=_ticket_sim_upload_to,
-		storage=settings.SECURE_STORAGE,
-		blank=True,
-		help_text=_('Italian regulations require a document ID to activate a phone SIM. You can use the same ID for up to three SIMs. Any document is fine (EU driving license, personal ID card, etc).'))
-	sim_type = models.CharField(
-		max_length=5,
-		choices=TICKET_SIM_TYPE,
-		default='std',
-		help_text=_('Select the SIM physical format. USIM is the sandard for most mobile phones; Micro SIM is notably used on iPad and iPhone 4; Nano SIM is used for the last generation smartphone like the iPhone 5'))
-	plan_type = models.CharField(
-		max_length=3,
-		choices=TICKET_SIM_PLAN_TYPE,
-		default='std',
-		help_text=_('Standard plan is fine for all mobiles except BlackBerry that require a special plan (even though rates and features are exactly the same).'))
-	number = models.CharField(
-		max_length=20, blank=True, help_text=_("Telephone number"))
