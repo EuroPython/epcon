@@ -442,7 +442,7 @@ CKEDITOR_SETTINGS = {
 
 
 #
-# We're not going to use this feature for EuroPython 2015:
+# We're not going to use this feature for EuroPython 2015+:
 #
 MICROBLOG_LINK = 'http://blog.europython.eu'
 MICROBLOG_TITLE = 'EuroPython Blog'
@@ -504,7 +504,7 @@ CONFERENCE_GOOGLE_MAPS = {
 
 CONFERENCE_CONFERENCE = 'ep2016'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2015.europython.eu/en/talk-voting/'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2016.europython.eu/en/talk-voting/'
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -705,7 +705,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
             lines[ix] = line
         return lines
 
-    if conference in ('ep2012', 'ep2013', 'ep2015'):
+    if conference in ('ep2012', 'ep2013', 'ep2015', 'ep2016'):
         master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert(
             'RGBA')
 
@@ -720,7 +720,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
                 os.path.join(stuff, 'Arial_Unicode.ttf'),
                 21, encoding="unic")
             y = 175
-        elif conference in ('ep2013', 'ep2015'):
+        elif conference in ('ep2013', 'ep2015', 'ep2016'):
             ftitle = ImageFont.truetype(
                 os.path.join(stuff, 'League_Gothic.otf'),
                 36, encoding="unic")
@@ -829,9 +829,9 @@ ASSOPY_OTC_CODE_HANDLERS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2015.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2016.europython.eu'
 
-PINGBACK_TARGET_DOMAIN = 'ep2015.europython.eu'
+PINGBACK_TARGET_DOMAIN = 'ep2016.europython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
@@ -846,7 +846,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2015.europython.eu/accounts/profile/
+https://ep2016.europython.eu/accounts/profile/
 '''
 
 TEMPLATESADMIN_EDITHOOKS = (
