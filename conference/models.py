@@ -712,6 +712,8 @@ FARE_TYPES = (
     ('s', 'Student'),
     ('p', 'Personal'),
 )
+
+
 class Fare(models.Model):
     conference = models.CharField(help_text='codice della conferenza', max_length=20)
     code = models.CharField(max_length=10)
