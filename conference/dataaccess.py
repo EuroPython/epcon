@@ -23,8 +23,10 @@ def _dump_fields(o):
         # key
         v = getattr(o, f.column)
         if isinstance(v, FieldFile):
+            # Convert uploaded files to their URLs
             try:
-                v = settings.DEFAULT_URL_PREFIX + v.url
+                #v = settings.DEFAULT_URL_PREFIX + v.url
+                v = v.url
             except ValueError:
                 # file not uploaded
                 v = None
