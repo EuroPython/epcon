@@ -170,6 +170,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
     'social.pipeline.user.get_username',
+    'social.pipeline.mail.mail_validation',
+    'social.pipeline.social_auth.associate_by_email',
     'social.pipeline.user.create_user',
     # THIS IS IMPORTANT!!!! Connect new authenticated users to profiles
     # of the important project apps!!
