@@ -124,7 +124,7 @@ class SubmissionForm(forms.Form):
         max_length=30,)
     birthday = forms.DateField(
         label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for Italian laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
         input_formats=('%Y-%m-%d',),
         widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
     )
@@ -140,22 +140,30 @@ class SubmissionForm(forms.Form):
     company_homepage = forms.URLField(label=_('Company homepage'), required=False)
     bio = forms.CharField(
         label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
+        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
         widget=forms.Textarea(),)
 
-    title = forms.CharField(label=_('Talk title'), max_length=80, widget=forms.TextInput(attrs={'size': 40}))
+    title = forms.CharField(label=_('Talk title'), max_length=80, widget=forms.TextInput(attrs={'size': 40}),
+                            help_text=_('An appealing, conside title with max 80 chars.<br />e.g. "Big Data Visualization in the Browser with Bokeh"'))
 
     sub_title = forms.CharField(label=_('Sub title'),
-        help_text=_('The sub title for your talk'),
+        help_text=_('Juice your title up with max. 100 chars.<br />e.g. "Interactively visualize big data with high performance."'),
         max_length=100, widget=forms.TextInput(attrs={'size': 40}), required=False)
+
+    abstract = forms.CharField(
+        max_length=1500,
+        label=_('Talk abstract'),
+        help_text=_('<p>Please enter a description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: 1500 chars.</p>'),
+        widget=forms.Textarea(),)
+
     prerequisites = forms.CharField(label=_('Prerequisites'),
-        help_text=_('What should attendees know already'),
+        help_text=_('What should attendees be familiar with already, important for intermediate and advanced talks.<br />E.g. data visualization basics, data analysis'),
         max_length=150, widget=forms.TextInput(attrs={'size': 40}), required=False)
 
     abstract_short = forms.CharField(
         max_length=500,
         label=_('Abstract short version'),
-        help_text=_('<p>Please enter a short version of your abstract (500 chars)'),
+        help_text=_('<p>Please enter a short version of your abstract (500 chars) we need a short description e.g. for YouTube and formats with limited space.'),
         widget=MarkEditWidget,
         )
 
@@ -167,11 +175,6 @@ class SubmissionForm(forms.Form):
 
     tags = TagField(widget=TagWidget)
 
-    abstract = forms.CharField(
-        max_length=1500,
-        label=_('Talk abstract'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: 1500 chars.</p>'),
-        widget=forms.Textarea(),)
 
     abstract_extra = forms.CharField(
         max_length=500,
@@ -242,7 +245,7 @@ class SubmissionForm(forms.Form):
 
         talk.save()
         talk.setAbstract(data['abstract'])
-        talk.tags.set(*data['tags'])
+        talk.tags.set(data['tags'][:5])  # only the first five tags will be added
 
         from conference.listeners import new_paper_submission
         new_paper_submission.send(sender=speaker, talk=talk)
