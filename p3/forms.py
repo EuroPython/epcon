@@ -87,7 +87,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     bio = forms.CharField(
         label=_('Compact biography'),
-        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
+        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
         widget=cforms.MarkEditWidget,)
 
     abstract = forms.CharField(
