@@ -1322,7 +1322,7 @@ def group_tags(tags):
     groups = defaultdict(list)
     for t in tags:
         groups[t.category].append(t)
-    return groups.items()
+    return sorted(groups.items())
 
 @fancy_tag(register)
 def talk_data(tid):
