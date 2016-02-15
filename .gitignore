@@ -10,7 +10,6 @@ p3/static/p6/.sass-cache/*
 *.mo
 .bundle
 ._*
-vendor/
 .DS_Store
 *.db
 Thumbs.db
@@ -21,3 +20,5 @@ Thumbs.db
 .idea
 *.sqlite
 build/
+*.bak
+*~
