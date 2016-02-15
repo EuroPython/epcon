@@ -56,11 +56,11 @@ TALK_TYPE_FORM = list(cmodels.TALK_TYPE)
 TALK_TYPE_FORM.insert(0, ("", "----------------"))
 
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
-    first_time = forms.BooleanField(
-        label=_('I\'m a first-time speaker'),
-        help_text=_('We would love to have more first time speakers at the conference. This setting will be visible for the Program WG to use in their talk selection.'),
-        required=False,
-    )
+    #first_time = forms.BooleanField(
+    #    label=_('I\'m a first-time speaker'),
+    #    help_text=_('This setting will be visible for the Program WG to use in their talk selection. The WG may contact you to ask you to participate in a first time speaker training session.'),
+    #    required=False,
+    #)
     type = forms.TypedChoiceField(
         label=_('Submission type'),
         help_text='Choose between a standard talk, an in-depth training, a poster session or an help desk session',
@@ -104,8 +104,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     abstract_extra = forms.CharField(
         max_length=500,
-        label=_('Instructions for attendees of trainings'),
-        help_text=_('<p>Please enter instructions for training attendees, e.g. things to prepare or bring, how to set up the notebook, etc.</p>'),
+        label=_('Additional information for talk reviewers'),
+        help_text=_('<p>Please add anything you may find useful for the review of your talk, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
         widget=cforms.MarkEditWidget,
         required=False)
 
