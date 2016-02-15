@@ -88,24 +88,32 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
-        widget=cforms.MarkEditWidget,)
+        widget=cforms.MarkEditWidget)
 
     abstract = forms.CharField(
         max_length=1500,
         label=_('Abstract/description'),
-        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
-        widget=cforms.MarkEditWidget,)
+        help_text=_('<p>Description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
+        widget=cforms.MarkEditWidget)
+
+    abstract_short = forms.CharField(
+        max_length=500,
+        label=_('Abstract short version'),
+        help_text=_('<p>Please enter a short version of your abstract. We need a short description e.g. for YouTube and other distribution channels with limited space for abstracts.</p><p>Suggested size: <500 chars.</p>'),
+        widget=cforms.MarkEditWidget)
 
     abstract_extra = forms.CharField(
         max_length=500,
-        label=_('Talk instructions'),
-        help_text=_('<p>Please enter instructions for attendees.</p>'),
-        widget=cforms.MarkEditWidget,)
+        label=_('Instructions for attendees of trainings'),
+        help_text=_('<p>Please enter instructions for training attendees, e.g. things to prepare or bring, how to set up the notebook, etc.</p>'),
+        widget=cforms.MarkEditWidget,
+        required=False)
 
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
         choices=TALK_LANGUAGES,
-        initial='en', required=False)
+        initial='en',
+        required=False)
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),

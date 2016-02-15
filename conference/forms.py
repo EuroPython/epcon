@@ -168,7 +168,7 @@ class SubmissionForm(forms.Form):
         )
 
     language = forms.TypedChoiceField(
-        help_text=_('Select Italian only if you are not comfortable in speaking English.'),
+        help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
         initial='en',)
     level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')

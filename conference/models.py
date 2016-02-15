@@ -468,7 +468,6 @@ class Speaker(models.Model, UrlMixin):
 
 TALK_DURATION = settings.TALK_DURATION
 TALK_LANGUAGES = (
-    ('it', _('Italian')),
     ('en', _('English')),
 )
 TALK_STATUS = (
