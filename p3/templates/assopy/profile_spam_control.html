@@ -17,8 +17,8 @@
             {{ pform.spam_recruiting|form_field:"autosubmit" }}
 
             <ul class="help-block">
-                <li>{% trans "Your email address will <i>never</i> be shared with any of our recruiting sponsor. We send the emails." %}</li>
-                <li>{% trans "You will receive max 10 job offers; all emails will be sent between June 15th and July 20th." %}</li>
+                <li>{% trans "Your email address will <i>never</i> be shared with any of our recruiting sponsors - the emails are sent by the EuroPython Organizers." %}</li>
+                <li>{% trans "You will receive at most 10 job offers." %}</li>
             </ul>
         </fieldset>
 
@@ -40,16 +40,16 @@
         <fieldset>
             <legend>{% trans "SMS messages" %}</legend>
 
-            <p>{% trans "Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes, last-minute schedule changes, impromptu happenings, etc.). Do you want to receive these information through SMS?" %}</p>
+            <p>{% trans "Sometimes it is useful for organizers to send last-minute information to all participants (eg: transportation strikes, last-minute schedule changes, impromptu happenings, etc.). Do you want to receive this information via SMS?" %}</p>
 
 
             {{ pform.spam_sms|form_field:"autosubmit" }}
 
             <ul class="help-block">
-                <li>{% trans "You must insert your phone number in the “Personal data” section to activate this service." %}</li>
+                <li>{% trans "You must add your phone number in the “Personal data” section to activate this service." %}</li>
                 <li>{% trans "Your phone number will <i>never</i> be shared with other people." %}</li>
-                <li>{% trans "This SMS message service will be active only for the time span of the conference." %}</li>
-                <li>{% trans "Make sure you don't pay any roaming fee for incoming SMS while in Italy (or that you don't care about it...)." %}</li>
+                <li>{% trans "This SMS message service will only be active for the time span of the conference." %}</li>
+                <li>{% trans "Please note that some companies charge for incoming SMS while roaming." %}</li>
             </ul>
         </fieldset>
     </form>
