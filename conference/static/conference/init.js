@@ -143,7 +143,7 @@ function _render_tags(tags, selected) {
     var tag_categories = Object.keys(conference.tags);
     tag_categories.sort();
 
-    for(var i=0; i<tag_categories.length; i++) {
+    for(var i in tag_categories) {
 	var category = tag_categories[i];
         // reverse map, tag -> category
         for(var ix=0; ix<conference.tags[category].length; ix++)
