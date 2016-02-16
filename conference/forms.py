@@ -116,18 +116,19 @@ class SubmissionForm(forms.Form):
     popolare sia il profilo dello speaker che i dati del talk. Vengono
     richiesti i soli dati essenziali.
     """
+
+    # Speaker details
     first_name = forms.CharField(
         label=_('First name'),
-        max_length=30,)
+        max_length=30)
     last_name = forms.CharField(
         label=_('Last name'),
-        max_length=30,)
+        max_length=30)
     birthday = forms.DateField(
         label=_('Date of birth'),
         help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
         input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
-    )
+        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}))
     job_title = forms.CharField(
         label=_('Job title'),
         help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
@@ -136,51 +137,66 @@ class SubmissionForm(forms.Form):
     phone = forms.CharField(
         help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
         max_length=30)
-    company = forms.CharField(label=_('Your company'), max_length=50, required=False)
-    company_homepage = forms.URLField(label=_('Company homepage'), required=False)
+    company = forms.CharField(
+        label=_('Your company'),
+        max_length=50,
+        required=False)
+    company_homepage = forms.URLField(
+        label=_('Company homepage'),
+        required=False)
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
-        widget=forms.Textarea(),)
+        widget=forms.Textarea())
 
-    title = forms.CharField(label=_('Talk title'), max_length=80, widget=forms.TextInput(attrs={'size': 40}),
-                            help_text=_('An appealing, conside title with max 80 chars.<br />e.g. "Big Data Visualization in the Browser with Bokeh"'))
-
-    sub_title = forms.CharField(label=_('Sub title'),
-        help_text=_('Juice your title up with max. 100 chars.<br />e.g. "Interactively visualize big data with high performance."'),
-        max_length=100, widget=forms.TextInput(attrs={'size': 40}), required=False)
-
+    # Talk details
+    title = forms.CharField(
+        label=_('Title'),
+        max_length=80,
+        widget=forms.TextInput(attrs={'size': 40}),
+        help_text=_('A descriptive, concise title with max 80 chars, e.g. "Big Data Visualization in the Browser with Bokeh"'))
+    sub_title = forms.CharField(
+        label=_('Subtitle'),
+        help_text=_('Juice up your title with max. 100 chars, e.g. "Interactively visualize big data with high performance."'),
+        max_length=100,
+        widget=forms.TextInput(attrs={'size': 40}),
+        required=False)
     abstract = forms.CharField(
         max_length=1500,
-        label=_('Talk abstract'),
-        help_text=_('<p>Please enter a description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: 1500 chars.</p>'),
-        widget=forms.Textarea(),)
-
-    prerequisites = forms.CharField(label=_('Prerequisites'),
-        help_text=_('What should attendees be familiar with already, important for intermediate and advanced talks.<br />E.g. data visualization basics, data analysis'),
-        max_length=150, widget=forms.TextInput(attrs={'size': 40}), required=False)
-
+        label=_('Abstract (longer version)'),
+        help_text=_('<p>Description of the session proposal you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
+        widget=MarkEditWidget)
     abstract_short = forms.CharField(
         max_length=500,
-        label=_('Abstract short version'),
-        help_text=_('<p>Please enter a short version of your abstract (500 chars) we need a short description e.g. for YouTube and formats with limited space.'),
-        widget=MarkEditWidget,
-        )
-
+        label=_('Abstract (short version)'),
+        help_text=_('<p>Please enter a short version of your abstract. We need a short description e.g. for YouTube and other distribution channels with limited space for abstracts.</p><p>Suggested size: <500 chars.</p>'),
+        widget=MarkEditWidget)
+    prerequisites = forms.CharField(
+        label=_('Prerequisites for attending the session'),
+        help_text=_('What should attendees be familiar with already, important for intermediate and advanced talks.<br />E.g. data visualization basics, data analysis'),
+        max_length=150,
+        widget=forms.TextInput(attrs={'size': 40}),
+        required=False)
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
         choices=models.TALK_LANGUAGES,
         initial='en',)
-    level = forms.TypedChoiceField(label=_('Audience level'), choices=models.TALK_LEVEL, initial='beginner')
+    level = forms.TypedChoiceField(
+        label=_('Audience level'),
+        help_text=_('Please choose a level suitable for the session. People attending the session will expect their skill level to be expected, so a talk for advanced Python users should have advanced level content.'),
+        choices=models.TALK_LEVEL,
+        initial='beginner')
 
+    # Talk tags
     tags = TagField(widget=TagWidget)
 
-
+    # Details for talk review
     abstract_extra = forms.CharField(
         max_length=500,
-        label=_('Talk instructions'),
-        help_text=_('<p>Please enter instructions for attendees.</p>'),
-        widget=MarkEditWidget,)
+        label=_('Additional information for talk reviewers'),
+        help_text=_('<p>Please add anything you may find useful for the review of your session proposal, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
+        widget=MarkEditWidget,
+        required=False)
 
     tags = TagField(widget=TagWidget)
 

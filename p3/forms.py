@@ -85,11 +85,6 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         help_text=_('We will be recording the conference talks and publish them on the EuroPython YouTube channel and archive.org.'),
     )
 
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
-        widget=cforms.MarkEditWidget)
-
     abstract = forms.CharField(
         max_length=1500,
         label=_('Abstract/description'),
