@@ -49,8 +49,8 @@
     {% if proposed_talks %}
         <div class="alert alert--info">
             <p>
-                {% trans "You have already submitted" %} {{ proposed_talks.count }} {% trans "paper" %}{{ proposed_talks.count|pluralize }}.
-                {% trans "To edit your submission" %}{{ proposed_talks.count|pluralize }},
+                {% trans "You have already submitted" %} {{ proposed_talks|length }} {% trans "proposal" %}{{ proposed_talks|pluralize }}.
+                {% trans "To edit your submission" %}{{ proposed_talks|pluralize }},
                 {% trans "visit your" %} <a href="{% url "conference-profile" slug=speaker.user.attendeeprofile.slug %}">{% trans "speaker profile" %}</a>.</p>
         </div>
     {% endif %}

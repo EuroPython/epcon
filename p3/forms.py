@@ -105,7 +105,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
-    @transaction.commit_on_success
+    #@transaction.commit_on_success
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 
@@ -117,7 +117,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
         data = self.cleaned_data
 
-        p3s.first_time = data['first_time']
+        p3s.first_time = data.get('first_time', False)
         p3s.save()
 
         # Set additional fields added in this form (compared to
@@ -136,7 +136,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
     video_agreement = P3SubmissionForm.base_fields['video_agreement']
     type = P3SubmissionForm.base_fields['type']
-    abstract = P3SubmissionForm.base_fields['abstract']
     language = P3SubmissionForm.base_fields['language']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
@@ -168,7 +167,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     type = P3SubmissionForm.base_fields['type']
-    abstract = P3SubmissionForm.base_fields['abstract']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
