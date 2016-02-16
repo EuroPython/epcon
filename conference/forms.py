@@ -261,7 +261,8 @@ class SubmissionForm(forms.Form):
         talk.save()
         talk.setAbstract(data['abstract'])
         # only the first five tags will be used
-        talk.tags.set(data['tags'][:5])
+        if 'tags' in data:
+            talk.tags.set(*(data['tags'][:5]))
 
         from conference.listeners import new_paper_submission
         new_paper_submission.send(sender=speaker, talk=talk)
