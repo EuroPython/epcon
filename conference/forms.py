@@ -110,44 +110,7 @@ class PseudoRadioRenderer(forms.widgets.RadioFieldRenderer):
         output = '<div class="pseudo-radio-field"><input type="hidden" name="%s" value="%s" />%s</div>'
         return mark_safe(output % (self.name, self.value, ''.join(choiches)))
 
-class SubmissionForm(forms.Form):
-    """
-    Form per la submission del primo paper; include campi che andranno a
-    popolare sia il profilo dello speaker che i dati del talk. Vengono
-    richiesti i soli dati essenziali.
-    """
-
-    # Speaker details
-    first_name = forms.CharField(
-        label=_('First name'),
-        max_length=30)
-    last_name = forms.CharField(
-        label=_('Last name'),
-        max_length=30)
-    birthday = forms.DateField(
-        label=_('Date of birth'),
-        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
-        input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}))
-    job_title = forms.CharField(
-        label=_('Job title'),
-        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
-        max_length=50,
-        required=False,)
-    phone = forms.CharField(
-        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
-        max_length=30)
-    company = forms.CharField(
-        label=_('Your company'),
-        max_length=50,
-        required=False)
-    company_homepage = forms.URLField(
-        label=_('Company homepage'),
-        required=False)
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
-        widget=forms.Textarea())
+class TalkBaseForm(forms.Form):
 
     # Talk details
     title = forms.CharField(
@@ -198,6 +161,60 @@ class SubmissionForm(forms.Form):
         help_text=_('<p>Please add anything you may find useful for the review of your session proposal, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
         widget=MarkEditWidget,
         required=False)
+
+# This form is used for new talk submissions and only when the speaker
+# has not yet submitted another talk; see TalkForm for talk
+# editing and additional talks.
+
+class SubmissionForm(forms.Form):
+    """
+    Form per la submission del primo paper; include campi che andranno a
+    popolare sia il profilo dello speaker che i dati del talk. Vengono
+    richiesti i soli dati essenziali.
+    """
+
+    # Speaker details
+    first_name = forms.CharField(
+        label=_('First name'),
+        max_length=30)
+    last_name = forms.CharField(
+        label=_('Last name'),
+        max_length=30)
+    birthday = forms.DateField(
+        label=_('Date of birth'),
+        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        input_formats=('%Y-%m-%d',),
+        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}))
+    job_title = forms.CharField(
+        label=_('Job title'),
+        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
+        max_length=50,
+        required=False,)
+    phone = forms.CharField(
+        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
+        max_length=30)
+    company = forms.CharField(
+        label=_('Your company'),
+        max_length=50,
+        required=False)
+    company_homepage = forms.URLField(
+        label=_('Company homepage'),
+        required=False)
+    bio = forms.CharField(
+        label=_('Compact biography'),
+        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
+        widget=forms.Textarea())
+
+    # Talk details
+    title = TalkBaseForm.base_fields['title']
+    sub_title = TalkBaseForm.base_fields['sub_title']
+    abstract = TalkBaseForm.base_fields['abstract']
+    abstract_short = TalkBaseForm.base_fields['abstract_short']
+    prerequisites = TalkBaseForm.base_fields['prerequisites']
+    language = TalkBaseForm.base_fields['language']
+    level = TalkBaseForm.base_fields['level']
+    tags = TalkBaseForm.base_fields['tags']
+    abstract_extra = TalkBaseForm.base_fields['abstract_extra']
 
     def __init__(self, user, *args, **kwargs):
         try:
@@ -287,25 +304,21 @@ class SpeakerForm(forms.Form):
 
 _abstract = models.Talk._meta.get_field_by_name('abstracts')[0]
 
+# This form is used in case the speaker has already proposed a talk
+# and for editing talks
+
 class TalkForm(forms.ModelForm):
-    abstract = forms.CharField(
-        max_length=5000,
-        label='Talk abstract',
-        help_text='',
-        widget=forms.Textarea(),)
 
-    abstract_short = forms.CharField(
-        max_length=2000,
-        label=_('Abstract short version'),
-        help_text=_('<p>Please enter a short version of your abstract'),
-        widget=MarkEditWidget,
-        )
-
-    abstract_extra = forms.CharField(
-        max_length=500,
-        label=_('Talk instructions'),
-        help_text=_('<p>Please enter instructions for attendees.</p>'),
-        widget=MarkEditWidget,)
+    # Talk details
+    title = TalkBaseForm.base_fields['title']
+    sub_title = TalkBaseForm.base_fields['sub_title']
+    abstract = TalkBaseForm.base_fields['abstract']
+    abstract_short = TalkBaseForm.base_fields['abstract_short']
+    prerequisites = TalkBaseForm.base_fields['prerequisites']
+    language = TalkBaseForm.base_fields['language']
+    level = TalkBaseForm.base_fields['level']
+    tags = TalkBaseForm.base_fields['tags']
+    abstract_extra = TalkBaseForm.base_fields['abstract_extra']
 
     class Meta:
         model = models.Talk
@@ -338,13 +351,16 @@ class TalkForm(forms.ModelForm):
                 status='proposed', language=data['language'],
                 level=data['level'], type=data['type']
             )
-        inst = super(TalkForm, self).save(commit=commit)
-        inst.setAbstract(data['abstract'])
+        talk = super(TalkForm, self).save(commit=commit)
+        talk.setAbstract(data['abstract'])
+        # only the first five tags will be used
+        if 'tags' in data:
+            talk.tags.set(*(data['tags'][:5]))
 
         if not pk:
             from conference.listeners import new_paper_submission
             new_paper_submission.send(sender=speaker, talk=self.instance)
-        return inst
+        return talk
 
 del _abstract
 
