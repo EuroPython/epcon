@@ -77,6 +77,7 @@
             onTagAdded  : null,
             onTagRemoved: null,
             onTagClicked: null,
+            filterTag: null,
             tagLimit: null
         },
 
@@ -311,6 +312,10 @@
             value = $.trim(value);
 
             if (!this._isNew(value) || value === '') {
+                return false;
+            }
+
+            if (this.options.filterTag && !this.options.filterTag.apply(this, [value])) {
                 return false;
             }
 
