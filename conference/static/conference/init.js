@@ -231,6 +231,10 @@ function setup_conference_fields(ctx) {
     var tfields = $('.tag-field', ctx);
     if(tfields.length) {
         tfields.tagit({
+            tagLimit: 5,
+            onTagLimitExceeded: function() {
+                // TODO: show message
+            },
             tagSource: function(search, showChoices) {
                 if(!conference)
                     return;
