@@ -85,24 +85,6 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         help_text=_('We will be recording the conference talks and publish them on the EuroPython YouTube channel and archive.org.'),
     )
 
-    abstract = forms.CharField(
-        max_length=1500,
-        label=_('Abstract/description'),
-        help_text=_('<p>Description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
-        widget=cforms.MarkEditWidget)
-
-    abstract_short = forms.CharField(
-        max_length=500,
-        label=_('Abstract short version'),
-        help_text=_('<p>Please enter a short version of your abstract. We need a short description e.g. for YouTube and other distribution channels with limited space for abstracts.</p><p>Suggested size: <500 chars.</p>'),
-        widget=cforms.MarkEditWidget)
-
-    abstract_extra = forms.CharField(
-        max_length=500,
-        label=_('Additional information for talk reviewers'),
-        help_text=_('<p>Please add anything you may find useful for the review of your talk, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
-        widget=cforms.MarkEditWidget,
-        required=False)
 
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
@@ -313,10 +295,14 @@ class P3ProfileForm(cforms.ProfileForm):
         required=False,)
     tagline = forms.CharField(
         label=_('Tagline'),
-        help_text=_('Describe yourself in one line'),
+        help_text=_('Describe yourself in one line.'),
         required=False,
     )
-    interests = cforms.TagField(label="Technical interests", widget=cforms.TagWidget, required=False)
+    interests = cforms.TagField(
+        label="Technical interests",
+        help_text=_('<p>Please add up to five (5) tags from the shown categories which are relevant to your interests. Only 5 tags will be saved; additional tags are discarded.</p>'),
+        widget=cforms.TagWidget,
+        required=False)
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
 
@@ -395,7 +381,9 @@ class P3ProfilePublicDataForm(P3ProfileForm):
             p3p.country = ''
 
         p3p.save()
-        p3p.interests.set(*data.get('interests', ''))
+        # only the first five interest tags will be used
+        if 'interests' in data:
+            p3p.interests.set(*(data['interests'][:5]))
         return profile
 
 

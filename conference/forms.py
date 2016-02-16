@@ -188,7 +188,9 @@ class SubmissionForm(forms.Form):
         initial='beginner')
 
     # Talk tags
-    tags = TagField(widget=TagWidget)
+    tags = TagField(
+        help_text=_('<p>Please add up to five (5) tags from the shown categories which are relevant to your session proposal. Only 5 tags will be saved; additional tags are discarded.</p>'),
+        widget=TagWidget)
 
     # Details for talk review
     abstract_extra = forms.CharField(
@@ -197,8 +199,6 @@ class SubmissionForm(forms.Form):
         help_text=_('<p>Please add anything you may find useful for the review of your session proposal, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
         widget=MarkEditWidget,
         required=False)
-
-    tags = TagField(widget=TagWidget)
 
     def __init__(self, user, *args, **kwargs):
         try:
@@ -261,7 +261,8 @@ class SubmissionForm(forms.Form):
 
         talk.save()
         talk.setAbstract(data['abstract'])
-        talk.tags.set(data['tags'][:5])  # only the first five tags will be added
+        # only the first five tags will be used
+        talk.tags.set(data['tags'][:5])
 
         from conference.listeners import new_paper_submission
         new_paper_submission.send(sender=speaker, talk=talk)
