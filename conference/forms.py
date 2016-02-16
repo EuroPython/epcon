@@ -194,7 +194,6 @@ class SubmissionForm(forms.Form):
 
     # Details for talk review
     abstract_extra = forms.CharField(
-        max_length=500,
         label=_('Additional information for talk reviewers'),
         help_text=_('<p>Please add anything you may find useful for the review of your session proposal, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
         widget=MarkEditWidget,
