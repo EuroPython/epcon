@@ -232,8 +232,12 @@ function setup_conference_fields(ctx) {
     if(tfields.length) {
         tfields.tagit({
             tagLimit: 5,
-            onTagLimitExceeded: function() {
-                // TODO: show message
+            onTagLimitExceeded: function(e, tagit) {
+                var ul = tagit.element.closest('.controls').find('ul');
+
+                ul.siblings('.tag-limit-error').remove();
+                ul.after('<div class="tag-limit-error">Max 5 tags.</div>');
+
             },
             tagSource: function(search, showChoices) {
                 if(!conference)

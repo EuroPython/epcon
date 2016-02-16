@@ -315,7 +315,7 @@
             }
 
             if (this.options.tagLimit && this.assignedTags().length >= this.options.tagLimit) {
-                this._trigger('onTagLimitExceeded', null);
+                this._trigger('onTagLimitExceeded', null, this);
 
                 return false;
             }
