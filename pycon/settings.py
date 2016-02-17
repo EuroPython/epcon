@@ -101,9 +101,9 @@ LANGUAGES = (
 # These languages are shown in the talk submission forms. The
 # tuple must be a subset of LANGUAGES.
 CONFERENCE_TALK_SUBMISSION_LANGUAGES = (
+    ('en', _('English')),
     ('es', _('Spanish')),
     ('eu', _('Basque')),
-    ('en', _('English')),
 )
 
 # Site ID
