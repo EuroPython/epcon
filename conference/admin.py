@@ -368,7 +368,13 @@ class MultiLingualForm(forms.ModelForm):
             translations = getattr(self.instance, field_name).filter(content=field_name)
             for t in translations:
                 form_field = '{name}_{lang}'.format(name=field_name, lang=t.language)
-                self.fields[form_field].initial = t.body
+                try:
+                    self.fields[form_field].initial = t.body
+                except KeyError:
+                    # Someone probably removed a previously configured
+                    # language; nothing must we can do other than to
+                    # ignore the error
+                    pass
 
     def _save_translations(self, o):
         for field_name in self.multilingual_fields:
