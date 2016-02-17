@@ -89,14 +89,13 @@ LANGUAGE_CODE = 'en'
 # Note that the system will have to support languages from previous
 # conferences as well, so changes have to be applied with care !
 #
-# TBD: Not sure why we have three language settings, one called
-# LANGUAGES, the other CONFERENCE_TALK_LANGUAGES and yet another
-# CMS_LANGUAGES
+# TBD: There's another setting called CMS_LANGUAGES. Not sure why we
+# need this.
 LANGUAGES = (
     ('en', _('English')),
     ('es', _('Spanish')),
     ('eu', _('Basque')),
-    ('it', _('Italiano')),
+    ('it', _('Italian')),
 )
 
 # These languages are shown in the talk submission forms. The
