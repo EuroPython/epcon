@@ -134,6 +134,11 @@ X_SENDFILE = getattr(settings, 'CONFERENCE_X_SENDFILE', None)
 
 TALK_VIDEO_ACCESS = getattr(settings, 'CONFERENCE_TALK_VIDEO_ACCESS', lambda r, t: True)
 
+TALK_SUBMISSION_LANGUAGES = getattr(
+    settings,
+    'CONFERENCE_TALK_SUBMISSION_LANGUAGES',
+    settings.LANGUAGES) 
+
 TALK_DURATION = getattr(
     settings,
     'CONFERENCE_TALK_DURATION',
