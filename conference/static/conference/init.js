@@ -233,7 +233,19 @@ function setup_conference_fields(ctx) {
     var tags = [];
     var tagsLowerCase = [];
 
-    if(tfields.length) {
+    if (conference) {
+        for(var key in conference.taggeditems) {
+            tags.push(key);
+            tagsLowerCase.push(key.toLowerCase());
+        }
+        tags.sort(function(a, b) {
+            var a = a.toLowerCase();
+            var b = b.toLowerCase();
+            return a == b ? 0 : (a < b ? -1 : 1);
+        });
+    }
+
+    if (tfields.length) {
         tfields.tagit({
             tagLimit: 5,
             onTagLimitExceeded: function(e, tagit) {
@@ -260,16 +272,8 @@ function setup_conference_fields(ctx) {
                 showChoices(tags);
             }
         });
-        if(conference) {
-            for(var key in conference.taggeditems) {
-                tags.push(key);
-                tagsLowerCase.push(key.toLowerCase());
-            }
-            tags.sort(function(a, b) {
-                var a = a.toLowerCase();
-                var b = b.toLowerCase();
-                return a == b ? 0 : (a < b ? -1 : 1);
-            });
+
+        if (conference) {
             tfields.each(function() {
                 var tag_field = $(this);
                 var wrapper = _render_tags(tags, tag_field.tagit('assignedTags'));
@@ -287,6 +291,7 @@ function setup_conference_fields(ctx) {
             });
         }
     }
+
     $('.readonly-tag-field').each(function() { setup_tag_field(this) });
 
     var mfields = $('.markedit-widget', ctx);
