@@ -49,14 +49,14 @@ python manage.py migrate
 ```
 
 RUN
------
+---
 
 ```bash
 python manage.py runserver
 ```
 
-START SETTING
------
+INITIAL DATABASE SETTINGS
+-------------------------
 
 The first thing you need to do is add 4 pages with the following **ids**:
 
@@ -68,4 +68,13 @@ The first thing you need to do is add 4 pages with the following **ids**:
 If you don't do that you'll start to see some errors like broken url reference. 
 NOTE: You may need to restart the server after adding the pages to let the system
 detect them.
+
+Next, you will have to create a conference record under
+/admin/conference/conference/. The links on this conference record
+also allow setting up the schedule and checking attendee statistics.
+
+The shopping cart system has support for hotel bookings. In order to get the cart
+working without errors, you have to create a conference record under
+/admin/p3/hotelbooking/.
+
 
