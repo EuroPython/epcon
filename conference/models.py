@@ -467,9 +467,7 @@ class Speaker(models.Model, UrlMixin):
         return Talk.objects.filter(id__in=qs.values('talk'))
 
 TALK_DURATION = settings.TALK_DURATION
-TALK_LANGUAGES = (
-    ('en', _('English')),
-)
+TALK_LANGUAGES = dsettings.LANGUAGES
 TALK_STATUS = (
     ('proposed', _('Proposed')),
     ('accepted', _('Accepted')),

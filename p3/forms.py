@@ -20,15 +20,6 @@ import datetime
 
 ## These should really be changes in the conference package:
 
-# Talk lanuages, mapping ISO code to languageT
-TALK_LANGUAGES = getattr(settings,
-                         'CONFERENCE_TALK_LANGUAGES',
-                         # TBD: Should add TALK_LANGUAGES to conference.settings
-                         #csettings.TALK_LANGUAGES
-                         settings.LANGUAGES
-                         )
-
-
 # TBD: These forms need some cleanup. Probably best to merge the
 # conference repo into epcon and then remove all this subclassing.
 
@@ -86,12 +77,6 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     )
 
 
-    language = forms.TypedChoiceField(
-        help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=TALK_LANGUAGES,
-        initial='en',
-        required=False)
-
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
         help_text=_('Select the sub community this talk is intended for, if any.'),
@@ -136,7 +121,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
     video_agreement = P3SubmissionForm.base_fields['video_agreement']
     type = P3SubmissionForm.base_fields['type']
-    language = P3SubmissionForm.base_fields['language']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):

@@ -142,7 +142,7 @@ class TalkBaseForm(forms.Form):
         required=False)
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=models.TALK_LANGUAGES,
+        choices=settings.TALK_SUBMISSION_LANGUAGES,
         initial='en',)
     level = forms.TypedChoiceField(
         label=_('Audience level'),
@@ -558,7 +558,7 @@ class OptionForm(forms.Form):
         widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
     )
     language = forms.ChoiceField(
-        choices=(('all', 'All'), ('en', 'English'), ('it', 'Italian'),),
+        choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
         required=False,
         initial='all',
         widget=forms.RadioSelect(renderer=PseudoRadioRenderer),

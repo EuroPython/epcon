@@ -83,12 +83,25 @@ TIME_ZONE = 'Europe/Madrid'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en'
 
+# Languages supported by the system, mapping ISO code
+# to language. 'en' must always be supported
+#
+# Note that the system will have to support languages from previous
+# conferences as well, so changes have to be applied with care !
+#
 # TBD: Not sure why we have three language settings, one called
 # LANGUAGES, the other CONFERENCE_TALK_LANGUAGES and yet another
 # CMS_LANGUAGES
 LANGUAGES = (
-    # disabled italian
-    #('it', _('Italiano')),
+    ('en', _('English')),
+    ('es', _('Spanish')),
+    ('eu', _('Basque')),
+    ('it', _('Italiano')),
+)
+
+# These languages are shown in the talk submission forms. The
+# tuple must be a subset of LANGUAGES.
+CONFERENCE_TALK_SUBMISSION_LANGUAGES = (
     ('es', _('Spanish')),
     ('eu', _('Basque')),
     ('en', _('English')),
@@ -519,13 +532,6 @@ CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
-
-# Talk lanuages, mapping ISO code to language
-CONFERENCE_TALK_LANGUAGES = (
-    ('en', _('English')),
-    ('es', _('Spanish')),
-    ('eu', _('Basque')),
-)
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from p3 import models

@@ -55,7 +55,7 @@
 
     <div class="grid-60">
         <div class="talk-speakers">
-        {% trans 'By' %} {% for spk in talk_data.speakers %}
+        {% trans 'Speaker(s)' %} {% for spk in talk_data.speakers %}
             <a href="{% url "conference-profile" slug=spk.slug %}">{{ spk.name }}</a>
             {% if not forloop.last %}, {% endif %}
         {% endfor %}
@@ -166,23 +166,23 @@
                     <hr />
                 {% endif %}
                 <dl>
-                    <dt>{% trans "Lingua" %}</dt>
+                    <dt>{% trans "Language" %}</dt>
                     <dd>{{ talk.language|upper }}</dd>
 
                     {% if talk.type != "p" %}
-                    <dt>{% trans "Durata" %}</dt>
+                    <dt>{% trans "Duration" %}</dt>
                     <dd>
                         {% if talk.duration == 480 %}
                             Full day (8h)
                         {% else %}
-                            {{ talk.duration }} {% trans "minuti" %} (inc. Q&amp;A)
+                            {{ talk.duration }} {% trans "minutes" %} (inc. Q&amp;A)
                         {% endif %}
                     </dd>
                     {% endif %}
 
                     {% if track.translate %}
-                        <dt>{% trans "Traduzione simultanea" %}</dt>
-                        <dd>{% trans "Disponibile" %}</dd>
+                        <dt>{% trans "Live Translation" %}</dt>
+                        <dd>{% trans "Available" %}</dd>
                     {% endif %}
                 </dl>
                 {% if talk_data.tags %}
