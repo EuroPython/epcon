@@ -531,6 +531,31 @@ CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
+# Conference sub-communities
+CONFERENCE_TALK_SUBCOMMUNITY = (
+    ('', _('All')),
+    ('pydata', _('PyData')),
+)
+
+# Ticket information
+CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
+    ('fs', 'S (female)'),
+    ('fm', 'M (female)'),
+    ('fl', 'L (female)'),
+    ('fxl', 'XL (female)'),
+    ('fxxl', 'XXL (female)'),
+    ('s', 'S (male)'),
+    ('m', 'M (male)'),
+    ('l', 'L (male)'),
+    ('xl', 'XL (male)'),
+    ('xxl', 'XXL (male)'),
+)
+CONFERENCE_TICKET_CONFERENCE_DIETS = (
+    ('omnivorous', _('Omnivorous')),
+    ('vegetarian', _('Vegetarian')),
+    #('vegan', _('Vegan')),
+    #('kosher', _('Kosher')),
+)
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from p3 import models

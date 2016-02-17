@@ -18,10 +18,8 @@ from taggit.managers import TaggableManager
 import logging
 log = logging.getLogger('p3.models')
 
-TALK_SUBCOMMUNITY = (
-    ('', _('All')),
-    ('pydata', _('PyData')),
-)
+# Configurable sub-communities
+TALK_SUBCOMMUNITY = dsettings.CONFERENCE_TALK_SUBCOMMUNITY
 
 class P3Talk(models.Model):
     """
@@ -38,24 +36,10 @@ class SpeakerConference(models.Model):
     speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
     first_time = models.BooleanField(default=False)
 
-TICKET_CONFERENCE_SHIRT_SIZES = (
-    ('fs', 'S (female)'),
-    ('fm', 'M (female)'),
-    ('fl', 'L (female)'),
-    ('fxl', 'XL (female)'),
-    ('fxxl', 'XXL (female)'),
-    ('s', 'S (male)'),
-    ('m', 'M (male)'),
-    ('l', 'L (male)'),
-    ('xl', 'XL (male)'),
-    ('xxl', 'XXL (male)'),
-)
-TICKET_CONFERENCE_DIETS = (
-    ('omnivorous', _('Omnivorous')),
-    ('vegetarian', _('Vegetarian')),
-    #('vegan', _('Vegan')),
-    #('kosher', _('Kosher')),
-)
+# Configurable t-shirt sizes and diets
+TICKET_CONFERENCE_SHIRT_SIZES = dsettings.CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES
+TICKET_CONFERENCE_DIETS = dsettings.CONFERENCE_TICKET_CONFERENCE_DIETS
+
 TICKET_CONFERENCE_EXPERIENCES = (
     (0, _('0 stars')),
     (1, _('1 stars')),
@@ -64,6 +48,8 @@ TICKET_CONFERENCE_EXPERIENCES = (
     (4, _('4 stars')),
     (5, _('5 stars')),
 )
+
+
 class TicketConferenceManager(models.Manager):
     def get_query_set(self):
         return self._QuerySet(self.model)
