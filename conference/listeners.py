@@ -3,6 +3,7 @@ from conference.models import Talk, Event, TalkSpeaker
 
 from django.dispatch import Signal
 from django.db.models.signals import post_save
+from conference import settings
 
 import logging
 
@@ -15,6 +16,10 @@ def _new_paper_email(sender, **kw):
     """
     Invia una mail agli organizzatori con i dettagli sul paper presentato.
     """
+    recipients = settings.TALK_SUBMISSION_NOTIFICATION_EMAIL
+    if not recipients:
+        # Nothing to do
+        return
     tlk = kw['talk']
     subject = '[new paper] "%s %s" - %s' % (sender.user.first_name, sender.user.last_name, tlk.title)
     body = '''
@@ -36,6 +41,7 @@ Tags: %(tags)s
     }
     from conference.utils import send_email
     send_email(
+        recipient_list=recipients,
         subject=subject,
         message=body,
     )

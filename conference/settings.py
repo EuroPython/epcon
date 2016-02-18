@@ -45,6 +45,7 @@ VOTING_ALLOWED = getattr(settings, 'CONFERENCE_VOTING_ALLOWED', lambda user: Tru
 
 VOTING_DISALLOWED = getattr(settings, 'CONFERENCE_VOTING_DISALLOWED', None)
 
+# List of emails to send notification to
 SEND_EMAIL_TO = getattr(settings, 'CONFERENCE_SEND_EMAIL_TO', None)
 
 STUFF_DIR = getattr(settings, 'CONFERENCE_STUFF_DIR', settings.MEDIA_ROOT)
@@ -161,6 +162,12 @@ DEFAULT_VOTING_TALK_TYPES = (
     ('t', 'Trainings'),
     ('p', 'Poster'),
 )
+
+# List of emails to send talk submission email notifications to
+TALK_SUBMISSION_NOTIFICATION_EMAIL = getattr(
+    settings,
+    'CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL',
+    None)
 
 TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES', DEFAULT_VOTING_TALK_TYPES)
 
