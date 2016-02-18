@@ -494,12 +494,18 @@ def tags():
     utilizzano.
     """
     qs = models.ConferenceTaggedItem.objects\
-        .all()\
-        .select_related('tag')
+         .all()\
+         .select_related('tag')
 
     tags = defaultdict(set)
     for item in qs:
         tags[item.tag].add((item.content_type_id, item.object_id))
+
+    # Add tags which are not currently in use
+    qs = models.ConferenceTag.objects.all()
+    for tag in qs:
+        if tag not in tags:
+            tags[tag] = set()
 
     return dict(tags)
 
