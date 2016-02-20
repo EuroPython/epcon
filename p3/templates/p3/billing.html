@@ -46,7 +46,7 @@
                     <tbody>
                         {% for fare, params, price in totals.tickets %}
                         <tr>
-                            <td>{{ fare.name }}</td>
+                            <td>{{ fare.name }} ({{ fare.fare_type }})</td>
                             <td>{{ params.qty }}</td>
                             <td>€ {{ price|floatformat:"2" }}</td>
                         </tr>
