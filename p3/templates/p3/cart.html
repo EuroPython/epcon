@@ -51,7 +51,9 @@
             <legend>{% trans "Billing type" %}</legend>
             <p>{% trans "Select the entity you are purchasing tickets for." %}</p>
             {{ form.order_type|form_field:"no-label" }}
-            <p>{% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}<br />
+            <p>
+              {% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}<br />
+              {% blocktrans %}You have to select "Company Purchase", if you want to buy a business ticket.{% endblocktrans %}<br />
             </p>
         </fieldset>
     </div><!--/grid -->
