@@ -737,6 +737,12 @@ class Fare(models.Model):
         #validity = numb < settings.MAX_TICKETS
         return validity
 
+    def fare_type(self):
+
+        """ Return the fare type based on the .recipient_type
+        """
+        return dict(FARE_TYPES).get(self.recipient_type, 'Regular')
+
     def calculated_price(self, qty=1, **kw):
         from conference.listeners import fare_price
         params = dict(kw)
