@@ -545,11 +545,14 @@ CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
     ('fl', 'L (female)'),
     ('fxl', 'XL (female)'),
     ('fxxl', 'XXL (female)'),
+    ('fxxxl', '3XL (female)'),
     ('s', 'S (male)'),
     ('m', 'M (male)'),
     ('l', 'L (male)'),
     ('xl', 'XL (male)'),
     ('xxl', 'XXL (male)'),
+    ('xxxl', '3XL (male)'),
+    ('xxxxl', '4XL (male)'),
 )
 CONFERENCE_TICKET_CONFERENCE_DIETS = (
     ('omnivorous', _('Omnivorous')),
