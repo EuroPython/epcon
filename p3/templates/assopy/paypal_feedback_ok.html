@@ -22,6 +22,9 @@
         <h1>{% trans "Purchase completed" %}</h1>
         <div class="page-summary" role="contentinfo">
             <p>{% trans "Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address." %}</p>
+	    <p>{% trans "Please assign the ticket to the attendee by clicking on the button below. If you bought the ticket for yourself, please assign it to yourself and edit the ticket to include your details." %}</p>
+	    <p>{% trans "Please assign the ticket to the attendee by clicking on the button below. Note that attendees have to have an account on the EuroPython website to have tickets assigned to them." %}</p>
+	    <p>{% trans "If you bought the ticket for yourself, please assign it to yourself and edit the ticket to include your details." %}</p>
             <div class="badge"><h5><a href="{% url "assopy-tickets" %}">{% trans "Edit your tickets" %} &rarr;</a></h5></div>
         </div>
         {% endif %}

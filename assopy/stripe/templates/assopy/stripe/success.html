@@ -3,5 +3,16 @@
 {% load stripe_tags i18n %}
 
 {% block ASSOPY_MAIN_CONTENT %}
-    <div align="center">{% trans "Your stripe payment has been processed with success!" %}</div>
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+        <h1>{% trans "Purchase completed" %}</h1>
+        <div class="page-summary" role="contentinfo">
+            <p>{% trans "Thank you for the purchase. The stripe transaction was completed." %}</p>
+	    <p>{% trans "Please assign the ticket to the attendee by clicking on the button below. Note that attendees have to have an account on the EuroPython website to have tickets assigned to them." %}</p>
+	    <p>{% trans "If you bought the ticket for yourself, please assign it to yourself and edit the ticket to include your details." %}</p>
+            <div class="badge"><h5><a href="{% url "assopy-tickets" %}">{% trans "Edit your tickets" %} &rarr;</a></h5></div>
+        </div>
+</div>
+</section>
 {% endblock ASSOPY_MAIN_CONTENT %}
