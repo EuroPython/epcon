@@ -308,8 +308,8 @@ class Coupon(models.Model):
         return '%s (%s)' % (self.code, self.value)
 
     def clean(self):
-        if re.search(r'[^\d\%]+', self.value):
-            raise ValidationError('il valore del coupon contiene un carattere non valido')
+        if re.search(r'[^\d\%\.]+', self.value):
+            raise ValidationError('The value of the coupon contains illegal characters')
 
     def type(self):
         if self.value.endswith('%'):
