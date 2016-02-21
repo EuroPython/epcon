@@ -13,14 +13,14 @@
         {% order_complete order.id as ocomplete %}
         {% if not ocomplete %}
         <h1>{% trans "Waiting for Paypal response..." %}</h1>
-        <div class="page-summary" role="contentinfo">
+        <div role="contentinfo">
             <p>{% blocktrans with code=order.code url="mailto:info@euroython.eu" %}
             Are you waiting for too long? <a href="{{ url }}">Write to us</a> specifying your order number {{ code }}
             {% endblocktrans %}</p>
         </div>
         {% else %}
         <h1>{% trans "Purchase completed" %}</h1>
-        <div class="page-summary" role="contentinfo">
+        <div role="contentinfo">
             <p>{% trans "Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address." %}</p>
 	    <p>{% trans "Please assign the ticket to the attendee by clicking on the button below. If you bought the ticket for yourself, please assign it to yourself and edit the ticket to include your details." %}</p>
 	    <p>{% trans "Please assign the ticket to the attendee by clicking on the button below. Note that attendees have to have an account on the EuroPython website to have tickets assigned to them." %}</p>
