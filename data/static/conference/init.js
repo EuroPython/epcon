@@ -229,8 +229,37 @@ function setup_tag_field(field) {
 function setup_conference_fields(ctx) {
     ctx = ctx || document;
     var tfields = $('.tag-field', ctx);
-    if(tfields.length) {
+
+    var tags = [];
+    var tagsLowerCase = [];
+
+    if (conference) {
+        for(var key in conference.taggeditems) {
+            tags.push(key);
+            tagsLowerCase.push(key.toLowerCase());
+        }
+        tags.sort(function(a, b) {
+            var a = a.toLowerCase();
+            var b = b.toLowerCase();
+            return a == b ? 0 : (a < b ? -1 : 1);
+        });
+    }
+
+    if (tfields.length) {
         tfields.tagit({
+            tagLimit: 5,
+            onTagLimitExceeded: function(e, tagit) {
+                var ul = tagit.element.closest('.controls').find('ul');
+
+                ul.siblings('.tag-limit-error').remove();
+                ul.after('<div class="tag-limit-error">Max 5 tags.</div>');
+
+            },
+            filterTag: function(term) {
+                term = term.toLowerCase();
+
+                return tagsLowerCase.indexOf(term) !== -1;
+            },
             tagSource: function(search, showChoices) {
                 if(!conference)
                     return;
@@ -243,16 +272,8 @@ function setup_conference_fields(ctx) {
                 showChoices(tags);
             }
         });
-        if(conference) {
-            var tags = [];
-            for(var key in conference.taggeditems) {
-                tags.push(key);
-            }
-            tags.sort(function(a, b) {
-                var a = a.toLowerCase();
-                var b = b.toLowerCase();
-                return a == b ? 0 : (a < b ? -1 : 1);
-            });
+
+        if (conference) {
             tfields.each(function() {
                 var tag_field = $(this);
                 var wrapper = _render_tags(tags, tag_field.tagit('assignedTags'));
@@ -270,6 +291,7 @@ function setup_conference_fields(ctx) {
             });
         }
     }
+
     $('.readonly-tag-field').each(function() { setup_tag_field(this) });
 
     var mfields = $('.markedit-widget', ctx);
