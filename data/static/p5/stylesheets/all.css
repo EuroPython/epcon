@@ -118,9 +118,9 @@ figure {
     color: #656257; }
 
 .meta, #talk-voting .talk-speakers, .person-card .see-more {
-  color: #807c6f; }
+  color: #2b2a26; }
   .meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited {
-    color: #807c6f; }
+    color: #2b2a26; }
 
 .tag {
   background: #d4d2cd;
@@ -333,7 +333,7 @@ sub {
 .lead, .page-summary p {
   font-size: 20.7px;
   font-size: 2.07rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 .secondary {
   font-size: 15.65217px;
@@ -1628,7 +1628,7 @@ legend {
   *margin-left: -7px;
   padding: 0 0 0.75em 0;
   border: 0;
-  color: #807c6f;
+  color: #2b2a26;
   font-weight: bold;
   line-height: 1.5em;
   white-space: normal;
@@ -1653,7 +1653,7 @@ label {
   font-size: 1.8rem; }
   label span {
     font-size: 13.5;
-    color: #807c6f; }
+    color: #2b2a26; }
 
 select,
 textarea,
@@ -1747,7 +1747,7 @@ input[type="color"] {
   input[type="search"]:focus,
   input[type="tel"]:focus,
   input[type="color"]:focus {
-    border-color: #807c6f;
+    border-color: #2b2a26;
     outline: 0;
     outline: thin dotted \ 9; }
 
@@ -1786,22 +1786,22 @@ input:-moz-placeholder,
 textarea:-moz-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 input::-moz-placeholder,
 textarea::-moz-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 .radio,
 .checkbox {
@@ -1880,7 +1880,7 @@ form .field.error select {
 
 .help-block, .help-text,
 .help-inline {
-  color: #807c6f;
+  color: #2b2a26;
   font-size: 14.4px;
   font-size: 1.44rem;
   line-height: 1.4; }
@@ -1898,7 +1898,7 @@ form .field.error select {
 
 .help-block, .help-text,
 .help-inline {
-  color: #807c6f; }
+  color: #2b2a26; }
 
 .help-block, .help-text {
   display: block;
@@ -4471,7 +4471,7 @@ form .field.error .errorlist {
 .blog-archive .h4 {
   margin-bottom: 0; }
 .blog-archive .summary {
-  color: #807c6f; }
+  color: #2b2a26; }
 
 #home .blog-archive ul li {
   margin-bottom: 0.75em; }
@@ -4791,7 +4791,7 @@ body > div.draft {
   border-radius: 4px;
   position: relative;
   min-height: 13.5em;
-  box-shadow: 0 0 4px #807c6f; }
+  box-shadow: 0 0 4px #2b2a26; }
   .ticket .preview .preview-inner {
     padding: 0 14px; }
   .ticket .preview h2 {
@@ -4807,7 +4807,7 @@ body > div.draft {
     text-transform: uppercase;
     margin-bottom: 0; }
   .ticket .preview .tagline {
-    color: #807c6f;
+    color: #2b2a26;
     font-style: italic;
     margin-bottom: 0.75em; }
   .ticket .preview .fa-star {
@@ -4857,7 +4857,7 @@ body > div.draft {
   opacity: 0; }
   .ticket-commands p {
     margin: 4.5em 0 0 0;
-    color: #807c6f; }
+    color: #2b2a26; }
 
 .ticket-assigned-to.ticket-commands {
   opacity: .8; }
@@ -4866,7 +4866,7 @@ body > div.draft {
   position: absolute;
   bottom: 0.75em;
   right: 14px;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 #form-ticket-edit ul {
   margin: 0; }
@@ -5205,7 +5205,7 @@ body#schedule > .page > .container {
       text-transform: uppercase;
       margin-bottom: 0.375em; }
       .conference-schedules.timetable .event .speakers a {
-        color: #807c6f; }
+        color: #2b2a26; }
     .conference-schedules.timetable .event.exposed .hhmm {
       font-weight: bold; }
     .conference-schedules.timetable .event.exposed .speakers {
@@ -5559,7 +5559,7 @@ body#schedule > .page > .container {
     font-weight: bold;
     padding: 4px 8px; }
   #schedule-navigator > div.selected {
-    background-color: #807c6f; }
+    background-color: #2b2a26; }
     #schedule-navigator > div.selected > a {
       color: white; }
     #schedule-navigator > div.selected a.filter-active {
@@ -6211,7 +6211,7 @@ header {
         font-size: 6.3rem; } }
   header .subhead {
     font-weight: 300;
-    color: #807c6f; }
+    color: #2b2a26; }
     @media (min-width: 37.5em) {
       header .subhead {
         font-size: 23.4px;
@@ -6229,7 +6229,7 @@ header {
   color: #2e2c24; }
 
 .notice .fa {
-  color: #807c6f; }
+  color: #2b2a26; }
 .notice h3 {
   text-transform: uppercase;
   margin-bottom: 0.75em; }
@@ -6263,10 +6263,10 @@ header {
     letter-spacing: 1px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
   .badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .person-card .see-more, .person-card .badge .see-more, .badge .ticket-footer {
-    color: #807c6f;
+    color: #2b2a26;
     margin-bottom: 0; }
   .badge .fa {
-    color: #807c6f; }
+    color: #2b2a26; }
 
 .sponsor {
   margin-bottom: 1.5em; }
@@ -6285,7 +6285,7 @@ header {
 
 .calendar .deadline.expired {
   text-decoration: line-through;
-  color: #807c6f; }
+  color: #2b2a26; }
 .calendar time {
   background: #306a99;
   padding: 3px 6px;
@@ -6336,7 +6336,7 @@ dt.toggle img {
 dt.toggle + dd {
   font-size: 14px;
   font-size: 1.4rem;
-  color: #807c6f;
+  color: #2b2a26;
   margin: 0.75em 0 0 14px; }
 
 .async-feedback {

@@ -138,10 +138,10 @@ figure {
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_elements\.scss}line{font-family:\0000357}}
 .meta, #talk-voting .talk-speakers, .person-card .see-more {
-  color: #807c6f; }
+  color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_elements\.scss}line{font-family:\0000360}}
   .meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited {
-    color: #807c6f; }
+    color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_elements\.scss}line{font-family:\0000366}}
 .tag {
@@ -395,7 +395,7 @@ sub {
 .lead, .page-summary p {
   font-size: 20.7px;
   font-size: 2.07rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_typography\.scss}line{font-family:\00003210}}
 .secondary {
@@ -1963,7 +1963,7 @@ legend {
   *margin-left: -7px;
   padding: 0 0 0.75em 0;
   border: 0;
-  color: #807c6f;
+  color: #2b2a26;
   font-weight: bold;
   line-height: 1.5em;
   white-space: normal;
@@ -1991,7 +1991,7 @@ label {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-forms\.scss}line{font-family:\0000366}}
   label span {
     font-size: 13.5;
-    color: #807c6f; }
+    color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-forms\.scss}line{font-family:\0000371}}
 select,
@@ -2092,7 +2092,7 @@ input[type="color"] {
   input[type="search"]:focus,
   input[type="tel"]:focus,
   input[type="color"]:focus {
-    border-color: #807c6f;
+    border-color: #2b2a26;
     outline: 0;
     outline: thin dotted \ 9; }
 
@@ -2137,25 +2137,25 @@ input:-moz-placeholder,
 textarea:-moz-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_mixins\.scss}line{font-family:\00003249}}
 input::-moz-placeholder,
 textarea::-moz-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_mixins\.scss}line{font-family:\00003253}}
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_mixins\.scss}line{font-family:\00003257}}
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-forms\.scss}line{font-family:\00003177}}
 .radio,
@@ -2252,7 +2252,7 @@ form .field.error select {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-help\.scss}line{font-family:\000037}}
 .help-block, .help-text,
 .help-inline {
-  color: #807c6f;
+  color: #2b2a26;
   font-size: 14.4px;
   font-size: 1.44rem;
   line-height: 1.4; }
@@ -2273,7 +2273,7 @@ form .field.error select {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-help\.scss}line{font-family:\0000324}}
 .help-block, .help-text,
 .help-inline {
-  color: #807c6f; }
+  color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-help\.scss}line{font-family:\0000328}}
 .help-block, .help-text {
@@ -5582,7 +5582,7 @@ form .field.error .errorlist {
   margin-bottom: 0; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_blog\.scss}line{font-family:\0000319}}
 .blog-archive .summary {
-  color: #807c6f; }
+  color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_blog\.scss}line{font-family:\0000327}}
 #home .blog-archive ul li {
@@ -5971,7 +5971,7 @@ body > div.draft {
   border-radius: 4px;
   position: relative;
   min-height: 13.5em;
-  box-shadow: 0 0 4px #807c6f; }
+  box-shadow: 0 0 4px #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_conference\.scss}line{font-family:\00003123}}
   .ticket .preview .preview-inner {
     padding: 0 14px; }
@@ -5991,7 +5991,7 @@ body > div.draft {
     margin-bottom: 0; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_conference\.scss}line{font-family:\00003144}}
   .ticket .preview .tagline {
-    color: #807c6f;
+    color: #2b2a26;
     font-style: italic;
     margin-bottom: 0.75em; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_conference\.scss}line{font-family:\00003150}}
@@ -6051,7 +6051,7 @@ body > div.draft {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_conference\.scss}line{font-family:\00003208}}
   .ticket-commands p {
     margin: 4.5em 0 0 0;
-    color: #807c6f; }
+    color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_conference\.scss}line{font-family:\00003214}}
 .ticket-assigned-to.ticket-commands {
@@ -6062,7 +6062,7 @@ body > div.draft {
   position: absolute;
   bottom: 0.75em;
   right: 14px;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_conference\.scss}line{font-family:\00003229}}
 #form-ticket-edit ul {
@@ -6477,7 +6477,7 @@ body#schedule > .page > .container {
       margin-bottom: 0.375em; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_schedule\.scss}line{font-family:\00003395}}
       .conference-schedules.timetable .event .speakers a {
-        color: #807c6f; }
+        color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_schedule\.scss}line{font-family:\00003398}}
     .conference-schedules.timetable .event.exposed .hhmm {
       font-weight: bold; }
@@ -6921,7 +6921,7 @@ body#schedule > .page > .container {
     padding: 4px 8px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_schedule\.scss}line{font-family:\00003909}}
   #schedule-navigator > div.selected {
-    background-color: #807c6f; }
+    background-color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_schedule\.scss}line{font-family:\00003911}}
     #schedule-navigator > div.selected > a {
       color: white; }
@@ -7837,7 +7837,7 @@ header {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\0000374}}
   header .subhead {
     font-weight: 300;
-    color: #807c6f; }
+    color: #2b2a26; }
     @media (min-width: 37.5em) {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\0000374}}
       header .subhead {
@@ -7860,7 +7860,7 @@ header {
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003114}}
 .notice .fa {
-  color: #807c6f; }
+  color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003117}}
 .notice h3 {
   text-transform: uppercase;
@@ -7901,11 +7901,11 @@ header {
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003153}}
   .badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .person-card .see-more, .person-card .badge .see-more, .badge .ticket-footer {
-    color: #807c6f;
+    color: #2b2a26;
     margin-bottom: 0; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003158}}
   .badge .fa {
-    color: #807c6f; }
+    color: #2b2a26; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003171}}
 .sponsor {
@@ -7927,7 +7927,7 @@ header {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003198}}
 .calendar .deadline.expired {
   text-decoration: line-through;
-  color: #807c6f; }
+  color: #2b2a26; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003203}}
 .calendar time {
   background: #306a99;
@@ -7991,7 +7991,7 @@ dt.toggle img {
 dt.toggle + dd {
   font-size: 14px;
   font-size: 1.4rem;
-  color: #807c6f;
+  color: #2b2a26;
   margin: 0.75em 0 0 14px; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/rock-hammer\.scss}line{font-family:\00003285}}

@@ -155,8 +155,8 @@ figure { margin-bottom: 1.5em; }
 figure img { margin-bottom: 0.375em; }
 figure figcaption { display: block; font-weight: normal; font-size: 14px; font-size: 1.4rem; font-style: italic; color: #656257; }
 
-.meta, #talk-voting .talk-speakers, .person-card .see-more { color: #807c6f; }
-.meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited { color: #807c6f; }
+.meta, #talk-voting .talk-speakers, .person-card .see-more { color: #2b2a26; }
+.meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited { color: #2b2a26; }
 
 .tag { background: #d4d2cd; border: 1px solid #bcbab2; border-radius: 4px; padding: 0 6px; display: inline-block; font-size: 14px; font-size: 1.4rem; margin-right: 7.5px; margin-bottom: 0.375em; }
 
@@ -235,7 +235,7 @@ sup { top: -.5em; }
 
 sub { bottom: -.25em; }
 
-.lead { font-size: 20.7px; font-size: 2.07rem; color: #807c6f; }
+.lead { font-size: 20.7px; font-size: 2.07rem; color: #2b2a26; }
 
 .secondary { font-size: 15.65217px; font-size: 1.56522rem; }
 
@@ -784,7 +784,7 @@ form ul { list-style-type: none; margin: 0 0 1.5em 0; padding: 0; }
 fieldset { margin-bottom: 1.5em; padding: 0; border-width: 0; }
 fieldset:last-of-type { margin-bottom: 0; }
 
-legend { display: block; width: 100%; /* margin-bottom : $baselineheight / 2; */ *margin-left: -7px; padding: 0 0 0.75em 0; border: 0; color: #807c6f; font-weight: bold; line-height: 1.5em; white-space: normal; text-transform: uppercase; /*
+legend { display: block; width: 100%; /* margin-bottom : $baselineheight / 2; */ *margin-left: -7px; padding: 0 0 0.75em 0; border: 0; color: #2b2a26; font-weight: bold; line-height: 1.5em; white-space: normal; text-transform: uppercase; /*
 small {
 font-size : $basefontsize * .75;
 color : $formsmallcolor; }
@@ -793,7 +793,7 @@ color : $formsmallcolor; }
 label, input, button, select, textarea { font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 label { display: block; margin-bottom: 0.375em; font-size: 18px; font-size: 1.8rem; }
-label span { font-size: 13.5; color: #807c6f; }
+label span { font-size: 13.5; color: #2b2a26; }
 
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"] { display: inline-block; margin-bottom: 0.75em; padding: 6px 6px; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; color: inherit; border-radius: 4px; vertical-align: middle; }
 
@@ -805,7 +805,7 @@ textarea { height: auto; resize-x: none; }
 
 textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] { background-color: white; border: 2px solid #bcbab2; }
 textarea:hover, input[type="text"]:hover, input[type="password"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="date"]:hover, input[type="month"]:hover, input[type="time"]:hover, input[type="week"]:hover, input[type="number"]:hover, input[type="email"]:hover, input[type="url"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="color"]:hover { border-color: #a5a197; }
-textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus { border-color: #807c6f; outline: 0; outline: thin dotted \ 9; }
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus { border-color: #2b2a26; outline: 0; outline: thin dotted \ 9; }
 
 input[type="radio"], input[type="checkbox"] { margin: 4px 0 0; *margin-top: 0; margin-top: 1px \ 9; line-height: normal; }
 
@@ -817,10 +817,10 @@ select[multiple], select[size] { height: auto; }
 
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus { outline: thin dotted #333; outline: 5px auto -webkit-focus-ring-color; outline-offset: -2px; }
 
-input:-moz-placeholder, textarea:-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
-input::-moz-placeholder, textarea::-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
-input:-ms-input-placeholder, textarea:-ms-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
-input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
+input:-moz-placeholder, textarea:-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
+input::-moz-placeholder, textarea::-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
 
 .radio, .checkbox { min-height: 1.5em; font-size: 18px; font-size: 1.8rem; }
 
@@ -854,13 +854,13 @@ input[disabled], select[disabled], textarea[disabled], input[readonly], select[r
 .has-error input, form .field.error input, .has-error textarea, form .field.error textarea, .has-error select, form .field.error select { border-color: #871a1a; color: #871a1a; }
 .has-error label, form .field.error label { color: #871a1a; }
 
-.help-block, .help-text, .help-inline { color: #807c6f; font-size: 14.4px; font-size: 1.44rem; line-height: 1.4; }
+.help-block, .help-text, .help-inline { color: #2b2a26; font-size: 14.4px; font-size: 1.44rem; line-height: 1.4; }
 
 .help-block, .help-text { display: block; margin-bottom: 0.75em; }
 
 .help-inline { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; padding-left: 15px; }
 
-.help-block, .help-text, .help-inline { color: #807c6f; }
+.help-block, .help-text, .help-inline { color: #2b2a26; }
 
 .help-block, .help-text { display: block; margin-bottom: 0.75em; }
 
@@ -2093,7 +2093,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 .blog-archive ul { list-style: none; }
 .blog-archive ul li { margin-bottom: 1.5em; }
 .blog-archive .h4 { margin-bottom: 0; text-align: left; }
-.blog-archive .summary { color: #807c6f; }
+.blog-archive .summary { color: #2b2a26; }
 
 #home .blog-archive ul li { margin-bottom: 0.75em; }
 
@@ -2247,11 +2247,11 @@ h4 { font-size: 20px; font-size: 2rem; font-weight: bold; margin: 1em 0 0.5em 0;
 .room-type.disabled { background: gray;
 }
 */
-.ticket .preview { background: white; margin: 1.5em 0; border: 1px solid #bcbab2; border-radius: 4px; position: relative; min-height: 13.5em; box-shadow: 0 0 4px #807c6f; }
+.ticket .preview { background: white; margin: 1.5em 0; border: 1px solid #bcbab2; border-radius: 4px; position: relative; min-height: 13.5em; box-shadow: 0 0 4px #2b2a26; }
 .ticket .preview .preview-inner { padding: 0 15px; }
 .ticket .preview h2 { padding: 0.375em 15px; color: white; /* background improbabile :) tutte le tariffe lo ridefiniscono, metto comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e ci scordiamo di aggiornare il css */ background: thistle; }
 .ticket .preview .media-heading { text-transform: uppercase; margin-bottom: 0; }
-.ticket .preview .tagline { color: #807c6f; font-style: italic; margin-bottom: 0.75em; }
+.ticket .preview .tagline { color: #2b2a26; font-style: italic; margin-bottom: 0.75em; }
 .ticket .preview .fa-star { color: gold; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); }
 
 .ticket.conference .preview h2 { background: #0094d6; }
@@ -2269,11 +2269,11 @@ h4 { font-size: 20px; font-size: 2rem; font-weight: bold; margin: 1em 0 0.5em 0;
 .preview:hover .ticket-commands { opacity: .85; }
 
 .ticket-commands { position: absolute; top: 0; left: 0; z-index: 1; text-align: center; min-height: 100%; min-width: 100%; background: white; -webkit-transition: opacity 0.2s ease-out; -moz-transition: opacity 0.2s ease-out; transition: opacity 0.2s ease-out; opacity: 0; }
-.ticket-commands p { margin: 4.5em 0 0 0; color: #807c6f; }
+.ticket-commands p { margin: 4.5em 0 0 0; color: #2b2a26; }
 
 .ticket-assigned-to.ticket-commands { opacity: .8; }
 
-.ticket-footer { position: absolute; bottom: 0.75em; right: 15px; color: #807c6f; }
+.ticket-footer { position: absolute; bottom: 0.75em; right: 15px; color: #2b2a26; }
 
 #form-ticket-edit ul { margin: 0; }
 
@@ -2372,7 +2372,7 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable .event .abstract { overflow-y: auto; height: 200px; background: white; padding: 0.375em 15px; }
 .conference-schedules.timetable .event .tag { cursor: pointer; margin: 0 2px 2px 0; }
 .conference-schedules.timetable .event .speakers { font-size: 14px; font-size: 1.4rem; line-height: 1.2; text-transform: uppercase; margin-bottom: 0.375em; }
-.conference-schedules.timetable .event .speakers a { color: #807c6f; }
+.conference-schedules.timetable .event .speakers a { color: #2b2a26; }
 .conference-schedules.timetable .event.exposed .hhmm { font-weight: bold; }
 .conference-schedules.timetable .event.exposed .speakers { opacity: 1; margin: 0; }
 .conference-schedules.timetable .event.exposed .ellipsis { display: none; }
@@ -2468,7 +2468,7 @@ body#schedule > .page > .container { margin-left: 60px; }
 #schedule-navigator > div > div ul li { padding: 0.1875em 7.5px; font-size: 16px; font-size: 1.6rem; }
 #schedule-navigator > div > div .tag-list { display: none; }
 #schedule-navigator > div:first-child { background: #301D1D; color: #FCFAD9; font-weight: bold; padding: 4px 8px; }
-#schedule-navigator > div.selected { background-color: #807c6f; }
+#schedule-navigator > div.selected { background-color: #2b2a26; }
 #schedule-navigator > div.selected > a { color: white; }
 #schedule-navigator > div.selected a.filter-active { color: #878181; opacity: .6; }
 #schedule-navigator > div.selected a.highlight-active { font-weight: bold; }
@@ -2767,7 +2767,7 @@ header { padding: 9em 0; text-align: center; }
 header h1 { color: #555555; text-transform: uppercase; font-weight: 300; margin-bottom: 0; font-size: 45px; font-size: 4.5rem; }
 header h1 span { color: #0094d6; }
 @media (min-width: 37.5em) { header h1 { font-size: 63px; font-size: 6.3rem; } }
-header .subhead { font-weight: 300; color: #807c6f; }
+header .subhead { font-weight: 300; color: #2b2a26; }
 @media (min-width: 37.5em) { header .subhead { font-size: 23.4px; font-size: 2.34rem; } }
 
 .slot h4 { margin: 0 0 0.75em 0; text-transform: uppercase; }
@@ -2783,7 +2783,7 @@ header .subhead { font-weight: 300; color: #807c6f; }
 .badge { text-align: center; }
 @media (min-width: 768px) { .badge { margin-top: 3em; } }
 .badge a { border: 1px solid #c8c6c0; padding: 0.75em 15px; background: #e0dfdb; background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0dfdb), to(#cdcbc5)); background-image: -webkit-linear-gradient(top, #e0dfdb, #cdcbc5); background-color: #cdcbc5; background-image: -moz-linear-gradient(top, #e0dfdb, #cdcbc5); background-image: -ms-linear-gradient(top, #e0dfdb, #cdcbc5); background-image: -o-linear-gradient(top, #e0dfdb, #cdcbc5); background-image: linear, top, #e0dfdb, #cdcbc5; background-repeat: repeat-x; border-radius: 4px; text-transform: uppercase; display: block; width: 90%; margin: 0.375em auto; letter-spacing: 1px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
-.badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .person-card .see-more, .person-card .badge .see-more, .badge .ticket-footer { color: #807c6f; margin-bottom: 0; }
+.badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .person-card .see-more, .person-card .badge .see-more, .badge .ticket-footer { color: #2b2a26; margin-bottom: 0; }
 .badge .fa { color: #555555; }
 
 .sponsor { margin-bottom: 1.5em; }
@@ -2792,7 +2792,7 @@ header .subhead { font-weight: 300; color: #807c6f; }
 
 .calendar .deadline { font-style: italic; font-weight: 300; }
 .calendar .deadline time { font-size: 16px; font-size: 1.6rem; color: white; background: #0094d6; font-style: normal; border-radius: 0; padding: 0; }
-.calendar .deadline.expired { text-decoration: line-through; color: #807c6f; }
+.calendar .deadline.expired { text-decoration: line-through; color: #2b2a26; }
 .calendar time { background: #0094d6; padding: 3px 6px; text-transform: uppercase; color: #0094d6; font-size: 14px; font-size: 1.4rem; border-radius: 4px; }
 
 span.icon { cursor: pointer; }
@@ -2814,6 +2814,6 @@ dt.toggle { font-weight: bold; margin: 0.75em 0 0 0; }
 
 dt.toggle img { vertical-align: middle; }
 
-dt.toggle + dd { font-size: 14px; font-size: 1.4rem; color: #807c6f; margin: 0.75em 0 0 15px; }
+dt.toggle + dd { font-size: 14px; font-size: 1.4rem; color: #2b2a26; margin: 0.75em 0 0 15px; }
 
 .async-feedback { display: none; position: fixed; top: 1.5em; left: 50%; right: 0; width: 50%; margin-left: -25%; text-align: center; }

@@ -49,8 +49,8 @@ figure { margin-bottom: 1.5em; }
 figure img { margin-bottom: 0.375em; }
 figure figcaption { display: block; font-weight: normal; font-size: 14px; font-size: 1.4rem; font-style: italic; color: #656257; }
 
-.meta, #talk-voting .talk-speakers { color: #807c6f; }
-.meta a:link, #talk-voting .talk-speakers a:link, .meta a:visited, #talk-voting .talk-speakers a:visited { color: #807c6f; }
+.meta, #talk-voting .talk-speakers { color: #2b2a26; }
+.meta a:link, #talk-voting .talk-speakers a:link, .meta a:visited, #talk-voting .talk-speakers a:visited { color: #2b2a26; }
 
 .tag { background: #d4d2cd; border: 1px solid #bcbab2; border-radius: 4px; padding: 0 6px; display: inline-block; font-size: 14px; font-size: 1.4rem; margin-right: 7px; margin-bottom: 0.375em; }
 
@@ -128,7 +128,7 @@ sup { top: -.5em; }
 
 sub { bottom: -.25em; }
 
-.lead { font-size: 20.7px; font-size: 2.07rem; color: #807c6f; }
+.lead { font-size: 20.7px; font-size: 2.07rem; color: #2b2a26; }
 
 .secondary { font-size: 15.65217px; font-size: 1.56522rem; }
 
@@ -624,7 +624,7 @@ form ul { list-style-type: none; margin: 0 0 1.5em 0; padding: 0; }
 fieldset { margin-bottom: 1.5em; padding: 0; border-width: 0; }
 fieldset:last-of-type { margin-bottom: 0; }
 
-legend { display: block; width: 100%; /* margin-bottom : $baselineheight / 2; */ *margin-left: -7px; padding: 0 0 0.75em 0; border: 0; color: #807c6f; font-weight: bold; line-height: 1.5em; white-space: normal; text-transform: uppercase; /*
+legend { display: block; width: 100%; /* margin-bottom : $baselineheight / 2; */ *margin-left: -7px; padding: 0 0 0.75em 0; border: 0; color: #2b2a26; font-weight: bold; line-height: 1.5em; white-space: normal; text-transform: uppercase; /*
 small {
 font-size : $basefontsize * .75;
 color : $formsmallcolor; }
@@ -633,7 +633,7 @@ color : $formsmallcolor; }
 label, input, button, select, textarea { font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 label { display: block; margin-bottom: 0.375em; font-size: 18px; font-size: 1.8rem; }
-label span { font-size: 13.5; color: #807c6f; }
+label span { font-size: 13.5; color: #2b2a26; }
 
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"] { display: inline-block; margin-bottom: 0.75em; padding: 6px 6px; font-size: 18px; font-size: 1.8rem; line-height: 1.5em; color: inherit; border-radius: 4px; vertical-align: middle; }
 
@@ -645,7 +645,7 @@ textarea { height: auto; resize-x: none; }
 
 textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] { background-color: white; border: 2px solid #bcbab2; }
 textarea:hover, input[type="text"]:hover, input[type="password"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="date"]:hover, input[type="month"]:hover, input[type="time"]:hover, input[type="week"]:hover, input[type="number"]:hover, input[type="email"]:hover, input[type="url"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="color"]:hover { border-color: #a5a197; }
-textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus { border-color: #807c6f; outline: 0; outline: thin dotted \ 9; }
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus { border-color: #2b2a26; outline: 0; outline: thin dotted \ 9; }
 
 input[type="radio"], input[type="checkbox"] { margin: 4px 0 0; *margin-top: 0; margin-top: 1px \ 9; line-height: normal; }
 
@@ -657,10 +657,10 @@ select[multiple], select[size] { height: auto; }
 
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus { outline: thin dotted #333; outline: 5px auto -webkit-focus-ring-color; outline-offset: -2px; }
 
-input:-moz-placeholder, textarea:-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
-input::-moz-placeholder, textarea::-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
-input:-ms-input-placeholder, textarea:-ms-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
-input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #807c6f; }
+input:-moz-placeholder, textarea:-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
+input::-moz-placeholder, textarea::-moz-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { font-size: 16px; font-size: 1.6rem; color: #2b2a26; }
 
 .radio, .checkbox { min-height: 1.5em; font-size: 18px; font-size: 1.8rem; }
 
@@ -694,13 +694,13 @@ input[disabled], select[disabled], textarea[disabled], input[readonly], select[r
 .has-error input, form .field.error input, .has-error textarea, form .field.error textarea, .has-error select, form .field.error select { border-color: #871a1a; color: #871a1a; }
 .has-error label, form .field.error label { color: #871a1a; }
 
-.help-block, .help-text, .help-inline { color: #807c6f; font-size: 14.4px; font-size: 1.44rem; line-height: 1.4; }
+.help-block, .help-text, .help-inline { color: #2b2a26; font-size: 14.4px; font-size: 1.44rem; line-height: 1.4; }
 
 .help-block, .help-text { display: block; margin-bottom: 0.75em; }
 
 .help-inline { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; padding-left: 14px; }
 
-.help-block, .help-text, .help-inline { color: #807c6f; }
+.help-block, .help-text, .help-inline { color: #2b2a26; }
 
 .help-block, .help-text { display: block; margin-bottom: 0.75em; }
 
@@ -1912,7 +1912,7 @@ form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 .blog-archive ul { list-style: none; }
 .blog-archive ul li { margin-bottom: 1.5em; }
 .blog-archive .h4 { margin-bottom: 0; }
-.blog-archive .summary { color: #807c6f; }
+.blog-archive .summary { color: #2b2a26; }
 
 #home .blog-archive ul li { margin-bottom: 0.75em; }
 
@@ -2040,11 +2040,11 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 .room-type.disabled { background: gray;
 }
 */
-.ticket .preview { background: white; margin: 1.5em 0; border: 1px solid #bcbab2; border-radius: 4px; position: relative; min-height: 13.5em; box-shadow: 0 0 4px #807c6f; }
+.ticket .preview { background: white; margin: 1.5em 0; border: 1px solid #bcbab2; border-radius: 4px; position: relative; min-height: 13.5em; box-shadow: 0 0 4px #2b2a26; }
 .ticket .preview .preview-inner { padding: 0 14px; }
 .ticket .preview h2 { padding: 0.375em 14px; color: white; /* background improbabile :) tutte le tariffe lo ridefiniscono, metto comunque un default per quando aggiungiuamo un nuovo tipo di tariffa e ci scordiamo di aggiornare il css */ background: thistle; }
 .ticket .preview .media-heading { text-transform: uppercase; margin-bottom: 0; }
-.ticket .preview .tagline { color: #807c6f; font-style: italic; margin-bottom: 0.75em; }
+.ticket .preview .tagline { color: #2b2a26; font-style: italic; margin-bottom: 0.75em; }
 .ticket .preview .fa-star { color: gold; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); }
 
 .ticket.conference .preview h2 { background: #306a99; }
@@ -2062,11 +2062,11 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 .preview:hover .ticket-commands { opacity: .85; }
 
 .ticket-commands { position: absolute; top: 0; left: 0; z-index: 1; text-align: center; min-height: 100%; min-width: 100%; background: white; -webkit-transition: opacity 0.2s ease-out; -moz-transition: opacity 0.2s ease-out; transition: opacity 0.2s ease-out; opacity: 0; }
-.ticket-commands p { margin: 4.5em 0 0 0; color: #807c6f; }
+.ticket-commands p { margin: 4.5em 0 0 0; color: #2b2a26; }
 
 .ticket-assigned-to.ticket-commands { opacity: .8; }
 
-.ticket-footer { position: absolute; bottom: 0.75em; right: 14px; color: #807c6f; }
+.ticket-footer { position: absolute; bottom: 0.75em; right: 14px; color: #2b2a26; }
 
 #form-ticket-edit ul { margin: 0; }
 

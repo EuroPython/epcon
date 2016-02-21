@@ -76,7 +76,9 @@
             // Event callbacks.
             onTagAdded  : null,
             onTagRemoved: null,
-            onTagClicked: null
+            onTagClicked: null,
+            filterTag: null,
+            tagLimit: null
         },
 
 
@@ -211,7 +213,7 @@
                     // Create a tag when the element loses focus (unless it's empty).
                     that.createTag(that._cleanedInput());
                 });
-                
+
 
             // Autocomplete.
             if (this.options.availableTags || this.options.tagSource) {
@@ -310,6 +312,16 @@
             value = $.trim(value);
 
             if (!this._isNew(value) || value === '') {
+                return false;
+            }
+
+            if (this.options.filterTag && !this.options.filterTag.apply(this, [value])) {
+                return false;
+            }
+
+            if (this.options.tagLimit && this.assignedTags().length >= this.options.tagLimit) {
+                this._trigger('onTagLimitExceeded', null, this);
+
                 return false;
             }
 
