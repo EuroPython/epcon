@@ -412,11 +412,22 @@ class VotoTalkAdmin(admin.ModelAdmin):
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
 class TalkAdmin(cadmin.TalkAdmin):
-    list_filter = ('conference', 'status', 'duration', 'type')
+    list_filter = ('conference', 'status', 'duration', 'type',
+                   'tags__name',
+                   )
     search_fields = [ 'title',
                       'talkspeaker__speaker__user__last_name',
                       'talkspeaker__speaker__user__first_name',
                       ]
+
+    list_display = ('title', 'conference', '_speakers',
+                    'duration', 'status', 'created',
+                    '_tags', '_slides', '_video')
+
+    ordering = ('-conference', 'title')
+
+    def _tags(self, obj):
+        return u', '.join(sorted(unicode(tag) for tag in obj.tags.all()))
 
 admin.site.unregister(cmodels.Talk)
 admin.site.register(cmodels.Talk, TalkAdmin)
