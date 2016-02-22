@@ -363,9 +363,11 @@ class P3ProfilePublicDataForm(P3ProfileForm):
             p3p.country = ''
 
         p3p.save()
-        # only the first five interest tags will be used
+
         if 'interests' in data:
-            p3p.interests.set(*(data['interests'][:5]))
+            valid_tags = cforms.validate_tags(data['interests'])
+
+            p3p.interests.set(*(valid_tags))
         return profile
 
 
