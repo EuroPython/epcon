@@ -15,6 +15,18 @@ from conference import settings
 
 from taggit.forms import TagField
 
+
+def validate_tags(tags):
+    """
+    Returns only tags that are already present in the database
+    and limits the results to 5
+    """
+
+    valid_tags = models.ConferenceTag.objects.filter(name__in=tags).values_list('name', flat=True)
+
+    return valid_tags[:5]
+
+
 class TagWidget(widgets.TextInput):
     def _media(self):
         return forms.Media(
@@ -277,9 +289,11 @@ class SubmissionForm(forms.Form):
 
         talk.save()
         talk.setAbstract(data['abstract'])
-        # only the first five tags will be used
+
         if 'tags' in data:
-            talk.tags.set(*(data['tags'][:5]))
+            valid_tags = validate_tags(data['tags'])
+
+            talk.tags.set(*(valid_tags))
 
         from conference.listeners import new_paper_submission
         new_paper_submission.send(sender=speaker, talk=talk)
@@ -353,9 +367,11 @@ class TalkForm(forms.ModelForm):
             )
         talk = super(TalkForm, self).save(commit=commit)
         talk.setAbstract(data['abstract'])
-        # only the first five tags will be used
+
         if 'tags' in data:
-            talk.tags.set(*(data['tags'][:5]))
+            valid_tags = validate_tags(data['tags'])
+
+            talk.tags.set(*(valid_tags))
 
         if not pk:
             from conference.listeners import new_paper_submission
