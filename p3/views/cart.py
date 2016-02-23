@@ -25,13 +25,15 @@ class P3BillingData(aforms.BillingData):
     class Meta(aforms.BillingData.Meta):
         exclude = aforms.BillingData.Meta.exclude + ('vat_number',)
 
-    def clean(self):
-        data = self.cleaned_data
-        if 'cf_code' in self.cleaned_data:
-            cf_code = self.cleaned_data['cf_code']
-            vat = self.cleaned_data.get('vat_number', '')
-            country = self.cleaned_data['country']
-        return data
+    # MAL: This code breaks validations; commented out because cf_code
+    #      is optional anyway and we currently don't need this check.
+    # def clean(self):
+    #     data = self.cleaned_data
+    #     if 'cf_code' in self.cleaned_data:
+    #         cf_code = self.cleaned_data['cf_code']
+    #         vat = self.cleaned_data.get('vat_number', '')
+    #         country = self.cleaned_data['country']
+    #     return data
 
 class P3BillingDataCompany(P3BillingData):
     billing_notes = forms.CharField(

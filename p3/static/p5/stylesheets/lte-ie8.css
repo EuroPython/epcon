@@ -242,7 +242,7 @@ a:hover, a:active { outline: 0; }
 .alert--success > h4 { color: #116e11; }
 
 /*alert--success*/
-.alert--danger, .alert--error { background-color: firebrick; border-color: #871a1a; color: white; }
+.alert--danger, .alert--error { background-color: firebrick; border-color: #ff1a1a; color: white; }
 .alert--danger > h4, .alert--error > h4 { color: white; }
 
 /*alert--error*/
@@ -691,8 +691,8 @@ input[disabled], select[disabled], textarea[disabled], input[readonly], select[r
 
 [placeholder]:focus::-webkit-input-placeholder { opacity: 0; transition: opacity .5s .5s ease; }
 
-.has-error input, form .field.error input, .has-error textarea, form .field.error textarea, .has-error select, form .field.error select { border-color: #871a1a; color: #871a1a; }
-.has-error label, form .field.error label { color: #871a1a; }
+.has-error input, form .field.error input, .has-error textarea, form .field.error textarea, .has-error select, form .field.error select { border-color: #ff1a1a; color: #ff1a1a; }
+.has-error label, form .field.error label { color: #ff1a1a; }
 
 .help-block, .help-text, .help-inline { color: #2b2a26; font-size: 14.4px; font-size: 1.44rem; line-height: 1.4; }
 
@@ -757,8 +757,8 @@ input.search-query { margin-bottom: 0; padding-right: 14px; padding-right: 4px \
 
 .btn-disabled { opacity: .5; cursor: default; }
 
-.btn-error { background-color: firebrick; border-color: #871a1a; border-bottom-color: #5c1212; color: white; text-shadow: none; }
-.btn-error:visited, .btn-error:active, .btn-error:hover { background-color: #871a1a; color: #f2f2f2; }
+.btn-error { background-color: firebrick; border-color: #ff1a1a; border-bottom-color: #5c1212; color: white; text-shadow: none; }
+.btn-error:visited, .btn-error:active, .btn-error:hover { background-color: #ff1a1a; color: #f2f2f2; }
 
 /*btn-error*/
 .btn-info { background-color: #9dcfff; border-color: #6ab6ff; border-bottom-color: #379dff; color: #00509d; text-shadow: none; }
@@ -777,7 +777,7 @@ input.search-query { margin-bottom: 0; padding-right: 14px; padding-right: 4px \
 .btn-success:visited, .btn-success:active, .btn-success:hover { background-color: #7aeb7a; color: #0d580d; }
 
 /*btn-success*/
-.btn-warning { background-color: firebrick; border-color: #871a1a; border-bottom-color: #5c1212; color: white; text-shadow: none; }
+.btn-warning { background-color: firebrick; border-color: #ff1a1a; border-bottom-color: #5c1212; color: white; text-shadow: none; }
 .btn-warning:visited, .btn-warning:active, .btn-warning:hover { background-color: #9d1e1e; color: #f2f2f2; }
 
 /*btn-warning*/

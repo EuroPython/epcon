@@ -690,7 +690,7 @@ a {
 .alert--danger,
 .alert--error {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   color: white; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-alerts\.scss}line{font-family:\0000337}}
   .alert--danger > h4,
@@ -2243,11 +2243,11 @@ textarea[readonly] {
 form .field.error textarea,
 .has-error select,
 form .field.error select {
-  border-color: #871a1a;
-  color: #871a1a; }
+  border-color: #ff1a1a;
+  color: #ff1a1a; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-forms\.scss}line{font-family:\00003245}}
 .has-error label, form .field.error label {
-  color: #871a1a; }
+  color: #ff1a1a; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-help\.scss}line{font-family:\000037}}
 .help-block, .help-text,
@@ -2480,13 +2480,13 @@ input.search-query {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-buttons\.scss}line{font-family:\0000346}}
 .btn-error {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   border-bottom-color: #5c1212;
   color: white;
   text-shadow: none; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-buttons\.scss}line{font-family:\0000355}}
   .btn-error:visited, .btn-error:active, .btn-error:hover {
-    background-color: #871a1a;
+    background-color: #ff1a1a;
     color: #f2f2f2; }
 
 /*btn-error*/
@@ -2545,7 +2545,7 @@ input.search-query {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/_bootstrap-form-buttons\.scss}line{font-family:\00003126}}
 .btn-warning {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   border-bottom-color: #5c1212;
   color: white;
   text-shadow: none; }

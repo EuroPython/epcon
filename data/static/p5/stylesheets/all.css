@@ -569,7 +569,7 @@ a {
 .alert--danger,
 .alert--error {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   color: white; }
   .alert--danger > h4,
   .alert--error > h4 {
@@ -1873,10 +1873,10 @@ textarea[readonly] {
 form .field.error textarea,
 .has-error select,
 form .field.error select {
-  border-color: #871a1a;
-  color: #871a1a; }
+  border-color: #ff1a1a;
+  color: #ff1a1a; }
 .has-error label, form .field.error label {
-  color: #871a1a; }
+  color: #ff1a1a; }
 
 .help-block, .help-text,
 .help-inline {
@@ -2067,12 +2067,12 @@ input.search-query {
 
 .btn-error {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   border-bottom-color: #5c1212;
   color: white;
   text-shadow: none; }
   .btn-error:visited, .btn-error:active, .btn-error:hover {
-    background-color: #871a1a;
+    background-color: #ff1a1a;
     color: #f2f2f2; }
 
 /*btn-error*/
@@ -2122,7 +2122,7 @@ input.search-query {
 /*btn-success*/
 .btn-warning {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   border-bottom-color: #5c1212;
   color: white;
   text-shadow: none; }
