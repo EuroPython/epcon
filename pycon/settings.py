@@ -559,6 +559,7 @@ CONFERENCE_TICKET_CONFERENCE_DIETS = (
     ('vegetarian', _('Vegetarian')),
     #('vegan', _('Vegan')),
     #('kosher', _('Kosher')),
+    ('other', _('Other')),
 )
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
