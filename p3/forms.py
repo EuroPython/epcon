@@ -79,7 +79,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
-        help_text=_('Select the sub community this talk is intended for, if any.'),
+        help_text=_('Select PyData if your submission is for the PyData satellite conference.'),
         choices=models.TALK_SUBCOMMUNITY,
         initial='',
         required=False)
@@ -282,7 +282,7 @@ class P3ProfileForm(cforms.ProfileForm):
     )
     interests = cforms.TagField(
         label="Technical interests",
-        help_text=_('<p>Please add up to five (5) tags from the shown categories which are relevant to your interests. Only 5 tags will be saved; additional tags are discarded.</p>'),
+        help_text=_('<p>Please select up to five (5) tags from the shown categories which are relevant to your interests. You can also suggest a track (see \'>>> Suggested Track\') for your talk. Only 5 tags will be saved, additional tags are discarded.</p>'),
         widget=cforms.TagWidget,
         required=False)
     twitter = forms.CharField(max_length=80, required=False)
