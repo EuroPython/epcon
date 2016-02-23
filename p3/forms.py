@@ -79,7 +79,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
-        help_text=_('Select the sub community this talk is intended for, if any.'),
+        help_text=_('Select PyData if your submission is for the PyData satellite conference.'),
         choices=models.TALK_SUBCOMMUNITY,
         initial='',
         required=False)
