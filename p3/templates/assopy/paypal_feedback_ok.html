@@ -13,19 +13,19 @@
         {% order_complete order.id as ocomplete %}
         {% if not ocomplete %}
         <h1>{% trans "Waiting for Paypal response..." %}</h1>
-        <div role="contentinfo">
-            <p>{% blocktrans with code=order.code url="mailto:info@euroython.eu" %}
-            Are you waiting for too long? <a href="{{ url }}">Write to us</a> specifying your order number {{ code }}
+        <div>
+            <p>{% blocktrans with code=order.code url="mailto:helpdesk@euroython.eu" %}
+                Are you waiting for too long? <a href="{{ url }}">Write to us</a>
+                specifying your order number {{ code }}
             {% endblocktrans %}</p>
         </div>
         {% else %}
         <h1>{% trans "Purchase completed" %}</h1>
-        <div role="contentinfo">
+        <div>
             <p>{% trans "Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address." %}</p>
 
 	    <h2>{% trans "Important" %}</h2>
-	    <p>{% trans "If you bought the ticket for yourself, the system will already have assigned it to you. You then only need to fill in your ticket details
-by clicking on the <i>Edit</i> button below." %}</p>
+	    <p>{% trans "If you bought the ticket for yourself, the system will already have assigned it to you. You then only need to fill in your ticket details by clicking on the <i>Edit</i> button below." %}</p>
 	    <p>{% trans "If you purchased tickets for other attendees, please assign them to the right attendee(s) by clicking on the <i>Edit</i> button below. Note that attendees have to have an account on the EuroPython website to have tickets assigned to them. You assign the tickets using the attendee email registered on the website." %}</p>
 	    <p>{% trans "After assignment, please let the attendees fill in their details via their own website account." %}</p>
 
