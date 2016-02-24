@@ -140,7 +140,10 @@ def _ticket_complete(t):
     # I'm also excluding old records sitting in the db because of
     # unconfirmed paypal payments or because the user came back to
     # our site using the back button.
-    order = t.orderitem.order
+    try:
+        order = t.orderitem.order
+    except amodels.OrderItem.DoesNotExist:
+        return False
     return (order.method in ('bank', 'admin')) or order.complete()
 
 def all_user_tickets(uid, conference):

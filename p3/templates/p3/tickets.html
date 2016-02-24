@@ -158,7 +158,7 @@
         var email = $.trim(prompt("{{ t_enter_email|escapejs }}"));
 
         if(!email){
-            alert("no email");
+            alert("missing email");
             return;
         }
 
@@ -172,7 +172,7 @@
         var form = $('form', ticket);
 
         ticket_field(form, 'assigned_to').val(email);
-        alert(ticket_field(form, 'assigned_to').val());
+        //alert(ticket_field(form, 'assigned_to').val());
         //var tid = $(form).parents('div.ticket').attr('data-ticket');
         //$("input[name=t" + tid + "-assigned_to]", form).value = email;
 
@@ -181,14 +181,13 @@
             target: form.parents('div.ticket'),
             replaceTarget: true,
             success: function() {
-                alert("bien");
-
                 {% trans "ticket assigned to" as t_assigned %}
                 feedback("{{ t_assigned|escapejs }}" + " " + email);
 
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                alert("Status:="+textStatus + " Error:="+errorThrown);
+                alert("Sorry, something went wrong... "+
+                      "Status:="+textStatus + " Error:="+errorThrown);
                 }
         });
     });

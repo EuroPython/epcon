@@ -154,7 +154,10 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        p3c = obj.p3_conference
+        try:
+            p3c = obj.p3_conference
+        except models.TicketConference.DoesNotExist:
+            p3c = None
         if p3c is None:
             p3c = models.TicketConference(ticket=obj)
 

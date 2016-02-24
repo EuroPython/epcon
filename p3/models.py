@@ -95,7 +95,8 @@ class TicketConference(models.Model):
         upload_to='p3/tickets/badge_image',
         help_text=_("""A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine."""))
     assigned_to = models.EmailField(
-        blank=True)
+        blank=True,
+        help_text=_("EMail of the attendee for whom this ticket was bought."))
 
     objects = TicketConferenceManager()
 

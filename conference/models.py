@@ -710,7 +710,7 @@ FARE_TYPES = (
     ('p', 'Personal'),
 )
 class Fare(models.Model):
-    conference = models.CharField(help_text='codice della conferenza', max_length=20)
+    conference = models.CharField(help_text='Conference code', max_length=20)
     code = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -755,15 +755,17 @@ class Fare(models.Model):
         return calc['total']
 
     def create_tickets(self, user):
-        """
-        Crea e ritorna i biglietti associati a questa tariffa.
-        Normalmente ogni tariffa comporta un solo biglietto, ma questo
-        comportamento è modificabile da un listener collegato al segnale
-        fare_tickets.
 
-        Le istanze ritornate da questo metodo hanno un attributo aggiuntivo
-        `fare_description` (volatile) che riporta una descrizione della tariffa
-        specifica per il singolo biglietto.
+        """ Creates and returns the tickets associated with this rate.
+
+            Normally each fare involves just one ticket, but this
+            behavior can be modified by a listener attached to the
+            signal fare_tickets.
+
+            The instances returned by this method have an additional
+            attribute `fare_description` (volatile) and contains a
+            description of the fare specific for the single ticket.
+
         """
         from conference.listeners import fare_tickets
         params = {
@@ -796,11 +798,11 @@ TICKET_TYPE = (
 class Ticket(models.Model):
     user = models.ForeignKey(
         'auth.User',
-        help_text=_('holder of the ticket (who has buyed it?)'))
+        help_text=_('Buyer of the ticket'))
     name = models.CharField(
         max_length=60,
         blank=True,
-        help_text=_('Real name of the attendee.<br />This is the person that will attend the conference.'))
+        help_text=_('Attendee name, i.e. the person who will attend the conference.'))
     fare = models.ForeignKey(Fare)
     frozen = models.BooleanField(default=False)
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
