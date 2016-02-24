@@ -164,7 +164,7 @@ class TalkBaseForm(forms.Form):
 
     # Talk tags
     tags = TagField(
-        help_text=_('<p>Please add up to five (5) tags from the shown categories which are relevant to your session proposal. Only 5 tags will be saved; additional tags are discarded.</p>'),
+        help_text=_('<p>Please add up to five (5) tags from the shown categories which are relevant to your session proposal. You can also suggest a track (see ">>> Suggested Track" category) for your talk. Only 5 tags will be saved; additional tags are discarded.</p>'),
         widget=TagWidget)
 
     # Details for talk review
