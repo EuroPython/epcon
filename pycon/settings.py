@@ -538,7 +538,9 @@ CONFERENCE_TALK_SUBCOMMUNITY = (
     ('pydata', _('PyData')),
 )
 
-# Ticket information
+### Ticket information
+
+# T-shirt sizes
 CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
     ('fs', 'S (female)'),
     ('fm', 'M (female)'),
@@ -554,6 +556,8 @@ CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
     ('xxxl', '3XL (male)'),
     ('xxxxl', '4XL (male)'),
 )
+
+# Available diets
 CONFERENCE_TICKET_CONFERENCE_DIETS = (
     ('omnivorous', _('Omnivorous')),
     ('vegetarian', _('Vegetarian')),
@@ -561,6 +565,17 @@ CONFERENCE_TICKET_CONFERENCE_DIETS = (
     #('kosher', _('Kosher')),
     ('other', _('Other')),
 )
+
+# Python experience
+CONFERENCE_TICKET_CONFERENCE_EXPERIENCES = (
+    (0, _('no comment')),
+    (1, _('1 star  (just starting)')),
+    (2, _('2 stars (beginner)')),
+    (3, _('3 stars (intermediate)')),
+    (4, _('4 stars (expert))')),
+    (5, _('5 stars (guru level)')),
+)
+
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from p3 import models
