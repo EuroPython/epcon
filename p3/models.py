@@ -40,13 +40,14 @@ class SpeakerConference(models.Model):
 TICKET_CONFERENCE_SHIRT_SIZES = dsettings.CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES
 TICKET_CONFERENCE_DIETS = dsettings.CONFERENCE_TICKET_CONFERENCE_DIETS
 
+# Python experience
 TICKET_CONFERENCE_EXPERIENCES = (
-    (0, _('0 stars')),
-    (1, _('1 stars')),
-    (2, _('2 stars')),
-    (3, _('3 stars')),
-    (4, _('4 stars')),
-    (5, _('5 stars')),
+    (0, _('no comment')),
+    (1, _('1 star  (just starting)')),
+    (2, _('2 stars (beginner)')),
+    (3, _('3 stars (intermediate)')),
+    (4, _('4 stars (expert))')),
+    (5, _('5 stars (guru level)')),
 )
 
 
@@ -75,21 +76,35 @@ class TicketConferenceManager(models.Manager):
             return q1 | q2
 
 class TicketConference(models.Model):
-    ticket = models.OneToOneField(Ticket, related_name='p3_conference')
-    shirt_size = models.CharField(max_length=4, choices=TICKET_CONFERENCE_SHIRT_SIZES, default='l')
-    python_experience = models.PositiveIntegerField(choices=TICKET_CONFERENCE_EXPERIENCES, default=0)
-    diet = models.CharField(max_length=10, choices=TICKET_CONFERENCE_DIETS, default='omnivorous')
+    ticket = models.OneToOneField(
+        Ticket,
+        related_name='p3_conference')
+    shirt_size = models.CharField(
+        max_length=4,
+        choices=TICKET_CONFERENCE_SHIRT_SIZES,
+        default='l')
+    python_experience = models.PositiveIntegerField(
+        choices=TICKET_CONFERENCE_EXPERIENCES,
+        null=True,
+        default=0)
+    diet = models.CharField(
+        choices=TICKET_CONFERENCE_DIETS,
+        max_length=10,
+        default='omnivorous')
     tagline = models.CharField(
         max_length=60,
         blank=True,
         help_text=_('a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of FooBar Inc.; Student at MIT; Super Python fanboy'))
     days = models.TextField(
-        verbose_name=_('Days of attendance'), blank=True)
+        verbose_name=_('Days of attendance'),
+        blank=True)
     badge_image = models.ImageField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         upload_to='p3/tickets/badge_image',
-        help_text=_('''A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine.'''))
-    assigned_to = models.EmailField(blank=True)
+        help_text=_("""A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine."""))
+    assigned_to = models.EmailField(
+        blank=True)
 
     objects = TicketConferenceManager()
 
@@ -174,14 +189,14 @@ class HotelRoom(models.Model):
     booking = models.ForeignKey(HotelBooking)
     room_type = models.CharField(max_length=2, choices=HOTELROOM_ROOM_TYPE)
     quantity = models.PositiveIntegerField()
-    amount = models.CharField(max_length=100, help_text='''
+    amount = models.CharField(max_length=100, help_text="""
         Costo della camera per notte.
         <ul>
             <li>10x1,8x2,7x3 significa: 10 € per una notte, 8 a notte per due notti, 7 a notte per 3 notti.</li>
             <li>10 significa: 10 € a notte</li>
             <li>7,12x1,8x2 significa: 12 € per una notte, 8 a notte per due notti, 7 a notte per tutti gli altri periodi</li>
         </ul>
-    ''')
+    """)
 
     class Meta:
         unique_together = (('booking', 'room_type'),)

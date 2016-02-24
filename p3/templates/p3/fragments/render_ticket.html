@@ -41,7 +41,9 @@
                         <h3 class="media-heading">{{ form.ticket_name.value|default:t_no_name}}</h3>
                         <div class="tagline">{{ form.tagline.value|default:t_about_me}}</div>
                         <div class="python-experience">
-                            {% trans "Python power" %}&nbsp;{% for x in form.python_experience.value|as_range %}<i class="fa fa-star"></i>{% endfor %}
+                           {% if form.python_experience.value %}
+                             {% trans "Python experience:" %}&nbsp;{% for x in form.python_experience.value|as_range %}<i class="fa fa-star"></i>{% endfor %}
+                           {% endif %}
                         </div>
                     </div><!-- media-body -->
                 </div><!-- /media -->
