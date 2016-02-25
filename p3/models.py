@@ -36,19 +36,10 @@ class SpeakerConference(models.Model):
     speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
     first_time = models.BooleanField(default=False)
 
-# Configurable t-shirt sizes and diets
+# Configurable t-shirt sizes, diets, experience
 TICKET_CONFERENCE_SHIRT_SIZES = dsettings.CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES
 TICKET_CONFERENCE_DIETS = dsettings.CONFERENCE_TICKET_CONFERENCE_DIETS
-
-# Python experience
-TICKET_CONFERENCE_EXPERIENCES = (
-    (0, _('no comment')),
-    (1, _('1 star  (just starting)')),
-    (2, _('2 stars (beginner)')),
-    (3, _('3 stars (intermediate)')),
-    (4, _('4 stars (expert))')),
-    (5, _('5 stars (guru level)')),
-)
+TICKET_CONFERENCE_EXPERIENCES = dsettings.CONFERENCE_TICKET_CONFERENCE_EXPERIENCES
 
 
 class TicketConferenceManager(models.Manager):
@@ -104,7 +95,8 @@ class TicketConference(models.Model):
         upload_to='p3/tickets/badge_image',
         help_text=_("""A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine."""))
     assigned_to = models.EmailField(
-        blank=True)
+        blank=True,
+        help_text=_("EMail of the attendee for whom this ticket was bought."))
 
     objects = TicketConferenceManager()
 
