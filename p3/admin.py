@@ -8,6 +8,7 @@ from django.conf.urls import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db.models import Q
+from django.contrib.auth.models import User
 from assopy import admin as aadmin
 from assopy import models as amodels
 from assopy import stats as astats
@@ -116,9 +117,17 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def _assigned(self, o):
         if o.p3_conference:
-            return o.p3_conference.assigned_to
+            assigned_to = o.p3_conference.assigned_to
+            if assigned_to:
+                user = User.objects.get(email__iexact=assigned_to)
+                if user:
+                    url = urlresolvers.reverse('admin:auth_user_change',
+                                               args=(user.id,))
+                    return '<a href="%s">%s</a>' % (url, assigned_to)
+            return assigned_to
         else:
             return ''
+    _assigned.allow_tags = True
     _assigned.admin_order_field = 'p3_conference__assigned_to'
 
     def _shirt_size(self, o):
