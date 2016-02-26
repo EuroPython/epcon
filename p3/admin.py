@@ -122,7 +122,14 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         if o.p3_conference:
             assigned_to = o.p3_conference.assigned_to
             if assigned_to:
-                user = User.objects.get(email__iexact=assigned_to)
+                try:
+                    user = User.objects.get(email__iexact=assigned_to)
+                except User.MultipleObjectsReturned:
+                    if user.email == assigned_to:
+                        # Use the buyer user account
+                        user = o.user
+                    else:
+                        return '%s (email not unique)' % assigned_to
                 if user:
                     url = urlresolvers.reverse('admin:auth_user_change',
                                                args=(user.id,))

@@ -5,6 +5,7 @@ from collections import defaultdict
 from conference.models import Conference, AttendeeProfile
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from p3 import models as p3models
 
 def assign_ticket_to_user(ticket, user=None):
@@ -25,8 +26,15 @@ def assign_ticket_to_user(ticket, user=None):
         # Set attendee name on the ticket
         ticket.name = '%s %s' % (user.first_name, user.last_name)
         ticket.save()
-        # Associate the email address with the ticket
-        p3c.assigned_to = user.email
+        # Associate the email address with the ticket, if possible
+        try:
+            check_user = User.objects.get(email__iexact=user.email)
+        except User.MultipleObjectsReturned:
+            # Not possible; this user will have other issues in the
+            # system as well
+            pass
+        else:
+            p3c.assigned_to = user.email
     p3c.save()
 
 def conference_ticket_badge(tickets):
