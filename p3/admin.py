@@ -17,6 +17,7 @@ from conference import models as cmodels
 from conference import forms as cforms
 from p3 import models
 from p3 import dataaccess
+from p3 import utils
 
 ### Customg list filters
 
@@ -100,7 +101,9 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         'orderitem__order__code',
         'fare__code',
         )
-
+    actions = cadmin.TicketAdmin.actions + (
+        'do_assign_to_buyer',
+        )
     form = ticketConferenceForm()
 
     class Media:
@@ -129,6 +132,17 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             return ''
     _assigned.allow_tags = True
     _assigned.admin_order_field = 'p3_conference__assigned_to'
+
+    def do_assign_to_buyer(self, request, queryset):
+
+        if not queryset:
+            self.message_user('no tickets selected')
+            return
+        for ticket in queryset:
+            # Assign to buyer
+            utils.assign_ticket_to_user(ticket, ticket.user)
+
+    do_assign_to_buyer.short_description = 'Assign to buyer'
 
     def _shirt_size(self, o):
         try:

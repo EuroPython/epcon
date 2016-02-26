@@ -155,21 +155,9 @@ def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
 
     # Create P3 TicketConference records and assign them to the user,
     # if not already done
-    from p3.models import TicketConference
+    from p3 import utils
     for ticket in created_tickets:
-        try:
-            p3c = ticket.p3_conference
-        except TicketConference.DoesNotExist:
-            p3c = None
-        if p3c is None:
-            p3c = models.TicketConference(ticket=ticket)
-        if not p3c.assigned_to:
-            # Set attendee name on the ticket
-            ticket.name = '%s %s' % (user.first_name, user.last_name)
-            ticket.save()
-            # Associate the email address with the ticket
-            p3c.assigned_to = user.email
-        p3c.save()
+        utils.assign_ticket_to_user(ticket, user)
 
 fare_tickets.connect(create_p3_auto_assigned_conference_tickets)
 
