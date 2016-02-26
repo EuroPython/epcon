@@ -13,6 +13,7 @@ from assopy import models as amodels
 from assopy import stats as astats
 from conference import admin as cadmin
 from conference import models as cmodels
+from conference import forms as cforms
 from p3 import models
 from p3 import dataaccess
 
@@ -104,8 +105,10 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
     class Media:
         js = ('p5/j/jquery-flot/jquery.flot.js',)
 
-    def _order(self, o):
-        return o.orderitem.order.code
+    def _order(self, obj):
+        url = urlresolvers.reverse('admin:assopy_order_change', args=(obj.orderitem.order.id,))
+        return '<a href="%s">%s</a>' % (url, obj.orderitem.order.code)
+    _order.allow_tags = True
 
     def _order_date(self, o):
         return o.orderitem.order.created
@@ -278,20 +281,6 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
 admin.site.unregister(cmodels.Speaker)
 admin.site.register(cmodels.Speaker, SpeakerAdmin)
 
-from conference import forms as cforms
-
-class TalkConferenceAdminForm(cadmin.TalkAdminForm):
-    def __init__(self, *args, **kwargs):
-        super(TalkConferenceAdminForm, self).__init__(*args, **kwargs)
-        self.fields['tags'].required = False
-
-class TalkConferenceAdmin(cadmin.TalkAdmin):
-    multilingual_widget = cforms.MarkEditWidget
-    form = TalkConferenceAdminForm
-
-admin.site.unregister(cmodels.Talk)
-admin.site.register(cmodels.Talk, TalkConferenceAdmin)
-
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('_name', 'date', 'amount')
     list_select_related = True
@@ -414,6 +403,20 @@ class VotoTalkAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
+# MAL: Commented out, since we don't really have a need for this:
+#
+# class TalkConferenceAdminForm(cadmin.TalkAdminForm):
+#     def __init__(self, *args, **kwargs):
+#         super(TalkConferenceAdminForm, self).__init__(*args, **kwargs)
+#         self.fields['tags'].required = False
+#
+# class TalkConferenceAdmin(cadmin.TalkAdmin):
+#     multilingual_widget = cforms.MarkEditWidget
+#     form = TalkConferenceAdminForm
+#
+# admin.site.unregister(cmodels.Talk)
+# admin.site.register(cmodels.Talk, TalkConferenceAdmin)
+
 class TalkAdmin(cadmin.TalkAdmin):
     list_filter = ('conference', 'status', 'duration', 'type',
                    'tags__name',
@@ -428,6 +431,7 @@ class TalkAdmin(cadmin.TalkAdmin):
                     '_tags', '_slides', '_video')
 
     ordering = ('-conference', 'title')
+    multilingual_widget = cforms.MarkEditWidget
 
     def _tags(self, obj):
         return u', '.join(sorted(unicode(tag) for tag in obj.tags.all()))
