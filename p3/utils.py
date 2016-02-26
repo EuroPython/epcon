@@ -7,6 +7,28 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from p3 import models as p3models
 
+def assign_ticket_to_user(ticket, user=None):
+
+    """ Assign ticket to the given user (defaults to buyer of the
+        ticket if not given).
+
+    """
+    if user is None:
+        user = ticket.user
+    try:
+        p3c = ticket.p3_conference
+    except p3models.TicketConference.DoesNotExist:
+        p3c = None
+    if p3c is None:
+        p3c = p3models.TicketConference(ticket=ticket)
+    if not p3c.assigned_to:
+        # Set attendee name on the ticket
+        ticket.name = '%s %s' % (user.first_name, user.last_name)
+        ticket.save()
+        # Associate the email address with the ticket
+        p3c.assigned_to = user.email
+    p3c.save()
+
 def conference_ticket_badge(tickets):
     """
     vedi conference.settings.TICKET_BADGE_PREPARE_FUNCTION
