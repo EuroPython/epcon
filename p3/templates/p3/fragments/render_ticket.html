@@ -62,9 +62,9 @@
             {% else %}
             <div class="ticket-commands">
                 <p>
-                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans 'This ticket is for me' %}</a>
+                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans 'Edit this ticket' %}</a>
                     {% if user == ticket.user %}
-                        <br /><a href="#" class="assign-button">{% trans "This ticket is for someone else" %}</a>
+                        <br /><a href="#" class="assign-button">{% trans "Assign ticket to someone else" %}</a>
                     {% endif %}
                     {% orderitem_can_be_refunded ticket.orderitem as r %}
                     {% if r %}

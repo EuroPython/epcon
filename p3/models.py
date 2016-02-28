@@ -10,6 +10,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext as _
+from assopy import utils as autils
 
 from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile, \
     TalkSpeaker, Speaker
@@ -102,9 +103,12 @@ class TicketConference(models.Model):
 
     def profile(self):
         if self.assigned_to:
-            return AttendeeProfile.objects.get(user__email=self.assigned_to)
+            # Ticket assigned to someone else
+            user = autils.get_user_account_from_email(self.assigned_to)
         else:
-            return AttendeeProfile.objects.get(user=self.ticket.user)
+            # Ticket assigned to the buyer
+            user = self.ticket.user
+        return AttendeeProfile.objects.get(user=user)
 
 def _ticket_sim_upload_to(instance, filename):
     subdir = 'p3/personal_documents'

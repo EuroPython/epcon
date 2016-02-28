@@ -3,6 +3,7 @@ from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels
 from assopy import models as amodels
+from assopy import utils as autils
 from p3 import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -168,7 +169,7 @@ def _i_all_user_tickets(sender, **kw):
         params = [ (o.ticket.user_id, conference) ]
         if o.assigned_to:
             try:
-                uid = User.objects.get(email__iexact=o.assigned_to).id
+                uid = autils.get_user_account_from_email(o.assigned_to).id
             except User.DoesNotExist:
                 pass
             else:

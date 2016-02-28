@@ -395,8 +395,8 @@ def ticket_user(ticket):
     except models.TicketConference.DoesNotExist:
         p3c = None
     if p3c and p3c.assigned_to:
-        from assopy.models import User
-        return User.objects.get(user__email=p3c.assigned_to)
+        from assopy.utils import get_user_account_from_email
+        return get_user_account_from_email(p3c.assigned_to)
     else:
         return ticket.orderitem.order.user
 

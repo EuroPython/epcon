@@ -14,9 +14,11 @@ from django.template import RequestContext, Template
 import p3.forms as p3forms
 from p3 import dataaccess
 from p3 import models
+from p3 import utils as p3utils
 import assopy.models as amodels
 from assopy.forms import RefundItemForm
 from assopy.views import render_to, HttpResponseRedirectSeeOther
+from assopy import utils as autils
 from conference import forms as cforms
 from conference import models as cmodels
 from email_template import utils
@@ -60,7 +62,7 @@ def _reset_ticket(ticket):
 def _assign_ticket(ticket, email):
     email = email.strip()
     try:
-        recipient = auth.models.User.objects.get(email__iexact=email)
+        recipient = autils.get_user_account_from_email(email)
     except auth.models.User.DoesNotExist:
         try:
             # Here I'm using filter + [0] instead of .get because it could happen,
@@ -122,6 +124,10 @@ def _assign_ticket(ticket, email):
 
     _reset_ticket(ticket)
 
+    # Set new ticket name
+    ticket.name = name
+    ticket.save()
+
     utils.email(
         'ticket-assigned',
         ctx={
@@ -157,6 +163,17 @@ def ticket(request, tid):
                 t.orderitem, reason=request.POST['refund'][:200])
             t = cmodels.Ticket.objects.get(id=t.id)
         elif t.fare.ticket_type == 'conference':
+
+            #print ('ticket name 0: %r' % t.name)
+
+            #
+            # MAL: TBD This code needs a serious refactoring. There
+            # are too many weird cases addressed here, most of which
+            # can be handled more generically by
+            # autils.get_user_account_from_email() and
+            # p3utils.assign_ticket_to_user().
+            #
+
             data = request.POST.copy()
             # We want to maximize the number of assigned tickets, and to do
             # this we discurage users from filling in tickets for others.
@@ -188,6 +205,8 @@ def ticket(request, tid):
                 x.assigned_to = assigned_to
             x.save()
 
+            #print ('ticket name 1: %r' % t.name)
+
             if t.user == request.user:
                 old = assigned_to or ''
                 new = x.assigned_to or ''
@@ -203,6 +222,10 @@ def ticket(request, tid):
                     else:
                         log.info('ticket reclaimed (previously assigned to "%s")', assigned_to)
                         _reset_ticket(t)
+                        # Assign to the buyer
+                        p3utils.assign_ticket_to_user(t, t.user)
+
+            #print ('ticket name 2: %r' % t.name)
 
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
                 # the user has neither first or last name inthe progle (and also
@@ -217,6 +240,9 @@ def ticket(request, tid):
                 request.user.first_name = f
                 request.user.last_name = l
                 request.user.save()
+
+            #print ('ticket name 3: %r' % t.name)
+
         elif t.fare.code in ('SIM01',):
             try:
                 sim_ticket = t.p3_conference_sim

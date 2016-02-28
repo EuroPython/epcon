@@ -16,6 +16,7 @@ from assopy import forms as aforms
 from assopy import janrain
 from assopy import models
 from assopy import settings
+from assopy import utils as autils
 if settings.GENRO_BACKEND:
     from assopy.clients import genro
 from email_template import utils
@@ -206,7 +207,7 @@ def otc_code(request, token):
 
 def _linkProfileToEmail(email, profile):
     try:
-        current = auth.models.User.objects.get(email__iexact=email)
+        current = autils.get_user_account_from_email(email)
     except auth.models.User.DoesNotExist:
         current = auth.models.User.objects.create_user(janrain.suggest_username(profile), email)
         try:
@@ -309,10 +310,7 @@ def janrain_incomplete_profile(request):
                 'profile': p,
             }
             token = models.Token.objects.create(ctype='j', payload=json.dumps(payload))
-            try:
-                current = auth.models.User.objects.get(email=email)
-            except auth.models.User.DoesNotExist:
-                current = None
+            current = autils.get_user_account_from_email(email, default=None)
             utils.email(
                 'janrain-incomplete',
                 ctx={
