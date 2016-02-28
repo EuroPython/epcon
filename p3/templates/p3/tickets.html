@@ -154,16 +154,16 @@
     $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
 
-        {% trans "Enter the email of the person you want to assign the ticket" as t_enter_email %}
+        {% trans "Enter the email of the person you want to assign the ticket to. The person will have to have registered an account using this email address on our website in order for the assignement to work." as t_enter_email %}
         var email = $.trim(prompt("{{ t_enter_email|escapejs }}"));
 
         if(!email){
-            alert("missing email");
+            alert("No email address given -- cannot assign ticket.");
             return;
         }
 
         if(email == "{{ request.user.email }}") {
-            {% trans "Please don't use your email address." as t_not_email %}
+            {% trans "Please don't use your own email address." as t_not_email %}
             alert("{{ t_not_email|escapejs }}");
             return;
         }
