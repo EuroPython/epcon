@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from assopy import admin as aadmin
 from assopy import models as amodels
 from assopy import stats as astats
+from assopy import utils as autils
 from conference import admin as cadmin
 from conference import models as cmodels
 from conference import forms as cforms
@@ -123,7 +124,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             assigned_to = o.p3_conference.assigned_to
             if assigned_to:
                 try:
-                    user = User.objects.get(email__iexact=assigned_to)
+                    user = autils.get_user_account_from_email(assigned_to)
                 except User.MultipleObjectsReturned:
                     if user.email == assigned_to:
                         # Use the buyer user account

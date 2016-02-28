@@ -1,8 +1,41 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings as dsettings
+from django.contrib import auth
 from django.core.mail import send_mail as real_send_mail
 
 from assopy import settings
+
+def get_user_account_from_email(email, default='raise'):
+
+    """ Return the user record for the user with the given email
+        address.
+
+        Only active user records are taken into account.
+
+        Note: The system expects the email addresses to be unique
+        among active user records. If there are multiple active user
+        records with the same email address, a MultipleObjectsReturned
+        exception is raised.
+
+        If the user record does not exist, a DoesNotExist exception is
+        raised if default is set to 'raise' (default). Otherwise,
+        default is returned.
+
+    """
+    email = email.strip()
+    try:
+        return auth.models.User.objects.get(email__iexact=email,
+                                            is_active=True)
+    except auth.models.User.DoesNotExist:
+        # User does not exist
+        if default == 'raise':
+            raise
+        else:
+            return default
+    except auth.models.User.MultipleObjectsReturned:
+        # The system expects to only have one user record per email,
+        # so let's reraise the error to have it fixed in the database.
+        raise
 
 def send_email(force=False, *args, **kwargs):
     if force is False and not settings.SEND_EMAIL_TO:
