@@ -24,6 +24,7 @@ ADMINS = (
     ('fpliger'  , 'fabio.pliger@gmail.com'),
     ('barrachri', 'barrachri@gmail.com'),
     ('malemburg', 'mal@europython.eu'),
+    ('web-wg', 'web-wg@europython.eu'),
 )
 
 MANAGERS = ADMINS
