@@ -29,6 +29,13 @@ from conference import signals
 from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
 from taggit.managers import TaggableManager
 
+import inspect
+import traceback
+import logging
+
+log = logging.getLogger('conference.tags')
+
+
 # ConferenceTag e ConferenceTaggedItem servono per creare un "namespace" per i
 # tag relativi a conference. In questo modo non devo preocuparmi di altri
 # utilizzi di taggit fatti da altre app.
@@ -53,6 +60,11 @@ class ConferenceTag(TagBase):
 
     def save(self, **kw):
         if not self.pk:
+            frame = inspect.currentframe()
+            stack_trace = traceback.format_stack(frame)
+            log.debug('saving new tag {}'.format(self.name))
+            log.debug(''.join(stack_trace[:-1]))
+
             # prima di salvare questo tag mi assicuro che non ne esista un
             # altro diverso solo per maiuscole/minuscole
             try:

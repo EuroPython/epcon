@@ -15,6 +15,10 @@ from conference import settings
 
 from taggit.forms import TagField
 
+import logging
+
+log = logging.getLogger('conference.tags')
+
 
 def validate_tags(tags):
     """
@@ -24,7 +28,13 @@ def validate_tags(tags):
 
     valid_tags = models.ConferenceTag.objects.filter(name__in=tags).values_list('name', flat=True)
 
-    return valid_tags[:5]
+    tags_limited = valid_tags[:5]
+
+    tags = ', '.join(tags_limited)
+
+    log.debug('validated tags: {}'.format(tags))
+
+    return tags_limited
 
 
 class TagWidget(widgets.TextInput):
@@ -290,6 +300,10 @@ class SubmissionForm(forms.Form):
         talk.save()
         talk.setAbstract(data['abstract'])
 
+        tags = ', '.join(data['tags'])
+
+        log.debug('updating form, tags: {}'.format(tags))
+
         if 'tags' in data:
             valid_tags = validate_tags(data['tags'])
 
@@ -367,6 +381,10 @@ class TalkForm(forms.ModelForm):
             )
         talk = super(TalkForm, self).save(commit=commit)
         talk.setAbstract(data['abstract'])
+
+        tags = ', '.join(data['tags'])
+
+        log.debug('updating form, tags: {}'.format(tags))
 
         if 'tags' in data:
             valid_tags = validate_tags(data['tags'])

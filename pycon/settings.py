@@ -354,7 +354,12 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-        }
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(PROJECT_DIR, 'logs/conference.log'),
+        },
     },
     'loggers': {
         'django.request': {
@@ -362,6 +367,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'conference.tags': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
     }
 }
 
