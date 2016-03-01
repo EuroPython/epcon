@@ -466,7 +466,6 @@ class Speaker(models.Model, UrlMixin):
             qs = qs.filter(talk__conference=conference)
         return Talk.objects.filter(id__in=qs.values('talk'))
 
-TALK_DURATION = settings.TALK_DURATION
 TALK_LANGUAGES = dsettings.LANGUAGES
 TALK_STATUS = (
     ('proposed', _('Proposed')),
@@ -534,14 +533,17 @@ class TalkManager(models.Manager):
             TalkSpeaker(talk=talk, speaker=speaker).save()
         return talk
 
-TALK_TYPE = (
-    ('s', 'Talk'),
-    ('i', 'Interactive'),
-    ('t', 'Training'),
-    ('p', 'Poster session'),
-    ('n', 'Panel'),
-    ('h', 'Help desk'),
-)
+# Previous definition of TALK_TYPE, kept around, since some of the
+# code in the system uses the codes to checks.
+#
+# TALK_TYPE = (
+#     ('s', 'Talk'),
+#     ('i', 'Interactive'),
+#     ('t', 'Training'),
+#     ('p', 'Poster session'),
+#     ('n', 'Panel'),
+#     ('h', 'Help desk'),
+# )
 
 TALK_TYPE = (
     ('t_30', 'Talk (30 mins)'),
@@ -555,7 +557,7 @@ TALK_TYPE = (
     ('h_180', 'Help desk (180 mins)'),
 )
 
-# Available talk durations
+# Mapping of TALK_TYPE to duration in minutes
 TALK_DURATION = {
     't_30': 30,
     't_45': 45,

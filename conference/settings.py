@@ -140,22 +140,6 @@ TALK_SUBMISSION_LANGUAGES = getattr(
     'CONFERENCE_TALK_SUBMISSION_LANGUAGES',
     settings.LANGUAGES) 
 
-TALK_DURATION = getattr(
-    settings,
-    'CONFERENCE_TALK_DURATION',
-    (
-        (5,   _('5 minutes')),
-        (15,  _('15 minutes')),
-        (30,  _('30 minutes')),
-        (45,  _('45 minutes')),
-        (60,  _('60 minutes')),
-        (90,  _('90 minutes')),
-        (150, _('150 minutes')),
-        (180, _('180 minutes')),
-        (210, _('210 minutes')),
-    )
-)
-
 DEFAULT_VOTING_TALK_TYPES = (
     ('all', 'All'),
     ('s', 'Talks'),
