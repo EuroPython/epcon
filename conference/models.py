@@ -587,7 +587,12 @@ TALK_ADMIN_TYPE = (
     ('c', 'Closing session'),
     ('l', 'Lightning talk'),
     ('k', 'Keynote'),
+    ('r', 'Recruiting session'),
+    ('m', 'EPS session'),
+    ('s', 'Open space'),
+    ('e', 'Social event'),
 )
+
 
 class Talk(models.Model, UrlMixin):
     title = models.CharField(_('Talk title'), max_length=80)
