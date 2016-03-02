@@ -19,11 +19,11 @@ TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['*']
 
 ADMINS = (
-    ('alexsavio', 'alexsavio@gmail.com'),
-    ('oiertwo'  , 'badtrex@gmail.com'),
-    ('fpliger'  , 'fabio.pliger@gmail.com'),
-    ('barrachri', 'barrachri@gmail.com'),
-    ('malemburg', 'mal@europython.eu'),
+#    ('alexsavio', 'alexsavio@gmail.com'),
+#    ('oiertwo'  , 'badtrex@gmail.com'),
+#    ('fpliger'  , 'fabio.pliger@gmail.com'),
+#    ('barrachri', 'barrachri@gmail.com'),
+#    ('malemburg', 'mal@europython.eu'),
     ('web-wg', 'web-wg@europython.eu'),
 )
 
