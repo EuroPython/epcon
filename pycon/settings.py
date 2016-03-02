@@ -39,6 +39,11 @@ DATA_DIR = os.environ.get('DATA_DIR', os.path.join(PROJECT_DIR, 'data'))
 OTHER_STUFF = os.environ.get('OTHER_STUFF',
                              os.path.join(PROJECT_DIR, 'documents'))
 
+LOGS_DIR = os.path.join(PROJECT_DIR, 'logs/')
+
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+
 sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
 
 SITE_DATA_ROOT = DATA_DIR + '/site'
@@ -358,7 +363,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(PROJECT_DIR, 'logs/conference.log'),
+            'filename': os.path.join(LOGS_DIR, 'conference.log'),
         },
     },
     'loggers': {
