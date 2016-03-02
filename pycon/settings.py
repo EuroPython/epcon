@@ -364,6 +364,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'conference.log'),
+            'encoding': 'utf-8',
         },
     },
     'loggers': {

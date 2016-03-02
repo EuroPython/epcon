@@ -30,9 +30,8 @@ def validate_tags(tags):
 
     tags_limited = valid_tags[:5]
 
-    tags = ', '.join(tags_limited)
-
-    log.debug('validated tags: {}'.format(tags))
+    tags = u', '.join(tags_limited)
+    log.debug(u'validated tags: {}'.format(tags))
 
     return tags_limited
 
@@ -301,8 +300,7 @@ class SubmissionForm(forms.Form):
         talk.setAbstract(data['abstract'])
 
         tags = ', '.join(data['tags'])
-
-        log.debug('updating form, tags: {}'.format(tags))
+        log.debug(u'updating form, tags: {}'.format(tags))
 
         if 'tags' in data:
             valid_tags = validate_tags(data['tags'])
@@ -382,9 +380,8 @@ class TalkForm(forms.ModelForm):
         talk = super(TalkForm, self).save(commit=commit)
         talk.setAbstract(data['abstract'])
 
-        tags = ', '.join(data['tags'])
-
-        log.debug('updating form, tags: {}'.format(tags))
+        tags = u', '.join(data['tags'])
+        log.debug(u'updating form, tags: {}'.format(tags))
 
         if 'tags' in data:
             valid_tags = validate_tags(data['tags'])

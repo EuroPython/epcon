@@ -62,8 +62,8 @@ class ConferenceTag(TagBase):
         if not self.pk:
             frame = inspect.currentframe()
             stack_trace = traceback.format_stack(frame)
-            log.debug('saving new tag {}'.format(self.name))
-            log.debug(''.join(stack_trace[:-1]))
+            log.debug(u'saving new tag {}'.format(self.name))
+            log.debug(u''.join(stack_trace[:-1]))
 
             # prima di salvare questo tag mi assicuro che non ne esista un
             # altro diverso solo per maiuscole/minuscole
