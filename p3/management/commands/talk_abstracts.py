@@ -149,6 +149,11 @@ def talk_schedule(talk):
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
+        make_option('--verbose',
+             action='store_true',
+             dest='verbose',
+             help='Will output some warning while running.',
+        ),
         make_option('--talk_status',
              action='store',
              dest='talk_status',
@@ -171,6 +176,9 @@ class Command(BaseCommand):
             conference = args[0]
         except IndexError:
             raise CommandError('conference not specified')
+
+        if options['verbose']:
+            VERBOSE = True
 
         # Group by admin types
         talks = OrderedDict()
@@ -199,6 +207,9 @@ class Command(BaseCommand):
 
             talks[grp_name] = grp_talks
 
+        import ipdb
+        ipdb.set_trace()
+
         sessions = OrderedDict()
         # Print list of submissions
         for type_name, session_talks in talks.items():
@@ -212,20 +223,22 @@ class Command(BaseCommand):
             for talk in session_talks:
 
                 sessions[type_name][talk.id] = {
-                'id':           talk.id,
-                'adm_type':     talk.get_admin_type_display().encode('utf-8'),
-                'type':         talk.get_type_display().encode('utf-8'),
-                'duration':     talk.duration,
-                'level':        talk.get_level_display().encode('utf-8'),
-                'track_title':  talk_track_title(talk).encode('utf-8'),
-                'timerange':    talk_schedule(talk).encode('utf-8'),
-                'tags':         [str(t) for t in talk.tags.all()],
-                'title':        talk_title(talk).encode('utf-8'),
-                'status':       talk.status.encode('utf-8'),
-                'language':     talk.get_language_display().encode('utf-8'),
-                'speakers':     speaker_listing(talk).encode('utf-8'),
-                'emails':       speaker_emails(talk).encode('utf-8'),
-                'have_tickets': have_tickets(talk),
-                'abstracts':    [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
+                'id':             talk.id,
+                'adm_type':       talk.get_admin_type_display().encode('utf-8'),
+                'type':           talk.get_type_display().encode('utf-8'),
+                'duration':       talk.duration,
+                'level':          talk.get_level_display().encode('utf-8'),
+                'track_title':    talk_track_title(talk).encode('utf-8'),
+                'timerange':      talk_schedule(talk).encode('utf-8'),
+                'tags':           [str(t) for t in talk.tags.all()],
+                'tag_categories': [tag.category.encode('utf-8') for tag t.tags.all()],
+                'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
+                'title':          talk_title(talk).encode('utf-8'),
+                'status':         talk.status.encode('utf-8'),
+                'language':       talk.get_language_display().encode('utf-8'),
+                'speakers':       speaker_listing(talk).encode('utf-8'),
+                'emails':         speaker_emails(talk).encode('utf-8'),
+                'have_tickets':   have_tickets(talk),
+                'abstracts':      [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
 
         print(json.dumps(sessions, indent=2))
