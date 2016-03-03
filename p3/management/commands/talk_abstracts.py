@@ -228,7 +228,7 @@ class Command(BaseCommand):
                 'track_title':    talk_track_title(talk).encode('utf-8'),
                 'timerange':      talk_schedule(talk).encode('utf-8'),
                 'tags':           [str(t) for t in talk.tags.all()],
-                'tag_categories': [tag.category.encode('utf-8') for tag t.tags.all()],
+                'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
                 'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
                 'title':          talk_title(talk).encode('utf-8'),
                 'status':         talk.status.encode('utf-8'),
