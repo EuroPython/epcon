@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-""" Print out a JSON of accepted talks with the abstracts, schedule and speaker tickets status.
-
+"""
+Print out a JSON of accepted talks with the abstracts, schedule and speaker tickets status.
 """
 from   django.core.management.base import BaseCommand, CommandError
 from   conference   import models
