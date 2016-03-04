@@ -191,6 +191,7 @@ def tickets_status(conf, code=None):
             'title': 'Assigned tickets without user record (orphaned)',
             'total': orphan_tickets.count(),
         })
+
     else:
         if code in ('ticket_sold',
                     'assigned_tickets',
@@ -199,7 +200,8 @@ def tickets_status(conf, code=None):
                     ):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('ticket', 'Ticket'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('fare', 'Fare code'),
                     ('buyer', 'Buyer'),
@@ -227,6 +229,9 @@ def tickets_status(conf, code=None):
                         .values('p3_conference__assigned_to'))])
             data = output['data']
             for x in qs:
+                ticket = '<a href="%s">%s</a>' % (
+                    reverse('admin:conference_ticket_change', args=(x.id,)),
+                    x.id)
                 # p3_conference can be None because it's filled lazily when
                 # the ticket is saved for the first time
                 try:
@@ -256,6 +261,7 @@ def tickets_status(conf, code=None):
                     order = x.user.first_name + x.user.last_name
                 buyer_email = x.user.email
                 row = {
+                    'ticket': ticket,
                     'name': name,
                     'email': email,
                     'fare': x.fare.code,
@@ -271,7 +277,8 @@ def tickets_status(conf, code=None):
                       ):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('ticket', 'Ticket'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('fare', 'Fare code'),
                     ('buyer', 'Buyer'),
@@ -286,11 +293,15 @@ def tickets_status(conf, code=None):
             qs = qs.select_related('p3_conference', 'user', 'fare')
             data = output['data']
             for x in qs:
+                ticket = '<a href="%s">%s</a>' % (
+                    reverse('admin:conference_ticket_change', args=(x.id,)),
+                    x.id)
                 buyer = '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user.id,)),
                     x.user.first_name,
                     x.user.last_name)
                 data.append({
+                    'ticket': ticket,
                     'name': x.name,
                     'email': x.p3_conference.assigned_to,
                     'fare': x.fare.code,
@@ -301,7 +312,8 @@ def tickets_status(conf, code=None):
         elif code in ('sim_tickets',):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('ticket', 'Ticket'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('fare', 'Fare code'),
                 ),
@@ -314,11 +326,15 @@ def tickets_status(conf, code=None):
             qs = qs.select_related('user', 'fare')
             data = output['data']
             for x in qs:
+                ticket = '<a href="%s">%s</a>' % (
+                    reverse('admin:conference_ticket_change', args=(x.id,)),
+                    x.id)
                 buyer = '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user.id,)),
                     x.user.first_name,
                     x.user.last_name)
                 data.append({
+                    'ticket': ticket,
                     'name': buyer,
                     'email': x.user.email,
                     'fare': x.fare.code,
@@ -328,7 +344,8 @@ def tickets_status(conf, code=None):
         elif code in ('voupe03_tickets',):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('uid', 'User ID'),
+                    ('name', 'Attendee name'),
                     ('buyer', 'Buyer'),
                 ),
                 'data': [],
@@ -353,7 +370,8 @@ def tickets_status(conf, code=None):
         elif code == 'spam_recruiting':
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('uid', 'User ID'),
+                    ('name', 'Attendee name'),
                 ),
                 'data': [],
             }
@@ -728,7 +746,7 @@ def hotel_tickets(conf, code=None):
         if code == 'not-compiled' or code[1] == 'R':
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('order', 'Order Number'),
                     ('checkin', 'Check in'),
@@ -755,7 +773,7 @@ def hotel_tickets(conf, code=None):
         else:
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('order', 'Order Number'),
                     ('checkin', 'Check in'),
@@ -812,7 +830,7 @@ def pp_tickets(conf, code=None):
     else:
         output = {
             'columns': (
-                ('name', 'Name'),
+                ('name', 'Attendee name'),
                 ('buyer', 'Buyer'),
                 ('email', 'Email'),
             ),
