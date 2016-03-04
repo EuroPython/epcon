@@ -43,11 +43,23 @@ class Command(BaseCommand):
                     choices=['all', 'complete', 'incomplete'],
                     help='Status of the orders related with the tickets.',
                 ),
+        make_option('--nondups',
+                    action='store_true',
+                    dest='nondups',
+                    default=False,
+                    help='If enables will remove the tickets with '
+                         'same owner/email.',
+                ),
         make_option('--raise',
                     action='store_true',
                     dest='raise',
                     default=False,
-                    help='If enables will raise any error that it may find.',
+                    help='If enabled will raise any error that it may find.',
+                ),
+        make_option('--ticket-id',
+                    action='store',
+                    dest='ticket_id',
+                    help='Will output the profile of the given ticket only.',
                 ),
     )
 
@@ -58,11 +70,20 @@ class Command(BaseCommand):
             raise CommandError('conference not specified')
 
         if options['status'] not in ('all', 'complete', 'incomplete'):
-            raise CommandError('--status should be one of (all, complete, incomplete)' )
+            raise CommandError('--status should be one of '
+                               '(all, complete, incomplete)' )
 
         tkts = get_all_order_tickets(conference)
         if not tkts:
-            raise IndexError('Could not find any tickets for conference {}.'.format(conference))
+            raise IndexError('Could not find any tickets for '
+                             'conference {}.'.format(conference))
+
+        if options['ticket_id']:
+            tkt_id = int(options['ticket_id'])
+            tkts = [t for t in tkts if t.id == tkt_id]
+            if not tkts:
+                raise IndexError('Could not find any ticket with '
+                                 'ticket_id {}.'.format(options['ticket_id']))
 
         dflt_profile = {'name':    '',
                         'surname': '',
