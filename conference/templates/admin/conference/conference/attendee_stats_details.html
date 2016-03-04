@@ -93,7 +93,7 @@ table {
 {% if request.user.email and result.data.0.uid %}
     <div id="send-email">
         <div>
-            <h1>Invia un email a tutti i partecipanti di questa lista</h1>
+            <h1>Send an email to all users in this list</h1>
             <form action="" method="POST">{% csrf_token %}
                 <fieldset>
                     <table>
@@ -101,8 +101,8 @@ table {
                     </table>
                 </fieldset>
                 <label>Preview id <input type="text" size="5" maxlength="5" name="preview_id" /></label>
-                <input type="submit" name="preview" value="preview" />
-                <input type="submit" name="send" value="invia" />
+                <input type="submit" name="preview" value="Preview email" />
+                <input type="submit" name="send" value="Send emails" />
             </form>
         </div>
         <div class="history">
