@@ -358,7 +358,13 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         if loc:
             if loc != oldl:
                 from assopy.utils import geocode_country
-                p3p.country = geocode_country(loc)
+                country = geocode_country(loc)
+                if country:
+                    p3p.country = country
+                else:
+                    # geocode_country() can return None, but the model
+                    # does not accept None as input; see #289
+                    p3p.country = ''
         else:
             p3p.country = ''
 
