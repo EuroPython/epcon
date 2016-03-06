@@ -24,18 +24,19 @@ def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
             qs = qs.filter(fare__code=fare_code)
     return qs
 
-def _compiled(conf, ticket_type='conference'):
+def _assigned_tickets(conf, ticket_type='conference'):
     return _tickets(conf, ticket_type)\
         .exclude(p3_conference=None)\
-        .exclude(name='')
+        .exclude(name='')\
+        .exclude(p3_conference__assigned_to='')
 
-def _not_compiled(conf, ticket_type='conference', only_complete=True):
+def _unassigned_tickets(conf, ticket_type='conference', only_complete=True):
     return _tickets(conf, ticket_type, only_complete=only_complete)\
-        .filter(Q(p3_conference=None)|Q(name=''))
+        .filter(Q(p3_conference=None)|Q(name='')|Q(p3_conference__assigned_to=''))
 
 def shirt_sizes(conf):
     sizes = dict(models.TICKET_CONFERENCE_SHIRT_SIZES)
-    qs = _compiled(conf)\
+    qs = _assigned_tickets(conf)\
         .values('p3_conference__shirt_size')\
         .annotate(total=Count('id'))
 
@@ -50,7 +51,7 @@ shirt_sizes.short_description = "Tshirts size"
 
 def diet_types(conf):
     diets = dict(models.TICKET_CONFERENCE_DIETS)
-    qs = _compiled(conf)\
+    qs = _assigned_tickets(conf)\
         .values('p3_conference__diet')\
         .annotate(total=Count('id'))
 
@@ -66,12 +67,12 @@ diet_types.short_description = "Diet"
 def presence_days(conf, code=None):
     qs = {
         'all': {
-            'c': _compiled(conf),
-            'n': _not_compiled(conf, only_complete=False),
+            'c': _assigned_tickets(conf),
+            'n': _unassigned_tickets(conf, only_complete=False),
         },
         'nostaff': {
-            'c': _compiled(conf).exclude(ticket_type='staff'),
-            'n': _not_compiled(conf, only_complete=False).exclude(ticket_type='staff'),
+            'c': _assigned_tickets(conf).exclude(ticket_type='staff'),
+            'n': _unassigned_tickets(conf, only_complete=False).exclude(ticket_type='staff'),
         }
     }
     totals = {}
@@ -83,7 +84,7 @@ def presence_days(conf, code=None):
     output = {
         'columns': (
             ('total', 'Total'),
-            ('total_nc', '<span title="Estimation with not compiled and not completed bank orders">Estimation with NCNC</span>'),
+            ('total_nc', '<span title="Estimate with unassigned tickets and incomplete bank orders">Estimate with NA/NC</span>'),
         ),
         'data': [],
     }
@@ -126,8 +127,7 @@ def tickets_status(conf, code=None):
         .filter(p3_conference__isnull=False)\
         .exclude(p3_conference__assigned_to='')\
         .exclude(p3_conference__assigned_to__in=User.objects.values('email'))
-    multiple_assignments = _tickets(conf, 'conference')\
-        .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))\
+    multiple_assignments = _assigned_tickets(conf, 'conference')\
         .values('p3_conference__assigned_to')\
         .annotate(total=Count('id'))\
         .filter(total__gt=1)
@@ -141,41 +141,44 @@ def tickets_status(conf, code=None):
         output = [
             {
                 'id': 'ticket_sold',
-                'title': 'Sold',
+                'title': 'Sold tickets',
                 'total': _tickets(conf, 'conference').count(),
             },
             {
-                'title': 'Compiled',
-                'total': _compiled(conf).count(),
+                'id': 'assigned_tickets',
+                'title': 'Assigned tickets',
+                'total': _assigned_tickets(conf).count(),
             },
             {
-                'id': 'not_compiled',
-                'title': 'Not compiled',
-                'total': _not_compiled(conf).count(),
+                'id': 'unassigned_tickets',
+                'title': 'Unassigned tickets',
+                'total': _unassigned_tickets(conf).count(),
             },
             {
                 'id': 'sim_tickets',
-                'title': 'Sim tickets',
+                'title': 'Tickets with SIM card orders',
                 'total': sim_tickets.count(),
             },
             {
                 'id': 'voupe03_tickets',
-                'title': 'VOUPE03 (PyFiorentina)',
+                'title': 'Social event tickets (VOUPE03)',
                 'total': voupe03.count(),
             },
             {
                 'id': 'spam_recruiting',
-                'title': 'SPAM recruiting',
+                'title': 'Recruiting emails (opt-in)',
                 'total': spam_recruiting.count(),
             },
         ]
 
-        qs = _tickets(conf, 'conference')\
-            .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
-        output.append({
-            'title': 'Tickets compiled',
-            'total': qs.count(),
-        })
+        # MAL: This looks like a duplicate of the above row
+        #
+        # qs = _tickets(conf, 'conference')\
+        #     .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
+        # output.append({
+        #     'title': 'Assigned tickets',
+        #     'total': qs.count(),
+        # })
 
         output.append({
             'id': 'multiple_assignments',
@@ -185,15 +188,22 @@ def tickets_status(conf, code=None):
 
         output.append({
             'id': 'orphan_tickets',
-            'title': 'Tickets not assigned',
+            'title': 'Assigned tickets without user record (orphaned)',
             'total': orphan_tickets.count(),
         })
+
     else:
-        if code in ('ticket_sold', 'not_compiled'):
+        if code in ('ticket_sold',
+                    'assigned_tickets',
+                    'unassigned_tickets',
+                    'multiple_assignments',
+                    ):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('ticket', 'Ticket'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
+                    ('fare', 'Fare code'),
                     ('buyer', 'Buyer'),
                     ('buyer_email', 'Buyer Email'),
                 ),
@@ -201,8 +211,16 @@ def tickets_status(conf, code=None):
             }
             if code == 'ticket_sold':
                 qs = _tickets(conf, 'conference')
+            elif code == 'assigned_tickets':
+                qs = _assigned_tickets(conf)
+            elif code == 'unassigned_tickets':
+                qs = _unassigned_tickets(conf)
+            elif code == 'multiple_assignments':
+                qs = _tickets(conf, 'conference')\
+                    .filter(p3_conference__assigned_to__in=multiple_assignments\
+                        .values('p3_conference__assigned_to'))
             else:
-                qs = _not_compiled(conf)
+                raise ValueError('Unsupported stats code: %r' % code)
             qs = qs.select_related('p3_conference', 'user')
             assignees = dict([
                 (u.email, u) for u in User.objects\
@@ -211,6 +229,9 @@ def tickets_status(conf, code=None):
                         .values('p3_conference__assigned_to'))])
             data = output['data']
             for x in qs:
+                ticket = '<a href="%s">%s</a>' % (
+                    reverse('admin:conference_ticket_change', args=(x.id,)),
+                    x.id)
                 # p3_conference can be None because it's filled lazily when
                 # the ticket is saved for the first time
                 try:
@@ -232,22 +253,18 @@ def tickets_status(conf, code=None):
                 else:
                     name = '%s <strong>Ticket not assigned</strong>' % x.name
                     order = x.name
-                if x.user == u:
-                    buyer = ''
-                else:
-                    buyer = '<a href="%s">%s %s</a>' % (
-                        reverse('admin:auth_user_change', args=(x.user.id,)),
-                        x.user.first_name,
-                        x.user.last_name)
-                    if not order:
-                        order = x.user.first_name + x.user.last_name
-                if x.user.email == email:
-                    buyer_email = ''
-                else:
-                    buyer_email = x.user.email
+                buyer = '<a href="%s">%s %s</a>' % (
+                    reverse('admin:auth_user_change', args=(x.user.id,)),
+                    x.user.first_name,
+                    x.user.last_name)
+                if not order:
+                    order = x.user.first_name + x.user.last_name
+                buyer_email = x.user.email
                 row = {
+                    'ticket': ticket,
                     'name': name,
                     'email': email,
+                    'fare': x.fare.code,
                     'buyer': buyer,
                     'buyer_email': buyer_email,
                     '_order': order,
@@ -255,10 +272,13 @@ def tickets_status(conf, code=None):
                 }
                 data.append(row)
             data.sort(key=lambda x: x['_order'])
-        elif code in ('orphan_tickets', 'multiple_assignments'):
+
+        elif code in ('orphan_tickets',
+                      ):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('ticket', 'Ticket'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('fare', 'Fare code'),
                     ('buyer', 'Buyer'),
@@ -269,27 +289,31 @@ def tickets_status(conf, code=None):
             if code == 'orphan_tickets':
                 qs = orphan_tickets
             else:
-                qs = _tickets(conf, 'conference')\
-                    .filter(p3_conference__assigned_to__in=multiple_assignments\
-                        .values('p3_conference__assigned_to'))
+                raise ValueError('Unsupported stats code: %r' % code)
             qs = qs.select_related('p3_conference', 'user', 'fare')
             data = output['data']
             for x in qs:
+                ticket = '<a href="%s">%s</a>' % (
+                    reverse('admin:conference_ticket_change', args=(x.id,)),
+                    x.id)
                 buyer = '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user.id,)),
                     x.user.first_name,
                     x.user.last_name)
                 data.append({
+                    'ticket': ticket,
                     'name': x.name,
                     'email': x.p3_conference.assigned_to,
                     'fare': x.fare.code,
                     'buyer': buyer,
                     'buyer_email': x.user.email,
                 })
+
         elif code in ('sim_tickets',):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('ticket', 'Ticket'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('fare', 'Fare code'),
                 ),
@@ -297,29 +321,39 @@ def tickets_status(conf, code=None):
             }
             if code == 'sim_tickets':
                 qs = sim_tickets
+            else:
+                raise ValueError('Unsupported stats code: %r' % code)
             qs = qs.select_related('user', 'fare')
             data = output['data']
             for x in qs:
+                ticket = '<a href="%s">%s</a>' % (
+                    reverse('admin:conference_ticket_change', args=(x.id,)),
+                    x.id)
                 buyer = '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user.id,)),
                     x.user.first_name,
                     x.user.last_name)
                 data.append({
+                    'ticket': ticket,
                     'name': buyer,
                     'email': x.user.email,
                     'fare': x.fare.code,
                     'uid': x.user.id,
                 })
+
         elif code in ('voupe03_tickets',):
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('uid', 'User ID'),
+                    ('name', 'Attendee name'),
                     ('buyer', 'Buyer'),
                 ),
                 'data': [],
             }
             if code == 'voupe03_tickets':
                 qs = voupe03
+            else:
+                raise ValueError('Unsupported stats code: %r' % code)
             qs = qs.select_related('user')
             data = output['data']
             for x in sorted(qs, key=lambda x: x.name or '%s %s' % (x.user.first_name, x.user.last_name)):
@@ -332,10 +366,12 @@ def tickets_status(conf, code=None):
                     'uid': x.user.id,
                     'email': x.user.email,
                 })
+
         elif code == 'spam_recruiting':
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('uid', 'User ID'),
+                    ('name', 'Attendee name'),
                 ),
                 'data': [],
             }
@@ -384,7 +420,7 @@ def speaker_status(conf, code=None):
                 },
                 {
                     'id': 'no_data',
-                    'title': 'Without avatar or biografy',
+                    'title': 'Without avatar or biography',
                     'total': spk_nodata.count(),
                     'note': 'Acccount with gravatar are not included',
                 }
@@ -434,12 +470,12 @@ def conference_speakers(conf, code=None):
             },
             {
                 'id': 'accepted_speakers',
-                'title': 'Speakers accepected',
+                'title': 'Speakers with accepted talks',
                 'total': accepted_spks.count()
             },
             {
                 'id': 'speakers_not_scheduled',
-                'title': 'Speakers not scheduled yet',
+                'title': 'Speakers with unscheduled accepted talks',
                 'total': not_scheduled.count()
             },
         ]
@@ -710,7 +746,7 @@ def hotel_tickets(conf, code=None):
         if code == 'not-compiled' or code[1] == 'R':
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('order', 'Order Number'),
                     ('checkin', 'Check in'),
@@ -737,7 +773,7 @@ def hotel_tickets(conf, code=None):
         else:
             output = {
                 'columns': (
-                    ('name', 'Name'),
+                    ('name', 'Attendee name'),
                     ('email', 'Email'),
                     ('order', 'Order Number'),
                     ('checkin', 'Check in'),
@@ -794,7 +830,7 @@ def pp_tickets(conf, code=None):
     else:
         output = {
             'columns': (
-                ('name', 'Name'),
+                ('name', 'Attendee name'),
                 ('buyer', 'Buyer'),
                 ('email', 'Email'),
             ),

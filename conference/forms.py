@@ -545,12 +545,19 @@ class AdminSendMailForm(forms.Form):
         messages = []
         addresses = []
         data = self.cleaned_data
+
+        # Make sure we don't send duplicate emails to the same uid
+        uids = list(set(uids))
+
+        # Prepare emails
         for sbj, body, user in self.preview(*uids):
             messages.append((sbj, body, data['from_'], [user.email]))
             addresses.append('"%s %s" - %s' % (user.first_name, user.last_name, user.email))
+
+        # Mass send the emails
         mail.send_mass_mail(messages)
 
-        # feedback mail
+        # Send feedback mail
         ctx = dict(data)
         ctx['addresses'] = '\n'.join(addresses)
         mail.send_mail(
