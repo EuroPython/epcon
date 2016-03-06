@@ -19,7 +19,7 @@
     <meta property="og:title" content="{{ talk.title }}" />
     <meta property="og:url" content="{{ DEFAULT_URL_PREFIX }}{{ request.path }}" />
     <meta property="og:description" content="{{ talk_data.abstract|truncatechars:140 }}" />
-    <meta property="og:determiner" content="" />
+    <meta property="og:determiner" content="auto" />
     <meta property="og:type" content="article" />
     <meta property="og:image" content="{{ DEFAULT_URL_PREFIX }}{{STATIC_URL}}p6/images/favicon-256x256.png" />
 {% endblock %}
