@@ -4,6 +4,7 @@
 {% block PAGE_TITLE %}{{ talk.title }}{% endblock %}
 
 {% block TWITTER_CARD %}
+{% p3_talk_data talk.id as talk_data %}
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@europython" />
 <meta name="twitter:title" content="{{ talk.title }}" />
