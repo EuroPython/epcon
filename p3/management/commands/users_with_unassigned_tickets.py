@@ -19,14 +19,29 @@ import traceback
 ### Globals
 
 ### Helpers
-def get_all_order_tickets():
+
+def conference_year(conference='ep2016'):
+    return conference[-2:]
+
+
+def get_all_order_tickets(conference='ep2016'):
+
+    year = conference_year(conference)
+
     orders          = assopy_models.Order.objects.filter(_complete=True)
-    order_tkts      = [ordi.ticket for order in orders for ordi in order.orderitem_set.all() if ordi.ticket is not None]
+    conf_orders     = [order for order in orders if order.code.startswith('O/{}.'.format(year))]
+    order_tkts      = [ordi.ticket
+                       for order in conf_orders
+                       for ordi in order.orderitem_set.all()
+                       if ordi.ticket is not None]
     conf_order_tkts = [ot for ot in order_tkts if ot.fare.code.startswith('T')]
+
     return conf_order_tkts
+
 
 def get_assigned_ticket(ticket_id):
     return p3_models.TicketConference.objects.filter(ticket=ticket_id)
+
 
 def has_assigned_ticket(ticket_id):
     return bool(get_assigned_ticket(ticket_id))
@@ -76,32 +91,30 @@ class Command(BaseCommand):
         # ),
     )
     def handle(self, *args, **options):
+        print('This script does not work anymore, do not use it.')
+
         try:
             conference = args[0]
         except IndexError:
             raise CommandError('conference not specified')
 
-        tkts = get_all_order_tickets()
+        tkts = get_all_order_tickets(conference)
+        if not tkts:
+            raise IndexError('Could not find any tickets for conference {}.'.format(conference))
 
         # unassigned tickets
-        un_tkts = [t for t in tkts if not has_assigned_ticket(t.id)]
+        un_tkts = [t for t in tkts if not t.p3_conference.assigned_to]
 
         # users with unassigned tickets
         users = set()
         for ut in un_tkts:
             users.add(ut.user)
 
-        output = []
         if options['emails']:
             output = sorted([usr.email.encode('utf-8') for usr in users])
-
         else:
             output = sorted([usr.get_full_name().encode('utf-8') for usr in users])
 
-        #for ot in order_tkts:
-        #    tkt = get_conference_ticket(ot.id)
+        if output:
+            print(', '.join(output))
 
-        #from IPython.core.debugger import Tracer
-        #Tracer()()
-
-        print(', '.join(output))
