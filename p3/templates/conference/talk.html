@@ -3,10 +3,25 @@
 
 {% block PAGE_TITLE %}{{ talk.title }}{% endblock %}
 
+{% block TWITTER_CARD %}
+    {% p3_talk_data talk.id as talk_data %}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@europython" />
+    <meta name="twitter:title" content="{{ talk.title }}" />
+    <meta name="twitter:description" content="{{ talk_data.abstract|truncatechars:140 }}" />
+    <meta name="twitter:image" content="{{ DEFAULT_URL_PREFIX }}{{STATIC_URL}}p6/images/favicon-256x256.png" />
+{% endblock %}
+
 {% block OPENGRAPH %}
 {{ block.super }}
     {% talk_data talk.id as talk_data %}
+    <meta property="og:site_name" content="EuroPython Conference" />
     <meta property="og:title" content="{{ talk.title }}" />
+    <meta property="og:url" content="{{ DEFAULT_URL_PREFIX }}{{ request.path }}" />
+    <meta property="og:description" content="{{ talk_data.abstract|truncatechars:140 }}" />
+    <meta property="og:determiner" content="auto" />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="{{ DEFAULT_URL_PREFIX }}{{STATIC_URL}}p6/images/favicon-256x256.png" />
 {% endblock %}
 
 {% block EXTRA_HEAD %}
