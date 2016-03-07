@@ -228,7 +228,7 @@ class Command(BaseCommand):
                 'track_title':    talk_track_title(talk).encode('utf-8'),
                 'timerange':      talk_schedule(talk).encode('utf-8'),
                 'tags':           [str(t) for t in talk.tags.all()],
-                'link':           'https://{}.europython.eu/conference/talks/{}'.format(conference, talk.slug).encode('utf-8'),
+                'url':            'https://{}.europython.eu/conference/talks/{}'.format(conference, talk.slug).encode('utf-8'),
                 'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
                 'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
                 'title':          clean_title(talk.title).encode('utf-8'),
