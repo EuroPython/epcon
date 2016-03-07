@@ -358,7 +358,13 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         if loc:
             if loc != oldl:
                 from assopy.utils import geocode_country
-                p3p.country = geocode_country(loc)
+                country = geocode_country(loc)
+                if country:
+                    p3p.country = country
+                else:
+                    # geocode_country() can return None, but the model
+                    # does not accept None as input; see #289
+                    p3p.country = ''
         else:
             p3p.country = ''
 
@@ -702,7 +708,9 @@ class P3FormTickets(aforms.FormTickets):
         if data[0] == '_':
             raise forms.ValidationError(_('invalid coupon'))
         try:
-            coupon = amodels.Coupon.objects.get(code__iexact=data)
+            coupon = amodels.Coupon.objects.get(
+                conference=settings.CONFERENCE_CONFERENCE,
+                code__iexact=data)
         except amodels.Coupon.DoesNotExist:
             raise forms.ValidationError(_('invalid coupon'))
         if not coupon.valid(self.user):
@@ -716,7 +724,8 @@ class P3FormTickets(aforms.FormTickets):
 
         checks = []
         for ix, row in enumerate(data):
-            f = cmodels.Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=row['fare'])
+            f = cmodels.Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE,
+                                         code=row['fare'])
             price = f.calculated_price(**row)
             if not price:
                 raise forms.ValidationError('%s:invalid period' % ix)
@@ -734,7 +743,9 @@ class P3FormTickets(aforms.FormTickets):
                 conference_tickets += v
         if not conference_tickets:
             from p3.dataaccess import user_tickets
-            tickets = user_tickets(self.user.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
+            tickets = user_tickets(self.user.user,
+                                   settings.CONFERENCE_CONFERENCE,
+                                   only_complete=True)
             for t in tickets:
                 if t.fare.code.startswith('T'):
                     conference_tickets += 1

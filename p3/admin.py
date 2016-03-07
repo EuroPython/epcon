@@ -434,6 +434,35 @@ class VotoTalkAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
+class AttendeeProfileAdmin(admin.ModelAdmin):
+    list_display = ('_name',
+                    '_user',
+                    'company', 'location', 'visibility')
+    list_filter = ('visibility',
+                   )
+    search_fields = [ 'user__username',
+                      'user__last_name', 'user__first_name',
+                      'company',
+                      'location',
+                      ]
+
+    def _name(self, o):
+        url = urlresolvers.reverse('conference-profile',
+                                   kwargs={'slug': o.slug})
+        return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
+    _name.allow_tags = True
+    _name.admin_order_field = 'user__first_name'
+
+    def _user(self, o):
+        url = urlresolvers.reverse('admin:auth_user_change',
+                                   args=(o.user.id,))
+        return '<a href="%s">%s</a>' % (url, o.user.username)
+    _user.allow_tags = True
+    _user.admin_order_field = 'user__username'
+
+
+admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
+
 # MAL: Commented out, since we don't really have a need for this:
 #
 # class TalkConferenceAdminForm(cadmin.TalkAdminForm):
