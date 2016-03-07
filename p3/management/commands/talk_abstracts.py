@@ -44,6 +44,11 @@ def speaker_emails(talk):
     return u', '.join(
         u'{}'.format(speaker.user.email) for speaker in talk.get_all_speakers())
 
+def speaker_twitters(talk):
+    return u', '.join(
+        u'@{}'.format(speaker.user.attendeeprofile.p3_profile.twitter)
+        for speaker in talk.get_all_speakers())
+
 
 def get_orders_from(user):
     return assopy_models.Order.objects.filter(_complete=True, user=user.id)
@@ -111,38 +116,33 @@ def have_tickets(talk):
     return have_tkt
 
 
-def talk_title(talk):
+def clean_title(title):
+    if not title:
+        return title
 
     # Remove whitespace
-    title = talk.title.strip()
-
+    title = title.strip()
     # Remove double spaces
     title = title.replace("  ", " ")
-
     # Remove quotes
     if title[0] == '"' and title[-1] == '"':
         title = title[1:-1]
-
     return title
 
 
 def talk_track_title(talk):
     event = talk.get_event()
-
     if not event:
         return ''
-
     return ', '.join([tr.title for tr in event.tracks.all()])
 
 
 def talk_schedule(talk):
     event = talk.get_event()
-
     if not event:
         if VERBOSE:
             print('ERROR: Talk {} is not scheduled.'.format(talk))
         return ''
-
     timerange = event.get_time_range()
     return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
 
@@ -216,7 +216,7 @@ class Command(BaseCommand):
             sessions[type_name] = OrderedDict()
 
             # Sort by talk title using title case
-            session_talks.sort(key=lambda talk: talk_title(talk).title())
+            session_talks.sort(key=lambda talk: clean_title(talk.title).encode('utf-8').title())
             for talk in session_talks:
 
                 sessions[type_name][talk.id] = {
@@ -228,14 +228,20 @@ class Command(BaseCommand):
                 'track_title':    talk_track_title(talk).encode('utf-8'),
                 'timerange':      talk_schedule(talk).encode('utf-8'),
                 'tags':           [str(t) for t in talk.tags.all()],
+                'slug':           talk.slug.encode('utf-8'),
                 'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
                 'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
-                'title':          talk_title(talk).encode('utf-8'),
+                'title':          clean_title(talk.title).encode('utf-8'),
+                'sub_title':      clean_title(talk.sub_title).encode('utf-8'),
                 'status':         talk.status.encode('utf-8'),
                 'language':       talk.get_language_display().encode('utf-8'),
+                'have_tickets':   have_tickets(talk),
+                'abstract_long':  [abst.body.encode('utf-8') for abst in talk.abstracts.all()],
+                'abstract_short': talk.abstract_short.encode('utf-8'),
+                'abstract_extra': talk.abstract_extra.encode('utf-8'),
                 'speakers':       speaker_listing(talk).encode('utf-8'),
                 'emails':         speaker_emails(talk).encode('utf-8'),
-                'have_tickets':   have_tickets(talk),
-                'abstracts':      [abst.body.encode('utf-8') for abst in talk.abstracts.all()]}
+                'twitters':       speaker_twitters(talk).encode('utf-8'),
+                }
 
         print(json.dumps(sessions, indent=2))
