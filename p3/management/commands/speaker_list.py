@@ -52,13 +52,14 @@ def speaker_list_key(entry):
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
+        make_option('--talk_status',
+             action='store',
+             dest='talk_status',
+             default='accepted',
+             choices=['accepted', 'proposed'],
+             help='The status of the talks to be put in the report. '
+                  'Choices: accepted, proposed',
+        ),
     )
     def handle(self, *args, **options):
         try:
@@ -68,7 +69,7 @@ class Command(BaseCommand):
 
         talks = (models.Talk.objects
                  .filter(conference=conference,
-                         status='accepted'))
+                         status=options['talk_status']))
 
         # Find all speakers
         speaker_dict = {}
@@ -104,4 +105,3 @@ class Command(BaseCommand):
                 name)).encode('utf-8'))
         print ('</ul>')
         print ('<p>%i speakers in total.</p>' % len(speaker_list))
-        
