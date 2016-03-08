@@ -207,9 +207,6 @@ class Command(BaseCommand):
 
             talks[grp_name] = grp_talks
 
-        import ipdb; ipdb.set_trace()
-
-
         sessions = OrderedDict()
         # Print list of submissions
         for type_name, session_talks in talks.items():
