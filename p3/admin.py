@@ -479,7 +479,7 @@ admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
 
 class TalkAdmin(cadmin.TalkAdmin):
     list_filter = ('conference', 'status', 'duration', 'type',
-                   'tags__name',
+                   'level', 'tags__name', 'language',
                    )
     search_fields = [ 'title',
                       'talkspeaker__speaker__user__last_name',
@@ -488,7 +488,10 @@ class TalkAdmin(cadmin.TalkAdmin):
 
     list_display = ('title', 'conference', '_speakers',
                     'duration', 'status', 'created',
-                    '_tags', '_slides', '_video')
+                    'level', '_tags',
+                    '_slides', '_video',
+                    'language',
+                    )
 
     ordering = ('-conference', 'title')
     multilingual_widget = cforms.MarkEditWidget

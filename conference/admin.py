@@ -575,10 +575,12 @@ class TalkAdmin(admin.ModelAdmin):
     def _slides(self, obj):
         return bool(obj.slides)
     _slides.boolean = True
+    _slides.admin_order_field = 'slides'
 
     def _video(self, obj):
         return bool(obj.video_type) and (bool(obj.video_url) or bool(obj.video_file))
     _video.boolean = True
+    _video.admin_order_field = 'video_type'
 
     #@transaction.commit_on_success
     def do_accept_talks_in_schedule(self, request, queryset):
