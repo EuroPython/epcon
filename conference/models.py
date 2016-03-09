@@ -549,14 +549,17 @@ class TalkManager(models.Manager):
 # code in the system uses the codes to checks.
 #
 # TALK_TYPE = (
-#     ('s', 'Talk'),
+#     ('t', 'Talk'),
 #     ('i', 'Interactive'),
-#     ('t', 'Training'),
+#     ('r', 'Training'),
 #     ('p', 'Poster session'),
 #     ('n', 'Panel'),
 #     ('h', 'Help desk'),
 # )
 
+# Talk types combined with duration. Note that the system uses the
+# first character to identify the generic talk type, so these should
+# not be changed from the ones listed above.
 TALK_TYPE = (
     ('t_30', 'Talk (30 mins)'),
     ('t_45', 'Talk (45 mins)'),
@@ -564,8 +567,8 @@ TALK_TYPE = (
     ('i_60', 'Interactive (60 mins)'),
     ('r_180', 'Training (180 mins)'),
     ('p_180', 'Poster session (180 mins)'),
-    ('p_60', 'Panel (60 mins)'),
-    ('p_90', 'Panel (90 mins)'),
+    ('n_60', 'Panel (60 mins)'),
+    ('n_90', 'Panel (90 mins)'),
     ('h_180', 'Help desk (180 mins)'),
 )
 
@@ -577,8 +580,8 @@ TALK_DURATION = {
     'i_60': 60,
     'r_180': 180,
     'p_180': 180,
-    'p_60': 60,
-    'p_90': 90,
+    'n_60': 60,
+    'n_90': 90,
     'h_180': 180,
 }
 

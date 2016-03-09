@@ -3,6 +3,7 @@ from __future__ import with_statement
 import functools
 import os.path
 import urllib
+import random
 from decimal import Decimal
 
 from conference import dataaccess
@@ -700,27 +701,33 @@ def voting(request):
         from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioRenderer
         class OptionForm(forms.Form):
             abstracts = forms.ChoiceField(
-                choices=(('not-voted', 'To be voted'), ('all', 'All'),),
+                choices=(('not-voted', 'Not yet voted'),
+                         ('all', 'All'),
+                         ),
                 required=False,
                 initial='not-voted',
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             talk_type = forms.ChoiceField(
-                choices=settings.TALK_TYPES_TO_BE_VOTED,
+                label=u'Session type',
+                choices=(('all', 'All'),) + tuple(settings.TALK_TYPES_TO_BE_VOTED),
                 required=False,
                 initial='all',
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             language = forms.ChoiceField(
-                choices=(('all', 'All'), ('en', 'English'), ('it', 'Italian'),),
+                choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
                 required=False,
                 initial='all',
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             order = forms.ChoiceField(
-                choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
+                choices=(('random', 'Random order'),
+                         ('vote', 'Vote'),
+                         ('speaker', 'Speaker name'),
+                         ),
                 required=False,
-                initial='vote',
+                initial='random',
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             tags = TagField(
@@ -735,7 +742,10 @@ def voting(request):
             ordinal[t] = ix
 
         user_votes = models.VotoTalk.objects.filter(user=request.user.id)
-        talks = talks.order_by('speakers__user__first_name', 'speakers__user__last_name')
+
+        # Start by sorting talks by name
+        talks = talks.order_by('speakers__user__first_name',
+                               'speakers__user__last_name')
 
         if request.GET:
             form = OptionForm(data=request.GET)
@@ -745,17 +755,19 @@ def voting(request):
             form = OptionForm()
             options = {
                 'abstracts': 'not-voted',
-                'talk_type': '',
-                'language': '',
+                'talk_type': 'all',
+                'language': 'all',
                 'tags': '',
-                'order': 'vote',
+                'order': 'random',
             }
-        if options['abstracts'] != 'all':
+        if options['abstracts'] == 'not-voted':
             talks = talks.exclude(id__in=user_votes.values('talk_id'))
-        if options['talk_type'] in ('s', 't', 'p'):
-            talks = talks.filter(type=options['talk_type'])
+        if options['talk_type'] in (tchar
+                                    for (tchar, tdef) in settings.TALK_TYPES_TO_BE_VOTED):
+            talks = talks.filter(type__startswith=options['talk_type'])
 
-        if options['language'] in ('en', 'it'):
+        if options['language'] in (lcode
+                                   for (lcode, ldef) in settings.TALK_SUBMISSION_LANGUAGES):
             talks = talks.filter(language=options['language'])
 
         if options['tags']:
@@ -780,7 +792,6 @@ def voting(request):
                 )
 
         talk_order = options['order']
-
         votes = dict((x.talk_id, x) for x in user_votes)
 
         # Poichè talks è ordinato per un modello collegato tramite una
@@ -799,13 +810,19 @@ def voting(request):
             return True
         talks = filter(filter_vote, talks.values('id'))
 
-        if talk_order != 'speaker':
+        # Fix talk order, if necessary
+        if talk_order == 'vote':
             def key(x):
                 if x['user_vote']:
                     return x['user_vote'].vote
                 else:
                     return Decimal('-99.99')
             talks = reversed(sorted(reversed(talks), key=key))
+        elif talk_order == 'random':
+            random.shuffle(talks)
+        elif talk_order == 'speaker':
+            # Already sorted
+            pass
 
         ctx = {
             'voting_allowed': voting_allowed,
