@@ -31,9 +31,7 @@
 
                     {{ form.abstracts|form_field:"autosubmit" }}
                     {{ form.talk_type|form_field:"autosubmit" }}
-<!--
                     {{ form.language|form_field:"autosubmit" }}
--->
                     {{ form.order|form_field:"autosubmit" }}
                     {{ form.tags|form_field:"autosubmit" }}
                 </fieldset>
@@ -77,11 +75,10 @@
             <h4>{% trans "How to vote:" %}</h4>
             <ul>
                 <li>{% trans "Click on the stars to cast a vote; half-points are allowed." %}</li>
-                <li>{% trans "Click on the red sign on the left of the stars to remove a vote, if you want to think about it more." %}</li>
+                <li>{% trans "Click on the red sign on the left of the stars to remove a vote, if you want to think about it some more." %}</li>
 
                 <li>{% trans "Use the filters at the top to help you go through the talks." %}</li>
                 <li>{% trans "Sort by vote to help you review all your votes." %}</li>
-
     <!--
                 <li>{% trans "Click on the talk name to go to the (linkable) talk page." %}</li>
                 <li>{% trans "Click on the speaker name to see the (linkable) speaker page, with full bio and other infos." %}</li>

@@ -140,11 +140,13 @@ TALK_SUBMISSION_LANGUAGES = getattr(
     'CONFERENCE_TALK_SUBMISSION_LANGUAGES',
     settings.LANGUAGES) 
 
+# Voting talk types (only the first letter of TALK_TYPE)
 DEFAULT_VOTING_TALK_TYPES = (
-    ('all', 'All'),
-    ('s', 'Talks'),
-    ('t', 'Trainings'),
-    ('p', 'Poster'),
+    ('t', 'Talks'),
+    ('r', 'Trainings'),
+    #('p', 'Poster'),
+    #('n', 'Panel'),
+    #('h', 'Help desk'),
 )
 
 # List of emails to send talk submission email notifications to
