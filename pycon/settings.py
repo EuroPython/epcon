@@ -645,12 +645,16 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     return False
 
 def CONFERENCE_VOTING_ALLOWED(user):
+
+    """ Determine whether user is allowed to participate in talk voting.
+
+    """
     if not user.is_authenticated():
         return False
     if user.is_superuser:
         return True
 
-    # Speakers are always allowed to vote
+    # Speakers of the current conference are always allowed to vote
     from p3.models import TalkSpeaker, Speaker
     try:
         count = TalkSpeaker.objects.filter(
@@ -662,16 +666,23 @@ def CONFERENCE_VOTING_ALLOWED(user):
         if count > 0:
             return True
 
+    # People who have a ticket for the current conference assigned to
+    # them can vote
     from p3 import models
     from django.db.models import Q
-    # Can vote who has at least one confirmed ticket that has
-    # not been assigned tosomeone else
+    # Starting with EP2015, we know that all assigned tickets have
+    # .assigned_to set correctly
     tickets = models.TicketConference.objects \
-        .available(user, CONFERENCE_CONFERENCE) \
-        .filter(Q(orderitem__order___complete=True) | Q(
-        orderitem__order__method='admin')) \
-        .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
-        p3_conference__assigned_to=user.email))
+              .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
+                      assigned_to=user.email)
+
+    # Old query:
+    # tickets = models.TicketConference.objects \
+    #     .available(user, CONFERENCE_CONFERENCE) \
+    #     .filter(Q(orderitem__order___complete=True) | Q(
+    #     orderitem__order__method='admin')) \
+    #     .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
+    #     p3_conference__assigned_to=user.email))
     return tickets.count() > 0
 
 
