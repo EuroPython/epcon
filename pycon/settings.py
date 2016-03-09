@@ -669,14 +669,14 @@ def CONFERENCE_VOTING_ALLOWED(user):
     # People who have a ticket for the current conference assigned to
     # them can vote
     from p3 import models
-    from django.db.models import Q
-    # Starting with EP2015, we know that all assigned tickets have
+    # Starting with EP2016, we know that all assigned tickets have
     # .assigned_to set correctly
     tickets = models.TicketConference.objects \
               .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
                       assigned_to=user.email)
 
     # Old query:
+    #from django.db.models import Q
     # tickets = models.TicketConference.objects \
     #     .available(user, CONFERENCE_CONFERENCE) \
     #     .filter(Q(orderitem__order___complete=True) | Q(
