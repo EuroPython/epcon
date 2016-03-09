@@ -40,22 +40,6 @@
 
             <div class="accordion" id="talk-accordion-{{ t.id }}">
 
-            <!-- Abstract -->
-
-            {% if voting_allowed %}
-                <div class="accordion__group abstract">
-                    <div class="accordion__heading content-toggle" rel="div[data-talk={{ t.id }}]" data-src="{% url "conference-talk-xml" t.slug %}">
-                        <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-abstract-{{ t.id }}">Abstract</a>
-                    </div><!-- accordion-heading -->
-                    <div id="talk-abstract-{{ t.id }}" class="accordion__body collapse">
-                    <div class="accordion__inner" data-talk="{{ t.id }}">
-                        <div class="abstract cms"></div><!-- placeholder -->
-                        <p>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#add-comment">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</p>
-                    </div><!-- accordion-inner -->
-                    </div><!-- accordion-body -->
-                </div><!-- accordion-group -->
-            {% endif %}
-
             <!-- Tags -->
 
             {% if t.tags %}
@@ -75,6 +59,23 @@
 
             </div><!-- /accordion -->
 
+            <!-- Abstract -->
+
+            {% if voting_allowed %}
+                <div class="accordion__group abstract">
+                    <div class="accordion__heading content-toggle" rel="div[data-talk={{ t.id }}]" data-src="{% url "conference-talk-xml" t.slug %}">
+                        <a class="accordion__toggle" data-toggle="collapse" data-parent="#talk-accordion-{{ t.id }}" href="#talk-abstract-{{ t.id }}">Abstract</a>
+                    </div><!-- accordion-heading -->
+                    <div id="talk-abstract-{{ t.id }}" class="accordion__body collapse">
+                    <div class="accordion__inner" data-talk="{{ t.id }}">
+                        <div class="abstract cms"></div><!-- placeholder -->
+			<hr/>
+                        <p>Questions regarding this talk ? <br/> Please visit the <a href="{% url "conference-talk" slug=t.slug %}">talk page</a> to leave a comment ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} available).</p>
+                    </div><!-- accordion-inner -->
+                    </div><!-- accordion-body -->
+                </div><!-- accordion-group -->
+            {% endif %}
+
             {%comment%}
                 {% if voting_allowed %}
                 <dl>
@@ -83,7 +84,7 @@
                         <div data-talk="{{ t.id }}" style="display: none">
                             <div class="abstract cms"></div>
                             <hr />
-                            <div>Questions on this talk? <a href="{% url "conference-talk" slug=t.slug %}#add-comment">Leave a comment</a> to the speaker ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} now)</a></div>
+                            <div>Questions on this talk ?  <br/> Please visit the <a href="{% url "conference-talk" slug=t.slug %}">talk page</a> to leave a comment ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} available).</div>
                         </div>
                     </dd>
                 </dl>
@@ -175,13 +176,14 @@
                 success: function(data, text, jqXHR) {
                     var text = $('talk abstract', data).html();
                     var video = $('teaser_video html', data).text();
+                    var infos = $('talk reviewinfos', data).html();
                     var html = '';
-                    if(text && video) {
-                        html = '<div>' + text + '<hr/><h4>Teaser Video</h4>' + video + '</div>';
-                    }
-                    else {
-                        html = text;
-                    }
+                    html = '<div>' + text;
+                    if (video)
+                        html += '<hr/><h4>Teaser Video</h4>' + video;
+                    if (infos)
+                        html += '<hr/><h4>Additional information for reviewers</h4>' + infos;
+                    html += '</div>';
                     dest.html(html);
                 },
                 error: function(jqXHR, text, error) {

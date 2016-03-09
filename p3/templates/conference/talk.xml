@@ -20,6 +20,9 @@
     </speaker>
     {% endfor %}
     <abstract xmlns="http://www.w3.org/1999/xhtml">{{ t.abstract|markdown2:"smarty-pants,code-color" }}</abstract>
+    {% if t.abstract_extra %}
+    <reviewinfos xmlns="http://www.w3.org/1999/xhtml">{{ t.abstract_extra|markdown2:"smarty-pants,code-color" }}</reviewinfos>
+    {% endif %}
     {% if t.teaser_video %}
     <teaser_video>
         <url>{{ t.teaser_video }}</url>
