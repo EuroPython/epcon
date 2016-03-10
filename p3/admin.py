@@ -484,7 +484,7 @@ class TalkAdmin(cadmin.TalkAdmin):
     search_fields = [ 'title',
                       'talkspeaker__speaker__user__last_name',
                       'talkspeaker__speaker__user__first_name',
-                      'talkspeaker__speaker__user__company',
+                      'speakers__user__attendeeprofile__company',
                       ]
 
     list_display = ('title', 'conference', '_speakers',
