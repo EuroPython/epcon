@@ -147,6 +147,14 @@ def talk_schedule(talk):
     return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
 
 
+def speaker_companies(talk):
+    companies = sorted(
+        set(speaker.user.attendeeprofile.company
+            for speaker in talk.speakers.all()
+                if speaker.user.attendeeprofile))
+    return u', '.join(companies)
+
+
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--verbose',
@@ -240,6 +248,7 @@ class Command(BaseCommand):
                 'abstract_short': talk.abstract_short.encode('utf-8'),
                 'abstract_extra': talk.abstract_extra.encode('utf-8'),
                 'speakers':       speaker_listing(talk).encode('utf-8'),
+                'companies':      speaker_companies(talk).encode('utf-8'),
                 'emails':         speaker_emails(talk).encode('utf-8'),
                 'twitters':       speaker_twitters(talk).encode('utf-8'),
                 }
