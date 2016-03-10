@@ -484,9 +484,11 @@ class TalkAdmin(cadmin.TalkAdmin):
     search_fields = [ 'title',
                       'talkspeaker__speaker__user__last_name',
                       'talkspeaker__speaker__user__first_name',
+                      'speakers__user__attendeeprofile__company',
                       ]
 
     list_display = ('title', 'conference', '_speakers',
+                    '_company',
                     'duration', 'status', 'created',
                     'level', '_tags',
                     '_slides', '_video',
@@ -498,6 +500,14 @@ class TalkAdmin(cadmin.TalkAdmin):
 
     def _tags(self, obj):
         return u', '.join(sorted(unicode(tag) for tag in obj.tags.all()))
+
+    def _company(self, obj):
+        companies = sorted(
+            set(speaker.user.attendeeprofile.company
+                for speaker in obj.speakers.all()
+                if speaker.user.attendeeprofile))
+        return u', '.join(companies)
+    _company.admin_order_field = 'speakers__user__attendeeprofile__company'
 
 admin.site.unregister(cmodels.Talk)
 admin.site.register(cmodels.Talk, TalkAdmin)
