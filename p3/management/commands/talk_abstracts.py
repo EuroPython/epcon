@@ -212,33 +212,30 @@ class Command(BaseCommand):
             session_talks.sort(key=lambda talk: clean_title(talk.title).encode('utf-8').title())
             for talk in session_talks:
 
-                try:
-                    sessions[type_name][talk.id] = {
-                    'id':             talk.id,
-                    'adm_type':       talk.get_admin_type_display().encode('utf-8'),
-                    'type':           talk.get_type_display().encode('utf-8'),
-                    'duration':       talk.duration,
-                    'level':          talk.get_level_display().encode('utf-8'),
-                    'track_title':    talk_track_title(talk).encode('utf-8'),
-                    'timerange':      talk_schedule(talk).encode('utf-8'),
-                    'tags':           [str(t) for t in talk.tags.all()],
-                    'url':            'https://{}.europython.eu/{}'.format(conference, talk.get_absolute_url()).encode('utf-8'),
-                    'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
-                    'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
-                    'title':          clean_title(talk.title).encode('utf-8'),
-                    'sub_title':      clean_title(talk.sub_title).encode('utf-8'),
-                    'status':         talk.status.encode('utf-8'),
-                    'language':       talk.get_language_display().encode('utf-8'),
-                    'have_tickets':   have_tickets(talk),
-                    'abstract_long':  [abst.body.encode('utf-8') for abst in talk.abstracts.all()],
-                    'abstract_short': talk.abstract_short.encode('utf-8'),
-                    'abstract_extra': talk.abstract_extra.encode('utf-8'),
-                    'speakers':       speaker_listing(talk).encode('utf-8'),
-                    'companies':      speaker_companies(talk).encode('utf-8'),
-                    'emails':         speaker_emails(talk).encode('utf-8'),
-                    'twitters':       speaker_twitters(talk).encode('utf-8'),
-                    }
-                except:
-                    import ipdb; ipdb.set_trace()
+                sessions[type_name][talk.id] = {
+                'id':             talk.id,
+                'adm_type':       talk.get_admin_type_display().encode('utf-8'),
+                'type':           talk.get_type_display().encode('utf-8'),
+                'duration':       talk.duration,
+                'level':          talk.get_level_display().encode('utf-8'),
+                'track_title':    talk_track_title(talk).encode('utf-8'),
+                'timerange':      talk_schedule(talk).encode('utf-8'),
+                'tags':           [str(t) for t in talk.tags.all()],
+                'url':            'https://{}.europython.eu/{}'.format(conference, talk.get_absolute_url()).encode('utf-8'),
+                'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
+                'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
+                'title':          clean_title(talk.title).encode('utf-8'),
+                'sub_title':      clean_title(talk.sub_title).encode('utf-8'),
+                'status':         talk.status.encode('utf-8'),
+                'language':       talk.get_language_display().encode('utf-8'),
+                'have_tickets':   have_tickets(talk),
+                'abstract_long':  [abst.body.encode('utf-8') for abst in talk.abstracts.all()],
+                'abstract_short': talk.abstract_short.encode('utf-8'),
+                'abstract_extra': talk.abstract_extra.encode('utf-8'),
+                'speakers':       speaker_listing(talk).encode('utf-8'),
+                'companies':      speaker_companies(talk).encode('utf-8'),
+                'emails':         speaker_emails(talk).encode('utf-8'),
+                'twitters':       speaker_twitters(talk).encode('utf-8'),
+                }
 
         print(json.dumps(sessions, indent=2))
