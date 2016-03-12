@@ -19,13 +19,16 @@
                 {% endfor %}
             </div>
             <h3 id="t{{ t.id }}">
-                <a href="#ord{{ row.ordinal }}" id="ord{{ row.ordinal }}">{{ row.ordinal }}</a>&emsp;
                 {% if voting_allowed or special_user %}
                     <a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a>
                 {% else %}
                     {{ t.title }}
                 {% endif %}
+		&nbsp;<a href="#ord{{ row.ordinal }}" id="ord{{ row.ordinal }}" class="talk-voting-id">#{{ row.ordinal }}</a>
             </h3>
+	    {% if t.sub_title %}
+	        <p class="subtitle">{{ t.sub_title }}</p>
+            {% endif %}
             <div class="meta">
                 {{ t.type|field_label:"Talk.type" }} for {{ t.level|field_label:"Talk.level" }}
                 {% if t.teaser_video %}&emsp;<span class="video" title="{% trans "Teaser video available" %}"><i class="fa fa-youtube-play"></i>&nbsp;Video</span>{% endif %}
