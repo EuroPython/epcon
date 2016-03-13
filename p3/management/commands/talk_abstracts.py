@@ -15,23 +15,6 @@ import traceback
 
 ### Globals
 VERBOSE = False
-#
-# TYPE_NAMES = (
-#     ('keynote', 'Keynotes'),
-#     ('s', 'Talks'),
-#     ('t', 'Trainings'),
-#     ('p', 'Poster sessions'),
-#     ('h', 'Help desks'),
-#     ('europython', 'EuroPython sessions'),
-#     ('i', 'Other sessions'),
-#     )
-#
-#
-# def _check_talk_types(type_names):
-#     d = dict(type_names)
-#     for code, entry in models.TALK_TYPE:
-#         assert code in d, 'Talk type code %r is missing' % code
-# _check_talk_types(TYPE_NAMES)
 
 
 ### Helpers
@@ -43,6 +26,7 @@ def speaker_listing(talk):
 def speaker_emails(talk):
     return u', '.join(
         u'{}'.format(speaker.user.email) for speaker in talk.get_all_speakers())
+
 
 def speaker_twitters(talk):
     return u', '.join(
@@ -117,6 +101,7 @@ def have_tickets(talk):
 
 
 def clean_title(title):
+    title = title.strip()
     if not title:
         return title
 
@@ -145,6 +130,14 @@ def talk_schedule(talk):
         return ''
     timerange = event.get_time_range()
     return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
+
+
+def speaker_companies(talk):
+    companies = sorted(
+        set(speaker.user.attendeeprofile.company
+            for speaker in talk.speakers.all()
+                if speaker.user.attendeeprofile))
+    return u', '.join(companies)
 
 
 class Command(BaseCommand):
@@ -240,6 +233,7 @@ class Command(BaseCommand):
                 'abstract_short': talk.abstract_short.encode('utf-8'),
                 'abstract_extra': talk.abstract_extra.encode('utf-8'),
                 'speakers':       speaker_listing(talk).encode('utf-8'),
+                'companies':      speaker_companies(talk).encode('utf-8'),
                 'emails':         speaker_emails(talk).encode('utf-8'),
                 'twitters':       speaker_twitters(talk).encode('utf-8'),
                 }
