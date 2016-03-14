@@ -427,7 +427,8 @@ admin.site.register(amodels.Invoice, InvoiceAdmin)
 
 class VotoTalkAdmin(admin.ModelAdmin):
     list_display = ('user', 'talk', 'vote')
-    list_filter = ( )
+    list_filter = ('talk__conference',
+                   )
     search_fields = [ 'talk__title',
                       'user__username',
                       'user__last_name', 'user__first_name' ]
