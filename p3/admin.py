@@ -426,12 +426,20 @@ admin.site.unregister(amodels.Invoice)
 admin.site.register(amodels.Invoice, InvoiceAdmin)
 
 class VotoTalkAdmin(admin.ModelAdmin):
-    list_display = ('user', 'talk', 'vote')
+    list_display = ('user', '_name', 'talk', 'vote')
     list_filter = ('talk__conference',
                    )
     search_fields = [ 'talk__title',
                       'user__username',
                       'user__last_name', 'user__first_name' ]
+    ordering = ('-talk__conference', 'talk')
+
+    def _name(self, o):
+        url = urlresolvers.reverse('conference-profile',
+                                   kwargs={'slug': o.user.attendeeprofile.slug})
+        return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
+    _name.allow_tags = True
+    _name.admin_order_field = 'user__first_name'
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
