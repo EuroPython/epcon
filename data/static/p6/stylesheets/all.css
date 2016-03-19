@@ -184,6 +184,10 @@ small, .meta, #talk-voting .talk-speakers, .person-card .see-more, .ticket-foote
 
 ul, ol { margin: 0 0 0.75em -30px; padding: 0 0 0 30px; }
 
+.subtitle { font-style: italic; font-size: 85%; }
+
+.talk-voting-id { font-size: 50%; }
+
 /*
 li ul,
 li ol {
