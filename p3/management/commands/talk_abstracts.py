@@ -133,7 +133,7 @@ def talk_votes(talk):
     qs = models.VotoTalk.objects.filter(talk=talk.id).all()
     user_votes = []
     for v in qs:
-        user_votes.append({v.user_id: int(v.vote)})
+        user_votes.append({v.user_id: v.vote})
     return user_votes
 
 
