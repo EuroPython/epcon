@@ -9,6 +9,7 @@
     <type>{{ t.type }}</type>
     <public_url>{% url "conference-talk" t.slug as x %}{{ x|full_url }}</public_url>
     <title>{{ t.title }}</title>
+    <subtitle>{{ t.sub_title }}</subtitle>
     <language>{{ t.language }}</language>
     <duration>{{ t.duration }}</duration>
     {% if t.slides %}<slides url="{{ t.slides }}" />{% endif %}
