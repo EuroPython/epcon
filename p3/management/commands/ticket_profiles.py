@@ -6,10 +6,8 @@ import logging as log
 from   optparse import make_option
 from   collections import OrderedDict
 
-
 from   django.core.management.base import BaseCommand, CommandError
 
-from   p3           import models as p3_models
 from   assopy       import models as assopy_models
 
 
@@ -95,6 +93,7 @@ class Command(BaseCommand):
                         'phone':   '',
                         'compweb': '',
                         'persweb': '',
+                        'id'     : '',
                         }
 
         profiles = OrderedDict()
