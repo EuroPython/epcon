@@ -2,6 +2,7 @@
 """ Print a json file with the users in the database."""
 
 import json
+import logging as log
 from   collections import OrderedDict
 
 from   django.core.management.base import BaseCommand, CommandError
@@ -17,20 +18,20 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         db_users = assopy_models.User.objects.all()
         users = OrderedDict()
-        for user in db_users:
-            #try:
-            users[user.id] = {'name': user.name().encode('utf-8'),
-                              'assopy_id': user.id,
-                             }
+        for u in db_users:
+            try:
+                user_name = u.name()
+                user_id   = u.user.id
+            except:
+                log.error('Error with user {}.'.format(u.id))
+                users[u.id] = {'assopy_id': u.id,}
+            else:
+                users[u.id] = {'name': user_name.encode('utf-8'),
+                               'assopy_id': u.id,
+                               'id': user_id,
+                               'username': u.user.get_username().encode('utf-8'),
+                               'email': u.user.email.encode('utf-8'),
+                               'date-joined': str(u.user.date_joined).encode('utf-8'),
+                               }
 
-            if user.user:
-                conf_user = {'id': user.user.id,
-                             'username': user.user.get_username().encode('utf-8'),
-                             'email': user.user.email.encode('utf-8'),
-                             'date-joined': str(user.user.date_joined).encode('utf-8'),
-                            }
-                users[user.id].update(conf_user)
-            #except:
-            #    import ipdb; ipdb.set_trace()
-            #else:
-            print(json.dumps(users, indent=2, separators=(',', ': ')))
+        print(json.dumps(users, indent=2, separators=(',', ': ')))
