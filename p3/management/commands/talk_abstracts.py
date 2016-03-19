@@ -47,9 +47,6 @@ def is_ticket_assigned_to_someone_else(ticket, user):
 
     if not tickets:
         return False
-        #from IPython.core.debugger import Tracer
-        #Tracer()()
-        #raise RuntimeError('Could not find any ticket with ticket_id {}.'.format(ticket))
 
     if len(tickets) > 1:
         raise RuntimeError('You got more than one ticket from a ticket_id.'
@@ -132,6 +129,14 @@ def talk_schedule(talk):
     return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
 
 
+def talk_votes(talk):
+    qs = models.VotoTalk.objects.filter(talk=talk.id).all()
+    user_votes = []
+    for v in qs:
+        user_votes.append({v.user_id: int(v.vote)})
+    return user_votes
+
+
 def speaker_companies(talk):
     companies = sorted(
         set(speaker.user.attendeeprofile.company
@@ -155,6 +160,13 @@ class Command(BaseCommand):
              help='The status of the talks to be put in the report. '
                   'Choices: accepted, proposed',
         ),
+        make_option('--votes',
+             action='store_true',
+             dest='votes',
+             default=False,
+             help='Add the votes to each talk.',
+        ),
+
         # make_option('--option',
         #     action='store',
         #     dest='option_attr',
@@ -237,5 +249,8 @@ class Command(BaseCommand):
                 'emails':         speaker_emails(talk).encode('utf-8'),
                 'twitters':       speaker_twitters(talk).encode('utf-8'),
                 }
+
+                if options['votes']:
+                    sessions[type_name][talk.id]['user_votes'] = talk_votes(talk)
 
         print(json.dumps(sessions, indent=2))
