@@ -15,18 +15,20 @@ import operator
 
 TYPE_NAMES = (
     ('keynote', 'Keynotes', ''),
-    ('s', 'Talks', ''),
-    ('t', 'Trainings', ''),
+    ('t', 'Talks', ''),
+    ('r', 'Trainings', ''),
     ('p', 'Poster sessions', ''),
-    ('h', 'Help desks', 'Help desks provide slots for attendee to discuss their problems one-on-one with experts from the projects.'),
+    ('i', 'Interactive sessions', ''),
+    ('n', 'Panels', ''),
+    ('p', 'Poster sessions', ''),
+    ('h', 'Help desks', 'Help desks provide slots for attendees to discuss their problems one-on-one with experts from the projects.'),
     ('europython', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
-    ('i', 'Other sessions', ''),
     )
 
 def _check_talk_types(type_names):
     d = set(x[0] for x in type_names)
     for code, entry in models.TALK_TYPE:
-        assert code in d, 'Talk type code %r is missing' % code
+        assert code[0] in d, 'Talk type code %r is missing' % code[0]
 _check_talk_types(TYPE_NAMES)
 
 ### Helpers
@@ -86,7 +88,7 @@ class Command(BaseCommand):
             elif talk.title.lower().startswith('keynote'):
                 type = 'keynote'
             else:
-                type = talk.type
+                type = talk.type[0]
             if type in talk_types:
                 talk_types[type].append(talk)
             else:
