@@ -20,7 +20,6 @@ TYPE_NAMES = (
     ('p', 'Poster sessions', ''),
     ('i', 'Interactive sessions', ''),
     ('n', 'Panels', ''),
-    ('p', 'Poster sessions', ''),
     ('h', 'Help desks', 'Help desks provide slots for attendees to discuss their problems one-on-one with experts from the projects.'),
     ('europython', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
     )
