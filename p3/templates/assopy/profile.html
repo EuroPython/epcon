@@ -108,11 +108,13 @@
                                 <p><b>{% trans "Code:" %} {{ c.code }}</b><br />{{ c.description }}</p>
                             </li>
                         {% endfor %}
+                        <!--
                         {% for c in coupons.invalid %}
                             <li class="coupon invalid">
-                                <p><b>{% trans "Code:" %} {{ c.code }}</b><br />{{ c.description }}</p>
+                                <p><b>{% trans "Code:" %} {{ c.code }}</b> (no longer valid)<br />{{ c.description }}</p>
                             </li>
                         {% endfor %}
+                        -->
                         </ul>
                     </div>
                     {% endif %}
