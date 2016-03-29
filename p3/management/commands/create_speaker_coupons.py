@@ -1,8 +1,13 @@
 # -*- coding: UTF-8 -*-
 """ Create coupons for speakers:
 
-    Talk     - 25%
-    Training - 100%
+    Talk        - 25%
+    Poster      - 25%
+    Helpdesk    - 25%
+    Interactive - 25%
+    Panel       - 25%
+
+    Training    - 100%
 
     Write the created coupons as CSV data to stdout. The script makes
     sure that no duplicate coupons are created. If you want a coupon
@@ -28,19 +33,24 @@ from assopy.models import Coupon
 
 ### Globals
 
-# From cmodels.TALK_TYPES
-TALK_TYPE_TALK = 's'
-TALK_TYPE_TRAINING = 't'
-
 # Discounts
-SPEAKER_DISCOUNT = '25%'
-TRAINING_DISCOUNT = '100%'
+#
+# See cmodels.TALK_TYPES; this dictionary maps the first char of the talk
+# type to a tuple (coupon_prefix, discount_code)
+#
+# The coupon_prefix must have 3 chars.
+#
+TALK_TYPE_DISCOUNTS = {
+    't': ('TLK', '25%'), # Talk
+    'i': ('INT', '25%'), # Interactive
+    'r': ('TRN', '100%'),# Training
+    'p': ('PST', '25%'), # Poster
+    'n': ('PAN', '25%'), # Panel
+    'h': ('HPD', '25%'), # Helpdesk
+}
 
-# Coupon prefix (3 letters)
-COUPON_PREFIX = {
-    'speaker': 'SPK',
-    'trainer': 'TRN',
-    }
+# Coupon prefixes used in the above dictionary
+COUPON_PREFIXES = tuple(prefix for (prefix, discount) in TALK_TYPE_DISCOUNTS.items())
 
 ###
 
@@ -73,26 +83,27 @@ class Command(BaseCommand):
             .filter(talk__conference=conference.code, talk__status='accepted')\
             .select_related('talk', 'speaker__user')
         for row in qs:
-            if row.talk.type not in (TALK_TYPE_TALK,
-                                     TALK_TYPE_TRAINING):
+            talk_code = row.talk.type[0]
+            if talk_code not in TALK_TYPE_DISCOUNTS:
                 continue
+            coupon_prefix, discount_code = TALK_TYPE_DISCOUNTS[talk_code]
             if row.speaker_id not in speakers:
                 entry = {
                     'spk': row.speaker,
                     'title': row.talk.title,
                     'duration': row.talk.duration,
-                    'discount': SPEAKER_DISCOUNT,
-                    'type': 'speaker',
+                    'discount': discount_code,
+                    'prefix': coupon_prefix,
                     }
                 speakers[row.speaker_id] = entry
             else:
                 entry = speakers[row.speaker_id]
-            # Override discount with 'training' for trainings; this
-            # means that someone who does both a talk and training,
+            # Override existing discount with training; this
+            # means that someone who does e.g. both a talk and training,
             # will get a training discount
-            if row.talk.type == TALK_TYPE_TRAINING:
-                entry['discount'] = TRAINING_DISCOUNT
-                entry['type'] = 'trainer'
+            if talk_code == 'r':
+                entry['discount'] = discount_code
+                entry['prefix'] = coupon_prefix
                 entry['title'] = row.talk.title
                 entry['duration'] = row.talk.duration
 
@@ -113,7 +124,7 @@ class Command(BaseCommand):
             .filter(conference=conference.code)\
             .select_related('user')\
             .values('user__user__email', 'code')
-            if (c['code'].startswith(tuple(COUPON_PREFIX.values()))
+            if (c['code'].startswith(COUPON_PREFIXES)
                 and c['user__user__email'])
             )
 
@@ -122,7 +133,7 @@ class Command(BaseCommand):
         for sid, entry in speakers.items():
 
             # Get coupon data
-            type = entry['type']
+            coupon_prefix = entry['prefix']
             user = entry['spk'].user
             value = entry['discount']
 
@@ -131,7 +142,6 @@ class Command(BaseCommand):
                 continue
 
             # Determine a new code
-            coupon_prefix = COUPON_PREFIX[type]
             while True:
                 # Codes: SPK-RANDOM
                 code = (coupon_prefix + '-'
@@ -145,7 +155,7 @@ class Command(BaseCommand):
             data_row = (
                 user.email,
                 name,
-                entry['type'],
+                entry['prefix'],
                 code,
                 value,
                 '', # donated (date)
@@ -162,7 +172,7 @@ class Command(BaseCommand):
             c.items_per_usage = 1
             c.value = value
             c.description = '[%s] %s discount' % (
-                conference, entry['type'])
+                conference, entry['prefix'])
             if not self.dry_run:
                 c.save()
                 c.fares = fares
@@ -171,7 +181,7 @@ class Command(BaseCommand):
         # Output CSV data, UTF-8 encoded
         data.insert(0, (
             # Header
-            'email', 'name', 'type', 'code', 'discount', 'donated', 'amount',
+            'email', 'name', 'prefix', 'code', 'discount', 'donated', 'amount',
             'title', 'duration'))
         for row in data:
             csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
