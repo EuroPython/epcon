@@ -188,10 +188,10 @@ class Command(BaseCommand):
         # Group by admin types
         talks = OrderedDict()
         for adm_type, type_name in dict(models.TALK_ADMIN_TYPE).items():
-            talks[type_name] = (models.Talk.objects
-                                   .filter(conference=conference,
-                                           status=options['talk_status'],
-                                           admin_type=adm_type))
+            talks[type_name] = list(models.Talk.objects
+                                    .filter(conference=conference,
+                                            status=options['talk_status'],
+                                            admin_type=adm_type))
 
         type_groups = {'talk':        ['t_30', 't_45', 't_60'],
                        'interactive': ['i_60'],
@@ -200,6 +200,7 @@ class Command(BaseCommand):
                        'poster':      ['p_180'],
                        'helpdesk':    ['h_180'],
                       }
+
         for grp_name, grp_types in type_groups.items():
             grp_talks = []
             for talk_type in grp_types:
