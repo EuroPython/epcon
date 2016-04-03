@@ -1,34 +1,43 @@
 # -*- coding: utf-8 -*-
-""" Print accepted talks not scheduled and not accepted talks which have been scheduled.
-
+""" Print accepted talks not scheduled and not accepted talks which have been
+scheduled.
 """
+from   collections  import defaultdict
+from   optparse     import make_option
+import operator
+
+import simplejson   as json
+
 from   django.core.management.base import BaseCommand, CommandError
 from   django.core  import urlresolvers
 from   conference   import models
 from   conference   import utils
-
-from   collections  import defaultdict
-from   optparse     import make_option
-import operator
-import simplejson   as json
+from   conference.models import TALK_TYPE, TALK_ADMIN_TYPE
 
 ### Globals
+# TALK_TYPE = (
+#     ('t_30', 'Talk (30 mins)'),
+#     ('t_45', 'Talk (45 mins)'),
+#     ('t_60', 'Talk (60 mins)'),
+#     ('i_60', 'Interactive (60 mins)'),
+#     ('r_180', 'Training (180 mins)'),
+#     ('p_180', 'Poster session (180 mins)'),
+#     ('n_60', 'Panel (60 mins)'),
+#     ('n_90', 'Panel (90 mins)'),
+#     ('h_180', 'Help desk (180 mins)'),
+# )
 
-TYPE_NAMES = (
-    ('keynote', 'Keynotes'),
-    ('s', 'Talks'),
-    ('t', 'Trainings'),
-    ('p', 'Poster sessions'),
-    ('h', 'Help desks'),
-    ('europython', 'EuroPython sessions'),
-    ('i', 'Other sessions'),
-    )
+# TALK_ADMIN_TYPE = (
+#     ('o', 'Opening session'),
+#     ('c', 'Closing session'),
+#     ('l', 'Lightning talk'),
+#     ('k', 'Keynote'),
+#     ('r', 'Recruiting session'),
+#     ('m', 'EPS session'),
+#     ('s', 'Open space'),
+#     ('e', 'Social event'),
+# )
 
-def _check_talk_types(type_names):
-    d = dict(type_names)
-    for code, entry in models.TALK_TYPE:
-        assert code in d, 'Talk type code %r is missing' % code
-_check_talk_types(TYPE_NAMES)
 
 ### Helpers
 def talk_schedule(talk):
@@ -45,31 +54,18 @@ def talk_schedule(talk):
 
 
 def talk_type(talk):
-    type_names = dict(TYPE_NAMES)
-
-    if 'EPS' in talk.title or 'EuroPython 20' in talk.title:
-        type = 'europython'
-    elif talk.title.lower().startswith('keynote'):
-        type = 'keynote'
+    if talk.admin_type:
+        typ = talk.get_admin_type_display()
     else:
-        type = talk.type
-
-    return type_names[type]
+        typ = talk.get_type_display()
+    return typ
 
 
 def group_talks_by_type(talks):
-
     # Group by types
     type_talks = defaultdict(list)
     for talk in talks:
-        if 'EPS' in talk.title or 'EuroPython 20' in talk.title:
-            type = 'europython'
-        elif talk.title.lower().startswith('keynote'):
-            type = 'keynote'
-        else:
-            type = talk.type
-
-        type_talks[type].append(talk)
+        type_talks[talk_type(talk)].append(talk)
 
     return type_talks
 
@@ -103,14 +99,16 @@ class Command(BaseCommand):
         if options['all_scheduled']:
             print('Checking that all accepted talks have been scheduled.')
 
-            talks = (models.Talk.objects.filter(conference=conference, status='accepted'))
+            talks = (models.Talk.objects.filter(conference=conference,
+                                                status='accepted'))
             type_talks = group_talks_by_type(talks)
 
             for type in type_talks:
                 for talk in type_talks[type]:
                     talk_t = talk_type(talk)
                     if not talk_schedule(talk):
-                        print('ERROR: Talk ({}) {} is not scheduled.'.format(talk_t, talk))
+                        print('ERROR: {} (id: {}) "{}" is not '
+                              'scheduled'.format(talk_t, talk.id, talk))
 
         if options['all_accepted']:
             print('Checking that all scheduled talks are accepted.')
@@ -122,4 +120,5 @@ class Command(BaseCommand):
                 for talk in type_talks[type]:
                     if talk.status != 'accepted' and talk_schedule(talk):
                         talk_t = talk_type(talk)
-                        print('ERROR: Talk ({}) {} is scheduled but not accepted.'.format(talk_t, talk))
+                        print('ERROR: {} (id: {}) "{}" is scheduled but '
+                              'not accepted.'.format(talk_t, talk.id, talk))
