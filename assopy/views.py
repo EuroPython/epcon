@@ -527,7 +527,7 @@ def _pdf(request, url):
         '-'
     ]
     
-    print command_args
+    #print command_args
     
     popen = subprocess.Popen(
         command_args,
@@ -538,7 +538,7 @@ def _pdf(request, url):
 
     raw, _ = popen.communicate()
     
-    print raw
+    #print raw
     
     return raw
 
@@ -593,7 +593,7 @@ def credit_note(request, order_code, code, mode='html'):
     else:
         hurl = reverse('assopy-credit_note-html', args=(order_code, code))
         if not settings.WKHTMLTOPDF_PATH:
-            print "NOT WKHTMLTOPDF SET"
+            print "NO WKHTMLTOPDF_PATH SET"
             return HttpResponseRedirectSeeOther(hurl)
         raw = _pdf(request, hurl)
 
