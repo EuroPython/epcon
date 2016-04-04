@@ -67,7 +67,7 @@ class ConferenceAdmin(admin.ModelAdmin):
             if results is not None:
                 tids = map(lambda x: x[0], results)
         complete = models.Talk.objects\
-            .filter(conference=conf.code)\
+            .filter(conference=conf.code, status='accepted')\
             .order_by('title')\
             .values_list('id', flat=True)
 
