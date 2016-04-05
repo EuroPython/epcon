@@ -20,7 +20,8 @@ VERBOSE = False
 ### Helpers
 def speaker_listing(talk):
     return u', '.join(
-        u'{} {}'.format(speaker.user.first_name, speaker.user.last_name) for speaker in talk.get_all_speakers())
+        u'{} {}'.format(speaker.user.first_name, speaker.user.last_name)
+        for speaker in talk.get_all_speakers())
 
 
 def speaker_emails(talk):
@@ -73,7 +74,10 @@ def has_ticket(user):
     user_tickets = list(user.ticket_set.all())
     orders = get_orders_from(user)
     if orders:
-        order_tkts = [ordi.ticket for order in orders for ordi in order.orderitem_set.all() if ordi.ticket is not None]
+        order_tkts = [ordi.ticket
+                      for order in orders
+                      for ordi in order.orderitem_set.all()
+                      if ordi.ticket is not None]
         user_tickets.extend(order_tkts)
 
     for tkt in user_tickets:
@@ -204,11 +208,11 @@ class Command(BaseCommand):
         for grp_name, grp_types in type_groups.items():
             grp_talks = []
             for talk_type in grp_types:
-                bag = (models.Talk.objects
-                         .filter(conference=conference,
-                                 status=options['talk_status'],
-                                 type=talk_type,
-                                 admin_type=''))
+                bag = list(models.Talk.objects
+                           .filter(conference=conference,
+                                   status=options['talk_status'],
+                                   type=talk_type,
+                                   admin_type=''))
                 grp_talks.extend(bag)
 
             talks[grp_name] = grp_talks
@@ -227,7 +231,7 @@ class Command(BaseCommand):
 
                 sessions[type_name][talk.id] = {
                 'id':             talk.id,
-                'adm_type':       talk.get_admin_type_display().encode('utf-8'),
+                'admin_type':     talk.get_admin_type_display().encode('utf-8'),
                 'type':           talk.get_type_display().encode('utf-8'),
                 'duration':       talk.duration,
                 'level':          talk.get_level_display().encode('utf-8'),
