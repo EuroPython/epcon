@@ -55,6 +55,7 @@ def _build_timetables(schedules, events=None, partner=None):
         `partner` deve essere compatibile con l'output di `_partner_as_event`.
     """
     tts = []
+
     if schedules and not events:
         for row in schedules:
             tt = TimeTable2.fromSchedule(row['id'])
@@ -81,6 +82,15 @@ def _build_timetables(schedules, events=None, partner=None):
             for e in evts:
                 e['schedule_id'] = sid
                 tt.addEvents([e])
+
+    # Remove empty timetables
+    def not_empty(o):
+        tt = o[1]
+        events = tt.events.values()
+        return bool(events and events[0])
+    tts = filter(not_empty, tts)
+
+    # Sort timetables by date
     def key(o):
         # timetable has an indirect reference to the day, I need to get it
         # from one of the events.
@@ -89,6 +99,7 @@ def _build_timetables(schedules, events=None, partner=None):
         ev0 = events[0][0]
         return ev0['time']
     tts.sort(key=key)
+
     return tts
 
 def _conference_timetables(conference):
