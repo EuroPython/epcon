@@ -8,7 +8,7 @@ from   collections import OrderedDict
 
 from   django.core.management.base import BaseCommand, CommandError
 
-from   assopy       import models as assopy_models
+from   assopy import models as assopy_models
 
 
 ### Helpers
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                         'tagline': '',
                         'company': '',
                         'pypower': '0',
-                        't-shirt': 'l',
+                        'tshirt':  'l',
                         'email':   '',
                         'phone':   '',
                         'compweb': '',
@@ -124,7 +124,7 @@ class Command(BaseCommand):
             subj['surname'] = profile.user.last_name
             subj['tagline'] = p3_tkt.tagline
             subj['pypower'] = str(p3_tkt.python_experience)
-            subj['t-shirt'] = p3_tkt.shirt_size
+            subj['tshirt']  = p3_tkt.shirt_size
             subj['email'  ] = profile.user.email
             subj['phone'  ] = profile.phone
             subj['compweb'] = profile.company_homepage
