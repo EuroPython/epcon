@@ -16,7 +16,7 @@ import operator
 TYPE_NAMES = (
     ('keynote', 'Keynotes', ''),
     ('t', 'Talks', ''),
-    ('r', 'Trainings', ''),
+    ('r', 'Training sessions', ''),
     ('p', 'Poster sessions', ''),
     ('i', 'Interactive sessions', ''),
     ('n', 'Panels', ''),
