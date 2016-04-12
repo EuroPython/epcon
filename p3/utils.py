@@ -9,6 +9,28 @@ from django.contrib.auth.models import User
 from assopy import utils as autils
 from p3 import models as p3models
 
+from django.contrib.auth.decorators import user_passes_test
+
+### Decorators
+
+def group_required(*group_names):
+
+    """ Check for group membership before granting access to the view.
+
+        You can pass in one or more group names to the decorator. The
+        user has to be member of all listed groups.
+
+    """
+    def group_membership_check(user):
+        if not user.is_authenticated():
+            return False
+        if user.is_superuser:
+            return True
+        return bool(user.groups.filter(name__in=group_names)):
+    return user_passes_test(group_membership_check)
+
+### Helpers
+
 def assign_ticket_to_user(ticket, user=None):
 
     """ Assign ticket to the given user (defaults to buyer of the
