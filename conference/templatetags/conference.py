@@ -1166,15 +1166,27 @@ def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", 
 
 @register.filter
 def name_abbrv(name):
-    whitelist = set(('de', 'di', 'van', 'mc', 'mac', 'le', 'cotta'))
+    whitelist = set(('de', 'di', 'der',
+                     'van',
+                     'mc', 'mac',
+                     'le',
+                     'cotta',
+                     ))
 
-    splitted = name.split(' ')
-    if len(splitted) == 1:
+    parts = name.split()
+    if len(parts) == 1:
         return name
 
-    last_name = splitted[-1]
-    if splitted[-2].lower() in whitelist:
-        last_name = splitted[-2] + ' ' + last_name
+    parts.reverse()
+    last_name = ''
+    for part in parts:
+        if not last_name:
+            last_name = part
+            continue
+        if part.lower() in whitelist:
+            last_name = part + ' ' + last_name
+        else:
+            break
 
     return '%s. %s' % (name[0], last_name)
 
