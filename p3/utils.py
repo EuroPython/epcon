@@ -26,7 +26,7 @@ def group_required(*group_names):
             return False
         if user.is_superuser:
             return True
-        return bool(user.groups.filter(name__in=group_names)):
+        return bool(user.groups.filter(name__in=group_names))
     return user_passes_test(group_membership_check)
 
 ### Helpers
