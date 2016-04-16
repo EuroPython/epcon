@@ -185,13 +185,13 @@
                                 <div class="talk-level {{ e.talk.level }}">&nbsp;<span class="maximized">{{ e.talk.level }}</span></div>
                             {% endif %}
                             <div class="tools">
-                                {% comment %}
+<!-- MAL 2016-04-16: disabled for now
                                 {% if ref in overbooked %}
                                 <div class="room-full">
                                     <img src="{{ STATIC_URL }}p6/images/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
                                 </div>
                                 {% endif %}
-                                {% endcomment %}
+-->
                                 {% if "recruiting" in e.tags or "lightning" in e.tags or "poster" in e.tags %}
                                 <div class="toggle-notice">&nbsp;</div>
                                 {% endif %}

@@ -93,11 +93,13 @@
                             <button class="up {% if interest > 0 %}active{% endif %}"></button>
                         </div>
                         {% endif %}
+<!-- MAL 2016-04-16: disabled for now
                         {% if ref in overbooked %}
                         <div class="room-full">
                             <img src="{{ STATIC_URL }}p6/images/warning.png" title="our estimate of attendance exceeds the room size" alt="warning" />
                         </div>
                         {% endif %}
+-->
                     </div>
                     {% endwith %}
                 {% else %}
