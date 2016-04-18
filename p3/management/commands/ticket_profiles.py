@@ -114,7 +114,10 @@ class Command(BaseCommand):
                     log.error(msg)
 
             if profile.job_title and profile.company:
-                subj['company'] = profile.job_title + " @ " + profile.company
+                if profile.company.lower().strip() in profile.job_title.lower().strip():
+                    subj['company'] = profile.job_title
+                else:
+                    subj['company'] = profile.job_title + " @ " + profile.company
             elif profile.job_title:
                 subj['company'] = profile.job_title
             elif profile.company:
