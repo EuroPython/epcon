@@ -8,6 +8,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'P3Talk'
+        db.create_table(u'p3_p3talk', (
+            ('talk', self.gf('django.db.models.fields.related.OneToOneField')(related_name='p3_talk', unique=True, primary_key=True, to=orm['conference.Talk'])),
+            ('sub_community', self.gf('django.db.models.fields.CharField')(default='', max_length=20)),
+        ))
+        db.send_create_signal(u'p3', ['P3Talk'])
+
         # Adding model 'SpeakerConference'
         db.create_table(u'p3_speakerconference', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -21,7 +28,7 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('ticket', self.gf('django.db.models.fields.related.OneToOneField')(related_name='p3_conference', unique=True, to=orm['conference.Ticket'])),
             ('shirt_size', self.gf('django.db.models.fields.CharField')(default='l', max_length=4)),
-            ('python_experience', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
+            ('python_experience', self.gf('django.db.models.fields.PositiveIntegerField')(default=0, null=True)),
             ('diet', self.gf('django.db.models.fields.CharField')(default='omnivorous', max_length=10)),
             ('tagline', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
             ('days', self.gf('django.db.models.fields.TextField')(blank=True)),
@@ -41,18 +48,30 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'p3', ['TicketSIM'])
 
+        # Adding model 'HotelBooking'
+        db.create_table(u'p3_hotelbooking', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('conference', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['conference.Conference'])),
+            ('booking_start', self.gf('django.db.models.fields.DateField')()),
+            ('booking_end', self.gf('django.db.models.fields.DateField')()),
+            ('default_start', self.gf('django.db.models.fields.DateField')()),
+            ('default_end', self.gf('django.db.models.fields.DateField')()),
+            ('minimum_night', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
+        ))
+        db.send_create_signal(u'p3', ['HotelBooking'])
+
         # Adding model 'HotelRoom'
         db.create_table(u'p3_hotelroom', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('conference', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['conference.Conference'])),
+            ('booking', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['p3.HotelBooking'])),
             ('room_type', self.gf('django.db.models.fields.CharField')(max_length=2)),
             ('quantity', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('amount', self.gf('django.db.models.fields.CharField')(max_length=100)),
         ))
         db.send_create_signal(u'p3', ['HotelRoom'])
 
-        # Adding unique constraint on 'HotelRoom', fields ['conference', 'room_type']
-        db.create_unique(u'p3_hotelroom', ['conference_id', 'room_type'])
+        # Adding unique constraint on 'HotelRoom', fields ['booking', 'room_type']
+        db.create_unique(u'p3_hotelroom', ['booking_id', 'room_type'])
 
         # Adding model 'TicketRoom'
         db.create_table(u'p3_ticketroom', (
@@ -111,8 +130,11 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Removing unique constraint on 'HotelRoom', fields ['conference', 'room_type']
-        db.delete_unique(u'p3_hotelroom', ['conference_id', 'room_type'])
+        # Removing unique constraint on 'HotelRoom', fields ['booking', 'room_type']
+        db.delete_unique(u'p3_hotelroom', ['booking_id', 'room_type'])
+
+        # Deleting model 'P3Talk'
+        db.delete_table(u'p3_p3talk')
 
         # Deleting model 'SpeakerConference'
         db.delete_table(u'p3_speakerconference')
@@ -122,6 +144,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'TicketSIM'
         db.delete_table(u'p3_ticketsim')
+
+        # Deleting model 'HotelBooking'
+        db.delete_table(u'p3_hotelbooking')
 
         # Deleting model 'HotelRoom'
         db.delete_table(u'p3_hotelroom')
@@ -263,6 +288,39 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Speaker'},
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'primary_key': 'True'})
         },
+        u'conference.talk': {
+            'Meta': {'ordering': "['title']", 'object_name': 'Talk'},
+            'abstract_extra': ('django.db.models.fields.TextField', [], {'default': "''"}),
+            'abstract_short': ('django.db.models.fields.TextField', [], {'default': "''"}),
+            'admin_type': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
+            'conference': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'duration': ('django.db.models.fields.IntegerField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'max_length': '3'}),
+            'level': ('django.db.models.fields.CharField', [], {'default': "'beginner'", 'max_length': '12'}),
+            'prerequisites': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '150', 'blank': 'True'}),
+            'slides': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'blank': 'True'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100'}),
+            'speakers': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['conference.Speaker']", 'through': u"orm['conference.TalkSpeaker']", 'symmetrical': 'False'}),
+            'status': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
+            'sub_title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '1000', 'blank': 'True'}),
+            'suggested_tags': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'teaser_video': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
+            'training_available': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'type': ('django.db.models.fields.CharField', [], {'default': "'t_30'", 'max_length': '5'}),
+            'video_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'blank': 'True'}),
+            'video_type': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'video_url': ('django.db.models.fields.TextField', [], {'blank': 'True'})
+        },
+        u'conference.talkspeaker': {
+            'Meta': {'unique_together': "(('talk', 'speaker'),)", 'object_name': 'TalkSpeaker'},
+            'helper': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'speaker': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['conference.Speaker']"}),
+            'talk': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['conference.Talk']"})
+        },
         u'conference.ticket': {
             'Meta': {'object_name': 'Ticket'},
             'fare': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['conference.Fare']"}),
@@ -287,10 +345,20 @@ class Migration(SchemaMigration):
             'message': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['assopy.User']"})
         },
-        u'p3.hotelroom': {
-            'Meta': {'unique_together': "(('conference', 'room_type'),)", 'object_name': 'HotelRoom'},
-            'amount': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+        u'p3.hotelbooking': {
+            'Meta': {'object_name': 'HotelBooking'},
+            'booking_end': ('django.db.models.fields.DateField', [], {}),
+            'booking_start': ('django.db.models.fields.DateField', [], {}),
             'conference': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['conference.Conference']"}),
+            'default_end': ('django.db.models.fields.DateField', [], {}),
+            'default_start': ('django.db.models.fields.DateField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'minimum_night': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'})
+        },
+        u'p3.hotelroom': {
+            'Meta': {'unique_together': "(('booking', 'room_type'),)", 'object_name': 'HotelRoom'},
+            'amount': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'booking': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['p3.HotelBooking']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'quantity': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'room_type': ('django.db.models.fields.CharField', [], {'max_length': '2'})
@@ -306,6 +374,11 @@ class Migration(SchemaMigration):
             'spam_user_message': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'tagline': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
             'twitter': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'})
+        },
+        u'p3.p3talk': {
+            'Meta': {'object_name': 'P3Talk'},
+            'sub_community': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '20'}),
+            'talk': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'p3_talk'", 'unique': 'True', 'primary_key': 'True', 'to': u"orm['conference.Talk']"})
         },
         u'p3.speakerconference': {
             'Meta': {'object_name': 'SpeakerConference'},
@@ -334,7 +407,7 @@ class Migration(SchemaMigration):
             'days': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'diet': ('django.db.models.fields.CharField', [], {'default': "'omnivorous'", 'max_length': '10'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'python_experience': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
+            'python_experience': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0', 'null': 'True'}),
             'shirt_size': ('django.db.models.fields.CharField', [], {'default': "'l'", 'max_length': '4'}),
             'tagline': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
             'ticket': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'p3_conference'", 'unique': 'True', 'to': u"orm['conference.Ticket']"})

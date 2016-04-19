@@ -299,7 +299,7 @@ class Coupon(models.Model):
     max_usage = models.PositiveIntegerField(default=0, help_text='numero di volte che questo coupon può essere usato')
     items_per_usage = models.PositiveIntegerField(default=0, help_text='numero di righe d\'ordine su cui questo coupon ha effetto')
     description = models.CharField(max_length=100, blank=True)
-    value = models.CharField(max_length=6, help_text='importo, eg: 10, 15%, 8.5')
+    value = models.CharField(max_length=8, help_text='importo, eg: 10, 15%, 8.5')
 
     user = models.ForeignKey(User, null=True, blank=True)
     fares = models.ManyToManyField('conference.Fare', blank=True)

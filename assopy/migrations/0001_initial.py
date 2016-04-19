@@ -81,7 +81,7 @@ class Migration(SchemaMigration):
             ('max_usage', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('items_per_usage', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('value', self.gf('django.db.models.fields.CharField')(max_length=6)),
+            ('value', self.gf('django.db.models.fields.CharField')(max_length=8)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['assopy.User'], null=True, blank=True)),
         ))
         db.send_create_signal(u'assopy', ['Coupon'])
@@ -287,7 +287,7 @@ class Migration(SchemaMigration):
             'max_usage': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'start_validity': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['assopy.User']", 'null': 'True', 'blank': 'True'}),
-            'value': ('django.db.models.fields.CharField', [], {'max_length': '6'})
+            'value': ('django.db.models.fields.CharField', [], {'max_length': '8'})
         },
         u'assopy.creditnote': {
             'Meta': {'object_name': 'CreditNote'},
