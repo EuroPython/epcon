@@ -50,7 +50,10 @@ TALK_TYPE_DISCOUNTS = {
 }
 
 # Coupon prefixes used in the above dictionary
-COUPON_PREFIXES = tuple(prefix for (prefix, discount) in TALK_TYPE_DISCOUNTS.items())
+COUPON_PREFIXES = tuple(prefix
+                        for ttype, (prefix, discount) 
+                        in TALK_TYPE_DISCOUNTS.items())
+assert 'TLK' in COUPON_PREFIXES
 
 ###
 
