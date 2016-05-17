@@ -41,16 +41,10 @@ from   conference.models import TALK_TYPE, TALK_ADMIN_TYPE
 
 ### Helpers
 def talk_schedule(talk):
-    event = talk.get_event()
-
-    if not event:
-        #print('ERROR: Talk ({}) {} is not scheduled.'.format(talk.type, talk))
-        return ''
-
-    #TODO: should also check if the talk has more than one event.
-
-    timerange = event.get_time_range()
-    return '{}, {}'.format(str(timerange[0]), str(timerange[1]))
+    events = talk.event_set.all()
+    for event in events:
+        timerange = event.get_time_range()
+        yield '{}, {}'.format(str(timerange[0]), str(timerange[1]))
 
 
 def talk_type(talk):
@@ -102,13 +96,20 @@ class Command(BaseCommand):
             talks = (models.Talk.objects.filter(conference=conference,
                                                 status='accepted'))
             type_talks = group_talks_by_type(talks)
-
             for type in type_talks:
                 for talk in type_talks[type]:
-                    talk_t = talk_type(talk)
-                    if not talk_schedule(talk):
+                    schedules = list(talk_schedule(talk))
+                    if not schedules:
                         print('ERROR: {} (id: {}) "{}" is not '
-                              'scheduled'.format(talk_t, talk.id, talk))
+                              'scheduled'.format(talk_type(talk), talk.id, talk))
+                    elif len(schedules) > 1:
+                        print('ERROR: {} (id: {}) "{}" is '
+                              'scheduled {} times: {}.'.format(talk_type(talk),
+                                                               talk.id,
+                                                               talk,
+                                                               len(schedules),
+                                                               schedules))
+
 
         if options['all_accepted']:
             print('Checking that all scheduled talks are accepted.')
@@ -118,7 +119,9 @@ class Command(BaseCommand):
 
             for type in type_talks:
                 for talk in type_talks[type]:
-                    if talk.status != 'accepted' and talk_schedule(talk):
-                        talk_t = talk_type(talk)
+                    schedules = list(talk_schedule(talk))
+                    if talk.status != 'accepted' and schedules:
                         print('ERROR: {} (id: {}) "{}" is scheduled but '
-                              'not accepted.'.format(talk_t, talk.id, talk))
+                              'not accepted.'.format(talk_type(talk),
+                                                     talk.id,
+                                                     talk))
