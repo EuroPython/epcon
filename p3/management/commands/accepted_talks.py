@@ -13,15 +13,16 @@ import operator
 
 ### Globals
 
+# These must match the talk .type or .admin_type
 TYPE_NAMES = (
-    ('keynote', 'Keynotes', ''),
+    ('k', 'Keynotes', ''),
     ('t', 'Talks', ''),
     ('r', 'Training sessions', ''),
     ('p', 'Poster sessions', ''),
     ('i', 'Interactive sessions', ''),
     ('n', 'Panels', ''),
     ('h', 'Help desks', 'Help desks provide slots for attendees to discuss their problems one-on-one with experts from the projects.'),
-    ('europython', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
+    ('m', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
     )
 
 def _check_talk_types(type_names):
@@ -82,12 +83,18 @@ class Command(BaseCommand):
         # Group by types
         talk_types = {}
         for talk in talks:
-            if 'EPS' in talk.title or 'EuroPython 20' in talk.title:
-                type = 'europython'
-            elif talk.title.lower().startswith('keynote'):
-                type = 'keynote'
+            talk_type = talk.type[:1]
+            admin_type = talk.admin_type[:1]
+            if (admin_type == 'm' or 
+               'EPS' in talk.title or 
+               'EuroPython 20' in talk.title):
+                type = 'm'
+            elif (admin_type == 'k' or 
+                  talk.title.lower().startswith('keynote')):
+                print ('found keynote: %r' % talk)
+                type = 'k'
             else:
-                type = talk.type[0]
+                type = talk_type
             if type in talk_types:
                 talk_types[type].append(talk)
             else:
