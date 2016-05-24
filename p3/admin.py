@@ -111,7 +111,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         js = ('p5/j/jquery-flot/jquery.flot.js',)
 
     def _order(self, obj):
-        url = urlresolvers.reverse('admin:assopy_order_change', args=(obj.orderitem.order.id,))
+        url = urlresolvers.reverse('admin:assopy_order_change',
+                                   args=(obj.orderitem.order.id,))
         return '<a href="%s">%s</a>' % (url, obj.orderitem.order.code)
     _order.allow_tags = True
 
@@ -119,25 +120,26 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         return o.orderitem.order.created
     _order_date.admin_order_field = 'orderitem__order__created'
 
-    def _assigned(self, o):
-        if o.p3_conference:
-            assigned_to = o.p3_conference.assigned_to
+    def _assigned(self, ticket):
+        if ticket.p3_conference:
+            assigned_to = ticket.p3_conference.assigned_to
             if assigned_to:
                 try:
                     user = autils.get_user_account_from_email(assigned_to)
                 except User.MultipleObjectsReturned:
-                    if user.email == assigned_to:
-                        # Use the buyer user account
-                        user = o.user
-                    else:
-                        return '%s (email not unique)' % assigned_to
-                if user:
+                    return '%s (email not unique)' % assigned_to
+                except User.DoesNotExist:
+                    return '%s (does not exist)' % assigned_to
+                if user is not None:
                     url = urlresolvers.reverse('admin:auth_user_change',
                                                args=(user.id,))
                     return '<a href="%s">%s</a>' % (url, assigned_to)
-            return assigned_to
+                else:
+                    return '%s (missing user account)' % assigned_to
+            else:
+                return '(not assigned)'
         else:
-            return ''
+            return '(old style ticket)'
     _assigned.allow_tags = True
     _assigned.admin_order_field = 'p3_conference__assigned_to'
 
