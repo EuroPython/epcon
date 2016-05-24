@@ -594,6 +594,7 @@ TALK_ADMIN_TYPE = (
     ('m', 'EPS session'),
     ('s', 'Open space'),
     ('e', 'Social event'),
+    ('x', 'Reserved slot'),
 )
 
 

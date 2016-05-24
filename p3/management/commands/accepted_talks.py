@@ -91,8 +91,11 @@ class Command(BaseCommand):
                 type = 'm'
             elif (admin_type == 'k' or 
                   talk.title.lower().startswith('keynote')):
-                print ('found keynote: %r' % talk)
+                #print ('found keynote: %r' % talk)
                 type = 'k'
+            elif admin_type == 'x':
+                # Don't list these placeholders for the schedule
+                continue
             else:
                 type = talk_type
             if type in talk_types:
