@@ -989,7 +989,8 @@ class SpecialPlaceAdmin(admin.ModelAdmin):
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
 class FareAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'code', 'name', 'price', 'recipient_type', 'start_validity', 'end_validity')
+    list_display = ('conference', 'code', 'name', 'price', 'recipient_type',
+                    'start_validity', 'end_validity')
     list_filter = ('conference', )
     list_editable = ('price',)
     ordering = ('conference', 'start_validity', 'code')
@@ -1019,19 +1020,23 @@ class TicketAdmin(admin.ModelAdmin):
         )
 
     def _name(self, o):
-        if o.name:
+        if o.name.strip():
             return o.name
         else:
-            return self._buyer(o)
+            return '(no attendee name set)'
+    _name.admin_order_field = 'name'
 
     def _buyer(self, o):
         return '%s %s' % (o.user.first_name, o.user.last_name)
+    _buyer.admin_order_field = 'user__first_name'
 
     def _conference(self, o):
         return o.fare.conference
+    _conference.admin_order_field = 'fare__conference'
 
     def _ticket(self, o):
         return o.fare.code
+    _ticket.admin_order_field = 'fare__code'
 
     def changelist_view(self, request, extra_context=None):
         if not request.GET:
