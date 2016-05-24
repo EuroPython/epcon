@@ -142,7 +142,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                     url = urlresolvers.reverse('admin:auth_user_change',
                                                args=(user.id,))
                     return '<a href="%s">%s</a>%s' % (url, assigned_to, comment)
-                else:
+                elif not comment:
                     comment = ' (missing user account)'
                 return '%s%s' % (assigned_to, comment)
             else:
