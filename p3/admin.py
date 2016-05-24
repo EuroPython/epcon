@@ -124,18 +124,27 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         if ticket.p3_conference:
             assigned_to = ticket.p3_conference.assigned_to
             if assigned_to:
+                comment = ''
+                user = None
                 try:
                     user = autils.get_user_account_from_email(assigned_to)
                 except User.MultipleObjectsReturned:
-                    return '%s (email not unique)' % assigned_to
+                    comment = ' (email not unique)'
                 except User.DoesNotExist:
-                    return '%s (does not exist)' % assigned_to
+                    try:
+                        user = autils.get_user_account_from_email(assigned_to,
+                                                                  active_only=False)
+                    except User.DoesNotExist:
+                        comment = ' (does not exist)'
+                    else:
+                        comment = ' (user inactive)'
                 if user is not None:
                     url = urlresolvers.reverse('admin:auth_user_change',
                                                args=(user.id,))
-                    return '<a href="%s">%s</a>' % (url, assigned_to)
+                    return '<a href="%s">%s</a>%s' % (url, assigned_to, comment)
                 else:
-                    return '%s (missing user account)' % assigned_to
+                    comment = ' (missing user account)'
+                return '%s%s' % (assigned_to, comment)
             else:
                 return '(not assigned)'
         else:
