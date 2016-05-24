@@ -93,8 +93,9 @@ class Command(BaseCommand):
                   talk.title.lower().startswith('keynote')):
                 #print ('found keynote: %r' % talk)
                 type = 'k'
-            elif admin_type == 'x':
-                # Don't list these placeholders for the schedule
+            elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):
+                # Don't list these placeholders or plenary sessions
+                # used in the schedule
                 continue
             else:
                 type = talk_type
