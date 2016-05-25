@@ -145,7 +145,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                     user_name = ('%s %s' %
                                  (user.first_name, user.last_name)).strip()
                     if not user_name:
-                        user_name = assigned_to
+                        user_name = '%s (no name set)' % assigned_to
                     return '<a href="%s">%s</a>%s' % (url, user_name, comment)
                 elif not comment:
                     comment = ' (missing user account)'
