@@ -50,7 +50,7 @@ def assign_ticket_to_user(ticket, user=None):
         p3c = p3models.TicketConference(ticket=ticket)
 
     # Set attendee name on the ticket
-    ticket.name = '%s %s' % (user.first_name, user.last_name)
+    ticket.name = ('%s %s' % (user.first_name, user.last_name)).strip()
     ticket.save()
 
     # Associate the email address with the ticket, if possible
