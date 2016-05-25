@@ -104,6 +104,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         )
     actions = cadmin.TicketAdmin.actions + (
         'do_assign_to_buyer',
+        'do_update_ticket_name',
         )
     form = ticketConferenceForm()
 
@@ -141,7 +142,11 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 if user is not None:
                     url = urlresolvers.reverse('admin:auth_user_change',
                                                args=(user.id,))
-                    return '<a href="%s">%s</a>%s' % (url, assigned_to, comment)
+                    user_name = ('%s %s' %
+                                 (user.first_name, user.last_name)).strip()
+                    if not user_name:
+                        user_name = assigned_to
+                    return '<a href="%s">%s</a>%s' % (url, user_name, comment)
                 elif not comment:
                     comment = ' (missing user account)'
                 return '%s%s' % (assigned_to, comment)
@@ -155,13 +160,47 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
     def do_assign_to_buyer(self, request, queryset):
 
         if not queryset:
-            self.message_user('no tickets selected')
+            self.message_user(request, 'no tickets selected', level='error')
             return
         for ticket in queryset:
             # Assign to buyer
             utils.assign_ticket_to_user(ticket, ticket.user)
 
     do_assign_to_buyer.short_description = 'Assign to buyer'
+
+    def do_update_ticket_name(self, request, queryset):
+
+        if not queryset:
+            self.message_user(request, 'no tickets selected')
+            return
+        for ticket in queryset:
+            # Find selected user
+            if not ticket.p3_conference:
+                continue
+            assigned_to = ticket.p3_conference.assigned_to
+            try:
+                user = autils.get_user_account_from_email(assigned_to)
+            except User.MultipleObjectsReturned:
+                self.message_user(request,
+                                  'found multiple users with '
+                                  'email address %s' % assigned_to,
+                                  level='error')
+                return
+            except User.DoesNotExist:
+                self.message_user(request,
+                                  'no user record found or user inactive for '
+                                  ' email address %s' % assigned_to,
+                                  level='error')
+                return
+            if user is None:
+                self.message_user(request,
+                                  'no user record found for '
+                                  ' email address %s' % assigned_to,
+                                  level='error')
+            # Reassign to selected user
+            utils.assign_ticket_to_user(ticket, user)
+
+    do_update_ticket_name.short_description = 'Update ticket name'
 
     def _shirt_size(self, o):
         try:
