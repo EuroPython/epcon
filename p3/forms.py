@@ -41,9 +41,24 @@ class P3TalkFormMixin(object):
 # has not yet submitted another talk; see P3SubmissionAdditionalForm
 # for talk editing and additional talks.
 
-# The sense of these lines of code is to have a not valid default
-# choice for the talk type, and the user must check the right option
-TALK_TYPE_FORM = list(cmodels.TALK_TYPE)
+# Hot topic CFP:
+TALK_TYPE_FORM = list((
+    ('t_30', 'Talk (30 mins)'),
+    ('t_45', 'Talk (45 mins)'),
+#    ('t_60', 'Talk (60 mins)'),
+#    ('i_60', 'Interactive (60 mins)'),
+#    ('r_180', 'Training (180 mins)'),
+    ('p_180', 'Poster session (180 mins)'),
+#    ('n_60', 'Panel (60 mins)'),
+#    ('n_90', 'Panel (90 mins)'),
+    ('h_180', 'Help desk (180 mins)'),
+))
+
+# Normal CFP:
+#TALK_TYPE_FORM = list(cmodels.TALK_TYPE)
+
+# Add a non-valid default choice for the talk type to force the user
+# to select one
 TALK_TYPE_FORM.insert(0, ("", "----------------"))
 
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
