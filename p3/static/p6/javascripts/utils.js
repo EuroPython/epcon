@@ -746,11 +746,14 @@ function addTOC() {
     $("div.cms").find("h1, h2, h3, h4").each(function() {
 	var header = $(this);
 	var title = header.text();
-	var header_id = encodeURIComponent(
-	    title.replace(/ /g, '-').replace(/\?/g, ''));
+	var header_id = (title.replace(/[ :&\/\$]/g, '-')
+			      .replace(/--+/g, '-')
+			      .replace(/[\?!,.\'\"]/g, ''));
 	header.attr('id', header_id);
 	toc += ('<li class="table-of-contents-' + header.prop("tagName")
-		+ '"><a href="#' + header_id + '">' + title + '</a></li>');
+		+ '"><a href="#' + encodeURIComponent(header_id) + '">' 
+		+ title 
+		+ '</a></li>');
     });
     toc += ("</ul>" + "</p>");
     div_toc.replaceWith(toc);
