@@ -2485,11 +2485,13 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable.vertical-narrow .track { position: relative; float: left; width: 100px; height: 1600px; }
 .conference-schedules.timetable.vertical-narrow .event { width: 100%; }
 .conference-schedules.timetable.vertical-narrow .duration-15 { height: 30px; }
+.conference-schedules.timetable.vertical-narrow .duration-25 { height: 50px; }
 .conference-schedules.timetable.vertical-narrow .duration-30 { height: 60px; }
 .conference-schedules.timetable.vertical-narrow .duration-45 { height: 90px; }
 .conference-schedules.timetable.vertical-narrow .duration-60 { height: 120px; }
 .conference-schedules.timetable.vertical-narrow .duration-75 { height: 150px; }
 .conference-schedules.timetable.vertical-narrow .duration-90 { height: 180px; }
+.conference-schedules.timetable.vertical-narrow .duration-120 { height: 240x; }
 .conference-schedules.timetable.vertical-narrow .duration-135 { height: 270px; }
 .conference-schedules.timetable.vertical-narrow .duration-150 { height: 300px; }
 .conference-schedules.timetable.vertical-narrow .duration-180 { height: 360px; }
@@ -2574,11 +2576,13 @@ body#schedule > .page > .container { margin-left: 60px; }
 .conference-schedules.timetable.vertical .track { position: relative; float: left; width: 12%; height: 2700px; }
 .conference-schedules.timetable.vertical .event { width: 100%; }
 .conference-schedules.timetable.vertical .duration-15 { height: 60px; }
+.conference-schedules.timetable.vertical .duration-25 { height: 100px; }
 .conference-schedules.timetable.vertical .duration-30 { height: 120px; }
 .conference-schedules.timetable.vertical .duration-45 { height: 180px; }
 .conference-schedules.timetable.vertical .duration-60 { height: 240px; }
 .conference-schedules.timetable.vertical .duration-75 { height: 300px; }
 .conference-schedules.timetable.vertical .duration-90 { height: 360px; }
+.conference-schedules.timetable.vertical .duration-120 { height: 480px; }
 .conference-schedules.timetable.vertical .duration-135 { height: 540px; }
 .conference-schedules.timetable.vertical .duration-150 { height: 600px; }
 .conference-schedules.timetable.vertical .duration-180 { height: 720px; }
