@@ -468,7 +468,7 @@ class Speaker(models.Model, UrlMixin):
         ritornati solo i talk con lo stato richiesto.
         """
         qs = TalkSpeaker.objects.filter(speaker=self)
-        if status in ('proposed', 'accepted'):
+        if status in ('proposed', 'accepted', 'canceled'):
             qs = qs.filter(talk__status=status)
         elif status is not None:
             raise ValueError('status unknown')
@@ -511,6 +511,11 @@ class TalkManager(models.Manager):
             return qs
         def accepted(self, conference=None):
             qs = self.filter(status='accepted')
+            if conference:
+                qs = qs.filter(conference=conference)
+            return qs
+        def canceled(self, conference=None):
+            qs = self.filter(status='canceled')
             if conference:
                 qs = qs.filter(conference=conference)
             return qs

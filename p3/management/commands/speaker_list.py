@@ -56,9 +56,9 @@ class Command(BaseCommand):
              action='store',
              dest='talk_status',
              default='accepted',
-             choices=['accepted', 'proposed'],
+             choices=['accepted', 'proposed', 'canceled'],
              help='The status of the talks to be put in the report. '
-                  'Choices: accepted, proposed',
+                  'Choices: accepted, proposed, canceled',
         ),
     )
     def handle(self, *args, **options):
