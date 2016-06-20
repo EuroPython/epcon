@@ -482,6 +482,7 @@ TALK_LANGUAGES = dsettings.LANGUAGES
 TALK_STATUS = (
     ('proposed', _('Proposed')),
     ('accepted', _('Accepted')),
+    ('canceled', _('Canceled')),
 )
 
 VIDEO_TYPE = (
