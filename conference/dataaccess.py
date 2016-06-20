@@ -630,6 +630,7 @@ def profile_data(uid, preload=None):
         'by_conf': {'all': []},
         'accepted': {'all': []},
         'proposed': {'all': []},
+        'canceled': {'all': []},
     }
     for t in talks:
         tid = t['talk']
