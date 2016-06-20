@@ -16,7 +16,10 @@
     Attendify Worksheet "Schedule" format
     -------------------------------------
 
-    Row A4: Session Title, Date (MM/DD/YYYY), Start Time (HH:MM), End Time (HH:MM), Description (Optional), Location (Optional), Track Title (Optional), UID (do not delete)
+    Row A4: Session Title, Date (MM/DD/YYYY), Start Time (HH:MM), End
+    Time (HH:MM), Description (Optional), Location (Optional), Track
+    Title (Optional), UID (do not delete)
+    
     Row A6: Start of data
 
 """
@@ -35,26 +38,22 @@ import openpyxl
 
 ### Globals
 
+# Debug output ?
+_debug = 0
+
 # These must match the talk .type or .admin_type
 from accepted_talks import TYPE_NAMES
 
-# Headers to use for the Attendify CSV file
-CSV_HEADERS = (
-    'Session Title',
-    'Date', # in format MM/DD/YYYY
-    'Start Time', # in format HH:MM
-    'End Time', # in format HH:MM
-    'Description (Optional)', # String
-    'Location (Optional)', # String
-    'Track Title (Optional)', # String
-    'UID (do not delete)', # String
-    )
-
-# Poster sessions don't have events associated with them, so use these
-# defaults
-POSTER_START = datetime.datetime(2016,7,19,15,15) # TBD
-POSTER_DURATION = datetime.timedelta(minutes=90)
-POSTER_ROOM = u'Exhibition Hall'
+# Special handling of poster sessions
+if 0:
+    # Poster sessions don't have events associated with them, so use
+    # these defaults
+    ADJUST_POSTER_SESSIONS = True
+    POSTER_START = datetime.datetime(2016,7,19,15,15) # TBD
+    POSTER_DURATION = datetime.timedelta(minutes=90)
+    POSTER_ROOM = u'Exhibition Hall'
+else:
+    ADJUST_POSTER_SESSIONS = False
 
 ### Helpers
 
@@ -134,7 +133,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 
     # Determine time_range and room
     if event is None:
-        if talk.type and talk.type[:1] == 'p':
+        if talk.type and talk.type[:1] == 'p' and ADJUST_POSTER_SESSIONS:
             # Poster session
             time_range = (POSTER_START,
                           POSTER_START + POSTER_DURATION)
@@ -180,6 +179,12 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 # Start row of data in spreadsheet (Python 0-based index)
 SCHEDULE_WS_START_DATA = 5
 
+# Column number of UID columns (Python 0-based index)
+SCHEDULE_UID_COLUMN = 7
+
+# Number of columns to make row unique (title, date, start, end)
+SCHEDULE_UNIQUE_COLS = 4
+
 def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 
     # Load workbook
@@ -196,21 +201,21 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     # Reconcile UIDs / talks
     uids = {}
     for line in ws_data:
-        uid = line[7]
+        uid = line[SCHEDULE_UID_COLUMN]
         if not uid:
             continue
-        uids[tuple(line[:4])] = uid
+        uids[tuple(line[:SCHEDULE_UNIQUE_COLS])] = uid
 
     # Add UID to new data
     new_schedule = []
     for line in new_data:
-        key = tuple(line[:4])
+        key = tuple(line[:SCHEDULE_UNIQUE_COLS])
         if key not in uids:
-            print ('New or rescheduled talk %s found' % key)
+            print ('New or rescheduled talk %s found' % (key,))
             uid = u''
         else:
             uid = uids[key]
-        line = tuple(line[:7]) + (uid,)
+        line = tuple(line[:SCHEDULE_UID_COLUMN]) + (uid,)
         new_schedule.append(line)
     new_data = new_schedule
 
@@ -221,8 +226,11 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     offset = SCHEDULE_WS_START_DATA + 1
     print ('new_data = %i rows' % len(new_data))
     for j, row in enumerate(ws[offset: offset + new_data_rows - 1]):
-        print ('updating row %i: %r' % (j, row))
         new_row = new_data[j]
+        if _debug:
+            print ('updating row %i with %r' % (j, new_row))
+        if len(row) > len(new_row):
+            row = row[:len(new_row)]
         for i, cell in enumerate(row):
             cell.value = new_row[i]
     
@@ -230,7 +238,8 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     if new_data_rows < old_data_rows:
         for j, row in enumerate(ws[offset + new_data_rows + 1:
                                    offset + old_data_rows + 1]):
-            print ('clearing row %i: %r' % (j, row))
+            if _debug:
+                print ('clearing row %i' % (j,))
             for i, cell in enumerate(row):
                 cell.value = None
 
@@ -285,7 +294,7 @@ class Command(BaseCommand):
             else:
                 talk_types[type] = [talk]
 
-        # Create CSV
+        # Build data for updating the spreadsheet
         data = []
         talk_events = {}
         for type, type_name, description in TYPE_NAMES:
@@ -298,9 +307,12 @@ class Command(BaseCommand):
             # Sort by talk title using title case
             bag.sort(key=lambda talk: talk_title(talk).title())
 
-            # Add talks from bag to csv
+            # Add talks from bag to data
             for talk in bag:
-                add_event(data, talk=talk, talk_events=talk_events, session_type=type_name)
+                add_event(data,
+                          talk=talk,
+                          talk_events=talk_events,
+                          session_type=type_name)
 
         # Add events which are not talks
         for schedule in models.Schedule.objects.filter(conference=conference):
