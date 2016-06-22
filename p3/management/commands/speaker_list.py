@@ -42,8 +42,8 @@ def speaker_list_key(entry):
 
     speaker = entry[1]
     name = u'%s %s' % (
-        speaker.user.last_name,
-        speaker.user.first_name)
+        speaker.user.first_name,
+        speaker.user.last_name)
 
     # Remove whitespace and use title case
     return name.strip().title()
@@ -89,8 +89,9 @@ class Command(BaseCommand):
         # Print list of speakers
         print ('<h2>Speakers</h2>')
         group = ''
-        for name, speaker in speaker_list:
-            sort_name = speaker.user.last_name.strip().title()
+        for entry in speaker_list:
+            name, speaker = entry
+            sort_name = speaker_list_key(entry)
             if not group:
                 group = sort_name[0]
                 print ('<h3>%s ...</h3>' % group)
