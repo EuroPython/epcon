@@ -26,7 +26,7 @@ def get_all_order_tickets(conference='ep2016'):
                        for order in conf_orders
                        for ordi in order.orderitem_set.all()
                        if ordi.ticket is not None]
-    conf_order_tkts = [ot for ot in order_tkts if ot.fare.code.startswith('T')]
+    conf_order_tkts = [ot for ot in order_tkts if ot.fare.code.startswith('T') and not ot.frozen]
 
     return conf_order_tkts
 
