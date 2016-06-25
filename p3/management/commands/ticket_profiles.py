@@ -10,26 +10,10 @@ from   django.core.management.base import BaseCommand, CommandError
 
 from   assopy import models as assopy_models
 
+from ...utils import (get_profile_company,
+                      get_all_order_tickets)
 
 ### Helpers
-def conference_year(conference='ep2016'):
-    return conference[-2:]
-
-
-def get_all_order_tickets(conference='ep2016'):
-
-    year = conference_year(conference)
-
-    orders          = assopy_models.Order.objects.filter(_complete=True)
-    conf_orders     = [order for order in orders if order.code.startswith('O/{}.'.format(year))]
-    order_tkts      = [ordi.ticket
-                       for order in conf_orders
-                       for ordi in order.orderitem_set.all()
-                       if ordi.ticket is not None]
-    conf_order_tkts = [ot for ot in order_tkts if ot.fare.code.startswith('T') and not ot.frozen]
-
-    return conf_order_tkts
-
 
 ###
 class Command(BaseCommand):
@@ -113,16 +97,7 @@ class Command(BaseCommand):
                 else:
                     log.error(msg)
 
-            if profile.job_title and profile.company:
-                if profile.company.lower().strip() in profile.job_title.lower().strip():
-                    subj['company'] = profile.job_title
-                else:
-                    subj['company'] = profile.job_title + " @ " + profile.company
-            elif profile.job_title:
-                subj['company'] = profile.job_title
-            elif profile.company:
-                subj['company'] = profile.company
-
+            subj['company'] = get_profile_company(profile)
             subj['name'   ] = profile.user.first_name
             subj['surname'] = profile.user.last_name
             subj['tagline'] = p3_tkt.tagline

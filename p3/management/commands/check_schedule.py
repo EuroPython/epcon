@@ -14,56 +14,11 @@ from   conference   import models
 from   conference   import utils
 from   conference.models import TALK_TYPE, TALK_ADMIN_TYPE
 
-### Globals
-# TALK_TYPE = (
-#     ('t_30', 'Talk (30 mins)'),
-#     ('t_45', 'Talk (45 mins)'),
-#     ('t_60', 'Talk (60 mins)'),
-#     ('i_60', 'Interactive (60 mins)'),
-#     ('r_180', 'Training (180 mins)'),
-#     ('p_180', 'Poster session (180 mins)'),
-#     ('n_60', 'Panel (60 mins)'),
-#     ('n_90', 'Panel (90 mins)'),
-#     ('h_180', 'Help desk (180 mins)'),
-# )
+from ...utils import (talk_schedule,
+                      talk_type,
+                      group_talks_by_type,
+                      talk_track_title)
 
-# TALK_ADMIN_TYPE = (
-#     ('o', 'Opening session'),
-#     ('c', 'Closing session'),
-#     ('l', 'Lightning talk'),
-#     ('k', 'Keynote'),
-#     ('r', 'Recruiting session'),
-#     ('m', 'EPS session'),
-#     ('s', 'Open space'),
-#     ('e', 'Social event'),
-# )
-
-
-### Helpers
-def talk_schedule(talk):
-    events = talk.event_set.all()
-    for event in events:
-        timerange = event.get_time_range()
-        yield '{}, {}'.format(str(timerange[0]), str(timerange[1]))
-
-
-def talk_type(talk):
-    if talk.admin_type:
-        typ = talk.get_admin_type_display()
-    else:
-        typ = talk.get_type_display()
-    return typ
-
-
-def group_talks_by_type(talks):
-    # Group by types
-    type_talks = defaultdict(list)
-    for talk in talks:
-        type_talks[talk_type(talk)].append(talk)
-
-    return type_talks
-
-###
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -104,11 +59,12 @@ class Command(BaseCommand):
                               'scheduled'.format(talk_type(talk), talk.id, talk))
                     elif len(schedules) > 1:
                         print('ERROR: {} (id: {}) "{}" is '
-                              'scheduled {} times: {}.'.format(talk_type(talk),
-                                                               talk.id,
-                                                               talk,
-                                                               len(schedules),
-                                                               schedules))
+                              'scheduled {} times: {} in {}.'.format(talk_type(talk),
+                                                                     talk.id,
+                                                                     talk,
+                                                                     len(schedules),
+                                                                     schedules,
+                                                                     talk_track_title(talk)))
 
 
         if options['all_accepted']:

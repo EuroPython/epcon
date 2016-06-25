@@ -11,6 +11,9 @@ from collections import defaultdict
 from optparse import make_option
 import operator
 
+from ...utils import (talk_title,
+                      profile_url)
+
 ### Globals
 
 # These must match the talk .type or .admin_type
@@ -33,13 +36,7 @@ _check_talk_types(TYPE_NAMES)
 
 ### Helpers
 
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
-
 def speaker_listing(talk):
-
     return u', '.join(
         u'<a href="%s"><i>%s %s</i></a>' % (
             profile_url(speaker.user),
@@ -47,16 +44,6 @@ def speaker_listing(talk):
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
 
-def talk_title(talk):
-
-    # Remove whitespace
-    title = talk.title.strip()
-
-    # Remove quotes
-    if title[0] == '"' and title[-1] == '"':
-        title = title[1:-1]
-
-    return title
 
 ###
 
@@ -85,11 +72,11 @@ class Command(BaseCommand):
         for talk in talks:
             talk_type = talk.type[:1]
             admin_type = talk.admin_type[:1]
-            if (admin_type == 'm' or 
-               'EPS' in talk.title or 
+            if (admin_type == 'm' or
+               'EPS' in talk.title or
                'EuroPython 20' in talk.title):
                 type = 'm'
-            elif (admin_type == 'k' or 
+            elif (admin_type == 'k' or
                   talk.title.lower().startswith('keynote')):
                 #print ('found keynote: %r' % talk)
                 type = 'k'
@@ -124,4 +111,3 @@ class Command(BaseCommand):
                     speaker_listing(talk))
                     ).encode('utf-8'))
             print ('</ul>')
-        
