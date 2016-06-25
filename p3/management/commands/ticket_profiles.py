@@ -96,7 +96,7 @@ class Command(BaseCommand):
                         'id'     : '',
                         }
 
-        profiles = OrderedDict()
+        profiles = [] #OrderedDict()
         for t in tkts:
             p3_tkt = t.p3_conference
             subj   = dflt_profile.copy()
@@ -132,9 +132,10 @@ class Command(BaseCommand):
             subj['phone'  ] = profile.phone
             subj['compweb'] = profile.company_homepage
             subj['persweb'] = profile.personal_homepage
+            subj['id']      = str(t.id)
 
             subj = {k: v.encode('utf-8') for k, v in subj.items()}
 
-            profiles[t.id] = subj
+            profiles.append(subj)
 
         print(json.dumps(profiles, indent=2, separators=(',', ': ')))
