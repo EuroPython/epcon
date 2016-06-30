@@ -81,6 +81,7 @@ def ticketConferenceForm():
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + (
+        'frozen',
         '_order',
         '_order_date',
         '_assigned',
@@ -93,6 +94,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_filter = cadmin.TicketAdmin.list_filter + (
         'fare__code',
         'orderitem__order___complete',
+        'frozen',
         'p3_conference__shirt_size',
         'p3_conference__diet',
         'p3_conference__python_experience',
@@ -257,6 +259,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             q['fare__conference'] = settings.CONFERENCE_CONFERENCE
             q['fare__ticket_type__exact'] = 'conference'
             q['orderitem__order___complete__exact'] = 1
+            q['frozen__exact'] = 0
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(TicketConferenceAdmin,self).changelist_view(request, extra_context=extra_context)
