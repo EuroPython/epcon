@@ -78,6 +78,7 @@ class Command(BaseCommand):
                         'compweb': '',
                         'persweb': '',
                         'id'     : '',
+                        'frozen' : False,
                         }
 
         profiles = [] #OrderedDict()
@@ -108,6 +109,7 @@ class Command(BaseCommand):
             subj['compweb'] = profile.company_homepage
             subj['persweb'] = profile.personal_homepage
             subj['id']      = str(t.id)
+            subj['frozen']  = t.frozen
 
             subj = {k: v.encode('utf-8') for k, v in subj.items()}
 
