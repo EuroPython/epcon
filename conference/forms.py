@@ -19,6 +19,35 @@ import logging
 
 log = logging.getLogger('conference.tags')
 
+### Helpers
+
+def mass_mail(messages, data, addresses, feedback_address):
+
+    # Mass send the emails
+    mail.send_mass_mail(messages)
+
+    # Send feedback mail
+    ctx = dict(data)
+    ctx['addresses'] = '\n'.join(addresses)
+    feedback_email = ("""
+message sent
+-------------------------------
+FROM: %(from_)s
+SUBJECT: %(subject)s
+BODY:
+%(body)s
+-------------------------------
+sent to:
+%(addresses)s
+""" % ctx)
+    mail.send_mail(
+        '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE,
+        feedback_email,
+        dsettings.DEFAULT_FROM_EMAIL,
+        recipient_list=[feedback_address],
+     )
+
+###
 
 def validate_tags(tags):
     """
@@ -554,28 +583,15 @@ class AdminSendMailForm(forms.Form):
             messages.append((sbj, body, data['from_'], [user.email]))
             addresses.append('"%s %s" - %s' % (user.first_name, user.last_name, user.email))
 
-        # Mass send the emails
-        mail.send_mass_mail(messages)
-
-        # Send feedback mail
-        ctx = dict(data)
-        ctx['addresses'] = '\n'.join(addresses)
-        mail.send_mail(
-            '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE,
-            '''
-message sent
--------------------------------
-FROM: %(from_)s
-SUBJECT: %(subject)s
-BODY:
-%(body)s
--------------------------------
-sent to:
-%(addresses)s
-            ''' % ctx,
-            dsettings.DEFAULT_FROM_EMAIL,
-            recipient_list=[feedback_address],
-        )
+        # Mass send the emails (in a separate process)
+        import multiprocessing
+        process = multiprocessing.Process(
+            target=mass_mail,
+            args=(messages, data, addresses, feedback_address))
+        process.daemon=True
+        process.start()
+        # Let it run until completion without joining it again
+        process = None
         return len(messages)
 
 class AttendeeLinkDescriptionForm(forms.Form):
