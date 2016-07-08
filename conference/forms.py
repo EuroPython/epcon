@@ -13,6 +13,8 @@ from django.utils.translation import ugettext as _
 from conference import models
 from conference import settings
 
+from p3 import utils as p3utils
+
 from taggit.forms import TagField
 
 import logging
@@ -562,6 +564,7 @@ class AdminSendMailForm(forms.Form):
             ctx = Context({
                 'user': u,
                 'conf': conf,
+                'tickets': p3utils.get_tickets_assigned_to(u),
             })
             output.append((
                 tSubject.render(ctx),
