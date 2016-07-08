@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Run local web app install server
 #
@@ -7,5 +7,12 @@
 WWWDIR=$PWD
 PORT=8000
 
-# Start web server
-python -m SimpleHTTPServer $PORT
+version=`python -c 'import sys; print(sys.version_info[0])'`
+
+if [ $version = 2 ]
+then
+    python -m SimpleHTTPServer $PORT
+else
+    python -m http.server $PORT
+fi
+
