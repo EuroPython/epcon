@@ -72,7 +72,7 @@ class TicketConference(models.Model):
         Ticket,
         related_name='p3_conference')
     shirt_size = models.CharField(
-        max_length=4,
+        max_length=5,
         choices=TICKET_CONFERENCE_SHIRT_SIZES,
         default='l')
     python_experience = models.PositiveIntegerField(
