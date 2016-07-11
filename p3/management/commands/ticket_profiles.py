@@ -98,20 +98,18 @@ class Command(BaseCommand):
                 else:
                     log.error(msg)
 
-            subj['company'] = get_profile_company(profile)
-            subj['name'   ] = profile.user.first_name
-            subj['surname'] = profile.user.last_name
-            subj['tagline'] = p3_tkt.tagline
-            subj['pypower'] = str(p3_tkt.python_experience)
-            subj['tshirt']  = p3_tkt.shirt_size
-            subj['email'  ] = profile.user.email
-            subj['phone'  ] = profile.phone
-            subj['compweb'] = profile.company_homepage
-            subj['persweb'] = profile.personal_homepage
-            subj['id']      = str(t.id)
-            subj['frozen']  = str(t.frozen)
-
-            subj = {k: v.encode('utf-8') for k, v in subj.items()}
+            subj['company'] = get_profile_company(profile).encode('utf-8')
+            subj['name'   ] = profile.user.first_name.encode('utf-8')
+            subj['surname'] = profile.user.last_name.encode('utf-8')
+            subj['tagline'] = p3_tkt.tagline.encode('utf-8')
+            subj['pypower'] = p3_tkt.python_experience
+            subj['tshirt']  = p3_tkt.shirt_size.encode('utf-8')
+            subj['email'  ] = profile.user.email.encode('utf-8')
+            subj['phone'  ] = profile.phone.encode('utf-8')
+            subj['compweb'] = profile.company_homepage.encode('utf-8')
+            subj['persweb'] = profile.personal_homepage.encode('utf-8')
+            subj['id']      = t.id
+            subj['frozen']  = t.frozen
 
             profiles.append(subj)
 
