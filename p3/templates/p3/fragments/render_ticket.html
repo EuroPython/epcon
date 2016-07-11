@@ -45,6 +45,9 @@
                              {% trans "Python experience:" %}&nbsp;{% for x in form.python_experience.value|as_range %}<i class="fa fa-star"></i>{% endfor %}
                            {% endif %}
                         </div>
+                        <div class="ticket-id">
+                           Ticket ID: {{ ticket.id }}
+                        </div>
                     </div><!-- media-body -->
                 </div><!-- /media -->
             {% else %}
