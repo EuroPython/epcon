@@ -40,7 +40,7 @@ log = logging.getLogger('conference.tags')
 # tag relativi a conference. In questo modo non devo preocuparmi di altri
 # utilizzi di taggit fatti da altre app.
 class ConferenceTagManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):
@@ -497,7 +497,7 @@ TALK_LEVEL = (
 )
 
 class TalkManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):
@@ -704,7 +704,7 @@ class TalkSpeaker(models.Model):
         unique_together = (('talk', 'speaker'),)
 
 class FareManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):
@@ -810,7 +810,7 @@ class Fare(models.Model):
         return params['tickets']
 
 class TicketManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):

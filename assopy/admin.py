@@ -38,6 +38,7 @@ class ReadOnlyWidget(forms.widgets.HiddenInput):
 class OrderItemAdminForm(forms.ModelForm):
     class Meta:
         model = models.OrderItem
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(OrderItemAdminForm, self).__init__(*args, **kwargs)
@@ -307,6 +308,7 @@ admin.site.register(models.Order, OrderAdmin)
 class CouponAdminForm(forms.ModelForm):
     class Meta:
         model = models.Coupon
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(CouponAdminForm, self).__init__(*args, **kwargs)
@@ -331,8 +333,8 @@ class CouponAdmin(admin.ModelAdmin):
     list_filter = ('conference',)
     form = CouponAdminForm
 
-    def queryset(self, request):
-        qs = super(CouponAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(CouponAdmin, self).get_queryset(request)
         qs = qs.select_related('user__user')
         return qs
 
@@ -454,7 +456,7 @@ class AuthUserAdmin(aUserAdmin):
                 user.card_name = data['card_name']
                 models.Order.objects.create(
                     user=user,
-                    payment=data['payment'], 
+                    payment=data['payment'],
                     items=data['tickets'],
                     billing_notes=data['billing_notes'],
                     coupons=data['coupon'],
@@ -494,8 +496,8 @@ class RefundAdmin(admin.ModelAdmin):
     list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_cnote', '_items', '_total', 'created', 'done')
     form = RefundAdminForm
 
-    def queryset(self, request):
-        qs = super(RefundAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(RefundAdmin, self).get_queryset(request)
 
         orderitems = defaultdict(list)
         items = models.RefundOrderItem.objects\
@@ -531,7 +533,7 @@ class RefundAdmin(admin.ModelAdmin):
         else:
             return ''
     _order.allow_tags = True
-    
+
     def _invoice(self, o):
         i = o.invoice
         if not i:
@@ -754,6 +756,7 @@ if not settings.GENRO_BACKEND:
 
         class Meta:
             model = cadmin.models.Fare
+            fields = '__all__'
 
         def __init__(self, *args, **kwargs):
             instance = kwargs.get('instance',None)

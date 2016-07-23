@@ -29,7 +29,7 @@ class Category(models.Model):
 POST_STATUS = (('P', 'Pubblicato'), ('D', 'Bozza'))
 
 class PostManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):
@@ -134,7 +134,7 @@ class Spam(models.Model):
         return '%s -> %s' % (self.method, self.value)
 
 class PostContentManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):

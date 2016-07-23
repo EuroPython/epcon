@@ -49,6 +49,8 @@ def ticketConferenceForm():
     class _(forms.ModelForm):
         class Meta:
             model = models.TicketConference
+            fields = '__all__'
+
     fields = _().fields
 
     class TicketConferenceForm(forms.ModelForm):

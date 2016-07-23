@@ -408,11 +408,13 @@ class MultiLingualForm(forms.ModelForm):
         class Form(cls):
             class Meta:
                 model = model_class
+                fields = '__all__'
         return Form
 
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
         model = models.TalkSpeaker
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(TalkSpeakerInlineAdminForm, self).__init__(*args, **kwargs)
@@ -436,6 +438,7 @@ class TalkSpeakerInlineAdmin(admin.TabularInline):
 class SpeakerAdminForm(forms.ModelForm):
     class Meta:
         model = models.Speaker
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(SpeakerAdminForm, self).__init__(*args, **kwargs)
@@ -514,6 +517,7 @@ admin.site.register(models.Speaker, SpeakerAdmin)
 class TalkAdminForm(MultiLingualForm):
     class Meta:
         model = models.Talk
+        fields = '__all__'
 
     # per semplificare l'inserimento del video permetto all'utente di inserire
     # il blob html che copia da viddler e da li estraggo la url che mi
@@ -1047,8 +1051,8 @@ class TicketAdmin(admin.ModelAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(TicketAdmin,self).changelist_view(request, extra_context=extra_context)
 
-    def queryset(self, request):
-        qs = super(TicketAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(TicketAdmin, self).get_queryset(request)
         qs = qs.select_related('user', 'fare',)
         return qs
 
