@@ -55,6 +55,13 @@ RUN
 python manage.py runserver
 ```
 
+RUN IN DEBUG MODE
+-----------------
+
+```bash
+DEBUG=True python manage.py runserver
+```
+
 INITIAL DATABASE SETTINGS
 -------------------------
 
