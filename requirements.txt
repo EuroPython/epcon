@@ -17,7 +17,6 @@ django-mptt==0.6.1
 django-page-cms==1.5.3
 django-pingback==0.3
 django-polymorphic==0.6.1
-django-recaptcha-works==0.3.4
 django-rosetta==0.7.4
 django-sekizai==0.8.1
 django-tagging==0.3.1
@@ -57,3 +56,4 @@ South==1.0.1
 stripe==1.19.1
 suds==0.4
 Unidecode==0.04.17
+django-recaptcha==1.0.5

@@ -1,26 +1,19 @@
 # -*- coding: UTF-8 -*-
-import urlparse
-
-try:
-    parse_qs = urlparse.parse_qs
-except AttributeError:
-    from cgi import parse_qs
 
 from django import http
 from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.comments.models import Comment
-from django.contrib.comments.signals import comment_will_be_posted
-from django.contrib.comments.views import comments as comments_views
+from django.contrib.comments import signals
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
+
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-from hcomments import models
-from hcomments import settings
+from hcomments import get_form, models, settings
 
 
 def send_email_to_subscribers(sender, **kwargs):
@@ -38,19 +31,17 @@ def send_email_to_subscribers(sender, **kwargs):
 post_save.connect(send_email_to_subscribers, sender=Comment)
 post_save.connect(send_email_to_subscribers, sender=models.HComment)
 
+def post_comment(request):
+    if request.method != 'POST':
+        return http.HttpResponse(status=405)
 
-class CaptchaFailed(Exception):
-    pass
+    pk = request.POST['object_pk']
 
+    content_type = request.POST['content_type']
+    app_label, model = content_type.split('.', 1)
 
-def on_comment_will_be_posted(sender, **kw):
-    if sender is not models.HComment:
-        return True
-
-    # if comments is configured to use a captcha we need another validation step
-    import hcomments
-    request = kw['request']
-    comment = kw['comment']
+    ct = ContentType.objects.get(app_label=app_label, model=model)
+    obj = ct.get_object_for_this_type(pk=pk)
 
     data = request.POST.copy()
     if request.user.is_authenticated():
@@ -58,68 +49,55 @@ def on_comment_will_be_posted(sender, **kw):
             data["name"] = request.user.get_full_name() or request.user.get_username()
         if not data.get('email', ''):
             data["email"] = request.user.email
-    form = hcomments.get_form(request)(comment, data)
+
+    form = get_form(request)(obj, data)
+
     if not form.is_valid():
-        raise CaptchaFailed()
-    return True
+        return http.HttpResponse(content='TODO: errors', status=400)
 
-comment_will_be_posted.connect(on_comment_will_be_posted)
+    if form.security_errors():
+        return http.HttpResponse(content='The comment form failed security verification: %s' % escape(str(form.security_errors())), status=400)
 
+    comment = form.get_comment_object()
+    comment.ip_address = request.META.get("REMOTE_ADDR", None)
 
-def post_comment(request):
-    from recaptcha_works.decorators import fix_recaptcha_remote_ip
-    try:
-        result = fix_recaptcha_remote_ip(comments_views.post_comment)(request)
-    except CaptchaFailed:
-        result = None
+    if request.user.is_authenticated():
+        comment.user = request.user
 
-    if 'async' not in request.POST:
-        if result:
-            return result
-        else:
-            return comments_views.CommentPostBadRequest('')
+    responses = signals.comment_will_be_posted.send(
+        sender=comment.__class__,
+        comment=comment,
+        request=request
+    )
 
-    if result is None:
-        return http.HttpResponse(content='captcha', status=403)
+    for (receiver, response) in responses:
+        if response is False:
+            return http.HttpResponse(content='comment_will_be_posted receiver %r killed the comment' % receiver.__name__, status=400)
 
-    if isinstance(result, comments_views.CommentPostBadRequest):
-        return http.HttpResponseBadRequest('')
+    # Save the comment and signal that it was saved
+    comment.save()
+    signals.comment_was_posted.send(
+        sender=comment.__class__,
+        comment=comment,
+        request=request
+    )
 
-    # since post_comment returns a HttpResponse, the only way to determine
-    # the comment that has just been posted is to analyze the Location header
+    if not comment.is_public:
+        return http.HttpResponse(content='moderated', status=403)
 
-    try:
-        loc = result['Location']
-    except:
-        return http.HttpResponseBadRequest('')
+    s = request.session.get('user-comments', [])
+    s = set(s)
+    s.add(comment.pk)
 
-    try:
-        url = urlparse.urlsplit(loc)
-        cid = parse_qs(url.query).get('c')
-        try:
-            cid = int(cid[0])
-            comment = models.HComment.objects.get(pk=cid)
-        except:
-            comment = None
-        else:
-            if not comment.is_public:
-                return http.HttpResponse(content='moderated', status=403)
-            s = request.session.get('user-comments', [])
-            s = set(s)
-            s.add(cid)
-            request.session['user-comments'] = list(s)
-        return render_to_response(
-            'hcomments/show_single_comment.html', {
-                'c': comment,
-                'owner': True,
-            },
-            context_instance=RequestContext(request)
-        )
-    except Exception, e:
-        if dsettings.DEBUG:
-            return http.HttpResponseBadRequest(str(e))
-        else:
-            raise
+    request.session['user-comments'] = list(s)
+
+    return render_to_response(
+        'hcomments/show_single_comment.html', {
+            'c': comment,
+            'owner': True,
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 def delete_comment(request):

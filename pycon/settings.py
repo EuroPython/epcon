@@ -305,7 +305,7 @@ INSTALLED_APPS = (
     'filer',
     'easy_thumbnails',
 
-    'recaptcha_works',
+    'captcha',
     'django_crontab',
     'formstyle',
 
@@ -333,6 +333,7 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get(
     # Registered for EuroPython domains:
     '6LdFmQcTAAAAAN1xx4M5UN6yg4TwFRXUwIrH5iGh')
 RECAPTCHA_USE_SSL = True
+NOCAPTCHA = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

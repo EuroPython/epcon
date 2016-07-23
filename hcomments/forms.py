@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.comments.forms import CommentForm
 
-import recaptcha_works.fields
+from captcha.fields import ReCaptchaField
 
 from hcomments import models
 
@@ -26,4 +26,4 @@ class HCommentForm(CommentForm):
 
 
 class HCommentFormWithCaptcha(HCommentForm):
-    captcha = recaptcha_works.fields.RecaptchaField()
+    captcha = ReCaptchaField(attrs={'theme' : 'clean'})
