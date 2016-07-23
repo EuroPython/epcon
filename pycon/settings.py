@@ -301,7 +301,6 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
-    'templatesadmin',
     'email_template',
     'paypal.standard.ipn',
     'filer',
@@ -927,10 +926,6 @@ Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
 https://ep2016.europython.eu/accounts/profile/
 '''
-
-TEMPLATESADMIN_EDITHOOKS = (
-    'templatesadmin.edithooks.gitcommit.GitCommitHook',
-)
 
 HAYSTACK_SITECONF = 'web_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
