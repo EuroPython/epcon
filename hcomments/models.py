@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.comments.models import Comment
+from django_comments.models import Comment
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 

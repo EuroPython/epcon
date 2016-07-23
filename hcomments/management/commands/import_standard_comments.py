@@ -1,5 +1,5 @@
 from django.db import connection, transaction
-from django.contrib.comments.models import Comment
+from django_comments.models import Comment
 from django.core.management.base import BaseCommand
 
 from hcomments.models import HComment

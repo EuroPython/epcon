@@ -3,11 +3,9 @@
 from django import http
 from django.conf import settings as dsettings
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.comments.models import Comment
-from django.contrib.comments import signals
+from django_comments.models import Comment
+from django_comments import signals
 from django.contrib.contenttypes.models import ContentType
-from django.core.mail import send_mail
-from django.db.models.signals import post_save
 
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
@@ -15,21 +13,6 @@ from django.template.loader import render_to_string
 
 from hcomments import get_form, models, settings
 
-
-def send_email_to_subscribers(sender, **kwargs):
-    subscripted = models.ThreadSubscription.objects.subscriptions(kwargs['instance'].content_object)
-    for u in filter(lambda x: x.email, subscripted):
-        ctx = {
-            'comment': kwargs['instance'],
-            'object': kwargs['instance'].content_object,
-            'user': u,
-        }
-        subject = 'New comment on a subscribed page'
-        body = render_to_string('hcomments/thread_email.txt', ctx)
-        send_mail(subject, body, dsettings.DEFAULT_FROM_EMAIL, [u.email])
-
-post_save.connect(send_email_to_subscribers, sender=Comment)
-post_save.connect(send_email_to_subscribers, sender=models.HComment)
 
 def post_comment(request):
     if request.method != 'POST':

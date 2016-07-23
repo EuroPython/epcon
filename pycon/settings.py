@@ -267,7 +267,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'django.contrib.redirects',
-    'django.contrib.comments',
+
+    'django_comments',
 
     'p3',
     'assopy',

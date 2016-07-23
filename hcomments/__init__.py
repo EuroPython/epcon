@@ -1,10 +1,13 @@
 # -*- coding: UTF-8 -*-
 from django.core.urlresolvers import reverse
-from django.contrib.comments.templatetags import comments as cc
+from django_comments.templatetags import comments as cc
 
 from hcomments import forms
 from hcomments import models
 from hcomments import settings
+
+
+default_app_config = 'hcomments.apps.HCommentsConfig'
 
 
 def get_model():
