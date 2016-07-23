@@ -26,7 +26,6 @@ django-xmlrpc==0.1.5
 easy-thumbnails==2.2
 ecdsa==0.13
 -e git+https://github.com/dcramer/django-paypal.git#egg=django_paypal-master
--e git+https://github.com/pythonitalia/hcomments.git#egg=hcomments-master
 -e git+https://github.com/pythonitalia/microblog.git#egg=microblog-master
 Fabric==1.10.1
 fancy-tag==0.2.0

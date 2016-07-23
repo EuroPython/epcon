@@ -1,0 +1,9 @@
+Hi {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.email }}{% endif %},
+
+A new comment has been added to this page:
+{% if object.get_url %}{{ object.get_url }}{% else %}{{ object.get_absolute_url }}{% endif %}
+
+Comment by: {{ comment.user_name }}
+----------------------------------------------------------------------
+{{ comment.comment }}
+----------------------------------------------------------------------
