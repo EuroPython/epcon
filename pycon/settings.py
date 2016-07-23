@@ -298,18 +298,18 @@ INSTALLED_APPS = (
 
     'microblog',
     'hcomments',
-    'django_xmlrpc',
+    #'django_xmlrpc',
     'pingback',
     'rosetta',
     'south',
-    'templatesadmin',
+    #'templatesadmin',
     'email_template',
     'paypal.standard.ipn',
     'filer',
     'easy_thumbnails',
 
     'recaptcha_works',
-    'django_crontab',
+    #'django_crontab',
     'formstyle',
 
     'cms_migration',
@@ -317,6 +317,7 @@ INSTALLED_APPS = (
     'cms_utils',
 
     'raven.contrib.django.raven_compat',
+    'django_extensions',
 )
 
 # Google ReCaptcha settings
@@ -1237,3 +1238,8 @@ except ImportError, reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
+
+GRAPH_MODELS = {
+    'all_applications': True,
+    'group_models': True,
+}
