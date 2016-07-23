@@ -1,0 +1,27 @@
+{% load microblog_tags %}
+{% get_post_comment post as comments %}
+{% if comments %}
+<div id="comments">
+    <h3>Commenti ({{ comments|length }})</h3>
+    <ol class="comments">
+        {% for c in comments %}
+        <li class="comment" id="microblog-comment-{{ c.id }}">
+            <div class="metadata" {% if forloop.last %}id="last-comment"{% endif %}>
+            {% with c.userinfo as info %}
+            {% if info.url %}
+                <strong><a href="{{ info.url }}" rel="nofollow">{{ info.name }}</a></strong>
+            {% else %}
+                <strong>{{ info.name }}</strong>
+            {% endif %}
+            , 
+            <span class="date">
+                <a title="Permalink a questo commento" href="#microblog-comment-{{ c.id}}">{{ c.submit_date|date:"d F Y" }}</a> alle {{ c.submit_date|date:"H:i" }}
+            </span>
+            {% endwith %}
+          </div>
+          <div class="body">{{ c.comment|linebreaksbr }}</div>
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+{% endif %}
