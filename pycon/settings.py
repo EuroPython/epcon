@@ -259,24 +259,23 @@ INSTALLED_APPS = (
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
 
-    'p3',
-    'assopy',
-    'assopy.stripe',
-    'conference',
-
-    'social.apps.django_app.default',
-
     'djangocms_admin_style',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django.contrib.markup',
+    'django.contrib.staticfiles',
     'django.contrib.redirects',
     'django.contrib.comments',
+
+    'p3',
+    'assopy',
+    'assopy.stripe',
+    'conference',
+
+    'social.apps.django_app.default',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
