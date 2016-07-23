@@ -174,7 +174,7 @@ def spam_recruiter_by_conf(conf):
 
 from django.core.cache import cache
 from django.utils.http import urlquote
-from django.utils.hashcompat import md5_constructor
+from hashlib import md5 as md5_constructor
 
 def template_cache_name(fragment_name, *variables):
     args = md5_constructor(u':'.join([urlquote(var) for var in variables]))

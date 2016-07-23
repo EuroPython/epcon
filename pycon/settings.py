@@ -231,7 +231,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.doc.XViewMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
     #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
     'pycon.middleware.RisingResponse',
@@ -259,24 +258,23 @@ INSTALLED_APPS = (
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
 
-    'p3',
-    'assopy',
-    'assopy.stripe',
-    'conference',
-
-    'social.apps.django_app.default',
-
     'djangocms_admin_style',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django.contrib.markup',
+    'django.contrib.staticfiles',
     'django.contrib.redirects',
     'django.contrib.comments',
+
+    'p3',
+    'assopy',
+    'assopy.stripe',
+    'conference',
+
+    'social.apps.django_app.default',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
@@ -302,7 +300,6 @@ INSTALLED_APPS = (
     'pingback',
     'rosetta',
     'south',
-    'templatesadmin',
     'email_template',
     'paypal.standard.ipn',
     'filer',
@@ -928,10 +925,6 @@ Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
 https://ep2016.europython.eu/accounts/profile/
 '''
-
-TEMPLATESADMIN_EDITHOOKS = (
-    'templatesadmin.edithooks.gitcommit.GitCommitHook',
-)
 
 HAYSTACK_SITECONF = 'web_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
