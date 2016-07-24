@@ -3,6 +3,7 @@ from haystack import indexes
 from haystack import site
 from conference import models
 
+
 class EventIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     conference = indexes.CharField(model_attr='schedule__conference')

@@ -25,7 +25,6 @@ from email_template import utils
 
 import logging
 import uuid
-from collections import defaultdict
 
 log = logging.getLogger('p3.views')
 
