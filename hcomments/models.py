@@ -9,7 +9,7 @@ from mptt.managers import TreeManager
 
 class HComment(Comment):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
-    tree = TreeManager()
+    # tree = TreeManager()
 
 
 class ThreadSubscriptionManager(models.Manager):

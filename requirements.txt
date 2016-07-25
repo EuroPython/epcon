@@ -13,9 +13,9 @@ django-filebrowser-no-grappelli==3.5.7
 django-cms==3.2.5
 django-filer==0.9.9
 django-markitup==2.2.2
-django-mptt==0.6.1
+django-mptt==0.8.5
 django-pingback==0.3
-django-polymorphic==0.6.1
+django-polymorphic==0.7.1
 django-rosetta==0.7.4
 django-sekizai==0.9.0
 django-tagging==0.3.6
