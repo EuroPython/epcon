@@ -286,6 +286,7 @@ INSTALLED_APPS = (
     'cmsplugin_filer_video',
     'djangocms_grid',
 
+    'treebeard',
     'cms',
     'menus',
     'sekizai',
@@ -300,7 +301,7 @@ INSTALLED_APPS = (
     'django_xmlrpc',
     'pingback',
     'rosetta',
-    'south',
+    # 'south',
     'email_template',
     'paypal.standard.ipn',
     'filer',
@@ -491,10 +492,6 @@ MICROBLOG_TWITTER_INTEGRATION = False
 
 MICROBLOG_PINGBACK_SERVER = False
 MICROBLOG_TRACKBACK_SERVER = False
-
-SOUTH_MIGRATION_MODULES = {
-    'easy_thumbnails': 'easy_thumbnails.south_migrations',
-}
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
