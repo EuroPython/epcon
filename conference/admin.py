@@ -338,10 +338,11 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         if not model:
             return new_class
 
-        for name, f in model.__dict__.items():
-            if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
-                if f.field.related.parent_model is models.MultilingualContent:
-                    multilingual_fields.append(name)
+        # TODO: is this needed
+        # for name, f in model.__dict__.items():
+        #     if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
+        #         if f.field.related.parent_model is models.MultilingualContent:
+        #             multilingual_fields.append(name)
 
         widget = attrs.get('multilingual_widget', forms.Textarea)
         form_fields = {}

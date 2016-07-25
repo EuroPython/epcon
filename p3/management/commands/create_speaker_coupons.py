@@ -51,14 +51,14 @@ TALK_TYPE_DISCOUNTS = {
 
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
-                        for ttype, (prefix, discount) 
+                        for ttype, (prefix, discount)
                         in TALK_TYPE_DISCOUNTS.items())
 assert 'TLK' in COUPON_PREFIXES
 
 ###
 
 class Command(BaseCommand):
-    
+
     option_list = BaseCommand.option_list + (
         make_option('--dry-run',
                     action='store_true',
