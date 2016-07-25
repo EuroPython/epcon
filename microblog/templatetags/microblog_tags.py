@@ -14,8 +14,6 @@ from microblog import dataaccess
 from microblog import models
 from microblog import settings
 
-from fancy_tag import fancy_tag
-
 register = template.Library()
 
 def _lang(ctx):
@@ -25,7 +23,7 @@ def _lang(ctx):
         l = settings.MICROBLOG_DEFAULT_LANGUAGE
     return l.split('-', 1)[0]
 
-@fancy_tag(register, takes_context=True)
+@register.assignment_tag(takes_context=True)
 def post_list(context, post_type='any', count=None, year=None, tag=None, category=None, author=None):
     posts = dataaccess.post_list(_lang(context))
     posts = settings.MICROBLOG_POST_FILTER(posts, context.get('user'))
@@ -47,7 +45,7 @@ def post_list(context, post_type='any', count=None, year=None, tag=None, categor
         posts = posts[:count]
     return posts
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def year_list(context):
     posts = post_list(context)
     years = defaultdict(lambda: 0)
@@ -55,7 +53,7 @@ def year_list(context):
         years[date(day=1, month=1, year=p.date.year)] += 1
     return sorted(years.items())
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def month_list(context):
     posts = post_list(context)
     months = defaultdict(lambda: 0)
@@ -63,7 +61,7 @@ def month_list(context):
         months[date(day=1, month=p.date.month, year=p.date.year)] += 1
     return sorted(months.items())
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def author_list(context):
     posts = post_list(context)
     authors = defaultdict(lambda: 0)
@@ -71,7 +69,7 @@ def author_list(context):
         authors[p.author] += 1
     return sorted(authors.items(), key=lambda x: x[0].first_name + x[0].last_name)
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def category_list(context):
     posts = post_list(context)
     categories = defaultdict(lambda: 0)
@@ -79,7 +77,7 @@ def category_list(context):
         categories[p.category] += 1
     return sorted(categories.items(), key=lambda x: x[0].name)
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def tags_list(context):
     posts = post_list(context)
     tmap = dataaccess.tag_map()
@@ -89,7 +87,7 @@ def tags_list(context):
             tags[t.name] += 1
     return sorted(tags.items())
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def opengraph_meta(context, pid):
     post_data = dataaccess.post_data(pid, _lang(context))
     meta = (
@@ -115,11 +113,11 @@ def post_tags(post):
     tmap = dataaccess.tag_map()
     return tmap[post.id]
 
-@fancy_tag(register, takes_context=True)
+@register.assignment_tag(takes_context=True)
 def get_post_data(context, pid):
     return dataaccess.post_data(pid, _lang(context))
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_post_comment(context, post):
     data = dataaccess.post_data(post.id, _lang(context))
     return data['comments']
