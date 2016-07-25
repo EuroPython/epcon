@@ -726,7 +726,7 @@ def prezzo_biglietti_ricalcolato(**kw):
     for oid, items in grouped.items():
         _calc_prices(oid, items)
 
-    # after using _calc_prices abtain the prices not found anymore
+    # after using _calc_prices obtain the prices not found anymore
     # of the ordinary rates, regroup the resulting OrderItem
     # by rate code and new price
     tcp = {}
