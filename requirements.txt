@@ -1,7 +1,7 @@
 akismet==0.2.0
 BeautifulSoup==3.2.1
 cmsplugin-filer==0.10.1
-Django==1.5.11
+Django==1.8.14
 django-appconf==1.0.1
 django-authority==0.4 #serve a django-page-cms ma non è incluso nelle sue dipendenze
 django-classy-tags==0.6.1
@@ -14,13 +14,12 @@ django-cms==3.2.5
 django-filer==0.9.9
 django-markitup==2.2.2
 django-mptt==0.6.1
-django-page-cms==1.6.2
 django-pingback==0.3
 django-polymorphic==0.6.1
 django-rosetta==0.7.4
 django-sekizai==0.8.1
 django-tagging==0.3.6
-django-taggit==0.10.0
+django-taggit==0.14.0
 django-xmlrpc==0.1.5
 easy-thumbnails==2.2
 ecdsa==0.13
