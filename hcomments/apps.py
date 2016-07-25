@@ -1,3 +1,5 @@
+import mptt
+
 from django.apps import AppConfig
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
@@ -26,3 +28,5 @@ class HCommentsConfig(AppConfig):
     def ready(self):
         post_save.connect(send_email_to_subscribers, sender=Comment)
         post_save.connect(send_email_to_subscribers, sender=models.HComment)
+
+        mptt.register(models.HComment)

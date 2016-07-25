@@ -5,14 +5,12 @@ from django_comments.models import Comment
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
-import mptt
 from mptt.managers import TreeManager
 
 class HComment(Comment):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     tree = TreeManager()
 
-mptt.register(HComment)
 
 class ThreadSubscriptionManager(models.Manager):
     def unsubscribe(self, object, user):
