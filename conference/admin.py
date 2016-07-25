@@ -451,10 +451,10 @@ class SpeakerAdmin(admin.ModelAdmin):
     form = SpeakerAdminForm
     inlines = (TalkSpeakerInlineAdmin,)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # list_select_related non insegue anche le reverse onetoone, devo
         # chiederle esplicitamente
-        qs = super(SpeakerAdmin, self).queryset(request)
+        qs = super(SpeakerAdmin, self).get_queryset(request)
         qs = qs.select_related('user__attendeeprofile',)
         return qs
 
@@ -1141,9 +1141,9 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         from django.db.models import Count
-        qs = super(ConferenceTagAdmin, self).queryset(request)
+        qs = super(ConferenceTagAdmin, self).get_queryset(request)
         qs = qs.annotate(usage=Count('conference_conferencetaggeditem_items'))
         return qs
 

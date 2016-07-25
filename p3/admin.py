@@ -63,6 +63,7 @@ def ticketConferenceForm():
 
         class Meta:
             model = cmodels.Ticket
+            fields = '__all__'
 
         def __init__(self, *args, **kw):
             if 'instance' in kw:
@@ -266,8 +267,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(TicketConferenceAdmin,self).changelist_view(request, extra_context=extra_context)
 
-    def queryset(self, request):
-        qs = super(TicketConferenceAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(TicketConferenceAdmin, self).get_queryset(request)
         qs = qs.select_related('orderitem__order', 'p3_conference', 'user', 'fare', )
         return qs
 
@@ -344,10 +345,10 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
         'p3_speaker__first_time',
         )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # XXX: waiting to upgrade to django 1.4, I'm implementing
         # this bad hack filter to keep only speakers of current conference.
-        qs = super(SpeakerAdmin, self).queryset(request)
+        qs = super(SpeakerAdmin, self).get_queryset(request)
         qs = qs.filter(user__in=(
             cmodels.TalkSpeaker.objects\
                 .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
