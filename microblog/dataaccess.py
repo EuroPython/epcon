@@ -53,17 +53,18 @@ def cache_me(key=None, ikey=None, signals=(), models=(), timeout=WEEK):
                 cache.set(k, data, timeout)
             return data
         wrapper.cachekey = _key
-            
+
         return wrapper
     return decorator
 
 from collections import defaultdict
 from django.conf import settings as dsettings
-from django.contrib import comments
 from django.core.urlresolvers import reverse
 from microblog import models
 from microblog import settings
 from taggit.models import TaggedItem
+
+import django_comments as comments
 
 def _i_post_list(sender, **kw):
     ks = []

@@ -1,17 +1,18 @@
 # -*- coding: UTF-8 -*-
 from conference import cachef
 from conference import models
-from pages.models import Page
 
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
+
 from taggit.models import TaggedItem
+
+import django_comments as comments
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 

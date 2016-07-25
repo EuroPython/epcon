@@ -169,7 +169,7 @@ def _trackback_ping(request, content):
 def _comment_count(request, content):
     post = content.post
     if settings.MICROBLOG_COMMENT == 'comment':
-        from django.contrib import comments
+        import django_comments as comments
         from django.contrib.contenttypes.models import ContentType
         model = comments.get_model()
         q = model.objects.filter(
