@@ -166,13 +166,6 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
-)
-
 from django.conf import global_settings
 
 #
@@ -199,27 +192,39 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details'
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    'django.contrib.messages.context_processors.messages',
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.request",
-    "django.core.context_processors.media",
-    'django.core.context_processors.csrf',
-    'django.core.context_processors.request',
-    "django.core.context_processors.tz",
-    'p3.context_processors.settings',
-    'conference.context_processors.current_url',
-    'conference.context_processors.stuff',
-    "sekizai.context_processors.sekizai",
-    "cms.context_processors.cms_settings",
-    "django.core.context_processors.static",
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [
+        os.path.join(PROJECT_DIR, 'templates'),
+    ],
+    'OPTIONS': {
+        'debug': DEBUG,
+        'context_processors': [
+            "django.contrib.auth.context_processors.auth",
+            'django.contrib.messages.context_processors.messages',
+            "django.core.context_processors.i18n",
+            "django.core.context_processors.debug",
+            "django.core.context_processors.request",
+            "django.core.context_processors.media",
+            'django.core.context_processors.csrf',
+            'django.core.context_processors.request',
+            "django.core.context_processors.tz",
+            'p3.context_processors.settings',
+            'conference.context_processors.current_url',
+            'conference.context_processors.stuff',
+            "sekizai.context_processors.sekizai",
+            "cms.context_processors.cms_settings",
+            "django.core.context_processors.static",
 
-
-   'social.apps.django_app.context_processors.backends',
-   'social.apps.django_app.context_processors.login_redirect',
-)
+            'social.apps.django_app.context_processors.backends',
+            'social.apps.django_app.context_processors.login_redirect',
+        ],
+        'loaders': [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ],
+    },
+}]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -228,7 +233,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
-    'django.middleware.doc.XViewMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
@@ -245,9 +249,6 @@ ROOT_URLCONF = 'pycon.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'pycon.wsgi.application'
 
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates'),
-)
 
 LOCALE_PATHS = (
     os.path.join(PROJECT_DIR, 'locale'),
