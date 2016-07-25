@@ -5,27 +5,26 @@ Django==1.5.11
 django-appconf==1.0.1
 django-authority==0.4 #serve a django-page-cms ma non è incluso nelle sue dipendenze
 django-classy-tags==0.6.1
-django-cms==3.0.6
 djangocms-admin-style==0.2.5
 djangocms-grid==1.1
 djangocms-text-ckeditor==2.4.1
 django-crontab==0.4.2
 django-filebrowser-no-grappelli==3.5.7
-django-filer==0.9.8
+django-cms==3.2.5
+django-filer==0.9.9
 django-markitup==2.2.2
 django-mptt==0.6.1
-django-page-cms==1.5.3
+django-page-cms==1.6.2
 django-pingback==0.3
 django-polymorphic==0.6.1
 django-rosetta==0.7.4
 django-sekizai==0.8.1
-django-tagging==0.3.1
+django-tagging==0.3.6
 django-taggit==0.10.0
 django-xmlrpc==0.1.5
 easy-thumbnails==2.2
 ecdsa==0.13
 -e git+https://github.com/dcramer/django-paypal.git#egg=django_paypal-master
--e git+https://github.com/pythonitalia/microblog.git#egg=microblog-master
 Fabric==1.10.1
 fancy-tag==0.2.0
 gunicorn==19.2.1
