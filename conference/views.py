@@ -508,7 +508,7 @@ def sponsor(request, sponsor):
 
 
 @login_required
-#@transaction.commit_on_success
+#@transaction.atomic
 def paper_submission(request):
     try:
         speaker = request.user.speaker

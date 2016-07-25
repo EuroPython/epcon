@@ -70,11 +70,11 @@ class Command(BaseCommand):
     # Dry run ?
     dry_run = False
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, *args, **options):
 
         self.dry_run = options.get('dry_run', False)
-        
+
         try:
             conference = cmodels.Conference.objects.get(code=args[0])
         except IndexError:

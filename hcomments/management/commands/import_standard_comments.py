@@ -8,7 +8,7 @@ from hcomments.models import HComment
 class Command(BaseCommand):
     help = "Import the standard comments into hcomments"
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, *args, **options):
         """
         Converts all legacy Comment objects into HComment objects.

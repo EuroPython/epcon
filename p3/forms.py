@@ -105,7 +105,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
-    #@transaction.commit_on_success
+    #@transaction.atomic
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 

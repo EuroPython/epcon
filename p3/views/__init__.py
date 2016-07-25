@@ -141,7 +141,7 @@ def _assign_ticket(ticket, email):
     return email
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def ticket(request, tid):
     t = get_object_or_404(cmodels.Ticket, pk=tid)
     try:
