@@ -4,6 +4,10 @@ import os
 import os.path
 import sys
 
+import django
+
+from distutils.version import StrictVersion
+
 #from django.utils.translation import ugettext as _
 _ = lambda x:x
 
@@ -13,8 +17,10 @@ else:
     DEBUG = False
 
 
-TEMPLATE_DEBUG = DEBUG
-#DEBUG=True
+LESS_THAN_18 = StrictVersion(django.get_version()) < StrictVersion('1.8')
+
+
+DEBUG=True
 #APPEND_SLASH=False
 ALLOWED_HOSTS = ['*']
 
@@ -226,6 +232,28 @@ TEMPLATES = [{
     },
 }]
 
+if LESS_THAN_18:
+    TEMPLATE_CONTEXT_PROCESSORS = [
+        "django.contrib.auth.context_processors.auth",
+        'django.contrib.messages.context_processors.messages',
+        "django.core.context_processors.i18n",
+        "django.core.context_processors.debug",
+        "django.core.context_processors.request",
+        "django.core.context_processors.media",
+        'django.core.context_processors.csrf',
+        'django.core.context_processors.request',
+        "django.core.context_processors.tz",
+        'p3.context_processors.settings',
+        'conference.context_processors.current_url',
+        'conference.context_processors.stuff',
+        "sekizai.context_processors.sekizai",
+        "cms.context_processors.cms_settings",
+        "django.core.context_processors.static",
+
+        'social.apps.django_app.context_processors.backends',
+        'social.apps.django_app.context_processors.login_redirect',
+    ]
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -269,8 +297,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.redirects',
 
-    'django_comments',
-
     'p3',
     'assopy',
     'assopy.stripe',
@@ -298,7 +324,6 @@ INSTALLED_APPS = (
     'mptt',
 
     'microblog',
-    'hcomments',
     'django_xmlrpc',
     'pingback',
     'rosetta',
@@ -318,6 +343,10 @@ INSTALLED_APPS = (
 
     'raven.contrib.django.raven_compat',
 )
+
+# prevent issue with django.apps not being found
+if not LESS_THAN_18:
+    INSTALLED_APPS += ('django_comments', 'hcomments', )
 
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
