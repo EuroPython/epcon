@@ -19,12 +19,12 @@ def _get(url):
             return response
     response = _HTTP.request(url)
     _CACHE[url] = time.time(), response
-    
+
     return response
 
 def attendeeCount():
     """
-    Restituisce il numero di partecipanti al pycon
+    Restitute the number of the participant at PyCon
     """
     response, content = _get(ASSOPYURL + 'sold')
     try:
@@ -33,4 +33,4 @@ def attendeeCount():
         return -1
 
 if __name__ == '__main__':
-    print 'partecipanti', attendeeCount()
+    print 'Participant', attendeeCount()

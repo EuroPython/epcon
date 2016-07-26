@@ -44,8 +44,8 @@ def _lang(ctx, full=False):
 
 def _request_cache(request, key):
     """
-    ritorna (o crea) un dizionario collegato all'oggetto passato utilizzabile
-    come cache con visibilità pari a quella della request.
+    Returns (or create) a linked object dictionary usable past as cache with
+    visibility equal to that of the request.
     """
     try:
         return request._conf_cache[key]
@@ -85,8 +85,8 @@ def navigation(context, page_type):
 def stuff_info(parser, token):
     """
     {% stuff_info "file_path"|variable [as var] %}
-    ritorna il mimetype e la dimensione del file specificato (il file deve
-    risidere all'interno della dir "stuff")
+    Return the mime type and the size of the specified file
+    (the file should be in the dir "stuff")
     """
     contents = token.split_contents()
     tag_name = contents[0]
@@ -119,7 +119,7 @@ def stuff_info(parser, token):
                 fpath = os.path.join(settings.STUFF_DIR, 'conference', fpath)
             try:
                 stat = os.stat(fpath)
-            except (AttributeError, OSError), e:
+            except (AttributeError, OSError) as e:
                 fsize = ftype = None
             else:
                 fsize = stat.st_size
@@ -137,8 +137,8 @@ def stuff_info(parser, token):
 def conference_speakers(parser, token):
     """
     {% conference_speakers [ conference ] [ limit num ] [ "random" ] as var %}
-    inserisce in var l'elenco degli speaker (opzionalmente è possibile
-    filtrare per conferenza).
+
+    Put in var the speaker list, optionally you can filter by conference.
     """
     contents = token.split_contents()
     tag_name = contents.pop(0)
@@ -239,9 +239,8 @@ def schedule_context(schedule):
 
     eevent = lambda t: { 'time': t, 'title': '', 'track_slots': 1, 'time_slots': 1, 'talk': None, 'tags': [], 'sponsor': None }
 
-    # riorganizzo in timetable la struttra degli evento dello schedule passato
-    # per renderli semplici da maneggiare al template. Ogni entry di timetable
-    # rappresenta una riga della tabella HTML
+    # I organize timetable in the structure of the events of the past schedule
+    # to make them easy to handle to the template. Each entry of timetable is a line of HTML table.
     timetable = defaultdict(lambda: { 'class': [], 'events': [ None ] * len(dbtracks)} )
     prow = [ None ] * len(dbtracks)
     for rtime, events in sorted(dbevents.items()):
@@ -257,8 +256,7 @@ def schedule_context(schedule):
                     event['sponsor'] = e.sponsor
             else:
                 event['title'] = e.custom
-            # row ha tanti elementi quante sono le track dello schedule
-            # devo inserire event nel punto giusto
+            # row has as many elements as there are tracks of the scheduler event I enter in the right place.
             tags = set( t.name for t in Tag.objects.get_for_object(e) )
             if 'end' in tags:
                 end = True

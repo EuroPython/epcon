@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime
 
+# FIXME: We can use an external library.
+
 def encode(line):
     if isinstance(line, unicode):
         line = line.encode('utf-8')
