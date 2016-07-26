@@ -18,6 +18,7 @@ else:
 
 
 LESS_THAN_18 = StrictVersion(django.get_version()) < StrictVersion('1.8')
+LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
 
 
 DEBUG=True
@@ -345,7 +346,7 @@ INSTALLED_APPS = (
 )
 
 # prevent issue with django.apps not being found
-if not LESS_THAN_18:
+if not LESS_THAN_17:
     INSTALLED_APPS += ('django_comments', 'hcomments', )
 
 # Google ReCaptcha settings
