@@ -1344,7 +1344,7 @@ def event_data(eid):
     event.update({'schedule':dataaccess.schedule_data(event['schedule_id'])})
     return event
 
-@register.simple_tag()
+@register.assignment_tag()
 def talks_data(tids, conference=None):
     data = dataaccess.talks_data(tids)
     if conference:

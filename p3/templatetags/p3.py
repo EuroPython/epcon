@@ -466,11 +466,11 @@ def box_next_events(context):
     })
     return ctx
 
-@register.simple_tag()
+@register.assignment_tag()
 def p3_profile_data(uid):
     return dataaccess.profile_data(uid)
 
-@register.simple_tag()
+@register.assignment_tag()
 def p3_profiles_data(uids):
     return dataaccess.profiles_data(uids)
 
