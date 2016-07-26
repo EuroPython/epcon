@@ -6,8 +6,10 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
 from mptt.managers import TreeManager
+from mptt.models import MPTTModel
 
-class HComment(Comment):
+
+class HComment(MPTTModel, Comment):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     tree = TreeManager()
 
