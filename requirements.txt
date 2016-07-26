@@ -49,7 +49,6 @@ requests==2.5.3
 requests-oauthlib==0.4.2
 simplejson==3.6.5
 six==1.9.0
-South==1.0.1
 stripe==1.19.1
 suds==0.4
 Unidecode==0.04.17
