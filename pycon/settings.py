@@ -317,7 +317,7 @@ INSTALLED_APPS = (
     'cms_utils',
 
     'raven.contrib.django.raven_compat',
-    'django_extensions',
+    #'django_extensions',
 )
 
 # Google ReCaptcha settings
