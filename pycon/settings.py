@@ -255,6 +255,12 @@ if LESS_THAN_18:
         'social.apps.django_app.context_processors.login_redirect',
     ]
 
+    # doing this here instead of checking django cms version
+    MIGRATION_MODULES = {
+        'cms': 'cms.migrations_django',
+        'menus': 'menus.migrations_django',
+    }
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
