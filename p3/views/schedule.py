@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
+
 def _partner_as_event(fares):
     from conference.templatetags.conference import fare_blob
     partner = defaultdict(list)
@@ -17,7 +18,7 @@ def _partner_as_event(fares):
             d = datetime.datetime.strptime(fare_blob(f, 'date'), '%Y/%m/%d').date()
             t = datetime.datetime.strptime(fare_blob(f, 'departure'), '%H:%M').time()
             dt = int(fare_blob(f, 'duration'))
-        except Exception, e:
+        except Exception as e:
             continue
         partner[d].append({
             'duration': dt,
@@ -32,27 +33,28 @@ def _partner_as_event(fares):
         })
     return dict(partner)
 
+
 def _build_timetables(schedules, events=None, partner=None):
     """
-    Dati un elenco di schedule ids/eventi e partner program ritorna una lista
-    di TimeTable relative ai dati passati.
+    Given a list of schedule ids / events and partner program returns a list
+    of TimeTable of relating to past data.
 
     _build_timetables([1,2])
 
-        Restituisce due TimeTable relative agli schedule 1 e 2 (gli eventi
-        vengono recuperati dal db)
+        Return two TimeTable relating to schedules 1 and 2 (events
+        are retrieved from db).
 
     _build_timetables([1,2], events=...)
 
-        Restituisce due TimeTable relative agli schedule 1 e 2 usando solo gli
-        eventi specificati (in questo caso events deve essere un dict che mappa
-        all'id dello schedule una lista con gli id degli eventi).
+        Return two TimeTable relating to schedules 1 and 2 using only
+        events specified (in this case events must be a dict that map
+        id of the schedule list with the id of the events).
 
     _build_timetables([1,2], partner=...)
 
-        Restituisce almeno due TimeTable (altre potrebbero essere aggiunte a
-        causa di partner program non coperti dagli schedule elencati).
-        `partner` deve essere compatibile con l'output di `_partner_as_event`.
+        Return least two TimeTable (others might be added to
+        Because of partner program not covered by listed schedule).
+        `Partner` must be compatible with the output of` _partner_as_event`.
     """
     tts = []
 
@@ -102,10 +104,9 @@ def _build_timetables(schedules, events=None, partner=None):
 
     return tts
 
+
 def _conference_timetables(conference):
-    """
-    Restituisce le TimeTable relative alla conferenza.
-    """
+    """ Return the TimeTable about the conference."""
     # The timetables must contain both events in the db and "artificial"
     # events from partner program
     sids = cmodels.Schedule.objects\
@@ -120,6 +121,7 @@ def _conference_timetables(conference):
     tts = _build_timetables(schedules, partner=partner)
     return tts
 
+
 def schedule(request, conference):
     tts = _conference_timetables(conference)
     ctx = {
@@ -128,6 +130,7 @@ def schedule(request, conference):
         'timetables': tts,
     }
     return render(request, 'p3/schedule.html', ctx)
+
 
 def schedule_ics(request, conference, mode='conference'):
     if mode == 'my-schedule':
@@ -140,6 +143,7 @@ def schedule_ics(request, conference, mode='conference'):
     cal = conference2ical(conference, user=uid, abstract='abstract' in request.GET)
     return http.HttpResponse(list(cal.encode()), content_type='text/calendar')
 
+
 def schedule_list(request, conference):
     sids = cmodels.Schedule.objects\
         .filter(conference=conference)\
@@ -151,9 +155,11 @@ def schedule_list(request, conference):
     }
     return render(request, 'p3/schedule_list.html', ctx)
 
+
 @login_required
 def jump_to_my_schedule(request):
     return redirect('p3-schedule-my-schedule', conference=settings.CONFERENCE_CONFERENCE)
+
 
 @login_required
 def my_schedule(request, conference):

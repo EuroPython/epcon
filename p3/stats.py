@@ -7,6 +7,7 @@ from django.db.models import Q, Count
 from p3 import models
 from conference import models as cmodels
 
+
 def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
     qs = Ticket.objects\
         .filter(fare__conference=conf)
@@ -24,15 +25,18 @@ def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
             qs = qs.filter(fare__code=fare_code)
     return qs
 
+
 def _assigned_tickets(conf, ticket_type='conference'):
     return _tickets(conf, ticket_type)\
         .exclude(p3_conference=None)\
         .exclude(name='')\
         .exclude(p3_conference__assigned_to='')
 
+
 def _unassigned_tickets(conf, ticket_type='conference', only_complete=True):
     return _tickets(conf, ticket_type, only_complete=only_complete)\
         .filter(Q(p3_conference=None)|Q(name='')|Q(p3_conference__assigned_to=''))
+
 
 def shirt_sizes(conf):
     sizes = dict(models.TICKET_CONFERENCE_SHIRT_SIZES)
@@ -49,6 +53,7 @@ def shirt_sizes(conf):
     return output
 shirt_sizes.short_description = "Tshirts size"
 
+
 def diet_types(conf):
     diets = dict(models.TICKET_CONFERENCE_DIETS)
     qs = _assigned_tickets(conf)\
@@ -63,6 +68,7 @@ def diet_types(conf):
         })
     return output
 diet_types.short_description = "Diet"
+
 
 def presence_days(conf, code=None):
     qs = {
@@ -84,7 +90,8 @@ def presence_days(conf, code=None):
     output = {
         'columns': (
             ('total', 'Total'),
-            ('total_nc', '<span title="Estimate with unassigned tickets and incomplete bank orders">Estimate with NA/NC</span>'),
+            ('total_nc', '<span title="Estimate with unassigned tickets and incomplete '
+                                      'bank orders">Estimate with NA/NC</span>'),
         ),
         'data': [],
     }
@@ -121,6 +128,7 @@ def presence_days(conf, code=None):
             })
     return output
 presence_days.short_description = "Conference attendance"
+
 
 def tickets_status(conf, code=None):
     orphan_tickets = _tickets(conf, 'conference')\
@@ -454,6 +462,7 @@ def speaker_status(conf, code=None):
     return output
 speaker_status.short_description = 'Speakers stats'
 
+
 def conference_speakers(conf, code=None):
     all_spks = Speaker.objects.byConference(conf, only_accepted=False)
     accepted_spks = Speaker.objects.byConference(conf)
@@ -508,6 +517,7 @@ def conference_speakers(conf, code=None):
             })
     return output
 conference_speakers.short_description = 'Speakers'
+
 
 def conference_speakers_day(conf, code=None):
     from p3 import dataaccess
@@ -584,6 +594,7 @@ def conference_speakers_day(conf, code=None):
         return output
 
 conference_speakers_day.short_description = 'Speaker for day'
+
 
 def hotel_tickets(conf, code=None):
     qs = {}

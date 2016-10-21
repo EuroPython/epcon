@@ -16,13 +16,12 @@ from django.contrib.auth.decorators import user_passes_test
 
 ### Decorators
 
-def group_required(*group_names):
 
+def group_required(*group_names):
     """ Check for group membership before granting access to the view.
 
         You can pass in one or more group names to the decorator. The
         user has to be member of all listed groups.
-
     """
     def group_membership_check(user):
         if not user.is_authenticated():
@@ -32,13 +31,11 @@ def group_required(*group_names):
         return bool(user.groups.filter(name__in=group_names))
     return user_passes_test(group_membership_check)
 
+
 ### Helpers
-
 def assign_ticket_to_user(ticket, user=None):
-
     """ Assign ticket to the given user (defaults to buyer of the
         ticket if not given).
-
     """
     if user is None:
         user = ticket.user
@@ -69,10 +66,9 @@ def assign_ticket_to_user(ticket, user=None):
 
     p3c.save()
 
+
 def conference_ticket_badge(tickets):
-    """
-    vedi conference.settings.TICKET_BADGE_PREPARE_FUNCTION
-    """
+    """See conference.settings.TICKET_BADGE_PREPARE_FUNCTION."""
     conferences = {}
     for c in Conference.objects.all():
         conferences[c.code] = {
@@ -135,6 +131,7 @@ def conference_ticket_badge(tickets):
         })
     return groups.values()
 
+
 def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
     import urllib, hashlib
 
@@ -151,10 +148,8 @@ def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
     return gravatar_url
 
 def spam_recruiter_by_conf(conf):
-    """
-    Restituisce un queryset con gli User che hanno accettato di essere
-    contattati via email per motivi di recruiting
-    """
+    """ Return a queryset with the User who have agreed to be
+    contacted via email for the purpose of recruiting."""
     from django.contrib.auth.models import User
 
     tickets = settings.CONFERENCE_TICKETS(conf, ticket_type='conference')
@@ -171,6 +166,7 @@ def spam_recruiter_by_conf(conf):
             email__in=assigned.values('p3_conference__assigned_to'),\
             attendeeprofile__p3_profile__spam_recruiting=True)
     return first_run | second_run
+
 
 from django.core.cache import cache
 from django.utils.http import urlquote
@@ -257,6 +253,7 @@ def conference2ical(conf, user=None, abstract=False):
         timetables = [ TimeTable2.fromEvents(x, events[x]) for x in sids ]
         cal = f(timetables, altf=altf)
     return cal
+
 
 class RawSubquery(object):
     """

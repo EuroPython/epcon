@@ -233,6 +233,7 @@ def _on_attendees_connected(sender, **kw):
     ).send()
 attendees_connected.connect(_on_attendees_connected)
 
+
 def _on_event_booked(sender, **kw):
     from conference.dataaccess import event_data
     from hcomments.models import ThreadSubscription
