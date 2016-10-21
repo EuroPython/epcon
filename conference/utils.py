@@ -47,16 +47,16 @@ def send_email(force=False, *args, **kwargs):
 
 def _input_for_ranking_of_talks(talks, missing_vote=5):
     """
-    Dato un elenco di talk restituisce l'input da passare a vengine; se un
-    utente non ha espresso una preferenza per un talk gli viene assegnato il
-    valore `missing_vote`.
+    Given a list of talk returns the output to pass to vengine; if a user
+    has not expressed a preference for a talk he was awarded the `missing_vote` value.
     """
-    # se talks è un QuerySet evito di interrogare il db più volte
+    # If talks is a QuerySet, I don't want to interact with the database.
     talks = list(talks)
     tids = set(t.id for t in talks)
-    # come candidati uso gli id dei talk...
+
+    # Join the talk ids
     cands = ' '.join(map(str, tids))
-    # e nel caso di pareggi faccio vincere il talk presentato prima
+    # Join the sorted talks (by the created date)
     tie = ' '.join(str(t.id) for t in sorted(talks, key=lambda x: x.created))
     vinput = [
         '-m schulze',
@@ -73,16 +73,15 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
         users[vote.user_id][vote.vote].append(vote.talk_id)
 
     for votes in users.values():
-        # tutti i talk non votati dall'utente ottengono il voto standard
-        # `missing_vote`
+        # All the unrated talks by thte user get the standard 'missing_vote' vote.
         missing = tids - set(sum(votes.values(), []))
         if missing:
             votes[missing_vote].extend(missing)
 
-        # per esprimere le preferenze nel formati di vengin:
-        #   cand1=cand2 -> i due candidati hanno avuto la stessa preferenza
-        #   cand1>cand2 -> cand1 ha avuto più preferenze di cand2
-        #   cand1=cand2>cand3 -> cand1 uguale a cand2 entrambi maggiori di cand3
+        # To express preferences in format
+        # cand1 = cand2 -> the two candidates have had the same preference
+        # cand1 > cand2 -> cand1 had more than cand2 preferences
+        # cand1 = cand2 > cand3 -> cand1 equals cand2 both greater than cand3
         input_line = []
         ballot = sorted(votes.items(), reverse=True)
         for vote, tid in ballot:
@@ -111,11 +110,11 @@ def ranking_of_talks(talks, missing_vote=5):
 
 def voting_results():
     """
-    Restituisce i risultati della votazione memorizzati nel file
-    settings.TALKS_RANKING_FILE. La lista ritornata è un elenco di tuple
-    (talk__id, talk__type, talk__language). Se TALKS_RANKING_FILE non è settato
-    o non esiste il valore di ritorno è None.
+    Returns the voting results stored in the file settings.TALKS_RANKING_FILE.
+    The returned list is a list of tuples (talk__id, talk__type, talk__language).
+    If TALKS_RANKING_FILE is not set or does not exist the return value is None.
     """
+    # FIXME: Rewrite this part with 'with open(settings.TALKS_RANKING_FILE)'
     if settings.TALKS_RANKING_FILE:
         try:
             f = file(settings.TALKS_RANKING_FILE)
@@ -145,7 +144,7 @@ class TimeTable2(object):
         self.sid = sid
         self._analyzed = False
         self.events = events
-        # elenco track nell'ordine giusto
+        # Track list in the right order
         self._tracks = list(Track.objects\
             .filter(schedule=sid)\
             .order_by('order')\
@@ -193,9 +192,9 @@ class TimeTable2(object):
     @classmethod
     def fromTracks(cls, tids):
         """
-        Costruisce una TimeTable con gli eventi presenti nelle track
-        specificate. La Timetable risultante verrà limitata alle sole track
-        elencate indipendentemente da quali track sono associate agli eventi.
+        If builds a TimeTable with present events in specified track.
+        The resulting TimeTable will be limited to the track listed regardless
+        of which track are associated with the events.
         """
         qs = EventTrack.objects\
             .filter(track__in=tids)\
@@ -226,7 +225,7 @@ class TimeTable2(object):
     def _analyze(self):
         if self._analyzed:
             return
-        # step 1 - cerco eventi "sovrapposti"
+        # step 1 - I try "stacked" events
         for t in self._tracks:
             events = {}
             timeline = []
@@ -251,8 +250,7 @@ class TimeTable2(object):
 
     def iterOnTracks(self, start=None):
         """
-        Itera sugli eventi della timetable una track per volta, restituisce un
-        iter((track, [events])).
+        Iterates through the events of the timetable a track at a time, returns an iterator ((track, [events]))
         """
         self._analyze()
         for track in self._tracks:
@@ -286,8 +284,8 @@ class TimeTable2(object):
 
     def iterOnTimes(self, step=None):
         """
-        Itera sugli eventi della timetable raggruppandoli a seconda del tempo
-        di inizio, restituisce un iter((time, [events])).
+        Iterates through the events of the timetable grouping them according
+        to the time start, returns a process ((time, [events]))
         """
         self._analyze()
         trasposed = defaultdict(list)
@@ -307,7 +305,7 @@ class TimeTable2(object):
 
     def limits(self):
         """
-        Restituisce data di inizio e fine della TimeTable
+        Returns start date and the end of the TimeTable
         """
         start = end = None
         for e in self.events.values():
@@ -320,8 +318,7 @@ class TimeTable2(object):
 
     def slice(self, start=None, end=None):
         """
-        Restituisce un nuovo TimeTable contenente solo gli eventi compresi tra
-        start e end.
+        Returns a new TimeTable containing only events between start and end.
         """
         e0, e1 = self.limits()
         if start is None:
@@ -355,9 +352,8 @@ class TimeTable2(object):
 
     def adjustTimes(self, start=None, end=None):
         """
-        Modifica la TimeTable perchè inizi e termini con i tempi specificati
-        (se specificati).  Se necessario vengono aggiunti degli eventi multi
-        traccia.
+        Change the TimeTable because begin and end with the specified time (if specified).
+        If necessary, are added multi events track.
         """
         tpl = {
             'id': None,
@@ -389,11 +385,10 @@ class TimeTable2(object):
 
 def collapse_events(tt, threshold):
     """
-    Data una timetable cerca i momenti temporali che possono essere
-    "collassati" perchè non interessanti, che non portano modifiche allo
-    schedule.
+    Given a timetable looks for moments in time that can be "Collapsed"
+    because not interesting, that do not lead to changes schedule.
 
-    Ad esempio una timetable con eventi molto lunghi 
+    For example, a timetable with very long events.
     """
     if isinstance(threshold, int):
         threshold = { None: threshold }
@@ -516,8 +511,8 @@ class TimeTable(object):
                 })
                 return
             elif isinstance(prev, TimeTable.Reference):
-                # sto cercando di inserire un evento su una cella occupata da
-                # un reference, un estensione temporale di un altro evento. 
+                # I am trying to place an event on a cell occupied by a reference,
+                # a time extension of an other event.
                 #
                 # Se nessuno dei due eventi (il nuovo e il precedente) è flex
                 # notifico un warning (nel caso uno dei due sia flex non dico
@@ -579,8 +574,8 @@ class TimeTable(object):
 
     def eventsAtTime(self, start, include_reference=False):
         """
-        ritorna le righe che contengono un Event (e un Reference se
-        include_reference=True) al tempo passato.
+        Returns the rows that contain an Event (and Reference if include_reference = True)
+        in the past tense.
         """
         output = []
         for r in self.rows:
@@ -594,7 +589,7 @@ class TimeTable(object):
 
     def changesAtTime(self, start):
         """
-        ritorna le righe che introducono un cambiamento al tempo passato.
+        Returns the rows that introduce a change in the past tense.
         """
         output = []
         for key, item in self._data.items():
@@ -711,18 +706,15 @@ def render_event_video_cover(eid, thumb=(256, 256)):
 
 def render_badge(tickets, cmdargs=None, stderr=subprocess.PIPE):
     """
-    Prepara i badge dei biglietti passati
+    Prepare the badges of the past tickets.
 
-    I biglietti vengono processati dalla funzione
-    settings.TICKET_BADGE_PREPARE_FUNCTION che può raggrupparli come crede;
-    ogni gruppo viene memorizzato in una directory diversa.
+    The tickets are processed by the function settings.TICKET_BADGE_PREPARE_FUNCTION that can group them as they wish;
+    each group is stored in a different directory.
 
-    L'output contiene una tupla di tre elementi per ogni gruppo ritornato dalla
-    funzione di preparazione:
-
-        - nome del gruppo (v. settings.TICKET_BADGE_PREPARE_FUNCTION)
-        - directory contenente i badge
-        - document json passato in input alla funzione di rendering
+    The output contains a tuple of three elements for each group returned from preparation function:
+    * Name of the group (v. settings.TICKET_BADGE_PREPARE_FUNCTION)
+    * Directory containing the badge
+    * JSON document passed as input to the rendering function.
     """
     cmdargs = cmdargs or []
     output = []
@@ -782,15 +774,10 @@ def timetables2ical(tts, altf=lambda d, comp: d):
                     continue
                 uniq.add(e['id'])
                 track = strip_tags(sdata['tracks'][e['tracks'][0]].title)
-                # ical supporta date in una timezone diversa da UTC attraverso
-                # il parametro TZID:
+                # iCal supports dates in a different timezone to UTC through TZID parameter:
                 # DTSTART;TZID=Europe/Rome:20120702T093000
                 #
-                # Il problema nel non usare UTC è che il nome della timezone è
-                # solo un identificativo locale al file ica, e deve esistere
-                # una struttura VTIMEZONE che ne descrive le proprietà.
-                #
-                # Per questo ho deciso di convertire i tempi in UTC
+                # So, decided to convert the time in UTC.
                 start = utc.normalize(tz.localize(e['time']).astimezone(utc))
                 end = utc.normalize(tz.localize(e['time'] + timedelta(seconds=e['duration']*60)).astimezone(utc))
                 ce = {
