@@ -288,14 +288,19 @@ class AttendeeProfileManager(models.Manager):
             slug = '-1'
         return slug
 
+
     def randomUUID(self, length=6):
         import string
         import random
         return ''.join(random.sample(string.letters + string.digits, length))
 
+    # TODO: Use the savepoint.
+    # Remember that, at least up to 1.4 django, SQLite backend does not support
+    # savepoint. Then you must move from cursor.execute(); if you ever pass to PostgreSQL
+    # Rememeber  to roll back the savepoint in the except (or set the autocommit)
     def getOrCreateForUser(self, user):
         """
-        Ritorna o crea il profilo associato all'utente.
+        Retunrns or create the associated profile
         """
         try:
             p = AttendeeProfile.objects.get(user=user)
