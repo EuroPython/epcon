@@ -449,8 +449,6 @@ class SpeakerAdmin(admin.ModelAdmin):
     inlines = (TalkSpeakerInlineAdmin,)
 
     def queryset(self, request):
-        # list_select_related non insegue anche le reverse onetoone, devo
-        # chiederle esplicitamente
         qs = super(SpeakerAdmin, self).queryset(request)
         qs = qs.select_related('user__attendeeprofile',)
         return qs
@@ -468,7 +466,7 @@ class SpeakerAdmin(admin.ModelAdmin):
             .order_by('speaker__user__first_name', 'speaker__user__last_name')\
             .distinct()\
             .values_list('speaker', flat=True)
-        # precarico i profili per aiutare il template
+        # preload the profiles because we need to help the template
         dataaccess.profiles_data(qs)
         speakers = dataaccess.speakers_data(qs)
         groups = {}
@@ -515,9 +513,7 @@ class TalkAdminForm(MultiLingualForm):
     class Meta:
         model = models.Talk
 
-    # per semplificare l'inserimento del video permetto all'utente di inserire
-    # il blob html che copia da viddler e da li estraggo la url che mi
-    # interessa
+    # Try to check if the url will match the pattern of Viddler
     video_check = re.compile(r'http://www\.viddler\.com/player/[^/]+/?')
 
     def clean_video(self):
@@ -541,9 +537,8 @@ class TalkAdmin(admin.ModelAdmin):
     form = TalkAdminForm
 
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        # utilizzo dataaccess per fare una sola query verso il db, in questo
-        # modo ho subito tutti i dati pronti (utile ad esempio per mostrare i
-        # nomi degli speaker)
+        # Use dataaccess to do only one query to the database, and try to fetch
+        # all the information of the speaker and the talks.
         talks = dataaccess.talks_data(queryset.values_list('id', flat=True))
         self.cached_talks = dict([(x['id'], x) for x in talks])
         sids = [ s['id'] for t in talks for s in t['speakers'] ]
@@ -628,9 +623,7 @@ class SponsorAdmin(admin.ModelAdmin):
     inlines = [ SponsorIncomeInlineAdmin ]
 
     def conferences(self, obj):
-        """
-        Elenca le conferenze sponsorizzate dallo sponsor
-        """
+        """List the sponsorised talks by the sponsor"""
         return ', '.join(s.conference for s in obj.sponsorincome_set.all())
 
 admin.site.register(models.Sponsor, SponsorAdmin)
@@ -645,9 +638,7 @@ class MediaPartnerAdmin(admin.ModelAdmin):
     inlines = [ MediaPartnerConferenceInlineAdmin ]
 
     def conferences(self, obj):
-        """
-        Elenca le conferenze a cui il partner ha partecipato
-        """
+        """Will give the conferences which the partner has participated"""
         return ', '.join(s.conference for s in obj.mediapartnerconference_set.all())
 
 admin.site.register(models.MediaPartner, MediaPartnerAdmin)
@@ -1173,10 +1164,10 @@ class ConferenceTagAdmin(admin.ModelAdmin):
                 .filter(id__in=tags_id)
             discard = [ t for t in tags if t.id != target ]
 
-            # Non voglio utilizzare le operazioni bulk per l'update di
-            # ConferenceTaggedItem e la cancellazione di ConferenceTag
-            # (objects.update, objects.delete) perché la cache gestita da
-            # dataaccess si appoggia ai segnali per rimanere coerente.
+            # We don't want to use the bulk operation for the update of
+            # ConferenceTaggedItem and the cancellation of ConferenceTag
+            # (objects.update, objects.delete) because the management of the
+            # cache of dataaccess is based on the signals for the coherence.
             for item in models.ConferenceTaggedItem.objects.filter(tag__in=discard):
                 item.tag_id=target
                 item.save()

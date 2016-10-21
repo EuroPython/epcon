@@ -9,12 +9,12 @@ import logging
 
 log = logging.getLogger('conference')
 
-# emesso quando uno speaker (il sender) presenta un nuovo paper
+# Signal when a speaker will sent a new talk
 new_paper_submission = Signal(providing_args=['talk'])
 
 def _new_paper_email(sender, **kw):
     """
-    Invia una mail agli organizzatori con i dettagli sul paper presentato.
+    Send an email to the organizers with details on the paper presented.
     """
     recipients = settings.TALK_SUBMISSION_NOTIFICATION_EMAIL
     if not recipients:
@@ -48,26 +48,22 @@ Tags: %(tags)s
 
 new_paper_submission.connect(_new_paper_email)
 
-# emesso quando una tariffa deve calcolare il proprio prezzo; il sender è
-# un'istanza di Fare mentre calc è un dict contenente due chiavi:
-#   total -> inizializzato con fare.price * qty può essere modificato da un
-#   listener
-#   params -> parametri inseriti dall'utente (come la quantità)
+# Issued when a charge has to calculate its price;
+# price * qty
 fare_price = Signal(providing_args=['calc'])
 
-# emesso quando una tariffa deve creare uno o più biglietti per un determinato
-# utente. Il `sender` è l'istanza di `Fare` mentre `params` è un dict con due
-# chiavi:
-#   user -> l'utente per il quale deve essere creato il biglietto
-#   tickets -> una lista in cui inserire i biglietti creati
+# Issued when a charge must create one or more tickets for a particular user.
+# The `sender` is the instance of `Fare` while params is a dict with two keys.
+#   user -> the user for whom the ticket has to be created
+#   tickets -> a list in which to place the created tickets
 #
-# Se nessun listener modifica `params['tickets']` l'implementazione di default
-# crea un solo `Ticket` per l'utente.
+# if no listeners change `params['tickets']`, the default implementation
+# creates a single `Ticket` user.
 fare_tickets = Signal(providing_args=['params'])
 
 def on_talk_saved(sender, **kw):
     """
-    Si assicura che il profilo di uno speaker con talk 'accepted' sia visibile.
+    Check that the profile of a speaker with a accepted talk is visible
     """
     if sender is Talk:
         o = kw['instance']
@@ -89,6 +85,6 @@ def on_talk_saved(sender, **kw):
 
 post_save.connect(on_talk_saved, sender=Talk)
 post_save.connect(on_talk_saved, sender=TalkSpeaker)
-# traccio anche gli Event perché c'è una action custom nell'admin che imposta
-# tutti i talk presenti nello schedule come accepted
+# Also I draw the event because there is a custom acion in the admin that
+# sets all the talks present in the schedule as accepted.
 post_save.connect(on_talk_saved, sender=Event)
