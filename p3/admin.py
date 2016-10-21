@@ -482,7 +482,7 @@ admin.site.unregister(amodels.Invoice)
 admin.site.register(amodels.Invoice, InvoiceAdmin)
 
 
-class TalkVoteAdmin(admin.ModelAdmin):
+class VotoTalkAdmin(admin.ModelAdmin):
     list_display = ('user', '_name', 'talk', 'vote')
     list_filter = ('talk__conference',
                    )
@@ -498,7 +498,7 @@ class TalkVoteAdmin(admin.ModelAdmin):
     _name.allow_tags = True
     _name.admin_order_field = 'user__first_name'
 
-admin.site.register(cmodels.VotoTalk, TalkVoteAdmin)
+admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
 
 class AttendeeProfileAdmin(admin.ModelAdmin):
