@@ -300,7 +300,7 @@ class AttendeeProfileManager(models.Manager):
     # Rememeber  to roll back the savepoint in the except (or set the autocommit)
     def getOrCreateForUser(self, user):
         """
-        Retunrns or create the associated profile
+        Returns or create the associated profile
         """
         try:
             p = AttendeeProfile.objects.get(user=user)
