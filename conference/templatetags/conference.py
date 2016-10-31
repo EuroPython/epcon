@@ -28,8 +28,6 @@ from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conver
 from conference.signals import timetable_prepare
 from conference.utils import TimeTable
 
-from pages.settings import PAGE_DEFAULT_LANGUAGE
-
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
 

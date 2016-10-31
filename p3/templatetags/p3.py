@@ -478,7 +478,7 @@ def p3_profiles_data(uids):
 def p3_talk_data(tid):
     return dataaccess.talk_data(tid)
 
-@register.simple_tag(takes_context=True)
+@register.assignment_tag(takes_context=True)
 def get_form(context, name, bound="auto", bound_field=None):
     if '.' in name:
         from conference.utils import dotted_import
@@ -510,7 +510,7 @@ def get_form(context, name, bound="auto", bound_field=None):
         form.is_valid()
     return form
 
-@register.simple_tag()
+@register.assignment_tag()
 def pending_email_change(user):
     try:
         t = amodels.Token.objects.get(ctype='e', user=user)
@@ -518,7 +518,7 @@ def pending_email_change(user):
         return None
     return t.payload
 
-@register.simple_tag()
+@register.assignment_tag()
 def admin_ticketroom_overall_status():
     status = models.TicketRoom.objects.overall_status()
 
