@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 
 cache_me = cachef.CacheFunction(prefix='p3:')
 
+
 def profile_data(uid, preload=None):
     if preload is None:
         preload = {}
@@ -54,6 +55,7 @@ def profile_data(uid, preload=None):
             })
     return profile
 
+
 def _i_profile_data(sender, **kw):
     # invalidation signal is handled by cachef
     return 'profile:%s' % (kw['instance'].profile_id,)
@@ -62,6 +64,7 @@ profile_data = cache_me(
     signals=(cdata.profile_data.invalidated,),
     models=(models.P3Profile,),
     key='profile:%(uid)s')(profile_data, _i_profile_data)
+
 
 def talk_data(tid, preload=None):
     if preload is None:
@@ -74,6 +77,7 @@ def talk_data(tid, preload=None):
             .get(talk=tid)
     talk['sub_community'] = (p3t.sub_community, p3t.get_sub_community_display())
     return talk
+
 
 def _i_talk_data(sender, **kw):
     # invalidation signal is handled by cachef

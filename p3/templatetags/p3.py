@@ -69,7 +69,7 @@ def box_download(context, fname, label=None):
     try:
         fpath = os.path.join(settings.STUFF_DIR, fname)
         stat = os.stat(fpath)
-    except (AttributeError, OSError), e:
+    except (AttributeError, OSError) as e:
         fsize = ftype = None
     else:
         fsize = stat.st_size

@@ -20,8 +20,7 @@ def _dump_fields(o):
     from django.db.models.fields.files import FieldFile
     output = {}
     for f in o._meta.fields:
-        # uso f.column invece che f.name perchè non voglio seguire le foreign
-        # key
+        # use the f.column instead of the f.name, to be more generic
         v = getattr(o, f.column)
         if isinstance(v, FieldFile):
             # Convert uploaded files to their URLs
@@ -301,8 +300,8 @@ def talks_data(tids):
     for r in events:
         preload[r['talk']]['event'].append(r['id'])
 
-    # talk_data utilizza profile_data per recuperare alcuni dati sullo speaker,
-    # precarico l'elenco per minimizzare il numero di query necessario
+    # talk_data uses profile_data, we try to fetch all the data of the speaker
+    # because we need to optimize the number of needed queries.
     profiles_data(pids)
 
     output = []
@@ -460,8 +459,8 @@ event_data = cache_me(
 
 def tags():
     """
-    Ritorna i tag utilizzati in conference associati agli oggetti che li
-    utilizzano.
+    Return the used tags from the associated conference with the associated
+    objects.
     """
     qs = models.ConferenceTaggedItem.objects\
          .all()\
@@ -484,8 +483,8 @@ tags = cache_me(
 
 def tags_for_talks(conference=None, status=None):
     """
-    Ritorna i tag utilizzati per i talk filtrandoli per conferenza e stato del
-    talk.
+    Return the used tags by talks, filtered by conferences and state of the
+    talk
     """
     talks = models.Talk.objects.all().values('id')
     if conference:
@@ -538,8 +537,8 @@ def events(eids=None, conf=None):
     for row in tracks:
         preload[row['event']]['tracks'].append(row['track__track'])
 
-    # precarico le cache per essere sicuro che event_data non debba toccare il
-    # database per ogni evento
+    # pre-load the cache, to be sure that event_data is not fetched from the
+    # database each time.
     talks_data(
         models.Talk.objects\
             .filter(id__in=events.values('talk'))\
@@ -683,15 +682,15 @@ def fares(conference):
         output.append(r)
     return output
 
-# XXX: cache disabilitata, perché il campo 'valid' dipende dalla data di
-# scadenza della Fare e questo non funziona con la cache.
+# XXX: Cache disabled, because the 'valid' field depends of the expiration date
+# of the decision and does not work with the cache
 #fares = cache_me(
 #    models=(models.Fare,),
 #    key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
 
 def user_votes(uid, conference):
     """
-    Restituisce i voti che l'utente ha assegnato ai talk della conferenza
+    Get the votes of the user for one conference
     """
     votes = models.VotoTalk.objects\
         .filter(user=uid, talk__conference=conference)
@@ -707,7 +706,7 @@ user_votes = cache_me(
 
 def user_events_interest(uid, conference):
     """
-    Restituisce gli eventi per cui l'utente ha espresso un "interesse".
+    Get the interesting events for the selected user, conference.
     """
     interests = models.EventInterest.objects\
         .filter(user=uid, event__schedule__conference=conference)

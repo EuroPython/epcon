@@ -54,3 +54,4 @@ suds==0.4
 Unidecode==0.04.17
 django-recaptcha==1.0.5
 django-contrib-comments==1.7.1
+django_extensions==1.6.7

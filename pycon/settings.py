@@ -331,10 +331,11 @@ INSTALLED_APPS = (
     'mptt',
 
     'microblog',
+
     'django_xmlrpc',
     'pingback',
     'rosetta',
-    # 'south',
+
     'email_template',
     'paypal.standard.ipn',
     'filer',
@@ -349,6 +350,7 @@ INSTALLED_APPS = (
     'cms_utils',
 
     'raven.contrib.django.raven_compat',
+    'django_extensions',
 )
 
 # prevent issue with django.apps not being found
@@ -1266,3 +1268,8 @@ except ImportError, reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
+
+GRAPH_MODELS = {
+    'all_applications': True,
+    'group_models': True,
+}

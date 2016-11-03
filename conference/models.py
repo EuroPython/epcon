@@ -36,9 +36,8 @@ import logging
 log = logging.getLogger('conference.tags')
 
 
-# ConferenceTag e ConferenceTaggedItem servono per creare un "namespace" per i
-# tag relativi a conference. In questo modo non devo preocuparmi di altri
-# utilizzi di taggit fatti da altre app.
+# ConferenceTag and ConferenceTaggedItem are used to create a "namesapce"
+# for the related tags to a conference.
 class ConferenceTagManager(models.Manager):
     def get_queryset(self):
         return self._QuerySet(self.model)
@@ -65,8 +64,7 @@ class ConferenceTag(TagBase):
             log.debug(u'saving new tag {}'.format(self.name))
             log.debug(u''.join(stack_trace[:-1]))
 
-            # prima di salvare questo tag mi assicuro che non ne esista un
-            # altro diverso solo per maiuscole/minuscole
+            # We check if the conference already exists
             try:
                 c = ConferenceTag.objects.get(name__iexact=self.name)
             except ConferenceTag.DoesNotExist:
@@ -89,8 +87,6 @@ class ConferenceManager(models.Manager):
         data = cache.get(key)
         if data is None:
             data = self.get(code=settings.CONFERENCE)
-            # mantengo in cache abbastanza a lungo perchè la query non sia più
-            # un problema
             cache.set(key, data, 60*60*24*7)
         return data
 
@@ -139,7 +135,7 @@ class Conference(models.Model):
         try:
             return self.cfp_start <= today <= self.cfp_end
         except TypeError:
-            # date non impostate
+            # there is no date, return False
             return False
 
     def voting(self):
@@ -147,17 +143,12 @@ class Conference(models.Model):
         try:
             return self.voting_start <= today <= self.voting_end
         except TypeError:
-            # date non impostate
+            # there is no date, return False
             return False
 
     def conference(self):
         today = datetime.date.today()
-        try:
-            return self.conference_start <= today <= self.conference_end
-        except TypeError:
-            raise
-            # date non impostate
-            return False
+        return self.conference_start <= today <= self.conference_end
 
 post_save.connect(ConferenceManager.clear_cache, sender=Conference)
 
@@ -168,7 +159,7 @@ class DeadlineManager(models.Manager):
 
 class Deadline(models.Model):
     """
-    deadline per il pycon
+    Deadline for the PyCon
     """
     date = models.DateField()
 
@@ -186,10 +177,7 @@ class Deadline(models.Model):
 
     def content(self, lang, fallback=True):
         """
-        Ritorna il DeadlineContent nella lingua specificata.  Se il
-        DeadlineContent non esiste e fallback è False viene sollevata
-        l'eccezione ObjectDoesNotExist. Se fallback è True viene ritornato il
-        primo DeadlineContent disponibile.
+        Return the dead line content in the specified language.
         """
         contents = dict((c.language, c) for c in self.deadlinecontent_set.exclude(body=''))
         if not contents:
@@ -204,7 +192,7 @@ class Deadline(models.Model):
 
 class DeadlineContent(models.Model):
     """
-    Testo, multilingua, di una deadline
+    Content of a deadline.
     """
     deadline = models.ForeignKey(Deadline)
     language = models.CharField(max_length=3)
@@ -286,7 +274,7 @@ class AttendeeProfileManager(models.Manager):
                 counter = int(r.rsplit('-', 1)[1])
             except (ValueError, IndexError):
                 if last is None:
-                    # l'if mi tutela da slug del tipo "str-str-str"
+                    # The protection from slug like "str-str-str"
                     last = 0
                 continue
             if counter > last:
@@ -295,26 +283,24 @@ class AttendeeProfileManager(models.Manager):
         if last is not None:
             slug = '%s-%d' % (slug, last+1)
         elif not slug:
-            # slug può essere una stringa vuota solo se lo user ha nome e
-            # cognome vuoti e se è il primo con questa anomalia.
-            # impostando lo slug a "-1" risolvo la situazione anche per i
-            # successivi che trovando un precedente continueranno la sequenza
+            # if there is no slug, because the firstname or the lastname are empties,
+            # we will return '-1'
             slug = '-1'
         return slug
+
 
     def randomUUID(self, length=6):
         import string
         import random
         return ''.join(random.sample(string.letters + string.digits, length))
 
-    # TODO: usare i savepoint. Ricordarsi che, almeno fino a django 1.4, il
-    # backend sqlite non supporta i savepoint nonostante sqlite lo faccia da
-    # tempo, quindi si deve passare da cursor.execute(); se mai passeremo a
-    # postgres ricordarsi di fare rollback del savepoint nell'except (o
-    # impostare l'autocommit)
+    # TODO: Use the savepoint.
+    # Remember that, at least up to 1.4 django, SQLite backend does not support
+    # savepoint. Then you must move from cursor.execute(); if you ever pass to PostgreSQL
+    # Rememeber  to roll back the savepoint in the except (or set the autocommit)
     def getOrCreateForUser(self, user):
         """
-        Ritorna o crea il profilo associato all'utente.
+        Returns or create the associated profile
         """
         try:
             p = AttendeeProfile.objects.get(user=user)
@@ -336,7 +322,7 @@ class AttendeeProfileManager(models.Manager):
             p.uuid = uuid
             try:
                 p.save()
-            except IntegrityError, e:
+            except IntegrityError as e:
                 msg = str(e)
                 if 'uuid' in msg:
                     uuid = None
@@ -355,9 +341,8 @@ ATTENDEEPROFILE_VISIBILITY = (
 )
 class AttendeeProfile(models.Model):
     """
-    È il profilo di un partecipante (inclusi gli speaker) alla conferenza, il
-    collegamento con la persona è ottenuto tramite la foreign key verso
-    auth.User.
+    It's the profile of a participant (including the speaker) at the conference, there is a connection
+    to the auth.User via a ForeignKey.
     """
     user = models.OneToOneField('auth.User', primary_key=True)
     slug = models.SlugField(unique=True)
@@ -404,7 +389,7 @@ post_save.connect(postSaveResizeImageHandler, sender=AttendeeProfile)
 
 class Presence(models.Model):
     """
-    Presenza di un partecipante ad una conferenza.
+    Presence of a participant in a conference.
     """
     profile = models.ForeignKey(AttendeeProfile, related_name='presences')
     conference = models.CharField(max_length=10)
@@ -426,7 +411,7 @@ class AttendeeLinkManager(models.Manager):
 
 class AttendeeLink(models.Model):
     """
-    Collegamento tra due partecipanti
+    Connection between two participants
     """
     attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1')
     attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2')
@@ -438,7 +423,7 @@ class AttendeeLink(models.Model):
 class SpeakerManager(models.Manager):
     def byConference(self, conf, only_accepted=True, talk_type=None):
         """
-        Ritorna tutti gli speaker della conferenza
+        Return the speakers from a conference
         """
         qs = TalkSpeaker.objects\
             .filter(talk__conference=conf)\
@@ -462,10 +447,8 @@ class Speaker(models.Model, UrlMixin):
 
     def talks(self, conference=None, include_secondary=True, status=None):
         """
-        Restituisce i talk dello speaker filtrandoli per conferenza (se non
-        None); se include_secondary è True vengono inclusi anche i talk dove
-        non è lo speaker principale. Se status è diverso da None vengono
-        ritornati solo i talk con lo stato richiesto.
+        Build a QueryBuilder, try to fetch all the talks for the current speaker,
+        in function of the status and the selected conference.
         """
         qs = TalkSpeaker.objects.filter(speaker=self)
         if status in ('proposed', 'accepted', 'canceled'):
@@ -545,9 +528,7 @@ class TalkManager(models.Manager):
                 check = '%s-%d' % (slug, count)
             talk.slug = check
             talk.save()
-            # associo qui lo speaker così se c'è qualche problema, ad esempio
-            # lo speaker non è valido, il tutto avviene in una transazione ed
-            # il db rimane pulito.
+            # FIXME: This part should be done in one transaction.
             TalkSpeaker(talk=talk, speaker=speaker).save()
         return talk
 
@@ -648,15 +629,12 @@ class Talk(models.Model, UrlMixin):
     #    return int(duration.split("_")[1])
     #duration = property(_talk_duration)
     # Old duration code
-    # durata totale del talk (include la sessione di Q&A)T
+    # Duration of the talk (including the session of Q&A)
     duration = models.IntegerField(
         _('Duration'),
         help_text=_('This is the duration of the talk'))
-    # durata della sessione di Q&A
-    # Questi sono i tag che lo speaker suggerisce per il proprio talk, li ho
-    # messi qui per una questione di tempo (il cfp di BSW2011 incombe) ma la
-    # cosa giusta sarebbe creare un nuovo modello "Submission" legato al Talk e
-    # mettere li i dati del cfp
+
+    # Suggested Tags, normally, should use a submission model.
     suggested_tags = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -843,17 +821,17 @@ class Ticket(models.Model):
 
 class Sponsor(models.Model):
     """
-    Attraverso l'elenco di SponsorIncome un'istanza di Sponsor è collegata
-    con le informazioni riguardanti tutte le sponsorizzazioni fatte.
-    Sempre in SponsorIncome la conferenza è indicata, come in altri posti,
-    con una chiave alfanumerica non collegata a nessuna tabella.
+    Through the list of SponsorIncome instance of Sponsor it is connected
+    with information about all made sponsorships.
+    Always SponsorIncome the conference is shown, as in other places,
+    with an alphanumeric key is not connected to any table.
     """
-    sponsor = models.CharField(max_length=100, help_text='nome dello sponsor')
+    sponsor = models.CharField(max_length=100, help_text='Name of the sponsor')
     slug = models.SlugField()
     url = models.URLField(blank=True)
     logo = models.ImageField(
         upload_to=_fs_upload_to('sponsor'), blank=True,
-        help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
+        help_text='Insert a raster image big enough to be scaled as needed'
     )
     alt_text = models.CharField(max_length=150, blank=True)
     title_text = models.CharField(max_length=150, blank=True)
@@ -877,15 +855,15 @@ class SponsorIncome(models.Model):
 
 class MediaPartner(models.Model):
     """
-    I media partner sono degli sponsor che non pagano ma che offrono visibilità
-    di qualche tipo.
+    The media partners are the sponsors who do not pay but that offer visibility
+    of some kind.
     """
-    partner = models.CharField(max_length=100, help_text='nome del media partner')
+    partner = models.CharField(max_length=100, help_text='The media partner name')
     slug = models.SlugField()
     url = models.URLField(blank=True)
     logo = models.ImageField(
         upload_to=_fs_upload_to('media-partner'), blank = True,
-        help_text='Inserire un immagine raster sufficientemente grande da poter essere scalata al bisogno'
+        help_text='Insert a raster image big enough to be scaled as needed'
     )
 
     class Meta:
@@ -907,47 +885,45 @@ class MediaPartnerConference(models.Model):
 class ScheduleManager(models.Manager):
     def attendees(self, conference, forecast=False):
         """
-        restituisce il numero di partecipanti per ogni schedule della conferenza.
+        Returns the number of participants for each of the conference schedule.
         """
         return settings.SCHEDULE_ATTENDEES(conference, forecast)
 
     def events_score_by_attendance(self, conference):
         """
-        Utilizzandoi gli EventInterest ritorna un "punteggio di presenza" per
-        ogni evento; Il punteggio è proporzionale al numero di persone che
-        hanno esspresso interesse in quell'evento.
+        Using events Interest returns a "Presence score" for each event;
+        The score is proportional to the number of people who have expressed
+        interest in that event.
         """
-        # Considero una manifestazione di interesse, interest > 0, come la
-        # volontà di partecipare ad un evento e aggiungo l'utente tra i
-        # partecipanti. Se l'utente ha "votato" più eventi contemporanei
-        # considero la sua presenza in proporzione (quindi gli eventi potranno
-        # avere "punteggio" frazionario)
+        # I consider it an expression of interest, interest > 0, as the will to
+        # participate in an event and add the user among the participants. If the user
+        # has voted the most contemporary events. I consider his presence in proportion
+        # (so events can have fractional score)
         events = defaultdict(set)
         for x in EventInterest.objects\
                     .filter(event__schedule__conference=conference, interest__gt=0)\
                     .select_related('event__schedule'):
             events[x.event].add(x.user_id)
-        # Oltre agli EventInterest tengo conto anche degli EventBooking, la
-        # confidenza in questi casi è ancora maggiore
+        # In addition to EventInterest keep account of EventBooking,
+        # the confidence in these cases in even greater.
         for x in EventBooking.objects\
                     .filter(event__schedule__conference=conference)\
                     .select_related('event__schedule'):
             events[x.event].add(x.user_id)
 
-        # associo ad ogni evento il numero di voti che ha ottenuto;
-        # l'operazione è complicata dal fatto che non tutti i voti hanno lo
-        # stesso peso; se un utente ha marcato come +1 due eventi che avvengano
-        # in parallelo ovviamente non potrà partecipare ad entrambi, quindi il
-        # suo voto deve essere scalato
+        # Associate to each event the number of votes it has obtained;
+        # the operation is complicated by the fact that not all votes have the
+        # same weight; if a user has marked as +1 two events to occur
+        # Parallel obviously can not participate in both, so the
+        # his vote should be scaled
         scores = defaultdict(lambda: 0.0)
         for evt, users in events.items():
             group = list(Event.objects.group_events_by_times(events, event=evt))[0]
             while users:
                 u = users.pop()
-                # Quanto vale la presenza di `u` per l'evento `evt`?  Se
-                # `u` non partecipa a nessun'altro evento dello stesso
-                # gruppo allora 1, altrimenti un valore proporzionale al
-                # numero di eventi che gli interesssano.
+                # what is the presence of `` evt` u` for the event? If `u` does not take
+                # part in no other event of the same group, then 1, otherwise a value proportional
+                # to the number of events of interest.
                 found = [ evt ]
                 for other in group:
                     if other != evt:
@@ -964,8 +940,7 @@ class ScheduleManager(models.Manager):
 
     def expected_attendance(self, conference, factor=0.85):
         """
-        restituisce per ogni evento la previsione di partecipazione basata
-        sugli EventInterest.
+        Return for each event prediction of participation based on EventInterest
         """
         seats_available = defaultdict(lambda: 0)
         for row in EventTrack.objects\
@@ -979,17 +954,15 @@ class ScheduleManager(models.Manager):
             .select_related('schedule')
 
         output = {}
-        # adesso devo fare la previsione dei partecipanti per ogni evento, per
-        # farla divido il punteggio di un evento per il numero di votanti che
-        # hanno espresso un voto per un evento *nella medesima fascia
-        # temporale*; il numero che ottengo è un fattore k che se moltiplicato
-        # per la previsione di presenze al giorno mi da un'indicazione di
-        # quante persone sono previste per l'evento.
+        # Now I have to make the forecast of the participants for each event,
+        # to make it divide the score of an event by the number of voters who
+        # have expressed a vote for an event in the same time band * *; the number
+        # I get is a k factor when multiplied by the forecast of people a day gives
+        # me an indication of how many people are expected for the event.
         forecasts = self.attendees(conference, forecast=True)
 
-        # per calcolare il punteggio relativo ad una fascia temporale devo fare
-        # un doppio for sugli eventi, per limitare il numero delle iterazioni
-        # interno raggruppo gli eventi per giorno
+        # to calculate the score for a time band I have to do a double for the
+        # events, to limit the number of internal iterations I group events per day
         event_by_day = defaultdict(set)
         for e in events:
             event_by_day[e.schedule_id].add(e)
@@ -1017,15 +990,11 @@ class ScheduleManager(models.Manager):
 
 class Schedule(models.Model):
     """
-    Direttamente dentro lo schedule abbiamo l'indicazione della conferenza,
-    una campo alfanumerico libero, e il giorno a cui si riferisce.
-
-    Attraverso le ForeignKey lo schedule è collegato alle track e agli
-    eventi.
-
-    Questi ultimi possono essere dei talk o degli eventi "custom", come la
-    pyBirra, e sono collegati alle track in modalità "weak", attraverso un
-    tagfield.
+    Directly into the schedule we have an indication of the conference,
+    a free alphanumeric field, and the day to which it relates.
+    Though ForeignKey the schedule is attached to and track events.
+    The latter can be the talk of the events or "custom" as the pyBirra,
+    and are connected to the track in the "weak" mode, through a tagfield.
     """
     conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
     slug = models.SlugField()
@@ -1062,11 +1031,8 @@ class Track(models.Model):
 class EventManager(models.Manager):
     def group_events_by_times(self, events, event=None):
         """
-        Raggruppa gli eventi, ovviamente appartenenti a track diverse, che
-        si "accavvallano" temporalmente.
-
-        Rtorna un generatore che ad ogni iterazione restituisce un gruppo(list)
-        di eventi.
+        Groups the events, obviously belonging to different track, which they overlap in time.
+        Return a generator that at each iteration returns a group (list) of events.
         """
         def overlap(range1, range2):
             # http://stackoverflow.com/questions/9044084/efficient-data-range-overlap-calculation-in-python
@@ -1161,10 +1127,10 @@ class Event(models.Model):
 
     def get_track(self):
         """
-        ritorna la prima istanza di track tra quelle specificate o None se l'evento
-        è di tipo speciale
+        returns to the first track instance with the specified values or None if the event
+        It is of special type
         """
-        # XXX: utilizzare il template tag get_event_track che cacha la query
+        # XXX: Use the tag template get track event that hunts the query
         dbtracks = dict( (t.track, t) for t in self.schedule.track_set.all())
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:
@@ -1172,7 +1138,7 @@ class Event(models.Model):
 
     def split(self, time):
         """
-        Divide l'evento in più eventi della durata massima di `time` minuti.
+        It divides the event into multiple events lasting up to `time` minutes.
         """
         if self.talk_id and self.duration == 0:
             original = self.talk.duration
@@ -1268,21 +1234,20 @@ class EventBooking(models.Model):
 
 class Hotel(models.Model):
     """
-    Gli hotel permettono di tenere traccia dei posti convenzionati e non dove
-    trovare alloggio durante la conferenza.
+    Hotels allow you to track affiliated places and not where finding accommodations during the conference.
     """
-    name = models.CharField('nome dell\'hotel', max_length = 100)
-    telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
+    name = models.CharField('Name', max_length = 100)
+    telephone = models.CharField('Phone', max_length = 50, blank = True)
     url = models.URLField(blank = True)
     email = models.EmailField('email', blank = True)
-    availability = models.CharField('Disponibilità', max_length = 50, blank = True)
-    price = models.CharField('Prezzo', max_length = 50, blank = True)
+    availability = models.CharField('Availability', max_length = 50, blank = True)
+    price = models.CharField('Price', max_length = 50, blank = True)
     note = models.TextField('note', blank = True)
-    affiliated = models.BooleanField('convenzionato', default = False)
+    affiliated = models.BooleanField('Affiliated', default = False)
     visible = models.BooleanField('visibile', default = True)
-    address = models.CharField('indirizzo', max_length = 200, default = '', blank = True)
-    lng = models.FloatField('longitudine', default = 0.0, blank = True)
-    lat = models.FloatField('latitudine', default = 0.0, blank = True)
+    address = models.CharField('Address', max_length = 200, default = '', blank = True)
+    lng = models.FloatField('longitude', default = 0.0, blank = True)
+    lat = models.FloatField('latitude', default = 0.0, blank = True)
     modified = models.DateField(auto_now = True)
 
     class Meta:
@@ -1296,16 +1261,16 @@ SPECIAL_PLACE_TYPES = (
     ('pyevents', 'PyEvents'),
 )
 class SpecialPlace(models.Model):
-    name = models.CharField('nome', max_length = 100)
-    address = models.CharField('indirizzo', max_length = 200, default = '', blank = True)
+    name = models.CharField('Name', max_length = 100)
+    address = models.CharField('Address', max_length = 200, default = '', blank = True)
     type = models.CharField(max_length = 10, choices=SPECIAL_PLACE_TYPES)
     url = models.URLField(blank = True)
-    email = models.EmailField('email', blank = True)
-    telephone = models.CharField('contatti telefonici', max_length = 50, blank = True)
+    email = models.EmailField('Email', blank = True)
+    telephone = models.CharField('Phone', max_length = 50, blank = True)
     note = models.TextField('note', blank = True)
     visible = models.BooleanField('visibile', default = True)
-    lng = models.FloatField('longitudine', default = 0.0, blank = True)
-    lat = models.FloatField('latitudine', default = 0.0, blank = True)
+    lng = models.FloatField('longitude', default = 0.0, blank = True)
+    lat = models.FloatField('latitude', default = 0.0, blank = True)
 
     class Meta:
         ordering = [ 'name' ]
@@ -1337,7 +1302,7 @@ else:
 
 class DidYouKnow(models.Model):
     """
-    Lo sai che?
+    Do you know that ?
     """
     visible = models.BooleanField('visible', default = True)
     messages = generic.GenericRelation(MultilingualContent)

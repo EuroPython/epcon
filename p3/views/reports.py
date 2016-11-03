@@ -9,6 +9,7 @@ from p3 import models
 import mimetypes
 import os.path
 
+
 def secure_media(request, path):
     if not (request.user.is_superuser or request.user.groups.filter(name__in=('sim_report', 'hotel_report')).exists()):
         fname = os.path.splitext(os.path.basename(path))[0]
@@ -22,7 +23,7 @@ def secure_media(request, path):
         if guessed[1]:
             r['Content-Encoding'] = guessed[1]
         return r
-    except IOError, e:
+    except IOError as e:
         if e.errno == 2:
             raise http.Http404()
         else:
@@ -88,6 +89,7 @@ def sim_report(request):
         'compiled': compiled,
     }
     return render(request, 'p3/sim_report.html', ctx)
+
 
 @login_required
 def hotel_report(request):

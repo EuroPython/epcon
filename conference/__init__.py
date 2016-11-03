@@ -1,11 +1,10 @@
 # -*- coding: UTF-8 -*-
 """
-Package contenente views/models e templatetags utili in più conferenze
-pycon-like. Idealmente in questo package trovano posto la gestione di modelli
-comuni (tipo le deadlines) templatetags di utilità (come la navigazione) e
-codice particolare come l'accesso ad assopy. Questo package *non* dovrebbe
-includere ne' template ne' file statici.
+Package contains all the views and models
 """
+# TODO: We need to remove this stuff, there is no deps directory in the
+# structure of this 'conference' package. Useless, but I don't remove it because
+# it's not the goal of the 'translate_to_english_conference' branch.
 import os.path
 import sys
 

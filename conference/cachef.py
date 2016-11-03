@@ -42,6 +42,7 @@ except ImportError:
                     pass
                 else:
                     raise ValueError('too many values to unpack')
+
         def is_assigned(arg):
             if isinstance(arg,str):
                 return arg in arg2value

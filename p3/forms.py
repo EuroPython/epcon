@@ -234,15 +234,15 @@ class FormTicket(forms.ModelForm):
             raw = [ raw ]
         try:
             data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
-        except Exception, e:
-            raise forms.ValidationError('formato data non valido')
+        except Exception:
+            raise forms.ValidationError('data format not valid')
         conf = cmodels.Conference.objects.current()
         days = []
         for x in data:
             if conf.conference_start <= x.date() <= conf.conference_end:
                 days.append(x.strftime('%Y-%m-%d'))
             else:
-                raise forms.ValidationError('data non valida')
+                raise forms.ValidationError('data not valid')
         if self.single_day:
             return days[0] if days else ''
         else:
@@ -256,7 +256,9 @@ class FormTicket(forms.ModelForm):
 
 
 class FormTicketPartner(forms.ModelForm):
-    name = forms.CharField(max_length=60, required=False, help_text='Real name of the person that will attend this specific event.')
+    name = forms.CharField(max_length=60, required=False,
+                           help_text='Real name of the person that '
+                                     'will attend this specific event.')
     class Meta:
         model = cmodels.Ticket
         fields = ('name',)
@@ -338,7 +340,7 @@ class P3ProfileForm(cforms.ProfileForm):
         return data
 
     def save(self, commit=True):
-        assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
+        assert commit, "Postpone P3ProfileForm to work with commit=False"
         profile = super(P3ProfileForm, self).save(commit=commit)
         try:
             p3p = profile.p3_profile
@@ -351,7 +353,8 @@ class P3ProfileForm(cforms.ProfileForm):
 class P3ProfilePublicDataForm(P3ProfileForm):
     class Meta:
         model = cmodels.AttendeeProfile
-        fields = ('tagline', 'personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
+        fields = ('tagline', 'personal_homepage', 'interests', 'twitter',
+                  'company', 'company_homepage', 'job_title', 'location',)
 
     def clean_bio(self):
         return getattr(self.instance.getBio(), 'body', '')
@@ -361,7 +364,7 @@ class P3ProfilePublicDataForm(P3ProfileForm):
             oldl = cmodels.AttendeeProfile.objects\
                 .values('location')\
                 .get(user=self.instance.user_id)['location']
-        except (AttributeError, cmodels.AttendeeProfile.DoesNotExist), e:
+        except (AttributeError, cmodels.AttendeeProfile.DoesNotExist) as e:
             oldl = None
         profile = super(P3ProfilePublicDataForm, self).save(commit)
         p3p = profile.p3_profile
@@ -469,13 +472,18 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     phone = forms.CharField(
-        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +99-012-3456789.<br/>This number will <i>never</i> be published.'),
+        help_text=_('If you opt-in the privacy settings, '
+                    'we can send you important communications via SMS.'
+                    '<br />Use the international format, '
+                    'eg: +99-012-3456789.<br/>This number will <i>never</i> be published.'),
         max_length=30,
         required=False,
     )
     birthday = forms.DateField(
         label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for local laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
+        help_text=_('We require date of birth for speakers to accommodate for local '
+                    'laws regarding minors.<br />'
+                    'Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
         input_formats=('%Y-%m-%d',),
         widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
         required=False,
@@ -524,9 +532,12 @@ class P3ProfileEmailContactForm(forms.Form):
 
 
 class P3ProfileSpamControlForm(forms.ModelForm):
-    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'), required=False)
-    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other participants.'), required=False)
-    spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'), required=False)
+    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'),
+                                         required=False)
+    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other participants.'),
+                                           required=False)
+    spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'),
+                                  required=False)
     class Meta:
         model = models.P3Profile
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
@@ -802,7 +813,8 @@ class P3FormTickets(aforms.FormTickets):
         from conference.models import Fare
         for fname in ('bed_reservations', 'room_reservations'):
             for r in data.get(fname, []):
-                data['tickets'].append((Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=r['fare']), r))
+                data['tickets'].append((Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE,
+                                                         code=r['fare']), r))
 
         if not data['tickets']:
             raise forms.ValidationError('No tickets')

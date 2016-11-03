@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime
 
+# FIXME: We can use an external library.
+
 def encode(line):
     if isinstance(line, unicode):
         line = line.encode('utf-8')
@@ -10,11 +12,10 @@ def encode(line):
         fold = [ line ]
         while len(fold[-1]) > 75:
             l = fold[-1]
-            # 73 perché poi verrà aggiunto CRLF
+            # 73, because it will be added CRLF
             pos = 73
-            # troncare una stringa utf-8 dopo un numero arbitrario di byte non
-            # è una buona idea; sicuramente spezzerei una sequenza multibyte
-            # rendendo il file illeggibile (o quanto meno indecodificabile)
+            # It's a bad idea to truncate the string (maybe UTF-8) with a random number,
+            # because I will break a multi-bytes sequence and the file will be unreadable.
             while True:
                 ready = fold[-1][:pos]
                 try:

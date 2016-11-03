@@ -1,8 +1,8 @@
 #-*- coding: utf-8 -*-
-import codecs
-import logging
 import logging.handlers
 import socket
+
+
 # SysLogHandler con patch per utf-8
 # http://bugs.python.org/issue7077
 # http://svn.python.org/view/python/trunk/Lib/logging/handlers.py?r1=75586&r2=75585&pathrev=75586&view=patch

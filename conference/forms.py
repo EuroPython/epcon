@@ -118,7 +118,7 @@ class ReadonlyTagWidget(widgets.TextInput):
             final_attrs['value'] = force_unicode(self._format_value(value))
         return mark_safe(u'<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
-# MarkEditWidget adattameto del codice di esempio presente in
+# MarkEditWidget we have adapted the code
 # http://tstone.github.com/jquery-markedit/
 
 class MarkEditWidget(forms.Textarea):
@@ -220,9 +220,9 @@ class TalkBaseForm(forms.Form):
 
 class SubmissionForm(forms.Form):
     """
-    Form per la submission del primo paper; include campi che andranno a
-    popolare sia il profilo dello speaker che i dati del talk. Vengono
-    richiesti i soli dati essenziali.
+    Submission Form for the first paper, it will contain the fields
+    which populates the user profile and the data of the talk,
+    only essential data is required.
     """
 
     # Speaker details
@@ -495,8 +495,9 @@ class EventBookingForm(forms.Form):
 
 class AdminSendMailForm(forms.Form):
     """
-    Form utilizzata dall'admin nella pagina con le statistiche dei biglietti;
-    permette di inviare una email ad un gruppo di utenti.
+    This form is used by the admin:
+        * statistics for the sold tickets
+        * allow to send a mail to a group of users
     """
     from_ = forms.EmailField(max_length=50, initial=dsettings.DEFAULT_FROM_EMAIL)
     subject = forms.CharField(max_length=200)

@@ -7,8 +7,7 @@ G = 'maps.google.com'
 
 def geocode(address, key, country):
     """
-    interroga google maps e ritorna le coordinate geografiche
-    dell'indirizzo passato
+    Get the coordinates from Google Maps for a specified address
     """
     # see http://code.google.com/intl/it/apis/maps/documentation/geocoding/#GeocodingRequests
     params = {

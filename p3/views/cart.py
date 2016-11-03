@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 from p3 import forms as p3forms
 from p3 import models
 
+
 class P3BillingData(aforms.BillingData):
     payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='cc')
     code_conduct = forms.BooleanField(
