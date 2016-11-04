@@ -1,7 +1,7 @@
 {% load p3 i18n formstyle static %}
 {% p3_profile_data request.user.id as profile %}
 {% if not pform %}
-    {% get_form "P3ProfilePersonalDataForm" bound=profile as pform %}
+    {% get_form name="P3ProfilePersonalDataForm" bound=profile as pform %}
 {% endif %}
 <div id="account-personal-data-async-target">
     <div class="grid-20">

@@ -1,6 +1,6 @@
 {% load p3 i18n formstyle %}
 {% p3_profile_data request.user.id as profile %}
-{% get_form "P3ProfileSpamControlForm" bound=profile as pform %}
+{% get_form name="P3ProfileSpamControlForm" bound=profile as pform %}
 <div id="account-spam-control-async-target" class="never form-box">
     <form action="{% url "p3-account-spam-control" %}" class="async" method="POST" rel="#account-spam-control-async-target">
         <div class="alert alert--success async-feedback"><i class="fa fa-check"></i>&ensp;{% trans "Saved" %}</div>

@@ -1,17 +1,18 @@
 # -*- coding: UTF-8 -*-
 from conference import cachef
 from conference import models
-from pages.models import Page
 
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.contrib import comments
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
+
 from taggit.models import TaggedItem
+
+import django_comments as comments
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 
@@ -32,37 +33,6 @@ def _dump_fields(o):
         output[f.name] = v
     return output
 
-def navigation(lang, page_type):
-    pages = []
-    qs = Page.objects\
-        .published()\
-        .filter(tags__name=page_type)\
-        .filter(content__language=lang, content__type='slug')\
-        .distinct()\
-        .order_by('tree_id', 'lft')
-    for p in qs:
-        pages.append({
-            'url': p.get_absolute_url(language=lang),
-            'slug': p.slug(language=lang),
-            'title': p.title(language=lang),
-        })
-    return pages
-
-def _i_navigation(sender, **kw):
-    if sender is Page:
-        page = kw['instance']
-    elif sender is TaggedItem:
-        item = kw['instance']
-        if not isinstance(item.content_object, Page):
-            return []
-        page = item.content_object
-    tags = page.tags.all().values_list('name', flat=True)
-    languages = page.get_languages()
-    return [ 'nav:%s:%s' % (l, t) for l in languages for t in tags ]
-
-navigation = cache_me(
-    models=(Page,TaggedItem),
-    key='nav:%(lang)s:%(page_type)s')(navigation, _i_navigation)
 
 def _i_deadlines(sender, **kw):
     years = set(x.year for x in models.Deadline.objects.all().values_list('date', flat=True))

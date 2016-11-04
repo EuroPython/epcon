@@ -105,7 +105,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
-    #@transaction.commit_on_success
+    #@transaction.atomic
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 
@@ -139,7 +139,7 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
-        exclude = ('duration')
+        exclude = ('duration', )
 
     def __init__(self, *args, **kwargs):
         super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)

@@ -4,6 +4,10 @@ import os
 import os.path
 import sys
 
+import django
+
+from distutils.version import StrictVersion
+
 #from django.utils.translation import ugettext as _
 _ = lambda x:x
 
@@ -13,8 +17,11 @@ else:
     DEBUG = False
 
 
-TEMPLATE_DEBUG = DEBUG
-#DEBUG=True
+LESS_THAN_18 = StrictVersion(django.get_version()) < StrictVersion('1.8')
+LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
+
+
+DEBUG=True
 #APPEND_SLASH=False
 ALLOWED_HOSTS = ['*']
 
@@ -166,13 +173,6 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
-)
-
 from django.conf import global_settings
 
 #
@@ -199,27 +199,67 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details'
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    'django.contrib.messages.context_processors.messages',
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.request",
-    "django.core.context_processors.media",
-    'django.core.context_processors.csrf',
-    'django.core.context_processors.request',
-    "django.core.context_processors.tz",
-    'p3.context_processors.settings',
-    'conference.context_processors.current_url',
-    'conference.context_processors.stuff',
-    "sekizai.context_processors.sekizai",
-    "cms.context_processors.cms_settings",
-    "django.core.context_processors.static",
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [
+        os.path.join(PROJECT_DIR, 'templates'),
+    ],
+    'OPTIONS': {
+        'debug': DEBUG,
+        'context_processors': [
+            "django.contrib.auth.context_processors.auth",
+            'django.contrib.messages.context_processors.messages',
+            "django.core.context_processors.i18n",
+            "django.core.context_processors.debug",
+            "django.core.context_processors.request",
+            "django.core.context_processors.media",
+            'django.core.context_processors.csrf',
+            'django.core.context_processors.request',
+            "django.core.context_processors.tz",
+            'p3.context_processors.settings',
+            'conference.context_processors.current_url',
+            'conference.context_processors.stuff',
+            "sekizai.context_processors.sekizai",
+            "cms.context_processors.cms_settings",
+            "django.core.context_processors.static",
 
+            'social.apps.django_app.context_processors.backends',
+            'social.apps.django_app.context_processors.login_redirect',
+        ],
+        'loaders': [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ],
+    },
+}]
 
-   'social.apps.django_app.context_processors.backends',
-   'social.apps.django_app.context_processors.login_redirect',
-)
+if LESS_THAN_18:
+    TEMPLATE_CONTEXT_PROCESSORS = [
+        "django.contrib.auth.context_processors.auth",
+        'django.contrib.messages.context_processors.messages',
+        "django.core.context_processors.i18n",
+        "django.core.context_processors.debug",
+        "django.core.context_processors.request",
+        "django.core.context_processors.media",
+        'django.core.context_processors.csrf',
+        'django.core.context_processors.request',
+        "django.core.context_processors.tz",
+        'p3.context_processors.settings',
+        'conference.context_processors.current_url',
+        'conference.context_processors.stuff',
+        "sekizai.context_processors.sekizai",
+        "cms.context_processors.cms_settings",
+        "django.core.context_processors.static",
+
+        'social.apps.django_app.context_processors.backends',
+        'social.apps.django_app.context_processors.login_redirect',
+    ]
+
+    # doing this here instead of checking django cms version
+    MIGRATION_MODULES = {
+        'cms': 'cms.migrations_django',
+        'menus': 'menus.migrations_django',
+    }
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -228,10 +268,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
-    'django.middleware.doc.XViewMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
     #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'assopy.middleware.DebugInfo',
     'pycon.middleware.RisingResponse',
@@ -246,9 +284,6 @@ ROOT_URLCONF = 'pycon.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'pycon.wsgi.application'
 
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates'),
-)
 
 LOCALE_PATHS = (
     os.path.join(PROJECT_DIR, 'locale'),
@@ -259,24 +294,22 @@ INSTALLED_APPS = (
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
 
-    'p3',
-    'assopy',
-    'assopy.stripe',
-    'conference',
-
-    'social.apps.django_app.default',
-
     'djangocms_admin_style',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django.contrib.markup',
+    'django.contrib.staticfiles',
     'django.contrib.redirects',
-    'django.contrib.comments',
+
+    'p3',
+    'assopy',
+    'assopy.stripe',
+    'conference',
+
+    'social.apps.django_app.default',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
@@ -287,6 +320,7 @@ INSTALLED_APPS = (
     'cmsplugin_filer_video',
     'djangocms_grid',
 
+    'treebeard',
     'cms',
     'menus',
     'sekizai',
@@ -297,19 +331,18 @@ INSTALLED_APPS = (
     'mptt',
 
     'microblog',
-    'hcomments',
-    #'django_xmlrpc',
+
+    'django_xmlrpc',
     'pingback',
     'rosetta',
-    'south',
-    #'templatesadmin',
+
     'email_template',
     'paypal.standard.ipn',
     'filer',
     'easy_thumbnails',
 
-    'recaptcha_works',
-    #'django_crontab',
+    'captcha',
+    'django_crontab',
     'formstyle',
 
     'cms_migration',
@@ -319,6 +352,10 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     #'django_extensions',
 )
+
+# prevent issue with django.apps not being found
+if not LESS_THAN_17:
+    INSTALLED_APPS += ('django_comments', 'hcomments', )
 
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
@@ -337,6 +374,7 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get(
     # Registered for EuroPython domains:
     '6LdFmQcTAAAAAN1xx4M5UN6yg4TwFRXUwIrH5iGh')
 RECAPTCHA_USE_SSL = True
+NOCAPTCHA = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -493,10 +531,6 @@ MICROBLOG_TWITTER_INTEGRATION = False
 
 MICROBLOG_PINGBACK_SERVER = False
 MICROBLOG_TRACKBACK_SERVER = False
-
-SOUTH_MIGRATION_MODULES = {
-    'easy_thumbnails': 'easy_thumbnails.south_migrations',
-}
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
@@ -929,10 +963,6 @@ Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
 https://ep2016.europython.eu/accounts/profile/
 '''
-
-TEMPLATESADMIN_EDITHOOKS = (
-    'templatesadmin.edithooks.gitcommit.GitCommitHook',
-)
 
 HAYSTACK_SITECONF = 'web_site.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'

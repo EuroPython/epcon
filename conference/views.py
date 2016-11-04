@@ -75,7 +75,7 @@ def render_to(template):
             if isinstance(output, dict):
                 if request.is_ajax() and settings.TEMPLATE_FOR_AJAX_REQUEST:
                     tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)
-                return render_to_response(tpl, output, RequestContext(request), mimetype=ct)
+                return render_to_response(tpl, output, RequestContext(request))
             else:
                 return output
         return wrapper
@@ -506,7 +506,7 @@ def sponsor(request, sponsor):
 
 
 @login_required
-#@transaction.commit_on_success
+#@transaction.atomic
 def paper_submission(request):
     try:
         speaker = request.user.speaker

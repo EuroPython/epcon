@@ -34,7 +34,7 @@ class Command(BaseCommand):
             raise CommandError('unknown action')
         return action(*args[1:], **options)
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def _sync(self, *args, **options):
         if options['conference']:
             qs = models.Order.objects.filter(orderitem__ticket__fare__conference=options['conference'])
@@ -53,7 +53,7 @@ class Command(BaseCommand):
         for o in qs.exclude(assopy_id=''):
             o.complete(ignore_cache=True)
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def _delete(self, *args, **options):
         older_than = {}
         for rule in options['older_than'].split(';'):

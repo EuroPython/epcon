@@ -113,7 +113,7 @@ def p3_account_data(request):
                     profile.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
-@transaction.commit_on_success
+@transaction.atomic
 def OTCHandler_E(request, token):
     user = token.user
     models.TicketConference.objects\

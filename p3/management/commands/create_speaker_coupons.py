@@ -51,14 +51,14 @@ TALK_TYPE_DISCOUNTS = {
 
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
-                        for ttype, (prefix, discount) 
+                        for ttype, (prefix, discount)
                         in TALK_TYPE_DISCOUNTS.items())
 assert 'TLK' in COUPON_PREFIXES
 
 ###
 
 class Command(BaseCommand):
-    
+
     option_list = BaseCommand.option_list + (
         make_option('--dry-run',
                     action='store_true',
@@ -70,11 +70,11 @@ class Command(BaseCommand):
     # Dry run ?
     dry_run = False
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, *args, **options):
 
         self.dry_run = options.get('dry_run', False)
-        
+
         try:
             conference = cmodels.Conference.objects.get(code=args[0])
         except IndexError:

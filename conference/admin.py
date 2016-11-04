@@ -338,10 +338,11 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         if not model:
             return new_class
 
-        for name, f in model.__dict__.items():
-            if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
-                if f.field.related.parent_model is models.MultilingualContent:
-                    multilingual_fields.append(name)
+        # TODO: is this needed
+        # for name, f in model.__dict__.items():
+        #     if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
+        #         if f.field.related.parent_model is models.MultilingualContent:
+        #             multilingual_fields.append(name)
 
         widget = attrs.get('multilingual_widget', forms.Textarea)
         form_fields = {}
@@ -408,11 +409,13 @@ class MultiLingualForm(forms.ModelForm):
         class Form(cls):
             class Meta:
                 model = model_class
+                fields = '__all__'
         return Form
 
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
         model = models.TalkSpeaker
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(TalkSpeakerInlineAdminForm, self).__init__(*args, **kwargs)
@@ -436,6 +439,7 @@ class TalkSpeakerInlineAdmin(admin.TabularInline):
 class SpeakerAdminForm(forms.ModelForm):
     class Meta:
         model = models.Speaker
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(SpeakerAdminForm, self).__init__(*args, **kwargs)
@@ -448,8 +452,9 @@ class SpeakerAdmin(admin.ModelAdmin):
     form = SpeakerAdminForm
     inlines = (TalkSpeakerInlineAdmin,)
 
-    def queryset(self, request):
-        qs = super(SpeakerAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(SpeakerAdmin, self).get_queryset(request)
+
         qs = qs.select_related('user__attendeeprofile',)
         return qs
 
@@ -512,6 +517,7 @@ admin.site.register(models.Speaker, SpeakerAdmin)
 class TalkAdminForm(MultiLingualForm):
     class Meta:
         model = models.Talk
+        fields = '__all__'
 
     # Try to check if the url will match the pattern of Viddler
     video_check = re.compile(r'http://www\.viddler\.com/player/[^/]+/?')
@@ -577,7 +583,7 @@ class TalkAdmin(admin.ModelAdmin):
     _video.boolean = True
     _video.admin_order_field = 'video_type'
 
-    #@transaction.commit_on_success
+    #@transaction.atomic
     def do_accept_talks_in_schedule(self, request, queryset):
         conf = set(t.conference for t in queryset)
         next = urlresolvers.reverse('admin:conference_talk_changelist')
@@ -680,7 +686,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     @views.json
-    #@transaction.commit_on_success
+    #@transaction.atomic
     def events(self, request, sid):
         sch = get_object_or_404(models.Schedule, id=sid)
         if request.method != 'POST':
@@ -699,7 +705,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             }
         return output
 
-    #@transaction.commit_on_success
+    #@transaction.atomic
     def event(self, request, sid, eid):
         ev = get_object_or_404(models.Event, schedule=sid, id=eid)
 
@@ -877,7 +883,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             }
             return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
 
-    #@transaction.commit_on_success
+    #@transaction.atomic
     def tracks(self, request, sid, tid):
         track = get_object_or_404(models.Track, schedule=sid, id=tid)
         from conference.forms import TrackForm
@@ -1038,8 +1044,8 @@ class TicketAdmin(admin.ModelAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(TicketAdmin,self).changelist_view(request, extra_context=extra_context)
 
-    def queryset(self, request):
-        qs = super(TicketAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(TicketAdmin, self).get_queryset(request)
         qs = qs.select_related('user', 'fare',)
         return qs
 
@@ -1128,9 +1134,9 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         from django.db.models import Count
-        qs = super(ConferenceTagAdmin, self).queryset(request)
+        qs = super(ConferenceTagAdmin, self).get_queryset(request)
         qs = qs.annotate(usage=Count('conference_conferencetaggeditem_items'))
         return qs
 

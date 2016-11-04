@@ -400,7 +400,7 @@ class Coupon(models.Model):
         return -1 * discount
 
 class OrderManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):

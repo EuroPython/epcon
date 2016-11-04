@@ -49,7 +49,7 @@ TICKET_CONFERENCE_EXPERIENCES = dsettings.CONFERENCE_TICKET_CONFERENCE_EXPERIENC
 
 
 class TicketConferenceManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return self._QuerySet(self.model)
 
     def __getattr__(self, name):

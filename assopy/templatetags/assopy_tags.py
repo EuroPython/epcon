@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 import urllib
-from fancy_tag import fancy_tag
 
 register = template.Library()
 
@@ -120,14 +119,14 @@ def form_errors(form, cls=None):
 # http://code.djangoproject.com/ticket/10427
 @register.filter
 def field_value(field):
-	""" 
-	Returns the value for this BoundField, as rendered in widgets. 
-	""" 
-	if field.form.is_bound: 
-		if isinstance(field.field, forms.FileField) and field.data is None: 
-			val = field.form.initial.get(field.name, field.field.initial) 
-		else: 
-			val = field.data 
+	"""
+	Returns the value for this BoundField, as rendered in widgets.
+	"""
+	if field.form.is_bound:
+		if isinstance(field.field, forms.FileField) and field.data is None:
+			val = field.form.initial.get(field.name, field.field.initial)
+		else:
+			val = field.data
 	else:
 		val = field.form.initial.get(field.name, field.field.initial)
 		if callable(val):
@@ -198,7 +197,7 @@ def _get_cached_order_status(request, order_id):
         cache = request._order_cache
     except AttributeError:
         cache = request._order_cache = {}
-    
+
     if order_id not in cache:
         cache[order_id] = models.Order.objects.get(pk=order_id).complete()
     return cache[order_id]
@@ -259,7 +258,7 @@ def user_coupons(user):
 def render_profile_last_block(context):
     return context
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def paginate(context, qs, count=20):
     pages = paginator.Paginator(qs, int(count))
     try:
@@ -272,7 +271,7 @@ def paginate(context, qs, count=20):
         ix = 1 if ix < 1 else pages.num_pages
         return pages.page(ix)
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def add_page_number_to_query(context, page, get=None):
     if get is None:
         get = context['request'].GET.copy()

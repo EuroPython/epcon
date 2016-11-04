@@ -9,7 +9,7 @@ from p3 import models
 class Command(BaseCommand):
     """
     """
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, *args, **options):
         for u in amodels.User.objects.all().select_related('user'):
             print u.name()

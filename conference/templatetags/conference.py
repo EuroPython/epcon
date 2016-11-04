@@ -28,12 +28,8 @@ from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conver
 from conference.signals import timetable_prepare
 from conference.utils import TimeTable
 
-from pages.settings import PAGE_DEFAULT_LANGUAGE
-
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
-
-from fancy_tag import fancy_tag
 
 mimetypes.init()
 
@@ -55,7 +51,7 @@ def _request_cache(request, key):
         request._conf_cache = {key: {}}
     return request._conf_cache[key]
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_deadlines(context, limit=None, not_expired=True):
     deadlines = dataaccess.deadlines(_lang(context))
     try:
@@ -77,7 +73,7 @@ def get_deadlines(context, limit=None, not_expired=True):
         output = output[:limit]
     return output
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def navigation(context, page_type):
     return dataaccess.navigation(_lang(context, full=True), page_type)
 
@@ -198,7 +194,7 @@ class TNode(template.Node):
         except AttributeError:
             return v
 
-@fancy_tag(register)
+@register.assignment_tag()
 def conference_talks(conference=None, status="accepted", tag=None, type=None):
     if conference is None:
         conference = [settings.CONFERENCE]
@@ -417,7 +413,7 @@ def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))
 
 # XXX - remove
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def schedule_timetable(context, schedule, start=None, end=None):
     if start:
         start = datetime.strptime(start, '%H:%M').time()
@@ -479,7 +475,7 @@ def schedule_timetable(context, schedule, start=None, end=None):
     return tt
 
 # XXX - remove
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_schedule_timetable(context, schedule, timetable, start=None, end=None, collapse='auto'):
     if start:
         start = datetime.strptime(start, '%H:%M').time()
@@ -500,7 +496,7 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
     return render_to_string('conference/render_schedule_timetable.html', ctx)
 
 # XXX - remove
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_schedule_timetable_as_list(context, schedule, timetable, start=None, end=None):
     if start:
         start = datetime.strptime(start, '%H:%M').time()
@@ -519,7 +515,7 @@ def render_schedule_timetable_as_list(context, schedule, timetable, start=None, 
     })
     return render_to_string('conference/render_schedule_timetable_as_list.html', ctx)
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def overbooked_events(context, conference):
     """
     Returns the list of events for which it is expected a turnout greater than the track capacity.
@@ -534,7 +530,7 @@ def overbooked_events(context, conference):
         c['items'] = data
     return c['items']
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_event_track(context, event):
     """
     Returns to the first track instance from those specified by the event, or
@@ -549,12 +545,12 @@ def get_event_track(context, event):
 def event_has_track(event, track):
     return track in set(parse_tag_input(event.track))
 
-@fancy_tag(register)
+@register.simple_tag()
 def event_row_span(timetable, event):
     ix = timetable.rows.index(event.row)
     return timetable.rows[ix:ix+event.rows]
 
-@fancy_tag(register)
+@register.simple_tag()
 def event_time_span(timetable, event, time_slot=15):
     start = datetime.combine(date.today(), event.time)
     end = start + timedelta(minutes=time_slot * event.columns)
@@ -650,7 +646,7 @@ def splitbysize(value, arg):
         value += [ None ] * (arg - (len(value) % arg))
     return grouper(arg, value)
 
-@fancy_tag(register)
+@register.simple_tag()
 def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
     if conference is None:
         conference = settings.CONFERENCE
@@ -835,7 +831,7 @@ def render_hotels(hotels):
         'hotels': hotels,
     }
 
-@fancy_tag(register)
+@register.simple_tag()
 def video_cover_url(event, type='front', thumb=False):
     base = dsettings.MEDIA_URL + 'conference/covers/%s/' % event['conference']
     if event.get('talk'):
@@ -848,7 +844,7 @@ def video_cover_url(event, type='front', thumb=False):
         url += '.jpg'
     return url
 
-@fancy_tag(register, takes_context=True)
+@register.assignment_tag(takes_context=True)
 def embed_video(context, value, args=""):
     """
     {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
@@ -977,7 +973,7 @@ def fare_blob(fare, field):
         return match.group(1).strip()
     return ''
 
-@fancy_tag(register)
+@register.simple_tag()
 def voting_data(conference):
     qs = models.VotoTalk.objects\
         .filter(talk__conference=conference)\
@@ -1006,7 +1002,7 @@ def convert_twitter_links(text, args=None):
     text = re.sub(r'([^&])#([^\s]*)', r'\1<a href="http://twitter.com/search?q=%23\2">#\2</a>', text)
     return mark_safe(text)
 
-@fancy_tag(register)
+@register.simple_tag()
 def randint():
     return random.randint(0, sys.maxint)
 
@@ -1040,7 +1036,7 @@ def timetable_columns(timetable):
     return output
 
 # XXX - remove
-@fancy_tag(register)
+@register.simple_tag()
 def timetable_cells(timetable, width, height, outer_width=None, outer_height=None, collapse='auto'):
     if outer_width is None:
         outer_width = width
@@ -1146,7 +1142,7 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         'schedule_size': 'width: %dpx; height: %dpx' % (max_size[0], max_size[1]),
     }
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", action="recommend", font="", colorscheme="light"):
     if not href:
         href = context['CURRENT_URL']
@@ -1190,7 +1186,7 @@ def teaser_event(events):
             return e
 
 # XXX - remove
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_talk_speakers(context, talk):
     c = _request_cache(context['request'], 'talk_speakers_%s' % talk.conference)
     if not c:
@@ -1199,7 +1195,7 @@ def get_talk_speakers(context, talk):
 
 
 # XXX - remove
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def current_events(context, time=None):
     if time is None:
         time = datetime.now()
@@ -1220,7 +1216,7 @@ def current_events(context, time=None):
     return output
 
 # XXX - remove
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def next_events(context, time=None):
     if time is None:
         time = datetime.now()
@@ -1262,15 +1258,15 @@ def next_events(context, time=None):
 
     return output
 
-@fancy_tag(register)
+@register.assignment_tag()
 def current_conference():
     return models.Conference.objects.current()
 
-@fancy_tag(register)
+@register.simple_tag()
 def conference_fares(conf=settings.CONFERENCE):
     return filter(lambda f: f['valid'], dataaccess.fares(conf))
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
     ctx = Context(context)
 
@@ -1304,11 +1300,11 @@ def markdown2(text, arg=''):
 
     return mark_safe(markdown(text, safe_mode=safe_mode, extras=extensions))
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def tagged_items(context, tag):
     return dataaccess.tags().get(tag, {})
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def tags_for_talks(context, conference=None, status="accepted"):
     if conference is None:
         conference = settings.CONFERENCE
@@ -1323,28 +1319,28 @@ def group_tags(tags):
         groups[t.category].append(t)
     return sorted(groups.items())
 
-@fancy_tag(register)
+@register.assignment_tag()
 def talk_data(tid):
     return dataaccess.talk_data(tid)
 
-@fancy_tag(register)
+@register.simple_tag()
 def event_data(eid):
     event = dataaccess.event_data(eid)
     event.update({'schedule':dataaccess.schedule_data(event['schedule_id'])})
     return event
 
-@fancy_tag(register)
+@register.assignment_tag()
 def talks_data(tids, conference=None):
     data = dataaccess.talks_data(tids)
     if conference:
         data = filter(lambda x: x['conference'] == conference, data)
     return data
 
-@fancy_tag(register)
+@register.simple_tag()
 def schedule_data(sid):
     return dataaccess.schedule_data(sid)
 
-@fancy_tag(register)
+@register.assignment_tag()
 def schedules_data(sids):
     return dataaccess.schedules_data(sids)
 
@@ -1362,7 +1358,7 @@ def field_label(value, fieldpath):
             return v
     return None
 
-@fancy_tag(register)
+@register.simple_tag()
 def admin_urlname_fromct(ct, action, id=None):
     r = 'admin:%s_%s_%s' % (ct.app_label, ct.model, action)
     if id is None:
@@ -1374,11 +1370,11 @@ def admin_urlname_fromct(ct, action, id=None):
     except:
         return None
 
-@fancy_tag(register)
+@register.simple_tag()
 def profile_data(uid):
     return dataaccess.profile_data(uid)
 
-@fancy_tag(register)
+@register.simple_tag()
 def profiles_data(uids):
     return dataaccess.profiles_data(uids)
 
@@ -1412,7 +1408,7 @@ def ordered_talks(talks, criteria="conference"):
     return sorted(grouped.items(), reverse=True)
 
 #XXX: rimuovere, gli stessi dati sono presenti nella cache ritornata da profile_data
-@fancy_tag(register)
+@register.simple_tag()
 def visible_talks(talks, filter_="all"):
     """
     Filter the list by talk filter_:
@@ -1430,7 +1426,7 @@ def visible_talks(talks, filter_="all"):
     else:
         return  filter(lambda x: x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE, talks)
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def olark_chat(context):
     # if there is no happy outbreak setting
     key = dsettings.CONFERENCE_OLARK_KEY
@@ -1537,7 +1533,7 @@ def sum_(context, varname, *args):
 def as_datetime(value, format="%Y/%m/%d"):
     return datetime.strptime(value, format)
 
-@fancy_tag(register, takes_context=True)
+@register.assignment_tag(takes_context=True)
 def user_votes(context, uid=None, conference=None, talk_id=None):
     if uid is None:
         uid = context['request'].user.id
@@ -1549,7 +1545,7 @@ def user_votes(context, uid=None, conference=None, talk_id=None):
     else:
         return votes
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def user_events_interest(context, uid=None, conference=None, event_id=None):
     if uid is None:
         uid = context['request'].user.id
@@ -1561,7 +1557,7 @@ def user_events_interest(context, uid=None, conference=None, event_id=None):
     else:
         return ei
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def conference_booking_status(context, conference=None, event_id=None):
     if conference is None:
         conference = settings.CONFERENCE
@@ -1571,7 +1567,7 @@ def conference_booking_status(context, conference=None, event_id=None):
     else:
         return status
 
-@fancy_tag(register)
+@register.simple_tag()
 def conference_js_data(tags=None):
     """
     Javascript Initialization for the conference app. The use of 'conference_js_data'

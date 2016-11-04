@@ -1,0 +1,9 @@
+{% load i18n comments %}
+<div id="add-comment">
+    <h3>{% trans "Aggiungi un commento" %} </h3>
+    {% get_comment_form for object as form %}
+    <form action="{% comment_form_target %}#preview-comment" method="post">{% csrf_token %}
+        {{ form }}
+        <button type="submit">{% trans "Post comment" %}</button>
+    </form>
+</div>

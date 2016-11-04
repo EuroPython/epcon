@@ -14,7 +14,7 @@ from xml.sax.saxutils import escape
 class Command(BaseCommand):
     """
     """
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, *args, **options):
         try:
             conference = args[0]

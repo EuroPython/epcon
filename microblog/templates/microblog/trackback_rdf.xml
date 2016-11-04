@@ -1,0 +1,11 @@
+{% if content %}
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+<rdf:Description
+    rdf:about="{{ content.get_url }}"
+    dc:identifier="{{ content.get_url }}"
+    dc:title="{{ content.headline }}"
+    trackback:ping="{{ content.post.get_trackback_url }}" />
+</rdf:RDF>
+{% endif %}
