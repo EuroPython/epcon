@@ -401,7 +401,7 @@ def speaker_twitters(talk):
             for speaker in talk.get_all_speakers()]
 
 
-def get_all_order_tickets(conference='ep2016'):
+def get_all_order_tickets(conference=settings.CONFERENCE_CONFERENCE):
     """ Return all valid conference tickets for the conference."""
     def conference_year(conference):
         return conference[-2:]

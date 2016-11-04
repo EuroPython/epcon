@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
 """ Print information of the users who got unassigned tickets."""
 
-from   django.core.management.base import BaseCommand, CommandError
-from   django.core  import urlresolvers
-from   conference   import models
-from   conference   import utils
+from django.core.management.base import BaseCommand, CommandError
+from django.core import urlresolvers
+from django.conf import settings
+from conference import models
+from conference import utils
 
-from   p3           import models as p3_models
-from   conference   import models as conf_models
-from   assopy       import models as assopy_models
+from p3 import models as p3_models
+from conference import models as conf_models
+from assopy import models as assopy_models
 
-from   collections  import defaultdict, OrderedDict
-from   optparse     import make_option
+from collections import defaultdict, OrderedDict
+from optparse import make_option
 import operator
-import simplejson   as json
+import simplejson as json
 import traceback
 
 ### Globals
 
 ### Helpers
 
-def conference_year(conference='ep2016'):
+def conference_year(conference=settings.CONFERENCE_CONFERENCE):
     return conference[-2:]
 
 
-def get_all_order_tickets(conference='ep2016'):
+def get_all_order_tickets(conference=settings.CONFERENCE_CONFERENCE):
 
     year = conference_year(conference)
 

@@ -3,6 +3,7 @@ from collections import defaultdict
 from conference.models import Ticket, Speaker, Talk
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db.models import Q, Count
 from p3 import models
 from conference import models as cmodels
@@ -552,7 +553,7 @@ def conference_speakers_day(conf, code=None):
         return output
     else:
         people_data = data[code[1:]]
-        conf_events = dict([(x['id'], x) for x in events(conf='ep2016')])
+        conf_events = dict([(x['id'], x) for x in events(conf=settings.CONFERENCE_CONFERENCE)])
         tracks = defaultdict(list)
         for p in people_data:
             tickets = [

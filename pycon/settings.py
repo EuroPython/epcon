@@ -88,7 +88,7 @@ DEFAULT_FROM_EMAIL = 'info@europython.eu'
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/Madrid'
+TIME_ZONE = 'Europe/Rome'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -566,10 +566,10 @@ CONFERENCE_GOOGLE_MAPS = {
     'country': 'es',
 }
 
-CONFERENCE_CONFERENCE = 'ep2016'
+CONFERENCE_CONFERENCE = 'ep2017'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2016.europython.eu/en/talk-voting/'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2017.europython.eu/en/talk-voting/'
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -702,7 +702,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
     # People who have a ticket for the current conference assigned to
     # them can vote
     from p3 import models
-    # Starting with EP2016, we know that all assigned tickets have
+    # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
     tickets = models.TicketConference.objects \
               .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
@@ -818,7 +818,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
             lines[ix] = line
         return lines
 
-    if conference in ('ep2012', 'ep2013', 'ep2015', 'ep2016'):
+    if conference in ('ep2012', 'ep2013', 'ep2015', 'ep2016', 'ep2017'):
         master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert(
             'RGBA')
 
@@ -833,7 +833,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
                 os.path.join(stuff, 'Arial_Unicode.ttf'),
                 21, encoding="unic")
             y = 175
-        elif conference in ('ep2013', 'ep2015', 'ep2016'):
+        elif conference in ('ep2013', 'ep2015', 'ep2016', 'ep2017'):
             ftitle = ImageFont.truetype(
                 os.path.join(stuff, 'League_Gothic.otf'),
                 36, encoding="unic")
@@ -942,9 +942,9 @@ ASSOPY_OTC_CODE_HANDLERS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2016.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2017.europython.eu'
 
-PINGBACK_TARGET_DOMAIN = 'ep2016.europython.eu'
+PINGBACK_TARGET_DOMAIN = 'ep2017.europython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
@@ -959,7 +959,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2016.europython.eu/accounts/profile/
+https://ep2017.europython.eu/accounts/profile/
 '''
 
 HAYSTACK_SITECONF = 'web_site.search_sites'
