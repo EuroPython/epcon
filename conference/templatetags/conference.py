@@ -44,8 +44,8 @@ def _lang(ctx, full=False):
 
 def _request_cache(request, key):
     """
-    ritorna (o crea) un dizionario collegato all'oggetto passato utilizzabile
-    come cache con visibilità pari a quella della request.
+    Returns (or create) a linked object dictionary usable past as cache with
+    visibility equal to that of the request.
     """
     try:
         return request._conf_cache[key]
@@ -85,8 +85,8 @@ def navigation(context, page_type):
 def stuff_info(parser, token):
     """
     {% stuff_info "file_path"|variable [as var] %}
-    ritorna il mimetype e la dimensione del file specificato (il file deve
-    risidere all'interno della dir "stuff")
+    Return the mime type and the size of the specified file
+    (the file should be in the dir "stuff")
     """
     contents = token.split_contents()
     tag_name = contents[0]
@@ -119,7 +119,7 @@ def stuff_info(parser, token):
                 fpath = os.path.join(settings.STUFF_DIR, 'conference', fpath)
             try:
                 stat = os.stat(fpath)
-            except (AttributeError, OSError), e:
+            except (AttributeError, OSError) as e:
                 fsize = ftype = None
             else:
                 fsize = stat.st_size
@@ -137,8 +137,8 @@ def stuff_info(parser, token):
 def conference_speakers(parser, token):
     """
     {% conference_speakers [ conference ] [ limit num ] [ "random" ] as var %}
-    inserisce in var l'elenco degli speaker (opzionalmente è possibile
-    filtrare per conferenza).
+
+    Put in var the speaker list, optionally you can filter by conference.
     """
     contents = token.split_contents()
     tag_name = contents.pop(0)
@@ -239,9 +239,8 @@ def schedule_context(schedule):
 
     eevent = lambda t: { 'time': t, 'title': '', 'track_slots': 1, 'time_slots': 1, 'talk': None, 'tags': [], 'sponsor': None }
 
-    # riorganizzo in timetable la struttra degli evento dello schedule passato
-    # per renderli semplici da maneggiare al template. Ogni entry di timetable
-    # rappresenta una riga della tabella HTML
+    # I organize timetable in the structure of the events of the past schedule
+    # to make them easy to handle to the template. Each entry of timetable is a line of HTML table.
     timetable = defaultdict(lambda: { 'class': [], 'events': [ None ] * len(dbtracks)} )
     prow = [ None ] * len(dbtracks)
     for rtime, events in sorted(dbevents.items()):
@@ -257,37 +256,34 @@ def schedule_context(schedule):
                     event['sponsor'] = e.sponsor
             else:
                 event['title'] = e.custom
-            # row ha tanti elementi quante sono le track dello schedule
-            # devo inserire event nel punto giusto
+
+            # row has as many elements as there are tracks of the scheduler event I enter in the right place.
             tags = set( t.name for t in Tag.objects.get_for_object(e) )
             if 'end' in tags:
                 end = True
                 tags.remove('end')
 
-            # tracks è una lista, ordinata, con gli indici numerici (riferiti a
-            # dbtracks) delle track interessate dall'evento.
+            # Tracks is a sorted list, with numerical indices (referring to dbtracks) of
+            # track affected by the event.
             tracks = sorted([ dbtracks.get(t, [None])[0] for t in tags ])
             if None in tracks:
-                # l'evento fa riferimento a delle track speciali (come il
-                # coffee break o la registrazione), per adesso tratto tutte gli
-                # eventi speciali nello stesso modo (lo spalmo tutte le track
-                # disponibili) un estensione utile potrebbe essere quella di
-                # dare significati diversi alle varie track speciali e cambiare
-                # il comportamento di conseguenza.
+                # the event referes to a special track (such as coffee breaks or recording),
+                # yet drawn all the special events in the same way (as I spread all the available tracks)
+                # a useful extension would be to give different meanings to different special tracks
+                # and change behavior accordingly.
                 event['track_slots'] = len(dbtracks)
                 event['tags'] = [ t for t in tags if t not in dbtracks ]
                 row[0] = event
             else:
-                # per il momento non supporto il caso di un evento associato a
-                # track non adiacenti.
+                # For the moment, we don't support the case of an associated event with
+                # non-adjacent track.
                 event['track_slots'] = len(tracks)
                 ex = tracks[0]
                 event['tags'] = [ _itracks[ex].track ]
                 row[ex] = event
 
-        # ho inserito una nuova riga nella timetable, ho abbastanza
-        # informazioni per controllare la riga precedente (prow) e allungare i
-        # tempi degli eventi che non hanno un indicazione della durata
+        # I inserted a new row in the timetable, I have enough information to control the above
+        # line (prow) and length the time of the events that have no indication of timeframe.
         minutes = lambda t: t.hour * 60 + t.minute
         def m2time(m):
             nh = m / 60
@@ -302,14 +298,14 @@ def schedule_context(schedule):
             if not p['talk']:
                 p['time_slots'] = slots
             elif p['time_slots'] < slots:
-                # se time_slots è minore del previsto "paddo" con un evento vuoto
+                # if timeslots is smaller than expected 'step' with an empty vote.
                 premature_end = minutes(p['time']) + p['talk'].duration
                 new_start = m2time(premature_end)
                 empty = timetable[new_start]['events']
                 empty[ix] = prow[ix] = eevent(new_start)
             elif c:
-                # qui devo gestire il caso in cui gli event nella riga superiore abbiano
-                # allocati più slot temporali di quelli individuati
+                # here I have to handle the case in which the events in the top row have
+                # allocated more time slots than those identified
                 for x in range(c['track_slots']):
                     pc = prow[ix+x]
                     if pc and pc['time_slots'] > slots:
@@ -318,12 +314,11 @@ def schedule_context(schedule):
                 else:
                     overlap_needed = None
                 if overlap_needed is not None:
-                    # se time_slots è maggiore ho due possibilità:
-                    # 1. se l'evento corrente è marcato come "overlap" lo inserisco
-                    # in mezzo a p, spostando parte di p dopo c
-                    # 2. se c non è "overlap" lascio le cose come stanno, l'html
-                    # che ne risulterà sarà senza dubbio incasinato e l'operatore
-                    # gestirà a mano la situazione
+                    # time_slots is greater if I have two possibilities:
+                    # 1. If the current event is marked as 'overlap' I insert it in
+                    # the middle of p, by moving part of p after c.
+                    # 2. If there is no "overlap" I leave it at that, the html that will
+                    # result will no doubt messed up and the operator will handle the situation at hand.
                     overlap = None
                     for t in c['tags']:
                         if t.startswith('overlap'):
@@ -341,8 +336,8 @@ def schedule_context(schedule):
                         pc = prow[pix]
                         dslots = pc['time_slots'] - slots
                         pc['time_slots'] = slots
-                        # devo calcolare il tempo di inizio della seconda parte del talk,
-                        # che equivale a: inizio_overlap + tempo_overlap
+                        # I have to calculate the start time of the second part of the talk, which is equivalent to:
+                        # inizio_overlap + tempo_overlap
                         c_end = minutes(c['time']) + overlap
                         new_start = m2time(c_end)
                         empty = timetable[new_start]['events']
@@ -373,15 +368,15 @@ def schedule_context(schedule):
     if timetable:
         timetable[rtime]['class'].append('end')
 
-    # trasformo il dizionario in una lista ordinata, più semplice da gestire
-    # per il template e la riempio di "filler" per proporzionare le varie fasce
-    # di eventi (altro lavoro in meno per il template).
+    # I transform the dictionary in an ordered list, easier to handle for the template
+    # and fill it with 'filler' to proportion the various groups of events
+    # (more work in less for the template)
     timetable = sorted(timetable.items())
     offset = 0
     for ix, v in list(enumerate(timetable[:-1])):
         t, row = v
         if 'end' in row['class']:
-            # padding arbitrario
+            # arbitrary padding
             steps = 4
         else:
             next = timetable[ix+1+offset][0]
@@ -527,9 +522,8 @@ def render_schedule_timetable_as_list(context, schedule, timetable, start=None, 
 @fancy_tag(register, takes_context=True)
 def overbooked_events(context, conference):
     """
-    restituisce l'elenco degli eventi per i quali è prevista un affluenza
-    maggiore della capienza della track.  la previsione viene fatta utilizzando
-    gli EventInterest.
+    Returns the list of events for which it is expected a turnout greater than the track capacity.
+    The forecast is made using the EventInterest.
     """
     c = _request_cache(context['request'], 'schedules_overbook')
     if not c:
@@ -543,8 +537,8 @@ def overbooked_events(context, conference):
 @fancy_tag(register, takes_context=True)
 def get_event_track(context, event):
     """
-    ritorna la prima istanza di track tra quelle specificate dall'evento o None
-    se è di tipo speciale
+    Returns to the first track instance from those specified by the event, or
+    None if it is a special type.
     """
     dbtracks = dict((t.track, t) for t in models.Track.objects.by_schedule(event.schedule))
     for t in set(parse_tag_input(event.track)):
@@ -865,17 +859,16 @@ def embed_video(context, value, args=""):
     if isinstance(value, models.Talk):
         talk = value
 
-        # L'accesso ai video può essere limitato (di default sono sempre
-        # accessibili)
+        # Access to video may be limited (by default they are always accessible)
         if not settings.TALK_VIDEO_ACCESS(context['request'], talk):
             return ''
 
         if not talk.video_type or talk.video_type == 'download':
             video_url = reverse('conference-talk-video-mp4', kwargs={'slug': talk.slug })
-            # Il video è in hosting presso di noi, se `talk.video_file` è None
-            # probabilmente è perché non è stato fatto l'upload (per praticità,
-            # a volta torna comodo avere i file in una directory senza dover
-            # passare dall'admin e fare l'upload uno per uno).
+            # The video is hosted with us, if 'talk.video_file' is None
+            # probably because it was not done uploading (for convenience, once it is
+            # convenient to have the files in a directory without having to passing by
+            # the admin and upload them one by one).
             if talk.video_file:
                 video_path = os.path.join(dsettings.MEDIA_ROOT, 'conference/videos', video_url.name)
             elif settings.VIDEO_DOWNLOAD_FALLBACK:
@@ -902,7 +895,7 @@ def embed_video(context, value, args=""):
     output = None
 
     if not video_path:
-        # il video deve essere embeddato
+        # the video must be embedded
         opts = {}
         if w:
             opts['maxwidth'] = w
@@ -1028,11 +1021,10 @@ def truncate_chars(text, length):
 @register.filter
 def timetable_columns(timetable):
     """
-    Restituisce le colonne di una timetable, ogni elemento ha questo formato:
+    Returns the columns of a timetable, each element has this format
         (columns, events, collapse)
-
-    events è il numero di TimeTable.Event associati alla colonna
-    collapse (True/False) indica se la colonna può essere collassata graficamente
+    is the number of events associated with the column TimeTable.Event collapse (True/False)
+    indicates whether the column can be collapsed graphically.
     """
     output = []
     for c in timetable.columns():
@@ -1166,12 +1158,7 @@ def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", 
 
 @register.filter
 def name_abbrv(name):
-    whitelist = set(('de', 'di', 'der',
-                     'van',
-                     'mc', 'mac',
-                     'le',
-                     'cotta',
-                     ))
+    whitelist = set(('de', 'di', 'der', 'van', 'mc', 'mac', 'le', 'cotta'))
 
     parts = name.split()
     if len(parts) == 1:
@@ -1398,8 +1385,7 @@ def profiles_data(uids):
 @register.filter
 def beautify_url(url):
     """
-    Elimina il protocollo dalla url e nel caso sia solo un hostname anche lo /
-    finale
+    Remove the URL protocol and if it is only a hostname also the final '/'
     """
     try:
         ix = url.index('://')
@@ -1414,7 +1400,7 @@ def beautify_url(url):
 @register.filter
 def ordered_talks(talks, criteria="conference"):
     """
-    raggruppa i talk per conferenza
+    Groups the talk for conference
     """
     if not talks:
         return []
@@ -1429,11 +1415,11 @@ def ordered_talks(talks, criteria="conference"):
 @fancy_tag(register)
 def visible_talks(talks, filter_="all"):
     """
-    Filtra l'elenco di talk in base a filter_:
-        * "all" ritorna tutti i talk
-        * "accepted" ritorna solo i talk accettati
-        * "conference" ritorna tutti i talk presentati alla conferenza corrente
-          (oltre a quelli accettati presentati nelle conferenze precedenti)
+    Filter the list by talk filter_:
+    * 'all' returns all talks
+    * 'accepted' returns talk only accepted
+    * 'conference' returns all the talks presented at the current conference
+    ( in addition to those accepted presented in previous conferences)
     """
     if not talks or filter_=="all":
         return talks
@@ -1446,7 +1432,7 @@ def visible_talks(talks, filter_="all"):
 
 @fancy_tag(register, takes_context=True)
 def olark_chat(context):
-    # se non esiste il settaggio scoppio felice
+    # if there is no happy outbreak setting
     key = dsettings.CONFERENCE_OLARK_KEY
     # blob from: https://www.olark.com/install
     blob = """
@@ -1588,9 +1574,8 @@ def conference_booking_status(context, conference=None, event_id=None):
 @fancy_tag(register)
 def conference_js_data(tags=None):
     """
-    Js di inizializzazione per l'app conference. L'utilizzo di
-    `conference_js_data` innietta nell'oggetto `window` una variabile
-    `conference` con alcuni dati sulla conferenza.
+    Javascript Initialization for the conference app. The use of 'conference_js_data'
+    injects on the 'conference' window, a variable with some information about the conference.
     """
     if tags is None:
         tags = dataaccess.tags()

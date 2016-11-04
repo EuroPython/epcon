@@ -4,7 +4,7 @@ from django.conf import settings as dsettings
 
 def stuff(request):
     """
-    Aggiunge le variabili relative alla STUFF directory
+    Add the variables realted to the STUFF directory
     """
     stuff = settings.STUFF_URL
     ctx = {

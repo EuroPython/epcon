@@ -12,8 +12,11 @@ from django.db.models.query import QuerySet
 from django.utils.translation import ugettext as _
 from assopy import utils as autils
 
-from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile, \
-    TalkSpeaker, Speaker
+from conference.models import (Ticket,
+                               ConferenceTaggedItem,
+                               AttendeeProfile,
+                               TalkSpeaker,
+                               Speaker)
 from taggit.managers import TaggableManager
 
 import logging
@@ -21,6 +24,7 @@ log = logging.getLogger('p3.models')
 
 # Configurable sub-communities
 TALK_SUBCOMMUNITY = dsettings.CONFERENCE_TALK_SUBCOMMUNITY
+
 
 class P3Talk(models.Model):
     """
@@ -32,6 +36,7 @@ class P3Talk(models.Model):
     sub_community = models.CharField(max_length=20,
                                      choices=TALK_SUBCOMMUNITY,
                                      default='')
+
 
 class SpeakerConference(models.Model):
     speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
@@ -67,6 +72,7 @@ class TicketConferenceManager(models.Manager):
 
             return q1 | q2
 
+
 class TicketConference(models.Model):
     ticket = models.OneToOneField(
         Ticket,
@@ -86,7 +92,8 @@ class TicketConference(models.Model):
     tagline = models.CharField(
         max_length=60,
         blank=True,
-        help_text=_('a (funny?) tagline that will be displayed on the badge<br />Eg. CEO of FooBar Inc.; Student at MIT; Super Python fanboy'))
+        help_text=_('a (funny?) tagline that will be displayed on the badge<br />'
+                    'Eg. CEO of FooBar Inc.; Super Python fanboy; Simple is better than complex.'))
     days = models.TextField(
         verbose_name=_('Days of attendance'),
         blank=True)
@@ -94,7 +101,8 @@ class TicketConference(models.Model):
         null=True,
         blank=True,
         upload_to='p3/tickets/badge_image',
-        help_text=_("""A custom badge image instead of the python logo. Don't use a very large image, 250x250 should be fine."""))
+        help_text=_("A custom badge image instead of the python logo."
+                    "Don't use a very large image, 250x250 should be fine."))
     assigned_to = models.EmailField(
         blank=True,
         help_text=_("EMail of the attendee for whom this ticket was bought."))
@@ -110,8 +118,11 @@ class TicketConference(models.Model):
             user = self.ticket.user
         return AttendeeProfile.objects.get(user=user)
 
+
+## TODO: remove SIM card acquisition options?
 def _ticket_sim_upload_to(instance, filename):
     subdir = 'p3/personal_documents'
+
     # Adding the ticket id in the filename because a single user can
     # buy multiple sims and probably they're not all for the same person.
     fname = '%s-%s' % (instance.ticket.user.username, instance.ticket.id)
@@ -138,6 +149,8 @@ TICKET_SIM_PLAN_TYPE = (
     ('std', _('Standard Plan')),
     ('bb', _('BlackBerry Plan')),
 )
+
+
 class TicketSIM(models.Model):
     ticket = models.OneToOneField(Ticket, related_name='p3_conference_sim')
     document = models.FileField(
@@ -159,6 +172,8 @@ class TicketSIM(models.Model):
     number = models.CharField(
         max_length=20, blank=True, help_text=_("Telephone number"))
 
+
+## TODO: remove Hotel Room management?
 class HotelBooking(models.Model):
     """
     Hotel booking rules for a given conference.
@@ -175,6 +190,7 @@ class HotelBooking(models.Model):
     def __unicode__(self):
         return '{}: {}-{}'.format(self.conference_id, self.booking_start, self.booking_end)
 
+
 HOTELROOM_ROOM_TYPE = (
     ('t1', _('Single room')),
     ('t2', _('Double room')),
@@ -186,11 +202,11 @@ class HotelRoom(models.Model):
     room_type = models.CharField(max_length=2, choices=HOTELROOM_ROOM_TYPE)
     quantity = models.PositiveIntegerField()
     amount = models.CharField(max_length=100, help_text="""
-        Costo della camera per notte.
+        Room cost per night.
         <ul>
-            <li>10x1,8x2,7x3 significa: 10 € per una notte, 8 a notte per due notti, 7 a notte per 3 notti.</li>
-            <li>10 significa: 10 € a notte</li>
-            <li>7,12x1,8x2 significa: 12 € per una notte, 8 a notte per due notti, 7 a notte per tutti gli altri periodi</li>
+            <li>10x1,8x2,7x3 means: 10.00€ for one night, 8.00€/night for 2 nights, 7.00€/night for 3 nights.</li>
+            <li>10 means: 10.00€/night</li>
+            <li>7,12x1,8x2 means: 12.00€ for one night, 8.00€/night for 2 nights, 7.00€/night for longer periods</li>
         </ul>
     """)
 
@@ -222,9 +238,7 @@ class HotelRoom(models.Model):
         return rules
 
     def price(self, days):
-        """
-        costo del singolo posto letto per `days` giorni
-        """
+        """Cost of each bed for `days` days."""
         if days <= 0 or not self.amount:
             return 0
         rules = self._calc_rules()
@@ -235,10 +249,9 @@ class HotelRoom(models.Model):
         return days * price
 
     def beds(self):
-        """
-        numero di posti letto in camera
-        """
+        """Number of beds in the room."""
         return int(self.room_type[1])
+
 
 class TicketRoomManager(models.Manager):
     def valid_tickets(self):
@@ -304,10 +317,10 @@ class TicketRoomManager(models.Manager):
         return period
 
     def beds_status(self, period):
-        """
-        Calcola la situazione dei posti letto nel periodo specificato; il
-        valore di ritorno è un dict che associa al tipo stanza la quantità di
-        camere disponibili e libere:
+        """ Compute the situation of the beds in the specified period.
+        The return value is a dict that associates the type of room to the
+        quantity of rooms available and free.
+        Example:
         {
             't2': {
                 'available': X,
@@ -351,14 +364,13 @@ class TicketRoomManager(models.Manager):
         return output
 
     def can_be_booked(self, items):
-        """
-        Dato un elenco di richieste:
+        """ Given a list of requirements:
             items = [
                 (room_type, qty, period),
                 ...
             ]
 
-        restitusice true se possono essere tutte soddisfatte in blocco.
+        return True if they can all be met collectively.
         """
         grouped = defaultdict(lambda: defaultdict(lambda: 0))
         for room, beds, period in items:
@@ -381,7 +393,8 @@ class TicketRoom(models.Model):
         upload_to=_ticket_sim_upload_to,
         storage=dsettings.SECURE_STORAGE,
         blank=True,
-        help_text=_('Italian regulations require a document ID to book an hotel room. Any document is fine (EU driving license, personal ID card, etc).'))
+        help_text=_('Italian regulations require a document ID to book an hotel room. '
+                    'Any document is fine (EU driving license, personal ID card, etc).'))
     room_type = models.ForeignKey(HotelRoom)
     ticket_type = models.CharField(max_length=1, choices=TICKETROOM_TICKET_TYPE)
     checkin = models.DateField(db_index=True)
@@ -394,7 +407,9 @@ class TicketRoom(models.Model):
     objects = TicketRoomManager()
 
     def __unicode__(self):
-        return '%s (%s) %s -> %s' % (self.room_type.get_room_type_display(), self.get_ticket_type_display(), self.checkin, self.checkout)
+        return '%s (%s) %s -> %s' % (self.room_type.get_room_type_display(),
+                                     self.get_ticket_type_display(),
+                                     self.checkin, self.checkout)
 
 class Donation(models.Model):
     user = models.ForeignKey('assopy.User')
@@ -448,10 +463,7 @@ class P3Profile(models.Model):
     objects = P3ProfileManager()
 
     def profile_image_url(self):
-        """
-        Restituisce l'url dell'immagine che l'utente ha associato al proprio
-        profilo.
-        """
+        """Return the url of the image that the user has associated with his profile."""
         from p3 import utils
         if self.image_gravatar:
             return utils.gravatar(self.profile.user.email)
@@ -462,10 +474,7 @@ class P3Profile(models.Model):
         return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
 
     def public_profile_image_url(self):
-        """
-        Come `profile_image_url` ma tiene conto delle regole di visibilità del
-        profilo.
-        """
+        """ Like `profile_image_url` but takes into account the visibility rules of the profile."""
         if self.profile.visibility != 'x':
             url = self.profile_image_url()
             if url == self.image_url:
@@ -512,4 +521,6 @@ class P3Profile(models.Model):
         ).send()
         log.info('email from "%s" to "%s" sent', from_.email, self.profile.user.email)
 
+
+#TODO: what is this import doing here?!
 import p3.listeners

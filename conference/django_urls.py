@@ -7,7 +7,6 @@ from django.conf import settings
 import urlparse
 
 class UrlMixin(object):
-    
     def get_url(self):
         if hasattr(self.get_url_path, 'dont_recurse'):
             raise NotImplemented
@@ -20,7 +19,7 @@ class UrlMixin(object):
         prefix = getattr(settings, 'DEFAULT_URL_PREFIX', 'http://localhost')
         return prefix + path
     get_url.dont_recurse = True
-    
+
     def get_url_path(self):
         if hasattr(self.get_url, 'dont_recurse'):
             raise NotImplemented

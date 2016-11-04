@@ -334,6 +334,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
+
 class SpeakerAdmin(cadmin.SpeakerAdmin):
 
     list_display = cadmin.SpeakerAdmin.list_display + (
@@ -461,6 +462,7 @@ class TicketRoomAdmin(admin.ModelAdmin):
 
 admin.site.register(models.TicketRoom, TicketRoomAdmin)
 
+
 class InvoiceAdmin(aadmin.InvoiceAdmin):
     """
     Specializzazione per gestire il download delle fatture generate con genro
@@ -479,6 +481,7 @@ class InvoiceAdmin(aadmin.InvoiceAdmin):
 admin.site.unregister(amodels.Invoice)
 admin.site.register(amodels.Invoice, InvoiceAdmin)
 
+
 class VotoTalkAdmin(admin.ModelAdmin):
     list_display = ('user', '_name', 'talk', 'vote')
     list_filter = ('talk__conference',
@@ -496,6 +499,7 @@ class VotoTalkAdmin(admin.ModelAdmin):
     _name.admin_order_field = 'user__first_name'
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
+
 
 class AttendeeProfileAdmin(admin.ModelAdmin):
     list_display = ('_name',
@@ -652,6 +656,7 @@ class TrackAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.Track, TrackAdmin)
 
+
 class ScheduleAdmin(cadmin.ScheduleAdmin):
     pass
 
@@ -721,9 +726,9 @@ def prezzo_biglietti_ricalcolato(**kw):
     for oid, items in grouped.items():
         _calc_prices(oid, items)
 
-    # dopo l'utilizzo di _calc_prices ottengo dei prezzi che non trovo
-    # più tra le tariffe ordinarie, raggruppo gli OrderItem risultanti
-    # per codice tariffa e nuovo prezzo
+    # after using _calc_prices obtain the prices not found anymore
+    # of the ordinary rates, regroup the resulting OrderItem
+    # by rate code and new price
     tcp = {}
     for rows in grouped.values():
         for item in rows:

@@ -87,7 +87,7 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
 
 def json(f):
     """
-    decoratore da applicare ad una vista per serializzare in json il risultato.
+    Decorator to be applied to a view to serialize json in the result.
     """
     if dsettings.DEBUG:
         ct = 'text/plain'
@@ -112,7 +112,7 @@ def json(f):
 
 def speaker_access(f):
     """
-    decoratore che protegge la view relativa ad uno speaker.
+    Decorator that protects the view relative to a speaker.
     """
     def wrapper(request, slug, **kwargs):
         spk = get_object_or_404(models.Speaker, slug=slug)
@@ -182,7 +182,7 @@ def speaker_xml(request, slug, speaker, full_access, talks):
 
 def talk_access(f):
     """
-    decoratore che protegge la view relativa ad un talk.
+    Decorator that protects the view relative to a talk.
     """
     def wrapper(request, slug, **kwargs):
         tlk = get_object_or_404(models.Talk, slug=slug)
@@ -194,15 +194,14 @@ def talk_access(f):
             try:
                 tlk.get_all_speakers().get(user__id=request.user.id)
             except (models.Speaker.DoesNotExist, models.Speaker.MultipleObjectsReturned):
-                # Il MultipleObjectsReturned può capitare se l'utente non è loggato
-                # e .id vale None
+                # The MultipleObjectsReturned can happen if the user is not logged on and .id is None
                 full_access = False
             else:
                 full_access = True
 
-        # Se il talk non è confermato possono accedere:
-        #   * i super user o gli speaker (full_access = True)
-        #   * se la votazione comunitarià è in corso chi ha il diritto di votare
+        # if the talk is unconfirmed can access:
+        #   * superusers or speakers (full access = True)
+        #   * if the community voting is in progress who has the right to vote
         if tlk.status == 'proposed' and not full_access:
             conf = models.Conference.objects.current()
             if not settings.VOTING_OPENED(conf, request.user):
@@ -236,11 +235,10 @@ def talk(request, slug, talk, full_access, talk_form=None):
             data['tags'] = ','.join([ x.name for x in talk.tags.all() ])
         form = talk_form(data=data, files=request.FILES, instance=talk)
         if not conf.cfp() and not data['tags'] and 'tags' in form.fields:
-            # Il CFP e' chiuso e stiamo editando un talk senza tags, la cosa
-            # non e' normalmente possibile visto che i tags sono richiesti;
-            # stiamo probabilmente editando un talk inserito tramite admin, se
-            # questo e' il caso non ha senso far fallire la validazione della
-            # form.
+            # The CFP and 'closed and we are editing a talk without tags,
+            # it is not' normally possible since the tags are required;
+            # we're probably editing a talk inserted through admin, and if that
+            # 's the case does not make sense to derail the form validation.
             form.fields['tags'].required = False
         if form.is_valid():
             talk = form.save()
@@ -443,7 +441,7 @@ def talks_xml(request, conference):
 
 def genro_wrapper(request):
     """
-    mostra in un iframe l'applicazione conference di genropy
+    Shows in a iframe application of the conference.
     """
     try:
         conf = dict(dsettings.GNR_CONFERENCE)
@@ -457,7 +455,7 @@ def genro_wrapper(request):
 @json
 def places(request):
     """
-    ritorna un json special places ed hotel
+    Returns a json special places and hotels.
     """
     places = []
     for h in models.SpecialPlace.objects.filter(visible = True):
@@ -497,7 +495,7 @@ def places(request):
 @json
 def sponsor(request, sponsor):
     """
-    ritorna i dati dello sponsor richiesto
+    Returns the data of the requested sponsor
     """
     sponsor = get_object_or_404(models.Sponsor, slug = sponsor)
     return {
@@ -517,11 +515,11 @@ def paper_submission(request):
 
     conf = models.Conference.objects.current()
 
-    # per questa conferenza non è previsto il cfp
+    # If there is no CFP, we raise a HTTP 404
     if not conf.cfp_start or not conf.cfp_end:
         raise http.Http404()
 
-    # il cfp è concluso
+    # the CfP is closed
     if not conf.cfp():
         if settings.CFP_CLOSED:
             return redirect(settings.CFP_CLOSED)
@@ -566,8 +564,7 @@ def paper_submission(request):
 
 
 def filter_talks_in_context(request, talks, voting_allowed):
-    # voglio poter associare ad ogni talk un numero "univoco" da mostrare
-    # accanto al titolo per poterlo individuare facilmente.
+    # Want to associate each talk with a "unique" number, easily find.
     ordinal = dict()
     for ix, t in enumerate(talks.order_by('created').values_list('id', flat=True)):
         ordinal[t] = ix
@@ -593,10 +590,9 @@ def filter_talks_in_context(request, talks, voting_allowed):
     if options['language'] in ('en', 'it'):
         talks = talks.filter(language=options['language'])
     if options['tags']:
-        # se in options['tags'] ci finisce un tag non associato ad alcun
-        # talk ho come risultato una query che da zero risultati; per
-        # evitare questo limito i tag usabili come filtro a quelli
-        # associati ai talk.
+        # if options['tags'] ends us a tag not associated with any talk.
+        # I have a query that results in zero results; to avoid this limit the usable
+        # tag as a filter to those associated with talk.
         allowed = set()
         ctt = ContentType.objects.get_for_model(models.Talk)
         for t, usage in dataaccess.tags().items():
@@ -614,12 +610,11 @@ def filter_talks_in_context(request, talks, voting_allowed):
             )
     talk_order = options['order']
     votes = dict((x.talk_id, x) for x in user_votes)
-    # Poichè talks è ordinato per un modello collegato tramite una
-    # ManyToMany posso avere dei talk ripetuti, e il distinct non si
-    # applica in questi casi.
+    # As talks are sorted by a linked model through a m2m can I have repeated
+    # the talk and distinct does not apply in these cases.
     #
-    # Non mi rimane che filtrare in python, a questo punto ne approfitto
-    # per agganciare i voti dell'utente utilizzando un unico loop.
+    # I can only filter in Python, at this point I take this opportunity to
+    # engage votes user using a single loop.
     dups = set()
 
     def filter_vote(t):
@@ -735,8 +730,7 @@ def voting(request):
                 widget=ReadonlyTagWidget(),
             )
 
-        # voglio poter associare ad ogni talk un numero "univoco" da mostrare
-        # accanto al titolo per poterlo individuare facilmente.
+        # I want to associate with each talk a "unique" number to display next to the title to be able to easily find.
         ordinal = dict()
         for ix, t in enumerate(talks.order_by('created').values_list('id', flat=True)):
             ordinal[t] = ix
@@ -771,10 +765,9 @@ def voting(request):
             talks = talks.filter(language=options['language'])
 
         if options['tags']:
-            # se in options['tags'] ci finisce un tag non associato ad alcun
-            # talk ho come risultato una query che da zero risultati; per
-            # evitare questo limito i tag usabili come filtro a quelli
-            # associati ai talk.
+            # if options['tags'] ends us a tag not associated with any talk I results
+            # in a query that results from scratch; to avoid this limit the usable tag
+            # as a filter to those associated with talk.
             allowed = set()
             ctt = ContentType.objects.get_for_model(models.Talk)
             for t, usage in dataaccess.tags().items():
@@ -794,12 +787,11 @@ def voting(request):
         talk_order = options['order']
         votes = dict((x.talk_id, x) for x in user_votes)
 
-        # Poichè talks è ordinato per un modello collegato tramite una
-        # ManyToMany posso avere dei talk ripetuti, e il distinct non si
-        # applica in questi casi.
+        # As talks are sorted by a model connected via a m2m can I have repeated the talk, and
+        # distinct does not apply in these case.
         #
-        # Non mi rimane che filtrare in python, a questo punto ne approfitto
-        # per agganciare i voti dell'utente utilizzando un unico loop.
+        # It can only filtered in python, at this point I take this opportunity to engage
+        # votes user using a single loop.
         dups = set()
         def filter_vote(t):
             if t['id'] in dups:
@@ -837,7 +829,7 @@ def voting(request):
 
 def profile_access(f):
     """
-    decoratore che protegge la view relativa ad un profilo.
+    Decorator which protect the relative view to a profile.
     """
     def wrapper(request, slug, **kwargs):
         try:
@@ -851,15 +843,15 @@ def profile_access(f):
             full_access = True
         else:
             full_access = False
-            # se il profilo appartiene ad uno speaker con dei talk "accepted" è
-            # visibile qualunque cosa dica il profilo stesso
+            # if the profile belongs to a speaker with talk of "accepted" is visible
+            # whatever you say the same profile.
             accepted = models.TalkSpeaker.objects\
                 .filter(speaker__user=profile.user)\
                 .filter(talk__status='accepted')\
                 .count()
             if not accepted:
-                # Se la votazione comunitaria à aperta e il profilo appartiene
-                # ad uno speaker con dei talk in gara la pagina è visibile
+                # if the community voting is open and the profile belongs to a speaker
+                # with the talk in the race page is visible
                 conf = models.Conference.objects.current()
                 if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
                     if profile.visibility == 'x':
