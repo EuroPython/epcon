@@ -22,8 +22,6 @@ LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
 
 
 DEBUG=True
-#APPEND_SLASH=False
-ALLOWED_HOSTS = ['*']
 
 ADMINS = (
 #    ('alexsavio', 'alexsavio@gmail.com'),
@@ -37,7 +35,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '').split(',')
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '*').split(',')
 #APPEND_SLASH = False
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
