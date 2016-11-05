@@ -2,7 +2,7 @@
 {% load assopy_tags i18n %}
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Checkout</h1>
-    <div class="cms">
+    <div class="ep-cms">
         {{ form.non_field_errors }}
         <form action="{% url "assopy-checkout" %}" method="post">{% csrf_token %}
             <fieldset>

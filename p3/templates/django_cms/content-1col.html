@@ -16,14 +16,14 @@
         </div>
         {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
         {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
-        <div class="cms">
+        <div class="ep-cms">
             {% placeholder "text"%} {# markdown #} {# render_template #}
         </div><!-- /cms -->
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% render_fb_like ref="like_page_down" width="800" %}{% endblock %}
     </div> <!-- /grid -->
     {% block PAGE__AFTER_MAIN_COLUMN %}
         <aside class="grid-30 prefix-10">
-            <div class="slot cms">
+            <div class="slot ep-cms">
                 {% render_fb_like ref="like_page_col" %}
                 {% block PAGE_SIDEBAR_TOP %}{% endblock %}
                 {% block PAGE_SIDEBAR %}

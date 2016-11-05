@@ -30,7 +30,7 @@
             {% endif %}
         </dl>
     </div>
-    <div class="person-card-bio cms">
+    <div class="person-card-bio ep-cms">
         {% if profile.bio %}
             {% with profile.bio|markdown2:"smarty-pants,code-color" as bio %}
             {% with bio|truncatewords_html:50 as shorted %}
@@ -48,7 +48,7 @@
     {% if tids %}
     {% talks_data tids as talks %}
     <div class="speaker">speaker</div>
-    <div class="person-card-talks cms">
+    <div class="person-card-talks ep-cms">
         <h4>Talks</h4>
         <ul>
             {% for t in talks %}

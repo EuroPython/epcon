@@ -16,7 +16,7 @@
         </div>
         {% block PAGE_SUMMARY_BOTTOM %}{% endblock %}
         {% block PAGE_MAIN_COLUMN_TOP %}{% endblock %}
-        <div class="cms">
+        <div class="ep-cms">
             {% placeholder "text"%} {# markdown #} {# render_template #}
         </div><!-- /cms -->
         {% block PAGE_MAIN_COLUMN_BOTTOM %}{% endblock %}
@@ -24,7 +24,7 @@
     {% block PAGE__AFTER_MAIN_COLUMN %}
         <aside class="grid-30">
             {% render_fb_like ref="like_page_col" %}
-            <div class="slot cms">
+            <div class="slot ep-cms">
                 {% block PAGE_SIDEBAR_TOP %}{% endblock %}
                 {% block PAGE_SIDEBAR %}
                 {% placeholder "right-column"%} {# markdown #}
