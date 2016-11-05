@@ -71,7 +71,7 @@
                     </div><!-- accordion-heading -->
                     <div id="talk-abstract-{{ t.id }}" class="accordion__body collapse">
                     <div class="accordion__inner" data-talk="{{ t.id }}">
-                        <div class="abstract cms"></div><!-- placeholder -->
+                        <div class="abstract ep-cms"></div><!-- placeholder -->
 			<hr/>
                         <p>Questions regarding this talk ? <br/> Please visit the <a href="{% url "conference-talk" slug=t.slug %}">talk page</a> to leave a comment ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} available).</p>
                     </div><!-- accordion-inner -->
@@ -85,7 +85,7 @@
                     <dt rel="div[data-talk={{ t.id }}]" class="toggle" data-src="{% url "conference-talk-xml" t.slug %}">Abstract</dt>
                     <dd>
                         <div data-talk="{{ t.id }}" style="display: none">
-                            <div class="abstract cms"></div>
+                            <div class="abstract ep-cms"></div>
                             <hr />
                             <div>Questions on this talk ?  <br/> Please visit the <a href="{% url "conference-talk" slug=t.slug %}">talk page</a> to leave a comment ({{ t.comments|length }} comment{{ t.comments|length|pluralize }} available).</div>
                         </div>

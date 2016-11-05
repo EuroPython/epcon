@@ -45,7 +45,7 @@
 </div>
 {% if linked %}
 <hr class="sep" />
-<div class="cms">
+<div class="ep-cms">
     <form id="message-form" class="async" action="{% url "conference-profile-link-message" uuid=p2.uuid %}" method="POST">{% csrf_token %}
         <fieldset>
             {{ form.message|field }}

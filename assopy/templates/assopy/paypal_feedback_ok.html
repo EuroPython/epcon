@@ -11,7 +11,7 @@
     {% if not ocomplete %}
     <h1>{% trans "Waiting for Paypal response..." %}</h1>
     <div class="span-12 append-1">
-        <div class="cms">
+        <div class="ep-cms">
             {% with order.code as ocode %}
             {% blocktrans %}
             <p>Are you waiting for too long? <a href="mailto:info@pycon.it">Write to us</a> specifying your order number {{ ocode }}</p>
@@ -22,7 +22,7 @@
     {% else %}
     <h1>{% trans "Purchase completed" %}</h1>
     <div class="span-12 append-1">
-        <div class="cms">
+        <div class="ep-cms">
             {% url "assopy-tickets" as u %}
             {% blocktrans %}
             <p>Thank you for the purchase. The transaction was completed and a receipt from paypal will be sent to your email address.</p>

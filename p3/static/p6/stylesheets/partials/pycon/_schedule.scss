@@ -103,9 +103,9 @@ body#schedule > .page > .container {
             //vertical-align: middle;
         }
         .name {
-            margin-bottom: $baselineheight / 2;            
+            margin-bottom: $baselineheight / 2;
         }
-        
+
         .talk-level {
             width: 6px; // Width for colored bar
             height: $baselineheight;
@@ -121,14 +121,14 @@ body#schedule > .page > .container {
             }
         }
         .details {
-            background: $cEventDefaultBackground;            
+            background: $cEventDefaultBackground;
             margin: $baselineheight / 2 0;
             padding: $baselineheight / 2 $gutterwidth / 2;
-            
+
             .abstract {
-                @extend .cms;
+                @extend .ep-cms;
             }
-            
+
         }
     }
 }
@@ -143,7 +143,7 @@ body#schedule > .page > .container {
         /* serve a limitare la larghezza al contenuto*/
         display: inline-block;
         width: 90%;
-        min-width: 780px; 
+        min-width: 780px;
 
         .schedule__title {
         }
@@ -376,7 +376,7 @@ body#schedule > .page > .container {
             .name {
                 a {
                     border: none;
-                    @include font-size(16);     
+                    @include font-size(16);
                     line-height: 1.2; // Talk titles may wrap, add some air
                 }
             }
@@ -398,7 +398,7 @@ body#schedule > .page > .container {
             margin: 0 2px 2px 0;
         }
         .speakers{
-            @include font-size(14);            
+            @include font-size(14);
             line-height: 1.2; // Multiple speakers may wrap, add some air
             text-transform: uppercase;
             margin-bottom: $baselineheight/4;
@@ -863,7 +863,7 @@ body#schedule > .page > .container {
     ul {
         list-style: none;
     }
-    
+
     .close {
         position: absolute;
         right: 0;
@@ -885,7 +885,7 @@ body#schedule > .page > .container {
             position: absolute;
             border: 1px solid $bordercolor;
             @include transform(rotate(90deg) translate(15px, -10px), left, top);
-            background: white;            
+            background: white;
             width: 12em;
             h3 {
                 padding: $baselineheight/4 $gutterwidth/4;
@@ -898,7 +898,7 @@ body#schedule > .page > .container {
                 @include zero;
                 li {
                     padding: $baselineheight/8 $gutterwidth/4;
-                    @include font-size(16);                    
+                    @include font-size(16);
                     a {
                         // Hover active for all available space
                         //display: block;
@@ -919,7 +919,7 @@ body#schedule > .page > .container {
     > div.selected{
         background-color: $neutralcolor;
         >a{
-            color: $cWhite;            
+            color: $cWhite;
         }
         a.filter-active {
             color: $cGray;
@@ -1189,8 +1189,8 @@ body#schedule > .page > .container {
     - come ti piace di più, possiamo selezionare gli eventi per:
         # tipo di track
         # tipo di evento (special, keynote, normale)
-        
-OK - stellina gialla        
+
+OK - stellina gialla
 OK - Nomi delle tracce da stilare
 ?? - Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli

@@ -2,7 +2,7 @@
 {% load assopy_tags %}
 {% block ASSOPY_MAIN_CONTENT %}
     <h1>Account verification needed</h1>
-    <div class="cms">
+    <div class="ep-cms">
         <p>Hi {{ name }}, the provider you've chosen ({{ provider }}) doesn't supply a verified email. Please enter your email address in the form below to complete the registration process:</p>
         <p>
         <form action="{% url "assopy-janrain-incomplete-profile" %}" method="post">{% csrf_token %}

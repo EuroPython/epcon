@@ -1,5 +1,5 @@
 {% load p3 %}
-<div class="cms archive">
+<div class="ep-cms archive">
 {% for talk in talks %}
     <div class="talk container clearfix">
         <h3><a href="{% url "conference-talk" slug=talk.slug %}">{{ talk.title }}</a></h3>
