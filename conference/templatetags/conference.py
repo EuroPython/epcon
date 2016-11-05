@@ -1545,12 +1545,13 @@ def user_votes(context, uid=None, conference=None, talk_id=None):
     else:
         return votes
 
-@register.simple_tag(takes_context=True)
+@register.assignment_tag(takes_context=True)
 def user_events_interest(context, uid=None, conference=None, event_id=None):
     if uid is None:
         uid = context['request'].user.id
     if conference is None:
         conference = settings.CONFERENCE
+
     ei = dataaccess.user_events_interest(uid, conference)
     if event_id:
         return ei.get(event_id, 0)
