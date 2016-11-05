@@ -354,7 +354,7 @@ def checkout(request):
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
     else:
         form = aforms.FormTickets()
-        
+
     return {
         'form': form,
     }
@@ -510,7 +510,7 @@ def invoice(request, order_code, code, mode='html'):
             conf = order.created.year
         fname = '[%s invoice] %s.pdf' % (conf, invoice.code.replace('/', '-'))
 
-        response = http.HttpResponse(raw, mimetype='application/pdf')
+        response = http.HttpResponse(raw, content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="%s"' % fname
         return response
 
@@ -526,9 +526,9 @@ def _pdf(request, url):
         "%s%s" % (dsettings.DEFAULT_URL_PREFIX, url),
         '-'
     ]
-    
+
     #print command_args
-    
+
     popen = subprocess.Popen(
         command_args,
         bufsize=4096,
@@ -537,9 +537,9 @@ def _pdf(request, url):
     )
 
     raw, _ = popen.communicate()
-    
+
     #print raw
-    
+
     return raw
 
 @login_required
@@ -605,7 +605,7 @@ def credit_note(request, order_code, code, mode='html'):
         conf = order.created.year
     fname = '[%s credit note] %s.pdf' % (conf, cnote.code.replace('/', '-'))
 
-    response = http.HttpResponse(raw, mimetype='application/pdf')
+    response = http.HttpResponse(raw, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="%s"' % fname
     return response
 

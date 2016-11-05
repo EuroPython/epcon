@@ -30,7 +30,7 @@ log = logging.getLogger('p3.views')
 
 def map_js(request):
     return render_to_response(
-        'p3/map.js', {}, context_instance=RequestContext(request), mimetype = 'text/javascript')
+        'p3/map.js', {}, context_instance=RequestContext(request), content_type='text/javascript')
 
 @login_required
 @render_to('p3/tickets.html')
@@ -487,7 +487,7 @@ def genro_invoice_pdf(request, assopy_id):
 
     fname = '[%s] invoice.pdf' % (conference,)
     f = urllib.urlopen(genro.invoice_url(assopy_id))
-    response = http.HttpResponse(f, mimetype='application/pdf')
+    response = http.HttpResponse(f, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="%s"' % fname
     return response
 

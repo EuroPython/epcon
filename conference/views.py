@@ -303,12 +303,12 @@ def talk_video(request, slug):
     else:
         mt = None
     if settings.X_SENDFILE is None:
-        r = http.HttpResponse(file(vfile), mimetype=mt)
+        r = http.HttpResponse(file(vfile), content_type=mt)
     elif settings.X_SENDFILE['type'] == 'x-accel':
-        r = http.HttpResponse('', mimetype=mt)
+        r = http.HttpResponse('', content_type=mt)
         r['X-Accel-Redirect'] = vurl
     elif settings.X_SENDFILE['type'] == 'custom':
-        return settings.X_SENDFILE['f'](tlk, url=vurl, fpath=vfile, mimetype=mt)
+        return settings.X_SENDFILE['f'](tlk, url=vurl, fpath=vfile, content_type=mt)
     else:
         raise RuntimeError('invalid X_SENDFILE')
     fname = '%s%s' % (tlk.title.encode('utf-8'), vext.encode('utf-8'))
@@ -428,7 +428,7 @@ def schedule_speakers_xml(request, conference, slug):
     return render_to_response(
         'conference/schedule_speakers.xml', { 'schedule': sch, 'speakers': speakers },
         context_instance = RequestContext(request),
-        mimetype = 'text/xml',
+        content_type = 'text/xml',
     )
 
 def talks_xml(request, conference):
@@ -436,7 +436,7 @@ def talks_xml(request, conference):
     return render_to_response(
         'conference/talks.xml', { 'conference': conference, 'talks': talks },
         context_instance = RequestContext(request),
-        mimetype = 'text/xml',
+        content_type = 'text/xml',
     )
 
 def genro_wrapper(request):

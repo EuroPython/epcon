@@ -216,7 +216,7 @@ class ConferenceAdmin(admin.ModelAdmin):
             writer.writerow([ row.get(c, '').encode('utf-8') for c in colid ])
 
         fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
-        r = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
+        r = http.HttpResponse(buff.getvalue(), content_type="text/csv")
         r['content-disposition'] = 'attachment; filename="%s"' % fname
         return r
 
@@ -612,7 +612,7 @@ class TalkAdmin(admin.ModelAdmin):
             for s in t.get_all_speakers():
                 name = '{} {}'.format(s.user.first_name, s.user.last_name)
                 writer.writerow((t.status, t.title.encode('utf-8'), name.encode('utf-8'), s.user.email.encode('utf-8')))
-        response = http.HttpResponse(buff.getvalue(), mimetype="text/csv")
+        response = http.HttpResponse(buff.getvalue(), content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename=speakers.csv'
         return response
     do_speakers_data.short_description = 'Speakers data'
@@ -1053,7 +1053,7 @@ class TicketAdmin(admin.ModelAdmin):
         output = utils.render_badge(qs, cmdargs=settings.TICKET_BADGE_PROG_ARGS_ADMIN)
         name, output_dir, _ = output[0]
         tar = utils.archive_dir(output_dir)
-        response = http.HttpResponse(tar, mimetype="application/x-gzip")
+        response = http.HttpResponse(tar, content_type="application/x-gzip")
         response['Content-Disposition'] = 'attachment; filename=badge-%s.tar.gz' % name
         return response
     do_ticket_badge.short_description = 'Ticket Badge'

@@ -18,7 +18,7 @@ def secure_media(request, path):
     fpath = settings.SECURE_STORAGE.path(path)
     guessed = mimetypes.guess_type(fpath)
     try:
-        r = http.HttpResponse(file(fpath), mimetype=guessed[0])
+        r = http.HttpResponse(file(fpath), content_type=guessed[0])
         r['Content-Length'] = os.path.getsize(fpath)
         if guessed[1]:
             r['Content-Encoding'] = guessed[1]
