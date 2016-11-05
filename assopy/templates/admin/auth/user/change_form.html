@@ -14,6 +14,17 @@
 {% endblock %}
 {% block content %}
     {{ block.super }}
+    <style>
+        #additional-user-info th {
+            font-weight: bold;
+            color: black;
+        }
+
+        #additional-user-info h2 {
+            margin-bottom: 20px;
+        }
+    </style>
+
     <script>
     (function($) {
         /*
@@ -55,10 +66,11 @@
         })
     })(django.jQuery);
     </script>
-    <div>
+    <div class="change-list" id="additional-user-info">
         <div>
             <h2>User info</h2>
             <table>
+                <tbody>
                 {% with user_data.user as d %}
                 <tr>
                     <th>Name:</th>
@@ -81,6 +93,7 @@
                     </tr>
                     {% endfor %}
                 {% endwith %}
+                </tbody>
             </table>
         </div>
         <div>
@@ -88,6 +101,7 @@
             <h2>Orders #{{ d|length }} </h2>
             {% if d %}
             <table>
+                <thead>
                 <tr>
                     <th>Order #</th>
                     <th>Complete</th>
@@ -97,6 +111,8 @@
                     <th>Total (net)</th>
                     <th>Billing notes/address</th>
                 </tr>
+                </thead>
+                <tbody>
                 {% for x in d %}
                 <tr>
                     <td><a href="{{ x.url }}">{{ x.code }}</a></td>
@@ -112,6 +128,7 @@
                     </td>
                 </tr>
                 {% endfor %}
+                </tbody>
             </table>
             {% endif %}
             {% endwith %}
@@ -121,6 +138,7 @@
             <h2>Coupons #{{ d|length }}</h2>
             {% if d %}
             <table>
+                <thead>
                 <tr>
                     <th>Coupon #</th>
                     <th>Conference</th>
@@ -128,6 +146,8 @@
                     <th>Used</th>
                     <th>Orders</th>
                 </tr>
+                </thead>
+                <tbody>
                 {% for x in d %}
                 <tr>
                     <td><a href="{{ x.url }}">{{ x.code }}</a></td>
@@ -152,6 +172,7 @@
                     </td>
                 </tr>
                 {% endfor %}
+                </tbody>
             </table>
             {% endif %}
             {% endwith %}
@@ -161,6 +182,7 @@
             <h2>Tickets #{{ d|length }}</h2>
             {% if d %}
             <table>
+                <thead>
                 <tr>
                     <th>Ticket #</th>
                     <th>Type</th>
@@ -171,6 +193,8 @@
                     <th>Order</th>
                     <th>Order date</th>
                 </tr>
+                </thead>
+                <tbody>
                 {% for x in d %}
                 <tr>
                     <td>{{ x.id }}</td>
@@ -183,6 +207,7 @@
                     <td>{{ x.order.created }}</td>
                 </tr>
                 {% endfor %}
+                </tbody>
             </table>
             {% endif %}
             {% endwith %}
