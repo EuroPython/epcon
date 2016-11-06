@@ -9,7 +9,7 @@ from p3 import models
 import mimetypes
 import os.path
 
-from .utils import get_secure_storage
+from .helpers import get_secure_storage
 
 
 def secure_media(request, path):

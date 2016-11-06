@@ -5,7 +5,6 @@ from collections import defaultdict, OrderedDict
 
 from conference.models import Conference, AttendeeProfile
 from django.conf import settings
-from django.core.files import storage
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from assopy import utils as autils
@@ -540,10 +539,3 @@ def get_profile_company(profile):
         company = profile.company
 
     return company
-
-
-def get_secure_storage():
-    return storage.FileSystemStorage(
-        location=settings.SECURE_MEDIA_ROOT,
-        base_url=settings.SECURE_MEDIA_URL,
-    )

@@ -18,7 +18,7 @@ from conference.models import (Ticket,
                                TalkSpeaker,
                                Speaker)
 from taggit.managers import TaggableManager
-from .utils import get_secure_storage
+from .helpers import get_secure_storage
 
 import logging
 log = logging.getLogger('p3.models')
