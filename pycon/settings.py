@@ -1271,3 +1271,6 @@ GRAPH_MODELS = {
     'all_applications': True,
     'group_models': True,
 }
+
+
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
