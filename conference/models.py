@@ -518,7 +518,7 @@ class TalkManager(models.Manager):
         talk.abstract_extra = abstract_extra
         talk.training_available = training_available
         talk.type = type
-        with transaction.commit_on_success():
+        with transaction.atomic():
             count = 0
             check = slug
             while True:
