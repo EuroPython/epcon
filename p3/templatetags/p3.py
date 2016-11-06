@@ -542,7 +542,7 @@ def admin_ticketroom_overall_status():
         'rooms': rooms.values(),
     }
 
-@register.simple_tag()
+@register.assignment_tag()
 def warmup_conference_cache(conference=None):
     """
     """
