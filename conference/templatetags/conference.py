@@ -646,7 +646,7 @@ def splitbysize(value, arg):
         value += [ None ] * (arg - (len(value) % arg))
     return grouper(arg, value)
 
-@register.simple_tag()
+@register.assignment_tag()
 def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
     if conference is None:
         conference = settings.CONFERENCE
