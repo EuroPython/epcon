@@ -190,7 +190,14 @@ def prezzo_biglietti_ricalcolato(**kw):
             if price not in tcp[code]['prices']:
                 tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
             tcp[code]['prices'][price]['count'] += 1
-    return tcp.values()
+    # Replace prices dicts with sorted lists
+    for code in tcp.keys():
+        prices_list = [entry
+                       for price, entry in sorted(tcp[code]['prices'].items())]
+        tcp[code]['prices'] = prices_list
+    # Create list sorted by fare code
+    ticket_sales = [entry for code, entry in sorted(tcp.items())]
+    return ticket_sales
 prezzo_biglietti_ricalcolato.template = '''
 <table>
     <tr>
@@ -199,7 +206,7 @@ prezzo_biglietti_ricalcolato.template = '''
         <th style="width: 70px;">Price</th>
     </tr>
     {% for ticket in data %}
-        {% for p in ticket.prices.values %}
+        {% for p in ticket.prices %}
         <tr>
             {% if forloop.counter == 1 %}
             <td title="{{ ticket.name }}" rowspan="{{ ticket.prices|length }}">{{ ticket.code }}</td>
