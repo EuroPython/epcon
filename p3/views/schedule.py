@@ -120,12 +120,28 @@ def _conference_timetables(conference):
     tts = _build_timetables(schedules, partner=partner)
     return tts
 
+
+def remove_useless_talks(timetables):
+    # FIXME: Use an other method because I don't like to use a cleaner in a
+    # controller view.
+    # Maybe implement a function in the sub object
+    for tidx, timetable in timetables:
+        for kind, events in timetable.events.iteritems():
+            new_events = []
+            for eventidx, event in enumerate(events):
+                talk = event.get('talk')
+                if talk and talk.get('status') in ('canceled',):
+                    continue
+                new_events.append(event)
+            timetable.events[kind] = new_events
+    return timetables
+
 def schedule(request, conference):
     tts = _conference_timetables(conference)
     ctx = {
         'conference': conference,
         'sids': [ x[0] for x in tts ],
-        'timetables': tts,
+        'timetables': remove_useless_talks(tts),
     }
     return render(request, 'p3/schedule.html', ctx)
 
@@ -149,6 +165,9 @@ def schedule_list(request, conference):
         'sids': sids,
         'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
     }
+
+    ctx['timetables'] = remove_useless_talks(ctx['timetables'])
+
     return render(request, 'p3/schedule_list.html', ctx)
 
 @login_required
