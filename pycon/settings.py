@@ -99,8 +99,8 @@ LANGUAGE_CODE = 'en'
 # need this.
 LANGUAGES = (
     ('en', _('English')),
-    ('es', _('Spanish')),
-    ('eu', _('Basque')),
+    #('es', _('Spanish')),
+    #('eu', _('Basque')),
     ('it', _('Italian')),
 )
 
@@ -108,8 +108,9 @@ LANGUAGES = (
 # tuple must be a subset of LANGUAGES.
 CONFERENCE_TALK_SUBMISSION_LANGUAGES = (
     ('en', _('English')),
-    ('es', _('Spanish')),
-    ('eu', _('Basque')),
+    #('es', _('Spanish')),
+    #('eu', _('Basque')),
+    ('it', _('Italian')),
 )
 
 # Site ID
@@ -466,16 +467,12 @@ ROSETTA_EXCLUDED_APPLICATIONS = (
 CMS_LANGUAGES = {
     1: [
         {
-            'code': 'it',
-            'name': _('Italiano'),
-        },
-        {
             'code': 'en',
             'name': _('English'),
         },
     ],
     'default': {
-        'fallbacks': ['en', 'it'],
+        'fallbacks': ['en'],
         'redirect_on_fallback': True,
         'public': True,
         'hide_untranslated': False,
