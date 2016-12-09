@@ -24,11 +24,6 @@ LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
 DEBUG=True
 
 ADMINS = (
-#    ('alexsavio', 'alexsavio@gmail.com'),
-#    ('oiertwo'  , 'badtrex@gmail.com'),
-#    ('fpliger'  , 'fabio.pliger@gmail.com'),
-#    ('barrachri', 'barrachri@gmail.com'),
-#    ('malemburg', 'mal@europython.eu'),
     ('web-wg', 'web-wg@europython.eu'),
 )
 
@@ -519,8 +514,8 @@ MICROBLOG_DEFAULT_LANGUAGE = 'en'
 MICROBLOG_POST_LIST_PAGINATION = True
 MICROBLOG_POST_PER_PAGE = 10
 MICROBLOG_MODERATION_TYPE = 'akismet'
-MICROBLOG_AKISMET_KEY = '56c34997206c'
-MICROBLOG_EMAIL_RECIPIENTS = ['pycon-organization@googlegroups.com']
+MICROBLOG_AKISMET_KEY = 'no-key-set'
+MICROBLOG_EMAIL_RECIPIENTS = ['info@europython.eu']
 MICROBLOG_EMAIL_INTEGRATION = True
 
 MICROBLOG_TWITTER_USERNAME = 'europython'
@@ -552,20 +547,16 @@ def MICROBLOG_POST_FILTER(posts, user):
         return filter(lambda x: x.is_published(), posts)
 
 
-SESSION_COOKIE_NAME = 'p5_sessionid'
+#
+# Session management
+#
+SESSION_COOKIE_NAME = 'sid'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 #
 # XXX THESE NEED TO GO INTO OS.ENVIRON !!!
 #
 CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
-CONFERENCE_GOOGLE_MAPS = {
-    # chiave info@europython.eu per http://localhost
-    # 'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSCRpOQNQwH5i15toJmp6eLWzSKPg',
-    # chiave info@europython.eu per http://europython.eu
-    'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
-    'country': 'es',
-}
-
 CONFERENCE_CONFERENCE = 'ep2017'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
@@ -613,6 +604,7 @@ CONFERENCE_TICKET_CONFERENCE_DIETS = (
     ('vegetarian', _('Vegetarian')),
     #('vegan', _('Vegan')),
     #('kosher', _('Kosher')),
+    #('halal', _('Halal')),
     ('other', _('Other')),
 )
 
@@ -924,12 +916,12 @@ ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 ASSOPY_REFUND_EMAIL_ADDRESS = {
-    'approve': ['info@europython.eu'],
+    'approve': ['billing@europython.eu'],
     'execute': {
-        None: ['dvd@gnx.it'],
-        'bank': ['matteo@europython.eu'],
+        None: ['billing@europython.eu'],
+        'bank': ['billing@europython.eu'],
     },
-    'credit-note': ['michele.bertoldi@gmail.com'],
+    'credit-note': ['billing@europython.eu'],
 }
 
 ASSOPY_OTC_CODE_HANDLERS = {
@@ -994,6 +986,10 @@ def HCOMMENTS_MODERATOR_REQUEST(request, comment):
 
 P3_ANONYMOUS_AVATAR = 'p5/images/headshot-default.jpg'
 
+#
+# These are probably meant for live streaming on-site servers. We don't
+# use these at the moment...
+#
 P3_LIVE_INTERNAL_IPS = ('2.228.78.', '10.3.3.', '127.0.0.1')
 P3_INTERNAL_SERVER = 'live.ep:1935'
 
@@ -1185,6 +1181,20 @@ CRONJOBS = [
     ('@weekly', 'pycon.settings.cron_cleanup')
 ]
 
+
+#
+# Google maps key
+#
+CONFERENCE_GOOGLE_MAPS = {
+    # Valid for europython.eu domain
+    # XXX This should go into os.environ
+    'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
+    'country': 'it',
+}
+
+#
+# Stripe payment integration
+#
 STRIPE_ENABLED = True
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
@@ -1193,14 +1203,9 @@ STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
 
-
-# Put your google maps key here
-CONFERENCE_GOOGLE_MAPS = {
-    'key': '',
-    'country': 'es',
-}
-
-
+#
+# Paypay payment integration
+#
 
 # Paypal merchant email
 PAYPAL_RECEIVER_EMAIL = os.environ.get("PAYPAL_RECEIVER_EMAIL")
@@ -1211,18 +1216,25 @@ if os.environ.get('PAYPAL_TEST') == 'False':
 else:
     PAYPAL_TEST = True
 
+#
 # Janrain account
+#
 ASSOPY_JANRAIN = {
     'domain': '',
     'app_id': '',
     'secret': '',
 }
 
+#
 # Sentry account
+#
 RAVEN_CONFIG = {
     'dsn': '',
 }
 
+#
+# EMail setup
+#
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # MAL 2015-03-03: We need the emails going out rather than to the
@@ -1232,6 +1244,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
+
 # files under SECURE_MEDIA_BOOT must be served by django, this if
 # is needed to avoid they end up in a subdir of MEDIA_ROOT that is
 # normally served by an external webserver
@@ -1257,8 +1270,15 @@ if not SECRET_KEY:
         print
         'WARN, SECRET_KEY not set'
 
+GRAPH_MODELS = {
+    'all_applications': True,
+    'group_models': True,
+}
 
 ### Override any settings with local settings
+#
+# IMPORTANT: This needs to be last in this module.
+#
 
 try:
     from pycon.settings_locale import *
@@ -1267,10 +1287,3 @@ except ImportError, reason:
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
 
-GRAPH_MODELS = {
-    'all_applications': True,
-    'group_models': True,
-}
-
-
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
