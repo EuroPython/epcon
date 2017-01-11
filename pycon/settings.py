@@ -4,6 +4,18 @@ import os
 import os.path
 import sys
 
+# We want to use HTTPS for everything and not fiddle with docker or gunicorn
+# setups.
+#
+# See http://security.stackexchange.com/questions/8964/trying-to-make-a-django-based-s
+# for details.
+#
+# Note: This doesn't really help all that much. In order to Django behave, you
+# have to configure your proxy to send proper X-Forward-* headers and enable
+# SECURE_PROXY_SSL_HEADER.
+#
+os.environ['HTTPS'] = 'on'
+
 import django
 
 from distutils.version import StrictVersion
@@ -32,6 +44,11 @@ MANAGERS = ADMINS
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '*').split(',')
 #APPEND_SLASH = False
+
+# HTTPS configuration
+#USE_X_FORWARDED_HOST = True
+HTTPS = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..')))
