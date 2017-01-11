@@ -4,6 +4,15 @@ import os
 import os.path
 import sys
 
+# Configure DEBUG settings
+if os.environ.get('DEBUG') == 'True':
+    DEBUG = True
+else:
+    DEBUG = False
+    
+# For development, we always run in debug mode...
+DEBUG=True
+
 # We want to use HTTPS for everything and not fiddle with docker or gunicorn
 # setups.
 #
@@ -14,7 +23,10 @@ import sys
 # have to configure your proxy to send proper X-Forward-* headers and enable
 # SECURE_PROXY_SSL_HEADER.
 #
-os.environ['HTTPS'] = 'on'
+if not DEBUG:
+    # Only set this in production mode, since debug servers typically don't
+    # have HTTPS set up.
+    os.environ['HTTPS'] = 'on'
 
 import django
 
@@ -23,17 +35,8 @@ from distutils.version import StrictVersion
 #from django.utils.translation import ugettext as _
 _ = lambda x:x
 
-if os.environ.get('DEBUG') == 'True':
-    DEBUG = True
-else:
-    DEBUG = False
-
-
 LESS_THAN_18 = StrictVersion(django.get_version()) < StrictVersion('1.8')
 LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
-
-
-DEBUG=True
 
 ADMINS = (
     ('web-wg', 'web-wg@europython.eu'),
@@ -41,12 +44,10 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '*').split(',')
 #APPEND_SLASH = False
 
 # HTTPS configuration
-#USE_X_FORWARDED_HOST = True
 HTTPS = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
