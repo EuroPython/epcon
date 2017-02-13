@@ -579,7 +579,7 @@ class Order(models.Model):
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
 
-    stripe_charge_id = models.CharField(_('Charge Stripe ID'), max_length=64, unique=True)
+    stripe_charge_id = models.CharField(_('Charge Stripe ID'), max_length=64, unique=True, null=True)
 
     objects = OrderManager()
 
