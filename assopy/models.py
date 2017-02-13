@@ -29,8 +29,8 @@ from collections import defaultdict
 
 log = logging.getLogger('assopy.models')
 
-if settings.CHECK_DB_SCHEMA:
-    check_database_schema()
+# if settings.CHECK_DB_SCHEMA:
+#     check_database_schema()
 
 def _cache(f):
     """
@@ -550,6 +550,7 @@ ORDER_PAYMENT = (
     ('paypal', 'PayPal'),
     #('bank', 'Bank'),
 )
+
 class Order(models.Model):
     code = models.CharField(max_length=20, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
@@ -577,6 +578,8 @@ class Order(models.Model):
     # e in quel caso non è detto che si conosca
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
     address = models.CharField(_('Address'), max_length=150, blank=True)
+
+    stripe_charge_id = models.CharField(_('Charge Stripe ID'), max_length=64, unique=True, null=True)
 
     objects = OrderManager()
 
@@ -629,7 +632,7 @@ class Order(models.Model):
     def confirm_order(self, payment_date):
         # metodo per confermare un ordine simile a genro.confirm_order
         # una volta confermato un ordine si crea una fattura con data
-        Invoice.objects.creates_from_order(self,payment_date=payment_date)
+        Invoice.objects.creates_from_order(self, payment_date=payment_date)
 
     def total(self, apply_discounts=True):
         if apply_discounts:

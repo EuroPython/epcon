@@ -98,6 +98,7 @@ class OrderAdmin(admin.ModelAdmin):
         '_created', 'method',
         '_items', '_complete', '_invoice',
         '_total_nodiscount', '_discount', '_total_payed',
+        'stripe_charge_id'
     )
     list_select_related = True
     list_filter = ('method', '_complete',)

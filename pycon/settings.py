@@ -302,6 +302,7 @@ LOCALE_PATHS = (
 )
 
 INSTALLED_APPS = (
+    # 'test_without_migrations',
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
@@ -362,7 +363,7 @@ INSTALLED_APPS = (
     'cms_utils',
 
     'raven.contrib.django.raven_compat',
-    #'django_extensions',
+    # 'django_extensions',
 )
 
 # prevent issue with django.apps not being found

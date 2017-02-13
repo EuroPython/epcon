@@ -55,7 +55,6 @@ class StripeCheckoutView(LoginRequiredMixin, DetailView):
         """
         # first get the order, excluding the orders that are already paid
         order = self.get_object(self.get_queryset().filter(_complete=False))
-
         form = StripeCheckoutForm(request.POST)
 
         stripe_error = None
@@ -80,6 +79,11 @@ class StripeCheckoutView(LoginRequiredMixin, DetailView):
                     card=token,
                     description="payment for order %s by %s" % (order.pk, email)
                 )
+                # Stripe will return an identifier for the Charge, we store it in the model
+                # FIXME: This fix is just a workaround and we have to use a real solution
+                # for example: https://github.com/mirumee/django-payments
+                order.stripe_charge_id = charge.id
+                order.save()
                 order.confirm_order(timezone.now())
 
                 # TODO: we should save the charge for future refunds
