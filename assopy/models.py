@@ -191,7 +191,7 @@ class User(models.Model):
         _('Vat Number'), max_length=22, blank=True,
         help_text=_('Your VAT number if applicable'))
     cf_code = models.CharField(
-        'Codice Fiscale', max_length=16, blank=True,
+        _('Fiscal Code'), max_length=16, blank=True,
         help_text=_('Needed only for Italian customers'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
     address = models.CharField(
@@ -573,7 +573,7 @@ class Order(models.Model):
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
     vat_number = models.CharField(_('Vat Number'), max_length=22, blank=True)
-    cf_code = models.CharField('Codice Fiscale', max_length=16, blank=True)
+    cf_code = models.CharField(_('Fiscal Code'), max_length=16, blank=True)
     # la country deve essere null perché un ordine può essere creato via admin
     # e in quel caso non è detto che si conosca
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
