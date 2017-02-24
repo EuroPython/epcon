@@ -517,8 +517,14 @@ CKEDITOR_SETTINGS = {
     'toolbar': 'CMS',
     'skin': 'moono',
     'extraPlugins': 'cmsplugins',
+    'basicEntities': False,
+    'entities': False,
 }
 
+# html5lib sanitizer settings
+TEXT_ADDITIONAL_TAGS = ('iframe',)
+TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder',
+     'src', 'height', 'width')
 
 #
 # We're not going to use this feature for EuroPython 2015+:
