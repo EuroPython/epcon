@@ -505,7 +505,7 @@ CMS_TEMPLATES = (
     ('django_cms/p5_home_splash.html', 'Homepage, splash'),
 )
 CMS_PLUGIN_PROCESSORS = (
-    # 'cms_utils.processors.process_templatetags',
+    'cms_utils.processors.process_templatetags',
 )
 MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': False})
 
