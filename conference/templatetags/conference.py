@@ -1336,7 +1336,7 @@ def talks_data(tids, conference=None):
         data = filter(lambda x: x['conference'] == conference, data)
     return data
 
-@register.simple_tag()
+@register.assignment_tag()
 def schedule_data(sid):
     return dataaccess.schedule_data(sid)
 
