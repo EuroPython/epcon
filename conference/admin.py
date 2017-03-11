@@ -328,6 +328,7 @@ admin.site.register(models.Deadline, DeadlineAdmin)
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import ReverseGenericRelatedObjectsDescriptor
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
     def __new__(mcs, name, bases, attrs):
@@ -338,11 +339,10 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         if not model:
             return new_class
 
-        # TODO: is this needed
-        # for name, f in model.__dict__.items():
-        #     if isinstance(f, generic.ReverseGenericRelatedObjectsDescriptor):
-        #         if f.field.related.parent_model is models.MultilingualContent:
-        #             multilingual_fields.append(name)
+        for name, f in model.__dict__.items():
+            if isinstance(f, ReverseGenericRelatedObjectsDescriptor):
+                if f.field.related.model is models.MultilingualContent:
+                    multilingual_fields.append(name)
 
         widget = attrs.get('multilingual_widget', forms.Textarea)
         form_fields = {}
@@ -361,6 +361,7 @@ class MultiLingualForm(forms.ModelForm):
 
     def __init__(self, *args, **kw):
         super(MultiLingualForm, self).__init__(*args, **kw)
+
         if self.instance:
             self._init_multilingual_fields()
 
@@ -962,13 +963,14 @@ class DidYouKnowAdmin(admin.ModelAdmin):
 
     def _message(self, o):
         messages = dict( (c.language, c) for c in o.messages.all() if c.body)
+
         try:
             return messages[dsettings.LANGUAGES[0][0]].body
         except KeyError:
             if messages:
                 return messages.values()[0].body
             else:
-                return ''
+                return 'no messages'
 
 admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 
