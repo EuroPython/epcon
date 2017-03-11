@@ -1324,6 +1324,8 @@ class VotoTalk(models.Model):
 
     class Meta:
         unique_together = (('user', 'talk'),)
+        verbose_name = 'Talk voting'
+        verbose_name_plural = 'Talk votings'
 #
 #def _clear_track_cache(sender, **kwargs):
 #    if hasattr(sender, 'schedule_id'):
