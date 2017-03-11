@@ -9,13 +9,15 @@ from p3 import models
 import mimetypes
 import os.path
 
+from .helpers import get_secure_storage
+
 
 def secure_media(request, path):
     if not (request.user.is_superuser or request.user.groups.filter(name__in=('sim_report', 'hotel_report')).exists()):
         fname = os.path.splitext(os.path.basename(path))[0]
         if fname.rsplit('-', 1)[0] != request.user.username:
             return http.HttpResponseForbidden()
-    fpath = settings.SECURE_STORAGE.path(path)
+    fpath = get_secure_storage().path(path)
     guessed = mimetypes.guess_type(fpath)
     try:
         r = http.HttpResponse(file(fpath), content_type=guessed[0])
