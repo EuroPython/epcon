@@ -1280,10 +1280,6 @@ if check.startswith(MEDIA_ROOT):
         print
         'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
 
-from django.core.files import storage
-
-SECURE_STORAGE = storage.FileSystemStorage(location=SECURE_MEDIA_ROOT,
-                                           base_url=SECURE_MEDIA_URL)
 
 if not SECRET_KEY:
     if not DEBUG:
