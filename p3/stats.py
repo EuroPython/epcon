@@ -682,9 +682,13 @@ def hotel_tickets(conf, code=None):
         lower(ct.name) = lower(u.first_name || ' ' || u.last_name)
         or lower(ct.name) = lower(u.last_name || ' ' || u.first_name))
     """
-    from p3.utils import RawSubquery
+
+    from django.db import connection
+    cursor = connection.cursor()
+    data = [x[0] for x in cursor.execute(not_compiled_sql, [conf, conf, conf]).fetchall()]
+
     not_compiled = _tickets(conf)\
-        .filter(p3_conference_room__id__in=RawSubquery(not_compiled_sql, [conf, conf, conf]))\
+        .filter(p3_conference_room__id__in=data)\
         .select_related(
             'user',
             'orderitem__order__user__user__attendeeprofile__p3_profile',
