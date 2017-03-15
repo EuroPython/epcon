@@ -119,7 +119,7 @@ LANGUAGES = (
     ('en', _('English')),
     #('es', _('Spanish')),
     #('eu', _('Basque')),
-    ('it', _('Italian')),
+    #('it', _('Italian')),
 )
 
 # These languages are shown in the talk submission forms. The
@@ -128,7 +128,7 @@ CONFERENCE_TALK_SUBMISSION_LANGUAGES = (
     ('en', _('English')),
     #('es', _('Spanish')),
     #('eu', _('Basque')),
-    ('it', _('Italian')),
+    #('it', _('Italian')),
 )
 
 # Site ID
@@ -466,8 +466,8 @@ PAGE_TEMPLATES = (
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_LANGUAGES = (
-    ('it-it', _('Italian')),
     ('en-us', _('English')),
+    #('it-it', _('Italian')),
 )
 PAGE_DEFAULT_LANGUAGE = PAGE_LANGUAGES[0][0]
 PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]
