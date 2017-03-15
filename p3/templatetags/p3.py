@@ -37,6 +37,10 @@ register = template.Library()
 def box_pycon_italia():
     return {}
 
+@register.inclusion_tag('p3/box_toc.html', takes_context=True)
+def box_toc(context):
+    return context
+
 @register.inclusion_tag('p3/box_sponsor.html', takes_context=True)
 def box_sponsor(context):
     return context
