@@ -182,7 +182,7 @@ p, ol, ul, dl, address { margin-bottom: 0.75em; font-size: 18px; font-size: 1.8r
 
 small, .meta, #talk-voting .talk-speakers, .person-card .see-more, .ticket-footer { font-size: 15px; font-size: 1.5rem; }
 
-ul, ol { margin: 0 0 0.75em -30px; padding: 0 0 0 30px; }
+ul, ol { padding: 0 0 0 30px; }
 
 .subtitle { font-style: italic; font-size: 85%; }
 
@@ -261,6 +261,10 @@ a { text-decoration: none; color: #ffb81c; }
 a:hover { text-decoration: none; color: #bd153a; }
 a:focus { outline: thin dotted; color: #222222; }
 a:hover, a:active { outline: 0; }
+
+/* Link color in content section of page */
+.page a { color: #1b86e0; }
+.page a:hover { color: #ef7918; }
 
 ::-moz-selection { background-color: white; color: #ffb81c; text-shadow: none; }
 
@@ -2052,7 +2056,7 @@ nav[role=navigation].active { max-height: 25em; }
 @media (min-width: 37.5em) { #navigation-toggle ul { margin: 0 auto; } }
 @media (min-width: 37.5em) { #navigation-toggle li { float: left; margin: 0 15px 0 0; } }
 #navigation-toggle li a { vertical-align: middle; display: block; padding: 15px 7.5px; border-top: 1px solid #ffb81c; color: #ffb81c; text-transform: uppercase; letter-spacing: .5px; }
-#navigation-toggle li li a { padding-left: 1em; background-color: #deedf4; }
+#navigation-toggle li li a { padding-left: 1em; background-color: #fff9ec; }
 @media (min-width: 37.5em) { #navigation-toggle li a { display: inline-block; border: none; font-size: 16px; font-size: 1.6rem; } }
 #navigation-toggle li a:hover { color: #555555; text-decoration: none; }
 #navigation-toggle li.current a { color: #555555; }
