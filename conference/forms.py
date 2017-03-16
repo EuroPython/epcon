@@ -195,7 +195,7 @@ class TalkBaseForm(forms.Form):
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
         choices=settings.TALK_SUBMISSION_LANGUAGES,
-        initial='en',)
+        required=False)
     level = forms.TypedChoiceField(
         label=_('Audience level'),
         help_text=_('Please choose a level suitable for the session. People attending the session will expect their skill level to be expected, so a talk for advanced Python users should have advanced level content.'),
