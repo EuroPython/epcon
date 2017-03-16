@@ -6,152 +6,152 @@
  */
 
 /* ============================================== */
-/* ! Custom styles for text pulled from the CMS   */
+/* ! Custom styles for text pulled from the ep-cms   */
 /* ============================================== */
 
 
-.cms img {
-	display: block;	
+.ep-cms img {
+	display: block;
 	border: 5px solid #999774;
 
     margin: 20px auto;
 }
 
-.cms img.noborder {
+.ep-cms img.noborder {
 	border: none;
 }
 
 
-.cms p, 
-.cms dl, 
-.cms ul, 
-.cms ol,
-.cms table {
+.ep-cms p,
+.ep-cms dl,
+.ep-cms ul,
+.ep-cms ol,
+.ep-cms table {
 	margin-bottom: 20px;
 }
 
-.cms p {
+.ep-cms p {
 	margin-bottom: 10px;
 }
 
 
-.cms h2 {
-	
+.ep-cms h2 {
+
 	margin: 30px 0 10px 0;
 	text-transform: none;
 
     font-size: 21px;
-    
+
     color: #96204B;
 
 }
 
 
-.cms h3,
-.cms h4,
-.cms h5,
-.cms h6 {
-	
+.ep-cms h3,
+.ep-cms h4,
+.ep-cms h5,
+.ep-cms h6 {
+
 	margin: 20px 0 10px 0;
 
 
     font-size: 18px;
-    		
+
 	text-transform: uppercase;
-		
+
 }
 
 /* first  h2 and h3 (sidebar) */
-.cms h3:first-child,
-.cms h2:first-child {
+.ep-cms h3:first-child,
+.ep-cms h2:first-child {
 	margin-top: 0;
 }
 
 
-.cms li {
+.ep-cms li {
 
 /*     font-size: 13px; */
 /*     color: #d7cef5; */
-    
+
 	margin: 0 0 5px 20px;
 }
 
-.cms dl {
+.ep-cms dl {
 	margin-left: 20px;
 }
 
 
-.cms ul {
+.ep-cms ul {
 	list-style: outside square  url(../i/bullet-arr.png);
 }
 
 
-.cms ol {
+.ep-cms ol {
 	list-style: outside decimal;
 }
 
-.cms dd {
-	margin-bottom: 20px;	
+.ep-cms dd {
+	margin-bottom: 20px;
 }
 
 
 
 
-.cms blockquote {
-	margin: 10px 20px 10px 20px;	
-	
+.ep-cms blockquote {
+	margin: 10px 20px 10px 20px;
+
     font: normal 12px/20px "Helvetica Neue",Tahoma,Arial,Helvetica,"DejaVu Sans Condensed",sans-serif;
     color: #383829;
-	
+
 }
 
 
-.cms blockquote i,
-.cms blockquote em {
+.ep-cms blockquote i,
+.ep-cms blockquote em {
 	font-style: normal;
 }
 
 
 
 
-.cms table {
+.ep-cms table {
 	border-collapse: collapse;
 	width: 100%;
-	
+
 
     margin: 20px 0;
 
     border: 10px solid #ebead8;
-    background: #ebead8;    
-    	
+    background: #ebead8;
+
 }
 
 
-.cms table caption {
+.ep-cms table caption {
 
     font-style: italic;
 	caption-side: bottom;
-	
+
 	margin: 20px 0 0 0;
-	
+
     text-align: center;
 
     color: #383829;
 }
 
 
-.cms table th,
-.cms table td {	
+.ep-cms table th,
+.ep-cms table td {
 
 	padding: 5px 10px 5px 0;
 
-	
+
 }
 
 
 
 
-.cms table th {
+.ep-cms table th {
 
 	font: bold 13px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
     text-transform: uppercase;
@@ -159,15 +159,15 @@
     letter-spacing: 1px;
 
     border-bottom: 5px solid #94946F;
-    
+
     padding-top: 0;
-	
+
 }
 
-.cms table td {	
+.ep-cms table td {
 
     border-bottom: 1px dotted #94946F;
-	
+
 }
 
 
@@ -176,38 +176,38 @@
 /* ============== */
 
 
-.cms .hotels th {
+.ep-cms .hotels th {
     border: none;
 }
 
-.cms .hotels tr.affiliated {
+.ep-cms .hotels tr.affiliated {
     color: #96204B;
 }
 
-.cms .hotels tr.affiliated a:link,
-.cms .hotels tr.affiliated a:visited {
+.ep-cms .hotels tr.affiliated a:link,
+.ep-cms .hotels tr.affiliated a:visited {
     color: #96204B;
 }
 
-.cms .hotels tr.info td {
+.ep-cms .hotels tr.info td {
 
     border-top: 3px solid #94946F;
     padding: 10px 10px 10px 0;
 }
 
-.cms .hotels tr.info td h4 {
-	
+.ep-cms .hotels tr.info td h4 {
+
 	font: bold 14px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif;
-			
+
 	margin: 0 0 5px 0;
 	text-transform: none;
 }
 
 
-.cms .hotels tr.note td {
+.ep-cms .hotels tr.note td {
     font-style: italic;
     color: #383829;
-    
+
     padding: 5px 10px 5px 20px;
     font-size: 13px;
 
@@ -215,15 +215,15 @@
 }
 
 
-.cms .hotels tr.note td p.last-contact {
+.ep-cms .hotels tr.note td p.last-contact {
     margin-bottom: 0;
 }
 
 
-.cms .info-hotel {
+.ep-cms .info-hotel {
 }
 
-.cms .info-hotel h1 {
+.ep-cms .info-hotel h1 {
     background: none;
     margin: 0 0 10px 0;
     padding: 0;
@@ -231,23 +231,23 @@
     text-shadow: none;
 }
 
-.cms .info-hotel table {
+.ep-cms .info-hotel table {
     background: #fff;
     border: none;
     margin: 0;
     width: auto;
 }
 
-.cms .info-hotel th, 
-.cms .info-hotel td {
+.ep-cms .info-hotel th,
+.ep-cms .info-hotel td {
     font-size: 13px;
     padding: 3px 0 3px 0;
 }
 
-.cms .info-hotel th  {
+.ep-cms .info-hotel th  {
     border-bottom: 1px dotted #94946F;
-    text-transform: capitalize;    
-    padding-right: 10px;    
+    text-transform: capitalize;
+    padding-right: 10px;
 }
 
 
@@ -259,36 +259,36 @@
 
 
 
-.cms pre
-.cms code {	
+.ep-cms pre
+.ep-cms code {
 	background: #eee;
-	
+
 	padding: 5px;
-	
+
 	font: normal 12px/20px Consolas, "Courier New", "Lucida Console", monospace;
-	
+
 	margin: 0 0 20px 0;
-		
+
 	display: block;
-	
+
 }
 
 
-.cms hr {
+.ep-cms hr {
   clear: both;
-  width: 100%; 
-    
+  width: 100%;
+
   height: 2px;
 
-  margin: 20px 0 20px 0; 
+  margin: 20px 0 20px 0;
 
   background: transparent url(../i/bg-sep.png) center left repeat-x;
 
   visibility: visible;
 
   /* IE */
-  _margin: -7px 0 13px 0; 
-  
+  _margin: -7px 0 13px 0;
+
 }
 
 
@@ -298,7 +298,7 @@
 
 .call-to-action {
     margin: 20px auto;
-    
+
     text-align: center;
 }
 
@@ -307,24 +307,24 @@
     border: none;
 	background: #94946F;
 	color: #fff;
-	
-    font: bold 14px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;	
 
-	
+    font: bold 14px/20px "Helvetica Neue", Tahoma, Arial, Helvetica, "DejaVu Sans Condensed", sans-serif;
+
+
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	
-	padding: 5px 10px;	
-	
+
+	padding: 5px 10px;
+
 /*     text-align:center;	 */
-		
+
 }
 
 .call-to-action a:hover {
 
 	background: #fff;
-    color: #96204B;	
+    color: #96204B;
 }
 
 
@@ -334,19 +334,19 @@
 /* ! img-desc   */
 /* ============ */
 
-cms .img-desc {
+ep-cms .img-desc {
     margin: 0 0 20px 0;
 }
 
-cms .img-desc object,
-cms .img-desc img {
+ep-cms .img-desc object,
+ep-cms .img-desc img {
     float: left;
- 
-    margin: 0 20px 0 0;   
+
+    margin: 0 20px 0 0;
 }
 
 
-cms .img-desc p {
+ep-cms .img-desc p {
     font-size: 13px;
 }
 
@@ -356,28 +356,28 @@ cms .img-desc p {
 /* ============== */
 
 
-.cms .highlights {
+.ep-cms .highlights {
 
     padding: 10px;
     border: 2px solid #4e69b2;
-    
+
     margin: 30px 0;
-    
-    
+
+
 /*     background: #fff url(../i/bg-highlights.png) bottom left repeat-x; */
-    background: #384b80;    
+    background: #384b80;
 }
 
 
-.cms .highlights h4 {
-    
+.ep-cms .highlights h4 {
+
     margin-top: 0;
-    
+
     color: #9dcc4f;
 
     text-transform: none;
     font-size: 14px;
-    
+
 }
 
 /*
@@ -393,7 +393,7 @@ cms .img-desc p {
 /* =========== */
 
 
-.cms .automap  {
+.ep-cms .automap  {
     margin: 20px 0;
     border: 5px solid #999774;
 }
