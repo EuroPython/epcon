@@ -184,7 +184,7 @@ class TalkBaseForm(forms.Form):
     abstract_short = forms.CharField(
         max_length=500,
         label=_('Abstract (short version)'),
-        help_text=_('<p>Please enter a short version of your abstract. We need a short description e.g. for YouTube and other distribution channels with limited space for abstracts.</p><p>Suggested size: <500 chars.</p>'),
+        help_text=_('<p>We need a short description e.g. for YouTube and other distribution channels with limited space for abstracts. <u>You could just use a shorter version of the long abstract</u>.</p><p>Suggested size: <500 chars.</p>'),
         widget=MarkEditWidget)
     prerequisites = forms.CharField(
         label=_('Prerequisites for attending the session'),
@@ -324,7 +324,7 @@ class SubmissionForm(forms.Form):
             title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
             abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', language=data['language'],
-            level=data['level'], type=data['type']
+-           level=data['level'], type=data['type']
         )
 
         talk.save()
@@ -406,7 +406,7 @@ class TalkForm(forms.ModelForm):
                 title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
                 abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', language=data['language'],
-                level=data['level'], type=data['type']
+-               level=data['level'], type=data['type']
             )
         talk = super(TalkForm, self).save(commit=commit)
         talk.setAbstract(data['abstract'])

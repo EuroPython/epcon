@@ -593,7 +593,7 @@ class Talk(models.Model, UrlMixin):
     conference = models.CharField(help_text='name of the conference', max_length=20)
     admin_type = models.CharField(max_length=1, choices=TALK_ADMIN_TYPE, blank=True)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
-    language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES)
+    language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES, default="en")
     abstracts = generic.GenericRelation(
         MultilingualContent,
         verbose_name=_('Talk abstract'),
