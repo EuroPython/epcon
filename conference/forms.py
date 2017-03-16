@@ -324,7 +324,7 @@ class SubmissionForm(forms.Form):
             title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
             abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
             status='proposed', language=data['language'],
--           level=data['level'], type=data['type']
+            level=data['level'], type=data['type']
         )
 
         talk.save()
@@ -406,7 +406,7 @@ class TalkForm(forms.ModelForm):
                 title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
                 abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
                 status='proposed', language=data['language'],
--               level=data['level'], type=data['type']
+                level=data['level'], type=data['type']
             )
         talk = super(TalkForm, self).save(commit=commit)
         talk.setAbstract(data['abstract'])
