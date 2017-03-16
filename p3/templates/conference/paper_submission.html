@@ -65,7 +65,7 @@
             {{ form.prerequisites|form_field }}
             {{ form.abstract|form_field }}
             {{ form.abstract_short|form_field }}
-            {{ form.abstract_extra|form_field }}
+            {# form.abstract_extra|form_field #}
 
         </fieldset>
 
@@ -81,9 +81,11 @@
         <fieldset class="form-actions">
             <button type="submit" name="" class="btn btn-primary">{% trans "Submit proposal" %}</button>
         </fieldset>
-
+ {#
         <div class="alert alert--info">
-            <b>{% trans "Note" %}</b>: {% trans "if you are able to give the same talk/training both in more than one language, please submit the talk for each language, with fully translated title and abstract." %}</div>
+            <b>{% trans "Note" %}</b>: {% trans "if you are able to give the same talk/training both in more than one language, please submit the talk for each language, with fully translated title and abstract." %}
+            </div>
+#}
     </div><!-- /grid -->
     </div><!-- /grid-container -->
 </section>
