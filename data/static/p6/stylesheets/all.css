@@ -34,8 +34,8 @@ body { margin: 0; padding: 0; width: 100%; background-color: transparent; font-f
 
 [role="contentinfo"] { color: #e0dfdb; padding: 0; }
 [role="contentinfo"] ul { margin: 0; padding: 0; list-style: none; }
-[role="contentinfo"] a { color: #ffb81c; }
-[role="contentinfo"] a:hover { color: white; }
+[role="contentinfo"] a { color: #555555; }
+[role="contentinfo"] a:hover { color: #ef7918; }
 [role="contentinfo"] a:visited { color: #ffb81c; }
 
 .bg-red { background-color: #ffb81c; color: white; }
@@ -80,7 +80,7 @@ footer .bg-grey .footer-menu, footer .deadlines .footer-menu { text-transform: u
 footer .bg-grey .footer-menu li, footer .deadlines .footer-menu li { display: inline-block; margin-right: 10px; margin-left: 10px; }
 footer .bg-grey .footer-menu li a, footer .deadlines .footer-menu li a { text-decoration: none; color: white; }
 footer .bg-grey .footer-menu li a:visited, footer .deadlines .footer-menu li a:visited { color: white; }
-footer .bg-grey .footer-menu li a:hover, footer .deadlines .footer-menu li a:hover { color: #EEE; }
+footer .bg-grey .footer-menu li a:hover, footer .deadlines .footer-menu li a:hover { color: #ef7918; }
 footer .copyright { background-color: #CCC; color: #555555; padding: 15px 0; text-transform: uppercase; text-align: center; }
 footer .copyright p { font-size: 10px; font-size: 1rem; letter-spacing: 1px; margin: 0; }
 footer .copyright a { font-weight: 800; text-decoration: none; }
@@ -254,9 +254,6 @@ sub { bottom: -.25em; }
 
 .post-date { font-size: 16px; font-size: 1.6rem; text-align: center; text-transform: uppercase; }
 
-.intro { text-align: center; font-size: 28px; font-size: 2.8rem; font-weight: 500; line-height: 1.3; }
-.intro a { text-decoration: underline; color: white; }
-
 a { text-decoration: none; color: #ffb81c; }
 a:hover { text-decoration: none; color: #bd153a; }
 a:focus { outline: thin dotted; color: #222222; }
@@ -265,6 +262,10 @@ a:hover, a:active { outline: 0; }
 /* Link color in content section of page */
 .page a { color: #1b86e0; }
 .page a:hover { color: #ef7918; }
+
+/* Overrides for home page intro section */
+.intro { text-align: center; font-size: 28px; font-size: 2.8rem; font-weight: 500; line-height: 1.3; }
+.intro a { text-decoration: underline; color: white; }
 
 ::-moz-selection { background-color: white; color: #ffb81c; text-shadow: none; }
 
