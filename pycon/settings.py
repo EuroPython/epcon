@@ -11,7 +11,7 @@ else:
     DEBUG = False
     
 # For development, we always run in debug mode...
-DEBUG=True
+#DEBUG=True
 
 # We want to use HTTPS for everything and not fiddle with docker or gunicorn
 # setups.
