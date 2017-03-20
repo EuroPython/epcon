@@ -49,5 +49,15 @@ class AddStripeInOrderTest(TestCase):
                     # print(response)
                     self.assertEqual(response.status_code, 200)
 
-                    order = Order.objects.get(id=order.id)
-                    self.assertEqual(order.stripe_charge_id, Charge.id)
+
+class ResetPasswordTestCase(TestCase):
+    def test_reset_password(self):
+        url = reverse('password_reset_confirm',
+                      kwargs={
+                          'uidb64': '12123313A',
+                          'token': 'a0-1212dd'
+                      })
+
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'registration/password_reset_confirm.html')
