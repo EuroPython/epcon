@@ -4,15 +4,19 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-import mock
-from django.test import TestCase, SimpleTestCase
+from mock import patch
+from mock import Mock
+from django.test import TestCase
 from assopy.models import User, Order
 from django.contrib.auth.models import User as AuthUser
 from django.core.urlresolvers import reverse
 
 
 class AddStripeInOrderTest(TestCase):
-    def test_stripe(self):
+    @patch('assopy.stripe.views.StripeCheckoutView.get_object')
+    @patch('stripe.Charge.create')
+    @patch('email_template.utils.email')
+    def test_stripe(self, email, create, get_object):
         data = {
             'stripeToken': '1234567890',
             'stripeEmail': 'demo@demo.org',
@@ -28,26 +32,32 @@ class AddStripeInOrderTest(TestCase):
 
         user = User.objects.create(user=auth_user)
 
-        class Charge(object):
-            id = '1'
+        charge = Mock(id='1')
+        email.return_value = Mock()
 
-        with mock.patch('assopy.stripe.views.StripeCheckoutView.get_object') as get_object:
-            with mock.patch('stripe.Charge.create') as create:
-                with mock.patch('email_template.utils.email') as email:
-                    from django.core.mail import EmailMessage
-                    email.return_value = EmailMessage()
+        order = Order.objects.create(user=user,
+                                     payment='cc',  ## cc because stripe is a credit card.
+                                     items=[])
 
-                    order = Order.objects.create(user=user,
-                                                 payment='cc',  ## cc because stripe is a credit card.
-                                                 items=[])
+        get_object.return_value = order
+        create.return_value = charge
 
-                    get_object.return_value = order
-                    create.return_value = Charge()
+        url = reverse('assopy-stripe-checkout', kwargs={'pk': 12345})
+        response = self.client.post(url, data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
 
-                    url = reverse('assopy-stripe-checkout', kwargs={'pk': 12345})
-                    response = self.client.post(url, data=data, follow=True)
-                    # print(response)
-                    self.assertEqual(response.status_code, 200)
+        order = Order.objects.get(id=order.id)
+        self.assertEqual(order.stripe_charge_id, charge.id)
 
-                    order = Order.objects.get(id=order.id)
-                    self.assertEqual(order.stripe_charge_id, Charge.id)
+
+class ResetPasswordTestCase(TestCase):
+    def test_reset_password(self):
+        url = reverse('password_reset_confirm',
+                      kwargs={
+                          'uidb64': '12123313A',
+                          'token': 'a0-1212dd'
+                      })
+
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'registration/password_reset_confirm.html')
