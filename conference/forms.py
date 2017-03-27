@@ -234,7 +234,7 @@ class SubmissionForm(forms.Form):
         max_length=30)
     birthday = forms.DateField(
         label=_('Date of birth'),
-        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published.'),
+        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published. We require date of birth for speakers to accomodate for laws regarding minors.'),
         input_formats=('%Y-%m-%d',),
         widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}))
     job_title = forms.CharField(
