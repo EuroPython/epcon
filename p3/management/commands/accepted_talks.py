@@ -11,33 +11,32 @@ from collections import defaultdict
 from optparse import make_option
 import operator
 
+from ...utils import (talk_title,
+                      profile_url)
+
 ### Globals
 
+# These must match the talk .type or .admin_type
 TYPE_NAMES = (
-    ('keynote', 'Keynotes', ''),
-    ('s', 'Talks', ''),
-    ('t', 'Trainings', ''),
+    ('k', 'Keynotes', ''),
+    ('t', 'Talks', ''),
+    ('r', 'Training sessions', ''),
     ('p', 'Poster sessions', ''),
-    ('h', 'Help desks', 'Help desks provide slots for attendee to discuss their problems one-on-one with experts from the projects.'),
-    ('europython', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
-    ('i', 'Other sessions', ''),
+    ('i', 'Interactive sessions', ''),
+    ('n', 'Panels', ''),
+    ('h', 'Help desks', 'Help desks provide slots for attendees to discuss their problems one-on-one with experts from the projects.'),
+    ('m', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
     )
 
 def _check_talk_types(type_names):
     d = set(x[0] for x in type_names)
     for code, entry in models.TALK_TYPE:
-        assert code in d, 'Talk type code %r is missing' % code
+        assert code[0] in d, 'Talk type code %r is missing' % code[0]
 _check_talk_types(TYPE_NAMES)
 
 ### Helpers
 
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
-
 def speaker_listing(talk):
-
     return u', '.join(
         u'<a href="%s"><i>%s %s</i></a>' % (
             profile_url(speaker.user),
@@ -45,16 +44,6 @@ def speaker_listing(talk):
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
 
-def talk_title(talk):
-
-    # Remove whitespace
-    title = talk.title.strip()
-
-    # Remove quotes
-    if title[0] == '"' and title[-1] == '"':
-        title = title[1:-1]
-
-    return title
 
 ###
 
@@ -81,12 +70,22 @@ class Command(BaseCommand):
         # Group by types
         talk_types = {}
         for talk in talks:
-            if 'EPS' in talk.title or 'EuroPython 20' in talk.title:
-                type = 'europython'
-            elif talk.title.lower().startswith('keynote'):
-                type = 'keynote'
+            talk_type = talk.type[:1]
+            admin_type = talk.admin_type[:1]
+            if (admin_type == 'm' or
+               'EPS' in talk.title or
+               'EuroPython 20' in talk.title):
+                type = 'm'
+            elif (admin_type == 'k' or
+                  talk.title.lower().startswith('keynote')):
+                #print ('found keynote: %r' % talk)
+                type = 'k'
+            elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):
+                # Don't list these placeholders or plenary sessions
+                # used in the schedule
+                continue
             else:
-                type = talk.type
+                type = talk_type
             if type in talk_types:
                 talk_types[type].append(talk)
             else:
@@ -112,4 +111,3 @@ class Command(BaseCommand):
                     speaker_listing(talk))
                     ).encode('utf-8'))
             print ('</ul>')
-        

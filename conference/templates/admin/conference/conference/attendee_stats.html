@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% load conference %}
+
+{% block extrahead %}
+<style>
+.stat {
+    margin-bottom: 20px;
+}
+.stat table {
+    width: 800px;
+}
+.stat table td {
+    text-align: right;
+}
+.stat table .title {
+    width: 500px;
+}
+</style>
+{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../../">Home</a> &rsaquo;
+     <a href="../../../">Conference</a>&rsaquo;
+     <a href="../../">Conference</a>&rsaquo;
+     stats
+</div>
+{% endblock %}{% block content %}
+<div>
+    {% for s in stats %}
+    <div class="stat">
+        <h1>{{ s.short_description }}</h1>
+        {% if s.description %}
+        <h2>{{ s.description }}</h2>
+        {% endif %}
+        {% with s.get_data as results %}
+        <table>
+            <thead>
+                <tr>
+                    <th class="title">Title</th>
+                    {% for colid, colname in results.columns %}
+                    <th class="{{ colid }}">{{ colname|safe }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results.data %}
+                <tr>
+                    <th>
+                        {% if row.id %}
+                            <a href="{% url "admin:conference-ticket-stats-details" conference %}?code={{ results.id }}.{{ row.id }}">{{ row.title }}</a>
+                        {% else %}
+                            {{ row.title }}
+                        {% endif %}
+                    </th>
+                    {% for colid, colname in results.columns %}
+                    <td>{% if row|attrib_:colid %}{{ row|attrib_:colid }}{% endif %}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endwith %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

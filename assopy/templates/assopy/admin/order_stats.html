@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}
+<style>
+.conference {
+    width: 30%;
+    float: left;
+    margin-right: 5px;
+    border: 2px solid black;
+    padding: 4px;
+}
+.conference h3 {
+    font-size: 10px;
+    margin: 0;
+}
+hr {
+    clear: both;
+}
+.qty, .sales {
+    text-align: right;
+}
+table {
+    width: 100%;
+}
+</style>
+{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../">Home</a> &rsaquo;
+     <a href="../../">Assopy</a>&rsaquo;
+     <a href="../">Orders</a>&rsaquo;
+     stats
+</div>
+{% endblock %}{% block content %}
+    {% for conf, stats in conferences %}
+    <div class="conference">
+        <h1>{{ conf.code }}</h1>
+        {% for name, doc, render in stats %}
+        <div class="stat">
+            <h2>{{ name }}</h2>
+            <h3>{{ doc }}</h3>
+            {{ render }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    <hr />
+{% endblock %}

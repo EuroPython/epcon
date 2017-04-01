@@ -20,21 +20,6 @@ import datetime
 
 ## These should really be changes in the conference package:
 
-# Talk lanuages, mapping ISO code to languageT
-TALK_LANGUAGES = getattr(settings,
-                         'CONFERENCE_TALK_LANGUAGES',
-                         # TBD: Should add TALK_LANGUAGES to conference.settings
-                         #csettings.TALK_LANGUAGES
-                         settings.LANGUAGES
-                         )
-
-# Available talk durations
-TALK_DURATION = getattr(settings,
-                         'CONFERENCE_TALK_DURATION',
-                         csettings.TALK_DURATION)
-
-###
-
 # TBD: These forms need some cleanup. Probably best to merge the
 # conference repo into epcon and then remove all this subclassing.
 
@@ -46,26 +31,9 @@ class P3TalkFormMixin(object):
         # needed
         #if data['type'] in ('t', 'h'):
         #    data['duration'] = 240
-
-        # Set default duration
-        if not data.get('duration'):
-            data['duration'] = 45
-
         # Set default language
-        if not data.get('language') or data['type'] != 's':
+        if not data.get('language'):
             data['language'] = 'en'
-
-        # Set Q&A duration
-        if data['duration'] < 45:
-            data['qa_duration'] = 5
-        elif data['duration'] < 90:
-            data['qa_duration'] = 10
-        elif data['duration'] == 90:
-            data['qa_duration'] = 15
-        else:
-            # Trainings and helpdesk don't get Q&A time
-            data['qa_duration'] = 0
-
         return data
 
 
@@ -73,27 +41,37 @@ class P3TalkFormMixin(object):
 # has not yet submitted another talk; see P3SubmissionAdditionalForm
 # for talk editing and additional talks.
 
+# Hot topic CFP only allows a subset of available talk types:
+#TALK_TYPE_FORM = list((
+#    ('t_30', 'Talk (30 mins)'),
+#    ('t_45', 'Talk (45 mins)'),
+##    ('t_60', 'Talk (60 mins)'),
+##    ('i_60', 'Interactive (60 mins)'),
+##    ('r_180', 'Training (180 mins)'),
+#    ('p_180', 'Poster session (180 mins)'),
+##    ('n_60', 'Panel (60 mins)'),
+##    ('n_90', 'Panel (90 mins)'),
+#    ('h_180', 'Help desk (180 mins)'),
+#))
+
+# Normal CFP:
+TALK_TYPE_FORM = list(cmodels.TALK_TYPE)
+
+# Add a non-valid default choice for the talk type to force the user
+# to select one
+TALK_TYPE_FORM.insert(0, ("", "----------------"))
+
 class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
-    duration = forms.TypedChoiceField(
-        label=_('Duration'),
-        help_text=_('This is the <i>desired duration</i> of the talk/training'),
-        choices=TALK_DURATION,
-        coerce=int,
-        initial=30,
-        required=False,
-    )
-    first_time = forms.BooleanField(
-        label=_('I\'m a first-time speaker'),
-        help_text=_('We would love to have more first time speakers at the conference. This setting will be visible for the Program WG to use in their talk selection.'),
-        required=False,
-    )
+    #first_time = forms.BooleanField(
+    #    label=_('I\'m a first-time speaker'),
+    #    help_text=_('This setting will be visible for the Program WG to use in their talk selection. The WG may contact you to ask you to participate in a first time speaker training session.'),
+    #    required=False,
+    #)
     type = forms.TypedChoiceField(
         label=_('Submission type'),
         help_text='Choose between a standard talk, an in-depth training, a poster session or an help desk session',
-        choices=(('s', 'Standard talk'), ('t', 'Training'), ('p', 'Poster session'), ('h', 'Help Desk')),
-        initial='s',
+        choices=TALK_TYPE_FORM,
         required=True,
-        widget=forms.RadioSelect(renderer=cforms.PseudoRadioRenderer),
     )
 
     # Note: These three fields are *not* saved in the talk record,
@@ -113,20 +91,6 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         help_text=_('We will be recording the conference talks and publish them on the EuroPython YouTube channel and archive.org.'),
     )
 
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
-        widget=cforms.MarkEditWidget,)
-    abstract = forms.CharField(
-        max_length=5000,
-        label=_('Abstract/description'),
-        help_text=_('<p>Short description of the talk/training/helpdesk/poster you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: two or three paragraphs.</p>'),
-        widget=cforms.MarkEditWidget,)
-
-    language = forms.TypedChoiceField(
-        help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=TALK_LANGUAGES,
-        initial='en', required=False)
 
     sub_community = forms.ChoiceField(
         label=_('Sub community'),
@@ -141,7 +105,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         kwargs['initial'] = data
         super(P3SubmissionForm, self).__init__(user, *args, **kwargs)
 
-    @transaction.commit_on_success
+    #@transaction.atomic
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionForm, self).save(*args, **kwargs)
 
@@ -153,7 +117,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
         data = self.cleaned_data
 
-        p3s.first_time = data['first_time']
+        p3s.first_time = data.get('first_time', False)
         p3s.save()
 
         # Set additional fields added in this form (compared to
@@ -167,23 +131,19 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
 # This form is used in case the speaker has already proposed a talk
 # and for editing talks
-    
+
 class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
-    duration = P3SubmissionForm.base_fields['duration']
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
     video_agreement = P3SubmissionForm.base_fields['video_agreement']
     type = P3SubmissionForm.base_fields['type']
-    abstract = P3SubmissionForm.base_fields['abstract']
-    language = P3SubmissionForm.base_fields['language']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
-        exclude = ('duration', 'qa_duration',)
+        exclude = ('duration', )
 
     def __init__(self, *args, **kwargs):
         super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)
         if self.instance:
-            self.fields['duration'].initial = self.instance.duration
             if self.instance.id:
                 self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
             # The speaker has already agreed to these when submitting
@@ -193,8 +153,6 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
     def save(self, *args, **kwargs):
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
-        talk.duration = self.cleaned_data['duration']
-        talk.qa_duration = self.cleaned_data['qa_duration']
         talk.save()
         try:
             talk.p3_talk.sub_community = self.cleaned_data['sub_community']
@@ -207,9 +165,7 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
-    duration = P3SubmissionForm.base_fields['duration']
     type = P3SubmissionForm.base_fields['type']
-    abstract = P3SubmissionForm.base_fields['abstract']
     sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
@@ -218,13 +174,11 @@ class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     def __init__(self, *args, **kwargs):
         super(P3TalkForm, self).__init__(*args, **kwargs)
         if self.instance:
-            self.fields['duration'].initial = self.instance.duration
+            #self.fields['duration'].initial = self.instance.duration
             self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
 
     def save(self, *args, **kwargs):
         talk = super(P3TalkForm, self).save(*args, **kwargs)
-        talk.duration = self.cleaned_data['duration']
-        talk.qa_duration = self.cleaned_data['qa_duration']
         talk.save()
         talk.p3_talk.sub_community = self.cleaned_data['sub_community']
         talk.p3_talk.save()
@@ -280,15 +234,15 @@ class FormTicket(forms.ModelForm):
             raw = [ raw ]
         try:
             data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
-        except Exception, e:
-            raise forms.ValidationError('formato data non valido')
+        except Exception:
+            raise forms.ValidationError('data format not valid')
         conf = cmodels.Conference.objects.current()
         days = []
         for x in data:
             if conf.conference_start <= x.date() <= conf.conference_end:
                 days.append(x.strftime('%Y-%m-%d'))
             else:
-                raise forms.ValidationError('data non valida')
+                raise forms.ValidationError('data not valid')
         if self.single_day:
             return days[0] if days else ''
         else:
@@ -302,7 +256,9 @@ class FormTicket(forms.ModelForm):
 
 
 class FormTicketPartner(forms.ModelForm):
-    name = forms.CharField(max_length=60, required=False, help_text='Real name of the person that will attend this specific event.')
+    name = forms.CharField(max_length=60, required=False,
+                           help_text='Real name of the person that '
+                                     'will attend this specific event.')
     class Meta:
         model = cmodels.Ticket
         fields = ('name',)
@@ -338,10 +294,14 @@ class P3ProfileForm(cforms.ProfileForm):
         required=False,)
     tagline = forms.CharField(
         label=_('Tagline'),
-        help_text=_('Describe yourself in one line'),
+        help_text=_('Describe yourself in one line.'),
         required=False,
     )
-    interests = cforms.TagField(label="Technical interests", widget=cforms.TagWidget, required=False)
+    interests = cforms.TagField(
+        label="Technical interests",
+        help_text=_('<p>Please add up to five (5) tags from the shown categories which are relevant to your interests. Only 5 tags will be saved; additional tags are discarded.</p>'),
+        widget=cforms.TagWidget,
+        required=False)
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(choices=cmodels.ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
 
@@ -380,7 +340,7 @@ class P3ProfileForm(cforms.ProfileForm):
         return data
 
     def save(self, commit=True):
-        assert commit, "Aggiornare P3ProfileForm per funzionare con commit=False"
+        assert commit, "Postpone P3ProfileForm to work with commit=False"
         profile = super(P3ProfileForm, self).save(commit=commit)
         try:
             p3p = profile.p3_profile
@@ -393,7 +353,8 @@ class P3ProfileForm(cforms.ProfileForm):
 class P3ProfilePublicDataForm(P3ProfileForm):
     class Meta:
         model = cmodels.AttendeeProfile
-        fields = ('tagline', 'personal_homepage', 'interests', 'twitter', 'company', 'company_homepage', 'job_title', 'location',)
+        fields = ('tagline', 'personal_homepage', 'interests', 'twitter',
+                  'company', 'company_homepage', 'job_title', 'location',)
 
     def clean_bio(self):
         return getattr(self.instance.getBio(), 'body', '')
@@ -403,7 +364,7 @@ class P3ProfilePublicDataForm(P3ProfileForm):
             oldl = cmodels.AttendeeProfile.objects\
                 .values('location')\
                 .get(user=self.instance.user_id)['location']
-        except (AttributeError, cmodels.AttendeeProfile.DoesNotExist), e:
+        except (AttributeError, cmodels.AttendeeProfile.DoesNotExist) as e:
             oldl = None
         profile = super(P3ProfilePublicDataForm, self).save(commit)
         p3p = profile.p3_profile
@@ -415,12 +376,22 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         if loc:
             if loc != oldl:
                 from assopy.utils import geocode_country
-                p3p.country = geocode_country(loc)
+                country = geocode_country(loc)
+                if country:
+                    p3p.country = country
+                else:
+                    # geocode_country() can return None, but the model
+                    # does not accept None as input; see #289
+                    p3p.country = ''
         else:
             p3p.country = ''
 
         p3p.save()
-        p3p.interests.set(*data.get('interests', ''))
+
+        if 'interests' in data:
+            valid_tags = cforms.validate_tags(data['interests'])
+
+            p3p.interests.set(*(valid_tags))
         return profile
 
 
@@ -501,13 +472,18 @@ class P3ProfilePersonalDataForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     phone = forms.CharField(
-        help_text=_('If you opt-in the privacy settings, we can send you important communications via SMS.<br />Use the international format, eg: +99-012-3456789.<br/>This number will <i>never</i> be published.'),
+        help_text=_('If you opt-in the privacy settings, '
+                    'we can send you important communications via SMS.'
+                    '<br />Use the international format, '
+                    'eg: +99-012-3456789.<br/>This number will <i>never</i> be published.'),
         max_length=30,
         required=False,
     )
     birthday = forms.DateField(
         label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accomodate for local laws regarding minors.<br />Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
+        help_text=_('We require date of birth for speakers to accommodate for local '
+                    'laws regarding minors.<br />'
+                    'Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
         input_formats=('%Y-%m-%d',),
         widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
         required=False,
@@ -556,9 +532,12 @@ class P3ProfileEmailContactForm(forms.Form):
 
 
 class P3ProfileSpamControlForm(forms.ModelForm):
-    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'), required=False)
-    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other participants.'), required=False)
-    spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'), required=False)
+    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'),
+                                         required=False)
+    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other participants.'),
+                                           required=False)
+    spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'),
+                                  required=False)
     class Meta:
         model = models.P3Profile
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
@@ -755,7 +734,9 @@ class P3FormTickets(aforms.FormTickets):
         if data[0] == '_':
             raise forms.ValidationError(_('invalid coupon'))
         try:
-            coupon = amodels.Coupon.objects.get(code__iexact=data)
+            coupon = amodels.Coupon.objects.get(
+                conference=settings.CONFERENCE_CONFERENCE,
+                code__iexact=data)
         except amodels.Coupon.DoesNotExist:
             raise forms.ValidationError(_('invalid coupon'))
         if not coupon.valid(self.user):
@@ -769,7 +750,8 @@ class P3FormTickets(aforms.FormTickets):
 
         checks = []
         for ix, row in enumerate(data):
-            f = cmodels.Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=row['fare'])
+            f = cmodels.Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE,
+                                         code=row['fare'])
             price = f.calculated_price(**row)
             if not price:
                 raise forms.ValidationError('%s:invalid period' % ix)
@@ -787,7 +769,9 @@ class P3FormTickets(aforms.FormTickets):
                 conference_tickets += v
         if not conference_tickets:
             from p3.dataaccess import user_tickets
-            tickets = user_tickets(self.user.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
+            tickets = user_tickets(self.user.user,
+                                   settings.CONFERENCE_CONFERENCE,
+                                   only_complete=True)
             for t in tickets:
                 if t.fare.code.startswith('T'):
                     conference_tickets += 1
@@ -829,7 +813,8 @@ class P3FormTickets(aforms.FormTickets):
         from conference.models import Fare
         for fname in ('bed_reservations', 'room_reservations'):
             for r in data.get(fname, []):
-                data['tickets'].append((Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=r['fare']), r))
+                data['tickets'].append((Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE,
+                                                         code=r['fare']), r))
 
         if not data['tickets']:
             raise forms.ValidationError('No tickets')

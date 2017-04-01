@@ -1,0 +1,28 @@
+{% load conference i18n %}
+<div class="voucher">
+    <h1>{{ item.ticket.fare.name }}</h1>
+    <div>
+        <p>{{ item.ticket.fare.description|safe }}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Voucher code" %}</th>
+                    <th>{% trans "Buyer" %}</th>
+                    <th>{% trans "Assigned to" %}</th>
+                    <th>{% trans "Value" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ item.order.code }} {{ item.id }}</td>
+                    <td>{{ item.order.user.name }}</td>
+                    <td>{{ item.ticket.name }}</td>
+                    <td>€ {{ item.ticket.fare.price|floatformat:"2" }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>{% trans "Bring this voucher with you to gain access to" %}</h2>
+        <h3>{{ item.ticket.fare.name }} on {{ item.ticket.fare|fare_blob:"data" }} at {{ item.ticket.fare|fare_blob:"departure" }}</h3>
+    </div>
+</div>
+

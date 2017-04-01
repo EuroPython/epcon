@@ -18,6 +18,7 @@ def get_all_order_tickets():
     conf_order_tkts = [ot for ot in order_tkts if ot.fare.code.startswith('T')]
     return conf_order_tkts
 
+
 class Command(BaseCommand):
     """
     """
@@ -37,24 +38,24 @@ class Command(BaseCommand):
 
         p3_tickets = TicketConference.objects.all()
 
-        con_ids = [ t.id for t in con_tickets ]
-        p3_ids  = [ t.ticket_id for t in p3_tickets ]
+        con_ids = [t.id for t in con_tickets]
+        p3_ids  = [t.ticket_id for t in p3_tickets]
 
         #GET ALL attendees
         #talks = models.Talk.objects.accepted(conference.code)
         #for t in talks:
         #     |= set(t.get_all_speakers())
 
-        COL_NAME = "Name"
-        COL_SURNAME = "Surname"
-        COL_TAG = "Tagline"
+        COL_NAME       = "Name"
+        COL_SURNAME    = "Surname"
+        COL_TAG        = "Tagline"
         COL_AFILIATION = "Affiliation"
-        COL_EXP = "Python experience"
-        COL_SHIRT = "T-shirt"
-        COL_EMAIL = "Email"
-        COL_PHONE = "Phone"
-        COL_COMWEB = "Company homepage"
-        COL_PERWEB = "Personal homepage"
+        COL_EXP        = "Python experience"
+        COL_SHIRT      = "T-shirt"
+        COL_EMAIL      = "Email"
+        COL_PHONE      = "Phone"
+        COL_COMWEB     = "Company homepage"
+        COL_PERWEB     = "Personal homepage"
 
         columns = (
             COL_NAME, COL_SURNAME, COL_TAG, COL_AFILIATION, COL_EXP, COL_SHIRT, COL_EMAIL, COL_PHONE,  COL_COMWEB, COL_PERWEB

@@ -8,13 +8,17 @@ from django.conf.urls import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db.models import Q
+from django.contrib.auth.models import User
 from assopy import admin as aadmin
 from assopy import models as amodels
 from assopy import stats as astats
+from assopy import utils as autils
 from conference import admin as cadmin
 from conference import models as cmodels
+from conference import forms as cforms
 from p3 import models
 from p3 import dataaccess
+from p3 import utils
 
 ### Customg list filters
 
@@ -45,6 +49,8 @@ def ticketConferenceForm():
     class _(forms.ModelForm):
         class Meta:
             model = models.TicketConference
+            fields = '__all__'
+
     fields = _().fields
 
     class TicketConferenceForm(forms.ModelForm):
@@ -57,6 +63,7 @@ def ticketConferenceForm():
 
         class Meta:
             model = cmodels.Ticket
+            fields = '__all__'
 
         def __init__(self, *args, **kw):
             if 'instance' in kw:
@@ -77,6 +84,7 @@ def ticketConferenceForm():
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + (
+        'frozen',
         '_order',
         '_order_date',
         '_assigned',
@@ -89,6 +97,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_filter = cadmin.TicketAdmin.list_filter + (
         'fare__code',
         'orderitem__order___complete',
+        'frozen',
         'p3_conference__shirt_size',
         'p3_conference__diet',
         'p3_conference__python_experience',
@@ -98,26 +107,107 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         'orderitem__order__code',
         'fare__code',
         )
-
+    actions = cadmin.TicketAdmin.actions + (
+        'do_assign_to_buyer',
+        'do_update_ticket_name',
+        )
     form = ticketConferenceForm()
 
     class Media:
         js = ('p5/j/jquery-flot/jquery.flot.js',)
 
-    def _order(self, o):
-        return o.orderitem.order.code
+    def _order(self, obj):
+        url = urlresolvers.reverse('admin:assopy_order_change',
+                                   args=(obj.orderitem.order.id,))
+        return '<a href="%s">%s</a>' % (url, obj.orderitem.order.code)
+    _order.allow_tags = True
 
     def _order_date(self, o):
         return o.orderitem.order.created
     _order_date.admin_order_field = 'orderitem__order__created'
 
-    def _assigned(self, o):
-        if o.p3_conference:
-            return o.p3_conference.assigned_to
+    def _assigned(self, ticket):
+        if ticket.p3_conference:
+            assigned_to = ticket.p3_conference.assigned_to
+            if assigned_to:
+                comment = ''
+                user = None
+                try:
+                    user = autils.get_user_account_from_email(assigned_to)
+                except User.MultipleObjectsReturned:
+                    comment = ' (email not unique)'
+                except User.DoesNotExist:
+                    try:
+                        user = autils.get_user_account_from_email(assigned_to,
+                                                                  active_only=False)
+                    except User.DoesNotExist:
+                        comment = ' (does not exist)'
+                    else:
+                        comment = ' (user inactive)'
+                if user is not None:
+                    url = urlresolvers.reverse('admin:auth_user_change',
+                                               args=(user.id,))
+                    user_name = ('%s %s' %
+                                 (user.first_name, user.last_name)).strip()
+                    if not user_name:
+                        user_name = assigned_to
+                        comment += ' (no name set)'
+                    return '<a href="%s">%s</a>%s' % (url, user_name, comment)
+                elif not comment:
+                    comment = ' (missing user account)'
+                return '%s%s' % (assigned_to, comment)
+            else:
+                return '(not assigned)'
         else:
-            return ''
+            return '(old style ticket)'
+    _assigned.allow_tags = True
     _assigned.admin_order_field = 'p3_conference__assigned_to'
-    
+
+    def do_assign_to_buyer(self, request, queryset):
+
+        if not queryset:
+            self.message_user(request, 'no tickets selected', level='error')
+            return
+        for ticket in queryset:
+            # Assign to buyer
+            utils.assign_ticket_to_user(ticket, ticket.user)
+
+    do_assign_to_buyer.short_description = 'Assign to buyer'
+
+    def do_update_ticket_name(self, request, queryset):
+
+        if not queryset:
+            self.message_user(request, 'no tickets selected')
+            return
+        for ticket in queryset:
+            # Find selected user
+            if not ticket.p3_conference:
+                continue
+            assigned_to = ticket.p3_conference.assigned_to
+            try:
+                user = autils.get_user_account_from_email(assigned_to)
+            except User.MultipleObjectsReturned:
+                self.message_user(request,
+                                  'found multiple users with '
+                                  'email address %s' % assigned_to,
+                                  level='error')
+                return
+            except User.DoesNotExist:
+                self.message_user(request,
+                                  'no user record found or user inactive for '
+                                  ' email address %s' % assigned_to,
+                                  level='error')
+                return
+            if user is None:
+                self.message_user(request,
+                                  'no user record found for '
+                                  ' email address %s' % assigned_to,
+                                  level='error')
+            # Reassign to selected user
+            utils.assign_ticket_to_user(ticket, user)
+
+    do_update_ticket_name.short_description = 'Update ticket name'
+
     def _shirt_size(self, o):
         try:
             p3c = o.p3_conference
@@ -154,7 +244,10 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        p3c = obj.p3_conference
+        try:
+            p3c = obj.p3_conference
+        except models.TicketConference.DoesNotExist:
+            p3c = None
         if p3c is None:
             p3c = models.TicketConference(ticket=obj)
 
@@ -169,12 +262,13 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             q['fare__conference'] = settings.CONFERENCE_CONFERENCE
             q['fare__ticket_type__exact'] = 'conference'
             q['orderitem__order___complete__exact'] = 1
+            q['frozen__exact'] = 0
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(TicketConferenceAdmin,self).changelist_view(request, extra_context=extra_context)
 
-    def queryset(self, request):
-        qs = super(TicketConferenceAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(TicketConferenceAdmin, self).get_queryset(request)
         qs = qs.select_related('orderitem__order', 'p3_conference', 'user', 'fare', )
         return qs
 
@@ -243,6 +337,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
+
 class SpeakerAdmin(cadmin.SpeakerAdmin):
 
     list_display = cadmin.SpeakerAdmin.list_display + (
@@ -251,17 +346,17 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
         'p3_speaker__first_time',
         )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # XXX: waiting to upgrade to django 1.4, I'm implementing
         # this bad hack filter to keep only speakers of current conference.
-        qs = super(SpeakerAdmin, self).queryset(request)
+        qs = super(SpeakerAdmin, self).get_queryset(request)
         qs = qs.filter(user__in=(
             cmodels.TalkSpeaker.objects\
                 .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
                 .values('speaker')
         ))
         return qs
-    
+
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         sids = queryset.values_list('user', flat=True)
         profiles = dataaccess.profiles_data(sids)
@@ -274,20 +369,6 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
 
 admin.site.unregister(cmodels.Speaker)
 admin.site.register(cmodels.Speaker, SpeakerAdmin)
-
-from conference import forms as cforms
-
-class TalkConferenceAdminForm(cadmin.TalkAdminForm):
-    def __init__(self, *args, **kwargs):
-        super(TalkConferenceAdminForm, self).__init__(*args, **kwargs)
-        self.fields['tags'].required = False
-
-class TalkConferenceAdmin(cadmin.TalkAdmin):
-    multilingual_widget = cforms.MarkEditWidget
-    form = TalkConferenceAdminForm
-
-admin.site.unregister(cmodels.Talk)
-admin.site.register(cmodels.Talk, TalkConferenceAdmin)
 
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('_name', 'date', 'amount')
@@ -384,6 +465,7 @@ class TicketRoomAdmin(admin.ModelAdmin):
 
 admin.site.register(models.TicketRoom, TicketRoomAdmin)
 
+
 class InvoiceAdmin(aadmin.InvoiceAdmin):
     """
     Specializzazione per gestire il download delle fatture generate con genro
@@ -402,21 +484,100 @@ class InvoiceAdmin(aadmin.InvoiceAdmin):
 admin.site.unregister(amodels.Invoice)
 admin.site.register(amodels.Invoice, InvoiceAdmin)
 
+
 class VotoTalkAdmin(admin.ModelAdmin):
-    list_display = ('user', 'talk', 'vote')
-    list_filter = ( )
+    list_display = ('user', '_name', 'talk', 'vote')
+    list_filter = ('talk__conference',
+                   )
     search_fields = [ 'talk__title',
                       'user__username',
                       'user__last_name', 'user__first_name' ]
+    ordering = ('-talk__conference', 'talk')
+
+    def _name(self, o):
+        url = urlresolvers.reverse('conference-profile',
+                                   kwargs={'slug': o.user.attendeeprofile.slug})
+        return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
+    _name.allow_tags = True
+    _name.admin_order_field = 'user__first_name'
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
+
+class AttendeeProfileAdmin(admin.ModelAdmin):
+    list_display = ('_name',
+                    '_user',
+                    'company', 'location', 'visibility')
+    list_filter = ('visibility',
+                   )
+    search_fields = [ 'user__username',
+                      'user__last_name', 'user__first_name',
+                      'company',
+                      'location',
+                      ]
+
+    def _name(self, o):
+        url = urlresolvers.reverse('conference-profile',
+                                   kwargs={'slug': o.slug})
+        return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
+    _name.allow_tags = True
+    _name.admin_order_field = 'user__first_name'
+
+    def _user(self, o):
+        url = urlresolvers.reverse('admin:auth_user_change',
+                                   args=(o.user.id,))
+        return '<a href="%s">%s</a>' % (url, o.user.username)
+    _user.allow_tags = True
+    _user.admin_order_field = 'user__username'
+
+
+admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
+
+# MAL: Commented out, since we don't really have a need for this:
+#
+# class TalkConferenceAdminForm(cadmin.TalkAdminForm):
+#     def __init__(self, *args, **kwargs):
+#         super(TalkConferenceAdminForm, self).__init__(*args, **kwargs)
+#         self.fields['tags'].required = False
+#
+# class TalkConferenceAdmin(cadmin.TalkAdmin):
+#     multilingual_widget = cforms.MarkEditWidget
+#     form = TalkConferenceAdminForm
+#
+# admin.site.unregister(cmodels.Talk)
+# admin.site.register(cmodels.Talk, TalkConferenceAdmin)
+
 class TalkAdmin(cadmin.TalkAdmin):
-    list_filter = ('conference', 'status', 'duration', 'type')
+    list_filter = ('conference', 'status', 'duration', 'type',
+                   'level', 'tags__name', 'language',
+                   )
     search_fields = [ 'title',
                       'talkspeaker__speaker__user__last_name',
                       'talkspeaker__speaker__user__first_name',
+                      'speakers__user__attendeeprofile__company',
                       ]
+
+    list_display = ('title', 'conference', '_speakers',
+                    '_company',
+                    'duration', 'status', 'created',
+                    'level', '_tags',
+                    '_slides', '_video',
+                    'language',
+                    )
+
+    ordering = ('-conference', 'title')
+    multilingual_widget = cforms.MarkEditWidget
+
+    def _tags(self, obj):
+        return u', '.join(sorted(unicode(tag) for tag in obj.tags.all()))
+
+    def _company(self, obj):
+        companies = sorted(
+            set(speaker.user.attendeeprofile.company
+                for speaker in obj.speakers.all()
+                if speaker.user.attendeeprofile))
+        return u', '.join(companies)
+    _company.admin_order_field = 'speakers__user__attendeeprofile__company'
 
 admin.site.unregister(cmodels.Talk)
 admin.site.register(cmodels.Talk, TalkAdmin)
@@ -498,6 +659,7 @@ class TrackAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.Track, TrackAdmin)
 
+
 class ScheduleAdmin(cadmin.ScheduleAdmin):
     pass
 
@@ -567,9 +729,9 @@ def prezzo_biglietti_ricalcolato(**kw):
     for oid, items in grouped.items():
         _calc_prices(oid, items)
 
-    # dopo l'utilizzo di _calc_prices ottengo dei prezzi che non trovo
-    # più tra le tariffe ordinarie, raggruppo gli OrderItem risultanti
-    # per codice tariffa e nuovo prezzo
+    # after using _calc_prices obtain the prices not found anymore
+    # of the ordinary rates, regroup the resulting OrderItem
+    # by rate code and new price
     tcp = {}
     for rows in grouped.values():
         for item in rows:
@@ -609,4 +771,3 @@ prezzo_biglietti_ricalcolato.template = '''
 # Monkey patch our version into assopy package:
 if 0:
     astats.prezzo_biglietti_ricalcolato = prezzo_biglietti_ricalcolato
-

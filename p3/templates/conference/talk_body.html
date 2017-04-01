@@ -14,7 +14,7 @@
         {% with talk.get_event as e %}
         {% with e.get_track as track %}
         <div class="readonly">
-            <div class="cms">
+            <div class="ep-cms">
                 {% conference_multilingual_attribute talk "abstracts" as ab fallback "any" %}
                 <p>{{ ab.body|linebreaks }}</p>
             </div>

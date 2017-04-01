@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+{% spaceless %}
+{% load conference %}
+<schedule conference="{{ schedule.conference }}" id="{{ schedule.slug }}">
+    <speakers>
+        {% for spk in speakers %}
+        <speaker name="{{ spk.name }}" url="{{ DEFAULT_URL_PREFIX }}{{ spk.get_absolute_url }}" image="{{ DEFAULT_URL_PREFIX }}{{ MEDIA_URL }}stuff/speaker/{{ spk.image|image_resized }}" homepage="{{ spk.homepage }}" twitter="{{ spk.twitter }}">
+                <activity url="{{ spk.activity_homepage }}">{{ spk.activity }}</activity>
+                {% if spk.industry %}
+                <industry>{{ spk.industry }}</industry>
+                {% endif %}
+                {% if spk.location %}
+                <location>{{ spk.location }}</location>
+                {% endif %}
+                {% for b in spk.bios.all %}
+                <{{ b.content }} lang="{{ b.language }}">{{ b.body|striptags }}</{{ b.content }}>
+                {% endfor %}
+                {% for talk in spk.talk_set.all %}
+                <talk url="{{ DEFAULT_URL_PREFIX }}{{ talk.get_absolute_url }}" title="{{ talk.title }}" />
+                {% endfor %}
+        </speaker>
+        {% endfor %}
+    </speakers>
+</schedule>
+{% endspaceless %}

@@ -1,0 +1,8 @@
+-cands A B C D
+110: B C A D
+37: B C D A
+161: B D C A
+125: C A B D
+190: C A D B
+298: D A B C
+

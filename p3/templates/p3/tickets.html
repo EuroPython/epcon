@@ -19,6 +19,7 @@
         {% endif %}
     </div><!-- /grid -->
 
+	<div class="grid-100">{% trans "You can edit the tickets by hovering over them with the mouse." %}<br/><br/></div>
         {% for t in tickets %}
             <div class="grid-50">
                 {% render_ticket t %}
@@ -153,16 +154,16 @@
     $('div.ticket .assign-button').live('click', function(e) {
         e.preventDefault();
 
-        {% trans "Enter the email of the person you want to assign the ticket" as t_enter_email %}
+        {% trans "Enter the email of the person you want to assign the ticket to. The person will have to have registered an account using this email address on our website in order for the assignement to work." as t_enter_email %}
         var email = $.trim(prompt("{{ t_enter_email|escapejs }}"));
 
         if(!email){
-            alert("no email");
+            alert("No email address given -- cannot assign ticket.");
             return;
         }
 
         if(email == "{{ request.user.email }}") {
-            {% trans "Please don't use your email address." as t_not_email %}
+            {% trans "Please don't use your own email address." as t_not_email %}
             alert("{{ t_not_email|escapejs }}");
             return;
         }
@@ -171,7 +172,7 @@
         var form = $('form', ticket);
 
         ticket_field(form, 'assigned_to').val(email);
-        alert(ticket_field(form, 'assigned_to').val());
+        //alert(ticket_field(form, 'assigned_to').val());
         //var tid = $(form).parents('div.ticket').attr('data-ticket');
         //$("input[name=t" + tid + "-assigned_to]", form).value = email;
 
@@ -180,14 +181,13 @@
             target: form.parents('div.ticket'),
             replaceTarget: true,
             success: function() {
-                alert("bien");
-
                 {% trans "ticket assigned to" as t_assigned %}
                 feedback("{{ t_assigned|escapejs }}" + " " + email);
 
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                alert("Status:="+textStatus + " Error:="+errorThrown);
+                alert("Sorry, something went wrong... "+
+                      "Status:="+textStatus + " Error:="+errorThrown);
                 }
         });
     });

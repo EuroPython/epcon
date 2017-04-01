@@ -1,0 +1,58 @@
+{% extends "admin/base_site.html" %}
+{% load conference %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+     <a href="../../../../">Home</a> &rsaquo;
+     <a href="../../../">Conference</a>&rsaquo;
+     <a href="../../">Speakers</a>&rsaquo;
+     list
+</div>
+{% endblock %}
+{% block content %}
+<h1>{{ CONFERENCE }} speakers</h1>
+<table>
+    <tr>
+        <th colspan="3">All speakers</th>
+    </tr>
+    {% for s in speakers %}
+    {% profile_data s.user as p %}
+    <tr>
+        <td>{{ forloop.counter }} - <a href="{% url "conference-profile" slug=p.slug %}">{{ p.name }}</a></td>
+        <td>{{ p.email }}</td>
+        <td>
+            <ul>
+            {% for t in s.talks %}
+            {% if t.conference == CONFERENCE %}
+            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
+            {% endif %}
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% for type, speakers in groups.items %}
+<hr />
+<table>
+    <tr>
+        <th colspan="3">{{ type|field_label:"Talk.type" }} speakers</th>
+    </tr>
+    {% for s in speakers %}
+    {% profile_data s.user as p %}
+    <tr>
+        <td>{{ forloop.counter }} - <a href="{% url "conference-profile" slug=p.slug %}">{{ p.name }}</a></td>
+        <td>{{ p.email }}</td>
+        <td>
+            <ul>
+            {% for t in s.talks %}
+            {% if t.conference == CONFERENCE %}
+            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
+            {% endif %}
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+{% endblock %}

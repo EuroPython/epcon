@@ -1,14 +1,14 @@
 @charset "UTF-8";
-/* 
+/*
 
 Built on Rock Hammer by Stuff and Nonsense
-URL: http://stuffandnonsense.co.uk/projects/rock-hammer/ 
+URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
-/* 
+/*
 
 Built on Rock Hammer by Stuff and Nonsense
-URL: http://stuffandnonsense.co.uk/projects/rock-hammer/ 
+URL: http://stuffandnonsense.co.uk/projects/rock-hammer/
 
 */
 @import url("//fonts.googleapis.com/css?family=Lato:300italic,700italic,300,400,400italic,700");
@@ -118,9 +118,9 @@ figure {
     color: #656257; }
 
 .meta, #talk-voting .talk-speakers, .person-card .see-more {
-  color: #807c6f; }
+  color: #2b2a26; }
   .meta a:link, #talk-voting .talk-speakers a:link, .person-card .see-more a:link, .meta a:visited, #talk-voting .talk-speakers a:visited, .person-card .see-more a:visited {
-    color: #807c6f; }
+    color: #2b2a26; }
 
 .tag {
   background: #d4d2cd;
@@ -333,7 +333,7 @@ sub {
 .lead, .page-summary p {
   font-size: 20.7px;
   font-size: 2.07rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 .secondary {
   font-size: 15.65217px;
@@ -491,7 +491,7 @@ a {
 .swatch-success span:nth-child(4) {
   background-color: rgba(144, 238, 144, 0.6); }
 
-.btn, .cms .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action a {
+.btn, .ep-cms .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action a {
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0dfdb), to(#cdcbc5));
   background-image: -webkit-linear-gradient(top, #e0dfdb, #cdcbc5);
   background-color: #cdcbc5;
@@ -569,7 +569,7 @@ a {
 .alert--danger,
 .alert--error {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   color: white; }
   .alert--danger > h4,
   .alert--error > h4 {
@@ -846,11 +846,11 @@ a {
 .modal-footer:after {
   clear: both; }
 
-.modal-footer .btn + .btn, .modal-footer .cms .call-to-action a + .btn, .cms .call-to-action .modal-footer a + .btn, .modal-footer .conference-schedules.list .event .details .abstract .call-to-action a + .btn, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer a + .btn, .modal-footer .cms .call-to-action .btn + a, .cms .call-to-action .modal-footer .btn + a, .modal-footer .cms .call-to-action a + a, .cms .call-to-action .modal-footer a + a, .modal-footer .conference-schedules.list .event .details .abstract .call-to-action .btn + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn + a, .conference-schedules.list .event .details .abstract .modal-footer .cms .call-to-action a + a, .modal-footer .conference-schedules.list .event .details .abstract .call-to-action a + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer a + a {
+.modal-footer .btn + .btn, .modal-footer .ep-cms .call-to-action a + .btn, .ep-cms .call-to-action .modal-footer a + .btn, .modal-footer .conference-schedules.list .event .details .abstract .call-to-action a + .btn, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer a + .btn, .modal-footer .ep-cms .call-to-action .btn + a, .ep-cms .call-to-action .modal-footer .btn + a, .modal-footer .ep-cms .call-to-action a + a, .ep-cms .call-to-action .modal-footer a + a, .modal-footer .conference-schedules.list .event .details .abstract .call-to-action .btn + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn + a, .conference-schedules.list .event .details .abstract .modal-footer .ep-cms .call-to-action a + a, .modal-footer .conference-schedules.list .event .details .abstract .call-to-action a + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer a + a {
   margin-bottom: 0;
   margin-left: 5px; }
 
-.modal-footer .btn-group .btn + .btn, .modal-footer .btn-group .cms .call-to-action a + .btn, .cms .call-to-action .modal-footer .btn-group a + .btn, .modal-footer .btn-group .conference-schedules.list .event .details .abstract .call-to-action a + .btn, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn-group a + .btn, .modal-footer .btn-group .cms .call-to-action .btn + a, .cms .call-to-action .modal-footer .btn-group .btn + a, .modal-footer .btn-group .cms .call-to-action a + a, .cms .call-to-action .modal-footer .btn-group a + a, .modal-footer .btn-group .conference-schedules.list .event .details .abstract .call-to-action .btn + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn-group .btn + a, .conference-schedules.list .event .details .abstract .modal-footer .btn-group .cms .call-to-action a + a, .modal-footer .btn-group .conference-schedules.list .event .details .abstract .call-to-action a + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn-group a + a {
+.modal-footer .btn-group .btn + .btn, .modal-footer .btn-group .ep-cms .call-to-action a + .btn, .ep-cms .call-to-action .modal-footer .btn-group a + .btn, .modal-footer .btn-group .conference-schedules.list .event .details .abstract .call-to-action a + .btn, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn-group a + .btn, .modal-footer .btn-group .ep-cms .call-to-action .btn + a, .ep-cms .call-to-action .modal-footer .btn-group .btn + a, .modal-footer .btn-group .ep-cms .call-to-action a + a, .ep-cms .call-to-action .modal-footer .btn-group a + a, .modal-footer .btn-group .conference-schedules.list .event .details .abstract .call-to-action .btn + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn-group .btn + a, .conference-schedules.list .event .details .abstract .modal-footer .btn-group .ep-cms .call-to-action a + a, .modal-footer .btn-group .conference-schedules.list .event .details .abstract .call-to-action a + a, .conference-schedules.list .event .details .abstract .call-to-action .modal-footer .btn-group a + a {
   margin-left: -1px; }
 
 .modal-footer .btn-block + .btn-block {
@@ -1628,7 +1628,7 @@ legend {
   *margin-left: -7px;
   padding: 0 0 0.75em 0;
   border: 0;
-  color: #807c6f;
+  color: #2b2a26;
   font-weight: bold;
   line-height: 1.5em;
   white-space: normal;
@@ -1653,7 +1653,7 @@ label {
   font-size: 1.8rem; }
   label span {
     font-size: 13.5;
-    color: #807c6f; }
+    color: #2b2a26; }
 
 select,
 textarea,
@@ -1747,7 +1747,7 @@ input[type="color"] {
   input[type="search"]:focus,
   input[type="tel"]:focus,
   input[type="color"]:focus {
-    border-color: #807c6f;
+    border-color: #2b2a26;
     outline: 0;
     outline: thin dotted \ 9; }
 
@@ -1786,22 +1786,22 @@ input:-moz-placeholder,
 textarea:-moz-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 input::-moz-placeholder,
 textarea::-moz-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
   font-size: 16px;
   font-size: 1.6rem;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 .radio,
 .checkbox {
@@ -1873,14 +1873,14 @@ textarea[readonly] {
 form .field.error textarea,
 .has-error select,
 form .field.error select {
-  border-color: #871a1a;
-  color: #871a1a; }
+  border-color: #ff1a1a;
+  color: #ff1a1a; }
 .has-error label, form .field.error label {
-  color: #871a1a; }
+  color: #ff1a1a; }
 
 .help-block, .help-text,
 .help-inline {
-  color: #807c6f;
+  color: #2b2a26;
   font-size: 14.4px;
   font-size: 1.44rem;
   line-height: 1.4; }
@@ -1898,7 +1898,7 @@ form .field.error select {
 
 .help-block, .help-text,
 .help-inline {
-  color: #807c6f; }
+  color: #2b2a26; }
 
 .help-block, .help-text {
   display: block;
@@ -1989,13 +1989,13 @@ input.search-query {
 .form-search .input-append .search-query {
   border-radius: 14px, 0, 0, 14px; }
 
-.form-search .input-append .btn, .form-search .input-append .cms .call-to-action a, .cms .call-to-action .form-search .input-append a, .form-search .input-append .conference-schedules.list .event .details .abstract .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action .form-search .input-append a {
+.form-search .input-append .btn, .form-search .input-append .ep-cms .call-to-action a, .ep-cms .call-to-action .form-search .input-append a, .form-search .input-append .conference-schedules.list .event .details .abstract .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action .form-search .input-append a {
   border-radius: 0, 14px, 14px, 0; }
 
 .form-search .input-prepend .search-query {
   border-radius: 0, 14px, 14px, 0; }
 
-.form-search .input-prepend .btn, .form-search .input-prepend .cms .call-to-action a, .cms .call-to-action .form-search .input-prepend a, .form-search .input-prepend .conference-schedules.list .event .details .abstract .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action .form-search .input-prepend a {
+.form-search .input-prepend .btn, .form-search .input-prepend .ep-cms .call-to-action a, .ep-cms .call-to-action .form-search .input-prepend a, .form-search .input-prepend .conference-schedules.list .event .details .abstract .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action .form-search .input-prepend a {
   border-radius: 14px, 0, 0, 14px; }
 
 .form-search {
@@ -2032,7 +2032,7 @@ input.search-query {
     -webkit-margin-top-collapse: separate; }
 
 /*form-search*/
-.btn, .cms .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action a {
+.btn, .ep-cms .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action a {
   display: inline-block;
   *display: inline;
   *zoom: 1;
@@ -2053,12 +2053,12 @@ input.search-query {
   border-radius: 4px;
   cursor: pointer;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
-  .btn:visited, .cms .call-to-action a:visited, .conference-schedules.list .event .details .abstract .call-to-action a:visited, .btn:hover, .cms .call-to-action a:hover, .conference-schedules.list .event .details .abstract .call-to-action a:hover, .btn:active, .cms .call-to-action a:active, .conference-schedules.list .event .details .abstract .call-to-action a:active {
+  .btn:visited, .ep-cms .call-to-action a:visited, .conference-schedules.list .event .details .abstract .call-to-action a:visited, .btn:hover, .ep-cms .call-to-action a:hover, .conference-schedules.list .event .details .abstract .call-to-action a:hover, .btn:active, .ep-cms .call-to-action a:active, .conference-schedules.list .event .details .abstract .call-to-action a:active {
     color: #050504;
     text-decoration: none; }
 
 /*btn*/
-.btn:first-child, .cms .call-to-action a:first-child, .conference-schedules.list .event .details .abstract .call-to-action a:first-child {
+.btn:first-child, .ep-cms .call-to-action a:first-child, .conference-schedules.list .event .details .abstract .call-to-action a:first-child {
   *margin-left: 0; }
 
 .btn-disabled {
@@ -2067,12 +2067,12 @@ input.search-query {
 
 .btn-error {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   border-bottom-color: #5c1212;
   color: white;
   text-shadow: none; }
   .btn-error:visited, .btn-error:active, .btn-error:hover {
-    background-color: #871a1a;
+    background-color: #ff1a1a;
     color: #f2f2f2; }
 
 /*btn-error*/
@@ -2122,7 +2122,7 @@ input.search-query {
 /*btn-success*/
 .btn-warning {
   background-color: firebrick;
-  border-color: #871a1a;
+  border-color: #ff1a1a;
   border-bottom-color: #5c1212;
   color: white;
   text-shadow: none; }
@@ -2138,7 +2138,7 @@ input.search-query {
   border-width: 2px;
   border-radius: 8px; }
 
-.btn.btn-large, .cms .call-to-action a.btn-large, .conference-schedules.list .event .details .abstract .call-to-action a.btn-large {
+.btn.btn-large, .ep-cms .call-to-action a.btn-large, .conference-schedules.list .event .details .abstract .call-to-action a.btn-large {
   *padding-top: 7px;
   *padding-bottom: 7px; }
 
@@ -2168,20 +2168,20 @@ input.search-query {
   *zoom: 1;
   *margin-left: .3em;
   margin-bottom: 1.5em; }
-  .btn-group .btn, .btn-group .cms .call-to-action a, .cms .call-to-action .btn-group a, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a {
+  .btn-group .btn, .btn-group .ep-cms .call-to-action a, .ep-cms .call-to-action .btn-group a, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a {
     position: relative;
     float: left;
     margin-left: -1px;
     border-radius: 0; }
-  .btn-group .btn:first-child, .btn-group .cms .call-to-action a:first-child, .cms .call-to-action .btn-group a:first-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a:first-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a:first-child {
+  .btn-group .btn:first-child, .btn-group .ep-cms .call-to-action a:first-child, .ep-cms .call-to-action .btn-group a:first-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a:first-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a:first-child {
     margin-left: 0;
     border-radius: 2px, 0, 2px, 0; }
-  .btn-group .btn:last-child, .btn-group .cms .call-to-action a:last-child, .cms .call-to-action .btn-group a:last-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a:last-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a:last-child {
+  .btn-group .btn:last-child, .btn-group .ep-cms .call-to-action a:last-child, .ep-cms .call-to-action .btn-group a:last-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a:last-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a:last-child {
     border-radius: 0, 2px, 0, 2px; }
-  .btn-group .btn.large:first-child, .btn-group .cms .call-to-action a.large:first-child, .cms .call-to-action .btn-group a.large:first-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a.large:first-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a.large:first-child {
+  .btn-group .btn.large:first-child, .btn-group .ep-cms .call-to-action a.large:first-child, .ep-cms .call-to-action .btn-group a.large:first-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a.large:first-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a.large:first-child {
     margin-left: 0;
     border-radius: 4px, 0, 4px, 0; }
-  .btn-group .btn.large:last-child, .btn-group .cms .call-to-action a.large:last-child, .cms .call-to-action .btn-group a.large:last-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a.large:last-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a.large:last-child {
+  .btn-group .btn.large:last-child, .btn-group .ep-cms .call-to-action a.large:last-child, .ep-cms .call-to-action .btn-group a.large:last-child, .btn-group .conference-schedules.list .event .details .abstract .call-to-action a.large:last-child, .conference-schedules.list .event .details .abstract .call-to-action .btn-group a.large:last-child {
     border-radius: 0, 4px, 0, 4px; }
 
 /*btn.btn-group*/
@@ -4471,7 +4471,7 @@ form .field.error .errorlist {
 .blog-archive .h4 {
   margin-bottom: 0; }
 .blog-archive .summary {
-  color: #807c6f; }
+  color: #2b2a26; }
 
 #home .blog-archive ul li {
   margin-bottom: 0.75em; }
@@ -4570,124 +4570,124 @@ body > div.draft {
   border: 0; }
 
 /* ============================================== */
-/* ! Custom styles for text pulled from the CMS   */
+/* ! Custom styles for text pulled from the ep-cms   */
 /* ============================================== */
-.cms .archive .talk, .conference-schedules.list .event .details .abstract .archive .talk {
+.ep-cms .archive .talk, .conference-schedules.list .event .details .abstract .archive .talk {
   padding: 15px;
   margin-bottom: 30px; }
-  .cms .archive .talk .abstract p, .conference-schedules.list .event .details .abstract .archive .talk .abstract p {
+  .ep-cms .archive .talk .abstract p, .conference-schedules.list .event .details .abstract .archive .talk .abstract p {
     font-size: 80%; }
-  .cms .archive .talk .abstract .tags .tag, .conference-schedules.list .event .details .abstract .archive .talk .abstract .tags .tag {
+  .ep-cms .archive .talk .abstract .tags .tag, .conference-schedules.list .event .details .abstract .archive .talk .abstract .tags .tag {
     font-size: 60%; }
-  .cms .archive .talk .speakers, .conference-schedules.list .event .details .abstract .archive .talk .speakers {
+  .ep-cms .archive .talk .speakers, .conference-schedules.list .event .details .abstract .archive .talk .speakers {
     margin-top: 10px; }
-.cms .archive .talk:nth-child(even), .conference-schedules.list .event .details .abstract .archive .talk:nth-child(even) {
+.ep-cms .archive .talk:nth-child(even), .conference-schedules.list .event .details .abstract .archive .talk:nth-child(even) {
   background: #e0dfdb; }
 
-.cms figure img, .conference-schedules.list .event .details .abstract figure img {
+.ep-cms figure img, .conference-schedules.list .event .details .abstract figure img {
   display: block; }
 
-.cms figure.border img, .conference-schedules.list .event .details .abstract figure.border img {
+.ep-cms figure.border img, .conference-schedules.list .event .details .abstract figure.border img {
   border: 5px solid #bcbab2; }
 
-.cms .floated, .conference-schedules.list .event .details .abstract .floated {
+.ep-cms .floated, .conference-schedules.list .event .details .abstract .floated {
   float: left;
   margin-right: 14px; }
 
-.cms .floated img, .conference-schedules.list .event .details .abstract .floated img {
+.ep-cms .floated img, .conference-schedules.list .event .details .abstract .floated img {
   display: block; }
 
-.cms .floated.right, .conference-schedules.list .event .details .abstract .floated.right {
+.ep-cms .floated.right, .conference-schedules.list .event .details .abstract .floated.right {
   float: right;
   margin: 0 0 0 10px; }
 
-.cms li, .conference-schedules.list .event .details .abstract li {
+.ep-cms li, .conference-schedules.list .event .details .abstract li {
   margin: 0 0 0.375em 28px;
   color: #656257; }
 
-.cms dd, .conference-schedules.list .event .details .abstract dd {
+.ep-cms dd, .conference-schedules.list .event .details .abstract dd {
   margin-bottom: 0.75em; }
 
 /* ============== */
 /* ! highlights   */
 /* ============== */
-.cms .highlights, .conference-schedules.list .event .details .abstract .highlights {
+.ep-cms .highlights, .conference-schedules.list .event .details .abstract .highlights {
   padding: 10px;
   border-top: 2px dotted #aba18f;
   border-bottom: 2px dotted #aba18f;
   margin: 20px 0;
   background: #fff; }
 
-.cms .highlights h3, .conference-schedules.list .event .details .abstract .highlights h3 {
+.ep-cms .highlights h3, .conference-schedules.list .event .details .abstract .highlights h3 {
   color: #4895a3;
   margin: 0 0 10px 0;
   font-size: 21px;
   text-align: center; }
 
-.cms .highlights ul, .conference-schedules.list .event .details .abstract .highlights ul {
+.ep-cms .highlights ul, .conference-schedules.list .event .details .abstract .highlights ul {
   margin-bottom: 0; }
 
-.cms .highlights li, .conference-schedules.list .event .details .abstract .highlights li {
+.ep-cms .highlights li, .conference-schedules.list .event .details .abstract .highlights li {
   margin: 0 0 10px 20px;
   color: inherit; }
 
 /* ================== */
 /* ! call-to-action   */
 /* ================== */
-.cms .call-to-action, .conference-schedules.list .event .details .abstract .call-to-action {
+.ep-cms .call-to-action, .conference-schedules.list .event .details .abstract .call-to-action {
   margin: 1.5em 0;
   text-align: center; }
 
 /* ============== */
 /* ! where page   */
 /* ============== */
-.cms .hotels th, .conference-schedules.list .event .details .abstract .hotels th {
+.ep-cms .hotels th, .conference-schedules.list .event .details .abstract .hotels th {
   /*     border: none; */ }
 
-.cms .hotels tr.affiliated, .conference-schedules.list .event .details .abstract .hotels tr.affiliated {
+.ep-cms .hotels tr.affiliated, .conference-schedules.list .event .details .abstract .hotels tr.affiliated {
   /*     color: #96204B; */ }
 
-.cms .hotels tr.info td, .conference-schedules.list .event .details .abstract .hotels tr.info td {
+.ep-cms .hotels tr.info td, .conference-schedules.list .event .details .abstract .hotels tr.info td {
   border-top: 3px solid #c4b9a5;
   padding: 10px 10px 10px 0; }
 
-.cms .hotels tr.info td h4, .conference-schedules.list .event .details .abstract .hotels tr.info td h4 {
+.ep-cms .hotels tr.info td h4, .conference-schedules.list .event .details .abstract .hotels tr.info td h4 {
   font-size: 21px;
   margin: 0 0 5px 0;
   /* 	text-transform: none; */ }
 
-.cms .hotels tr.affiliated h4, .conference-schedules.list .event .details .abstract .hotels tr.affiliated h4 {
+.ep-cms .hotels tr.affiliated h4, .conference-schedules.list .event .details .abstract .hotels tr.affiliated h4 {
   color: #96204B; }
 
-.cms .hotels tr.note td, .conference-schedules.list .event .details .abstract .hotels tr.note td {
+.ep-cms .hotels tr.note td, .conference-schedules.list .event .details .abstract .hotels tr.note td {
   /*     font-style: italic; */
   color: #63584d;
   padding: 5px 10px 5px 20px;
   border-top: 1px dotted #94946F; }
 
-.cms .hotels tr.note td p.last-contact, .conference-schedules.list .event .details .abstract .hotels tr.note td p.last-contact {
+.ep-cms .hotels tr.note td p.last-contact, .conference-schedules.list .event .details .abstract .hotels tr.note td p.last-contact {
   margin-bottom: 0; }
 
-.cms .place h1, .conference-schedules.list .event .details .abstract .place h1 {
+.ep-cms .place h1, .conference-schedules.list .event .details .abstract .place h1 {
   background: none;
   margin: 0 0 10px 0;
   padding: 0;
   /* 	font: bold 16px/20px Constantia, Georgia, "Lucida Bright", "Bitstream Vera Serif", serif; */
   text-shadow: none; }
 
-.cms .place table, .conference-schedules.list .event .details .abstract .place table {
+.ep-cms .place table, .conference-schedules.list .event .details .abstract .place table {
   background: #fff;
   border: none;
   margin: 0;
   width: auto; }
 
-.cms .place th, .conference-schedules.list .event .details .abstract .place th,
-.cms .place td,
+.ep-cms .place th, .conference-schedules.list .event .details .abstract .place th,
+.ep-cms .place td,
 .conference-schedules.list .event .details .abstract .place td {
   font-size: 13px;
   padding: 3px 0 3px 0; }
 
-.cms .place th, .conference-schedules.list .event .details .abstract .place th {
+.ep-cms .place th, .conference-schedules.list .event .details .abstract .place th {
   border-bottom: 1px dotted #94946F;
   text-transform: capitalize;
   padding-right: 10px; }
@@ -4757,7 +4757,7 @@ body > div.draft {
   /*
           label {
               @extend .meta;
-              text-transform: uppercase;            
+              text-transform: uppercase;
           }
   */ }
 #form-options .tagfield {
@@ -4791,7 +4791,7 @@ body > div.draft {
   border-radius: 4px;
   position: relative;
   min-height: 13.5em;
-  box-shadow: 0 0 4px #807c6f; }
+  box-shadow: 0 0 4px #2b2a26; }
   .ticket .preview .preview-inner {
     padding: 0 14px; }
   .ticket .preview h2 {
@@ -4807,7 +4807,7 @@ body > div.draft {
     text-transform: uppercase;
     margin-bottom: 0; }
   .ticket .preview .tagline {
-    color: #807c6f;
+    color: #2b2a26;
     font-style: italic;
     margin-bottom: 0.75em; }
   .ticket .preview .fa-star {
@@ -4857,7 +4857,7 @@ body > div.draft {
   opacity: 0; }
   .ticket-commands p {
     margin: 4.5em 0 0 0;
-    color: #807c6f; }
+    color: #2b2a26; }
 
 .ticket-assigned-to.ticket-commands {
   opacity: .8; }
@@ -4866,7 +4866,7 @@ body > div.draft {
   position: absolute;
   bottom: 0.75em;
   right: 14px;
-  color: #807c6f; }
+  color: #2b2a26; }
 
 #form-ticket-edit ul {
   margin: 0; }
@@ -5205,7 +5205,7 @@ body#schedule > .page > .container {
       text-transform: uppercase;
       margin-bottom: 0.375em; }
       .conference-schedules.timetable .event .speakers a {
-        color: #807c6f; }
+        color: #2b2a26; }
     .conference-schedules.timetable .event.exposed .hhmm {
       font-weight: bold; }
     .conference-schedules.timetable .event.exposed .speakers {
@@ -5559,7 +5559,7 @@ body#schedule > .page > .container {
     font-weight: bold;
     padding: 4px 8px; }
   #schedule-navigator > div.selected {
-    background-color: #807c6f; }
+    background-color: #2b2a26; }
     #schedule-navigator > div.selected > a {
       color: white; }
     #schedule-navigator > div.selected a.filter-active {
@@ -6112,8 +6112,8 @@ body#schedule > .page > .container {
     - come ti piace di più, possiamo selezionare gli eventi per:
         # tipo di track
         # tipo di evento (special, keynote, normale)
-        
-OK - stellina gialla        
+
+OK - stellina gialla
 OK - Nomi delle tracce da stilare
 ?? - Traccia keynote: non si capiscono i nomi delle celle
 Troncamento titoli: mancano i puntini per indicare i titoli
@@ -6211,7 +6211,7 @@ header {
         font-size: 6.3rem; } }
   header .subhead {
     font-weight: 300;
-    color: #807c6f; }
+    color: #2b2a26; }
     @media (min-width: 37.5em) {
       header .subhead {
         font-size: 23.4px;
@@ -6229,7 +6229,7 @@ header {
   color: #2e2c24; }
 
 .notice .fa {
-  color: #807c6f; }
+  color: #2b2a26; }
 .notice h3 {
   text-transform: uppercase;
   margin-bottom: 0.75em; }
@@ -6263,10 +6263,10 @@ header {
     letter-spacing: 1px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
   .badge small, .badge .meta, .badge #talk-voting .talk-speakers, #talk-voting .badge .talk-speakers, .badge .person-card .see-more, .person-card .badge .see-more, .badge .ticket-footer {
-    color: #807c6f;
+    color: #2b2a26;
     margin-bottom: 0; }
   .badge .fa {
-    color: #807c6f; }
+    color: #2b2a26; }
 
 .sponsor {
   margin-bottom: 1.5em; }
@@ -6285,7 +6285,7 @@ header {
 
 .calendar .deadline.expired {
   text-decoration: line-through;
-  color: #807c6f; }
+  color: #2b2a26; }
 .calendar time {
   background: #306a99;
   padding: 3px 6px;
@@ -6336,7 +6336,7 @@ dt.toggle img {
 dt.toggle + dd {
   font-size: 14px;
   font-size: 1.4rem;
-  color: #807c6f;
+  color: #2b2a26;
   margin: 0.75em 0 0 14px; }
 
 .async-feedback {

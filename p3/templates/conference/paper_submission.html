@@ -33,7 +33,7 @@
                 {{ form.bio|form_field }}
             </fieldset>
             <fieldset>
-                {{ form.first_time|form_field }}
+                <!--{{ form.first_time|form_field }}-->
                 {{ form.personal_agreement|form_field }}
           </fieldset>
         </div><!-- /grid -->
@@ -49,8 +49,8 @@
     {% if proposed_talks %}
         <div class="alert alert--info">
             <p>
-                {% trans "You have already submitted" %} {{ proposed_talks.count }} {% trans "paper" %}{{ proposed_talks.count|pluralize }}.
-                {% trans "To edit your submission" %}{{ proposed_talks.count|pluralize }},
+                {% trans "You have already submitted" %} {{ proposed_talks|length }} {% trans "proposal" %}{{ proposed_talks|pluralize }}.
+                {% trans "To edit your submission" %}{{ proposed_talks|pluralize }},
                 {% trans "visit your" %} <a href="{% url "conference-profile" slug=speaker.user.attendeeprofile.slug %}">{% trans "speaker profile" %}</a>.</p>
         </div>
     {% endif %}
@@ -58,11 +58,15 @@
         <fieldset>
             {{ form.type|form_field }}
             {{ form.title|form_field }}
+            {# form.sub_title|form_field #}
             {{ form.sub_community|form_field }}
-            {{ form.language|form_field }}
-            {{ form.duration|form_field }}
+            {# form.language|form_field #}
             {{ form.level|form_field }}
+            {{ form.prerequisites|form_field }}
             {{ form.abstract|form_field }}
+            {{ form.abstract_short|form_field }}
+            {# form.abstract_extra|form_field #}
+
         </fieldset>
 
         <fieldset>
@@ -78,8 +82,11 @@
             <button type="submit" name="" class="btn btn-primary">{% trans "Submit proposal" %}</button>
         </fieldset>
 
+ {% comment %}
         <div class="alert alert--info">
-            <b>{% trans "Note" %}</b>: {% trans "if you are able to give the same talk/training both in more than one language, please submit the talk for each language, with fully translated title and abstract." %}</div>
+            <b>{% trans "Note" %}</b>: {% trans "if you are able to give the same talk/training both in more than one language, please submit the talk for each language, with fully translated title and abstract." %}
+            </div>
+{% endcomment %}
     </div><!-- /grid -->
     </div><!-- /grid-container -->
 </section>

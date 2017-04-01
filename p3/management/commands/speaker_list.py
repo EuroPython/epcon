@@ -42,8 +42,8 @@ def speaker_list_key(entry):
 
     speaker = entry[1]
     name = u'%s %s' % (
-        speaker.user.last_name,
-        speaker.user.first_name)
+        speaker.user.first_name,
+        speaker.user.last_name)
 
     # Remove whitespace and use title case
     return name.strip().title()
@@ -52,13 +52,14 @@ def speaker_list_key(entry):
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
+        make_option('--talk_status',
+             action='store',
+             dest='talk_status',
+             default='accepted',
+             choices=['accepted', 'proposed', 'canceled'],
+             help='The status of the talks to be put in the report. '
+                  'Choices: accepted, proposed, canceled',
+        ),
     )
     def handle(self, *args, **options):
         try:
@@ -68,7 +69,7 @@ class Command(BaseCommand):
 
         talks = (models.Talk.objects
                  .filter(conference=conference,
-                         status='accepted'))
+                         status=options['talk_status']))
 
         # Find all speakers
         speaker_dict = {}
@@ -88,8 +89,9 @@ class Command(BaseCommand):
         # Print list of speakers
         print ('<h2>Speakers</h2>')
         group = ''
-        for name, speaker in speaker_list:
-            sort_name = speaker.user.last_name.strip().title()
+        for entry in speaker_list:
+            name, speaker = entry
+            sort_name = speaker_list_key(entry)
             if not group:
                 group = sort_name[0]
                 print ('<h3>%s ...</h3>' % group)
@@ -104,4 +106,3 @@ class Command(BaseCommand):
                 name)).encode('utf-8'))
         print ('</ul>')
         print ('<p>%i speakers in total.</p>' % len(speaker_list))
-        

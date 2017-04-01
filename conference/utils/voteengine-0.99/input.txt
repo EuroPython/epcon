@@ -1,0 +1,7 @@
+-m borda-elim
+-cands A B C D E -tie C B D A E
+A B C D E
+B C D E A
+C D E A B
+D E A B C
+E A B C D

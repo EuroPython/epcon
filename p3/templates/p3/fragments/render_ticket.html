@@ -41,7 +41,12 @@
                         <h3 class="media-heading">{{ form.ticket_name.value|default:t_no_name}}</h3>
                         <div class="tagline">{{ form.tagline.value|default:t_about_me}}</div>
                         <div class="python-experience">
-                            {% trans "Python power" %}&nbsp;{% for x in form.python_experience.value|as_range %}<i class="fa fa-star"></i>{% endfor %}
+                           {% if form.python_experience.value %}
+                             {% trans "Python experience:" %}&nbsp;{% for x in form.python_experience.value|as_range %}<i class="fa fa-star"></i>{% endfor %}
+                           {% endif %}
+                        </div>
+                        <div class="ticket-id">
+                           Ticket ID: {{ ticket.id }}
                         </div>
                     </div><!-- media-body -->
                 </div><!-- /media -->
@@ -60,9 +65,9 @@
             {% else %}
             <div class="ticket-commands">
                 <p>
-                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans 'This ticket is for me' %}</a>
+                    <a href="#" class="edit-button" rel="div[data-ticket={{ ticket.id }}] .overlay">{% trans 'Edit this ticket' %}</a>
                     {% if user == ticket.user %}
-                        <br /><a href="#" class="assign-button">{% trans "This ticket is for someone else" %}</a>
+                        <br /><a href="#" class="assign-button">{% trans "Assign ticket to someone else" %}</a>
                     {% endif %}
                     {% orderitem_can_be_refunded ticket.orderitem as r %}
                     {% if r %}
@@ -113,7 +118,7 @@
     <div class="ticket-additional-info">
     {% if ticket.fare.ticket_type == "conference" %}
         {% if ticket.p3_conference %}
-        <p>{% trans "Additional information (they won&#8217;t show up on the ticket)" %}</p>
+        <p>{% trans "Additional information (this won't show up on the ticket)" %}</p>
         <dl class="dl-horizontal">
             <dt>{% trans "Attending on days:" %}</dt>
             <dd>{% if form.single_day %}{{ form.days|field_display_value }}{% else %}{{ form.days|field_display_value|join:"; " }}{% endif %}.</dd>

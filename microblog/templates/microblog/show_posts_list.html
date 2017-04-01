@@ -1,0 +1,9 @@
+{% load microblog_tags %}
+<ul class="blog-archive">
+{% for post in posts %}
+    <li>{% show_post_summary post %}</li>
+{% empty %}
+    <li>Empty blog</li>
+{% endfor %}
+</ul>
+

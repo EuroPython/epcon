@@ -29,14 +29,14 @@ body > div.draft {
 }
 
 /* ============================================== */
-/* ! Custom styles for text pulled from the CMS   */
+/* ! Custom styles for text pulled from the ep-cms   */
 /* ============================================== */
 
-.cms {
+.ep-cms {
 
 }
 
-.cms {
+.ep-cms {
     .archive {
         .talk {
             padding: 15px;
@@ -61,34 +61,34 @@ body > div.draft {
     }
 }
 
-.cms figure img {
+.ep-cms figure img {
     display: block;
 }
 
-.cms figure.border img {
+.ep-cms figure.border img {
     border: 5px solid $lightneutralcolor;
 }
 
-.cms .floated {
+.ep-cms .floated {
     float: left;
     margin-right: $gutterwidth/2;
 }
 
-.cms .floated img {
+.ep-cms .floated img {
     display: block;
 }
 
-.cms .floated.right {
+.ep-cms .floated.right {
     float: right;
     margin: 0 0 0 10px;
 }
 
-.cms li {
+.ep-cms li {
     margin: 0 0 $baselineheight/4 $gutterwidth;
     color: $midneutralcolor;
 }
 
-.cms dd {
+.ep-cms dd {
     margin-bottom: $baselineheight/2;
 }
 
@@ -96,7 +96,7 @@ body > div.draft {
 /* ! highlights   */
 /* ============== */
 
-.cms .highlights {
+.ep-cms .highlights {
 
     padding: 10px;
     border-top: 2px dotted #aba18f;
@@ -107,7 +107,7 @@ body > div.draft {
     background: #fff;
 }
 
-.cms .highlights h3 {
+.ep-cms .highlights h3 {
 
     color: #4895a3;
     margin: 0 0 10px 0;
@@ -116,11 +116,11 @@ body > div.draft {
     text-align: center;
 }
 
-.cms .highlights ul {
+.ep-cms .highlights ul {
     margin-bottom: 0;
 }
 
-.cms .highlights li {
+.ep-cms .highlights li {
 
     margin: 0 0 10px 20px;
 
@@ -131,13 +131,13 @@ body > div.draft {
 /* ! call-to-action   */
 /* ================== */
 
-.cms .call-to-action {
+.ep-cms .call-to-action {
 
     margin: $baselineheight 0;
     text-align: center;
 }
 
-.cms .call-to-action a {
+.ep-cms .call-to-action a {
     @extend .btn;
 }
 
@@ -145,32 +145,32 @@ body > div.draft {
 /* ! where page   */
 /* ============== */
 
-.cms .hotels th {
+.ep-cms .hotels th {
     /*     border: none; */
 }
 
-.cms .hotels tr.affiliated {
+.ep-cms .hotels tr.affiliated {
     /*     color: #96204B; */
 }
 
-.cms .hotels tr.info td {
+.ep-cms .hotels tr.info td {
 
     border-top: 3px solid #c4b9a5;
     padding: 10px 10px 10px 0;
 }
 
-.cms .hotels tr.info td h4 {
+.ep-cms .hotels tr.info td h4 {
 
     font-size: 21px;
     margin: 0 0 5px 0;
     /* 	text-transform: none; */
 }
 
-.cms .hotels tr.affiliated h4 {
+.ep-cms .hotels tr.affiliated h4 {
     color: #96204B;
 }
 
-.cms .hotels tr.note td {
+.ep-cms .hotels tr.note td {
     /*     font-style: italic; */
     color: #63584d;
 
@@ -178,14 +178,14 @@ body > div.draft {
     border-top: 1px dotted #94946F;
 }
 
-.cms .hotels tr.note td p.last-contact {
+.ep-cms .hotels tr.note td p.last-contact {
     margin-bottom: 0;
 }
 
-.cms .place {
+.ep-cms .place {
 }
 
-.cms .place h1 {
+.ep-cms .place h1 {
     background: none;
     margin: 0 0 10px 0;
     padding: 0;
@@ -193,20 +193,20 @@ body > div.draft {
     text-shadow: none;
 }
 
-.cms .place table {
+.ep-cms .place table {
     background: #fff;
     border: none;
     margin: 0;
     width: auto;
 }
 
-.cms .place th,
-.cms .place td {
+.ep-cms .place th,
+.ep-cms .place td {
     font-size: 13px;
     padding: 3px 0 3px 0;
 }
 
-.cms .place th {
+.ep-cms .place th {
     border-bottom: 1px dotted #94946F;
     text-transform: capitalize;
     padding-right: 10px;

@@ -7,7 +7,6 @@ from conference import models as cmodels
 from conference.views import profile_access, json_dumps
 from django import http
 from django import forms
-from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -89,7 +88,7 @@ def p3_profile_message(request, slug):
         profile = get_object_or_404(cmodels.AttendeeProfile, slug=slug)
         try:
             profile.p3_profile.send_user_message(request.user, data['subject'], data['message'])
-        except ValueError, e:
+        except ValueError as e:
             return http.HttpResponseBadRequest(str(e))
         return "OK"
     return f.errors
@@ -114,7 +113,7 @@ def p3_account_data(request):
                     profile.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
-@transaction.commit_on_success
+@transaction.atomic
 def OTCHandler_E(request, token):
     user = token.user
     models.TicketConference.objects\
@@ -163,6 +162,7 @@ def p3_account_spam_control(request):
             form.save()
     return render(request, "assopy/profile_spam_control.html", ctx)
 
+
 def connect_profile_to_assopy(backend, user, response, *args, **kwargs):
     """ CB to be filled in the python-social-auth pipeline in order to
     verify if user is a new user and (if not) assopy and conference
@@ -176,6 +176,7 @@ def connect_profile_to_assopy(backend, user, response, *args, **kwargs):
         for more details
 
     """
+    # TODO: `email` is not used anywhere
     if backend.name.startswith('google'):
         email = kwargs['details']['email']
 

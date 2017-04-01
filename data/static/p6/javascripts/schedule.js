@@ -476,7 +476,8 @@ function highlighter(mode, option) {
                 e.attr('data-raw-seats', data.seats);
                 e.attr('data-raw-expected', data.expected);
 
-                if(data.overbook) {
+                // MAL 2016-04-16: disabled for now
+                if(0 && data.overbook) {
                     var track = e.parents('.track').attr('data-track');
                     if(track != 'helpdesk1' && track != 'helpdesk2'
                         && track != 'training1' && track != 'training2'

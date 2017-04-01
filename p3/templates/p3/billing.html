@@ -46,7 +46,7 @@
                     <tbody>
                         {% for fare, params, price in totals.tickets %}
                         <tr>
-                            <td>{{ fare.name }}</td>
+                            <td>{{ fare.name }} ({{ fare.fare_type }})</td>
                             <td>{{ params.qty }}</td>
                             <td>€ {{ price|floatformat:"2" }}</td>
                         </tr>
@@ -114,10 +114,10 @@
 
                         <div style="display: none;">
                         <div class="control-group  field textinput charfield">
-                            <label class="control-label" for="id_cf_code">Identity card Number</label>
+                            <label class="control-label" for="id_cf_code">Fiscal ID number</label>
                             <div class="controls">
                                 <input id="id_cf_code" maxlength="16" name="cf_code" type="text" />
-                                    <span class="help-block">Optional</span>
+                                    <span class="help-block">Optional, only needed if required on the invoice.</span>
                             </div>
                         </div>
                         </div>

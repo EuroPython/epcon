@@ -1,0 +1,3 @@
+{{ object.headline }}
+{{ object.summary }}
+{{ object.body }}

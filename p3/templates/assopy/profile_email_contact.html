@@ -1,7 +1,7 @@
 {% load p3 formstyle i18n %}
 {% p3_profile_data request.user.id as profile %}
 {% if not pform %}
-{% get_form "P3ProfileEmailContactForm" bound=profile as pform %}
+{% get_form name="P3ProfileEmailContactForm" bound=profile as pform %}
 {% endif %}
 <div id="account-email-contact-async-target">
 

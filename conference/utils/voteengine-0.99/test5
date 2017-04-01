@@ -1,0 +1,10 @@
+-m rp
+-cands A B C D E
+-table
+#    A   B   C   D   E
+A    X   3   2   7   0 
+B    0   X   6   0   1
+C    0   0   X   6   8
+D    0   6   0   X   0
+E    4   0   0   0   X
+

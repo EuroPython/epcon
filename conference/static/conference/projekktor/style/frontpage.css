@@ -1,0 +1,155 @@
+
+html, body {
+font-size: 12px;
+font-family: Monospace, Sans-Serif;
+margin: 0px;
+padding: 0px;
+color: #565050;
+line-height: 1.2em;
+}
+
+a img {
+border: 0px;
+}
+
+
+#header {
+width: 900px;
+margin: 15px auto;
+padding: 0px;
+height: 60px;
+}
+
+
+#headleft {
+width: 338px;
+float: left;
+height: 60px;
+}
+
+#headright {
+width: 400px;
+float: right;
+text-align: right;
+text-transform: lowercase;
+height: 40px;
+padding: 25px 0 0 0;
+}
+
+
+
+#thevideo {
+width: 100%;
+float: left;
+background: #131313 url(images/videobgtop.jpg) top left repeat-x;
+padding: 15px 0 0 0;
+}
+
+#thevideoinside {
+width: 100%;
+height:506px;
+float: left;
+background: url(images/videobgbottom.jpg) bottom left repeat-x;
+position: static;
+padding: 0 0 15px 0;
+min-height: 350px;
+}
+
+#novideoinside {
+width: 100%;
+float: left;
+background: url(images/videobgbottom.jpg) bottom left repeat-x;
+position: static;
+padding:  0 0 5px 0;
+}
+
+#contentwrap {
+width: 100%;
+background: #EFEFEF;
+border-bottom: 1px solid #D3D3D3;
+float: left;
+}
+
+#pagewrap {
+width: 100%;
+background: #EFEFEF;
+border-bottom: 1px solid #D3D3D3;
+border-top: 1px solid #D3D3D3;
+float: left;
+}
+
+#content {
+width: 900px;
+margin: 0px auto;
+padding: 15px;
+}
+
+
+h1,h2,h3,h4,h5 {
+background-color: #000;
+padding: 5px;
+color: #FF00FF;
+width: 95%;
+font-family: 'Lucida Grande', Arial, Sans-Serif;
+font-weight: bold;
+font-size: 28px;
+line-height: 12px; 
+-webkit-transform: rotate(-1deg); 
+-moz-transform: rotate(-1deg);	
+}
+
+h2 {
+color: #FFF00C;
+width: 75%; 
+-webkit-transform: rotate(+1deg); 
+-moz-transform: rotate(+1deg);
+}
+
+h3 {
+color: #00FFFF;
+width: 55%; 
+}
+
+h4 {
+width: 24%;
+color: #fdfdfd;
+-webkit-transform: rotate(0deg); 
+-moz-transform: rotate(0deg);
+margin: 15px;
+}
+
+h5 {
+width: 24%;
+color: #0d0d0d;
+background-color: transparent;
+-webkit-transform: rotate(2deg); 
+-moz-transform: rotate(2deg);
+margin: 42px 0 0 0;
+}
+
+a {
+color: red;
+text-decoration: underline;
+padding: 2px;
+}
+
+a:hover {
+color: #fdfdfd;
+padding: 2px;
+background-color: #000;
+text-decoration: none;
+}
+
+#footer {
+margin-top: 32px;
+text-align: center;
+}
+
+ul {
+width: 640px;
+}
+
+ul li {
+margin: 5px;
+}
+

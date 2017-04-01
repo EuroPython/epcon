@@ -3,11 +3,13 @@ from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels
 from assopy import models as amodels
+from assopy import utils as autils
 from p3 import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 cache_me = cachef.CacheFunction(prefix='p3:')
+
 
 def profile_data(uid, preload=None):
     if preload is None:
@@ -53,6 +55,7 @@ def profile_data(uid, preload=None):
             })
     return profile
 
+
 def _i_profile_data(sender, **kw):
     # invalidation signal is handled by cachef
     return 'profile:%s' % (kw['instance'].profile_id,)
@@ -61,6 +64,7 @@ profile_data = cache_me(
     signals=(cdata.profile_data.invalidated,),
     models=(models.P3Profile,),
     key='profile:%(uid)s')(profile_data, _i_profile_data)
+
 
 def talk_data(tid, preload=None):
     if preload is None:
@@ -73,6 +77,7 @@ def talk_data(tid, preload=None):
             .get(talk=tid)
     talk['sub_community'] = (p3t.sub_community, p3t.get_sub_community_display())
     return talk
+
 
 def _i_talk_data(sender, **kw):
     # invalidation signal is handled by cachef
@@ -140,7 +145,10 @@ def _ticket_complete(t):
     # I'm also excluding old records sitting in the db because of
     # unconfirmed paypal payments or because the user came back to
     # our site using the back button.
-    order = t.orderitem.order
+    try:
+        order = t.orderitem.order
+    except amodels.OrderItem.DoesNotExist:
+        return False
     return (order.method in ('bank', 'admin')) or order.complete()
 
 def all_user_tickets(uid, conference):
@@ -165,7 +173,7 @@ def _i_all_user_tickets(sender, **kw):
         params = [ (o.ticket.user_id, conference) ]
         if o.assigned_to:
             try:
-                uid = User.objects.get(email__iexact=o.assigned_to).id
+                uid = autils.get_user_account_from_email(o.assigned_to).id
             except User.DoesNotExist:
                 pass
             else:

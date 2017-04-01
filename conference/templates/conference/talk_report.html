@@ -1,0 +1,28 @@
+{% load conference tagging_tags %}
+<html>
+<body>
+    <h1>Talks report - conference: {{ conference }}, tags: {{ tags }}</h1>
+    {% conference_talks "" conference tags as talks %}
+    <table>
+        <tr>
+            <th>talk</th>
+            <th>conference</th>
+            <th>tag</th>
+        </tr>
+        {% for t in talks %}
+        <tr>
+            <td>{{ t.title }}</td>
+            <td>
+                {% with t.get_event as e %}
+                {% if e %}
+                {{ e.schedule.conference }}
+                {% endif %}
+                {% endwith %}
+            </td>
+            {% tags_for_object t as to %}
+            <td>{{ to|join:", " }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

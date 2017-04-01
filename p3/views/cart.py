@@ -11,10 +11,11 @@ from django.utils.translation import ugettext as _
 from p3 import forms as p3forms
 from p3 import models
 
+
 class P3BillingData(aforms.BillingData):
     payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='cc')
     code_conduct = forms.BooleanField(
-        label=_('I have read and accepted the <a class="trigger-overlay" href="/coc" target="blank">code of conduct</a>.'))
+        label=_('I have read and accepted the <a href="/coc" target="blank">code of conduct</a>.'))
 
     def __init__(self, *args, **kwargs):
         super(P3BillingData, self).__init__(*args, **kwargs)
@@ -25,13 +26,15 @@ class P3BillingData(aforms.BillingData):
     class Meta(aforms.BillingData.Meta):
         exclude = aforms.BillingData.Meta.exclude + ('vat_number',)
 
-    def clean(self):
-        data = self.cleaned_data
-        if 'cf_code' in self.cleaned_data:
-            cf_code = self.cleaned_data['cf_code']
-            vat = self.cleaned_data.get('vat_number', '')
-            country = self.cleaned_data['country']
-        return data
+    # MAL: This code breaks validations; commented out because cf_code
+    #      is optional anyway and we currently don't need this check.
+    # def clean(self):
+    #     data = self.cleaned_data
+    #     if 'cf_code' in self.cleaned_data:
+    #         cf_code = self.cleaned_data['cf_code']
+    #         vat = self.cleaned_data.get('vat_number', '')
+    #         country = self.cleaned_data['country']
+    #     return data
 
 class P3BillingDataCompany(P3BillingData):
     billing_notes = forms.CharField(

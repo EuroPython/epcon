@@ -1,0 +1,13 @@
+{% extends "assopy/base.html" %}
+{% load assopy_tags i18n %}
+{% block ASSOPY_MAIN_CONTENT %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <h1>{% trans "Payd by credic card" %}</h1>
+        {{ form.non_field_errors }}
+        {{ form.as_table }}
+        <br/>
+        <br/>
+        <button type="submit" value="confirm">{% trans "confirm" %}</button>
+    </form>
+{% endblock %}

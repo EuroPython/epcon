@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>MarkEdit国际语言演示</title>
+    <link rel="stylesheet" type="text/css" href="../jquery.markedit.css" />
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/hot-sneaks/jquery-ui.css" />
+    <style type="text/css">
+        textarea { min-height: 250px; }
+        .markedit { width: 75%; }
+    </style>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../showdown.js"></script>
+
+    <!-- Language script is simply loaded before markedit.js -->
+    <script type="text/javascript" src="../lang/markedit.lang.zh.js"></script>
+    <script type="text/javascript" src="../jquery.markedit.js"></script>
+
+    <script type="text/javascript">
+
+        // Create a MarkEdit editor on page load
+        $(function(){
+            $('textarea').markedit();
+        });
+
+    </script>
+</head>
+<body>
+    <textarea>
+MarkEdit国际语言演示
+-------------------------
+
+Lorem存有只是虚文字的印刷和排版行业。 Lorem存有一直是行业的标准自1500年，当一个未知的打印机类型采取了厨房和炒时，作出模式标本书假文字不断。
+
+它不仅存活5个世纪，而且还成电子排版的飞跃，基本上保持不变。这是通俗化与Letraset含Lorem存有通道板释放世纪60年代，以及最近与像阿尔杜斯排版包括Lorem存有版本的桌面出版软件。
+
+这是一个历史悠久的事实，读者将页面的可读内容分散在布局时看。使用Lorem存有的一点是，它更具有或多或少的正态分布的信件，而不是使用'内容在这里，这里的内容'，使它看起来像读英文。
+
+----------
+
+ 1. [Lorem][1]
+ 2. Ipsum
+ 3. 成立
+ 4. 读者
+ 5. 分心
+
+  [1]: http://www.lipsum.com/
+    </textarea>
+</body>
+</html>

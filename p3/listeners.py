@@ -112,6 +112,7 @@ def calculate_hotel_reservation_price(sender, **kw):
     if sender.code[1] == 'R':
         price *= int(sender.code[2])
     calc['total'] = price * calc['params']['qty']
+
 fare_price.connect(calculate_hotel_reservation_price)
 
 def create_hotel_tickets(sender, **kw):
@@ -126,6 +127,39 @@ def create_hotel_tickets(sender, **kw):
             kw['params']['tickets'].append(t)
 
 fare_tickets.connect(create_hotel_tickets)
+
+def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
+
+    #print ('create_p3_conference_tickets: %r %r %r' % (sender, params, kws))
+    fare = sender
+
+    # Only create conference tickets with this helper
+    if fare.ticket_type != 'conference':
+        return
+
+    # Get parameters sent by Fare.create_tickets()
+    if params is None:
+        return
+    created_tickets = params['tickets']
+    user = params['user']
+
+    # Tickets may have not yet been created, so do this now. This
+    # overrides the default ticket in Fare.created_tickets(), but
+    # allows us to apply the auto-assign below, even for the first
+    # ticket
+    if not created_tickets:
+        ticket = Ticket(user=user, fare=fare)
+        ticket.fare_description = fare.name
+        ticket.save()
+        created_tickets.append(ticket)
+
+    # Create P3 TicketConference records and assign them to the user,
+    # if not already done
+    from p3 import utils
+    for ticket in created_tickets:
+        utils.assign_ticket_to_user(ticket, user)
+
+fare_tickets.connect(create_p3_auto_assigned_conference_tickets)
 
 # redefining user_tickets of assopy to include assined tickets
 from assopy import dataaccess as cd
@@ -198,6 +232,7 @@ def _on_attendees_connected(sender, **kw):
         to=[scanned.email]
     ).send()
 attendees_connected.connect(_on_attendees_connected)
+
 
 def _on_event_booked(sender, **kw):
     from conference.dataaccess import event_data

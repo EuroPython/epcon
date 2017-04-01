@@ -1,0 +1,6 @@
+{% load i18n %}
+<h1>{{ stripe_error.message }}</h1>
+<h2>{% trans "More info" %}</h2>
+<div>{% trans "Type:" %} {{ stripe_error.type }}</div>
+<div>{% trans "Code:" %} {{ stripe_error.code }}</div>
+<div>{% trans "Param:" %} {{ stripe_error.param }}</div>

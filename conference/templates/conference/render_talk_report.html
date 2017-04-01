@@ -1,0 +1,23 @@
+{% load conference tagging_tags %}
+<div>
+    {% conference_talks "" conference tags as talks %}
+    <ul class="talk-list">
+        {% for talk in talks %}
+        <li>
+            <h2><a href="{{ talk.get_absolute_url }}">{{ talk.title }}</a></h2>
+
+            <p class="meta">
+                <i>di</i> {% for spk in talk.speakers.all %}
+                    <a href="{{ spk.get_absolute_url }}">{{ spk.name }}</a>
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+
+            {% conference_multilingual_attribute talk "abstracts" as abstract %}
+            {{ abstract.body|striptags|truncatewords:40|safe }}
+
+        </li>
+        {% endfor %}
+    </ul>
+
+</div>

@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h2>Please confirm the following orders:</h2>
+    <table>
+        <tr>
+            <th>Code</th>
+            <th>Buyer Name</th>
+            <th>Method</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Invoice</th>
+            <th>Invoice date</th>
+        </tr>
+    {% for o in orders %}
+        {% with o.invoice as i %}
+        <tr>
+            <td>{{ o.code }}</td>
+            <td>{{ o.card_name }}</td>
+            <td>{{ o.method }}</td>
+            <td>{{ o.created|date:"d M Y" }}</td>
+            <td>{{ o.total|floatformat:".2" }}</td>
+            <td>{% if i %}Yes{% else %}No{% endif %}</td>
+            <td>{% if i %}{{ i.invoice_date }}{% endif %}</td>
+        </tr>
+        {% endwith %}
+    {% endfor %}
+    </table>
+    <hr />
+    <form action="{% url "admin:assopy-edit-invoices" %}?id={{ ids }}" method="post">{% csrf_token %}
+        {{ form }}
+        <div>
+            <input type="submit" value="Save invoices" />
+        </div>
+    </form>
+{% endblock %}

@@ -28,7 +28,6 @@ from p3 import dataaccess
 from p3 import forms as p3forms
 from p3 import models
 
-from fancy_tag import fancy_tag
 
 mimetypes.init()
 
@@ -37,6 +36,10 @@ register = template.Library()
 @register.inclusion_tag('p3/box_pycon_italia.html')
 def box_pycon_italia():
     return {}
+
+@register.inclusion_tag('p3/box_toc.html', takes_context=True)
+def box_toc(context):
+    return context
 
 @register.inclusion_tag('p3/box_sponsor.html', takes_context=True)
 def box_sponsor(context):
@@ -70,7 +73,7 @@ def box_download(context, fname, label=None):
     try:
         fpath = os.path.join(settings.STUFF_DIR, fname)
         stat = os.stat(fpath)
-    except (AttributeError, OSError), e:
+    except (AttributeError, OSError) as e:
         fsize = ftype = None
     else:
         fsize = stat.st_size
@@ -130,7 +133,7 @@ def box_latest_tweets(context):
 def render_time(tweet, args=None):
     time = tweet["timestamp"]
     time = datetime.datetime.fromtimestamp(time)
-    return time.strftime("%d-%m-%y @ %H:%M") 
+    return time.strftime("%d-%m-%y @ %H:%M")
 
 @register.filter
 def check_map(page):
@@ -229,7 +232,7 @@ def fares_available(context, fare_type, sort=None):
         fares.sort(key=lambda x: x['price'])
     return fares
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_cart_rows(context, fare_type, form):
     assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
     ctx = Context(context)
@@ -339,7 +342,7 @@ def box_image_gallery(context):
     })
     return context
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_partner_program(context, conference=None):
     if conference is None:
         conference = settings.CONFERENCE_CONFERENCE
@@ -354,7 +357,7 @@ def render_partner_program(context, conference=None):
     })
     return render_to_string('p3/fragments/render_partner_program.html', ctx)
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def event_partner_program(context, event):
     fare_id = re.search(r'f(\d+)', event.track)
     if fare_id is None:
@@ -395,8 +398,8 @@ def ticket_user(ticket):
     except models.TicketConference.DoesNotExist:
         p3c = None
     if p3c and p3c.assigned_to:
-        from assopy.models import User
-        return User.objects.get(user__email=p3c.assigned_to)
+        from assopy.utils import get_user_account_from_email
+        return get_user_account_from_email(p3c.assigned_to)
     else:
         return ticket.orderitem.order.user
 
@@ -467,19 +470,19 @@ def box_next_events(context):
     })
     return ctx
 
-@fancy_tag(register)
+@register.assignment_tag()
 def p3_profile_data(uid):
     return dataaccess.profile_data(uid)
 
-@fancy_tag(register)
+@register.assignment_tag()
 def p3_profiles_data(uids):
     return dataaccess.profiles_data(uids)
 
-@fancy_tag(register)
+@register.assignment_tag()
 def p3_talk_data(tid):
     return dataaccess.talk_data(tid)
 
-@fancy_tag(register, takes_context=True)
+@register.assignment_tag(takes_context=True)
 def get_form(context, name, bound="auto", bound_field=None):
     if '.' in name:
         from conference.utils import dotted_import
@@ -511,7 +514,7 @@ def get_form(context, name, bound="auto", bound_field=None):
         form.is_valid()
     return form
 
-@fancy_tag(register)
+@register.assignment_tag()
 def pending_email_change(user):
     try:
         t = amodels.Token.objects.get(ctype='e', user=user)
@@ -519,7 +522,7 @@ def pending_email_change(user):
         return None
     return t.payload
 
-@fancy_tag(register)
+@register.assignment_tag()
 def admin_ticketroom_overall_status():
     status = models.TicketRoom.objects.overall_status()
 
@@ -543,7 +546,7 @@ def admin_ticketroom_overall_status():
         'rooms': rooms.values(),
     }
 
-@fancy_tag(register)
+@register.assignment_tag()
 def warmup_conference_cache(conference=None):
     """
     """
@@ -573,7 +576,7 @@ def frozen_reason(ticket):
     else:
         return ''
 
-@fancy_tag(register, takes_context=True)
+@register.assignment_tag(takes_context=True)
 def all_user_tickets(context, uid=None, conference=None, status="complete", fare_type="conference"):
     if uid is None:
         uid = context['request'].user.id
@@ -588,11 +591,11 @@ def all_user_tickets(context, uid=None, conference=None, status="complete", fare
         tickets = filter(lambda x: x[1] == fare_type, tickets)
     return tickets
 
-@fancy_tag(register)
+@register.assignment_tag()
 def p3_tags():
     return dataaccess.tags()
 
-@fancy_tag(register, takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_profile_box(context, profile, conference=None, user_message="auto"):
     if conference is None:
         conference = settings.CONFERENCE_CONFERENCE

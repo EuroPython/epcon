@@ -1,0 +1,27 @@
+{% extends "assopy/stripe/base.html" %}
+
+{% load stripe_tags i18n %}
+
+{% block ASSOPY_MAIN_CONTENT %}
+    {# here is rendered the "pay with stripe" button #}
+    {% block stripe-checkout-form %}
+        {% stripe_checkout_form order %}
+    {% endblock stripe-checkout-form %}
+
+    {# errors returned during the payment charging by the stripe API #}
+    {% block stripe-error %}
+        {% if stripe_error %}
+            {% include "assopy/stripe/stripe_error.html" %}
+        {% endif %}
+    {% endblock stripe-error %}
+
+    {# errors returned when the form has incompleted data #}
+    {% block form-errors %}
+        {% if form.errors %}
+            <div>
+                {% trans "Missing stripe parameters. More details below:" %}
+                {{ form.errors }}
+            </div>
+        {% endif %}
+    {% endblock form-errors %}
+{% endblock ASSOPY_MAIN_CONTENT %}

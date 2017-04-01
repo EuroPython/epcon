@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Projekktor Video Tag Extension</title>
+    <style type="text/css">
+	body { background-color: #fff; padding: 0 20px; color:#000; font: 13px/18px Arial, sans-serif; }
+	a { color: #360; }
+	h3 { padding-top: 20px; }
+    </style>
+    <link rel="stylesheet" href="style/projekktor_theme_tll/style.css" type="text/css" media="screen" />
+
+    <script type="text/javascript" src="jquery.js"></script> <!-- Load jquery -->
+    <script type="text/javascript" src="projekktor.js"></script>  <!-- load projekktor -->
+</head>
+<body>
+
+    <h1>Thanks for downloading Projekktor</h1>
+    <p>
+	This file is intended as a quick introduction on how to install and use the Projekktor &lt;video&gt; extension.
+	To learn more about it please refer to:
+    </p>
+
+    <ul>
+	<li><a href="http://www.projekktor.com">Projekktor homepage</a></li>
+	<li><a href="http://www.projekktor.com/board/">Projekktor forum</a></li>
+	<li><a href="http://www.projekktor.com/downloads.php">Other downloads</a></li>
+    </ul>
+
+    <h3>Licensing</h3>
+    <p>
+	Please check <a href="http://www.projekktor.com/license/">Projekktor License</a> for detailed information about licensing.
+    </p>
+
+
+    <h3>Example (Theme: Totally Looks Like)</h3>
+
+    <video class="projekktor" poster="intro.png" title="this is Projekktor" width="640" height="385" controls>
+	<source src="intro.ogv" type="video/ogg" />
+	<source src="intro.mp4" type="video/mp4" />
+    </video>
+
+
+    <h3>Quick Installation</h3>
+
+    <p>
+	Using Projekktor on your own websites is easy as 1-2-3:
+    </p>
+
+    <hr/>
+    <h4>Step 1:</h4>
+    <p>
+	Make sure your page loads the jQuery library V1.4.1 or higher. Version 1.4.2 is bundled with the distribution archive you got the file from you are
+	currently reading. You may also want to check out jQuery&acute;s home at <a href="http://www.jquery.com">jquery.com</a> to learn more about it and what it does.
+	To make jQuery available on your web page add the following HTML to your page&acute;s HEAD section:
+    </p>
+
+    <code>
+	&lt;script type="text/javascript" src="jquery.js"&gt;&lt;/script&gt; &lt;!-- Load jquery --&gt;
+    </code>
+
+
+
+    <hr/>
+    <h4>Step 2:</h4>
+
+    <p>
+	Add the following HTML to your page&acute;s HEAD section too. This will load the projekktor in its default configuration.
+	Make sure you have uploaded projekktor.js, projekktor_theme_tll.css and playerMP4.swf to your webspace.
+    </p>
+
+    <code>
+    &lt;script type="text/javascript" src="projekktor.js"&gt;&lt;/script&gt; &lt;!-- Load Projekktor player --&gt;<br />
+    &lt;link rel="stylesheet" href="style/projekktor_theme_tll/style.css" type="text/css" media="screen" /&gt; &lt;!-- Load player theme --&gt;<br />
+    </code>
+
+    <p>
+	Alter the <i>src</i> path to <i>projekktor.js</i> as required or desired. If you want to put the above mentioned
+	SWF to an other location alter the
+	Projekktor configuration by hacking the following snippet into the HEAD of your HTML file(s):
+    </p>
+
+    <pre>
+    <code>
+    &lt;script type=&quot;text/javascript&quot;&gt;
+	var PROJEKKTOR_CONFIG = {
+	    playerFlashMP4:	&quot;&lt;desired path here&gt/playerMP4.swf&quot
+	    playerFlashMP3:	&quot;&lt;desired path here&gt/playerMP3.swf&quot
+	};
+    &lt;/script&gt;
+    </code>
+    </pre>
+
+    <p>
+	Visit <a href="http://www.projekktor.com/docs.php#configparams">this page</a> in order to learn more about available config params.
+    </p>
+
+    <hr/>
+    <h4>Step 3:</h4>
+    <p>
+	Use the HTML5 video tag as usual. E.g. for the above example use the following HTML:
+    </p>
+
+    <pre>
+    <code>
+    &lt;video class=&quot;projekktor&quot; poster=&quot;poster.png&quot; title=&quot;this is Projekktor&quot; width=&quot;640&quot; height=&quot;385&quot; controls&gt;
+	&lt;source src=&quot;video.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+	&lt;source src=&quot;video.ogv&quot; type=&quot;video/ogg&quot; /&gt;
+    &lt;/video&gt;
+    </code>
+    </pre>
+
+    <hr/>
+    <h4>DONE!</h4>
+
+    <p>
+	brought to you by <a href="http://www.spinningairwhale.com">spinning airwhale media</a> - Free the Princess of Agentia!
+    </p>
+
+</body>
+</html>

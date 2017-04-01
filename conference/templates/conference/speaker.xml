@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+{% spaceless %}
+{% load conference %}
+<speaker>
+    <name>{{ speaker.name }}</name>
+    <public_url>{{ speaker.get_url }}</public_url>
+    {% if speaker.homepage %}
+    <homepage>{{ speaker.homepage }}</homepage>
+    {% endif %}
+    {% if speaker.activity %}
+    <activity>{{ speaker.activity }}</activity>
+    {% endif %}
+    {% if speaker.activity_homepage %}
+    <activity_homepage>{{ speaker.activity_homepage }}</activity_homepage>
+    {% endif %}
+    {% if speaker.company %}
+    <company>{{ speaker.company }}</company>
+    {% endif %}
+    {% if speaker.company_homepage %}
+    <company_homepage>{{ speaker.company_homepage }}</company_homepage>
+    {% endif %}
+    {% if speaker.industry %}
+    <industry>{{ speaker.industry }}</industry>
+    {% endif %}
+    {% if speaker.location %}
+    <location>{{ speaker.location }}</location>
+    {% endif %}
+    {% if speaker.twitter %}
+    <twitter>{{ speaker.twitter }}</twitter>
+    {% endif %}
+    {% if speaker.image %}
+    <image>{{ speaker.image.url|full_url }}</image>
+    {% endif %}
+    {% for b in speaker.bios.all %}
+    <bio xmlns="http://www.w3.org/1999/xhtml" lang="{{ b.language }}">{{ b.body|linebreaks }}</bio>
+    {% endfor %}
+    {% for t in talks %}
+    <talk>
+        <title>{{ t.title }}</title>
+        <public_url>{{ t.get_url }}</public_url>
+        <url>{% url conference-talk-xml t.slug as x %}{{ x|full_url }}</url>
+    </talk>
+    {% endfor %}
+</speaker>
+{% endspaceless %}

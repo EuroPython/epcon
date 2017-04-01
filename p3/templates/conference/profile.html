@@ -80,8 +80,8 @@ TALKS AND TWITTER
                 {% for t in talks_list %}
                     <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a>{% if t.status != "accepted" %} — {{ t.status }}{% endif %}</li>
                 {% endfor %}
-            {% endfor %}
                 </ul></dd>
+            {% endfor %}
             </dl>
         </div>
         {% endif %}

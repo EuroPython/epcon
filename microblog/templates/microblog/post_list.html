@@ -1,0 +1,17 @@
+{% extends "microblog/base.html" %}
+{% load microblog_tags %}
+{% block BLOG_HEADER %}
+  <h1>Posts list</h1>
+  <form action="/i18n/setlang/" method="post">
+    <select name="language">
+      {% for lang in LANGUAGES %}
+      <option value="{{ lang.0 }}">{{ lang.1 }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Go" />
+  </form>
+{% endblock %}
+{% block BLOG_CONTENT %}
+    {% post_list as posts %}
+    {% show_posts_list %}
+{% endblock %}
