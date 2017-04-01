@@ -665,7 +665,7 @@ class Talk(models.Model, UrlMixin):
             return None
 
     def get_all_speakers(self):
-        return self.speakers.all().select_related('speaker')
+        return self.speakers.all()
 
     def setAbstract(self, body, language=None):
         MultilingualContent.objects.setContent(self, 'abstracts', language, body)
