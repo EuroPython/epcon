@@ -817,12 +817,12 @@ class InvoiceManager(models.Manager):
                     output.append(item)
                 return output
 
-            # Genero un save point almeno isolo la transazione
-            from django.db import connection
-            cursor = connection.cursor()
-            cursor.execute(
-                'savepoint pregenerateinvoice;'
-            )
+            # # Genero un save point almeno isolo la transazione
+            # from django.db import connection
+            # cursor = connection.cursor()
+            # cursor.execute(
+            #     'savepoint pregenerateinvoice;'
+            # )
             # salvo almeno sono sicuro di aver effettuato
             # un operazione di insert nella transazione
             # in modo da crere un lock su db che gestisce la concorrenza
