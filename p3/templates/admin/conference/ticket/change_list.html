@@ -1,11 +1,11 @@
 {% extends "admin/change_list.html" %}
 {% load i18n %}
 {% block result_list %}
-<div style="position: relative;margin-right: 160px;">
-    <div id="plot-legend" style="height: 100px"></div>
+<div style="position: relative; margin-right: 250px!important;">
+    <div id="plot-legend" style="height:200px;"></div>
     <div id="markers-text" style="position: absolute; bottom: 0; right: 10px; height: 16px;"></div>
 </div>
-<div id="plot" style="height: 300px; margin-right: 160px;"></div>
+<div id="plot" style="height: 300px; margin-right: 250px;"></div>
 {{ block.super }}
 <script type="text/javascript">
 (function() {
