@@ -52,7 +52,7 @@
             <p>{% trans "Select the entity you are purchasing tickets for." %}</p>
             {{ form.order_type|form_field:"no-label" }}
             <p>
-              {% blocktrans %}Invoices for personal purchases will be explicitly marked as "non tax-deductible".{% endblocktrans %}<br />
+              {% blocktrans %}Please note: Invoices for personal purchases will not include a company name and thus will not be usable to get a VAT refund.{% endblocktrans %}<br />
               {% blocktrans %}You have to select "Company Purchase", if you want to buy a business ticket.{% endblocktrans %}<br />
             </p>
         </fieldset>
@@ -69,7 +69,7 @@
         <fieldset class="tickets conference-tickets">
             {% if conference_fares %}
             <legend>{% trans "Conference tickets" %}</legend>
-                <p>{% trans "All prices are 10% VAT included. (Max. 5 tickets)" %}</p>
+                <p>{% trans "All conference tickets prices are 22% VAT included. (Max. 5 tickets)" %}</p>
                 <table id="ticket_table" class="table">
                     <col />
 
