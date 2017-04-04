@@ -27,6 +27,14 @@ if not DEBUG:
     # Only set this in production mode, since debug servers typically don't
     # have HTTPS set up.
     os.environ['HTTPS'] = 'on'
+    # HTTPS configuration
+    HTTPS = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    # Turn off HTTPS
+    if 'HTTPS' in os.environ:
+        del os.environ['HTTPS']
+    HTTPS = False
 
 import django
 
@@ -46,10 +54,6 @@ MANAGERS = ADMINS
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '*').split(',')
 #APPEND_SLASH = False
-
-# HTTPS configuration
-HTTPS = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..')))
