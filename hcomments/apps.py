@@ -1,6 +1,7 @@
 import mptt
 
 from django.apps import AppConfig
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -19,7 +20,7 @@ def send_email_to_subscribers(sender, **kwargs):
         }
         subject = 'New comment on a subscribed page'
         body = render_to_string('hcomments/thread_email.txt', ctx)
-        send_mail(subject, body, dsettings.DEFAULT_FROM_EMAIL, [u.email])
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [u.email])
 
 
 class HCommentsConfig(AppConfig):
