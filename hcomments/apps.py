@@ -3,6 +3,7 @@ import mptt
 from django.apps import AppConfig
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django_comments.models import Comment
 
 import models
