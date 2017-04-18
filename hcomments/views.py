@@ -10,6 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.html import escape
+
 
 from hcomments import get_form, models, settings
 
