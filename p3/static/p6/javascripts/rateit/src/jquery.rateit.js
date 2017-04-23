@@ -47,7 +47,7 @@
                 }
 
                 if (itemdata('backingfld')) {
-                    //if we have a backing field, check which fields we should update. 
+                    //if we have a backing field, check which fields we should update.
                     //In case of input[type=range], although we did read its attributes even in browsers that don't support it (using fld.attr())
                     //we only update it in browser that support it (&& fld[0].min only works in supporting browsers), not only does it save us from checking if it is range input type, it also is unnecessary.
                     var fld = $(itemdata('backingfld'));
@@ -97,6 +97,40 @@
 
                 //Create the necessart tags.
                 item.append('<div class="rateit-reset"></div><div class="rateit-range"><div class="rateit-selected" style="height:' + itemdata('starheight') + 'px"></div><div class="rateit-hover" style="height:' + itemdata('starheight') + 'px"></div></div>');
+
+
+                item.append('<div class="rateit-simplified"></div>');
+
+                var $simplified = item.find('.rateit-simplified');
+
+                var simplified = [{
+                    text: 'must see',
+                    score: 10,
+                }, {
+                    text: 'want to see',
+                    score: 7,
+                }, {
+                    text: 'maybe',
+                    score: 3,
+                }, {
+                    text: 'not interested',
+                    score: 0,
+                }];
+
+                for (var i = 0; i < simplified.length; i++) {
+                    var data = simplified[i];
+                    var d = $('<div />');
+
+                    d.data('score', data.score);
+                    d.text(data.text)
+
+                    if (itemdata('value') == data.score) {
+                        d.addClass('selected');
+                    }
+
+                    $simplified.append(d);
+                }
+
 
                 //if we are in RTL mode, we have to change the float of the "reset button"
                 if (!ltr) {
@@ -157,6 +191,20 @@
 
                 //when the mouse goes over the range div, we set the "hover" stars.
                 if (!itemdata('wired')) {
+                    item.on('click', '.rateit-simplified div:not(.selected)', function(e) {
+                        item.find('.rateit-simplified div').removeClass('selected');
+                        var $$ = $(e.currentTarget);
+                        $$.addClass('selected');
+
+                        var score = $$.data('score') * 2;
+
+                        var newvalue = (score * itemdata('step')) + itemdata('min');
+                        itemdata('value', newvalue);
+
+                        range.find('.rateit-selected').width(score * itemdata('starwidth') * itemdata('step')).show();
+                        item.trigger('hover', [null]).trigger('rated', [newvalue]);
+                    });
+
                     range.bind('touchmove touchend', touchHandler); //bind touch events
                     range.mousemove(function (e) {
                         var score = calcRawScore(this, e);
@@ -185,6 +233,7 @@
                         }
                         range.find('.rateit-hover').hide();
                         range.find('.rateit-selected').width(score * itemdata('starwidth') * itemdata('step')).show();
+
                         item.trigger('hover', [null]).trigger('rated', [newvalue]);
                     });
 
