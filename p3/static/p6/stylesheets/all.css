@@ -2306,6 +2306,26 @@ div.rateit div.rateit-selected-rtl { background-position: right -16px; }
 div.rateit div.rateit-reset { background: url(../images/rateit-delete.gif) 0 0; width: 16px; height: 16px; display: inline-block; float: left; }
 
 div.rateit div.rateit-reset:hover { background-position: 0 -16px; }
+div.rateit div.rateit-range,
+div.rateit div.rateit-reset {
+  display: none!important;
+}
+
+.rateit-simplified div {
+  cursor: pointer;
+}
+
+.rateit-simplified div:hover {
+  text-decoration: underline;
+}
+
+.rateit-simplified .selected {
+  font-weight: bold;
+}
+
+.rateit-simplified .selected:after {
+  content: ' ✔';
+}
 
 /* Il programma di una conferenza può essere rappresentato in diversi modi: - timetable la versione più complessa e completa, con una disposizione a griglia - list gli eventi dispositi in una lista uno di seguito all'altro */
 /* SETTINGS AND MIXINS */
