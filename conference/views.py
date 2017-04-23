@@ -754,8 +754,8 @@ def voting(request):
                 'tags': '',
                 'order': 'random',
             }
-        if options['abstracts'] == 'not-voted':
-            talks = talks.exclude(id__in=user_votes.values('talk_id'))
+        # if options['abstracts'] == 'not-voted':
+        #     talks = talks.exclude(id__in=user_votes.values('talk_id'))
         if options['talk_type'] in (tchar
                                     for (tchar, tdef) in settings.TALK_TYPES_TO_BE_VOTED):
             talks = talks.filter(type__startswith=options['talk_type'])
