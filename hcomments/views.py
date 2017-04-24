@@ -6,7 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django_comments.models import Comment
 from django_comments import signals
 from django.contrib.contenttypes.models import ContentType
-
+from django.utils.html import escape
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
