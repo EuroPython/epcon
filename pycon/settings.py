@@ -587,6 +587,7 @@ CONFERENCE_CONFERENCE = 'ep2017'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2017.europython.eu/en/talk-voting/'
+CONFERENCE_TALK_VOTING_ELIGIBLE = ('ep2015', 'ep2016', 'ep2017')
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -720,11 +721,17 @@ def CONFERENCE_VOTING_ALLOWED(user):
     # People who have a ticket for the current conference assigned to
     # them can vote
     from p3 import models
+    # Starting with EP2017, we allow people who have bought tickets in the
+    # past, to also past to participate in talk voting.
+    tickets = models.TicketConference.objects \
+              .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
+                      assigned_to=user.email)
+                      
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
-    tickets = models.TicketConference.objects \
-              .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
-                      assigned_to=user.email)
+    #tickets = models.TicketConference.objects \
+    #          .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
+    #                  assigned_to=user.email)
 
     # Old query:
     #from django.db.models import Q
