@@ -237,7 +237,8 @@ def conference_users(conference, speakers=True):
     q2 = User.objects\
         .filter(email__in=\
             ticket_qs\
-                .exclude(p3_conference__assigned_to__in=(None,''))\
+                .exclude(p3_conference__assigned_to=None)\
+                .exclude(p3_conference__assigned_to='')\
                 .values('p3_conference__assigned_to')
         )\
         .values_list('id', flat=True)
