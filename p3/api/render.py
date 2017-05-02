@@ -1,6 +1,7 @@
 
 import datetime, decimal
 from functools import partial
+import simplejson as json
 
 from django import http
 from django.conf import settings as dsettings
@@ -19,7 +20,8 @@ class MyEncode(simplejson.JSONEncoder):
         elif isinstance(obj, set):
             return list(obj)
 
-        return simplejson.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, obj)
+
 
 def render_to_json(f):
     json_dumps = functools.partial(simplejson.dumps, cls=MyEncode)
