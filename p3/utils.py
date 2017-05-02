@@ -488,18 +488,21 @@ def speaker_companies(talk):
 
 
 def get_profile_company(profile):
-    """ Return a company tag to generate a textual profile for the user.
+    """ Return a (title, company) to generate a textual profile for the user.
     Since users sometimes use Company and Tag with the same content.
     """
+    title = ''
     company = ''
     if profile.job_title and profile.company:
         if profile.company.lower().strip() in profile.job_title.lower().strip():
+            title = ''
             company = profile.job_title
         else:
-            company = profile.job_title + " @ " + profile.company
+            title = profile.job_title
+            company = profile.company
     elif profile.job_title:
-        company = profile.job_title
+        title = profile.job_title
     elif profile.company:
         company = profile.company
 
-    return company
+    return title, company

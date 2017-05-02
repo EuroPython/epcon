@@ -71,6 +71,7 @@ class Command(BaseCommand):
                         'surname': '',
                         'tagline': '',
                         'company': '',
+                        'title':   '',
                         'pypower': '0',
                         'tshirt':  'l',
                         'email':   '',
@@ -98,7 +99,9 @@ class Command(BaseCommand):
                 else:
                     log.error(msg)
 
-            subj['company'] = get_profile_company(profile).encode('utf-8')
+            title, company  = get_profile_company(profile)
+            subj['title']   = title.encode('utf-8')
+            subj['company'] = company.encode('utf-8')
             subj['name'   ] = profile.user.first_name.encode('utf-8')
             subj['surname'] = profile.user.last_name.encode('utf-8')
             subj['tagline'] = p3_tkt.tagline.encode('utf-8')
