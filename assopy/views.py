@@ -420,16 +420,16 @@ def paypal_cancel(request, code):
     form = aforms.PayPalForm(o)
     return {'form': form }
 
-# sembra che a volte la redirezione di paypal si concluda con una POST da parte
-# del browser (qualcuno ha detto HttpResponseRedirectSeeOther?), dato che non
-# eseguo niente di pericoloso evito di controllare il csrf
+# looks like sometimes the redirect from paypal is ended with a POST request
+# from the browser (someone said HttpResponseRedirectSeeOther?), since we are not
+# executing anything critical I can skip the csrf check
 @csrf_exempt
 @render_to('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.user.user != request.user or o.method not in ('paypal', 'cc'):
         raise http.Http404()
-    # aspettiamo un po' per dare tempo a Paypal di inviarci la notifica IPN
+    # let's wait a bit to get the IPN notification from PayPal
     from time import sleep
     sleep(0.4)
     return {
