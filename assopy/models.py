@@ -547,7 +547,8 @@ purchase_completed = dispatch.Signal(providing_args=[])
 
 ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
-    ('paypal', 'PayPal'),
+    # MAL: Disabling Paypal until we have this method working again. See #516.
+    #('paypal', 'PayPal'),
     #('bank', 'Bank'),
 )
 
