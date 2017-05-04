@@ -74,7 +74,7 @@ function select_tag(field, tags, mode) {
 
     var t = $();
     for(var ix=0, ex=tags.length; ix<ex; ix++)
-        t = t.add($('.tag[data-tag=' + tags[ix] + ']'));
+        t = t.add($('.tag[data-tag="' + tags[ix] + '"]'));
     if(!t.length)
         return false;
 
