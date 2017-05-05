@@ -436,8 +436,7 @@ LOGGING = {
     'loggers': {
         'django.request': {
             'handlers': ['file', 'mail_admins'],
-#            'level': 'ERROR',
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'propagate': True,
         },
         'conference.tags': {
