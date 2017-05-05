@@ -547,8 +547,9 @@ purchase_completed = dispatch.Signal(providing_args=[])
 
 ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
-    # MAL: Disabling Paypal until we have this method working again. See #516.
-    #('paypal', 'PayPal'),
+    # MAL: Marking Paypal as broken until we have this method working again.
+    # See #516.
+    ('paypal', 'PayPal (currently broken - please do not use)'),
     #('bank', 'Bank'),
 )
 
@@ -729,13 +730,13 @@ class OrderItem(models.Model):
 
 def _order_feedback(sender, **kwargs):
     rows = [
-        'Utente: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
-        'Ragione sociale: "%s"' % (sender.card_name,),
-        'Metodo di pagamento: "%s"' % (sender.method,),
-        'Nazione: "%s"' % (sender.country.name if sender.country else '',),
-        'Indirizzo: "%s"' % (sender.address,),
-        'Note di fatturazione:\n%s\n' % (sender.billing_notes,),
-        'Biglietti acquistati:',
+        'Ordering person: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
+        'Card name: "%s"' % (sender.card_name,),
+        'Payment method: "%s"' % (sender.method,),
+        'Nationality: "%s"' % (sender.country.name if sender.country else '',),
+        'Address: "%s"' % (sender.address,),
+        'Billing notes:\n%s\n' % (sender.billing_notes,),
+        'Billing summary:',
     ]
     for x in sender.orderitem_set.order_by('ticket__fare__code').select_related():
         rows.append('%-5s %-47s %6.2f' % (x.code, x.description, x.price))

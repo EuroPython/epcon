@@ -378,6 +378,7 @@ def geocode(request):
 
 def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
+    log.debug('Paypal billing request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.total() == 0:
         o.confirm_order(datetime.now())
@@ -388,6 +389,7 @@ def paypal_billing(request, code):
 def paypal_cc_billing(request, code):
     # questa vista serve a eseguire il redirect su paypal e aggiungere le info
     # per billing con cc
+    log.debug('Paypal CC billing request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.total() == 0:
         o.confirm_order(datetime.now())
@@ -416,6 +418,7 @@ def paypal_cc_billing(request, code):
 
 @render_to('assopy/paypal_cancel.html')
 def paypal_cancel(request, code):
+    log.debug('Paypal billing cancel request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     form = aforms.PayPalForm(o)
     return {'form': form }
@@ -426,6 +429,7 @@ def paypal_cancel(request, code):
 @csrf_exempt
 @render_to('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request, code):
+    log.debug('Paypal billing OK request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.user.user != request.user or o.method not in ('paypal', 'cc'):
         raise http.Http404()
@@ -623,6 +627,7 @@ def voucher(request, order_id, item_id):
 def order_complete(request, assopy_id):
     if request.method != 'POST':
         return http.HttpResponseNotAllowed(('POST',))
+    log.debug('Order complete notice (assopy_id %s): %s', assopy_id, request.environ)
     order = get_object_or_404(models.Order, assopy_id=assopy_id)
     r = order.complete()
     log.info('remote notice! order "%s" (%s) complete! result=%s', order.code, order.assopy_id, r)

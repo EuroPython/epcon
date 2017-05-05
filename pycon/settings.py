@@ -401,6 +401,14 @@ NOCAPTCHA = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(process)d] %(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
+        },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -415,25 +423,33 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'conference.log'),
             'encoding': 'utf-8',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+            'handlers': ['file', 'mail_admins'],
+#            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': True,
         },
         'conference.tags': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': False,
-        }
+        },
+        'assopy.views': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     }
 }
 
