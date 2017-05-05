@@ -115,6 +115,9 @@
                 }, {
                     text: 'not interested',
                     score: 0,
+                }, {
+                    text: 'not voted',
+                    score: -1,
                 }];
 
                 for (var i = 0; i < simplified.length; i++) {
@@ -167,8 +170,6 @@
             };
 
 
-            //
-
             if (!itemdata('readonly')) {
                 //if we are not read only, add all the events
 
@@ -187,8 +188,6 @@
                     resetbtn.hide();
                 }
 
-
-
                 //when the mouse goes over the range div, we set the "hover" stars.
                 if (!itemdata('wired')) {
                     item.on('click', '.rateit-simplified div:not(.selected)', function(e) {
@@ -197,6 +196,10 @@
                         $$.addClass('selected');
 
                         var score = $$.data('score') * 2;
+
+                        if (score < 0) {
+                            return;
+                        }
 
                         var newvalue = (score * itemdata('step')) + itemdata('min');
                         itemdata('value', newvalue);

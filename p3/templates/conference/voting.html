@@ -74,29 +74,14 @@
 
             <h4>{% trans "How to vote:" %}</h4>
             <ul>
-                <li>{% trans "Click on the stars to cast a vote of interest (the more stars, the higher your interest in the talk); half-points are allowed." %}</li>
-                <li>{% trans "Click on the red sign on the left of the stars to remove a vote, if you want to think about it some more." %}</li>
-
-                <li>{% trans "Use the filters at the top to help you go through the talks." %}</li>
-                <li>{% trans "Sort by vote to help you review all your votes." %}</li>
-    <!--
-                <li>{% trans "Click on the talk name to go to the (linkable) talk page." %}</li>
-                <li>{% trans "Click on the speaker name to see the (linkable) speaker page, with full bio and other infos." %}</li>
-    -->
-                <li>{% trans "Do you have some questions on a talk? Leave a comment in the talk page, and the speaker will answer you and enhance the abstract." %}</li>
-                <li>{% trans "For talks without votes we will assume you're indifferent about them and use an interest level of 0 stars." %}</li>
+                <li>Click on 'ABSTRACT' to see the short version of the submission.</li>
+                <li>To read the full abstract click on the title of the submission.</li>
+                <li>Indicate your personal interest in attending this session: simply chose between these four options: “must see”, “want to see”, “maybe” and “not interested”.</li>
+                <li>Please only indicate your own personal interest and not think about what others might like.</li>
+                <li>Use the filters at the top to help you go through the talks.</li>
+                <li>Do you have some questions on a talk? Leave a comment in the talk page (click on title).</li>
+                <li>Note that your votes are automatically saved to the backend without the need to click on a save or submit button.</li>
             </ul>
-        </div><!-- /slot -->
-
-        <div class="slot ep-cms">
-            <h4>{% trans "Need more info?" %}</h4>
-            <p>
-                {% blocktrans with voting_url="/talk-voting" contacts_url="/contacts" chat_url="#" chat_click="habla_window.show(); habla_window.expand()" %}
-                Go to the <a href="{{ voting_url }}">talk voting</a> description page for all the details.
-                If you still have answers, <a href="{{ contacts_url }}">write us</a> or
-                <a href="{{ chat_url }}" onclick="{{ chat_click }}">chat with us</a>.
-                {% endblocktrans %}
-            </p>
         </div><!-- /slot -->
 
     </aside>
