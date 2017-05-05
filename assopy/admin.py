@@ -219,7 +219,7 @@ class OrderAdmin(admin.ModelAdmin):
             'admin/assopy/order/vouchers_fare.html', ctx, context_instance=template.RequestContext(request))
 
     def do_edit_invoices(self, request, queryset):
-        ids = [ str(o.id) for o in queryset if not o.complete() ]
+        ids = [ str(o.id) for o in queryset ]
         if ids:
             url = urlresolvers.reverse('admin:assopy-edit-invoices') + '?id=' + ','.join(ids)
             return redirect(url)
