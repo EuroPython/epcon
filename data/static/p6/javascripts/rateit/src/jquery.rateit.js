@@ -117,6 +117,7 @@
                     score: 0,
                 }, {
                     text: 'not voted',
+                    skip: true,
                     score: -1,
                 }];
 
@@ -127,8 +128,15 @@
                     d.data('score', data.score);
                     d.text(data.text)
 
-                    if (itemdata('value') == data.score) {
+                    console.log(item.closest('li').find('h3 a').text(), itemdata('value'), data.score, itemdata('value') == data.score)
+
+                    // if (itemdata('value') == data.score) {
+                    if (parseInt(itemdata('value'), 10) == data.score) {
                         d.addClass('selected');
+                    }
+
+                    if (data.skip) {
+                        d.addClass('skip');
                     }
 
                     $simplified.append(d);
@@ -190,10 +198,11 @@
 
                 //when the mouse goes over the range div, we set the "hover" stars.
                 if (!itemdata('wired')) {
-                    item.on('click', '.rateit-simplified div:not(.selected)', function(e) {
+                    item.on('click', '.rateit-simplified div:not(.selected,.skip)', function(e) {
                         item.find('.rateit-simplified div').removeClass('selected');
                         var $$ = $(e.currentTarget);
                         $$.addClass('selected');
+
 
                         var score = $$.data('score') * 2;
 
