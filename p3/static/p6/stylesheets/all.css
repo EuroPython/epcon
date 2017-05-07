@@ -2313,11 +2313,11 @@ div.rateit div.rateit-reset {
   display: none!important;
 }
 
-.rateit-simplified div {
+.rateit-simplified div:not(.skip) {
   cursor: pointer;
 }
 
-.rateit-simplified div:hover {
+.rateit-simplified div:not(.skip):hover {
   text-decoration: underline;
 }
 
