@@ -459,16 +459,15 @@ class SpeakerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(SpeakerAdmin, self).get_queryset(request)
         qs = qs.select_related('user__attendeeprofile')
+        if request.GET:
+            # Make sure we do an AND query, not an or one as implicit by
+            # the Django admin .list_filter
+            conf = request.GET.get('talk__conference', None)
+            status = request.GET.get('talk__status__exact', None)
+            if conf is not None and status is not None:
+                qs = qs.filter(talk__conference=conf,
+                               talk__status__exact=status)
         return qs
-
-    def changelist_view(self, request, extra_context=None):
-        if not request.GET:
-            q = request.GET.copy()
-            q['talk__conference'] = settings.CONFERENCE
-            q['talk__status__exact'] = 'accepted'
-            request.GET = q
-            request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(SpeakerAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
