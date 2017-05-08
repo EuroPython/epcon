@@ -465,7 +465,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         if not request.GET:
             q = request.GET.copy()
             q['talk__conference'] = settings.CONFERENCE
-            q['talk__status'] = 'accepted'
+            q['talk__status__exact'] = 'accepted'
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(SpeakerAdmin, self).changelist_view(request, extra_context=extra_context)
