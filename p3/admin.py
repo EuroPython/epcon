@@ -342,7 +342,7 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
 
     list_display = cadmin.SpeakerAdmin.list_display + (
         )
-    list_filter = (
+    list_filter = cadmin.SpeakerAdmin.list_filter + (
         'p3_speaker__first_time',
         )
 
@@ -352,7 +352,7 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
         qs = super(SpeakerAdmin, self).get_queryset(request)
         qs = qs.filter(user__in=(
             cmodels.TalkSpeaker.objects\
-                .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
+                #.filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
                 .values('speaker')
         ))
         return qs

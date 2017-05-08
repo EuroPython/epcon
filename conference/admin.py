@@ -447,17 +447,28 @@ class SpeakerAdminForm(forms.ModelForm):
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
 
 class SpeakerAdmin(admin.ModelAdmin):
-    list_display = ('_avatar', '_user', '_email')
-    search_fields = ('user__first_name', 'user__last_name', 'user__email')
+    list_display = ('_avatar', '_user', '_email', '_company')
+    search_fields = ('user__first_name', 'user__last_name', 'user__email',
+                     'user__attendeeprofile__company')
+    list_filter = ('talk__conference', 'talk__status', 
+                   'user__attendeeprofile__company')
     list_select_related = True
     form = SpeakerAdminForm
     inlines = (TalkSpeakerInlineAdmin,)
 
     def get_queryset(self, request):
         qs = super(SpeakerAdmin, self).get_queryset(request)
-
-        qs = qs.select_related('user__attendeeprofile',)
+        qs = qs.select_related('user__attendeeprofile')
         return qs
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.GET:
+            q = request.GET.copy()
+            q['talk__conference'] = settings.CONFERENCE
+            q['talk__status'] = 'accepted'
+            request.GET = q
+            request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(SpeakerAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
@@ -499,6 +510,11 @@ class SpeakerAdmin(admin.ModelAdmin):
     _user.allow_tags = True
     _user.admin_order_field = 'user__first_name'
 
+    def _company(self, o):
+        if o.user.attendeeprofile:
+            return o.user.attendeeprofile.company
+    _company.admin_order_field = 'user__attendeeprofile__company'
+    
     def _email(self, o):
         return o.user.email
     _user.admin_order_field = 'user__email'
