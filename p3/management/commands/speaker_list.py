@@ -61,6 +61,9 @@ class Command(BaseCommand):
                   'Choices: accepted, proposed, canceled',
         ),
     )
+
+    args = '<conference>'
+
     def handle(self, *args, **options):
         try:
             conference = args[0]
