@@ -11,6 +11,9 @@ import sys
 class Command(BaseCommand):
     """
     """
+
+    args = '<conference>'
+
     def handle(self, *args, **options):
         try:
             conference = models.Conference.objects.get(code=args[0])

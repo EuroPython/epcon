@@ -57,6 +57,9 @@ class Command(BaseCommand):
         #     help='Help text',
         # ),
     )
+    
+    args = '<conference>'
+    
     def handle(self, *args, **options):
         try:
             conference = args[0]
@@ -83,6 +86,9 @@ class Command(BaseCommand):
             elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):
                 # Don't list these placeholders or plenary sessions
                 # used in the schedule
+                continue
+            elif 'reserved for' in talk.title.lower():
+                # Don't list reserved talk slots
                 continue
             else:
                 type = talk_type
