@@ -40,7 +40,7 @@ def speaker_listing(talk):
 
 
 @register.assignment_tag
-def get_accepted_talks(conference):
+def get_accepted_talks(conference, filter_types=None):
     _check_talk_types(TYPE_NAMES)
 
     talks = models.Talk.objects.filter(
@@ -69,7 +69,14 @@ def get_accepted_talks(conference):
 
     output = {}
 
-    for type, type_name, description in TYPE_NAMES:
+    types = TYPE_NAMES
+
+    if filter_types is not None:
+        filter_types = [x.strip() for x in filter_types.split(',')]
+
+        types = [t for t in TYPE_NAMES if t[0] in filter_types]
+
+    for type, type_name, description in types:
         bag = talk_types.get(type, [])
 
         # Sort by talk title using title case
