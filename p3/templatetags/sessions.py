@@ -1,3 +1,9 @@
+""" Session related tags
+
+    Note: It's better to use tag names without underscores, since those need
+    to be escaped in MarkItUp CMS plugins.
+
+"""
 from __future__ import unicode_literals
 from django import template
 
@@ -35,12 +41,12 @@ def _check_talk_types(type_names):
 def speaker_listing(talk):
     return [{
         'url': profile_url(speaker.user),
-        'fullname': '{} {}'.format(speaker.user.first_name, speaker.user.last_name),
+        'fullname': '{} {}'.format(speaker.user.first_name,
+                                   speaker.user.last_name),
     } for speaker in talk.get_all_speakers()]
 
-
 @register.assignment_tag
-def get_accepted_talks(conference, filter_types=None):
+def acceptedsessions(conference, filter_types=None):
     _check_talk_types(TYPE_NAMES)
 
     talks = models.Talk.objects.filter(
@@ -51,14 +57,19 @@ def get_accepted_talks(conference, filter_types=None):
     for talk in talks:
         talk_type = talk.type[:1]
         admin_type = talk.admin_type[:1]
-        if (admin_type == 'm' or 'EPS' in talk.title or
-                'EuroPython 20' in talk.title):
+        if (admin_type == 'm' or 
+            'EPS' in talk.title or
+            'EuroPython 20' in talk.title):
             type = 'm'
-        elif (admin_type == 'k' or talk.title.lower().startswith('keynote')):
+        elif (admin_type == 'k' or 
+              talk.title.lower().startswith('keynote')):
             type = 'k'
         elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):
             # Don't list these placeholders or plenary sessions
             # used in the schedule
+            continue
+        elif 'reserved for' in talk.title.lower():
+            # Don't list reserved talk slots
             continue
         else:
             type = talk_type
@@ -67,29 +78,30 @@ def get_accepted_talks(conference, filter_types=None):
         else:
             talk_types[type] = [talk]
 
-    output = {}
-
-    types = TYPE_NAMES
-
     if filter_types is not None:
         filter_types = [x.strip() for x in filter_types.split(',')]
+        types = [t 
+                 for t in TYPE_NAMES 
+                 if t[0] in filter_types]
+    else:
+        types = TYPE_NAMES
 
-        types = [t for t in TYPE_NAMES if t[0] in filter_types]
-
+    output = []
     for type, type_name, description in types:
         bag = talk_types.get(type, [])
 
         # Sort by talk title using title case
         bag.sort(key=lambda talk: talk_title(talk).title())
 
-        output[type] = {
-            'type': type_name,
-            'talks': [{
+        output.append({
+            'type': type,
+            'name': type_name,
+            'description': description,
+            'sessions': [{
                 'title': talk_title(talk),
                 'url': talk.get_absolute_url(),
                 'speakers': speaker_listing(talk),
-                'talk': talk,
+                'session': talk,
             } for talk in bag]
-        }
-
+        })
     return output
