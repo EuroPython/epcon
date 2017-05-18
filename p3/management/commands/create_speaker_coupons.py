@@ -67,6 +67,8 @@ class Command(BaseCommand):
                     ),
     )
 
+    args = '<conference>'
+
     # Dry run ?
     dry_run = False
 
@@ -83,32 +85,34 @@ class Command(BaseCommand):
         # Find speakers eligible for coupons
         speakers = {}
         qs = cmodels.TalkSpeaker.objects\
-            .filter(talk__conference=conference.code, talk__status='accepted')\
+            .filter(talk__conference=conference.code, 
+                    talk__status='accepted',
+                    helper=False)\
             .select_related('talk', 'speaker__user')
         for row in qs:
             talk_code = row.talk.type[0]
             if talk_code not in TALK_TYPE_DISCOUNTS:
                 continue
             coupon_prefix, discount_code = TALK_TYPE_DISCOUNTS[talk_code]
-            if row.speaker_id not in speakers:
+            if (row.speaker_id not in speakers or 
+                # Override existing discount with training; this
+                # means that someone who does e.g. both a talk and training,
+                # will get a training discount
+                talk_code == 'r'):
                 entry = {
                     'spk': row.speaker,
                     'title': row.talk.title,
+                    'type': row.talk.type[0],
+                    'admin_type': row.talk.admin_type,
                     'duration': row.talk.duration,
                     'discount': discount_code,
                     'prefix': coupon_prefix,
+                    'talk_id': row.talk.id,
+                    'speaker_id': row.speaker_id,
                     }
                 speakers[row.speaker_id] = entry
             else:
                 entry = speakers[row.speaker_id]
-            # Override existing discount with training; this
-            # means that someone who does e.g. both a talk and training,
-            # will get a training discount
-            if talk_code == 'r':
-                entry['discount'] = discount_code
-                entry['prefix'] = coupon_prefix
-                entry['title'] = row.talk.title
-                entry['duration'] = row.talk.duration
 
         # Valid fares (conference fares only)
         fares = cmodels.Fare.objects\
@@ -138,7 +142,18 @@ class Command(BaseCommand):
             # Get coupon data
             coupon_prefix = entry['prefix']
             user = entry['spk'].user
+            name = u'%s %s' % (user.first_name, user.last_name)
             value = entry['discount']
+            title = entry['title']
+
+            # Check for reserved slots
+            if (entry['admin_type'] == 'x' or 
+                'reserved for' in title.lower()):
+                continue
+
+            # Check for placeholder entries
+            if name.lower() in ('to be announced', 'tobey announced'):
+                continue
 
             # Check if we have already issued a coupon
             if user.email in existing_coupon_emails:
@@ -154,7 +169,6 @@ class Command(BaseCommand):
                     break
 
             # Build CSV data
-            name = u'%s %s' % (user.first_name, user.last_name)
             data_row = (
                 user.email,
                 name,
@@ -165,6 +179,10 @@ class Command(BaseCommand):
                 '', # donated amount
                 entry['title'],
                 entry['duration'],
+                entry['type'],
+                entry['admin_type'],
+                entry['talk_id'],
+                entry['speaker_id'],
                 )
 
             # Create coupon
@@ -185,7 +203,7 @@ class Command(BaseCommand):
         data.insert(0, (
             # Header
             'email', 'name', 'prefix', 'code', 'discount', 'donated', 'amount',
-            'title', 'duration'))
+            'title', 'duration', 'type', 'admin_type', 'talk_id', 'speaker_id'))
         for row in data:
             csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
                         for x in row)
