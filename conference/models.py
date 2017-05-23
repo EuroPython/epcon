@@ -811,7 +811,12 @@ class Ticket(models.Model):
         blank=True,
         help_text=_('Attendee name, i.e. the person who will attend the conference.'))
     fare = models.ForeignKey(Fare)
-    frozen = models.BooleanField(default=False)
+    frozen = models.BooleanField(
+        default=False,
+        verbose_name=_('ticket canceled / invalid / frozen'),
+        help_text=_('If a ticket was canceled or otherwise need to be marked as '
+                    'invalid, please check this checkbox to indicate this.'),
+        )
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
 
     objects = TicketManager()
