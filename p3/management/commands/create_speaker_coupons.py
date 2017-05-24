@@ -41,18 +41,22 @@ from assopy.models import Coupon
 # The coupon_prefix must have 3 chars.
 #
 TALK_TYPE_DISCOUNTS = {
-    't': ('TLK', '25%'), # Talk
-    'i': ('INT', '25%'), # Interactive
-    'r': ('TRN', '100%'),# Training
-    'p': ('PST', '25%'), # Poster
-    'n': ('PAN', '25%'), # Panel
-    'h': ('HPD', '25%'), # Helpdesk
+    't': ('TLK', '25%'),  # Talk
+    'i': ('INT', '25%'),  # Interactive
+    'r': ('TRN', '100%'), # Training
+    'p': ('PST', '25%'),  # Poster
+    'n': ('PAN', '25%'),  # Panel
+    'h': ('HPD', '25%'),  # Helpdesk
 }
 
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
                         for ttype, (prefix, discount)
                         in TALK_TYPE_DISCOUNTS.items())
+
+# Add special keynote coupon prefix
+COUPON_PREFIXES += ('KEY',)
+
 assert 'TLK' in COUPON_PREFIXES
 
 ###
