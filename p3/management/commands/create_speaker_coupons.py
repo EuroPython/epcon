@@ -94,25 +94,47 @@ class Command(BaseCommand):
             if talk_code not in TALK_TYPE_DISCOUNTS:
                 continue
             coupon_prefix, discount_code = TALK_TYPE_DISCOUNTS[talk_code]
-            if (row.speaker_id not in speakers or 
-                # Override existing discount with training; this
-                # means that someone who does e.g. both a talk and training,
-                # will get a training discount
-                talk_code == 'r'):
-                entry = {
-                    'spk': row.speaker,
-                    'title': row.talk.title,
-                    'type': row.talk.type[0],
-                    'admin_type': row.talk.admin_type,
-                    'duration': row.talk.duration,
-                    'discount': discount_code,
-                    'prefix': coupon_prefix,
-                    'talk_id': row.talk.id,
-                    'speaker_id': row.speaker_id,
-                    }
-                speakers[row.speaker_id] = entry
-            else:
+            admin_type = row.talk.admin_type
+
+            # Get possibly already existing entry
+            if row.speaker_id in speakers:
                 entry = speakers[row.speaker_id]
+            else:
+                entry = None
+
+            # Handle special cases
+            if admin_type == 'k':
+                # Keynote talk
+                coupon_prefix = 'KEY'
+                discount_code = '100%'
+                # Force an override
+                entry = None
+                
+            if talk_code == 'r':
+                # Override existing talk discount with training; this
+                # means that someone who does e.g. both a talk and
+                # training, will get the higher training discount
+                if (entry is not None and
+                    entry['discount'] != '100%'):
+                    entry = None
+
+            # Entry already exists, so don't create a new coupon
+            if entry is not None:
+                continue
+
+            # Create a new entry
+            entry = {
+                'spk': row.speaker,
+                'title': row.talk.title,
+                'type': talk_code,
+                'admin_type': row.talk.admin_type,
+                'duration': row.talk.duration,
+                'discount': discount_code,
+                'prefix': coupon_prefix,
+                'talk_id': row.talk.id,
+                'speaker_id': row.speaker_id,
+                }
+            speakers[row.speaker_id] = entry
 
         # Valid fares (conference fares only)
         fares = cmodels.Fare.objects\

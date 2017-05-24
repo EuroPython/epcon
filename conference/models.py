@@ -814,7 +814,7 @@ class Ticket(models.Model):
     frozen = models.BooleanField(
         default=False,
         verbose_name=_('ticket canceled / invalid / frozen'),
-        help_text=_('If a ticket was canceled or otherwise need to be marked as '
+        help_text=_('If a ticket was canceled or otherwise needs to be marked as '
                     'invalid, please check this checkbox to indicate this.'),
         )
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
