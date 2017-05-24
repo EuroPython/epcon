@@ -582,6 +582,7 @@ TALK_ADMIN_TYPE = (
     ('s', 'Open space'),
     ('e', 'Social event'),
     ('x', 'Reserved slot'),
+    ('z', 'Sponsored session'),
 )
 
 
