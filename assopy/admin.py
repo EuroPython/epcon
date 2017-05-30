@@ -156,7 +156,9 @@ class OrderAdmin(admin.ModelAdmin):
     def _invoice(self, o):
         from django.contrib.admin.util import quote
         output = []
-        if dsettings.DEBUG:
+        # MAL: PDF generation is currently broken, so always show the HTML
+        # version
+        if 1 or dsettings.DEBUG:
             vname = 'assopy-invoice-html'
         else:
             vname = 'assopy-invoice-pdf'
