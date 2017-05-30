@@ -25,6 +25,8 @@ admin.site.register(models.Country, CountryAdmin)
 
 class ReadOnlyWidget(forms.widgets.HiddenInput):
 
+    # MAL: This widget doesn't render well in Django 1.8. See #539
+
     def __init__(self, display=None, *args, **kwargs):
         self.display = display
         super(ReadOnlyWidget, self).__init__(*args, **kwargs)
@@ -35,25 +37,10 @@ class ReadOnlyWidget(forms.widgets.HiddenInput):
         output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
-class OrderItemAdminForm(forms.ModelForm):
-    class Meta:
-        model = models.OrderItem
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super(OrderItemAdminForm, self).__init__(*args, **kwargs)
-        from conference.models import Ticket
-        self.fields['ticket'].queryset = Ticket.objects.all().select_related('fare')
-        instance = kwargs.get('instance',None)
-        if instance and instance.order.invoices.exclude(payment_date=None).exists():
-            # se ho emesso un invoice impedisco di variare alcuni campi degli gli order items
-            for f in ('ticket', 'price', 'vat', 'code'):
-                self.fields[f].widget = ReadOnlyWidget(display = getattr(self.instance, f))
-
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
-    form = OrderItemAdminForm
     raw_id_fields = ('ticket',)
+    readonly_fields = ('ticket', 'price', 'vat', 'code', 'description')
 
     def get_formset(self, request, obj=None, **kwargs):
         # se ho emesso un invoice impedisco di variare gli order items

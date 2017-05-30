@@ -706,6 +706,12 @@ class OrderItem(models.Model):
         except Invoice.DoesNotExist:
             return None
 
+    def get_readonly_fields(self, request, obj=None):
+	# Make fields read-only if an invoice for the order already exists
+        if obj and self.order.invoices.exclude(payment_date=None).exists():
+            return self.readonly_fields + ('ticket', 'price', 'vat', 'code')
+        return self.readonly_fields
+
     def delete(self, **kwargs):
         if self.ticket:
             self.ticket.delete()
