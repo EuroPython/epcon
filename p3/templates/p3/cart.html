@@ -69,7 +69,7 @@
         <fieldset class="tickets conference-tickets">
             {% if conference_fares %}
             <legend>{% trans "Conference tickets" %}</legend>
-                <p>{% trans "All conference tickets prices are 22% VAT included. (Max. 5 tickets)" %}</p>
+                <p>{% trans "All conference tickets prices are 22% VAT included. (Max. 6 tickets)" %}</p>
                 <table id="ticket_table" class="table">
                     <col />
 
@@ -109,8 +109,8 @@
                         var changed = (1<0)
                         for (i = 0; i < inp_list.length; i++) {
                             val = inp_list[i].value
-                                if (val > 5) {
-                                    inp_list[i].value = 5
+                                if (val > 6) {
+                                    inp_list[i].value = 6;
                                     changed = (1>0);
                                 }
                         }
