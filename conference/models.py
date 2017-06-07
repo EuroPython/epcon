@@ -572,6 +572,11 @@ TALK_DURATION = {
     'h_180': 180,
 }
 
+# Admin talk entries
+#
+# These are usually not eligible for speaker coupons. See the
+# create_speaker_coupons.py script for details.
+#
 TALK_ADMIN_TYPE = (
     ('o', 'Opening session'),
     ('c', 'Closing session'),
@@ -579,6 +584,7 @@ TALK_ADMIN_TYPE = (
     ('k', 'Keynote'),
     ('r', 'Recruiting session'),
     ('m', 'EPS session'),
+    ('p', 'Community session'),
     ('s', 'Open space'),
     ('e', 'Social event'),
     ('x', 'Reserved slot'),

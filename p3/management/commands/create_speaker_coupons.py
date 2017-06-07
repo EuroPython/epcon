@@ -113,6 +113,10 @@ class Command(BaseCommand):
                 discount_code = '100%'
                 # Force an override
                 entry = None
+
+            elif admin_type:
+                # All other admin types are not eligible for coupons
+                continue
                 
             if talk_code == 'r':
                 # Override existing talk discount with training; this
