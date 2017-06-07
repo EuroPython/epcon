@@ -258,7 +258,7 @@ def user_coupons(user):
 def render_profile_last_block(context):
     return context
 
-@register.simple_tag(takes_context=True)
+@register.assignment_tag(takes_context=True)
 def paginate(context, qs, count=20):
     pages = paginator.Paginator(qs, int(count))
     try:
