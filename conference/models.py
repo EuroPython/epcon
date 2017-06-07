@@ -579,6 +579,7 @@ TALK_ADMIN_TYPE = (
     ('k', 'Keynote'),
     ('r', 'Recruiting session'),
     ('m', 'EPS session'),
+    ('p', 'Community session'),
     ('s', 'Open space'),
     ('e', 'Social event'),
     ('x', 'Reserved slot'),
