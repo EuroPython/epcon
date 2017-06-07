@@ -27,9 +27,13 @@ TYPE_NAMES = (
         'Help desks provide slots for attendees to discuss '
         'their problems one-on-one with experts from the projects.'
     )),
-    ('m', 'EuroPython sessions', (
+    ('e', 'EuroPython sessions', (
         'The EuroPython sessions are intended for anyone interested '
         'in helping with the EuroPython organization in the coming years.'
+    )),
+    ('c', 'Community sessions', (
+        'The community sessions are intended for Python communities such as '
+        'the Python Software Foundation (PSF) to use for members meetings.'
     )),
 )
 
@@ -94,10 +98,13 @@ EXAMPLE_ACCEPTEDSESSIONS = """
 """
 
 @register.assignment_tag
-def acceptedsessions(conference, filter_types=None):
+def acceptedsessions(conference, filter_types=None, filter_community=None):
 
     talks = models.Talk.objects.filter(
         conference=conference, status='accepted')
+    if filter_community:
+        talks = talks.filter(
+            p3_talk__sub_community=filter_community.strip())
 
     # Group by types
     talk_types = {}
@@ -107,10 +114,15 @@ def acceptedsessions(conference, filter_types=None):
         if (admin_type == 'm' or 
             'EPS' in talk.title or
             'EuroPython 20' in talk.title):
-            type = 'm'
+            # EPS sessions
+            type = 'e'
         elif (admin_type == 'k' or 
               talk.title.lower().startswith('keynote')):
+            # Keynotes
             type = 'k'
+        elif (admin_type == 'p'):
+            # Community sessions
+            type = 'c'
         elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):
             # Don't list these placeholders or plenary sessions
             # used in the schedule
