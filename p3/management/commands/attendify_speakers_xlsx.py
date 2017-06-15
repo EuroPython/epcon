@@ -206,6 +206,9 @@ class Command(BaseCommand):
         #     help='Help text',
         # ),
     )
+
+    args = '<conference> <xlsx-file>'
+
     def handle(self, *args, **options):
         try:
             conference = args[0]

@@ -260,6 +260,9 @@ class Command(BaseCommand):
         #     help='Help text',
         # ),
     )
+
+    args = '<conference> <xlsx-file>'
+
     def handle(self, *args, **options):
         try:
             conference = args[0]
@@ -279,13 +282,9 @@ class Command(BaseCommand):
         for talk in talks:
             talk_type = talk.type[:1]
             admin_type = talk.admin_type[:1]
-            if (admin_type == 'm' or 
-               'EPS' in talk.title or 
-               'EuroPython 20' in talk.title):
+            if admin_type == 'm':
                 type = 'm'
-            elif (admin_type == 'k' or 
-                  talk.title.lower().startswith('keynote')):
-                #print ('found keynote: %r' % talk)
+            elif admin_type == 'k':
                 type = 'k'
             else:
                 type = talk_type
