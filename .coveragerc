@@ -2,6 +2,10 @@
 branch = True
 omit =
      */migrations/*
+     microblog/*
+     hcomments/*
+     */settings.py
+     fabfile.py
 
 [report]
 fail_under = 100
