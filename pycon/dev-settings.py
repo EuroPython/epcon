@@ -6,3 +6,5 @@ DEBUG=True
 PAYPAL_TEST = True
 
 TEMPLATES[0]['OPTIONS']['debug'] = True
+
+INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
