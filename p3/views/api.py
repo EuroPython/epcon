@@ -7,20 +7,22 @@ from django import http
 from django.conf import settings
 from django.shortcuts import redirect, render
 from django.core.management.base import BaseCommand, CommandError
+from django.contrib.auth.decorators import login_required
 
-from .render import render_to_json
-from ..utils import(speaker_companies,
-                    speaker_listing,
-                    speaker_emails,
-                    speaker_twitters,
-                    have_tickets,
-                    talk_schedule,
-                    talk_track_title,
-                    talk_votes,
-                    group_all_talks_by_admin_type,
-                    clean_title,
-                    )
+from epcon.p3.render import render_to_json
+from epcon.p3.utils import(speaker_companies,
+                           speaker_listing,
+                           speaker_emails,
+                           speaker_twitters,
+                           have_tickets,
+                           talk_schedule,
+                           talk_track_title,
+                           talk_votes,
+                           group_all_talks_by_admin_type,
+                           clean_title,
+                           )
 
+@login_required
 @render_to_json
 def api_schedule(request, conference):
         talks = group_all_talks_by_admin_type(conference, 'accepted')
