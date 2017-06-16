@@ -4,12 +4,13 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-from mock import patch
-from mock import Mock
-from django.test import TestCase
-from assopy.models import User, Order
 from django.contrib.auth.models import User as AuthUser
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+from mock import Mock
+from mock import patch
+
+from assopy.models import User, Order
 
 
 class AddStripeInOrderTest(TestCase):
@@ -50,14 +51,3 @@ class AddStripeInOrderTest(TestCase):
         self.assertEqual(order.stripe_charge_id, charge.id)
 
 
-class ResetPasswordTestCase(TestCase):
-    def test_reset_password(self):
-        url = reverse('password_reset_confirm',
-                      kwargs={
-                          'uidb64': '12123313A',
-                          'token': 'a0-1212dd'
-                      })
-
-        response = self.client.get(url)
-
-        self.assertTemplateUsed(response, 'registration/password_reset_confirm.html')

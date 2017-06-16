@@ -527,7 +527,7 @@ def _pdf(request, url):
         request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
         '--zoom',
         '1.3',
-        "%s%s" % (dsettings.DEFAULT_URL_PREFIX, url),
+        "%s" % request.build_absolute_uri(url),
         '-'
     ]
 
