@@ -30,3 +30,5 @@ logs/
 migrate-to-ep2017.sh
 pycon-env/
 src/
+.coverage
+htmlcov/
