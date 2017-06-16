@@ -29,6 +29,8 @@ from django.template.loader import render_to_string
 import simplejson
 from decorator import decorator
 
+import functools
+
 class MyEncode(simplejson.JSONEncoder):
     def default(self, obj):
         import datetime, decimal
@@ -63,6 +65,7 @@ def render_to(template):
      - template: template name to use
     """
     def renderer(func):
+        @functools.wraps(func)
         def wrapper(request, *args, **kw):
             output = func(request, *args, **kw)
             if isinstance(output, (list, tuple)):
@@ -95,6 +98,8 @@ def json(f):
     else:
         ct = 'application/json'
         j = simplejson.dumps
+
+    @functools.wraps(f)
     def wrapper(func, *args, **kw):
         try:
             result = func(*args, **kw)
@@ -114,6 +119,7 @@ def speaker_access(f):
     """
     Decorator that protects the view relative to a speaker.
     """
+    @functools.wraps(f)
     def wrapper(request, slug, **kwargs):
         spk = get_object_or_404(models.Speaker, slug=slug)
         if request.user.is_staff or request.user == spk.user:
@@ -184,6 +190,7 @@ def talk_access(f):
     """
     Decorator that protects the view relative to a talk.
     """
+    @functools.wraps(f)
     def wrapper(request, slug, **kwargs):
         tlk = get_object_or_404(models.Talk, slug=slug)
         if request.user.is_anonymous():
@@ -831,6 +838,7 @@ def profile_access(f):
     """
     Decorator which protect the relative view to a profile.
     """
+    @functools.wraps(f)
     def wrapper(request, slug, **kwargs):
         try:
             profile = models.AttendeeProfile.objects\

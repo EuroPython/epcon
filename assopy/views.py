@@ -19,6 +19,9 @@ from assopy import settings
 from assopy import utils as autils
 if settings.GENRO_BACKEND:
     from assopy.clients import genro
+import functools
+
+
 from email_template import utils
 
 import json
@@ -52,6 +55,7 @@ def render_to(template):
      - template: template name to use
     """
     def renderer(func):
+        @functools.wraps(func)
         def wrapper(request, *args, **kw):
             output = func(request, *args, **kw)
             if isinstance(output, (list, tuple)):
@@ -70,6 +74,7 @@ def render_to_json(f):
     else:
         ct = 'application/json'
         j = json_dumps
+    @functools.wraps(f)
     def wrapper(*args, **kw):
         try:
             result = f(*args, **kw)
