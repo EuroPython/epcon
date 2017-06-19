@@ -20,9 +20,11 @@ from epcon.p3.utils import(speaker_companies,
                            talk_votes,
                            group_all_talks_by_admin_type,
                            clean_title,
+                           group_required
                            )
 
 @login_required
+@group_required("API Access")
 @render_to_json
 def api_schedule(request, conference):
         talks = group_all_talks_by_admin_type(conference, 'accepted')
