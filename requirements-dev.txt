@@ -8,3 +8,6 @@ pytest
 pytest-cov
 pytest-django
 django-coverage-plugin
+-e git+https://github.com/FactoryBoy/django-factory_boy#egg=master
+django-pdb
+django-test-without-migrations
