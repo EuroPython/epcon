@@ -16,7 +16,7 @@ django-markitup==2.2.2
 django-mptt==0.8.6
 django-pingback==0.3
 django-polymorphic==0.8.1
-django-rosetta==0.7.4
+django-rosetta==0.7.13
 django-sekizai==0.10.0
 django-tagging==0.3.6
 django-taggit==0.14.0
