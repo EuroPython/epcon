@@ -83,6 +83,7 @@ class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
 
 class ConferenceManager(models.Manager):
     def current(self):
+        from django.conf import settings
         key = 'CONFERENCE_CURRENT'
         data = cache.get(key)
         if data is None:

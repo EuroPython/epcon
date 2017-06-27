@@ -8,7 +8,9 @@ from django_factory_boy import auth as auth_factories
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
 
-@unittest.skip("Todo")
+from django.conf import settings
+
+@unittest.skip("To finish")
 class TestView(TestCase):
     def setUp(self):
         self.user = auth_factories.UserFactory(password='password1234', is_superuser=True)
@@ -67,12 +69,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
-    def test_p3_live_track(self):
-        # p3-live-track -> p3.views.live.live_track
-        url = reverse('p3-live-track')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
     def test_p3_live_track_events(self):
         # p3-live-track-events -> p3.views.live.live_track_events
         url = reverse('p3-live-track-events')
@@ -101,7 +97,12 @@ class TestView(TestCase):
         # p3-my-schedule -> p3.views.schedule.jump_to_my_schedule
         url = reverse('p3-my-schedule')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+
+        redirect_url = reverse('p3-schedule-my-schedule', kwargs={
+            'conference': settings.CONFERENCE_CONFERENCE
+        })
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False )
 
     def test_p3_account_data_get(self):
         # p3-account-data -> p3.views.profile.p3_account_data
