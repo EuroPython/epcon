@@ -6,6 +6,9 @@ omit =
      hcomments/*
      */settings.py
      fabfile.py
+     */management/*
+     */tests/factories/*
+     */tests/*
 
 [report]
 fail_under = 100
