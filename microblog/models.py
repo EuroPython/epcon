@@ -5,7 +5,7 @@ from django.core import mail
 from django.db import models
 from django.db.models.query import QuerySet
 from django.template import Template, Context
-from django.utils.importlib import import_module
+from importlib import import_module
 
 from taggit.managers import TaggableManager
 

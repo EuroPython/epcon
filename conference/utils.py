@@ -19,7 +19,7 @@ from collections import defaultdict
 log = logging.getLogger('conference')
 
 def dotted_import(path):
-    from django.utils.importlib import import_module
+    from importlib import import_module
     from django.core.exceptions import ImproperlyConfigured
     i = path.rfind('.')
     module, attr = path[:i], path[i+1:]

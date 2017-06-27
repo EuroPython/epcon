@@ -5,7 +5,7 @@ from django.contrib.admin import widgets as admin_widgets
 from django.core import mail
 from django.db import transaction
 from django.forms import widgets
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _

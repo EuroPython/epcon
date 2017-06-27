@@ -49,7 +49,7 @@ def send_email(force=False, *args, **kwargs):
     real_send_mail(*args, **kwargs)
 
 def dotted_import(path):
-    from django.utils.importlib import import_module
+    from importlib import import_module
     from django.core.exceptions import ImproperlyConfigured
     i = path.rfind('.')
     module, attr = path[:i], path[i+1:]
