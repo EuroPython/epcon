@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import ugettext as _
 
 try:
     CONFERENCE = settings.CONFERENCE_CONFERENCE

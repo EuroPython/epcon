@@ -524,4 +524,3 @@ class P3Profile(models.Model):
 
 
 #TODO: what is this import doing here?!
-import p3.listeners

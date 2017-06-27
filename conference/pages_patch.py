@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-import pages.utils
-from pages import settings
-from django.db import models, connection
+from django.db import connection
 from django.http import Http404, HttpResponseRedirect
 
 def get_page_ids_by_slug(slug, parents=None):
@@ -30,7 +28,7 @@ def get_page_ids_by_slug(slug, parents=None):
     return [(c[0], c[1]) for c in cursor.fetchall()]
 
 def patched_get_page_from_slug(slug, request, lang=None):
-    from pages.models import Content, Page
+    from pages.models import Page
     from django.core.urlresolvers import reverse
     relative_url = request.path.replace(reverse('pages-root'), '', 1)
     slugs = filter(None, relative_url.split('/'))
@@ -49,7 +47,7 @@ def patched_get_page_from_slug(slug, request, lang=None):
     else:
         return None
 
-from pages.models import Page, Content
+from pages.models import Page
 from pages.utils import auto_render#, get_language_from_request, get_page_from_slug
 
 def details(request, slug=None, lang=None):

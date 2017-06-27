@@ -1,6 +1,5 @@
 import time
 import httplib2
-import simplejson
 
 ASSOPYURL = 'http://assopy.pycon.it/conference/getinfo.py/'
 CACHETIME = 5 * 60

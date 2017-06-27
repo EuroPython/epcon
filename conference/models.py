@@ -8,7 +8,6 @@ from collections import defaultdict
 from django.conf import settings as dsettings
 from django.core import exceptions
 from django.core.cache import cache
-from django.db import connection
 from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
@@ -1365,4 +1364,3 @@ class VotoTalk(models.Model):
 #post_save.connect(_clear_schedule_cache, sender=Event)
 #post_save.connect(_clear_schedule_cache, sender=EventInterest)
 
-from conference import listeners

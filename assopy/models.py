@@ -3,8 +3,8 @@ from assopy import django_urls
 from assopy import janrain
 from assopy import settings
 if settings.GENRO_BACKEND:
-    from assopy.clients import genro, vies
-from assopy.utils import check_database_schema, send_email
+    from assopy.clients import genro
+from assopy.utils import send_email
 from conference.models import Ticket
 from email_template import utils
 

@@ -8,7 +8,6 @@ from django.contrib import admin
 from django.conf import settings as dsettings
 from django.conf.urls import url, patterns
 from django.core import urlresolvers
-from django.db import transaction
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 
 from conference import dataaccess
@@ -326,8 +325,6 @@ class DeadlineAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Deadline, DeadlineAdmin)
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.fields import ReverseGenericRelatedObjectsDescriptor
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):

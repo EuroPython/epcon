@@ -34,7 +34,6 @@ class Command(BaseCommand):
 
         oids = map(int, args[1:])
 
-        from django.db.models import Q
         qs = models.OrderItem.objects\
                 .filter(order___complete=True)\
                 .filter(ticket__fare__payment_type='v', ticket__fare__conference=conf)\

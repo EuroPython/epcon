@@ -19,7 +19,6 @@ This module is for the procedures that don't do I/O or anything like that.
 from string import *
 import re
 import numpy
-import sys
 
 
 # 2 funcs for converting to and from special letter form

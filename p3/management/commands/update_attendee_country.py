@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from p3 import models
 from assopy import utils
 import time

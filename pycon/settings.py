@@ -189,7 +189,6 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
-from django.conf import global_settings
 
 #
 # XXX THESE SHOULD GO INTO THE OS.ENVIRON !
@@ -1294,7 +1293,7 @@ GRAPH_MODELS = {
 #
 
 try:
-    from pycon.settings_locale import *
+    pass
 except ImportError, reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)

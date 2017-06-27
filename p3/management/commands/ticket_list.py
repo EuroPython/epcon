@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
-import haystack
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from conference import models
 
 from collections import defaultdict

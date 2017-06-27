@@ -2978,7 +2978,6 @@ class BagResolver(object):
         """.. deprecated:: 0.7
         .. note:: This method have to be rewritten.
         """
-        pass
 
     def init(self):
         pass
@@ -3325,7 +3324,6 @@ class BagResolverNew(object):
     def load(self):
         """.. deprecated:: 0.7
         .. note:: This method have to be rewritten."""
-        pass
 
     def init(self):
         pass

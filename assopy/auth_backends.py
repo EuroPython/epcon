@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
-from django.db import transaction
 
 from assopy import models
 from assopy import settings

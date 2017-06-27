@@ -5,11 +5,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from conference import models
-from conference import utils
 
-from collections import defaultdict
 from optparse import make_option
-import operator
 
 ### Globals
 
