@@ -347,8 +347,6 @@ INSTALLED_APPS = (
     #'pages',
     'mptt',
 
-    'microblog',
-
     'django_xmlrpc',
     'pingback',
     'rosetta',
@@ -548,24 +546,6 @@ TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder',
 #
 # We're not going to use this feature for EuroPython 2015+:
 #
-MICROBLOG_LINK = 'http://blog.europython.eu'
-MICROBLOG_TITLE = 'EuroPython Blog'
-MICROBLOG_DESCRIPTION = 'Latest news from EuroPython'
-MICROBLOG_DEFAULT_LANGUAGE = 'en'
-MICROBLOG_POST_LIST_PAGINATION = True
-MICROBLOG_POST_PER_PAGE = 10
-MICROBLOG_MODERATION_TYPE = 'akismet'
-MICROBLOG_AKISMET_KEY = 'no-key-set'
-MICROBLOG_EMAIL_RECIPIENTS = ['info@europython.eu']
-MICROBLOG_EMAIL_INTEGRATION = True
-
-MICROBLOG_TWITTER_USERNAME = 'europython'
-MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
-MICROBLOG_TWITTER_INTEGRATION = False
-
-MICROBLOG_PINGBACK_SERVER = False
-MICROBLOG_TRACKBACK_SERVER = False
-
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
@@ -579,13 +559,6 @@ DJANGOCMS_GRID_CONFIG = {
     'TOTAL_WIDTH': 960,
     'GUTTER': 20,
 }
-
-
-def MICROBLOG_POST_FILTER(posts, user):
-    if user and user.is_staff:
-        return posts
-    else:
-        return filter(lambda x: x.is_published(), posts)
 
 
 #
@@ -993,7 +966,7 @@ P3_FARES_ENABLED = lambda u: True
 #P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
 P3_NEWSLETTER_SUBSCRIBE_URL = ""
 
-P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
+P3_TWITTER_USER = 'europython'
 P3_USER_MESSAGE_FOOTER = '''
 
 This message was sent from a participant at the EuroPython conference.
@@ -1012,13 +985,9 @@ def HCOMMENTS_RECAPTCHA(request):
 
 def HCOMMENTS_THREAD_OWNERS(o):
     from p3.models import P3Talk
-    from microblog.models import Post
 
     if isinstance(o, P3Talk):
         return [s.user for s in o.get_all_speakers()]
-    elif isinstance(o, Post):
-        return [o.author, ]
-        return [o.author, ]
     return None
 
 

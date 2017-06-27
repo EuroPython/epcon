@@ -20,7 +20,6 @@ settings.configure(
         'assopy.stripe',
 
         'conference',
-        'microblog',
         'taggit',
 
     ),
@@ -33,8 +32,6 @@ settings.configure(
     PAGE_LANGUAGES = (
         ('en-us', 'English'),
     ),
-
-    MICROBLOG_PINGBACK_SERVER = False,
 
     STRIPE_SECRET_KEY="sk_test_N5pR3SD63rk0ODlSdD1ljnrW",
     STRIPE_PUBLISHABLE_KEY="pk_test_qRUg4tJTFJgUiLz0FxKnuOXO",

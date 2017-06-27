@@ -2,7 +2,6 @@
 branch = True
 omit =
      */migrations/*
-     microblog/*
      hcomments/*
      */settings.py
      fabfile.py

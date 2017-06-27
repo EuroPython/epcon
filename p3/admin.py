@@ -283,7 +283,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         from conference.views import json_dumps
         from django.db.models import Q
         from collections import defaultdict
-        from microblog.models import PostContent
         import datetime
 
         conferences = cmodels.Conference.objects\
@@ -318,14 +317,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 .select_related('deadline')\
                 .order_by('deadline__date')
             markers = [ ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body)) for d in deadlines ]
-
-            posts = PostContent.objects\
-                .filter(language='en')\
-                .filter(post__date__lte=c.conference_start, post__date__gte=dlimit)\
-                .filter(post__status='P')\
-                .select_related('post')\
-                .order_by('post__date')
-            markers += [ ((d.post.date.date() - c.conference_start).days, 'BLOG: ' + d.headline) for d in posts ]
 
             output[c.code] = {
                 'data': data,
