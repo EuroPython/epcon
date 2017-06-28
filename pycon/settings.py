@@ -359,7 +359,6 @@ INSTALLED_APPS = (
     'django_crontab',
     'formstyle',
 
-    'cms_migration',
     'markitup',
     'cms_utils',
 
