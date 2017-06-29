@@ -11,6 +11,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.utils import ErrorDict
 
 from assopy import forms as aforms
 from assopy import janrain
@@ -85,7 +86,6 @@ def render_to_json(f):
             if isinstance(result, http.HttpResponse):
                 return result
             else:
-                from django.forms.util import ErrorDict
                 status = 200 if not isinstance(result, ErrorDict) else 400
                 result = j(result)
         return http.HttpResponse(content=result, content_type=ct, status=status)

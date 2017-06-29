@@ -10,6 +10,7 @@ from conference.tests.factories.attendee_profile import AttendeeProfileFactory
 
 from django.conf import settings
 
+
 @unittest.skip("To finish")
 class TestView(TestCase):
     def setUp(self):
@@ -25,11 +26,11 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
-    # def test_p3_billing(self):
-    #     # p3-billing -> p3.views.cart.billing
-    #     url = reverse('p3-billing')
-    #     response = self.client.get(url)
-    #     self.assertEqual(response.status_code, 200)
+    def test_p3_billing(self):
+        # p3-billing -> p3.views.cart.billing
+        url = reverse('p3-billing')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_p3_billing_no_ticket(self):
         # p3-billing -> p3.views.cart.billing
@@ -37,13 +38,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
 
-    @unittest.skip("FIXME: Add the test")
-    def test_p3_cart(self):
-        # p3-cart -> p3.views.cart.cart
-        url = reverse('p3-cart')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
     def test_p3_calculator(self):
         # p3-calculator -> p3.views.cart.calculator
         url = reverse('p3-calculator')
@@ -56,13 +50,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip("We don't test this part")
-    def test_genro_legacy_invoice(self):
-        # genro-legacy-invoice -> p3.views.genro_invoice_pdf
-        url = reverse('genro-legacy-invoice')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
     def test_p3_live(self):
         # p3-live -> p3.views.live.live
         url = reverse('p3-live')
