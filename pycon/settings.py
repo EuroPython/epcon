@@ -286,7 +286,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+
     'assopy.middleware.DebugInfo',
     'pycon.middleware.RisingResponse',
     'cms.middleware.user.CurrentUserMiddleware',
