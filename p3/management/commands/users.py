@@ -5,7 +5,7 @@ import json
 import logging as log
 from   collections import OrderedDict
 
-from   django.core.management.base import BaseCommand
+from   django.core.management.base import BaseCommand, CommandError
 
 from   assopy       import models as assopy_models
 

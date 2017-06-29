@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404, render
 from django.template import RequestContext

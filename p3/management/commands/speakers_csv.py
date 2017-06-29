@@ -3,6 +3,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from conference import models
+from p3.models import TicketConference
 
 import csv
 import sys

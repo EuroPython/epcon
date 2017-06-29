@@ -31,7 +31,12 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist
 from conference import models as cmodels
+from conference import utils
+from p3 import models
 
+from collections import defaultdict
+from optparse import make_option
+import operator
 
 ### Globals
 

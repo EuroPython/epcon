@@ -2,12 +2,14 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.utils.translation import ugettext as _
 
 import assopy.models as amodels
 import assopy.forms as aforms
 import conference.forms as cforms
 import conference.models as cmodels
+import conference.settings as csettings
 
 from p3 import dataaccess
 from p3 import models

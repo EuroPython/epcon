@@ -20,7 +20,9 @@ from string import *
 import re
 import numpy
 import sys
+from sys import maxint
 from votelib import *
+import votemethod
 
 class Options:
 	cand_l = None # list of candidate names

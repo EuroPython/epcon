@@ -19,6 +19,7 @@ This module provides all the different election methods.
 from votelib import *
 
 from string import *
+import re
 from numpy import *
 import sys
 from sys import maxint
