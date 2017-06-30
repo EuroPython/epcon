@@ -76,13 +76,6 @@ class TestView(TestCase):
         self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
 
     @unittest.skip("FIXME")
-    def test_p3_hotel_report(self):
-        # p3-hotel-report -> p3.views.reports.hotel_report
-        url = reverse('p3-hotel-report')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip("FIXME")
     def test_p3_live(self):
         # p3-live -> p3.views.live.live
         url = reverse('p3-live')

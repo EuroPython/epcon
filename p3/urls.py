@@ -14,8 +14,6 @@ urlpatterns = patterns('p3.views',
     url(r'^sprints/$', 'sprints', name='p3-sprints'),
     url(r'^sprints/(?P<sid>\d+)/$', 'sprint', name='p3-sprint'),
 
-    url(r'^hotel_report/$', 'hotel_report', name='p3-hotel-report'),
-
     url(r'^p/profile/(?P<slug>[\w-]+)/$', 'p3_profile', name='p3-profile'),
     url(r'^p/profile/(?P<slug>[\w-]+)/avatar$', 'p3_profile_avatar', name='p3-profile-avatar'),
     url(r'^p/profile/(?P<slug>[\w-]+).json$', 'p3_profile', name='p3-profile-json', kwargs={'format_': 'json'}),
