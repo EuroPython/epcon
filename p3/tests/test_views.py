@@ -60,8 +60,6 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
 
-
-    @unittest.skip("FIXME")
     def test_p3_billing_no_ticket(self):
         # p3-billing -> p3.views.cart.billing
         url = reverse('p3-billing')
