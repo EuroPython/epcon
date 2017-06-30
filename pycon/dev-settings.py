@@ -22,12 +22,12 @@ MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
 )
 
 DEVSERVER_MODULES = (
-    # 'devserver.modules.sql.SQLRealTimeModule',
-    # 'devserver.modules.sql.SQLSummaryModule',
-    # 'devserver.modules.profile.ProfileSummaryModule',
+    'devserver.modules.sql.SQLRealTimeModule',
+    'devserver.modules.sql.SQLSummaryModule',
+    'devserver.modules.profile.ProfileSummaryModule',
 
     # Modules not enabled by default
-    # 'devserver.modules.profile.LineProfilerModule',
+    'devserver.modules.profile.LineProfilerModule',
 )
 
 DEVSERVER_AUTO_PROFILE = True
