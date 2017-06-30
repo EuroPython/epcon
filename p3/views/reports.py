@@ -13,7 +13,7 @@ from p3.helpers import get_secure_storage
 
 
 def secure_media(request, path):
-    if not (request.user.is_superuser or request.user.groups.filter(name__in=('sim_report', 'hotel_report')).exists()):
+    if not (request.user.is_superuser or request.user.groups.filter(name__in=('hotel_report')).exists()):
         fname = os.path.splitext(os.path.basename(path))[0]
         if fname.rsplit('-', 1)[0] != request.user.username:
             return http.HttpResponseForbidden()
@@ -30,68 +30,6 @@ def secure_media(request, path):
             raise http.Http404()
         else:
             raise
-
-@login_required
-def sim_report(request):
-    if not (request.user.is_superuser or request.user.groups.filter(name='sim_report').exists()):
-        return http.HttpResponseForbidden()
-
-    speakers = {}
-    for row in cmodels.TalkSpeaker.objects\
-                    .filter(talk__conference=settings.CONFERENCE_CONFERENCE, talk__status='accepted')\
-                    .values_list('speaker__user', 'speaker__user__first_name', 'speaker__user__last_name',):
-        spk_id = row[0]
-        speakers[spk_id] = u'{0} {1}'.format(*row[1:])
-
-    tickets = cmodels.Ticket.objects\
-        .filter(
-            orderitem__order___complete=True,
-            fare__in=cmodels.Fare.objects.filter(
-                code__startswith='SIM', conference=settings.CONFERENCE_CONFERENCE))\
-        .select_related('p3_conference_sim', 'orderitem__order__user__user')\
-        .order_by('orderitem__order')
-    if request.method == 'POST':
-        t = tickets.get(id=request.POST['ticket'])
-        t.frozen = not t.frozen
-        t.save()
-        t.p3_conference_sim.number = request.POST.get('number', '').strip()
-        t.p3_conference_sim.save()
-
-    tickets = list(tickets.iterator())
-
-    # dict to associate each buyer with the list of owned tickets
-    #
-    # We want to ask the phone number only for speakers, but a speaker could
-    # have bought more than one SIM. If there is a perfect correspondence
-    # between the speaker name and the ticket name then we found what we were
-    # looking for, otherwise I'm going to sk a phone number for each SIM
-    # that has been bought.
-    tickets_by_buyer = defaultdict(list)
-
-    compiled = dict([ (x[0], { 'label': x[1], 'total': 0, 'done': 0 }) for x in models.TICKET_SIM_TYPE ])
-    for t in tickets:
-        if t.p3_conference_sim and t.p3_conference_sim.document:
-            sim_type = t.p3_conference_sim.sim_type
-            compiled[sim_type]['total'] += 1
-            if t.frozen:
-                compiled[sim_type]['done'] += 1
-        if t.user_id in speakers:
-            tickets_by_buyer[t.user_id].append(t)
-
-    for user_id, user_tickets in tickets_by_buyer.items():
-        for t in user_tickets:
-            if t.orderitem.order.user.name().lower() == speakers[user_id].lower():
-                t.for_speaker = True
-                break
-        else:
-            for t in user_tickets:
-                t.for_speaker = True
-    ctx = {
-        'tickets': tickets,
-        'compiled': compiled,
-    }
-    return render(request, 'p3/sim_report.html', ctx)
-
 
 @login_required
 def hotel_report(request):

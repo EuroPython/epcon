@@ -229,13 +229,6 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
     
     @unittest.skip("FIXME")
-    def test_p3_sim_report(self):
-        # p3-sim-report -> p3.views.reports.sim_report
-        url = reverse('p3-sim-report')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
     def test_p3_sprint_submission(self):
         # p3-sprint-submission -> p3.views.sprint_submission
         url = reverse('p3-sprint-submission')
