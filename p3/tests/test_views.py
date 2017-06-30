@@ -1,3 +1,4 @@
+import json
 import unittest
 
 import mock
@@ -44,7 +45,6 @@ class TestWhosComing(TestCase):
         # FIXME: Test the query string speaker, tags, country
 
 
-
 class TestView(TestCase):
     def setUp(self):
         self.user = auth_factories.UserFactory(password='password1234', is_superuser=True)
@@ -66,13 +66,15 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
 
-    @unittest.skip("FIXME")
-    def test_p3_calculator(self):
+    @override_settings(DEBUG=False)
+    def test_p3_calculator_get_default_values(self):
         # p3-calculator -> p3.views.cart.calculator
         url = reverse('p3-calculator')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-    
+        self.assertEqual(response.get('content-type'), 'application/json')
+        self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
+
     @unittest.skip("FIXME")
     def test_p3_hotel_report(self):
         # p3-hotel-report -> p3.views.reports.hotel_report
