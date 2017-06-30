@@ -2,7 +2,6 @@
 from django.conf.urls import url, patterns
 
 urlpatterns = patterns('p3.views',
-    url(r'^map.js/', 'map_js', name='p3-map-js'),
     url(r'^cart/$', 'cart', name='p3-cart'),
     url(r'^cart/calculator/$', 'calculator', name='p3-calculator'),
     url(r'^billing/$', 'billing', name='p3-billing'),

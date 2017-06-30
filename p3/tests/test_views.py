@@ -104,13 +104,6 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
     
     @unittest.skip("FIXME")
-    def test_p3_map_js(self):
-        # p3-map-js -> p3.views.map_js
-        url = reverse('p3-map-js')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
     def test_p3_my_schedule(self):
         # p3-my-schedule -> p3.views.schedule.jump_to_my_schedule
         url = reverse('p3-my-schedule')

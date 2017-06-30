@@ -28,10 +28,6 @@ import uuid
 
 log = logging.getLogger('p3.views')
 
-def map_js(request):
-    return render_to_response(
-        'p3/map.js', {}, context_instance=RequestContext(request), content_type='text/javascript')
-
 @login_required
 @render_to('p3/tickets.html')
 def tickets(request):
