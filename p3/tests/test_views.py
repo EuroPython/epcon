@@ -222,13 +222,6 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
     
     @unittest.skip("FIXME")
-    def test_p3_secure_media(self):
-        # p3-secure-media -> p3.views.reports.secure_media
-        url = reverse('p3-secure-media')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
     def test_p3_sprint_submission(self):
         # p3-sprint-submission -> p3.views.sprint_submission
         url = reverse('p3-sprint-submission')

@@ -10,8 +10,6 @@ urlpatterns = patterns('p3.views',
     url(r'^tickets/(?P<tid>\d+)/$', 'ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'user', name='p3-user'),
 
-    url(r'^secure_media/(?P<path>.*)', 'secure_media', name='p3-secure-media'),
-
     url(r'^sprint-submission/$', 'sprint_submission', name='p3-sprint-submission'),
     url(r'^sprints/$', 'sprints', name='p3-sprints'),
     url(r'^sprints/(?P<sid>\d+)/$', 'sprint', name='p3-sprint'),
