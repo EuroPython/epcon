@@ -159,7 +159,7 @@ SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = '/media/'
-
+SECURE_MEDIA_URL = '/p3/secure_media/'
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
