@@ -32,7 +32,6 @@ class TestWhosComing(TestCase):
             'conference': conference.pk,
         }))
 
-
     def test_p3_whos_coming_with_conference(self):
         # p3-whos-coming-conference -> p3.views.whos_coming
         # FIXME: The conference parameter has a default value to None, but the url does not accept a empty value
@@ -87,62 +86,6 @@ class TestView(TestCase):
         })
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False )
 
-    @unittest.skip("FIXME")
-    def test_p3_account_data_get(self):
-        # p3-account-data -> p3.views.profile.p3_account_data
-        url = reverse('p3-account-data')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip("Fix the test with POST method for p3_account_data")
-    def test_p3_account_data_post(self):
-        # p3-account-data -> p3.views.profile.p3_account_data
-        url = reverse('p3-account-data')
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 200)
-
-    # @unittest.skip("FIXME")
-    def test_p3_account_email(self):
-        # p3-account-email -> p3.views.profile.p3_account_email
-        url = reverse('p3-account-email')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_account_spam_control(self):
-        # p3-account-spam-control -> p3.views.profile.p3_account_spam_control
-        url = reverse('p3-account-spam-control')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_profile_json(self):
-        # p3-profile-json -> p3.views.profile.p3_profile
-        url = reverse('p3-profile-json')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_profile(self):
-        # p3-profile -> p3.views.profile.p3_profile
-        url = reverse('p3-profile')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_profile_avatar(self):
-        # p3-profile-avatar -> p3.views.profile.p3_profile_avatar
-        url = reverse('p3-profile-avatar')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_profile_message(self):
-        # p3-profile-message -> p3.views.profile.p3_profile_message
-        url = reverse('p3-profile-message')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
     @unittest.skip("FIXME")
     def test_p3_schedule_ics(self):
         # p3-schedule-ics -> p3.views.schedule.schedule_ics
