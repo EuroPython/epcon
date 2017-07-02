@@ -10,6 +10,7 @@ from conference.tests.factories.conference import ConferenceFactory
 
 from django_factory_boy import auth as auth_factories
 
+from conference.tests.factories.event import TrackWithEventsFactory
 from p3.tests.factories.schedule import ScheduleFactory
 from p3.tests.factories.track import TrackFactory
 
@@ -46,12 +47,18 @@ class TestLiveViews(TestCase):
         conference = ConferenceFactory(code='epbeta', conference_start=datetime.date.today())
         schedule = ScheduleFactory(conference=conference, date=datetime.date.today())
         track = TrackFactory(schedule=schedule)
-        print(track)
+
+        # FIXME: track_with_events = TrackWithEventsFactory()
+
         url = reverse('p3-live-track-events', kwargs={
             'track': track.track,
         })
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'application/json')
+        self.assertJSONEqual(response.content, [])
+
 
     @unittest.skip("FIXME")
     def test_p3_live_track_video(self):
