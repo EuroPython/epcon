@@ -76,34 +76,6 @@ class TestView(TestCase):
         self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
 
     @unittest.skip("FIXME")
-    def test_p3_live(self):
-        # p3-live -> p3.views.live.live
-        url = reverse('p3-live')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_live_track_events(self):
-        # p3-live-track-events -> p3.views.live.live_track_events
-        url = reverse('p3-live-track-events')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_live_track_video(self):
-        # p3-live-track-video -> p3.views.live.live_track_video
-        url = reverse('p3-live-track-video')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_live_events(self):
-        # p3-live-events -> p3.views.live.live_events
-        url = reverse('p3-live-events')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
     def test_p3_my_schedule(self):
         # p3-my-schedule -> p3.views.schedule.jump_to_my_schedule
         url = reverse('p3-my-schedule')
@@ -129,8 +101,7 @@ class TestView(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
 
-
-    @unittest.skip("FIXME")
+    # @unittest.skip("FIXME")
     def test_p3_account_email(self):
         # p3-account-email -> p3.views.profile.p3_account_email
         url = reverse('p3-account-email')

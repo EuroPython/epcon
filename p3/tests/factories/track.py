@@ -9,5 +9,5 @@ class TrackFactory(factory.django.DjangoModelFactory):
 
     schedule = factory.SubFactory(ScheduleFactory)
 
-    track = factory.Sequence(lambda x: 'Track %05d' % x)
+    track = factory.Sequence(lambda x: 'track%05d' % x)
     seats = 100

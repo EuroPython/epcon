@@ -10,6 +10,10 @@ from conference.tests.factories.conference import ConferenceFactory
 
 from django_factory_boy import auth as auth_factories
 
+from p3.tests.factories.schedule import ScheduleFactory
+from p3.tests.factories.track import TrackFactory
+
+
 class TestLiveViews(TestCase):
     def setUp(self):
         self.user = auth_factories.UserFactory(password='password1234', is_superuser=True)
@@ -35,3 +39,30 @@ class TestLiveViews(TestCase):
 
         self.assertEqual(response.templates[0].name, 'p3/live.html')
         self.assertEqual(response.context['tracks'].count(), 0)
+
+    @override_settings(CONFERENCE='epbeta', DEBUG=False)
+    def test_p3_live_track_events(self):
+        # p3-live-track-events -> p3.views.live.live_track_events
+        conference = ConferenceFactory(code='epbeta', conference_start=datetime.date.today())
+        schedule = ScheduleFactory(conference=conference, date=datetime.date.today())
+        track = TrackFactory(schedule=schedule)
+        print(track)
+        url = reverse('p3-live-track-events', kwargs={
+            'track': track.track,
+        })
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skip("FIXME")
+    def test_p3_live_track_video(self):
+        # p3-live-track-video -> p3.views.live.live_track_video
+        url = reverse('p3-live-track-video')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skip("FIXME")
+    def test_p3_live_events(self):
+        # p3-live-events -> p3.views.live.live_events
+        url = reverse('p3-live-events')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
