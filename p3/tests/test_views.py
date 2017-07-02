@@ -86,13 +86,17 @@ class TestView(TestCase):
         })
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False )
 
-    @unittest.skip("FIXME")
+    @override_settings(CONFERENCE='epbeta')
     def test_p3_schedule_ics(self):
         # p3-schedule-ics -> p3.views.schedule.schedule_ics
-        url = reverse('p3-schedule-ics')
+        conference = ConferenceFactory(code='epbeta')
+
+        url = reverse('p3-schedule-ics', kwargs={
+            'conference': conference.code,
+        })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-    
+
     @unittest.skip("FIXME")
     def test_p3_schedule(self):
         # p3-schedule -> p3.views.schedule.schedule
@@ -104,13 +108,6 @@ class TestView(TestCase):
     def test_p3_schedule_list(self):
         # p3-schedule-list -> p3.views.schedule.schedule_list
         url = reverse('p3-schedule-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_schedule_my_schedule_ics(self):
-        # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
-        url = reverse('p3-schedule-my-schedule-ics')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
@@ -162,3 +159,29 @@ class TestView(TestCase):
         url = reverse('p3-user')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(CONFERENCE='epbeta')
+    def test_p3_schedule_my_schedule_ics(self):
+        # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
+
+        conference = ConferenceFactory(code='epbeta')
+
+        url = reverse('p3-schedule-my-schedule-ics', kwargs={
+            'conference': conference.code,
+        })
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'text/calendar')
+
+
+    @override_settings(CONFERENCE='epbeta')
+    def test_p3_schedule_my_schedule_ics(self):
+        # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
+        self.client.logout()
+        conference = ConferenceFactory(code='epbeta')
+
+        url = reverse('p3-schedule-my-schedule-ics', kwargs={
+            'conference': conference.code,
+        })
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 404)
