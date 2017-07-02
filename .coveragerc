@@ -8,7 +8,15 @@ omit =
      */management/*
      */tests/factories/*
      */tests/*
+    */urls.py
      manage.py
+     */admin.py
+     */models.py
+     */forms.py
+     generator.py
+     assopy/clients/*.py
+    */middleware.py
+
 
 [report]
 fail_under = 100
