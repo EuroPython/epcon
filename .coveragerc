@@ -8,6 +8,7 @@ omit =
      */management/*
      */tests/factories/*
      */tests/*
+     manage.py
 
 [report]
 fail_under = 100
