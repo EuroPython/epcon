@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 from django.conf import settings
-import assopy.django_urls
+import common.django_urls
 
 
 class Migration(migrations.Migration):
@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
                 ('payload', models.TextField(blank=b'')),
                 ('created', models.DateTimeField(auto_now_add=True)),
             ],
-            bases=(models.Model, assopy.django_urls.UrlMixin),
+            bases=(models.Model, common.django_urls.UrlMixin),
         ),
         migrations.CreateModel(
             name='User',
