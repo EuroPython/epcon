@@ -74,17 +74,20 @@ class TestView(TestCase):
         self.assertEqual(response.get('content-type'), 'application/json')
         self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
 
-    @unittest.skip("FIXME")
+    @override_settings(CONFERENCE='epbeta', CONFERENCE_CONFERENCE='epbeta')
     def test_p3_my_schedule(self):
         # p3-my-schedule -> p3.views.schedule.jump_to_my_schedule
+        conference = ConferenceFactory(code='epbeta')
+
         url = reverse('p3-my-schedule')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
 
         redirect_url = reverse('p3-schedule-my-schedule', kwargs={
-            'conference': settings.CONFERENCE_CONFERENCE
+            'conference': conference.code
         })
-        self.assertRedirects(response, redirect_url, fetch_redirect_response=False )
+
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
     @override_settings(CONFERENCE='epbeta')
     def test_p3_schedule_ics(self):
@@ -172,7 +175,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'text/calendar')
-
 
     @override_settings(CONFERENCE='epbeta')
     def test_p3_schedule_my_schedule_ics(self):
