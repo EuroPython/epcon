@@ -59,14 +59,6 @@ class TestLiveViews(TestCase):
         self.assertEqual(response.get('content-type'), 'application/json')
         self.assertJSONEqual(response.content, [])
 
-
-    @unittest.skip("FIXME")
-    def test_p3_live_track_video(self):
-        # p3-live-track-video -> p3.views.live.live_track_video
-        url = reverse('p3-live-track-video')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
     @unittest.skip("FIXME")
     def test_p3_live_events(self):
         # p3-live-events -> p3.views.live.live_events
