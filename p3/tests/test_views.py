@@ -1,17 +1,13 @@
-import json
 import unittest
 
-import mock
 from django.core.urlresolvers import reverse
-from django.test import TestCase, RequestFactory, override_settings
-
+from django.test import TestCase
+from django.test import override_settings
 from django_factory_boy import auth as auth_factories
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-
-from django.conf import settings
-
 from conference.tests.factories.conference import ConferenceFactory
+from p3.tests.factories.schedule import ScheduleFactory
 
 
 class TestWhosComing(TestCase):
@@ -100,18 +96,37 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip("FIXME")
     def test_p3_schedule(self):
         # p3-schedule -> p3.views.schedule.schedule
-        url = reverse('p3-schedule')
+        conference = ConferenceFactory()
+        url = reverse('p3-schedule', kwargs={
+            'conference': conference.code
+        })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
-    @unittest.skip("FIXME")
+    # @unittest.skip("FIXME")
     def test_p3_schedule_list(self):
         # p3-schedule-list -> p3.views.schedule.schedule_list
-        url = reverse('p3-schedule-list')
+        conference = ConferenceFactory()
+        schedule = ScheduleFactory(conference=conference.code)
+
+        url = reverse('p3-schedule-list', kwargs={
+            'conference': conference.code,
+        })
         response = self.client.get(url)
+
+        values = response.context['sids'].values()
+
+        dict_of_schedule = {
+            'conference': schedule.conference,
+            'date': schedule.date.date(),
+            'description': schedule.description,
+            'id': schedule.id,
+            'slug': schedule.slug,
+        }
+
+        self.assertDictEqual(values[0], dict_of_schedule)
         self.assertEqual(response.status_code, 200)
     
     @unittest.skip("FIXME")
