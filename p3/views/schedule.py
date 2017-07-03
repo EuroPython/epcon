@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
-from assopy.views import render_to_json
+from common.decorators import render_to_json
 from collections import defaultdict
 from conference import models as cmodels
 from conference.utils import TimeTable2

@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 from assopy import models as amodels
 from assopy import forms as aforms
-from assopy.views import render_to_json, HttpResponseRedirectSeeOther
+from assopy.views import HttpResponseRedirectSeeOther
+from common.decorators import render_to_json
 from django import forms
 from django.core.urlresolvers import reverse
 from django.conf import settings

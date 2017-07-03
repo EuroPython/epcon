@@ -22,6 +22,8 @@ if settings.GENRO_BACKEND:
     from assopy.clients import genro
 import functools
 
+from common.decorators import render_to_json
+
 
 from email_template import utils
 
@@ -66,30 +68,6 @@ def render_to(template):
             return output
         return wrapper
     return renderer
-
-def render_to_json(f):
-    from common.jsonify import json_dumps
-    if dsettings.DEBUG:
-        ct = 'text/plain'
-        j = lambda d: json_dumps(d, indent=2)
-    else:
-        ct = 'application/json'
-        j = json_dumps
-    @functools.wraps(f)
-    def wrapper(*args, **kw):
-        try:
-            result = f(*args, **kw)
-        except Exception, e:
-            result = j(str(e))
-            status = 500
-        else:
-            if isinstance(result, http.HttpResponse):
-                return result
-            else:
-                status = 200 if not isinstance(result, ErrorDict) else 400
-                result = j(result)
-        return http.HttpResponse(content=result, content_type=ct, status=status)
-    return wrapper
 
 @login_required
 @render_to('assopy/profile.html')

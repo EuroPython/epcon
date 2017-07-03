@@ -7,8 +7,6 @@ import urllib
 from decimal import Decimal
 
 import os.path
-import simplejson
-from decorator import decorator
 from django import forms
 from django import http
 from django.conf import settings as dsettings
@@ -21,12 +19,14 @@ from django.shortcuts import redirect, render_to_response, get_object_or_404, re
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
+from common.decorators import render_to_json
 from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
 from conference.forms import OptionForm
 from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
+
 
 # see: http://www.djangosnippets.org/snippets/821/
 def render_to(template):
@@ -67,32 +67,6 @@ def render_to(template):
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
-def json(f):
-    """
-    Decorator to be applied to a view to serialize json in the result.
-    """
-    if dsettings.DEBUG:
-        ct = 'text/plain'
-        j = lambda d: simplejson.dumps(d, indent = 2)
-    else:
-        ct = 'application/json'
-        j = simplejson.dumps
-
-    @functools.wraps(f)
-    def wrapper(func, *args, **kw):
-        try:
-            result = func(*args, **kw)
-        except Exception, e:
-            result = j(str(e))
-            status = 500
-        else:
-            if isinstance(result, http.HttpResponse):
-                return result
-            else:
-                result = j(result)
-                status = 200
-        return http.HttpResponse(content = result, content_type = ct, status = status)
-    return decorator(wrapper, f)
 
 def speaker_access(f):
     """
@@ -332,7 +306,7 @@ def schedule(request, conference, slug):
     }
 
 @login_required
-@json
+@render_to_json
 def schedule_event_interest(request, conference, slug, eid):
     evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
     if request.method == 'POST':
@@ -356,7 +330,7 @@ def schedule_event_interest(request, conference, slug, eid):
     return { 'interest': val }
 
 @login_required
-@json
+@render_to_json
 def schedule_event_booking(request, conference, slug, eid):
     evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
     status = models.EventBooking.objects.booking_status(evt.id)
@@ -387,7 +361,7 @@ def schedule_event_booking(request, conference, slug, eid):
         'user': request.user.id in status['booked'],
     }
 
-@json
+@render_to_json
 def schedule_events_booking_status(request, conference):
     data = dataaccess.conference_booking_status(conference)
     uid = request.user.id if request.user.is_authenticated() else 0
@@ -438,7 +412,7 @@ def genro_wrapper(request):
         'conference/genro_wrapper.html', conf,
         context_instance = RequestContext(request))
 
-@json
+@render_to_json
 def places(request):
     """
     Returns a json special places and hotels.
@@ -478,7 +452,7 @@ def places(request):
 
     return places
 
-@json
+@render_to_json
 def sponsor(request, sponsor):
     """
     Returns the data of the requested sponsor
@@ -875,7 +849,7 @@ def myself_profile(request):
     p = models.AttendeeProfile.objects.getOrCreateForUser(request.user)
     return redirect('conference-profile', slug=p.slug)
 
-@json
+@render_to_json
 def schedule_events_expected_attendance(request, conference):
     return dataaccess.expected_attendance(conference)
 
@@ -956,7 +930,7 @@ def user_profile_link(request, uuid):
     return render(request, 'conference/profile_link.html', ctx)
 
 @login_required
-@json
+@render_to_json
 def user_profile_link_message(request, uuid):
     profile = get_object_or_404(models.AttendeeProfile, uuid=uuid).user_id
     uid = request.user.id
