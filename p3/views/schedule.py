@@ -1,13 +1,16 @@
 # -*- coding: UTF-8 -*-
 import datetime
-from common.decorators import render_to_json
 from collections import defaultdict
-from conference import models as cmodels
-from conference.utils import TimeTable2
+
 from django import http
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.shortcuts import render
+
+from common.decorators import render_to_json
+from conference import models as cmodels
+from conference.utils import TimeTable2
 
 
 def _partner_as_event(fares):

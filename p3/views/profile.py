@@ -1,19 +1,23 @@
 # -*- coding: UTF-8 -*-
-import os.path
 import logging
-from assopy import models as amodels
-from common.decorators import render_to_json
-from conference import models as cmodels
-from conference.views import profile_access
-from common.jsonify import json_dumps
-from django import http
+import os.path
+
 from django import forms
+from django import http
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+
+from assopy import models as amodels
+from common.decorators import render_to_json
+from common.jsonify import json_dumps
+from conference import models as cmodels
+from conference.views import profile_access
 from email_template import utils
-from p3 import dataaccess
 from p3 import forms as p3forms
+from p3 import dataaccess
 from p3 import models
 
 log = logging.getLogger('p3.views')

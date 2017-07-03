@@ -1,34 +1,38 @@
 # -*- coding: UTF-8 -*-
+import functools
+import json
+import logging
+import urllib
+from datetime import datetime
+
 from django import forms
 from django import http
 from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.admin.util import unquote
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from assopy import forms as aforms
+from assopy import utils as autils
 from assopy import janrain
 from assopy import models
 from assopy import settings
-from assopy import utils as autils
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
-import functools
-
 from common.decorators import render_to_json
-
-
 from email_template import utils
 
-import json
-import logging
-import urllib
-from datetime import datetime
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
+
+
+
+
 
 log = logging.getLogger('assopy.views')
 

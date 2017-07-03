@@ -2,11 +2,11 @@
 from __future__ import with_statement
 
 import functools
+import os.path
 import random
 import urllib
 from decimal import Decimal
 
-import os.path
 from django import forms
 from django import http
 from django.conf import settings as dsettings
@@ -15,7 +15,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.shortcuts import redirect, render_to_response, get_object_or_404, render
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
@@ -24,8 +27,10 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
+from conference.forms import AttendeeLinkDescriptionForm
 from conference.forms import OptionForm
-from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
+from conference.forms import SpeakerForm
+from conference.forms import TalkForm
 
 
 # see: http://www.djangosnippets.org/snippets/821/
