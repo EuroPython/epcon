@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-import functools
 import json
 import logging
 import urllib
@@ -18,20 +17,17 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from email_template import utils
 
 from assopy import forms as aforms
-from assopy import utils as autils
 from assopy import janrain
 from assopy import models
 from assopy import settings
-from common.decorators import render_to_json
-from email_template import utils
+from assopy import utils as autils
+from common.decorators import render_to_json, render_to_template
 
 if settings.GENRO_BACKEND:
     from assopy.clients import genro
-
-
-
 
 
 log = logging.getLogger('assopy.views')
@@ -44,35 +40,8 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
             url = dsettings.DEFAULT_URL_PREFIX + url
         super(HttpResponseRedirectSeeOther, self).__init__(url)
 
-# see: http://www.djangosnippets.org/snippets/821/
-def render_to(template):
-    """
-    Decorator for Django views that sends returned dict to render_to_response function
-    with given template and RequestContext as context instance.
-
-    If view doesn't return dict then decorator simply returns output.
-    Additionally view can return two-tuple, which must contain dict as first
-    element and string with template name as second. This string will
-    override template name, given as parameter
-
-    Parameters:
-
-     - template: template name to use
-    """
-    def renderer(func):
-        @functools.wraps(func)
-        def wrapper(request, *args, **kw):
-            output = func(request, *args, **kw)
-            if isinstance(output, (list, tuple)):
-                return render_to_response(output[1], output[0], RequestContext(request))
-            elif isinstance(output, dict):
-                return render_to_response(template, output, RequestContext(request))
-            return output
-        return wrapper
-    return renderer
-
 @login_required
-@render_to('assopy/profile.html')
+@render_to_template('assopy/profile.html')
 def profile(request):
     user = request.user.assopy_user
     if request.method == 'POST':
@@ -107,7 +76,7 @@ def profile_identities(request):
         return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
 
 @login_required
-@render_to('assopy/billing.html')
+@render_to_template('assopy/billing.html')
 def billing(request, order_id=None):
     user = request.user.assopy_user
     if request.method == 'POST':
@@ -122,7 +91,7 @@ def billing(request, order_id=None):
         'form': form,
     }
 
-@render_to('assopy/new_account.html')
+@render_to_template('assopy/new_account.html')
 def new_account(request):
     if request.user.is_authenticated():
         return redirect('assopy-profile')
@@ -146,7 +115,7 @@ def new_account(request):
         'next': request.GET.get('next', '/'),
     }
 
-@render_to('assopy/new_account_feedback.html')
+@render_to_template('assopy/new_account_feedback.html')
 def new_account_feedback(request):
     try:
         user = models.User.objects.get(pk=request.session['new-account-user'])
@@ -277,7 +246,7 @@ def janrain_token(request):
             pass
     return HttpResponseRedirectSeeOther(redirect_to)
 
-@render_to('assopy/janrain_incomplete_profile.html')
+@render_to_template('assopy/janrain_incomplete_profile.html')
 def janrain_incomplete_profile(request):
     p = request.session['incomplete-profile']
     try:
@@ -316,15 +285,15 @@ def janrain_incomplete_profile(request):
         'form': form,
     }
 
-@render_to('assopy/janrain_incomplete_profile_feedback.html')
+@render_to_template('assopy/janrain_incomplete_profile_feedback.html')
 def janrain_incomplete_profile_feedback(request):
     return {}
 
-@render_to('assopy/janrain_login_mismatch.html')
+@render_to_template('assopy/janrain_login_mismatch.html')
 def janrain_login_mismatch(request):
     return {}
 
-@render_to('assopy/checkout.html')
+@render_to_template('assopy/checkout.html')
 def checkout(request):
     if request.method == 'POST':
         if not request.user.is_authenticated():
@@ -345,7 +314,7 @@ def checkout(request):
     }
 
 @login_required
-@render_to('assopy/tickets.html')
+@render_to_template('assopy/tickets.html')
 def tickets(request):
     if settings.TICKET_PAGE:
         return redirect(settings.TICKET_PAGE)
@@ -401,7 +370,7 @@ def paypal_cc_billing(request, code):
         )
     )
 
-@render_to('assopy/paypal_cancel.html')
+@render_to_template('assopy/paypal_cancel.html')
 def paypal_cancel(request, code):
     log.debug('Paypal billing cancel request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
@@ -412,7 +381,7 @@ def paypal_cancel(request, code):
 # from the browser (someone said HttpResponseRedirectSeeOther?), since we are not
 # executing anything critical I can skip the csrf check
 @csrf_exempt
-@render_to('assopy/paypal_feedback_ok.html')
+@render_to_template('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request, code):
     log.debug('Paypal billing OK request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
@@ -426,7 +395,7 @@ def paypal_feedback_ok(request, code):
     }
 
 @login_required
-@render_to('assopy/bank_feedback_ok.html')
+@render_to_template('assopy/bank_feedback_ok.html')
 def bank_feedback_ok(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.user.user != request.user or o.method != 'bank':
@@ -599,7 +568,7 @@ def credit_note(request, order_code, code, mode='html'):
     return response
 
 @login_required
-@render_to('assopy/voucher.html')
+@render_to_template('assopy/voucher.html')
 def voucher(request, order_id, item_id):
     item = get_object_or_404(models.OrderItem, order=order_id, id=item_id)
     if (not item.ticket or item.ticket.fare.payment_type != 'v' or item.order.user.user != request.user) and not request.user.is_superuser:

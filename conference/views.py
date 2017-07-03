@@ -23,6 +23,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from common.decorators import render_to_json
+from common.decorators import render_to_template
 from conference import dataaccess
 from conference import models
 from conference import settings
@@ -31,42 +32,6 @@ from conference.forms import AttendeeLinkDescriptionForm
 from conference.forms import OptionForm
 from conference.forms import SpeakerForm
 from conference.forms import TalkForm
-
-
-# see: http://www.djangosnippets.org/snippets/821/
-def render_to(template):
-    """
-    Decorator for Django views that sends returned dict to render_to_response function
-    with given template and RequestContext as context instance.
-
-    If view doesn't return dict then decorator simply returns output.
-    Additionally view can return two-tuple, which must contain dict as first
-    element and string with template name as second. This string will
-    override template name, given as parameter
-
-    Parameters:
-
-     - template: template name to use
-    """
-    def renderer(func):
-        @functools.wraps(func)
-        def wrapper(request, *args, **kw):
-            output = func(request, *args, **kw)
-            if isinstance(output, (list, tuple)):
-                output, tpl = output
-            else:
-                tpl = template
-            ct = 'text/html'
-            if tpl.endswith('xml'):
-                ct = 'text/xml' if dsettings.DEBUG else 'application/xml'
-            if isinstance(output, dict):
-                if request.is_ajax() and settings.TEMPLATE_FOR_AJAX_REQUEST:
-                    tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)
-                return render_to_response(tpl, output, RequestContext(request))
-            else:
-                return output
-        return wrapper
-    return renderer
 
 
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
@@ -102,7 +67,7 @@ def speaker_access(f):
         return f(request, slug, speaker=spk, talks=talks, full_access=full_access, **kwargs)
     return wrapper
 
-@render_to('conference/speaker.html')
+@render_to_template('conference/speaker.html')
 @speaker_access
 def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
     if request.method == 'POST':
@@ -137,7 +102,7 @@ def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm
     }
 
 @speaker_access
-@render_to('conference/speaker.xml')
+@render_to_template('conference/speaker.xml')
 def speaker_xml(request, slug, speaker, full_access, talks):
     return {
         'speaker': speaker,
@@ -180,7 +145,7 @@ def talk_access(f):
         return f(request, slug, talk=tlk, full_access=full_access, **kwargs)
     return wrapper
 
-@render_to('conference/talk.html')
+@render_to_template('conference/talk.html')
 @talk_access
 def talk(request, slug, talk, full_access, talk_form=None):
     conf = models.Conference.objects.current()
@@ -219,7 +184,7 @@ def talk(request, slug, talk, full_access, talk_form=None):
         'voting': conf.voting(),
     }
 
-@render_to('conference/talk_preview.html')
+@render_to_template('conference/talk_preview.html')
 @talk_access
 def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
     conf = models.Conference.objects.current()
@@ -228,7 +193,7 @@ def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
         'voting': conf.voting(),
     }
 
-@render_to('conference/talk.xml')
+@render_to_template('conference/talk.xml')
 @talk_access
 def talk_xml(request, slug, talk, full_access):
     return {
@@ -280,7 +245,7 @@ def talk_video(request, slug):
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
 
-@render_to('conference/conference.xml')
+@render_to_template('conference/conference.xml')
 def conference_xml(request, conference):
     conference = get_object_or_404(models.Conference, code=conference)
     talks = models.Talk.objects.filter(conference=conference)
@@ -303,7 +268,7 @@ def talk_report(request):
         },
         context_instance = RequestContext(request))
 
-@render_to('conference/schedule.html')
+@render_to_template('conference/schedule.html')
 def schedule(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
     return {
@@ -827,7 +792,7 @@ def profile_access(f):
         return f(request, slug, profile=profile, full_access=full_access, **kwargs)
     return wrapper
 
-@render_to('conference/profile.html')
+@render_to_template('conference/profile.html')
 @profile_access
 def user_profile(request, slug, profile=None, full_access=False):
     fc = utils.dotted_import(settings.FORMS['Profile'])
