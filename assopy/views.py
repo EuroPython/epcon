@@ -7,11 +7,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.util import unquote
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.forms.utils import ErrorDict
 
 from assopy import forms as aforms
 from assopy import janrain

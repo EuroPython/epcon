@@ -2,7 +2,6 @@ from __future__ import absolute_import
 
 import functools
 
-import simplejson
 from decorator import decorator
 from django import http
 from django.conf import settings as dsettings
