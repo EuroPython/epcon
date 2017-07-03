@@ -1451,7 +1451,7 @@ olark.identify('%s');/*]]>{/literal}*/</script>
 
 @register.filter
 def json_(val):
-    from conference.views import json_dumps
+    from common.jsonify import json_dumps
     return mark_safe(json_dumps(val))
 
 @register.filter

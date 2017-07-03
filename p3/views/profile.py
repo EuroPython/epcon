@@ -4,7 +4,8 @@ import logging
 from assopy import models as amodels
 from assopy.views import render_to_json
 from conference import models as cmodels
-from conference.views import profile_access, json_dumps
+from conference.views import profile_access
+from common.jsonify import json_dumps
 from django import http
 from django import forms
 from django.contrib.auth.decorators import login_required

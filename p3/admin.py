@@ -280,7 +280,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         return my_urls + urls
 
     def stats_data(self, request):
-        from conference.views import json_dumps
+        from common.jsonify import json_dumps
         from django.db.models import Q
         from collections import defaultdict
         import datetime
@@ -396,7 +396,7 @@ class HotelRoomAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def ticket_list(self, request):
-        from conference.views import json_dumps
+        from common.jsonify import json_dumps
         day_ix = int(request.GET['day'])
         room_type = request.GET['type']
         rdays = models.TicketRoom.objects.reserved_days()

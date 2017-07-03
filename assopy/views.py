@@ -68,7 +68,7 @@ def render_to(template):
     return renderer
 
 def render_to_json(f):
-    from conference.views import json_dumps
+    from common.jsonify import json_dumps
     if dsettings.DEBUG:
         ct = 'text/plain'
         j = lambda d: json_dumps(d, indent=2)

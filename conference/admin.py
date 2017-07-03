@@ -1129,7 +1129,7 @@ class TicketAdmin(admin.ModelAdmin):
         return output
 
     def stats_data_view(self, request):
-        from conference.views import json_dumps
+        from common.jsonify import json_dumps
         output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 

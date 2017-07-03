@@ -1,53 +1,32 @@
 # -*- coding: UTF-8 -*-
 from __future__ import with_statement
+
 import functools
-import os.path
-import urllib
 import random
+import urllib
 from decimal import Decimal
 
-from conference import dataaccess
-from conference import models
-from conference import settings
-from conference import utils
-from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
-from conference.forms import OptionForm
-
+import os.path
+import simplejson
+from decorator import decorator
 from django import forms
 from django import http
 from django.conf import settings as dsettings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render_to_response, get_object_or_404, render
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-import simplejson
-from decorator import decorator
-
-import functools
-
-class MyEncode(simplejson.JSONEncoder):
-    def default(self, obj):
-        import datetime, decimal
-        if isinstance(obj, datetime.datetime):
-            return obj.strftime('%d/%m/%Y %H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%d/%m/%Y')
-        elif isinstance(obj, datetime.time):
-            return obj.strftime('%H:%M')
-        elif isinstance(obj, decimal.Decimal):
-            return str(obj)
-        elif isinstance(obj, set):
-            return list(obj)
-
-        return simplejson.JSONEncoder.default(self, obj)
-
-json_dumps = functools.partial(simplejson.dumps, cls=MyEncode)
+from conference import dataaccess
+from conference import models
+from conference import settings
+from conference import utils
+from conference.forms import OptionForm
+from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
 
 # see: http://www.djangosnippets.org/snippets/821/
 def render_to(template):
