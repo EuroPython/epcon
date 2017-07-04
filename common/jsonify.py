@@ -1,11 +1,10 @@
 import datetime
-import decimal
 import functools
 
 import simplejson
 
 
-class MyEncode(simplejson.JSONEncoder):
+class MyEncode(simplejson.JSONEncoder):  # pragma: no cover
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%d/%m/%Y %H:%M:%S')
