@@ -11,7 +11,8 @@ from django.template import RequestContext
 
 from .jsonify import json_dumps
 
-def render_to_json(f):
+
+def render_to_json(f): # pragma: no cover
     """
     Decorator to be applied to a view to serialize json in the result.
     """
@@ -40,7 +41,7 @@ def render_to_json(f):
 
 
 # see: http://www.djangosnippets.org/snippets/821/
-def render_to_template(template):
+def render_to_template(template):  # pragma: no cover
     """
     Decorator for Django views that sends returned dict to render_to_response function
     with given template and RequestContext as context instance.

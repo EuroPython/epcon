@@ -6,7 +6,7 @@
 from django.conf import settings
 import urlparse
 
-class UrlMixin(object):
+class UrlMixin(object):  # pragma: no cover
     
     def get_url(self):
         if hasattr(self.get_url_path, 'dont_recurse'):
