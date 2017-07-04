@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
 from __future__ import with_statement
 
-import functools
-import os.path
 import random
 import urllib
 from decimal import Decimal
 
+import os.path
 from django import forms
 from django import http
 from django.conf import settings as dsettings
@@ -28,6 +27,7 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
+from conference.decorators import speaker_access, talk_access, profile_access
 from conference.forms import AttendeeLinkDescriptionForm
 from conference.forms import OptionForm
 from conference.forms import SpeakerForm
@@ -37,35 +37,6 @@ from conference.forms import TalkForm
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
-
-def speaker_access(f):
-    """
-    Decorator that protects the view relative to a speaker.
-    """
-    @functools.wraps(f)
-    def wrapper(request, slug, **kwargs):
-        spk = get_object_or_404(models.Speaker, slug=slug)
-        if request.user.is_staff or request.user == spk.user:
-            full_access = True
-            talks = spk.talks()
-        else:
-            full_access = False
-            conf = models.Conference.objects.current()
-            if settings.VOTING_OPENED(conf, request.user):
-                if settings.VOTING_ALLOWED(request.user):
-                    talks = spk.talks()
-                else:
-                    if settings.VOTING_DISALLOWED:
-                        return redirect(settings.VOTING_DISALLOWED)
-                    else:
-                        raise http.Http404()
-            else:
-                talks = spk.talks(status='accepted')
-                if talks.count() == 0:
-                    raise http.Http404()
-
-        return f(request, slug, speaker=spk, talks=talks, full_access=full_access, **kwargs)
-    return wrapper
 
 @render_to_template('conference/speaker.html')
 @speaker_access
@@ -109,41 +80,6 @@ def speaker_xml(request, slug, speaker, full_access, talks):
         'talks': talks,
     }
 
-def talk_access(f):
-    """
-    Decorator that protects the view relative to a talk.
-    """
-    @functools.wraps(f)
-    def wrapper(request, slug, **kwargs):
-        tlk = get_object_or_404(models.Talk, slug=slug)
-        if request.user.is_anonymous():
-            full_access = False
-        elif request.user.is_staff:
-            full_access = True
-        else:
-            try:
-                tlk.get_all_speakers().get(user__id=request.user.id)
-            except (models.Speaker.DoesNotExist, models.Speaker.MultipleObjectsReturned):
-                # The MultipleObjectsReturned can happen if the user is not logged on and .id is None
-                full_access = False
-            else:
-                full_access = True
-
-        # if the talk is unconfirmed can access:
-        #   * superusers or speakers (full access = True)
-        #   * if the community voting is in progress who has the right to vote
-        if tlk.status == 'proposed' and not full_access:
-            conf = models.Conference.objects.current()
-            if not settings.VOTING_OPENED(conf, request.user):
-                return http.HttpResponseForbidden()
-            if not settings.VOTING_ALLOWED(request.user):
-                if settings.VOTING_DISALLOWED:
-                    return redirect(settings.VOTING_DISALLOWED)
-                else:
-                    return http.HttpResponseForbidden()
-
-        return f(request, slug, talk=tlk, full_access=full_access, **kwargs)
-    return wrapper
 
 @render_to_template('conference/talk.html')
 @talk_access
@@ -756,41 +692,6 @@ def voting(request):
         else:
             tpl = 'conference/voting.html'
         return render(request, tpl, ctx)
-
-def profile_access(f):
-    """
-    Decorator which protect the relative view to a profile.
-    """
-    @functools.wraps(f)
-    def wrapper(request, slug, **kwargs):
-        try:
-            profile = models.AttendeeProfile.objects\
-                .select_related('user')\
-                .get(slug=slug)
-        except models.AttendeeProfile.DoesNotExist:
-            raise http.Http404()
-
-        if request.user.is_staff or request.user == profile.user:
-            full_access = True
-        else:
-            full_access = False
-            # if the profile belongs to a speaker with talk of "accepted" is visible
-            # whatever you say the same profile.
-            accepted = models.TalkSpeaker.objects\
-                .filter(speaker__user=profile.user)\
-                .filter(talk__status='accepted')\
-                .count()
-            if not accepted:
-                # if the community voting is open and the profile belongs to a speaker
-                # with the talk in the race page is visible
-                conf = models.Conference.objects.current()
-                if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
-                    if profile.visibility == 'x':
-                        return http.HttpResponseForbidden()
-                    elif profile.visibility == 'm' and request.user.is_anonymous():
-                        return http.HttpResponseForbidden()
-        return f(request, slug, profile=profile, full_access=full_access, **kwargs)
-    return wrapper
 
 @render_to_template('conference/profile.html')
 @profile_access

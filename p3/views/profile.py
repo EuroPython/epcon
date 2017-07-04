@@ -15,7 +15,7 @@ from assopy import models as amodels
 from common.decorators import render_to_json
 from common.jsonify import json_dumps
 from conference import models as cmodels
-from conference.views import profile_access
+from conference.decorators import profile_access
 from email_template import utils
 from p3 import forms as p3forms
 from p3 import dataaccess
