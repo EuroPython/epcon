@@ -32,3 +32,4 @@ pycon-env/
 src/
 .coverage
 htmlcov/
+*.py,cover
