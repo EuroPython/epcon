@@ -14,5 +14,6 @@ class AttendeeProfileFactory(factory.django.DjangoModelFactory):
 
     user = factory.SubFactory(auth_factories.UserFactory)
     slug = factory.LazyAttribute(lambda a: slugify("%s %s" % (a.user.first_name, a.user.last_name)))
+    uuid = factory.Faker('uuid4')
 
     birthday = factory.fuzzy.FuzzyDate(start_date=datetime.date(1950, 1, 1))
