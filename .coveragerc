@@ -20,6 +20,7 @@ omit =
     conference/utils/*.py
     deps/*/*.py
     deps/*.py
+    cms_utils/*
 
 
 [report]
