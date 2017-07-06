@@ -17,15 +17,15 @@ def render_to_json(f): # pragma: no cover
     """
     Decorator to be applied to a view to serialize json in the result.
     """
-    if dsettings.DEBUG:
-        ct = 'text/plain'
-        j = lambda d: json_dumps(d, indent = 2)
-    else:
-        ct = 'application/json'
-        j = json_dumps
-
     @functools.wraps(f)
     def wrapper(func, *args, **kw):
+        if dsettings.DEBUG:
+            ct = 'text/plain'
+            j = lambda d: json_dumps(d, indent=2)
+        else:
+            ct = 'application/json'
+            j = json_dumps
+
         try:
             result = func(*args, **kw)
         except Exception, e:
