@@ -10,7 +10,6 @@ from conference.tests.factories.conference import ConferenceFactory
 
 from django_factory_boy import auth as auth_factories
 
-from conference.tests.factories.event import TrackWithEventsFactory
 from p3.tests.factories.schedule import ScheduleFactory
 from p3.tests.factories.track import TrackFactory
 
@@ -59,9 +58,16 @@ class TestLiveViews(TestCase):
         self.assertEqual(response.get('content-type'), 'application/json')
         self.assertJSONEqual(response.content, [])
 
-    @unittest.skip("FIXME")
+    @override_settings(CONFERENCE='epbeta', DEBUG=False)
     def test_p3_live_events(self):
         # p3-live-events -> p3.views.live.live_events
         url = reverse('p3-live-events')
+        conference = ConferenceFactory(code='epbeta', conference_start=datetime.date.today())
+        schedule = ScheduleFactory(conference=conference, date=conference.conference_start)
+        track = TrackFactory(schedule=schedule)
+
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'application/json')
+        self.assertJSONEqual(response.content, {})
