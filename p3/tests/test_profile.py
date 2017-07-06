@@ -8,6 +8,7 @@ from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
+from p3.tests.factories.profile import P3ProfileFactory
 
 
 class MessageFactory(object):
@@ -21,6 +22,7 @@ class TestView(TestCase):
         is_logged = self.client.login(username=self.user.username,
                                       password='password1234')
         self.user_profile = AttendeeProfileFactory(user=self.user)
+        self.user_p3_profile = P3ProfileFactory(profile=self.user_profile)
         self.assertTrue(is_logged)
 
     def test_p3_account_data_error(self):
@@ -104,10 +106,11 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.content, 'This user does not want to receive a message')
 
-    def test_p3_profile_message_refuse_message(self):
+    def test_p3_profile_message_accept_message(self):
         # p3-profile-message -> p3.views.profile.p3_profile_message
         user = auth_factories.UserFactory()
         user_profile = AttendeeProfileFactory(user=user)
+        user_p3_profile = P3ProfileFactory(profile=user_profile)
 
         url = reverse('p3-profile-message', kwargs={
             'slug': user_profile.slug,
