@@ -1,3 +1,5 @@
+import unittest
+
 from django.contrib.auth.models import User as AuthUser
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -22,7 +24,8 @@ class StripeViewTestCase(TestCase):
     @patch('assopy.stripe.views.StripeCheckoutView.get_object')
     @patch('stripe.Charge.create')
     @patch('email_template.utils.email')
-    def test_add_stripe_on_order_test(self, email, create, get_object):
+    @patch('django.core.mail.send_mail')
+    def test_add_stripe_on_order_test(self, send_email, email, create, get_object):
         data = {
             'stripeToken': '1234567890',
             'stripeEmail': 'demo@demo.org',
@@ -30,7 +33,6 @@ class StripeViewTestCase(TestCase):
         }
 
         charge = Mock(id='1')
-        email.return_value = Mock()
 
         order = CreditCardOrderFactory()
 
@@ -45,9 +47,11 @@ class StripeViewTestCase(TestCase):
         self.assertEqual(order.stripe_charge_id, charge.id)
 
     @patch('assopy.stripe.views.StripeCheckoutView.get_object')
-    @patch('email_template.utils.email', return_value=Mock())
-    def test_stripe_get(self, email, get_object):
+    @patch('email_template.utils.email')
+    @patch('django.core.mail.send_mail')
+    def test_stripe_get(self, send_email, email, get_object):
         order = CreditCardOrderFactory()
+        get_object.return_value = order
         url = reverse('assopy-stripe-checkout', kwargs={'pk': order.id})
         response = self.client.get(url)
         self.assertRedirects(response, reverse('assopy-stripe-success'),
