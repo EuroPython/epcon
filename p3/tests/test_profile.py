@@ -22,7 +22,7 @@ class TestView(TestCase):
         is_logged = self.client.login(username=self.user.username,
                                       password='password1234')
         self.user_profile = AttendeeProfileFactory(user=self.user)
-        self.user_p3_profile = P3ProfileFactory(profile=self.user_profile)
+        # self.user_p3_profile = P3ProfileFactory(profile=self.user_profile)
         self.assertTrue(is_logged)
 
     def test_p3_account_data_error(self):
@@ -110,7 +110,6 @@ class TestView(TestCase):
         # p3-profile-message -> p3.views.profile.p3_profile_message
         user = auth_factories.UserFactory()
         user_profile = AttendeeProfileFactory(user=user)
-        user_p3_profile = P3ProfileFactory(profile=user_profile)
 
         url = reverse('p3-profile-message', kwargs={
             'slug': user_profile.slug,
