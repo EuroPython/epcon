@@ -1,12 +1,26 @@
 import unittest
 
-from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
+from django.test import TestCase, override_settings
+from django_factory_boy import auth as auth_factories
 
+from conference.tests.factories.attendee_profile import AttendeeProfileFactory
 from conference.tests.factories.conference import ConferenceFactory
+from conference.tests.factories.speaker import SpeakerFactory
+from conference.tests.factories.talk import TalkFactory
+from p3.tests.factories.schedule import ScheduleFactory
+from p3.tests.factories.talk import P3TalkFactory
 
 
 class TestView(TestCase):
+    def setUp(self):
+        self.user = auth_factories.UserFactory(password='password1234',
+                                               is_superuser=True,
+                                               is_staff=True)
+        is_logged = self.client.login(username=self.user.username,
+                                      password='password1234')
+        AttendeeProfileFactory(user=self.user)
+        self.assertTrue(is_logged)
 
     @override_settings(DEBUG=False)
     def test_conference_data_xml(self):
@@ -22,7 +36,10 @@ class TestView(TestCase):
     @unittest.skip('todo')
     def test_conference_covers(self):
         # conference-covers -> conference.views.covers
-        url = reverse('conference-covers')
+        conference = ConferenceFactory()
+        url = reverse('conference-covers', kwargs={
+            'conference': conference.code,
+        })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
@@ -61,12 +78,20 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip('todo')
+    @override_settings(DEBUG=False)
     def test_conference_schedule_xml(self):
         # conference-schedule-xml -> conference.views.schedule_xml
-        url = reverse('conference-schedule-xml')
+        conference = ConferenceFactory()
+        schedule = ScheduleFactory(conference=conference.code)
+
+        url = reverse('conference-schedule-xml', kwargs={
+            'conference': conference.code,
+            'slug': schedule.slug,
+        })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'application/xml')
+        self.assertEqual(response.context['schedule'], schedule)
 
     @unittest.skip('todo')
     def test_conference_schedule(self):
@@ -110,54 +135,63 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip('todo')
-    def test_conference_speaker(self):
-        # conference-speaker -> conference.views.speaker
-        url = reverse('conference-speaker')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
+    @unittest.skip('to finish')
     def test_conference_speaker_xml(self):
         # conference-speaker-xml -> conference.views.speaker_xml
-        url = reverse('conference-speaker-xml')
+        speaker = SpeakerFactory()
+
+        url = reverse('conference-speaker-xml', kwargs={
+            'slug': '123',
+        })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'application/xml')
+        self.assertEqual(response.context['speaker'], speaker)
 
     @unittest.skip('todo')
     def test_conference_sponsor(self):
-        # conference-sponsor -> conference.views.sponsor
-        url = reverse('conference-sponsor')
+        # conference-sponsor-json -> conference.views.sponsor_json
+        url = reverse('conference-sponsor-json')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip('todo')
     def test_conference_talk(self):
         # conference-talk -> conference.views.talk
-        url = reverse('conference-talk')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        conference = ConferenceFactory()
+        talk = TalkFactory(conference=conference.code)
+        p3_talk = P3TalkFactory(talk=talk)
 
-    @unittest.skip('todo')
-    def test_conference_talk(self):
-        # conference-talk -> conference.views.talk
-        url = reverse('conference-talk')
-        response = self.client.get(url)
+        url = reverse('conference-talk', kwargs={
+            'slug': talk.slug,
+        })
+        with override_settings(CONFERENCE=conference.code):
+            response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'text/html')
 
-    @unittest.skip('todo')
     def test_conference_talk_xml(self):
         # conference-talk-xml -> conference.views.talk_xml
-        url = reverse('conference-talk-xml')
-        response = self.client.get(url)
+        conference = ConferenceFactory()
+        talk = TalkFactory(conference=conference.code)
+        url = reverse('conference-talk-xml', kwargs={
+            'slug': talk.slug,
+        })
+        with override_settings(CONFERENCE=conference.code):
+            response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'application/xml')
 
-    @unittest.skip('todo')
     def test_conference_talk_preview(self):
         # conference-talk-preview -> conference.views.talk_preview
-        url = reverse('conference-talk-preview')
-        response = self.client.get(url)
+        conference = ConferenceFactory()
+        talk = TalkFactory(conference=conference.code)
+        url = reverse('conference-talk-preview', kwargs={
+            'slug': talk.slug,
+        })
+        with override_settings(CONFERENCE=conference.code):
+            response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['talk'], talk)
 
     @unittest.skip('todo')
     def test_conference_talk_video(self):
@@ -170,13 +204,6 @@ class TestView(TestCase):
     def test_conference_talk_video_mp4(self):
         # conference-talk-video-mp4 -> conference.views.talk_video
         url = reverse('conference-talk-video-mp4')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_talk_report(self):
-        # conference-talk-report -> conference.views.talk_report
-        url = reverse('conference-talk-report')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
