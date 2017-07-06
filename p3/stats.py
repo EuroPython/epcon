@@ -9,6 +9,16 @@ from p3 import models
 from conference import models as cmodels
 
 
+def _create_option(id, title, total_qs, **kwargs):
+    output = {
+        'id': id,
+        'title': title,
+        'total': total_qs.count(),
+    }
+    output.update(kwargs)
+    return output
+
+
 def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
     qs = Ticket.objects\
         .filter(fare__conference=conf)
@@ -369,57 +379,16 @@ def ticket_status_for_sim_tickets(code, sim_tickets):
 
 
 def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, sim_tickets, spam_recruiting, voupe03):
-    output = [
-        {
-            'id': 'ticket_sold',
-            'title': 'Sold tickets',
-            'total': _tickets(conf, 'conference').count(),
-        },
-        {
-            'id': 'assigned_tickets',
-            'title': 'Assigned tickets',
-            'total': _assigned_tickets(conf).count(),
-        },
-        {
-            'id': 'unassigned_tickets',
-            'title': 'Unassigned tickets',
-            'total': _unassigned_tickets(conf).count(),
-        },
-        {
-            'id': 'sim_tickets',
-            'title': 'Tickets with SIM card orders',
-            'total': sim_tickets.count(),
-        },
-        {
-            'id': 'voupe03_tickets',
-            'title': 'Social event tickets (VOUPE03)',
-            'total': voupe03.count(),
-        },
-        {
-            'id': 'spam_recruiting',
-            'title': 'Recruiting emails (opt-in)',
-            'total': spam_recruiting.count(),
-        },
+    return [
+        _create_option('ticket_sold', 'Sold tickets', _tickets(conf, 'conference')),
+        _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
+        _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
+        _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),
+        _create_option('voupe03_tickets', 'Social event tickets (VOUPE03)', voupe03),
+        _create_option('spam_recruiting', 'Recruiting emails (opt-in)', spam_recruiting),
+        _create_option('multiple_assignments', 'Tickets assigned to the same person', multiple_assignments),
+        _create_option('orphan_tickets', 'Assigned tickets without user record (orphaned)', orphan_tickets)
     ]
-    # MAL: This looks like a duplicate of the above row
-    #
-    # qs = _tickets(conf, 'conference')\
-    #     .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
-    # output.append({
-    #     'title': 'Assigned tickets',
-    #     'total': qs.count(),
-    # })
-    output.append({
-        'id': 'multiple_assignments',
-        'title': 'Tickets assigned to the same person',
-        'total': multiple_assignments.count(),
-    })
-    output.append({
-        'id': 'orphan_tickets',
-        'title': 'Assigned tickets without user record (orphaned)',
-        'total': orphan_tickets.count(),
-    })
-    return output
 
 
 tickets_status.short_description = 'Tickets stats'
@@ -447,18 +416,8 @@ def speaker_status(conf, code=None):
                 ('note', 'Note'),
             ),
             'data': [
-                {
-                    'id': 'no_ticket',
-                    'title': 'Without ticket',
-                    'total': spk_noticket.count(),
-                    'note': '',
-                },
-                {
-                    'id': 'no_data',
-                    'title': 'Without avatar or biography',
-                    'total': spk_nodata.count(),
-                    'note': 'Acccount with gravatar are not included',
-                }
+                _create_option('no_ticket', 'Without ticket', spk_noticket, note=''),
+                _create_option('no_data', 'Without avatar or biography', spk_nodata, note='Account with gravatar are not included'),
             ]
         }
     else:
@@ -499,21 +458,9 @@ def conference_speakers(conf, code=None):
         .distinct()
     if code is None:
         return [
-            {
-                'id': 'all_speakers',
-                'title': 'All speakers',
-                'total': all_spks.count()
-            },
-            {
-                'id': 'accepted_speakers',
-                'title': 'Speakers with accepted talks',
-                'total': accepted_spks.count()
-            },
-            {
-                'id': 'speakers_not_scheduled',
-                'title': 'Speakers with unscheduled accepted talks',
-                'total': not_scheduled.count()
-            },
+            _create_option('all_speakers', 'All speakers', all_spks),
+            _create_option('accepted_speakers', 'Speakers with accepted talks', accepted_spks),
+            _create_option('speakers_not_scheduled', 'Speakers with unscheduled accepted talks', not_scheduled),
         ]
     else:
         if code == 'all_speakers':
@@ -632,11 +579,9 @@ def pp_tickets(conf, code=None):
         qs[fcode] = _tickets(conf, fare_code=fcode)
     all_attendees = User.objects.filter(id__in=_tickets(conf, ticket_type='partner').values('user'))
     if code is None:
-        output = [{
-            'id': 'all',
-            'total': all_attendees.count(),
-            'title': 'Tickets partner program',
-        }]
+        output = [
+            _create_option('all', 'Tickets partner program', all_attendees)
+        ]
         from conference.templatetags.conference import fare_blob
         titles = {}
         for f in cmodels.Fare.objects.filter(code__in=fcodes):

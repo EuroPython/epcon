@@ -16,6 +16,17 @@ class StatsTestCase(TestCase):
         self.user = auth_factories.UserFactory()
         self.assopy_user = AssopyUserFactory(user=self.user)
 
+    def test_creation_option(self):
+        from p3.stats import _create_option
+        total_qs = mock.Mock()
+        total_qs.count.return_value = 1
+        output = _create_option('id', 'title', total_qs)
+        self.assertDictEqual(output, {
+            'id': 'id',
+            'title': 'title',
+            'total': 1,
+        })
+
     def test_tickets(self):
         from p3.stats import _tickets
         tickets = _tickets(self.conference)
