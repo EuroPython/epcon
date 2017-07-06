@@ -192,7 +192,7 @@ class TestView(TestCase):
         self.assertEqual(response.get('content-type'), 'text/calendar')
 
     @override_settings(CONFERENCE='epbeta')
-    def test_p3_schedule_my_schedule_ics(self):
+    def test_p3_schedule_my_schedule_ics_error_404(self):
         # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
         self.client.logout()
         conference = ConferenceFactory(code='epbeta')
