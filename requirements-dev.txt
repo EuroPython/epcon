@@ -7,9 +7,15 @@ coverage
 pytest
 pytest-cov
 pytest-django
+pytest-mock
+pytest-profiling
+pytest-sugar
+pytest-watch
+pytest-xdist
 django-coverage-plugin
 -e git+https://github.com/FactoryBoy/django-factory_boy#egg=master
 django-pdb
 django-test-without-migrations
 line_profiler
 django-devserver
+cprofilev
