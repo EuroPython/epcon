@@ -766,8 +766,8 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
 
 
 def CONFERENCE_VIDEO_COVER_EVENTS(conference):
-    from p3 import dataaccess
-    from p3 import models
+    from conference import dataaccess
+    from conference import models
     from datetime import timedelta
 
     conf = models.Conference.objects.get(code=conference)
