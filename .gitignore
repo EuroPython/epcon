@@ -33,3 +33,6 @@ src/
 .coverage
 htmlcov/
 *.py,cover
+.cache/
+coverage.xml
+prof/
