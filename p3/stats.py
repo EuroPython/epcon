@@ -147,255 +147,281 @@ def tickets_status(conf, code=None):
     from p3.utils import spam_recruiter_by_conf
     spam_recruiting = spam_recruiter_by_conf(conf)
     if code is None:
-        output = [
-            {
-                'id': 'ticket_sold',
-                'title': 'Sold tickets',
-                'total': _tickets(conf, 'conference').count(),
-            },
-            {
-                'id': 'assigned_tickets',
-                'title': 'Assigned tickets',
-                'total': _assigned_tickets(conf).count(),
-            },
-            {
-                'id': 'unassigned_tickets',
-                'title': 'Unassigned tickets',
-                'total': _unassigned_tickets(conf).count(),
-            },
-            {
-                'id': 'sim_tickets',
-                'title': 'Tickets with SIM card orders',
-                'total': sim_tickets.count(),
-            },
-            {
-                'id': 'voupe03_tickets',
-                'title': 'Social event tickets (VOUPE03)',
-                'total': voupe03.count(),
-            },
-            {
-                'id': 'spam_recruiting',
-                'title': 'Recruiting emails (opt-in)',
-                'total': spam_recruiting.count(),
-            },
-        ]
-
-        # MAL: This looks like a duplicate of the above row
-        #
-        # qs = _tickets(conf, 'conference')\
-        #     .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
-        # output.append({
-        #     'title': 'Assigned tickets',
-        #     'total': qs.count(),
-        # })
-
-        output.append({
-            'id': 'multiple_assignments',
-            'title': 'Tickets assigned to the same person',
-            'total': multiple_assignments.count(),
-        })
-
-        output.append({
-            'id': 'orphan_tickets',
-            'title': 'Assigned tickets without user record (orphaned)',
-            'total': orphan_tickets.count(),
-        })
+        output = ticket_status_no_code(conf, multiple_assignments, orphan_tickets, sim_tickets, spam_recruiting,
+                                       voupe03)
 
     else:
-        if code in ('ticket_sold',
-                    'assigned_tickets',
-                    'unassigned_tickets',
-                    'multiple_assignments',
-                    ):
-            output = {
-                'columns': (
-                    ('ticket', 'Ticket'),
-                    ('name', 'Attendee name'),
-                    ('email', 'Email'),
-                    ('fare', 'Fare code'),
-                    ('buyer', 'Buyer'),
-                    ('buyer_email', 'Buyer Email'),
-                ),
-                'data': [],
-            }
-            if code == 'ticket_sold':
-                qs = _tickets(conf, 'conference')
-            elif code == 'assigned_tickets':
-                qs = _assigned_tickets(conf)
-            elif code == 'unassigned_tickets':
-                qs = _unassigned_tickets(conf)
-            elif code == 'multiple_assignments':
-                qs = _tickets(conf, 'conference')\
-                    .filter(p3_conference__assigned_to__in=multiple_assignments\
-                        .values('p3_conference__assigned_to'))
-            else:
-                raise ValueError('Unsupported stats code: %r' % code)
-            qs = qs.select_related('p3_conference', 'user')
-            assignees = dict([
-                (u.email, u) for u in User.objects\
-                    .filter(email__in=qs\
-                        .exclude(p3_conference__assigned_to='')\
-                        .values('p3_conference__assigned_to'))])
-            data = output['data']
-            for x in qs:
-                ticket = '<a href="%s">%s</a>' % (
-                    reverse('admin:conference_ticket_change', args=(x.id,)),
-                    x.id)
-                # p3_conference can be None because it's filled lazily when
-                # the ticket is saved for the first time
-                try:
-                    x.p3_conference
-                except models.TicketConference.DoesNotExist:
-                    continue
-                if x.p3_conference and x.p3_conference.assigned_to:
-                    email = x.p3_conference.assigned_to
-                    u = assignees.get(email)
-                else:
-                    email = x.user.email
-                    u = x.user
-                if u:
-                    name = '<a href="%s">%s %s</a>' % (
-                        reverse('admin:auth_user_change', args=(u.id,)),
-                        u.first_name,
-                        u.last_name)
-                    order = u.first_name + u.last_name
-                else:
-                    name = '%s <strong>Ticket not assigned</strong>' % x.name
-                    order = x.name
-                buyer = '<a href="%s">%s %s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.user.id,)),
-                    x.user.first_name,
-                    x.user.last_name)
-                if not order:
-                    order = x.user.first_name + x.user.last_name
-                buyer_email = x.user.email
-                row = {
-                    'ticket': ticket,
-                    'name': name,
-                    'email': email,
-                    'fare': x.fare.code,
-                    'buyer': buyer,
-                    'buyer_email': buyer_email,
-                    '_order': order,
-                    'uid': (u or x.user).id,
-                }
-                data.append(row)
-            data.sort(key=lambda x: x['_order'])
+        if code in ('ticket_sold', 'assigned_tickets', 'unassigned_tickets', 'multiple_assignments', ):
+            output = ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
 
-        elif code in ('orphan_tickets',
-                      ):
-            output = {
-                'columns': (
-                    ('ticket', 'Ticket'),
-                    ('name', 'Attendee name'),
-                    ('email', 'Email'),
-                    ('fare', 'Fare code'),
-                    ('buyer', 'Buyer'),
-                    ('buyer_email', 'Buyer Email'),
-                ),
-                'data': [],
-            }
-            if code == 'orphan_tickets':
-                qs = orphan_tickets
-            else:
-                raise ValueError('Unsupported stats code: %r' % code)
-            qs = qs.select_related('p3_conference', 'user', 'fare')
-            data = output['data']
-            for x in qs:
-                ticket = '<a href="%s">%s</a>' % (
-                    reverse('admin:conference_ticket_change', args=(x.id,)),
-                    x.id)
-                buyer = '<a href="%s">%s %s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.user.id,)),
-                    x.user.first_name,
-                    x.user.last_name)
-                data.append({
-                    'ticket': ticket,
-                    'name': x.name,
-                    'email': x.p3_conference.assigned_to,
-                    'fare': x.fare.code,
-                    'buyer': buyer,
-                    'buyer_email': x.user.email,
-                })
+        elif code in ('orphan_tickets',):
+            output = ticket_status_for_orphant_tickets(code, orphan_tickets)
 
         elif code in ('sim_tickets',):
-            output = {
-                'columns': (
-                    ('ticket', 'Ticket'),
-                    ('name', 'Attendee name'),
-                    ('email', 'Email'),
-                    ('fare', 'Fare code'),
-                ),
-                'data': [],
-            }
-            if code == 'sim_tickets':
-                qs = sim_tickets
-            else:
-                raise ValueError('Unsupported stats code: %r' % code)
-            qs = qs.select_related('user', 'fare')
-            data = output['data']
-            for x in qs:
-                ticket = '<a href="%s">%s</a>' % (
-                    reverse('admin:conference_ticket_change', args=(x.id,)),
-                    x.id)
-                buyer = '<a href="%s">%s %s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.user.id,)),
-                    x.user.first_name,
-                    x.user.last_name)
-                data.append({
-                    'ticket': ticket,
-                    'name': buyer,
-                    'email': x.user.email,
-                    'fare': x.fare.code,
-                    'uid': x.user.id,
-                })
+            output = ticket_status_for_sim_tickets(code, sim_tickets)
 
         elif code in ('voupe03_tickets',):
-            output = {
-                'columns': (
-                    ('uid', 'User ID'),
-                    ('name', 'Attendee name'),
-                    ('buyer', 'Buyer'),
-                ),
-                'data': [],
-            }
-            if code == 'voupe03_tickets':
-                qs = voupe03
-            else:
-                raise ValueError('Unsupported stats code: %r' % code)
-            qs = qs.select_related('user')
-            data = output['data']
-            for x in sorted(qs, key=lambda x: x.name or '%s %s' % (x.user.first_name, x.user.last_name)):
-                buyer_name = '%s %s' % (x.user.first_name, x.user.last_name)
-                buyer = '<a href="%s">%s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.user.id,)), buyer_name)
-                data.append({
-                    'name': x.name or buyer_name,
-                    'buyer': buyer,
-                    'uid': x.user.id,
-                    'email': x.user.email,
-                })
+            output = ticket_status_for_voupe03_tickets(code, voupe03)
 
         elif code == 'spam_recruiting':
-            output = {
-                'columns': (
-                    ('uid', 'User ID'),
-                    ('name', 'Attendee name'),
-                ),
-                'data': [],
-            }
-            qs = spam_recruiting.order_by('first_name', 'last_name')
-            data = output['data']
-            for x in qs:
-                buyer_name = '%s %s' % (x.first_name, x.last_name)
-                name = '<a href="%s">%s</a>' % (
-                    reverse('admin:auth_user_change', args=(x.id,)), buyer_name)
-                data.append({
-                    'name': name,
-                    'uid': x.id,
-                    'email': x.email,
-                })
+            output = ticket_status_for_spam_recruiting(spam_recruiting)
+
     return output
+
+
+def ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments):
+    output = {
+        'columns': (
+            ('ticket', 'Ticket'),
+            ('name', 'Attendee name'),
+            ('email', 'Email'),
+            ('fare', 'Fare code'),
+            ('buyer', 'Buyer'),
+            ('buyer_email', 'Buyer Email'),
+        ),
+        'data': [],
+    }
+    if code == 'ticket_sold':
+        qs = _tickets(conf, 'conference')
+    elif code == 'assigned_tickets':
+        qs = _assigned_tickets(conf)
+    elif code == 'unassigned_tickets':
+        qs = _unassigned_tickets(conf)
+    elif code == 'multiple_assignments':
+        qs = _tickets(conf, 'conference') \
+            .filter(p3_conference__assigned_to__in=multiple_assignments \
+                    .values('p3_conference__assigned_to'))
+    else:
+        raise ValueError('Unsupported stats code: %r' % code)
+    qs = qs.select_related('p3_conference', 'user')
+    assignees = dict([
+        (u.email, u) for u in User.objects \
+            .filter(email__in=qs \
+                    .exclude(p3_conference__assigned_to='') \
+                    .values('p3_conference__assigned_to'))])
+    data = output['data']
+    for x in qs:
+        ticket = '<a href="%s">%s</a>' % (
+            reverse('admin:conference_ticket_change', args=(x.id,)),
+            x.id)
+        # p3_conference can be None because it's filled lazily when
+        # the ticket is saved for the first time
+        try:
+            x.p3_conference
+        except models.TicketConference.DoesNotExist:
+            continue
+        if x.p3_conference and x.p3_conference.assigned_to:
+            email = x.p3_conference.assigned_to
+            u = assignees.get(email)
+        else:
+            email = x.user.email
+            u = x.user
+        if u:
+            name = '<a href="%s">%s %s</a>' % (
+                reverse('admin:auth_user_change', args=(u.id,)),
+                u.first_name,
+                u.last_name)
+            order = u.first_name + u.last_name
+        else:
+            name = '%s <strong>Ticket not assigned</strong>' % x.name
+            order = x.name
+        buyer = '<a href="%s">%s %s</a>' % (
+            reverse('admin:auth_user_change', args=(x.user.id,)),
+            x.user.first_name,
+            x.user.last_name)
+        if not order:
+            order = x.user.first_name + x.user.last_name
+        buyer_email = x.user.email
+        row = {
+            'ticket': ticket,
+            'name': name,
+            'email': email,
+            'fare': x.fare.code,
+            'buyer': buyer,
+            'buyer_email': buyer_email,
+            '_order': order,
+            'uid': (u or x.user).id,
+        }
+        data.append(row)
+    data.sort(key=lambda x: x['_order'])
+    return output
+
+
+def ticket_status_for_orphant_tickets(code, orphan_tickets):
+    output = {
+        'columns': (
+            ('ticket', 'Ticket'),
+            ('name', 'Attendee name'),
+            ('email', 'Email'),
+            ('fare', 'Fare code'),
+            ('buyer', 'Buyer'),
+            ('buyer_email', 'Buyer Email'),
+        ),
+        'data': [],
+    }
+    if code == 'orphan_tickets':
+        qs = orphan_tickets
+    else:
+        raise ValueError('Unsupported stats code: %r' % code)
+    qs = qs.select_related('p3_conference', 'user', 'fare')
+    data = output['data']
+    for x in qs:
+        ticket = '<a href="%s">%s</a>' % (
+            reverse('admin:conference_ticket_change', args=(x.id,)),
+            x.id)
+        buyer = '<a href="%s">%s %s</a>' % (
+            reverse('admin:auth_user_change', args=(x.user.id,)),
+            x.user.first_name,
+            x.user.last_name)
+        data.append({
+            'ticket': ticket,
+            'name': x.name,
+            'email': x.p3_conference.assigned_to,
+            'fare': x.fare.code,
+            'buyer': buyer,
+            'buyer_email': x.user.email,
+        })
+    return output
+
+
+def ticket_status_for_spam_recruiting(spam_recruiting):
+    output = {
+        'columns': (
+            ('uid', 'User ID'),
+            ('name', 'Attendee name'),
+        ),
+        'data': [],
+    }
+    qs = spam_recruiting.order_by('first_name', 'last_name')
+    data = output['data']
+    for x in qs:
+        buyer_name = '%s %s' % (x.first_name, x.last_name)
+        name = '<a href="%s">%s</a>' % (
+            reverse('admin:auth_user_change', args=(x.id,)), buyer_name)
+        data.append({
+            'name': name,
+            'uid': x.id,
+            'email': x.email,
+        })
+    return output
+
+
+def ticket_status_for_voupe03_tickets(code, voupe03):
+    output = {
+        'columns': (
+            ('uid', 'User ID'),
+            ('name', 'Attendee name'),
+            ('buyer', 'Buyer'),
+        ),
+        'data': [],
+    }
+    if code == 'voupe03_tickets':
+        qs = voupe03
+    else:
+        raise ValueError('Unsupported stats code: %r' % code)
+    qs = qs.select_related('user')
+    data = output['data']
+    for x in sorted(qs, key=lambda x: x.name or '%s %s' % (x.user.first_name, x.user.last_name)):
+        buyer_name = '%s %s' % (x.user.first_name, x.user.last_name)
+        buyer = '<a href="%s">%s</a>' % (
+            reverse('admin:auth_user_change', args=(x.user.id,)), buyer_name)
+        data.append({
+            'name': x.name or buyer_name,
+            'buyer': buyer,
+            'uid': x.user.id,
+            'email': x.user.email,
+        })
+    return output
+
+
+def ticket_status_for_sim_tickets(code, sim_tickets):
+    output = {
+        'columns': (
+            ('ticket', 'Ticket'),
+            ('name', 'Attendee name'),
+            ('email', 'Email'),
+            ('fare', 'Fare code'),
+        ),
+        'data': [],
+    }
+    if code == 'sim_tickets':
+        qs = sim_tickets
+    else:
+        raise ValueError('Unsupported stats code: %r' % code)
+    qs = qs.select_related('user', 'fare')
+    data = output['data']
+    for x in qs:
+        ticket = '<a href="%s">%s</a>' % (
+            reverse('admin:conference_ticket_change', args=(x.id,)),
+            x.id)
+        buyer = '<a href="%s">%s %s</a>' % (
+            reverse('admin:auth_user_change', args=(x.user.id,)),
+            x.user.first_name,
+            x.user.last_name)
+        data.append({
+            'ticket': ticket,
+            'name': buyer,
+            'email': x.user.email,
+            'fare': x.fare.code,
+            'uid': x.user.id,
+        })
+    return output
+
+
+def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, sim_tickets, spam_recruiting, voupe03):
+    output = [
+        {
+            'id': 'ticket_sold',
+            'title': 'Sold tickets',
+            'total': _tickets(conf, 'conference').count(),
+        },
+        {
+            'id': 'assigned_tickets',
+            'title': 'Assigned tickets',
+            'total': _assigned_tickets(conf).count(),
+        },
+        {
+            'id': 'unassigned_tickets',
+            'title': 'Unassigned tickets',
+            'total': _unassigned_tickets(conf).count(),
+        },
+        {
+            'id': 'sim_tickets',
+            'title': 'Tickets with SIM card orders',
+            'total': sim_tickets.count(),
+        },
+        {
+            'id': 'voupe03_tickets',
+            'title': 'Social event tickets (VOUPE03)',
+            'total': voupe03.count(),
+        },
+        {
+            'id': 'spam_recruiting',
+            'title': 'Recruiting emails (opt-in)',
+            'total': spam_recruiting.count(),
+        },
+    ]
+    # MAL: This looks like a duplicate of the above row
+    #
+    # qs = _tickets(conf, 'conference')\
+    #     .exclude(Q(p3_conference=None)|Q(p3_conference__assigned_to=''))
+    # output.append({
+    #     'title': 'Assigned tickets',
+    #     'total': qs.count(),
+    # })
+    output.append({
+        'id': 'multiple_assignments',
+        'title': 'Tickets assigned to the same person',
+        'total': multiple_assignments.count(),
+    })
+    output.append({
+        'id': 'orphan_tickets',
+        'title': 'Assigned tickets without user record (orphaned)',
+        'total': orphan_tickets.count(),
+    })
+    return output
+
+
 tickets_status.short_description = 'Tickets stats'
 
 def speaker_status(conf, code=None):
