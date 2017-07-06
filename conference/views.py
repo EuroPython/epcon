@@ -38,8 +38,8 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
 
-@render_to_template('conference/speaker.html')
 @speaker_access
+@render_to_template('conference/speaker.html')
 def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
     if request.method == 'POST':
         if not full_access:
@@ -136,7 +136,7 @@ def talk_xml(request, slug, talk, full_access):
         'talk': talk,
     }
 
-def talk_video(request, slug):
+def talk_video(request, slug):  # pragma: no cover
     tlk = get_object_or_404(models.Talk, slug=slug)
 
     if not tlk.video_type or tlk.video_type == 'download':
@@ -187,14 +187,15 @@ def conference_xml(request, conference):
     talks = models.Talk.objects.filter(conference=conference)
     schedules = [
         (s, utils.TimeTable2.fromSchedule(s.id))
-        for s in models.Schedule.objects.filter(conference=conference.code)]
+        for s in models.Schedule.objects.filter(conference=conference.code)
+    ]
     return {
         'conference': conference,
         'talks': talks,
         'schedules': schedules,
     }
 
-def talk_report(request):
+def talk_report(request):  # pragma: no cover
     conference = request.GET.getlist('conference')
     tags = request.GET.getlist('tag')
     return render_to_response(
@@ -279,31 +280,13 @@ def schedule_events_booking_status(request, conference):
         del v['booked']
     return data
 
+@render_to_template('conference/schedule.xml')
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
-    ctx = {
+    return {
         'schedule': sch,
         'timetable': utils.TimeTable2.fromSchedule(sch.id),
     }
-    return render(request, 'conference/schedule.xml', ctx, content_type='text/xml')
-
-def schedule_speakers_xml(request, conference, slug):
-    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
-    query = Q(talk__event__schedule = sch) | Q(additional_speakers__event__schedule = sch)
-    speakers = models.Speaker.objects.filter(query)
-    return render_to_response(
-        'conference/schedule_speakers.xml', { 'schedule': sch, 'speakers': speakers },
-        context_instance = RequestContext(request),
-        content_type = 'text/xml',
-    )
-
-def talks_xml(request, conference):
-    talks = models.Talk.objects.filter(conference=conference)
-    return render_to_response(
-        'conference/talks.xml', { 'conference': conference, 'talks': talks },
-        context_instance = RequestContext(request),
-        content_type = 'text/xml',
-    )
 
 def genro_wrapper(request):
     """
