@@ -38,3 +38,16 @@ DATABASES = {
        'NAME': '/tmp/p3.db',
    }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ.get("DATABASE_NAME", 'epcon'),
+#         'USER': os.environ.get("POSTGRES_USER", 'epcon'),
+#         'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'epcon'),
+#         'HOST': os.environ.get("POSTGRES_HOST", '172.15.201.10'),
+#         'PORT': os.environ.get("POSTGRES_PORT", '5432'),
+#     },
+# }
+
