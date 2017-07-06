@@ -7,4 +7,4 @@ class P3TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'p3.P3Talk'
 
-    talk = factory.RelatedFactory(TalkFactory)
+    talk = factory.SubFactory(TalkFactory)

@@ -1,22 +1,22 @@
 from __future__ import absolute_import
 
 import functools
+from decimal import Decimal
+from random import randint
 
 import factory
 import factory.django
-from decimal import Decimal
 from django.template.defaultfilters import slugify
 from django_factory_boy import auth as auth_factories
+from faker import Faker
 
 import conference.models
-from conference.models import (FARE_TYPES,
-                               FARE_TICKET_TYPES,
-                               FARE_PAYMENT_TYPE,
-                               TICKET_TYPE,
-                               )
+from conference.models import FARE_PAYMENT_TYPE
+from conference.models import FARE_TICKET_TYPES
+from conference.models import FARE_TYPES
+from conference.models import TICKET_TYPE
 
-from random import randint
-
+fake = Faker()
 Iterator = functools.partial(factory.Iterator, getter=lambda x: x[0])
 
 
@@ -38,7 +38,7 @@ class TicketFactory(factory.django.DjangoModelFactory):
         model = 'conference.Ticket'
 
     user = factory.SubFactory(auth_factories.UserFactory)
-    name = factory.Faker('sentence', nb_words=6, variable_nb_words=True)
+    name = factory.Faker('sentence', nb_words=4, variable_nb_words=True)
     fare = factory.SubFactory(FareFactory)
     frozen = factory.Faker('random_element', elements=(True, False))
     ticket_type = Iterator(TICKET_TYPE)
@@ -48,6 +48,6 @@ class SponsorFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'conference.Sponsor'
 
-    sponsor = factory.Faker('sentence', nb_words=6, variable_nb_words=True)
+    sponsor = factory.LazyAttribute(lambda x: fake.sentence(nb_words=6, variable_nb_words=True)[:50])
     slug = factory.LazyAttribute(lambda sponsor: slugify(sponsor.sponsor))
     url = factory.Faker('url')

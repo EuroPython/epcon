@@ -13,6 +13,6 @@ class ScheduleFactory(factory.django.DjangoModelFactory):
     conference = factory.Iterator(
         Conference.objects.all().values_list('code', flat=True)
     )
-    slug = factory.LazyAttribute(lambda conference: slugify(fake.sentence(nb_words=6, variable_nb_words=True)))
+    slug = factory.LazyAttribute(lambda conference: slugify(fake.sentence(nb_words=6, variable_nb_words=True)[:50]))
 
     date = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
