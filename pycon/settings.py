@@ -975,10 +975,6 @@ from other users you can change your privacy settings from this page:
 https://ep2017.europython.eu/accounts/profile/
 '''
 
-HAYSTACK_SITECONF = 'web_site.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
-
-
 def HCOMMENTS_RECAPTCHA(request):
     return not request.user.is_authenticated()
 

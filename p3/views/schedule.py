@@ -199,8 +199,3 @@ def my_schedule(request, conference):
     }
     return render(request, 'p3/my_schedule.html', ctx)
 
-@render_to_json
-def schedule_search(request, conference):
-    from haystack.query import SearchQuerySet
-    sqs = SearchQuerySet().models(cmodels.Event).auto_query(request.GET.get('q')).filter(conference=conference)
-    return [ { 'pk': x.pk, 'score': x.score, } for x in sqs ]
