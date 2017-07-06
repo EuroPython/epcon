@@ -1,11 +1,13 @@
 import unittest
 
+from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django_factory_boy import auth as auth_factories
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
 from conference.tests.factories.conference import ConferenceFactory
+from conference.tests.factories.fare import SponsorFactory
 from conference.tests.factories.speaker import SpeakerFactory
 from conference.tests.factories.talk import TalkFactory
 from p3.tests.factories.schedule import ScheduleFactory
@@ -135,7 +137,7 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip('to finish')
+    @unittest.skip('todo')
     def test_conference_speaker_xml(self):
         # conference-speaker-xml -> conference.views.speaker_xml
         speaker = SpeakerFactory()
@@ -148,12 +150,26 @@ class TestView(TestCase):
         self.assertEqual(response.get('content-type'), 'application/xml')
         self.assertEqual(response.context['speaker'], speaker)
 
-    @unittest.skip('todo')
+    @override_settings(DEBUG=False)
     def test_conference_sponsor(self):
         # conference-sponsor-json -> conference.views.sponsor_json
-        url = reverse('conference-sponsor-json')
+        sponsor = SponsorFactory()
+        url = reverse('conference-sponsor-json', kwargs={
+            'sponsor': sponsor.slug,
+        })
+
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), 'application/json')
+
+        result = {
+            'slug': sponsor.slug,
+            'sponsor': sponsor.sponsor,
+            'url': sponsor.url,
+        }
+
+        self.assertJSONEqual(response.content, result)
 
     def test_conference_talk(self):
         # conference-talk -> conference.views.talk
