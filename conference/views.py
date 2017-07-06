@@ -359,11 +359,11 @@ def places(request):
     return places
 
 @render_to_json
-def sponsor(request, sponsor):
+def sponsor_json(request, sponsor):
     """
     Returns the data of the requested sponsor
     """
-    sponsor = get_object_or_404(models.Sponsor, slug = sponsor)
+    sponsor = get_object_or_404(models.Sponsor, slug=sponsor)
     return {
         'sponsor': sponsor.sponsor,
         'slug': sponsor.slug,
