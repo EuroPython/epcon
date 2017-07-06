@@ -7,7 +7,8 @@ from assopy.tests.factories.order import CreditCardOrderFactory
 from conference.tests.factories.conference import ConferenceFactory
 from conference.tests.factories.fare import TicketFactory, FareFactory
 from p3.tests.factories.ticket_conference import TicketConferenceFactory
-from p3.models import TICKET_CONFERENCE_SHIRT_SIZES
+from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
+
 
 class StatsTestCase(TestCase):
     def setUp(self):
@@ -31,8 +32,10 @@ class StatsTestCase(TestCase):
     @mock.patch('django.core.mail.send_mail')
     def test_shirt_sizes(self, mock_send_email, mock_email):
         from p3.stats import shirt_sizes
-        fare = FareFactory(conference=self.conference.code)
+        fare = FareFactory(conference=self.conference.code, ticket_type='conference')
+
         ticket = TicketFactory(fare=fare, user=self.user)
+
         ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
         order = CreditCardOrderFactory(user=self.assopy_user)
         vat = VatFactory()
@@ -40,15 +43,33 @@ class StatsTestCase(TestCase):
         order.save()
         order_item = OrderItemFactory(order=order, ticket=ticket, price=1, vat=vat)
         repartition = shirt_sizes(self.conference)
+
         # import pdb; pdb.set_trace()
+
         self.assertDictEqual(repartition[0], {
             'total': 1,
             'title': dict(TICKET_CONFERENCE_SHIRT_SIZES)[ticket_conference.shirt_size],
         })
 
-    def test_diet_types(self):
+    @mock.patch('email_template.utils.email')
+    @mock.patch('django.core.mail.send_mail')
+    def test_diet_types(self, mock_send_email, mock_email):
         from p3.stats import diet_types
+        fare = FareFactory(conference=self.conference.code, ticket_type='conference')
+        ticket = TicketFactory(fare=fare, user=self.user)
+        ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
+        order = CreditCardOrderFactory(user=self.assopy_user)
+
+        vat = VatFactory()
+        order._complete = True
+        order.save()
+        order_item = OrderItemFactory(order=order, ticket=ticket, price=1, vat=vat)
+
         repartition = diet_types(self.conference)
+        self.assertDictEqual(repartition[0], {
+            'total': 1,
+            'title': dict(TICKET_CONFERENCE_DIETS)[ticket_conference.diet],
+        })
 
     def test_presence_days(self):
         from p3.stats import presence_days
