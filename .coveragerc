@@ -11,15 +11,19 @@ omit =
     */urls.py
      manage.py
      */admin.py
-     */models.py
-     */forms.py
+#     */models.py
+#     */forms.py
      generator.py
      assopy/clients/*.py
     */middleware.py
+    pycon/wsgi.py
+    conference/utils/*.py
+    deps/*/*.py
+    deps/*.py
 
 
 [report]
-fail_under = 100
+fail_under = 50
 precision = 2
-sort = Stmts
+sort = Name
 skip_covered = True
