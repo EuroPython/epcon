@@ -150,15 +150,16 @@ def tickets_status(conf, code=None):
         .values('p3_conference__assigned_to')\
         .annotate(total=Count('id'))\
         .filter(total__gt=1)
-    sim_tickets = _tickets(conf, fare_code='SIM%')\
-        .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
-        .select_related('p3_conference_sim')
+    if 0: # FIXME: remove hotels and sim
+        sim_tickets = _tickets(conf, fare_code='SIM%')\
+            .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
+            .select_related('p3_conference_sim')
     voupe03 = _tickets(conf, fare_code='VOUPE03')
     from p3.utils import spam_recruiter_by_conf
     spam_recruiting = spam_recruiter_by_conf(conf)
     if code is None:
-        output = ticket_status_no_code(conf, multiple_assignments, orphan_tickets, sim_tickets, spam_recruiting,
-                                       voupe03)
+        # FIXME: remove hotel and sim (sim_tickets has been removed from the parameters of ticket_status_no_code function
+        output = ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03)
 
     else:
         if code in ('ticket_sold', 'assigned_tickets', 'unassigned_tickets', 'multiple_assignments', ):
@@ -167,14 +168,16 @@ def tickets_status(conf, code=None):
         elif code in ('orphan_tickets',):
             output = ticket_status_for_orphant_tickets(code, orphan_tickets)
 
-        elif code in ('sim_tickets',):
-            output = ticket_status_for_sim_tickets(code, sim_tickets)
-
         elif code in ('voupe03_tickets',):
             output = ticket_status_for_voupe03_tickets(code, voupe03)
 
         elif code == 'spam_recruiting':
             output = ticket_status_for_spam_recruiting(spam_recruiting)
+
+        if 0:
+            # elif code in ('sim_tickets',):
+            #     output = ticket_status_for_sim_tickets(code, sim_tickets)
+            pass
 
     return output
 
@@ -344,46 +347,47 @@ def ticket_status_for_voupe03_tickets(code, voupe03):
     return output
 
 
-def ticket_status_for_sim_tickets(code, sim_tickets):
-    output = {
-        'columns': (
-            ('ticket', 'Ticket'),
-            ('name', 'Attendee name'),
-            ('email', 'Email'),
-            ('fare', 'Fare code'),
-        ),
-        'data': [],
-    }
-    if code == 'sim_tickets':
-        qs = sim_tickets
-    else:
-        raise ValueError('Unsupported stats code: %r' % code)
-    qs = qs.select_related('user', 'fare')
-    data = output['data']
-    for x in qs:
-        ticket = '<a href="%s">%s</a>' % (
-            reverse('admin:conference_ticket_change', args=(x.id,)),
-            x.id)
-        buyer = '<a href="%s">%s %s</a>' % (
-            reverse('admin:auth_user_change', args=(x.user.id,)),
-            x.user.first_name,
-            x.user.last_name)
-        data.append({
-            'ticket': ticket,
-            'name': buyer,
-            'email': x.user.email,
-            'fare': x.fare.code,
-            'uid': x.user.id,
-        })
-    return output
+if 0: # FIXME: remove hotels and sim
+    def ticket_status_for_sim_tickets(code, sim_tickets):
+        output = {
+            'columns': (
+                ('ticket', 'Ticket'),
+                ('name', 'Attendee name'),
+                ('email', 'Email'),
+                ('fare', 'Fare code'),
+            ),
+            'data': [],
+        }
+        if code == 'sim_tickets':
+            qs = sim_tickets
+        else:
+            raise ValueError('Unsupported stats code: %r' % code)
+        qs = qs.select_related('user', 'fare')
+        data = output['data']
+        for x in qs:
+            ticket = '<a href="%s">%s</a>' % (
+                reverse('admin:conference_ticket_change', args=(x.id,)),
+                x.id)
+            buyer = '<a href="%s">%s %s</a>' % (
+                reverse('admin:auth_user_change', args=(x.user.id,)),
+                x.user.first_name,
+                x.user.last_name)
+            data.append({
+                'ticket': ticket,
+                'name': buyer,
+                'email': x.user.email,
+                'fare': x.fare.code,
+                'uid': x.user.id,
+            })
+        return output
 
 
-def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, sim_tickets, spam_recruiting, voupe03):
+def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03):
     return [
         _create_option('ticket_sold', 'Sold tickets', _tickets(conf, 'conference')),
         _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
         _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
-        _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),
+        # _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),  # FIXME: remove hotels and sim
         _create_option('voupe03_tickets', 'Social event tickets (VOUPE03)', voupe03),
         _create_option('spam_recruiting', 'Recruiting emails (opt-in)', spam_recruiting),
         _create_option('multiple_assignments', 'Tickets assigned to the same person', multiple_assignments),

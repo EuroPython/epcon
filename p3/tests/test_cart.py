@@ -4,7 +4,8 @@ from django_factory_boy import auth as auth_factories
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
 from conference.tests.factories.conference import ConferenceFactory
-from p3.tests.factories.hotelbooking import HotelBookingFactory
+if 0:
+    from p3.tests.factories.hotelbooking import HotelBookingFactory
 
 
 class TestCartView(TestCase):
@@ -19,7 +20,8 @@ class TestCartView(TestCase):
         url = reverse('p3-cart')
 
         conference = ConferenceFactory(code='ep2017')
-        hotel = HotelBookingFactory(conference=conference)
+        if 0:
+            hotel = HotelBookingFactory(conference=conference)
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
