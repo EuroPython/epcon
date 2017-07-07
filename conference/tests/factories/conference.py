@@ -1,9 +1,13 @@
 import datetime
 
 import factory
-import factory.fuzzy
 import factory.django
+import factory.fuzzy
+from faker import Faker
 
+fake = Faker()
+
+from factory import lazy_attribute
 
 class ConferenceTagFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -29,7 +33,10 @@ class ConferenceFactory(factory.django.DjangoModelFactory):
     cfp_start = factory.LazyAttribute(lambda conf: conf.conference_start - datetime.timedelta(days=50))
     cfp_end = factory.LazyAttribute(lambda conf: conf.cfp_start + datetime.timedelta(days=+20))
 
-    conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
+    @lazy_attribute
+    def conference_start(self):
+        return fake.date_time_this_decade(before_now=True, after_now=True).date()
+    # conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
     conference_end = factory.LazyAttribute(lambda conf: (conf.conference_start + datetime.timedelta(days=+5)))
 
     voting_start = factory.LazyAttribute(lambda conf: conf.cfp_end + datetime.timedelta(days=10))

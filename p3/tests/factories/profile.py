@@ -7,4 +7,4 @@ class P3ProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'p3.P3Profile'
 
-    profile = factory.SubFactory(AttendeeProfileFactory)
+    profile = factory.RelatedFactory(AttendeeProfileFactory)
