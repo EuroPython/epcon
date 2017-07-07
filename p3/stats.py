@@ -11,7 +11,7 @@ from conference import models as cmodels
 
 def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
     qs = Ticket.objects\
-        .filter(fare__conference=conf)
+        .filter(fare__conference=conf, frozen=False)
     if only_complete:
         qs = qs.filter(orderitem__order___complete=True)
     else:
