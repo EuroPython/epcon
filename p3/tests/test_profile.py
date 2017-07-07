@@ -1,6 +1,5 @@
 import unittest
 
-import factory
 import mock
 import simplejson
 from django.core.urlresolvers import reverse
@@ -8,12 +7,7 @@ from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-from p3.tests.factories.profile import P3ProfileFactory
-
-
-class MessageFactory(object):
-    subject = factory.Faker('sentence', nb_words=6, variable_nb_words=True, ext_word_list=None)
-    message = factory.Faker('paragraph', nb_sentences=3, variable_nb_sentences=True, ext_word_list=None)
+from p3.tests.factories.message import MessageFactory
 
 
 class TestView(TestCase):
@@ -38,7 +32,7 @@ class TestView(TestCase):
         url = reverse('p3-account-data')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.templates[0].name, 'assopy/profile_personal_data.html')
+        self.assertTemplateUsed(response, 'assopy/profile_personal_data.html')
 
     def test_p3_account_data_post(self):
         # p3-account-data -> p3.views.profile.p3_account_data
