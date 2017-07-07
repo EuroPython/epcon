@@ -587,16 +587,6 @@ def conference_schedule(parser, token):
 
     return ScheduleNode(conference, schedule, var_name)
 
-# XXX - remove (dup)
-@register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
-def render_talk_report(context, speaker, conference, tags):
-    context.update({
-        'speaker': speaker,
-        'conference': conference,
-        'tags': tags,
-    })
-    return context
-
 @register.filter
 def add_number(value, arg):
     return value + float(arg)
