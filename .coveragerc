@@ -28,3 +28,8 @@ fail_under = 50
 precision = 2
 sort = Name
 skip_covered = True
+exclude_lines = 
+    if 0:
+    def __repr__
+    def __unicode__
+    def __str__
