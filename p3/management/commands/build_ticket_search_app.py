@@ -29,7 +29,7 @@ import sys
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from conference import models as cmodels
 from conference import utils
 from p3 import models
@@ -43,16 +43,16 @@ import operator
 TEMPLATE = u"""\
 <!DOCTYPE html>
 <html>
-<title>EuroPython Ticket Search App</title>
+<title>EuroPython %(year)s Ticket Search App</title>
 <meta name="viewport" content="width=device-width, initial-scale=0.9">
 <link rel="stylesheet" href="css/materialize.min.css">
 <head>
 <meta charset=utf-8 />
-<title>EuroPython Ticket Search App</title>
+<title>EuroPython %(year)s Ticket Search App</title>
 </head>
 <body>
 
-<h3 class="center-align hide-on-small-only">Ticket Search App</h3>
+<h3 class="center-align hide-on-small-only">EuroPython %(year)s Ticket Search App</h3>
 
 <div id="ticket-list" class="container">
 
@@ -86,7 +86,7 @@ var fuzzyOptions = {
   multiSearch: true
 };
 var ticketList = new List('ticket-list', { 
-  valueNames: ['name', 'tid'], 
+  valueNames: ['name', 'email', 'tid'], 
   plugins: [ListFuzzySearch(fuzzyOptions)]
 });
 </script>
@@ -101,18 +101,26 @@ def profile_url(user):
     return urlresolvers.reverse('conference-profile',
                                 args=[user.attendeeprofile.slug])
 
-def attendee_name(ticket, profile):
+def attendee_name(ticket, profile=None):
 
-    name = u'%s %s' % (
-        profile.user.first_name,
-        profile.user.last_name)
+    # Determine user name from profile, if available
+    if profile is not None:
+        name = u'%s %s' % (
+            profile.user.first_name,
+            profile.user.last_name)
+    else:
+        name = ''
 
     # Remove whitespace
-    name = name.strip().title()
+    name = name.strip()
 
     # Use ticket name if not set in profile
     if not name:
-        name = ticket.name.strip().title()
+        name = ticket.name.strip()
+        
+    # Convert to title case, if not an email address
+    if u'@' not in name:
+        name = name.title()
 
     # Use email address if no ticket name set
     if not name:
@@ -139,6 +147,7 @@ def create_app_file(conference, output_file):
 
     # Find all attendees
     attendee_dict = {}
+    missing_profiles = []
     for ticket in tickets:
         #sys.stderr.write('ticket %r: conference=%s\n' %
         #                 (ticket, ticket.fare.conference))
@@ -151,18 +160,25 @@ def create_app_file(conference, output_file):
                               ticket.name,
                               ticket.user.first_name, ticket.user.last_name))
             continue
+        email = ticket.p3_conference.assigned_to
         try:
             profile = ticket.p3_conference.profile()
         except ObjectDoesNotExist:
             # Missing profile for assigned user
             sys.stderr.write('could not find profile for %r\n' %
                              ticket.p3_conference.assigned_to)
-            continue
+            profile = None
+        except MultipleObjectsReturned:
+            # Profile assigned to multiple user accounts
+            sys.stderr.write('multiple users accounts for %r\n' %
+                             ticket.p3_conference.assigned_to)
+            profile = None
         name = attendee_name(ticket, profile)
         attendee_dict[ticket.id] = (
             ticket,
             profile,
-            name)
+            name,
+            email)
 
     # Prepare list
     attendee_list = attendee_dict.items()
@@ -173,26 +189,32 @@ def create_app_file(conference, output_file):
          u'<thead>',
          u'<tr>'
          u'<th data-field="name">Name</th>',
+         u'<th data-field="email">Email</th>',
          u'<th data-field="tid">TID</th>',
          u'<th data-field="tcode">Code</th>',
          u'</tr>'
          u'</thead>',
          u'<tbody class="list">',
          ]
-    for id, (ticket, profile, name) in attendee_list:
+    for id, (ticket, profile, name, email) in attendee_list:
         l.append((u'<tr>'
                   u'<td class="name">%s</td>'
+                  u'<td class="email">%s</td>'
                   u'<td class="tid">%s</td>'
                   u'<td class="tcode">%s</td>'
                   u'</tr>' %
                   (name,
+                   email,
                    id,
                    ticket.fare.code)))
     l.extend([u'</tbody>',
               u'</table>',
               u'<p>%i attendees in total.</p>' % len(attendee_list),
               ])
-    output.write((TEMPLATE % {'listing': u'\n'.join(l)}).encode('utf-8'))
+    output.write((TEMPLATE % {
+                      'listing': u'\n'.join(l),
+                      'year': conference[2:],
+                  }).encode('utf-8'))
 
 ###
 
@@ -207,6 +229,9 @@ class Command(BaseCommand):
         #           'Choices: accepted, proposed',
         # ),
     )
+
+    args = '<conference> [<output-file>]'
+
     def handle(self, *args, **options):
         
         try:
