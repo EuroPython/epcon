@@ -1,15 +1,18 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import unittest
+
+import pytest
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.template import Template, Context
+from django.test import TestCase
 
 from . import factories as f
 
-import unittest
 
-@unittest.skip("Update these tests because does not match the reality")
+@pytest.mark.skip(reason="Update these tests because do not match the reality")
+@unittest.skip("Update these tests because do not match the reality")
 class TestStripeTemplateTags(TestCase):
     def setUp(self):
         # clean fares
