@@ -1093,7 +1093,7 @@ class TicketAdmin(admin.ModelAdmin):
         output = {}
         for c in conferences:
             tickets = models.Ticket.objects\
-                .filter(fare__conference=c)\
+                .filter(fare__conference=c, frozen=False)\
                 .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
                 .select_related('fare', 'orderitem__order')
             data = {
