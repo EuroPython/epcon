@@ -189,9 +189,9 @@ def create_app_file(conference, output_file):
          u'<thead>',
          u'<tr>'
          u'<th data-field="name">Name</th>',
-         u'<th data-field="email">Email</th>',
+         u'<th data-field="email" class="hide-on-small-only">Email</th>',
          u'<th data-field="tid">TID</th>',
-         u'<th data-field="tcode">Code</th>',
+         u'<th data-field="tcode" class="hide-on-small-only">Code</th>',
          u'</tr>'
          u'</thead>',
          u'<tbody class="list">',
@@ -199,9 +199,9 @@ def create_app_file(conference, output_file):
     for id, (ticket, profile, name, email) in attendee_list:
         l.append((u'<tr>'
                   u'<td class="name">%s</td>'
-                  u'<td class="email">%s</td>'
+                  u'<td class="email hide-on-small-only">%s</td>'
                   u'<td class="tid">%s</td>'
-                  u'<td class="tcode">%s</td>'
+                  u'<td class="tcode hide-on-small-only">%s</td>'
                   u'</tr>' %
                   (name,
                    email,
