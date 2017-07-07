@@ -37,7 +37,8 @@ class TestLiveViews(TestCase):
         url = reverse('p3-live')
         response = self.client.get(url)
 
-        self.assertEqual(response.templates[0].name, 'p3/live.html')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'p3/live.html')
         self.assertEqual(response.context['tracks'].count(), 0)
 
     @override_settings(CONFERENCE='epbeta', DEBUG=False)
