@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-    Build Ticket Search App
-    -----------------------
+    Build Social Ticket Search App
+    ------------------------------
 
     Creates a single-page fuzzy full text search list with all tickets
-    and their ticket IDs.  Writes the single page to
-    ep-ticket-search-app/index.html
+    and their social ticket IDs.  Writes the single page to
+    ep-social-ticket-search-app/index.html
 
     This can be used during registration to do quick search in the
     list of all tickets in order to find badges or find that no badge
@@ -14,15 +14,15 @@
     Usage:
     
     cd epcon
-    ./manage.py build_ticket_search_app ep2016
-    cd ep-ticket-search-app
+    ./manage.py build_social_ticket_search_app ep2017
+    cd ep-social-ticket-search-app
     ./run.sh
     
     This will build the search app and start a web server running
     on port 8000. Pointing a browser at http://localhost:8000/ will
     then load the app into the browser.
 
-    Author: Marc-Andre Lemburg, 2016.
+    Author: Marc-Andre Lemburg, 2016-2017.
 
 """
 import sys
@@ -43,16 +43,16 @@ import operator
 TEMPLATE = u"""\
 <!DOCTYPE html>
 <html>
-<title>EuroPython %(year)s Ticket Search App</title>
+<title>EuroPython %(year)s Social Ticket Search App</title>
 <meta name="viewport" content="width=device-width, initial-scale=0.9">
 <link rel="stylesheet" href="css/materialize.min.css">
 <head>
 <meta charset=utf-8 />
-<title>EuroPython %(year)s Ticket Search App</title>
+<title>EuroPython %(year)s Social Ticket Search App</title>
 </head>
 <body>
 
-<h3 class="center-align hide-on-small-only">EuroPython %(year)s Ticket Search App</h3>
+<h3 class="center-align hide-on-small-only">EuroPython %(year)s Social Ticket Search App</h3>
 
 <div id="ticket-list" class="container">
 
@@ -122,10 +122,6 @@ def attendee_name(ticket, profile=None):
     if u'@' not in name:
         name = name.title()
 
-    # Use email address if no ticket name set
-    if not name:
-        name = ticket.p3_conference.assigned_to.strip()
-
     return name
 
 def attendee_list_key(entry):
@@ -140,7 +136,7 @@ def create_app_file(conference, output_file):
     # Get all valid conference tickets (frozen ones are not valid)
     tickets = cmodels.Ticket.objects.filter(
         fare__conference=conference,
-        fare__ticket_type='conference',
+        fare__ticket_type='event',
         orderitem__order___complete=True,
         frozen=False,
         )
@@ -151,28 +147,8 @@ def create_app_file(conference, output_file):
     for ticket in tickets:
         #sys.stderr.write('ticket %r: conference=%s\n' %
         #                 (ticket, ticket.fare.conference))
-        try:
-            ticket.p3_conference
-        except ObjectDoesNotExist:
-            sys.stderr.write('unassigned ticket ID %s: name=%r, '
-                             'user: %s %s\n' %
-                             (ticket.id,
-                              ticket.name,
-                              ticket.user.first_name, ticket.user.last_name))
-            continue
-        email = ticket.p3_conference.assigned_to
-        try:
-            profile = ticket.p3_conference.profile()
-        except ObjectDoesNotExist:
-            # Missing profile for assigned user
-            sys.stderr.write('could not find profile for %r\n' %
-                             ticket.p3_conference.assigned_to)
-            profile = None
-        except MultipleObjectsReturned:
-            # Profile assigned to multiple user accounts
-            sys.stderr.write('multiple users accounts for %r\n' %
-                             ticket.p3_conference.assigned_to)
-            profile = None
+        profile = None
+        email = ticket.user.email
         name = attendee_name(ticket, profile)
         attendee_dict[ticket.id] = (
             ticket,
@@ -241,6 +217,6 @@ class Command(BaseCommand):
         try:
             output_file = args[1]
         except IndexError:
-            output_file = 'ep-ticket-search-app/index.html'
+            output_file = 'ep-social-ticket-search-app/index.html'
 
         create_app_file(conference, output_file)

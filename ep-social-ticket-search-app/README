@@ -1,0 +1,21 @@
+Build Ticket Search App
+-----------------------
+
+    Creates a single-page fuzzy full text search list with all tickets
+    and their ticket IDs.  Writes the single page to
+    ep-ticket-search-app/index.html
+
+    This can be used during registration to do quick search in the
+    list of all tickets in order to find badges or find that no badge
+    exists.
+
+    Usage:
+
+    cd ..
+    ./manage.py build_ticket_search_app ep2016
+    cd ep-ticket-search-app
+    ./run.sh
+
+    This will build the search app and start a web server running
+    on port 8000. Pointing a browser at http://localhost:8000/ will
+    then load the app into the browser.
