@@ -23,8 +23,7 @@ from tagging.fields import TagField
 
 import conference
 import conference.gmap
-from conference import settings
-from conference import signals
+from . import settings, signals
 
 from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
 from taggit.managers import TaggableManager
@@ -83,11 +82,10 @@ class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
 
 class ConferenceManager(models.Manager):
     def current(self):
-        from django.conf import settings
         key = 'CONFERENCE_CURRENT'
         data = cache.get(key)
         if data is None:
-            data = self.get(code=settings.CONFERENCE)
+            data = self.get(code=dsettings.CONFERENCE_CONFERENCE)
             cache.set(key, data, 60*60*24*7)
         return data
 

@@ -22,7 +22,7 @@ class TestLiveViews(TestCase):
         AttendeeProfileFactory(user=self.user)
         self.assertTrue(is_logged)
 
-    @override_settings(CONFERENCE='epbeta', DEBUG=False)
+    @override_settings(CONFERENCE_CONFERENCE='epbeta', DEBUG=False)
     def test_live_conference(self):
         tmp = ConferenceFactory(code='epbeta', conference_start=datetime.date.today())
         from p3.views.live import _live_conference
@@ -31,7 +31,7 @@ class TestLiveViews(TestCase):
 
         self.assertEqual(tmp, conf)
 
-    @override_settings(CONFERENCE='epbeta', DEBUG=False)
+    @override_settings(CONFERENCE_CONFERENCE='epbeta', DEBUG=False)
     def test_live(self):
         ConferenceFactory(code='epbeta', conference_start=datetime.date.today())
         url = reverse('p3-live')
@@ -41,7 +41,7 @@ class TestLiveViews(TestCase):
         self.assertTemplateUsed(response, 'p3/live.html')
         self.assertEqual(response.context['tracks'].count(), 0)
 
-    @override_settings(CONFERENCE='epbeta', DEBUG=False)
+    @override_settings(CONFERENCE_CONFERENCE='epbeta', DEBUG=False)
     def test_p3_live_track_events(self):
         # p3-live-track-events -> p3.views.live.live_track_events
         conference = ConferenceFactory(code='epbeta', conference_start=datetime.date.today())
@@ -59,7 +59,7 @@ class TestLiveViews(TestCase):
         self.assertEqual(response.get('content-type'), 'application/json')
         self.assertJSONEqual(response.content, [])
 
-    @override_settings(CONFERENCE='epbeta', DEBUG=False)
+    @override_settings(CONFERENCE_CONFERENCE='epbeta', DEBUG=False)
     def test_p3_live_events(self):
         # p3-live-events -> p3.views.live.live_events
         url = reverse('p3-live-events')
