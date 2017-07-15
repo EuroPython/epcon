@@ -19,6 +19,8 @@ class TalkFactory(factory.django.DjangoModelFactory):
     title = factory.LazyAttribute(lambda talk: fake.sentence(nb_words=6, variable_nb_words=True)[:80])
     sub_title = factory.Faker('sentence', nb_words=12, variable_nb_words=True)
 
+    duration = 30
+
     slug = factory.LazyAttribute(lambda talk: slugify(talk.title))
     level = factory.Iterator(conference.models.TALK_LEVEL, getter=lambda x: x[0])
     status = factory.Iterator(conference.models.TALK_STATUS, getter=lambda x: x[0])
