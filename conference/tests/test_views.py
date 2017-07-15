@@ -180,7 +180,7 @@ class TestView(TestCase):
         url = reverse('conference-talk', kwargs={
             'slug': talk.slug,
         })
-        with override_settings(CONFERENCE=conference.code):
+        with override_settings(CONFERENCE_CONFERENCE=conference.code):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'text/html')
@@ -192,7 +192,7 @@ class TestView(TestCase):
         url = reverse('conference-talk-xml', kwargs={
             'slug': talk.slug,
         })
-        with override_settings(CONFERENCE=conference.code):
+        with override_settings(CONFERENCE_CONFERENCE=conference.code):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'application/xml')
@@ -204,7 +204,7 @@ class TestView(TestCase):
         url = reverse('conference-talk-preview', kwargs={
             'slug': talk.slug,
         })
-        with override_settings(CONFERENCE=conference.code):
+        with override_settings(CONFERENCE_CONFERENCE=conference.code):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['talk'], talk)

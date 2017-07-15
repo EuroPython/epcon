@@ -70,7 +70,7 @@ class TestView(TestCase):
         self.assertEqual(response.get('content-type'), 'application/json')
         self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
 
-    @override_settings(CONFERENCE='epbeta', CONFERENCE_CONFERENCE='epbeta')
+    @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_my_schedule(self):
         # p3-my-schedule -> p3.views.schedule.jump_to_my_schedule
         conference = ConferenceFactory(code='epbeta')
@@ -85,7 +85,7 @@ class TestView(TestCase):
 
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
-    @override_settings(CONFERENCE='epbeta')
+    @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_schedule_ics(self):
         # p3-schedule-ics -> p3.views.schedule.schedule_ics
         conference = ConferenceFactory(code='epbeta')
@@ -178,7 +178,7 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @override_settings(CONFERENCE='epbeta')
+    @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_schedule_my_schedule_ics(self):
         # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
 
@@ -191,7 +191,7 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'text/calendar')
 
-    @override_settings(CONFERENCE='epbeta')
+    @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_schedule_my_schedule_ics_error_404(self):
         # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
         self.client.logout()
