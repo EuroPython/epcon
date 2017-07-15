@@ -24,11 +24,11 @@ omit =
 
 
 [report]
-fail_under = 50
+fail_under = 30
 precision = 2
 sort = Name
 skip_covered = True
-exclude_lines = 
+exclude_lines =
     if 0:
     def __repr__
     def __unicode__
