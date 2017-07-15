@@ -640,6 +640,7 @@ class Talk(models.Model, UrlMixin):
     # Duration of the talk (including the session of Q&A)
     duration = models.IntegerField(
         _('Duration'),
+        default=0,
         help_text=_('This is the duration of the talk. Set to 0 to use the default talk duration.'))
 
     # Suggested Tags, normally, should use a submission model.
@@ -819,6 +820,7 @@ TICKET_TYPE = (
     ('standard', 'standard'),
     ('staff', 'staff'),
 )
+
 class Ticket(models.Model):
     user = models.ForeignKey(
         'auth.User',
