@@ -3,12 +3,18 @@ import mock
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
-from assopy.stripe.tests.factories import OrderItemFactory, AssopyUserFactory, VatFactory
+from assopy.stripe.tests.factories import (
+    OrderItemFactory,
+    AssopyUserFactory,
+    VatFactory
+)
 from assopy.tests.factories.order import CreditCardOrderFactory
 from conference.tests.factories.conference import ConferenceFactory
 from conference.tests.factories.fare import TicketFactory, FareFactory
 from p3.tests.factories.ticket_conference import TicketConferenceFactory
 from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
+
+from p3.stats import shirt_sizes, diet_types
 
 
 class StatsTestCase(TestCase):
@@ -40,14 +46,12 @@ class StatsTestCase(TestCase):
         from p3.stats import _unassigned_tickets
         tickets = _unassigned_tickets(self.conference)
 
-    @unittest.skip("FIXME")
     @mock.patch('email_template.utils.email')
     @mock.patch('django.core.mail.send_mail')
     def test_shirt_sizes(self, mock_send_email, mock_email):
-        from p3.stats import shirt_sizes
-        fare = FareFactory(conference=self.conference.code, ticket_type='conference')
+        fare = FareFactory(conference=self.conference, ticket_type='conference')
 
-        ticket = TicketFactory(fare=fare, user=self.user)
+        ticket = TicketFactory(fare=fare, user=self.user, frozen=False)
 
         ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
         order = CreditCardOrderFactory(user=self.assopy_user)
@@ -55,20 +59,19 @@ class StatsTestCase(TestCase):
         order._complete = True
         order.save()
         order_item = OrderItemFactory(order=order, ticket=ticket, price=1, vat=vat)
-        repartition = shirt_sizes(self.conference)
 
-        self.assertDictEqual(repartition[0], {
+        repartition = shirt_sizes(self.conference)
+        assert repartition[0] == {
             'total': 1,
             'title': dict(TICKET_CONFERENCE_SHIRT_SIZES)[ticket_conference.shirt_size],
-        })
+        }
 
-    @unittest.skip("FIXME")
     @mock.patch('email_template.utils.email')
     @mock.patch('django.core.mail.send_mail')
     def test_diet_types(self, mock_send_email, mock_email):
-        from p3.stats import diet_types
-        fare = FareFactory(conference=self.conference.code, ticket_type='conference')
-        ticket = TicketFactory(fare=fare, user=self.user)
+        fare = FareFactory(conference=self.conference, ticket_type='conference')
+
+        ticket = TicketFactory(fare=fare, user=self.user, frozen=False)
         ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
         order = CreditCardOrderFactory(user=self.assopy_user)
 
@@ -78,10 +81,10 @@ class StatsTestCase(TestCase):
         order_item = OrderItemFactory(order=order, ticket=ticket, price=1, vat=vat)
 
         repartition = diet_types(self.conference)
-        self.assertDictEqual(repartition[0], {
+        assert repartition[0] == {
             'total': 1,
             'title': dict(TICKET_CONFERENCE_DIETS)[ticket_conference.diet],
-        })
+        }
 
     def test_presence_days(self):
         from p3.stats import presence_days

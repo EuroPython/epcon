@@ -20,8 +20,10 @@ def _create_option(id, title, total_qs, **kwargs):
 
 
 def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
+    # TODO: check why it needs frozen=False NEEDSDOCUMENTATION
     qs = Ticket.objects\
         .filter(fare__conference=conf, frozen=False)
+
     if only_complete:
         qs = qs.filter(orderitem__order___complete=True)
     else:
@@ -61,6 +63,7 @@ def shirt_sizes(conf):
             'title': sizes.get(x['p3_conference__shirt_size']),
             'total': x['total'],
         })
+
     return output
 shirt_sizes.short_description = "Tshirts size"
 
