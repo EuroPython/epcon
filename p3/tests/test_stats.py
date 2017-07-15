@@ -39,6 +39,7 @@ class StatsTestCase(TestCase):
         from p3.stats import _unassigned_tickets
         tickets = _unassigned_tickets(self.conference)
 
+    @unittest.skip("FIXME")
     @mock.patch('email_template.utils.email')
     @mock.patch('django.core.mail.send_mail')
     def test_shirt_sizes(self, mock_send_email, mock_email):
@@ -55,13 +56,12 @@ class StatsTestCase(TestCase):
         order_item = OrderItemFactory(order=order, ticket=ticket, price=1, vat=vat)
         repartition = shirt_sizes(self.conference)
 
-        # import pdb; pdb.set_trace()
-
         self.assertDictEqual(repartition[0], {
             'total': 1,
             'title': dict(TICKET_CONFERENCE_SHIRT_SIZES)[ticket_conference.shirt_size],
         })
 
+    @unittest.skip("FIXME")
     @mock.patch('email_template.utils.email')
     @mock.patch('django.core.mail.send_mail')
     def test_diet_types(self, mock_send_email, mock_email):
