@@ -1,3 +1,4 @@
+import unittest
 import mock
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
