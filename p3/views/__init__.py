@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect, render_to_response, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template import RequestContext, Template
 
 import p3.forms as p3forms
@@ -17,7 +17,8 @@ from p3 import models
 from p3 import utils as p3utils
 import assopy.models as amodels
 from assopy.forms import RefundItemForm
-from assopy.views import render_to, HttpResponseRedirectSeeOther
+from assopy.views import HttpResponseRedirectSeeOther
+from common.decorators import render_to_template
 from assopy import utils as autils
 from conference import forms as cforms
 from conference import models as cmodels
@@ -28,12 +29,8 @@ import uuid
 
 log = logging.getLogger('p3.views')
 
-def map_js(request):
-    return render_to_response(
-        'p3/map.js', {}, context_instance=RequestContext(request), content_type='text/javascript')
-
 @login_required
-@render_to('p3/tickets.html')
+@render_to_template('p3/tickets.html')
 def tickets(request):
     tickets = dataaccess.user_tickets(request.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
     return {
@@ -295,7 +292,7 @@ def user(request, token):
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
 @login_required
-@render_to('p3/sprint_submission.html')
+@render_to_template('p3/sprint_submission.html')
 def sprint_submission(request):
     if request.method == 'POST':
         form = p3forms.FormSprint(data=request.POST)
@@ -313,7 +310,7 @@ def sprint_submission(request):
         'form': form,
     }
 
-@render_to('p3/sprints.html')
+@render_to_template('p3/sprints.html')
 def sprints(request):
     events = []
     attendees = defaultdict(list)
@@ -347,7 +344,7 @@ def sprints(request):
     }
 
 @login_required
-@render_to('p3/render_single_sprint.html')
+@render_to_template('p3/render_single_sprint.html')
 def sprint(request, sid):
     e = get_object_or_404(models.Sprint, pk=sid)
     if request.method == 'POST':
@@ -495,4 +492,3 @@ from p3.views.cart import *
 from p3.views.live import *
 from p3.views.profile import *
 from p3.views.schedule import *
-from p3.views.reports import *

@@ -5,7 +5,8 @@ import simplejson
 
 G = 'maps.google.com'
 
-def geocode(address, key, country):
+# FIXME: use this function or this one, but the code is in double assopy.utils.geocode
+def geocode(address, key, country):  # pragma: no cover
     """
     Get the coordinates from Google Maps for a specified address
     """

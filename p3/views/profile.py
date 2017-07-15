@@ -1,18 +1,24 @@
 # -*- coding: UTF-8 -*-
-import os.path
 import logging
-from assopy import models as amodels
-from assopy.views import render_to_json
-from conference import models as cmodels
-from conference.views import profile_access, json_dumps
-from django import http
+import os.path
+
 from django import forms
+from django import http
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+
+from assopy import models as amodels
+from common.decorators import render_to_json
+from common.jsonify import json_dumps
+from conference import models as cmodels
+from conference.decorators import profile_access
 from email_template import utils
-from p3 import dataaccess
 from p3 import forms as p3forms
+from p3 import dataaccess
 from p3 import models
 
 log = logging.getLogger('p3.views')
@@ -72,12 +78,10 @@ def p3_profile_avatar(request, slug):
         ct = headers.get('content-type')
     return http.HttpResponse(img.read(), content_type=ct)
 
+@require_POST
 @login_required
 @render_to_json
 def p3_profile_message(request, slug):
-    if request.method != 'POST':
-        return http.HttpResponseNotAllowed(('POST',))
-
     class MessageForm(forms.Form):
         subject = forms.CharField()
         message = forms.CharField()

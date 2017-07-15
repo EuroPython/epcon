@@ -11,6 +11,7 @@ from django.core import urlresolvers
 from django.db import transaction
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 
+import common.decorators
 from conference import dataaccess
 from conference import models
 from conference import settings
@@ -701,7 +702,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    @views.json
+    @common.decorators.render_to_json
     #@transaction.atomic
     def events(self, request, sid):
         sch = get_object_or_404(models.Schedule, id=sid)
@@ -1129,7 +1130,7 @@ class TicketAdmin(admin.ModelAdmin):
         return output
 
     def stats_data_view(self, request):
-        from conference.views import json_dumps
+        from common.jsonify import json_dumps
         output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 

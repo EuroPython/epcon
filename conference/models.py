@@ -16,7 +16,7 @@ from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
-from django_urls import UrlMixin
+from common.django_urls import UrlMixin
 
 import tagging
 from tagging.fields import TagField
@@ -83,6 +83,7 @@ class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
 
 class ConferenceManager(models.Manager):
     def current(self):
+        from django.conf import settings
         key = 'CONFERENCE_CURRENT'
         data = cache.get(key)
         if data is None:

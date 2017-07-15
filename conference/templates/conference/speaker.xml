@@ -38,7 +38,7 @@
     <talk>
         <title>{{ t.title }}</title>
         <public_url>{{ t.get_url }}</public_url>
-        <url>{% url conference-talk-xml t.slug as x %}{{ x|full_url }}</url>
+        <url>{% url "conference-talk-xml" t.slug as x %}{{ x|full_url }}</url>
     </talk>
     {% endfor %}
 </speaker>

@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
-from assopy import django_urls
 from assopy import janrain
 from assopy import settings
+from common import django_urls
+
 if settings.GENRO_BACKEND:
     from assopy.clients import genro, vies
 from assopy.utils import check_database_schema, send_email

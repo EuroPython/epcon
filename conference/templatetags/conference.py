@@ -587,16 +587,6 @@ def conference_schedule(parser, token):
 
     return ScheduleNode(conference, schedule, var_name)
 
-# XXX - remove (dup)
-@register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
-def render_talk_report(context, speaker, conference, tags):
-    context.update({
-        'speaker': speaker,
-        'conference': conference,
-        'tags': tags,
-    })
-    return context
-
 @register.filter
 def add_number(value, arg):
     return value + float(arg)
@@ -794,42 +784,6 @@ def conference_multilingual_attribute(parser, token):
                 return value.body if value else ''
 
     return AttributeNode(instance, attribute, var_name, fallback)
-
-@register.tag
-def conference_hotels(parser, token):
-    """
-    {% conference_hotels as var %}
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    try:
-        if contents[1] != 'as':
-            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-        var_name = contents[2]
-    except IndexError:
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-
-    class HotelsNode(TNode):
-        def __init__(self, var_name):
-            self.var_name = var_name
-
-        def render(self, context):
-            query = models.Hotel.objects.filter(visible = True).order_by('-modified', 'name')
-            if self.var_name:
-                context[self.var_name] = query
-                return ''
-            else:
-                return value
-    return HotelsNode(var_name)
-
-@register.inclusion_tag('conference/render_hotels.html')
-def render_hotels(hotels):
-    """
-    {% render_hotels hotels %}
-    """
-    return {
-        'hotels': hotels,
-    }
 
 @register.simple_tag()
 def video_cover_url(event, type='front', thumb=False):
@@ -1451,7 +1405,7 @@ olark.identify('%s');/*]]>{/literal}*/</script>
 
 @register.filter
 def json_(val):
-    from conference.views import json_dumps
+    from common.jsonify import json_dumps
     return mark_safe(json_dumps(val))
 
 @register.filter

@@ -3,7 +3,7 @@
 {% load conference %}
 <schedule>
     <code>{{ schedule.slug }}</code>
-    <conference>{% url conference-data-xml conference=schedule.conference as x %}{{ x|full_url }}</conference>
+    <conference>{% url "conference-data-xml" conference=schedule.conference as x %}{{ x|full_url }}</conference>
     <tracks>
     {% schedule_data schedule.id as sdata %}
     {% for tcode, events in timetable.iterOnTracks %}
@@ -31,7 +31,7 @@
             </tracks>
             <event>
                 {% if evt.talk %}
-                <talk>{% url conference-talk-xml evt.talk.slug as x %}{{ x|full_url }}</talk>
+                <talk>{% url "conference-talk-xml" evt.talk.slug as x %}{{ x|full_url }}</talk>
                 {% else %}
                 <custom xmlns="http://www.w3.org/1999/xhtml">{{ evt.name|escape_amp|safe }}</custom>
                 {% endif %}

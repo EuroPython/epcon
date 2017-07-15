@@ -1,145 +1,45 @@
 # -*- coding: UTF-8 -*-
 from __future__ import with_statement
-import functools
-import os.path
-import urllib
+
 import random
+import urllib
 from decimal import Decimal
 
+import os.path
+from django import forms
+from django import http
+from django.conf import settings as dsettings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.template.loader import render_to_string
+
+from common.decorators import render_to_json
+from common.decorators import render_to_template
 from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
-from conference.forms import SpeakerForm, TalkForm, AttendeeLinkDescriptionForm
+from conference.decorators import speaker_access, talk_access, profile_access
+from conference.forms import AttendeeLinkDescriptionForm
 from conference.forms import OptionForm
-
-from django import forms
-from django import http
-from django.conf import settings as dsettings
-from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
-from django.contrib import messages
-from django.core.urlresolvers import reverse
-from django.db import transaction
-from django.db.models import Q
-from django.shortcuts import redirect, render_to_response, get_object_or_404, render
-from django.template import RequestContext
-from django.template.loader import render_to_string
-
-import simplejson
-from decorator import decorator
-
-class MyEncode(simplejson.JSONEncoder):
-    def default(self, obj):
-        import datetime, decimal
-        if isinstance(obj, datetime.datetime):
-            return obj.strftime('%d/%m/%Y %H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%d/%m/%Y')
-        elif isinstance(obj, datetime.time):
-            return obj.strftime('%H:%M')
-        elif isinstance(obj, decimal.Decimal):
-            return str(obj)
-        elif isinstance(obj, set):
-            return list(obj)
-
-        return simplejson.JSONEncoder.default(self, obj)
-
-json_dumps = functools.partial(simplejson.dumps, cls=MyEncode)
-
-# see: http://www.djangosnippets.org/snippets/821/
-def render_to(template):
-    """
-    Decorator for Django views that sends returned dict to render_to_response function
-    with given template and RequestContext as context instance.
-
-    If view doesn't return dict then decorator simply returns output.
-    Additionally view can return two-tuple, which must contain dict as first
-    element and string with template name as second. This string will
-    override template name, given as parameter
-
-    Parameters:
-
-     - template: template name to use
-    """
-    def renderer(func):
-        def wrapper(request, *args, **kw):
-            output = func(request, *args, **kw)
-            if isinstance(output, (list, tuple)):
-                output, tpl = output
-            else:
-                tpl = template
-            ct = 'text/html'
-            if tpl.endswith('xml'):
-                ct = 'text/xml' if dsettings.DEBUG else 'application/xml'
-            if isinstance(output, dict):
-                if request.is_ajax() and settings.TEMPLATE_FOR_AJAX_REQUEST:
-                    tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)
-                return render_to_response(tpl, output, RequestContext(request))
-            else:
-                return output
-        return wrapper
-    return renderer
+from conference.forms import SpeakerForm
+from conference.forms import TalkForm
 
 
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
-def json(f):
-    """
-    Decorator to be applied to a view to serialize json in the result.
-    """
-    if dsettings.DEBUG:
-        ct = 'text/plain'
-        j = lambda d: simplejson.dumps(d, indent = 2)
-    else:
-        ct = 'application/json'
-        j = simplejson.dumps
-    def wrapper(func, *args, **kw):
-        try:
-            result = func(*args, **kw)
-        except Exception, e:
-            result = j(str(e))
-            status = 500
-        else:
-            if isinstance(result, http.HttpResponse):
-                return result
-            else:
-                result = j(result)
-                status = 200
-        return http.HttpResponse(content = result, content_type = ct, status = status)
-    return decorator(wrapper, f)
 
-def speaker_access(f):
-    """
-    Decorator that protects the view relative to a speaker.
-    """
-    def wrapper(request, slug, **kwargs):
-        spk = get_object_or_404(models.Speaker, slug=slug)
-        if request.user.is_staff or request.user == spk.user:
-            full_access = True
-            talks = spk.talks()
-        else:
-            full_access = False
-            conf = models.Conference.objects.current()
-            if settings.VOTING_OPENED(conf, request.user):
-                if settings.VOTING_ALLOWED(request.user):
-                    talks = spk.talks()
-                else:
-                    if settings.VOTING_DISALLOWED:
-                        return redirect(settings.VOTING_DISALLOWED)
-                    else:
-                        raise http.Http404()
-            else:
-                talks = spk.talks(status='accepted')
-                if talks.count() == 0:
-                    raise http.Http404()
-
-        return f(request, slug, speaker=spk, talks=talks, full_access=full_access, **kwargs)
-    return wrapper
-
-@render_to('conference/speaker.html')
 @speaker_access
+@render_to_template('conference/speaker.html')
 def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
     if request.method == 'POST':
         if not full_access:
@@ -173,49 +73,15 @@ def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm
     }
 
 @speaker_access
-@render_to('conference/speaker.xml')
+@render_to_template('conference/speaker.xml')
 def speaker_xml(request, slug, speaker, full_access, talks):
     return {
         'speaker': speaker,
         'talks': talks,
     }
 
-def talk_access(f):
-    """
-    Decorator that protects the view relative to a talk.
-    """
-    def wrapper(request, slug, **kwargs):
-        tlk = get_object_or_404(models.Talk, slug=slug)
-        if request.user.is_anonymous():
-            full_access = False
-        elif request.user.is_staff:
-            full_access = True
-        else:
-            try:
-                tlk.get_all_speakers().get(user__id=request.user.id)
-            except (models.Speaker.DoesNotExist, models.Speaker.MultipleObjectsReturned):
-                # The MultipleObjectsReturned can happen if the user is not logged on and .id is None
-                full_access = False
-            else:
-                full_access = True
 
-        # if the talk is unconfirmed can access:
-        #   * superusers or speakers (full access = True)
-        #   * if the community voting is in progress who has the right to vote
-        if tlk.status == 'proposed' and not full_access:
-            conf = models.Conference.objects.current()
-            if not settings.VOTING_OPENED(conf, request.user):
-                return http.HttpResponseForbidden()
-            if not settings.VOTING_ALLOWED(request.user):
-                if settings.VOTING_DISALLOWED:
-                    return redirect(settings.VOTING_DISALLOWED)
-                else:
-                    return http.HttpResponseForbidden()
-
-        return f(request, slug, talk=tlk, full_access=full_access, **kwargs)
-    return wrapper
-
-@render_to('conference/talk.html')
+@render_to_template('conference/talk.html')
 @talk_access
 def talk(request, slug, talk, full_access, talk_form=None):
     conf = models.Conference.objects.current()
@@ -254,7 +120,7 @@ def talk(request, slug, talk, full_access, talk_form=None):
         'voting': conf.voting(),
     }
 
-@render_to('conference/talk_preview.html')
+@render_to_template('conference/talk_preview.html')
 @talk_access
 def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
     conf = models.Conference.objects.current()
@@ -263,14 +129,14 @@ def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
         'voting': conf.voting(),
     }
 
-@render_to('conference/talk.xml')
+@render_to_template('conference/talk.xml')
 @talk_access
 def talk_xml(request, slug, talk, full_access):
     return {
         'talk': talk,
     }
 
-def talk_video(request, slug):
+def talk_video(request, slug):  # pragma: no cover
     tlk = get_object_or_404(models.Talk, slug=slug)
 
     if not tlk.video_type or tlk.video_type == 'download':
@@ -315,20 +181,21 @@ def talk_video(request, slug):
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
 
-@render_to('conference/conference.xml')
+@render_to_template('conference/conference.xml')
 def conference_xml(request, conference):
     conference = get_object_or_404(models.Conference, code=conference)
     talks = models.Talk.objects.filter(conference=conference)
     schedules = [
         (s, utils.TimeTable2.fromSchedule(s.id))
-        for s in models.Schedule.objects.filter(conference=conference.code)]
+        for s in models.Schedule.objects.filter(conference=conference.code)
+    ]
     return {
         'conference': conference,
         'talks': talks,
         'schedules': schedules,
     }
 
-def talk_report(request):
+def talk_report(request):  # pragma: no cover
     conference = request.GET.getlist('conference')
     tags = request.GET.getlist('tag')
     return render_to_response(
@@ -338,7 +205,7 @@ def talk_report(request):
         },
         context_instance = RequestContext(request))
 
-@render_to('conference/schedule.html')
+@render_to_template('conference/schedule.html')
 def schedule(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
     return {
@@ -346,7 +213,7 @@ def schedule(request, conference, slug):
     }
 
 @login_required
-@json
+@render_to_json
 def schedule_event_interest(request, conference, slug, eid):
     evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
     if request.method == 'POST':
@@ -370,7 +237,7 @@ def schedule_event_interest(request, conference, slug, eid):
     return { 'interest': val }
 
 @login_required
-@json
+@render_to_json
 def schedule_event_booking(request, conference, slug, eid):
     evt = get_object_or_404(models.Event, schedule__conference=conference, schedule__slug=slug, id=eid)
     status = models.EventBooking.objects.booking_status(evt.id)
@@ -401,7 +268,7 @@ def schedule_event_booking(request, conference, slug, eid):
         'user': request.user.id in status['booked'],
     }
 
-@json
+@render_to_json
 def schedule_events_booking_status(request, conference):
     data = dataaccess.conference_booking_status(conference)
     uid = request.user.id if request.user.is_authenticated() else 0
@@ -413,31 +280,13 @@ def schedule_events_booking_status(request, conference):
         del v['booked']
     return data
 
+@render_to_template('conference/schedule.xml')
 def schedule_xml(request, conference, slug):
     sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
-    ctx = {
+    return {
         'schedule': sch,
         'timetable': utils.TimeTable2.fromSchedule(sch.id),
     }
-    return render(request, 'conference/schedule.xml', ctx, content_type='text/xml')
-
-def schedule_speakers_xml(request, conference, slug):
-    sch = get_object_or_404(models.Schedule, conference = conference, slug = slug)
-    query = Q(talk__event__schedule = sch) | Q(additional_speakers__event__schedule = sch)
-    speakers = models.Speaker.objects.filter(query)
-    return render_to_response(
-        'conference/schedule_speakers.xml', { 'schedule': sch, 'speakers': speakers },
-        context_instance = RequestContext(request),
-        content_type = 'text/xml',
-    )
-
-def talks_xml(request, conference):
-    talks = models.Talk.objects.filter(conference=conference)
-    return render_to_response(
-        'conference/talks.xml', { 'conference': conference, 'talks': talks },
-        context_instance = RequestContext(request),
-        content_type = 'text/xml',
-    )
 
 def genro_wrapper(request):
     """
@@ -452,7 +301,7 @@ def genro_wrapper(request):
         'conference/genro_wrapper.html', conf,
         context_instance = RequestContext(request))
 
-@json
+@render_to_json
 def places(request):
     """
     Returns a json special places and hotels.
@@ -492,12 +341,12 @@ def places(request):
 
     return places
 
-@json
-def sponsor(request, sponsor):
+@render_to_json
+def sponsor_json(request, sponsor):
     """
     Returns the data of the requested sponsor
     """
-    sponsor = get_object_or_404(models.Sponsor, slug = sponsor)
+    sponsor = get_object_or_404(models.Sponsor, slug=sponsor)
     return {
         'sponsor': sponsor.sponsor,
         'slug': sponsor.slug,
@@ -827,41 +676,7 @@ def voting(request):
             tpl = 'conference/voting.html'
         return render(request, tpl, ctx)
 
-def profile_access(f):
-    """
-    Decorator which protect the relative view to a profile.
-    """
-    def wrapper(request, slug, **kwargs):
-        try:
-            profile = models.AttendeeProfile.objects\
-                .select_related('user')\
-                .get(slug=slug)
-        except models.AttendeeProfile.DoesNotExist:
-            raise http.Http404()
-
-        if request.user.is_staff or request.user == profile.user:
-            full_access = True
-        else:
-            full_access = False
-            # if the profile belongs to a speaker with talk of "accepted" is visible
-            # whatever you say the same profile.
-            accepted = models.TalkSpeaker.objects\
-                .filter(speaker__user=profile.user)\
-                .filter(talk__status='accepted')\
-                .count()
-            if not accepted:
-                # if the community voting is open and the profile belongs to a speaker
-                # with the talk in the race page is visible
-                conf = models.Conference.objects.current()
-                if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
-                    if profile.visibility == 'x':
-                        return http.HttpResponseForbidden()
-                    elif profile.visibility == 'm' and request.user.is_anonymous():
-                        return http.HttpResponseForbidden()
-        return f(request, slug, profile=profile, full_access=full_access, **kwargs)
-    return wrapper
-
-@render_to('conference/profile.html')
+@render_to_template('conference/profile.html')
 @profile_access
 def user_profile(request, slug, profile=None, full_access=False):
     fc = utils.dotted_import(settings.FORMS['Profile'])
@@ -888,7 +703,7 @@ def myself_profile(request):
     p = models.AttendeeProfile.objects.getOrCreateForUser(request.user)
     return redirect('conference-profile', slug=p.slug)
 
-@json
+@render_to_json
 def schedule_events_expected_attendance(request, conference):
     return dataaccess.expected_attendance(conference)
 
@@ -969,7 +784,7 @@ def user_profile_link(request, uuid):
     return render(request, 'conference/profile_link.html', ctx)
 
 @login_required
-@json
+@render_to_json
 def user_profile_link_message(request, uuid):
     profile = get_object_or_404(models.AttendeeProfile, uuid=uuid).user_id
     uid = request.user.id

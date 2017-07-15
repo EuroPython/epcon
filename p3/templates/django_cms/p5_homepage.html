@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load p3 microblog_tags conference i18n cms_tags static thumbnail %}
+{% load p3 conference i18n cms_tags static thumbnail %}
 {% block BODY_ID %}home{% endblock %}
 {% block body-class %}home-tpl{% endblock %}
 
@@ -186,30 +186,6 @@
 
 
 {% block MAIN_CONTENT %}
-{% if posts %}
-<section class="blog-container">
-    <div class="grid-container">
-        {% post_list count=3 as posts %}
-        <div class="grid-100">
-            <h2 class="border-title">{% trans "Watch our blog for updates" %}</h2>
-        </div>
-        {% for post in posts %}
-            {% get_post_data post.id as data %}
-            <div class="grid-33">
-                <h4><a href="{{ data.url }}">{{ data.content.headline }}</a></h4>
-                <p class="post-date">{{ post.date|date:"j F Y" }}</p>
-
-                <!--
-                &ensp;{% if data.comments %}<a href="{{ data.url }}#comments">{{ data.comments|length }} comment{{data.comments|length|pluralize:"o,i"}}</a>{% endif %}
-                -->
-
-                <div class="post-abstract">{{ data.content.summary|safe }}</div>
-            </div>
-        {% endfor %}
-    </div><!-- /grid-container -->
-</section>
-{% endif %}
-
 <script type="text/javascript">
     {% if not request.toolbar.edit_mode %}
     $(document).ready(function(){

@@ -27,7 +27,7 @@
         <talk>
             <status>{{ talk.status }}</status>
             <public_url>{{ talk.get_url }}</public_url>
-            <url>{% url conference-talk-xml talk.slug as x %}{{ x|full_url }}</url>
+            <url>{% url "conference-talk-xml" talk.slug as x %}{{ x|full_url }}</url>
             <title>{{ talk.title }}</title>
         </talk>
         {% endfor %}
@@ -35,8 +35,8 @@
     <schedules>
         {% for sch, timetable in schedules %}
         <schedule>
-            <url>{% url conference-schedule-xml conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</url>
-            <public_url>{% url conference-schedule conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</public_url>
+            <url>{% url "conference-schedule-xml" conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</url>
+            <public_url>{% url "conference-schedule" conference=conference.code slug=sch.slug as x %}{{ x|full_url }}</public_url>
             <date>{{ sch.date|date:"Y/m/d" }}</date>
             {% if sch.description %}
             <description xmlns="http://www.w3.org/1999/xhtml">{{ sch.description|safe }}</description>
@@ -68,7 +68,7 @@
                     </tracks>
                     <event>
                         {% if evt.talk %}
-                        <talk>{% url conference-talk-xml evt.talk.slug as x %}{{ x|full_url }}</talk>
+                        <talk>{% url "conference-talk-xml" evt.talk.slug as x %}{{ x|full_url }}</talk>
                         {% else %}
                         <custom xmlns="http://www.w3.org/1999/xhtml">{{ evt.name|escape_amp|safe }}</custom>
                         {% endif %}

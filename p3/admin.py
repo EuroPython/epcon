@@ -280,10 +280,9 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         return my_urls + urls
 
     def stats_data(self, request):
-        from conference.views import json_dumps
+        from common.jsonify import json_dumps
         from django.db.models import Q
         from collections import defaultdict
-        from microblog.models import PostContent
         import datetime
 
         conferences = cmodels.Conference.objects\
@@ -318,14 +317,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 .select_related('deadline')\
                 .order_by('deadline__date')
             markers = [ ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body)) for d in deadlines ]
-
-            posts = PostContent.objects\
-                .filter(language='en')\
-                .filter(post__date__lte=c.conference_start, post__date__gte=dlimit)\
-                .filter(post__status='P')\
-                .select_related('post')\
-                .order_by('post__date')
-            markers += [ ((d.post.date.date() - c.conference_start).days, 'BLOG: ' + d.headline) for d in posts ]
 
             output[c.code] = {
                 'data': data,
@@ -383,87 +374,89 @@ class DonationAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Donation, DonationAdmin)
 
-class HotelBookingAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'booking_start', 'booking_end', 'minimum_night')
+if 0:  # FIXME: remove hotels and sim
+    class HotelBookingAdmin(admin.ModelAdmin):
+        list_display = ('conference', 'booking_start', 'booking_end', 'minimum_night')
 
-admin.site.register(models.HotelBooking, HotelBookingAdmin)
+    admin.site.register(models.HotelBooking, HotelBookingAdmin)
 
-class HotelRoomAdmin(admin.ModelAdmin):
-    list_display = ('_conference', 'room_type', 'quantity', 'amount',)
-    list_editable = ('quantity', 'amount',)
-    list_filter = ('booking__conference',)
-    list_select_related = True
 
-    def _conference(self, o):
-        return o.booking.conference_id
+    class HotelRoomAdmin(admin.ModelAdmin):
+        list_display = ('_conference', 'room_type', 'quantity', 'amount',)
+        list_editable = ('quantity', 'amount',)
+        list_filter = ('booking__conference',)
+        list_select_related = True
 
-    def get_urls(self):
-        urls = super(HotelRoomAdmin, self).get_urls()
-        my_urls = patterns('',
-            url(r'^tickets/$', self.admin_site.admin_view(self.ticket_list), name='p3-hotelrooms-tickets-data'),
-        )
-        return my_urls + urls
+        def _conference(self, o):
+            return o.booking.conference_id
 
-    def ticket_list(self, request):
-        from conference.views import json_dumps
-        day_ix = int(request.GET['day'])
-        room_type = request.GET['type']
-        rdays = models.TicketRoom.objects.reserved_days()
-        day = rdays[day_ix]
+        def get_urls(self):
+            urls = super(HotelRoomAdmin, self).get_urls()
+            my_urls = patterns('',
+                url(r'^tickets/$', self.admin_site.admin_view(self.ticket_list), name='p3-hotelrooms-tickets-data'),
+            )
+            return my_urls + urls
 
-        qs = models.TicketRoom.objects.valid_tickets()\
-            .filter(room_type__room_type=room_type, checkin__lte=day, checkout__gte=day)\
-            .select_related('ticket__user', 'ticket__orderitem__order')\
-            .order_by('ticket__orderitem__order__created')
+        def ticket_list(self, request):
+            from common.jsonify import json_dumps
+            day_ix = int(request.GET['day'])
+            room_type = request.GET['type']
+            rdays = models.TicketRoom.objects.reserved_days()
+            day = rdays[day_ix]
 
-        output = []
-        for row in qs:
-            user = row.ticket.user
-            order = row.ticket.orderitem.order
-            name = u'{0} {1}'.format(user.first_name, user.last_name)
-            if row.ticket.name and row.ticket.name != name:
-                name = u'{0} ({1})'.format(row.ticket.name, name)
-            output.append({
-                'user': {
-                    'id': user.id,
-                    'name': name,
-                },
-                'order': {
-                    'id': order.id,
-                    'code': order.code,
-                    'method': order.method,
-                    'complete': order._complete,
-                },
-                'period': (row.checkin, row.checkout, row.checkout == day),
-            })
-        return http.HttpResponse(json_dumps(output), 'text/javascript')
+            qs = models.TicketRoom.objects.valid_tickets()\
+                .filter(room_type__room_type=room_type, checkin__lte=day, checkout__gte=day)\
+                .select_related('ticket__user', 'ticket__orderitem__order')\
+                .order_by('ticket__orderitem__order__created')
 
-admin.site.register(models.HotelRoom, HotelRoomAdmin)
+            output = []
+            for row in qs:
+                user = row.ticket.user
+                order = row.ticket.orderitem.order
+                name = u'{0} {1}'.format(user.first_name, user.last_name)
+                if row.ticket.name and row.ticket.name != name:
+                    name = u'{0} ({1})'.format(row.ticket.name, name)
+                output.append({
+                    'user': {
+                        'id': user.id,
+                        'name': name,
+                    },
+                    'order': {
+                        'id': order.id,
+                        'code': order.code,
+                        'method': order.method,
+                        'complete': order._complete,
+                    },
+                    'period': (row.checkin, row.checkout, row.checkout == day),
+                })
+            return http.HttpResponse(json_dumps(output), 'text/javascript')
 
-class TicketRoomAdmin(admin.ModelAdmin):
-    list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
-    list_select_related = True
-    search_fields = ('ticket__user__first_name', 'ticket__user__last_name', 'ticket__user__email', 'ticket__orderitem__order__code')
-    raw_id_fields = ('ticket', )
-    list_filter = ('room_type__room_type',)
+    admin.site.register(models.HotelRoom, HotelRoomAdmin)
 
-    def _user(self, o):
-        return o.ticket.user
+    class TicketRoomAdmin(admin.ModelAdmin):
+        list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
+        list_select_related = True
+        search_fields = ('ticket__user__first_name', 'ticket__user__last_name', 'ticket__user__email', 'ticket__orderitem__order__code')
+        raw_id_fields = ('ticket', )
+        list_filter = ('room_type__room_type',)
 
-    def _room_type(self, o):
-        return o.room_type.get_room_type_display()
+        def _user(self, o):
+            return o.ticket.user
 
-    def _order_code(self, o):
-        return o.ticket.orderitem.order.code
+        def _room_type(self, o):
+            return o.room_type.get_room_type_display()
 
-    def _order_date(self, o):
-        return o.ticket.orderitem.order.created
+        def _order_code(self, o):
+            return o.ticket.orderitem.order.code
 
-    def _order_confirmed(self, o):
-        return o.ticket.orderitem.order._complete
-    _order_confirmed.boolean = True
+        def _order_date(self, o):
+            return o.ticket.orderitem.order.created
 
-admin.site.register(models.TicketRoom, TicketRoomAdmin)
+        def _order_confirmed(self, o):
+            return o.ticket.orderitem.order._complete
+        _order_confirmed.boolean = True
+
+    admin.site.register(models.TicketRoom, TicketRoomAdmin)
 
 
 class InvoiceAdmin(aadmin.InvoiceAdmin):
