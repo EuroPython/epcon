@@ -20,15 +20,19 @@ class Command(BaseCommand):
         )
 
         pages = [
-            ('home', 'HOME'),
-            ('contacts', 'CONTACTS'),
-            ('privacy', 'PRIVACY'),
-            ('conduct-code', 'CONDUCT-CODE'),
-            ('staff', 'STAFF')
+            ('contacts', 'CONTACTS', 'content.html'),
+            ('privacy', 'PRIVACY', 'content-1col.html'),
+            ('conduct-code', 'CONDUCT-CODE', 'content.html'),
+            ('staff', 'STAFF', 'content.html'),
+            ('home', 'HOME', 'p5_homepage.html')
         ]
 
-        print "Creating pages: ", pages
+        for id, title, template in pages:
+            print "Creating page: ", id, title, template
 
-        for id, title in pages:
-            create_page(title=title, template='django_cms/content.html',
-                        language='en', reverse_id=id)
+            create_page(
+                title=title,
+                template='django_cms/' + template,
+                language='en',
+                reverse_id=id,
+            )
