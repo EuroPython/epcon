@@ -1,7 +1,7 @@
 from fabric.api import env
 
 env.user = 'pyconwww'
-env.hosts = ['euroython.eu']
+env.hosts = ['europython.eu']
 env.forward_agent = True
 
 import sys
@@ -78,10 +78,10 @@ class PyconLayout(object):
         self.project_name = project_name
 
     def working_copy(self):
-        return '/srv/euroython.eu/sites/{}/'.format(self.project_name)
+        return '/srv/europython.eu/sites/{}/'.format(self.project_name)
 
     def virtualenv(self):
-        return '/srv/euroython.eu/virtualenvs/{}/'.format(self.project_name)
+        return '/srv/europython.eu/virtualenvs/{}/'.format(self.project_name)
 
 class ProcessManager(object):
     def __init__(self, upstart_name):

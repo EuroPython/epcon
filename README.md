@@ -4,6 +4,8 @@ README
 ======
 This project (and its dependencies) contains the EuroPython website source code.
 
+The code is used for the EuroPython 2016 website.
+
 LICENSE
 =======
 As a general rule, the whole website code is copyrighted by the Python Italia non-profit association, and released under the 2-clause BSD license (see LICENSE.bsd).
@@ -45,6 +47,7 @@ mkdir -p data/site
 python manage.py syncdb
 python manage.py migrate
 ```
+
 RUN
 -----
 
