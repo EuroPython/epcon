@@ -39,6 +39,10 @@ def content(name, value, params=None):
                 pvalue = '"%s"' % pvalue
             t.append('%s=%s' % (pname, pvalue))
         name += ';' + ';'.join(t)
+    if isinstance(name, unicode):
+        name = name.encode('utf-8')
+    if isinstance(value, unicode):
+        value = value.encode('utf-8')
     return encode('%s:%s' % (name, value))
 
 def TEXT(value):
