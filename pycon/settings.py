@@ -306,13 +306,9 @@ LOCALE_PATHS = (
     os.path.join(PROJECT_DIR, 'locale'),
 )
 
-INSTALLED_APPS = (
-    # 'test_without_migrations',
-    'filebrowser',
-    # Warning: the sequence p3/assopy/admin is important to be able to
-    # resolve correctly templates
-
-    'djangocms_admin_style',
+# Warning: the sequence p3/assopy/admin is important to be able to
+# resolve correctly templates
+DJANGO_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -321,56 +317,56 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'django.contrib.redirects',
+)
 
+THIRD_PARTY_APPS = (
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
+    'djangocms_admin_style',
+    'djangocms_grid',
+    'djangocms_text_ckeditor',
+    'filebrowser',
+
+    'authority',
+    'captcha',
+    'cms',
+    'cms_utils',
+    'django_crontab',
+    'django_comments',
+    'django_xmlrpc',
+    'easy_thumbnails',
+    'email_template',
+    'filer',
+    'formstyle',
+    'markitup',
+    'menus',
+    'mptt',
+    # 'pages' ,
+    'paypal.standard.ipn',
+    # 'pingback',
+    'raven.contrib.django.raven_compat',
+    'rosetta',
+    'sekizai',
+    'social.apps.django_app.default',
+    'tagging',
+    'taggit',
+    'treebeard',
+    # 'django_extensions',
+)
+
+PROJECT_APPS = (
     'p3',
     'assopy',
     'assopy.stripe',
     'conference',
-
-    'social.apps.django_app.default',
-
-    'djangocms_text_ckeditor',
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_link',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
-    'djangocms_grid',
-
-    'treebeard',
-    'cms',
-    'menus',
-    'sekizai',
-    'tagging',
-    'taggit',
-    'authority',
-    #'pages',
-    'mptt',
-
-    'django_xmlrpc',
-    'pingback',
-    'rosetta',
-
-    'email_template',
-    'paypal.standard.ipn',
-    'filer',
-    'easy_thumbnails',
-
-    'captcha',
-    'django_crontab',
-    'formstyle',
-
-    'markitup',
-    'cms_utils',
-
-    'raven.contrib.django.raven_compat',
-    # 'django_extensions',
+    'hcomments',
 )
 
-# prevent issue with django.apps not being found
-if not LESS_THAN_17:
-    INSTALLED_APPS += ('django_comments', 'hcomments', )
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
@@ -1294,3 +1290,5 @@ except ImportError, reason:
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
 
+
+CONFERENCE = 'ep2018'
