@@ -15,10 +15,6 @@ source ../pycon-env/bin/activate
 title "PIP install dev requirements"
 pip install -r requirements-dev.txt
 
-
-title "Copy settings"
-[[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
-
 title "Create .env file"
 [[ -e .env ]] || cp .env.example .env
 

@@ -19,8 +19,7 @@ INSTALL & SETUP
 ---------------
 
 Run provision.sh. Read it for more details.
-
-Edit `pycon/settings_locale.py` to your taste!
+Customise your .env file (it's not versioned)
 
 ```bash
 python manage.py runserver

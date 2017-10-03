@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
-# Django settings for pycon project.
+
+from __future__ import absolute_import
+
 import os
 import os.path
 import sys
 from decouple import config, Csv
 from pathlib2 import Path
 from dj_database_url import parse as db_url
-import django
 
 # Configure DEBUG settings
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -46,13 +47,16 @@ MANAGERS = ADMINS
 # Cast to Csv() because we can have multiple comma-separated values.
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default='*', cast=Csv())
 
+# -----
 # PATHS
 # -----
-
-# first .parent gives a directory, second .parent gives the parent dir.
-_DEFAULT_PROJECT_DIR = Path(__file__).parent.parent
+# first .parent gives the directory (settings dir)
+# second .parent gives the pycon dir (core module)
+# third .parent gives the whatever is the main repo/project dir
+_DEFAULT_PROJECT_DIR = Path(__file__).parent.parent.parent
 
 PROJECT_DIR = Path(config('PROJECT_DIR', default=_DEFAULT_PROJECT_DIR))
+
 DATA_DIR = config('DATA_DIR', default=PROJECT_DIR / 'data')
 # rename to 'DOCUMENTS_PATH' maybe?
 OTHER_STUFF = config('OTHER_STUFF', default=PROJECT_DIR / 'documents')
@@ -65,6 +69,7 @@ sys.path.insert(0, str(PROJECT_DIR / 'deps'))
 
 SITE_DATA_ROOT = DATA_DIR / 'site'
 
+# ---------
 # DATABASES
 # ---------
 # (protocol://username:password@hostname/databasename
@@ -140,6 +145,9 @@ USE_TZ = True
 MEDIA_ROOT = str(DATA_DIR / 'media_public')
 SECURE_MEDIA_ROOT = str(DATA_DIR / 'media_private')
 
+# files under SECURE_MEDIA_BOOT must be served by django, this if
+# is needed to avoid they end up in a subdir of MEDIA_ROOT that is
+# normally served by an external webserver
 check = os.path.commonprefix((MEDIA_ROOT, SECURE_MEDIA_ROOT))
 if check.startswith(str(MEDIA_ROOT)):
     if not DEBUG:
@@ -1204,14 +1212,3 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
-
-# files under SECURE_MEDIA_BOOT must be served by django, this if
-# is needed to avoid they end up in a subdir of MEDIA_ROOT that is
-# normally served by an external webserver
-
-try:
-    from pycon.settings_locale import *
-except ImportError, reason:
-    #import sys
-    #sys.stderr.write('Could not import local settings: %s\n' % reason)
-    pass
