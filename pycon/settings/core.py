@@ -1151,7 +1151,7 @@ def cron_cleanup():
 
 CRONTAB_COMMAND_PREFIX = 'DATA_DIR=%s OTHER_STUFF=%s' % (DATA_DIR, OTHER_STUFF)
 CRONJOBS = [
-    ('@weekly', 'pycon.settings.cron_cleanup')
+    ('@weekly', 'pycon.settings.core.cron_cleanup')
 ]
 
 
