@@ -267,21 +267,23 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'pycon.urls'
 
-# Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'pycon.wsgi.application'
-
 
 LOCALE_PATHS = [str(PROJECT_DIR / 'locale')]
 
-# Warning: the sequence p3/assopy/admin is important to be able to
-# resolve correctly templates
 DJANGO_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+
+    # This is the exception to the rule, not django app but need to be before
+    # django.contrib.admin in order to overwrite the django_admin_style skin in
+    # django admin.
+    'djangocms_admin_style',
     'django.contrib.admin',
+
     'django.contrib.staticfiles',
     'django.contrib.redirects',
 )
@@ -293,10 +295,8 @@ THIRD_PARTY_APPS = (
     'cmsplugin_filer_link',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    'djangocms_admin_style',
     'djangocms_grid',
     'djangocms_text_ckeditor',
-    'filebrowser',
 
     'authority',
     'captcha',
@@ -308,6 +308,7 @@ THIRD_PARTY_APPS = (
     'easy_thumbnails',
     'email_template',
     'filer',
+    'filebrowser',
     'formstyle',
     'markitup',
     'menus',
