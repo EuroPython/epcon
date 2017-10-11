@@ -1,17 +1,16 @@
 # -*- coding: UTF-8 -*-
-# Django settings for pycon project.
+
+from __future__ import absolute_import
+
 import os
 import os.path
 import sys
+from decouple import config, Csv
+from pathlib2 import Path
+from dj_database_url import parse as db_url
 
 # Configure DEBUG settings
-if os.environ.get('DEBUG') == 'True':
-    DEBUG = True
-else:
-    DEBUG = False
-    
-# For development, we always run in debug mode...
-#DEBUG=True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # We want to use HTTPS for everything and not fiddle with docker or gunicorn
 # setups.
@@ -36,60 +35,51 @@ else:
         del os.environ['HTTPS']
     HTTPS = False
 
-import django
 
-from distutils.version import StrictVersion
-
-#from django.utils.translation import ugettext as _
-_ = lambda x:x
-
-LESS_THAN_18 = StrictVersion(django.get_version()) < StrictVersion('1.8')
-LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
+# from django.utils.translation import ugettext as _
+_ = lambda x: x
 
 ADMINS = (
     ('web-wg', 'web-wg@europython.eu'),
 )
-
 MANAGERS = ADMINS
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", '*').split(',')
-#APPEND_SLASH = False
+# Cast to Csv() because we can have multiple comma-separated values.
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default='*', cast=Csv())
 
-PROJECT_DIR = os.environ.get('PROJECT_DIR', os.path.normpath(
-    os.path.join(os.path.dirname(__file__), '..')))
-DATA_DIR = os.environ.get('DATA_DIR', os.path.join(PROJECT_DIR, 'data'))
-OTHER_STUFF = os.environ.get('OTHER_STUFF',
-                             os.path.join(PROJECT_DIR, 'documents'))
+# -----
+# PATHS
+# -----
+# first .parent gives the directory (settings dir)
+# second .parent gives the pycon dir (core module)
+# third .parent gives the whatever is the main repo/project dir
+_DEFAULT_PROJECT_DIR = Path(__file__).parent.parent.parent
 
-LOGS_DIR = os.path.join(PROJECT_DIR, 'logs/')
+PROJECT_DIR = Path(config('PROJECT_DIR', default=_DEFAULT_PROJECT_DIR))
 
-if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
+DATA_DIR = config('DATA_DIR', default=PROJECT_DIR / 'data')
+# rename to 'DOCUMENTS_PATH' maybe?
+OTHER_STUFF = config('OTHER_STUFF', default=PROJECT_DIR / 'documents')
+LOGS_DIR = PROJECT_DIR / 'logs'
 
-sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
+if not LOGS_DIR.is_dir():
+    LOGS_DIR.mkdir()
 
-SITE_DATA_ROOT = DATA_DIR + '/site'
+sys.path.insert(0, str(PROJECT_DIR / 'deps'))
 
-DATABASE_TYPE = os.environ.get('DATABASE')
+SITE_DATA_ROOT = DATA_DIR / 'site'
 
-if DATABASE_TYPE == "postgres":
-    user = os.environ.get('DATABASE_USER')
-    password = os.environ.get('DATABASE_PASSWORD')
-    dbname = os.environ.get('DATABASE_NAME')
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': dbname,
-        'USER': user,
-        'PASSWORD': password,
-    }
-}
-else:
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DATA_ROOT + '/p3.db',
-    }
+# ---------
+# DATABASES
+# ---------
+# (protocol://username:password@hostname/databasename
+# example for postgres database:
+# 'postgres://epuser:epuserpassword@localhost/epdb'
+
+DATABASES = {
+    'default': config('DATABASE_URL',
+                      default='sqlite:///' + str(SITE_DATA_ROOT / 'p3.db'),
+                      cast=db_url)
 }
 
 # EuroPython outgoing mail server
@@ -152,8 +142,20 @@ USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 
-MEDIA_ROOT = DATA_DIR + '/media_public'
-SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
+MEDIA_ROOT = str(DATA_DIR / 'media_public')
+SECURE_MEDIA_ROOT = str(DATA_DIR / 'media_private')
+
+# files under SECURE_MEDIA_BOOT must be served by django, this if
+# is needed to avoid they end up in a subdir of MEDIA_ROOT that is
+# normally served by an external webserver
+check = os.path.commonprefix((MEDIA_ROOT, SECURE_MEDIA_ROOT))
+if check.startswith(str(MEDIA_ROOT)):
+    if not DEBUG:
+        raise RuntimeError(
+            'SECURE_MEDIA_ROOT cannot be a subdir of MEDIA_ROOT'
+        )
+    else:
+        print 'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -164,7 +166,7 @@ SECURE_MEDIA_URL = '/p3/secure_media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = DATA_DIR + '/static/'
+STATIC_ROOT = str(DATA_DIR / 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -186,16 +188,11 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
+SECRET_KEY = config("SECRET_KEY")
 
-from django.conf import global_settings
-
-#
-# XXX THESE SHOULD GO INTO THE OS.ENVIRON !
-#
 LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
 
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',
@@ -217,7 +214,7 @@ SOCIAL_AUTH_PIPELINE = (
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
     'DIRS': [
-        os.path.join(PROJECT_DIR, 'templates'),
+        str(PROJECT_DIR / 'templates'),
     ],
     'OPTIONS': {
         'debug': DEBUG,
@@ -248,34 +245,6 @@ TEMPLATES = [{
     },
 }]
 
-if LESS_THAN_18:
-    TEMPLATE_CONTEXT_PROCESSORS = [
-        "django.contrib.auth.context_processors.auth",
-        'django.contrib.messages.context_processors.messages',
-        "django.core.context_processors.i18n",
-        "django.core.context_processors.debug",
-        "django.core.context_processors.request",
-        "django.core.context_processors.media",
-        'django.core.context_processors.csrf',
-        'django.core.context_processors.request',
-        "django.core.context_processors.tz",
-        'p3.context_processors.settings',
-        'conference.context_processors.current_url',
-        'conference.context_processors.stuff',
-        "sekizai.context_processors.sekizai",
-        "cms.context_processors.cms_settings",
-        "django.core.context_processors.static",
-
-        'social.apps.django_app.context_processors.backends',
-        'social.apps.django_app.context_processors.login_redirect',
-    ]
-
-    # doing this here instead of checking django cms version
-    MIGRATION_MODULES = {
-        'cms': 'cms.migrations_django',
-        'menus': 'menus.migrations_django',
-    }
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -298,79 +267,74 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'pycon.urls'
 
-# Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'pycon.wsgi.application'
 
+LOCALE_PATHS = [str(PROJECT_DIR / 'locale')]
 
-LOCALE_PATHS = (
-    os.path.join(PROJECT_DIR, 'locale'),
-)
-
-INSTALLED_APPS = (
-    # 'test_without_migrations',
-    'filebrowser',
-    # Warning: the sequence p3/assopy/admin is important to be able to
-    # resolve correctly templates
-
-    'djangocms_admin_style',
+DJANGO_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+
+    # This is the exception to the rule, not django app but need to be before
+    # django.contrib.admin in order to overwrite the django_admin_style skin in
+    # django admin.
+    'djangocms_admin_style',
     'django.contrib.admin',
+
     'django.contrib.staticfiles',
     'django.contrib.redirects',
+)
 
+THIRD_PARTY_APPS = (
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
+    'djangocms_grid',
+    'djangocms_text_ckeditor',
+
+    'authority',
+    'captcha',
+    'cms',
+    'cms_utils',
+    'django_crontab',
+    'django_comments',
+    'django_xmlrpc',
+    'easy_thumbnails',
+    'email_template',
+    'filer',
+    'filebrowser',
+    'formstyle',
+    'markitup',
+    'menus',
+    'mptt',
+    # 'pages' ,
+    'paypal.standard.ipn',
+    # 'pingback',
+    'raven.contrib.django.raven_compat',
+    'rosetta',
+    'sekizai',
+    'social.apps.django_app.default',
+    'tagging',
+    'taggit',
+    'treebeard',
+    # 'django_extensions',
+)
+
+PROJECT_APPS = (
     'p3',
     'assopy',
     'assopy.stripe',
     'conference',
-
-    'social.apps.django_app.default',
-
-    'djangocms_text_ckeditor',
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_link',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
-    'djangocms_grid',
-
-    'treebeard',
-    'cms',
-    'menus',
-    'sekizai',
-    'tagging',
-    'taggit',
-    'authority',
-    #'pages',
-    'mptt',
-
-    'django_xmlrpc',
-    'pingback',
-    'rosetta',
-
-    'email_template',
-    'paypal.standard.ipn',
-    'filer',
-    'easy_thumbnails',
-
-    'captcha',
-    'django_crontab',
-    'formstyle',
-
-    'markitup',
-    'cms_utils',
-
-    'raven.contrib.django.raven_compat',
-    # 'django_extensions',
+    'hcomments',
 )
 
-# prevent issue with django.apps not being found
-if not LESS_THAN_17:
-    INSTALLED_APPS += ('django_comments', 'hcomments', )
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
@@ -378,16 +342,10 @@ RECAPTCHA_OPTIONS = {
     'lang': 'en',
     'tabindex': 0,
     # 'custom_translations': {},
-    #'custom_theme_widget': None
+    # 'custom_theme_widget': None
 }
-RECAPTCHA_PRIVATE_KEY = os.environ.get(
-    'RECAPTCHA_PRIVATE_KEY',
-    # This needs to be passed in via the OS env:
-    'no-private-key-set')
-RECAPTCHA_PUBLIC_KEY = os.environ.get(
-    'RECAPTCHA_PUBLIC_KEY',
-    # Registered for EuroPython domains:
-    '6LdFmQcTAAAAAN1xx4M5UN6yg4TwFRXUwIrH5iGh')
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_USE_SSL = True
 NOCAPTCHA = True
 
@@ -426,7 +384,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'conference.log'),
+            'filename': str(LOGS_DIR / 'conference.log'),
             'encoding': 'utf-8',
             'formatter': 'verbose',
         },
@@ -457,9 +415,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 
     'social.backends.facebook.FacebookOAuth2',
-   'social.backends.google.GoogleOAuth2',
-   'social.backends.twitter.TwitterOAuth',
-   # 'django.contrib.auth.backends.ModelBackend',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.twitter.TwitterOAuth',
+    # 'django.contrib.auth.backends.ModelBackend',
 )
 
 
@@ -540,8 +498,10 @@ CKEDITOR_SETTINGS = {
 
 # html5lib sanitizer settings
 TEXT_ADDITIONAL_TAGS = ('iframe',)
-TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder',
-     'src', 'height', 'width')
+TEXT_ADDITIONAL_ATTRIBUTES = (
+    'scrolling', 'allowfullscreen', 'frameborder',
+    'src', 'height', 'width'
+)
 
 #
 # We're not going to use this feature for EuroPython 2015+:
@@ -567,14 +527,12 @@ DJANGOCMS_GRID_CONFIG = {
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-#
-# XXX THESE NEED TO GO INTO OS.ENVIRON !!!
-#
-CONFERENCE_CONFERENCE = 'ep2017'
-CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
+
+CONFERENCE_CONFERENCE = config('CONFERENCE_CONFERENCE')
+CONFERENCE_SEND_EMAIL_TO = ['helpdesk@europython.eu']
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2017.europython.eu/en/talk-voting/'
-CONFERENCE_TALK_VOTING_ELIGIBLE = ('ep2015', 'ep2016', 'ep2017')
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2018.europython.eu/en/talk-voting/'
+CONFERENCE_TALK_VOTING_ELIGIBLE = ('ep2015', 'ep2016', 'ep2017', 'ep2018')
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -583,8 +541,11 @@ CONFERENCE_FORMS = {
     'EventBooking': 'p3.forms.P3EventBookingForm',
 }
 
-CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
-CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
+CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT / 'rankings.txt'
+CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = \
+    SITE_DATA_ROOT / 'admin_ticket_emails.txt'
+
+# TODO: check why we have to load libraries
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
 # Conference sub-communities
@@ -682,6 +643,7 @@ def CONFERENCE_VOTING_OPENED(conf, user):
             return True
 
     return False
+
 
 def CONFERENCE_VOTING_ALLOWED(user):
 
@@ -1109,6 +1071,7 @@ def P3_LIVE_EMBED(request, track=None, event=None):
             'stream': url.rsplit('/', 1)[1],
             'url': url,
         }
+        # TODO: move that to a template file
         html = ("""
         <div>
             <div class="button" style="float: left; margin-right: 20px;">
@@ -1189,7 +1152,7 @@ def cron_cleanup():
 
 CRONTAB_COMMAND_PREFIX = 'DATA_DIR=%s OTHER_STUFF=%s' % (DATA_DIR, OTHER_STUFF)
 CRONJOBS = [
-    ('@weekly', 'pycon.settings.cron_cleanup')
+    ('@weekly', 'pycon.settings.core.cron_cleanup')
 ]
 
 
@@ -1197,9 +1160,7 @@ CRONJOBS = [
 # Google maps key
 #
 CONFERENCE_GOOGLE_MAPS = {
-    # Valid for europython.eu domain
-    # XXX This should go into os.environ
-    'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
+    'key': config("CONFERENCE_GOOGLE_MAPS_KEY"),
     'country': 'it',
 }
 
@@ -1207,10 +1168,10 @@ CONFERENCE_GOOGLE_MAPS = {
 # Stripe payment integration
 #
 STRIPE_ENABLED = True
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
-STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
-STRIPE_COMPANY_NAME = os.environ.get("STRIPE_COMPANY_NAME")
-STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
+STRIPE_COMPANY_NAME = config("STRIPE_COMPANY_NAME")
+STRIPE_COMPANY_LOGO = config("STRIPE_COMPANY_LOGO")
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
 
@@ -1219,13 +1180,10 @@ STRIPE_ALLOW_REMEMBER_ME = False
 #
 
 # Paypal merchant email
-PAYPAL_RECEIVER_EMAIL = os.environ.get("PAYPAL_RECEIVER_EMAIL")
+PAYPAL_RECEIVER_EMAIL = config("PAYPAL_RECEIVER_EMAIL")
 
 # If the merchant account is a debug one set this flag to True
-if os.environ.get('PAYPAL_TEST') == 'False':
-    PAYPAL_TEST = False
-else:
-    PAYPAL_TEST = True
+PAYPAL_TEST = config('PAYPAL_TEST', cast=bool)
 
 #
 # Janrain account
@@ -1255,42 +1213,3 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 if DEBUG:
     LOGGING['loggers']['django.request']['handlers'].append('console')
-
-# files under SECURE_MEDIA_BOOT must be served by django, this if
-# is needed to avoid they end up in a subdir of MEDIA_ROOT that is
-# normally served by an external webserver
-import os.path
-
-check = os.path.commonprefix((MEDIA_ROOT, SECURE_MEDIA_ROOT))
-if check.startswith(MEDIA_ROOT):
-    if not DEBUG:
-        raise RuntimeError('SECURE_MEDIA_ROOT cannot be a subdir of MEDIA_ROOT')
-    else:
-        print
-        'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
-
-
-if not SECRET_KEY:
-    if not DEBUG:
-        raise RuntimeError('SECRET_KEY not set')
-    else:
-        print
-        'WARN, SECRET_KEY not set'
-
-GRAPH_MODELS = {
-    'all_applications': True,
-    'group_models': True,
-}
-
-### Override any settings with local settings
-#
-# IMPORTANT: This needs to be last in this module.
-#
-
-try:
-    from pycon.settings_locale import *
-except ImportError, reason:
-    #import sys
-    #sys.stderr.write('Could not import local settings: %s\n' % reason)
-    pass
-

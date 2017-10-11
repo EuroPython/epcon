@@ -9,15 +9,17 @@ git remote add upstream git@github.com:europython/epcon.git
 
 title "Make virtualenv"
 
-virtualenv ../pycon-env
+virtualenv -p python2.7 ../pycon-env
 source ../pycon-env/bin/activate
 
 title "PIP install dev requirements"
 pip install -r requirements-dev.txt
 
+title "Create .env file"
+[[ -e .env ]] || cp .env.example .env
 
-title "Copy settings"
-[[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
+title "Create local_dev.py file"
+[[ -e pycon/settings/local_dev.py ]] || cp pycon/settings/local_dev.py.in pycon/settings/local_dev.py
 
 title "Generate data"
 mkdir -p data/site

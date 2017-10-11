@@ -7,5 +7,6 @@ python:
 
 install:
   - pip install -r requirements-dev.txt
+  - cp .env.travis .env
 
 script: "py.test"

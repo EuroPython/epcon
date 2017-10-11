@@ -2,6 +2,7 @@
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.utils import timezone
 
 from cms.api import create_page
 from conference.models import Conference
@@ -20,11 +21,11 @@ class Command(BaseCommand):
         )
 
         pages = [
+            ('home', 'HOME', 'p5_homepage.html'),
             ('contacts', 'CONTACTS', 'content.html'),
             ('privacy', 'PRIVACY', 'content-1col.html'),
             ('conduct-code', 'CONDUCT-CODE', 'content.html'),
             ('staff', 'STAFF', 'content.html'),
-            ('home', 'HOME', 'p5_homepage.html')
         ]
 
         for id, title, template in pages:
@@ -35,4 +36,6 @@ class Command(BaseCommand):
                 template='django_cms/' + template,
                 language='en',
                 reverse_id=id,
+                published=True,
+                publication_date=timezone.now(),
             )

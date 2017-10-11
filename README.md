@@ -19,8 +19,7 @@ INSTALL & SETUP
 ---------------
 
 Run provision.sh. Read it for more details.
-
-Edit `pycon/settings_locale.py` to your taste!
+Customise your .env file and pycon/settings/locale_dev.py (they are not versioned)
 
 ```bash
 python manage.py runserver
@@ -29,9 +28,22 @@ python manage.py runserver
 RUN IN DEBUG MODE
 -----------------
 
+It's default in dev environment but you can force it using environment
+variables
+
 ```bash
 DEBUG=True python manage.py runserver
 ```
+
+
+RUN WITH PRODUCTION SETTINGS
+----------------------------
+
+There's a special manage_production.py script that's using a production.py
+DJANGO_SETTINGS_MODULE just in case you want to run shell or local server with
+production settings (doesn't include secrets, those are provided by env
+variables)
+
 
 CONTRIBUTING
 ------------
