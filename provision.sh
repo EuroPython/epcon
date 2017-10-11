@@ -18,6 +18,9 @@ pip install -r requirements-dev.txt
 title "Create .env file"
 [[ -e .env ]] || cp .env.example .env
 
+title "Create local_dev.py file"
+[[ -e pycon/settings/local_dev.py ]] || cp pycon/settings/local_dev.py.in pycon/settings/local_dev.py
+
 title "Generate data"
 mkdir -p data/site
 

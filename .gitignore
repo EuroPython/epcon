@@ -2,6 +2,7 @@
 *.pyc
 *.swp
 settings_locale.py
+pycon/settings/local_dev.py
 Session.vim
 penv/*
 data/site/

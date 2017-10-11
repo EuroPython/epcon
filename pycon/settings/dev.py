@@ -31,3 +31,7 @@ DEVSERVER_MODULES = (
 DEVSERVER_AUTO_PROFILE = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+RAVEN_CONFIG = {
+    'dsn': '',
+}
