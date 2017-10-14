@@ -2,6 +2,8 @@
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.utils import timezone
+from django.core.exceptions import FieldError
 
 from cms.api import create_page
 from conference.models import Conference
@@ -20,19 +22,27 @@ class Command(BaseCommand):
         )
 
         pages = [
+            ('home', 'HOME', 'p5_homepage.html'),
             ('contacts', 'CONTACTS', 'content.html'),
             ('privacy', 'PRIVACY', 'content-1col.html'),
             ('conduct-code', 'CONDUCT-CODE', 'content.html'),
             ('staff', 'STAFF', 'content.html'),
-            ('home', 'HOME', 'p5_homepage.html')
         ]
 
         for id, title, template in pages:
-            print "Creating page: ", id, title, template
 
-            create_page(
-                title=title,
-                template='django_cms/' + template,
-                language='en',
-                reverse_id=id,
-            )
+            try:
+                create_page(
+                    title=title,
+                    template='django_cms/' + template,
+                    language='en',
+                    reverse_id=id,
+                    published=True,
+                    publication_date=timezone.now(),
+                )
+                print "Created page: ", id, title, template
+
+            # FieldError happens to be what django cms is using when we want to
+            # create another page with the same reverse_id
+            except FieldError, e:
+                print "Warning: ", e
