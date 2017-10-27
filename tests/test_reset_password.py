@@ -20,7 +20,7 @@ def test_reset_password(client):
     password.
     """
 
-    url = reverse("assopy-password-reset")
+    url = reverse("password_reset")
     assert url == "/accounts/password_reset/"
     response = client.get(url)
     assert template_used(response, 'registration/password_reset_form.html')

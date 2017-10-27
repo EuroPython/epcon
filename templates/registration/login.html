@@ -1,5 +1,5 @@
-{% extends "assopy/base.html" %}
-{% load formstyle assopy_tags i18n %}
+{% extends "assopy/base.html" %}{# TODO: clear up this inheritance structure #}
+{% load formstyle i18n %}
 
 {% block ASSOPY_MAIN_CONTENT %}
 
@@ -44,7 +44,7 @@
 
         <h3>{% trans "Did you forget your password?" %}</h3>
         <div>
-            <a href="{% url "assopy-password-reset" %}" class="btn">{% trans "Recover your password" %}</a>
+            <a href="{% url "password_reset" %}" class="btn">{% trans "Recover your password" %}</a>
         </div>
     </div>
 
