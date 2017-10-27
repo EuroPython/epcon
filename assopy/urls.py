@@ -1,3 +1,6 @@
+# coding: utf-8
+
+from __future__ import unicode_literals, absolute_import
 
 from django.conf import settings as dsettings
 from django.conf.urls import url, include
@@ -12,8 +15,8 @@ from django.contrib.auth.views import (
     password_reset_complete,
 )
 
-
 from assopy.forms import LoginForm, SetPasswordForm
+
 
 urlpatterns = [
     url(r'^login/$',
