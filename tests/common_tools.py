@@ -17,7 +17,9 @@ def template_used(response, template_name):
 
     :rtype: bool
     """
-    return template_name in [t.name for t in response.templates if t.name]
+    templates = [t.name for t in response.templates if t.name]
+    assert template_name in templates, templates
+    return True
 
 
 def create_homepage_in_cms():
