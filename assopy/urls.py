@@ -1,20 +1,58 @@
+# coding: utf-8
+
+from __future__ import unicode_literals, absolute_import
+
 from django.conf import settings as dsettings
-from django.conf.urls import patterns, url, include
-from django.contrib import auth
+from django.conf.urls import url, include
+from django.contrib.auth.views import (
+    login,
+    logout,
+    password_change,
+    password_change_done,
+    password_reset,
+    password_reset_done,
+    password_reset_confirm,
+    password_reset_complete,
+)
+
 from assopy.forms import LoginForm, SetPasswordForm
 
-urlpatterns = patterns('',
-    url(r'^login/$', 'django.contrib.auth.views.login', kwargs={ 'authentication_form': LoginForm }),
-    url(r'^logout/$', 'django.contrib.auth.views.logout'),
-    url(r'^password_change/$', 'django.contrib.auth.views.password_change', name='password_change'),
-    url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done', name='password_change_done'),
-    url(r'^password_reset/$', 'django.contrib.auth.views.password_reset', kwargs={ 'password_reset_form': auth.forms.PasswordResetForm }, name='assopy-password-reset'),
-    url(r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm', kwargs={ 'set_password_form': SetPasswordForm }, name='password_reset_confirm'),
-    url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete', name='password_reset_complete'),
 
-    url(r'^new-account/$', 'assopy.views.new_account', name='assopy-new-account'),
-    url(r'^new-account/feedback$', 'assopy.views.new_account_feedback', name='assopy-new-account-feedback'),
+urlpatterns = [
+    url(r'^login/$',
+        login,
+        kwargs={'authentication_form': LoginForm},
+        name="login"),
+
+    url(r'^logout/$', logout, name="logout"),
+
+    # Password change
+    url(r'^password_change/$', password_change, name='password_change'),
+    url(r'^password_change/done/$', password_change_done,
+        name='password_change_done'),
+
+    # Password reset, using default django views.
+    url(r'^password_reset/$', password_reset, name='password_reset'),
+
+    url(r'^password_reset/done/$', password_reset_done,
+        name='password_reset_done'),
+
+    url(r'^reset/(?P<uidb64>[\w-]+)/(?P<token>[\w]{1,13}-[\w]{1,20})/$',
+        password_reset_confirm,
+        kwargs={'set_password_form': SetPasswordForm},
+        name='password_reset_confirm'),
+
+    url(r'^reset/done/$', password_reset_complete,
+        name='password_reset_complete'),
+
+
+    # New account
+    url(r'^new-account/$', 'assopy.views.new_account',
+        name='assopy-new-account'),
+    url(r'^new-account/feedback$', 'assopy.views.new_account_feedback',
+        name='assopy-new-account-feedback'),
+
+    # Manage user profile
     url(r'^profile/$', 'assopy.views.profile', name='assopy-profile'),
     url(r'^profile/identities$', 'assopy.views.profile_identities', name='assopy-profile-identities'),
     url(r'^billing/$', 'assopy.views.billing', name='assopy-billing'),
@@ -63,14 +101,14 @@ urlpatterns = patterns('',
         name='assopy-credit_note-pdf',
         kwargs={'mode': 'pdf'},
     ),
-)
+]
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
-    urlpatterns += patterns('',
+    urlpatterns += [
         url(r'^paypal/standard-ipn/', include('paypal.standard.ipn.urls')),
-    )
+    ]
 
 if 'assopy.stripe' in dsettings.INSTALLED_APPS:
-    urlpatterns += patterns(
-        '', url(r'^stripe/', include('assopy.stripe.urls')),
-    )
+    urlpatterns += [
+        url(r'^stripe/', include('assopy.stripe.urls')),
+    ]

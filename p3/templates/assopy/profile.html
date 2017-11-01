@@ -170,6 +170,9 @@
             <p>{% blocktrans with url="/find-out-whos-coming" %}Join and <a href="{{ url }}">find out who's coming</a>: let people know that you will be coming to this conference.{% endblocktrans %}</p>
             <a class="btn btn-small btn-centered" href="{% url "conference-profile" slug=profile.slug %}">{% trans "View your public profile" %}</a>
         </div>
+        <div class="slot">
+            <a class="btn btn-small btn-centered" href="{% url "password_change" %}">{% trans "Change your password" %}</a>
+        </div>
     </div>
    </div><!-- /grid -->
    
