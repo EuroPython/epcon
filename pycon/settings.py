@@ -311,6 +311,11 @@ INSTALLED_APPS = (
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
+    # FIXME(artcz) ↑ this Warning is there because templates within apps are
+    # overlapping and inherit in a non-obvious way. This is currently being
+    # fixed, with the goal to move to a centralised templates/ location; once
+    # that's done this warning could be removed (and the order of the apps
+    # should be no longer relevant)
 
     'djangocms_admin_style',
     'django.contrib.auth',
