@@ -254,10 +254,6 @@ def user_coupons(user):
             output['invalid'].append(c)
     return output
 
-@register.inclusion_tag('assopy/render_profile_last_block.html', takes_context=True)
-def render_profile_last_block(context):
-    return context
-
 @register.assignment_tag(takes_context=True)
 def paginate(context, qs, count=20):
     pages = paginator.Paginator(qs, int(count))
