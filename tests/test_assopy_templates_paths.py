@@ -81,16 +81,6 @@ def test_assopy_invoice(client):
 
 
 @mark.django_db
-def test_assopy_new_account(client):
-    new_account_url = reverse("assopy-new-account")
-
-    response = client.get(new_account_url)
-    make_sure_root_template_is_used(response, "assopy/new_account.html")
-    make_sure_root_template_is_used(response, "assopy/base.html")
-    make_sure_root_template_is_used(response, "p3/base.html")
-
-
-@mark.django_db
 def test_assopy_paypal(client):
     """
     This tests two views – paypal_feedback_ok and paypal_cancel.

@@ -15,6 +15,8 @@ from tests.common_tools import (
     template_used
 )
 
+from tests.test_assopy_templates_paths import make_sure_root_template_is_used
+
 
 @mark.django_db
 def test_user_registration(client):
@@ -30,9 +32,11 @@ def test_user_registration(client):
     response = client.get(sign_up_url)
     assert response.status_code == 200
 
-    # TODO/FIXME: make it something like account/new_account.html
-    # (maybe using django-allauth)
     assert template_used(response, "assopy/new_account.html")
+    make_sure_root_template_is_used(response, 'assopy/new_account.html')
+    make_sure_root_template_is_used(response, "assopy/base.html")
+    make_sure_root_template_is_used(response, "p3/base.html")
+
     assert User.objects.all().count() == 0
 
     # need to create an email template that's used in the signup process
@@ -45,6 +49,12 @@ def test_user_registration(client):
         'password1': 'password',
         'password2': 'password',
     }, follow=True)
+
+    # check if redirect was correct
+    make_sure_root_template_is_used(response,
+                                    'assopy/new_account_feedback.html')
+    make_sure_root_template_is_used(response, "assopy/base.html")
+    make_sure_root_template_is_used(response, "p3/base.html")
 
     user = User.objects.get()
     assert user.name() == "Joe Doe"
