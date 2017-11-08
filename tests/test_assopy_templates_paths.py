@@ -22,6 +22,7 @@ from pytest import mark
 
 from assopy.models import Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from conference.models import AttendeeProfile
 
 from tests.common_tools import template_paths
 
@@ -120,5 +121,46 @@ def test_assopy_paypal(client):
     make_sure_root_template_is_used(response, "p3/base.html")
 
 
+@mark.django_db
 def test_assopy_profile(client):
-    pass
+    profile_url = reverse('assopy-profile')
+    user = auth_factories.UserFactory(email='joedoe@example.com',
+                                      is_active=True)
+    # both are required to access user profile page.
+    AssopyUserFactory(user=user)
+    AttendeeProfile.objects.create(user=user, slug='foobar')
+
+    client.login(email='joedoe@example.com', password='password123')
+    response = client.get(profile_url)
+
+    make_sure_root_template_is_used(response, "assopy/profile.html")
+    make_sure_root_template_is_used(response, "assopy/base.html")
+    make_sure_root_template_is_used(response, "p3/base.html")
+
+    # there are some includes used in this template, namely
+    # profile_{email_contact,personal_data,spam_control}.html
+    # those templates are also used in specific p3 views
+
+    make_sure_root_template_is_used(
+        response, "assopy/profile_email_contact.html")
+    make_sure_root_template_is_used(
+        response, "assopy/profile_personal_data.html")
+    make_sure_root_template_is_used(
+        response, "assopy/profile_spam_control.html")
+
+    # also those templates are used in some p3 views, so adding some additional
+    # checks for them.
+    p3_account_spam_control_url = reverse('p3-account-spam-control')
+    response = client.get(p3_account_spam_control_url)
+    make_sure_root_template_is_used(response,
+                                    "assopy/profile_spam_control.html")
+
+    p3_account_email_url = reverse('p3-account-email')
+    response = client.get(p3_account_email_url)
+    make_sure_root_template_is_used(response,
+                                    "assopy/profile_email_contact.html")
+
+    p3_account_data_url = reverse('p3-account-data')
+    response = client.get(p3_account_data_url)
+    make_sure_root_template_is_used(response,
+                                    "assopy/profile_personal_data.html")

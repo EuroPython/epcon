@@ -99,6 +99,8 @@ def p3_profile_message(request, slug):
 
 @login_required
 def p3_account_data(request):
+    # TODO(artcz) probably move those closer to assopy/views.py::profile, looks
+    # like they are related (at least by templates)
     ctx = {}
     if request.method == 'POST':
         profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(request.user)
@@ -130,6 +132,8 @@ def OTCHandler_E(request, token):
 
 @login_required
 def p3_account_email(request):
+    # TODO(artcz) probably move those closer to assopy/views.py::profile, looks
+    # like they are related (at least by templates)
     if request.method == 'POST':
         form = p3forms.P3ProfileEmailContactForm(data=request.POST, user=request.user)
         if form.is_valid():
@@ -158,6 +162,8 @@ def p3_account_email(request):
 
 @login_required
 def p3_account_spam_control(request):
+    # TODO(artcz) probably move those closer to assopy/views.py::profile, looks
+    # like they are related (at least by templates)
     ctx = {}
     if request.method == 'POST':
         profile = cmodels.AttendeeProfile.objects.getOrCreateForUser(request.user)
