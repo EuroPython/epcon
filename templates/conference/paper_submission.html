@@ -1,14 +1,97 @@
-<html>
-<body>
-    <h1>Talk submission</h1>
+{% extends "p3/base.html" %}
+{% load i18n formstyle %}
+## conference assopy_tags formstyle %}
+
+{% block EXTRA_HEAD %}{{ form.media }}{% endblock %}
+{% block PAGE_TITLE %}{% trans "New talk" %}{% endblock %}
+
+{% block MAIN_CONTENT %}
+
+<form class="talk-form form-horizontal" action="{% url "conference-paper-submission" %}" method="post" enctype="multipart/form-data">
+{% if not proposed_talks %}
+    <section>
+        <div class="grid-container">
+        <div class="grid-100">
+            <h2>{% trans "Speaker profile" %}</h2>
+
+            <fieldset>
+                <legend>{% trans "Personal information" %}</legend>
+                {{ form.first_name|form_field }}
+                {{ form.last_name|form_field }}
+                {{ form.job_title|form_field }}
+                {{ form.birthday|form_field }}
+                {{ form.phone|form_field }}
+            </fieldset>
+            <fieldset>
+                <legend>{% trans "Company" %}</legend>
+                {{ form.company|form_field }}
+                {{ form.company_homepage|form_field }}
+            </fieldset>
+            <fieldset>
+                <legend>{% trans "About you" %}</legend>
+
+                {{ form.bio|form_field }}
+            </fieldset>
+            <fieldset>
+                <!--{{ form.first_time|form_field }}-->
+                {{ form.personal_agreement|form_field }}
+          </fieldset>
+        </div><!-- /grid -->
+        </div><!-- /grid-container -->
+    </section>
+{% endif %}
+
+<section>
+    <div class="grid-container">
+    <div class="grid-100">
+        <h2>{% trans "Submit a new talk" %}</h2>
+
     {% if proposed_talks %}
-    You have submitted {{ proposed_talks.count }} paper{{ proposed_talks.count|pluralize }}.
+        <div class="alert alert--info">
+            <p>
+                {% trans "You have already submitted" %} {{ proposed_talks|length }} {% trans "proposal" %}{{ proposed_talks|pluralize }}.
+                {% trans "To edit your submission" %}{{ proposed_talks|pluralize }},
+                {% trans "visit your" %} <a href="{% url "conference-profile" slug=speaker.user.attendeeprofile.slug %}">{% trans "speaker profile" %}</a>.</p>
+        </div>
     {% endif %}
-    <form action="{% url "conference-paper-submission" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        <table>
-        {{ form }}
-        </table>
-        <input type="submit" />
-    </form>
-</body>
-</html>
+
+        <fieldset>
+            {{ form.type|form_field }}
+            {{ form.title|form_field }}
+            {# form.sub_title|form_field #}
+            {{ form.sub_community|form_field }}
+            {# form.language|form_field #}
+            {{ form.level|form_field }}
+            {{ form.prerequisites|form_field }}
+            {{ form.abstract|form_field }}
+            {{ form.abstract_short|form_field }}
+            {# form.abstract_extra|form_field #}
+
+        </fieldset>
+
+        <fieldset>
+            {{ form.tags|form_field }}
+        </fieldset>
+
+        <fieldset>
+            {{ form.video_agreement|form_field }}
+            {{ form.slides_agreement|form_field }}
+        </fieldset>
+
+        <fieldset class="form-actions">
+            <button type="submit" name="" class="btn btn-primary">{% trans "Submit proposal" %}</button>
+        </fieldset>
+
+ {% comment %}
+        <div class="alert alert--info">
+            <b>{% trans "Note" %}</b>: {% trans "if you are able to give the same talk/training both in more than one language, please submit the talk for each language, with fully translated title and abstract." %}
+            </div>
+{% endcomment %}
+    </div><!-- /grid -->
+    </div><!-- /grid-container -->
+</section>
+
+{% csrf_token %}
+</form>
+
+{% endblock %}

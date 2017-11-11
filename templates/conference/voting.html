@@ -1,29 +1,91 @@
-{% load conference %}
-<html>
-<head>
-    <meta charset="UTF-8" />
-</head>
-<body>
-    <h1>Talk voting</h1>
-    <form action="{% url "conference-voting" %}" method="get">
-        {{ form }}
-        <input type="submit" />
-    </form>
-    <form action="{% url "conference-voting" %}?{{ request.GET.urlencode }}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        <table style="width: 500px">
-        {% for t in talks %}
-            <tr>
-                <td style="padding-top: 20px">{{ t.title }}</td>
-                <td><input type="text" size="2" name="vote-{{ t.id }}" value="{{ t.user_vote.vote }}" />
-            </tr>
-            <tr>
-                {% conference_multilingual_attribute t "abstracts" as ab fallback "any" %}
-                <td colspan="2" style="padding-left: 10px; font-size: 0.8em;">{{ ab.body|linebreaks }}</td>
-            </tr>
-        {% endfor %}
-        </table>
-        <input type="submit" />
-    </form>
-</body>
-</html>
+{% extends "p3/base.html" %}
+{% load conference formstyle p3 i18n %}
 
+
+{% block PAGE_TITLE %}{% trans "Talk voting" %}{% endblock %}
+
+{% block MAIN_CONTENT %}
+    {% if not voting_allowed %}
+        {% url "p3-cart" as cart_url %}
+        <div class="alert">
+            {% if request.user.is_authenticated %}
+            <p>{% blocktrans %}To join the community voting, you must buy a ticket. You can buy one <a href="{{ cart_url }}">here</a>.{% endblocktrans %}</p>
+            {% else %}
+            <p>{% trans "To join the community voting, you must buy a ticket." %}</p>
+            <p>{% blocktrans with url="/accounts/login/" %}If you already bought a ticket please <a href="{{ url }}">log in</a>, otherwise you can buy one <a href="{{ cart_url }}">here</a>.{% endblocktrans %}</p>
+            {% endif %}
+        </div><!--/ alert -->
+    {% endif %}
+<section class="full-page-height">
+    <div class="grid-container">
+    <div class="grid-100">
+        <h1>{% trans "Talk Voting" %}</h1>
+    </div>
+
+    <div class="grid-60">
+
+        <form class="async" rel="#talk-voting-wrapper" action="{% url "conference-voting" %}" method="GET" id="form-options">
+
+                <fieldset class="clearfix">
+                    <legend>Filters</legend>
+
+                    {{ form.abstracts|form_field:"autosubmit" }}
+                    {{ form.talk_type|form_field:"autosubmit" }}
+                    {{ form.language|form_field:"autosubmit" }}
+                    {{ form.order|form_field:"autosubmit" }}
+                    {{ form.tags|form_field:"autosubmit" }}
+                </fieldset>
+                <fieldset>
+                {% if user.is_authenticated %}
+                    {% url "conference-profile" slug=pdata.slug as profile_url %}
+                    <p>{% blocktrans %}Set your favorite tags in <a href="{{ profile_url }}">your profile</a> and filter by your interests with one click.{% endblocktrans %}</p>
+                    {% p3_profile_data user.id as pdata %}
+                    {% if pdata.interests %}
+                    <button id="use-my-tag" class="btn btn-small" type="button">{% trans "Match my tags" %}</button>
+                    <script>
+                    (function() {
+                        $('#use-my-tag').click(function(e) {
+                            var form=$('#form-options');
+                            var input = $('input[name=tags]', form);
+                            var tags = [];
+                            $({{ pdata.interests|json_ }}).each(function(ix, val) {
+                                tags.push('"' + val + '"');
+                            });
+                            form.unbind('submit');
+                            input.val(tags.join(','));
+                            form.submit();
+                            return false;
+                        });
+                    })();
+                    </script>
+                    {% endif %}
+                {% endif %}
+                </fieldset>
+        </form>
+        <hr  />
+        {% include "conference/ajax/voting.html" %}
+
+
+
+    </div> <!-- /grid -->
+
+    <aside class="grid-30 prefix-10">
+        <div class="slot ep-cms">
+
+            <h4>{% trans "How to vote:" %}</h4>
+            <ul>
+                <li>Click on 'ABSTRACT' to see the short version of the submission.</li>
+                <li>To read the full abstract click on the title of the submission.</li>
+                <li>Indicate your personal interest in attending this session: simply chose between these four options: “must see”, “want to see”, “maybe” and “not interested”.</li>
+                <li>Please only indicate your own personal interest and not think about what others might like.</li>
+                <li>Use the filters at the top to help you go through the talks.</li>
+                <li>Do you have some questions on a talk? Leave a comment in the talk page (click on title).</li>
+                <li>Note that your votes are automatically saved to the backend without the need to click on a save or submit button.</li>
+            </ul>
+        </div><!-- /slot -->
+
+    </aside>
+
+    </div><!-- /grid-container -->
+</section>
+{% endblock %}

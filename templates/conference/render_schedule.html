@@ -1,3 +1,4 @@
+{% load i18n %}
 <table class="schedule tracks-{{ schedule.track_set.all|length }}">
     <caption>{{ schedule.date|date:"l d F Y" }}</caption>
     <thead>
@@ -11,23 +12,27 @@
     <tbody>
     {% for t, row in timetable %}
     {% if not t%}
-        <tr><td> </td></tr>
+        <tr><td></td></tr>
     {% else %}
         <tr class="{{ row.class|join:" " }}">
-            <td class="hhmm"><strong>{{ t|time:"H" }}</strong>:{{ t|time:"i" }}</td>
+            <td class="hhmm"><span>{{ t|time:"H" }}</span>:{{ t|time:"i" }}</td>
             {% for e in row.events %}
             {% if e %}
-            <td class="track {% for t in e.tags %} t-{{ t }}{% endfor %}{% if e.sponsor %} sponsored-event{% endif %}" rowspan="{{ e.time_slots }}" colspan="{{ e.track_slots }}" {% if e.sponsor %}style="background-attachment: scroll; background-image: url({{ SPONSOR_LOGO_URL }}stamp/{{ e.sponsor.slug}}.jpg); background-position: 50% 50%; background-repeat: no-repeat;"{% endif %}>
+            <td class="track{% for t in e.tags %} t-{{ t }}{% endfor %}" rowspan="{{ e.time_slots }}" colspan="{{ e.track_slots }}">
                 {% if e.talk %}
-                <a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a>
-                <br /> di
+                <h3><a href="{{ e.talk.get_absolute_url }}">{{ e.title }}</a></h3>
+                di
                 {% for s in e.talk.get_all_speakers %}
-                    <a href="{{ s.get_absolute_url }}">{{ s.name }}</a>
-                    {% if not forloop.last %} e {% endif %}
+                    <span class="s"><a href="{{ s.get_absolute_url }}">{{ s.name }}</a></span>{% if not forloop.last %} e {% endif %}
                 {% endfor %}
                 {% else %}
-                <span>{{ e.title|safe }}</span>
+                <span class="c">{{ e.title|safe }}</span>
                 {% endif %}
+                
+                {% if e.sponsor %}
+                    <div class="sponsored-talk">&bull; {% trans "sponsorizzato da" %} <a href="{{ e.sponsor.url }}">{{ e.sponsor.sponsor }}</a>.</div>
+                {% endif %} 
+               
             </td>
             {% endif %}
             {% endfor %}

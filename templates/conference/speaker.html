@@ -1,33 +1,80 @@
-<html>
-<body>
-    <h1>{{ speaker.nome }}</h1>
-    <table>
-        <tr>
-            <th>homepage</th>
-            <td>{{ speaker.homepage }}</td>
-        </tr>
-        <tr>
-            <th>attività</th>
-            <td>{{ speaker.attivita }}</td>
-        </tr>
-        <tr>
-            <th>settore</th>
-            <td>{{ speaker.settore }}</td>
-        </tr>
-        <tr>
-            <th>provenienza</th>
-            <td>{{ speaker.provenienza }}</td>
-        </tr>
-        <tr>
-            <th>immagine</th>
-            <td><img src="{{ MEDIA_URL }}stuff/speaker/{{ speaker.immagine }}" /></td>
-        </tr>
-        {% for b in speaker.bios.all %}
-        <tr>
-            <th>bio {{ b.language|upper }}</th>
-            <td>{{ b.body }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
-</html>
+{% extends "p3/base.html" %}
+{% load conference i18n p3 assopy_tags %}
+{% block PAGE_TITLE %}{{ speaker.name }} &mdash; {% endblock %}
+{% block EXTRA_HEAD %}{{ form.media }}{% endblock %}
+{% block MAIN_CONTENT %}
+{% with speaker.user.assopy_user as auser %}
+    {% if accepted|length == 0 and full_access %}
+    <section class="notice">
+        <p>This page is currently private. It will become public when at least one of the proposed talks will be accepted.</p>
+    </section>
+    {% endif %}
+    <div class="column span-8">
+        <h1>{{ auser.name }}
+        {% if full_access %}
+        <span class="action edit"><a href="#">(Edit profile)</a></span>
+        <script type="text/javascript">//<![CDATA[
+        $('.action a').click(function(e) {
+            e.preventDefault();
+            $('div.readonly').hide();
+            $('div.writable').show();
+            $(e.target).hide();
+        });
+        //]]>
+        </script>
+        {% endif %}</h1>
+        <div class="page-summary">
+            <p>
+                {% if speaker.activity %}{{ speaker.activity }}{% endif %}
+                {% if speaker.company %}@{{ speaker.company }}{% endif %}
+            </p>
+        </div>
+        <div class="readonly"{% if form.errors|length > 0 %} style="display: none;"{% endif %}>
+            <div class="ep-cms">
+                {% conference_multilingual_attribute speaker "bios" as b fallback "any" %}
+                <p>{{ b.body|markdown2:"smarty-pants,code-color" }}</p>
+            </div>
+            {% if auser.twitter or auser.www or speaker.company_homepage %}
+            <section class="speaker contacts">
+                <h2>Contacts</h2>
+                <dl>
+                    {% if auser.twitter %}
+                    <dt>{% trans "Twitter" %}</dt>
+                    <dd><a href="http://twitter.com/{{ auser.twitter }}">{{ auser.twitter }}</a></dd>
+                    {% endif %}
+                    {% if auser.www %}
+                    <dt>{% trans "Sito personale" %}</dt>
+                    <dd><a href="{{ auser.www }}">{{ auser.www }}</a></dd>
+                    {% endif %}
+                    {% if speaker.company_homepage %}
+                    <dt>{% trans "Company website" %}</dt>
+                    <dd><a href="{{ speaker.company_homepage }}">{{ speaker.company_homepage }}</a></dd>
+                    {% endif %}
+                </dl>
+            </section>
+            {% endif %}
+            {% box_talks_conference talks %}
+        </div>
+        {% if full_access %}
+        <div class="writable"{% if form.errors|length == 0 %} style="display: none;"{% endif %}>
+            <form class="speaker-profile" action="{% url "conference-speaker" slug=speaker.slug %}" method="post">{% csrf_token %}
+                <fieldset>
+                {{ form.activity|field }}
+                {{ form.company|field }}
+                {{ form.company_homepage|field }}
+                {{ form.bio|field }}
+                </fieldset>
+                <fieldset class="border">
+                    <button type="submit">Save Changes</button>
+                </fieldset>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    <div class="column span-3 last">
+        <div class="speaker-picture">
+            <img class="block" src="{{ auser.photo_url|image_resized:"r_small" }}" alt="{{ auser.name }}" width="170" height="170" />
+        </div>
+    </div>
+{% endwith %}
+{% endblock %}
