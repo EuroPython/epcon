@@ -181,6 +181,9 @@ def _fs_upload_to(subdir, attr=None):
 ticket_for_user = dispatch.Signal(providing_args=['tickets'])
 
 class User(models.Model):
+    """
+    aka. AssopyUser
+    """
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
@@ -218,6 +221,15 @@ class User(models.Model):
         super(User, self).save(*args, **kwargs)
         if self.assopy_id and settings.GENRO_BACKEND:
             genro.user_local2remote(self)
+
+    def get_orders(self):
+        """
+        Temporary wrapper method for Issue #592, to easily disable old
+        (pre-2018) orders/invoices, until #591 is fixed
+
+        https://github.com/EuroPython/epcon/issues/592
+        """
+        return self.orders.filter(created__gte=date(2018, 1, 1))
 
     def tickets(self):
         tickets = []
@@ -686,6 +698,8 @@ class Order(models.Model):
             item.delete()
         super(Order, self).delete(**kwargs)
 
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
     ticket = models.OneToOneField('conference.ticket', null=True, blank=True)
@@ -864,6 +878,7 @@ class InvoiceManager(models.Manager):
 
                 invoices.append(i)
             return invoices
+
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
