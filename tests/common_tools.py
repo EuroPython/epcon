@@ -51,3 +51,17 @@ def serve(content, host='0.0.0.0', port=9876):
     srv = make_server(host, port, render)
     print "Go to http://{}:{}".format(host, port)
     srv.serve_forever()
+
+
+def sequence_equals(sequence1, sequence2):
+    """
+    Inspired by django's self.assertSequenceEquals
+
+    Useful for comparing lists with querysets and similar situations where
+    simple == fails because of different type.
+    """
+    assert len(sequence1) == len(sequence2), (len(sequence1), len(sequence2))
+    for item_from_s1, item_from_s2 in zip(sequence1, sequence2):
+        assert item_from_s1 == item_from_s2, (item_from_s1, item_from_s2)
+
+    return True
