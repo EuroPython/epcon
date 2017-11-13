@@ -31,7 +31,9 @@ FORMS.update(getattr(settings, 'CONFERENCE_FORMS', {}))
 import os
 # FIXME: This part is hardcoded, why ?
 #MAX_TICKETS =  os.environ.get("MAX_TICKETS")
-MAX_TICKETS = 350
+# (artcz) Setting to 6 because that was/is the value in the javascript for the
+# cart.
+MAX_TICKETS = 6
 
 # URL that will receive a user who tries to access the paper submission when the CFP is closed
 # None if a 404 is returned
