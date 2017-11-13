@@ -136,26 +136,52 @@ def test_invoices_from_buying_tickets(client):
     #     for group_type in ['S', 'P', 'C']
     # ]
 
-    PRICE_PER_UNIT = Decimal("213.7")
+    ticket_price = 100
+    ticket_amount = 20
+    social_event_price = 10
+    social_event_amount = 5
 
-    fare = Fare.objects.create(
-        conference=settings.CONFERENCE_CONFERENCE,
-        name="Testing Regular Standard",
-        description="Testing Regular Standard Description",
-        code='TRSP',  # Ticket Regular Standard Personal
-        price=PRICE_PER_UNIT,
-        start_validity=date.today() - timedelta(days=10),
-        end_validity=date.today() + timedelta(days=10),
-    )
+    def create_fare(code, price, name, type, vat_rate):
+        # TODO: maybe use Fare factory(?)
+        fare = Fare.objects.create(
+            conference=settings.CONFERENCE_CONFERENCE,
+            name=name,
+            description=name,
+            code=code,
+            price=price,
+            ticket_type=type,
+            start_validity=date.today() - timedelta(days=10),
+            end_validity=date.today() + timedelta(days=10),
+        )
 
-    # fare also needs VAT
-    vat_10 = Vat.objects.create(value=10)
-    VatFare.objects.create(fare=fare, vat=vat_10)
+        # fare also needs VAT
+        vat_rate, _ = Vat.objects.get_or_create(value=vat_rate)
+        VatFare.objects.get_or_create(fare=fare, vat=vat_rate)
+        return fare
+
+    create_fare("TRSP",  # Ticket Regular Standard Personal
+                ticket_price,
+                "Regular Standard Ticket",
+                "conference",
+                vat_rate=10)
+
+    create_fare("VOUPE03",  # hardcoded social event format
+                social_event_price,
+                "Social Event One",
+                "event",
+                vat_rate=10)
+
+    create_fare("S123",  # some random social event id
+                social_event_price,
+                "Social Event Two",
+                "other",
+                vat_rate=20)
 
     # 4. If Fare is created we should have one input on the cart.
     response = client.get(cart_url)
     assert template_used(response, "p3/cart.html")
     _response_content = response.content.decode('utf-8')
+
     assert 'Sorry, no tickets are available' not in _response_content
     assert 'Buy tickets (1 of 2)' in _response_content
 
@@ -163,6 +189,9 @@ def test_invoices_from_buying_tickets(client):
     assert 'td class="fare" data-fare="TRSP">' in _response_content
     assert 'td class="fare" data-fare="TDCP">' not in _response_content
     assert 'td class="fare" data-fare="">' in _response_content
+    # social events
+    assert 'td class="fare" data-fare="VOUPE03">' in _response_content
+    assert 'td class="fare" data-fare="S123">' in _response_content
 
     # and one input for TRSP where you can specify how many tickets
     # TODO: maybe it should have a different type than text?
@@ -170,16 +199,18 @@ def test_invoices_from_buying_tickets(client):
 
     # 5. Try buying some tickets
     # FIXME: looks like the max_tickets is enforced only with javascript
-    QUANTITY = 20
-    assert QUANTITY > conference_settings.MAX_TICKETS
+    assert ticket_amount > conference_settings.MAX_TICKETS
+
     response = client.post(cart_url, {
         'order_type': 'non-deductible',  # == Personal
-        'TRSP': QUANTITY,
+        'TRSP': ticket_amount,
+        'VOUPE03': social_event_amount,
+        'S123': social_event_amount,
     }, follow=True)
+
     billing_url = reverse('p3-billing')
     assert response.status_code == 200
     assert response.request['PATH_INFO'] == billing_url
-    assert billing_url == '/p3/billing/'
 
     assert 'Buy tickets (2 of 2)' in response.content.decode('utf-8')
 
@@ -200,7 +231,8 @@ def test_invoices_from_buying_tickets(client):
 
     order = Order.objects.get()
     # FIXME: confirming that max_tickets is only enforced in javascript
-    assert order.orderitem_set.all().count() == QUANTITY
+    assert order.orderitem_set.all().count() ==\
+        ticket_amount + social_event_amount * 2  # two social events
 
     # need to create an email template that's used in the purchasing process
     Email.objects.create(code='purchase-complete')
@@ -210,29 +242,61 @@ def test_invoices_from_buying_tickets(client):
     # static date, because of #592 choosing something in 2018
     order.confirm_order(date(2018, 1, 1))
 
-    # 20 items but just one invoice
-    assert Invoice.objects.all().count() == 1
+    # multiple items per invoice, one invoice per vat rate.
+    assert Invoice.objects.all().count() == 2
 
-    invoice = Invoice.objects.get()
+    invoice_vat_10 = Invoice.objects.get(vat__value=10)
+    invoice_vat_20 = Invoice.objects.get(vat__value=20)
 
     # only one orderitem_set instance because they are grouped by fare_code
-    expected_invoice_items = [{'count': QUANTITY,
-                               'price': QUANTITY * PRICE_PER_UNIT,
-                               'code': u'TRSP',
-                               'description': u'Testing Regular Standard'}]
+    # items are ordered desc by price.
+    expected_invoice_items_vat_10 = [
+        {'count': ticket_amount,
+         'price': ticket_price * ticket_amount,
+         'code': u'TRSP',
+         'description': u'Regular Standard Ticket'},
+        {'count': social_event_amount,
+         'price': social_event_price * social_event_amount,
+         'code': u'VOUPE03',
+         'description': u'Social Event One'},
+    ]
 
-    assert sequence_equals(invoice.invoice_items(), expected_invoice_items)
+    expected_invoice_items_vat_20 = [
+        {'count': social_event_amount,
+         'price': social_event_price * social_event_amount,
+         'code': u'S123',
+         'description': u'Social Event Two'},
+    ]
 
-    gross_price = QUANTITY * PRICE_PER_UNIT
-    net_price = gross_price / Decimal('1.1')  # 110% - 100% net and 10% vat
-    vat_value = gross_price - net_price
+    assert sequence_equals(invoice_vat_10.invoice_items(),
+                           expected_invoice_items_vat_10)
+    assert sequence_equals(invoice_vat_20.invoice_items(),
+                           expected_invoice_items_vat_20)
 
-    assert invoice.price == gross_price
-    assert invoice.net_price() == net_price
-    assert invoice.vat_value() == vat_value
+    # check numbers for vat 10%
+    gross_price_vat_10 = (
+        ticket_price * ticket_amount
+        + social_event_price * social_event_amount
+    )
+    net_price_vat_10 = gross_price_vat_10 / Decimal('1.1')
+    vat_value_vat_10 = gross_price_vat_10 - net_price_vat_10
+
+    assert invoice_vat_10.price == gross_price_vat_10
+    assert invoice_vat_10.net_price() == net_price_vat_10
+    assert invoice_vat_10.vat_value() == vat_value_vat_10
+
+    # do the same for vat 20%
+    gross_price_vat_20 = social_event_price * social_event_amount
+    net_price_vat_20 = gross_price_vat_20 / Decimal('1.2')
+    vat_value_vat_20 = gross_price_vat_20 - net_price_vat_20
+
+    assert invoice_vat_20.price == gross_price_vat_20
+    assert invoice_vat_20.net_price() == net_price_vat_20
+    assert invoice_vat_20.vat_value() == vat_value_vat_20
 
     # each OrderItem should have a corresponding Ticket
-    assert Ticket.objects.all().count() == QUANTITY
+    assert Ticket.objects.all().count() ==\
+        ticket_amount + social_event_amount * 2
 
     # Check if user profile has the tickets and invoices available
     profile_url = reverse('assopy-profile')
@@ -244,7 +308,6 @@ def test_invoices_from_buying_tickets(client):
     # it later and replace with APIs that allows to control/specify date for
     # order and invoice.
     assert 'O/18.0001' in response.content.decode('utf-8')
+    # there is only one order but two invoices
     assert 'I/18.0001' in response.content.decode('utf-8')
-
-    # TODO: add social event tickets/invoices
-    # This should produce another invoice to the same Order(?)
+    assert 'I/18.0002' in response.content.decode('utf-8')
