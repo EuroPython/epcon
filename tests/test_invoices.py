@@ -311,3 +311,69 @@ def test_invoices_from_buying_tickets(client):
     # there is only one order but two invoices
     assert 'I/18.0001' in response.content.decode('utf-8')
     assert 'I/18.0002' in response.content.decode('utf-8')
+
+
+@mark.django_db
+def test_if_invoice_stores_information_about_the_seller(client):
+    """
+    Testing #591
+    https://github.com/EuroPython/epcon/issues/591
+    """
+    from assopy.stripe.tests.factories import FareFactory, OrderFactory
+    # need this email to generate invoices/orders
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+
+    user = auth_factories.UserFactory(
+        email='joedoe@example.com', is_active=True
+    )
+
+    assopy_user = AssopyUserFactory(user=user)
+    AttendeeProfile.objects.create(user=user, slug='foobar')
+
+    client.login(email='joedoe@example.com', password='password123')
+
+    def invoice_url(invoice):
+        return reverse("assopy-invoice-html", kwargs={
+            'code': invoice.code,
+            'order_code': invoice.order.code,
+        })
+
+    def create_order_and_invoice():
+        today = date.today()
+        order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
+        # TODO: confirm_order should instead return it's invoices
+        order.confirm_order(today)
+        return Invoice.objects.get(emit_date__year=today.year)
+
+    with freeze_time("2016-01-01"):
+        invoice = create_order_and_invoice()
+        assert invoice.code == "I/16.0001"
+        assert invoice.emit_date == date(2016, 1, 1)
+        assert invoice.issuer == "Bilbao FIXME"
+
+        response = client.get(invoice_url(invoice))
+        assert "Bilbao FIXME" in response.content.decode('utf-8')
+
+    with freeze_time("2017-01-01"):
+        invoice = create_order_and_invoice()
+        assert invoice.code == "I/17.0001"
+        assert invoice.emit_date == date(2017, 1, 1)
+        assert invoice.issuer == "Rimini FIXME"
+
+        response = client.get(invoice_url(invoice))
+        assert "Rimini FIXME" in response.content.decode('utf-8')
+
+    with freeze_time("2018-01-01"):
+        # (2017-11-14) for some reason we need to log in again to see the
+        # future. This check won't work with any year above 2017 w/o relogin,
+        # otherwise it will produce 302 to /accounts/login/ on profile and
+        # invoice views. (however the backend code will work fine)
+        client.login(email='joedoe@example.com', password='password123')
+        invoice = create_order_and_invoice()
+        assert invoice.code == "I/18.0001"
+        assert invoice.emit_date == date(2018, 1, 1)
+        assert invoice.issuer == "TBA FIXME"
+
+        response = client.get(invoice_url(invoice))
+        assert "TBA FIXME" in response.content.decode('utf-8')

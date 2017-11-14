@@ -421,6 +421,8 @@ def invoice(request, order_code, code, mode='html'):
     if mode == 'html':
         order = invoice.order
         address = '%s, %s' % (order.address, unicode(order.country))
+        # TODO: why, instead of passing invoice objects, it explicitly passes
+        # every attribute?
         ctx = {
             'document': ('Fattura N.', 'Invoice N.'),
             'title': unicode(invoice),
@@ -442,6 +444,7 @@ def invoice(request, order_code, code, mode='html'):
             },
             'vat': invoice.vat,
             'real': settings.IS_REAL_INVOICE(invoice.code),
+            "issuer": invoice.issuer,
         }
         return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
     else:
