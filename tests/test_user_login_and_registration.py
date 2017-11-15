@@ -74,3 +74,42 @@ def test_user_registration(client):
     # checking if user is logged in.
     assert 'Joe Doe' in response.content
     assert 'Log out' in response.content
+
+
+@mark.django_db
+def test_393_emails_are_lowercased(client):
+    """
+    https://github.com/EuroPython/epcon/issues/393
+    """
+
+    create_homepage_in_cms()
+    Email.objects.create(code='verify-account')
+
+    sign_up_url = "/accounts/new-account/"
+
+    response = client.post(sign_up_url, {
+        'first_name': 'Joe',
+        'last_name': 'Doe',
+        'email': 'joedoe@example.com',
+        'password1': 'password',
+        'password2': 'password',
+    })
+    assert response.status_code == 303
+
+    user = User.objects.get()
+    assert user.name() == "Joe Doe"
+    assert user.user.email == 'joedoe@example.com'
+
+    response = client.post(sign_up_url, {
+        'first_name': 'Joe',
+        'last_name': 'Doe',
+        'email': 'JoeDoe@example.com',
+        'password1': 'password',
+        'password2': 'password',
+    })
+    assert response.status_code == 200
+    assert response.context['form'].errors['email'] == ['Email already in use']
+
+    user = User.objects.get()  # still only one user
+    assert user.name() == "Joe Doe"
+    assert user.user.email == 'joedoe@example.com'
