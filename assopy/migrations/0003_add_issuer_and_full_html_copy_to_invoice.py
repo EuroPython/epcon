@@ -19,18 +19,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='invoice',
-            name='items_copy',
+            name='invoice_copy_full_html',
             field=models.TextField(default=''),
             preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='order',
-            name='cf_code',
-            field=models.CharField(max_length=16, verbose_name='Fiscal Code', blank=True),
-        ),
-        migrations.AlterField(
-            model_name='user',
-            name='cf_code',
-            field=models.CharField(help_text='Needed only for Italian customers', max_length=16, verbose_name='Fiscal Code', blank=True),
         ),
     ]
