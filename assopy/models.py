@@ -24,7 +24,7 @@ from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
 from conference.models import Ticket
-from conference.invoicing import ISSUER_BY_YEAR
+from conference.invoicing import ISSUER_BY_YEAR, render_invoice_as_html
 from email_template import utils
 
 if settings.GENRO_BACKEND:
@@ -873,7 +873,7 @@ class InvoiceManager(models.Manager):
                         'issuer': ISSUER_BY_YEAR[emit_date.year],
                     }
                 )
-                # TODO: Dump what's on the invoice as well
+
                 if not created:
                     if not payment_date or i.payment_date:
                         raise RuntimeError('Payment date mismatch')
@@ -881,8 +881,9 @@ class InvoiceManager(models.Manager):
                         i.payment_date = payment_date
                         i.emit_date = emit_date
                         i.code = vat_item['code']
-                        i.save()
 
+                i.invoice_copy_full_html = render_invoice_as_html(i)
+                i.save()
                 invoices.append(i)
             return invoices
 
@@ -896,7 +897,7 @@ class Invoice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     issuer = models.TextField()
-    items_copy = models.TextField()
+    invoice_copy_full_html = models.TextField()
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso

@@ -284,6 +284,8 @@ def test_invoices_from_buying_tickets(client):
     assert invoice_vat_10.price == gross_price_vat_10
     assert invoice_vat_10.net_price() == net_price_vat_10
     assert invoice_vat_10.vat_value() == vat_value_vat_10
+    assert invoice_vat_10.invoice_copy_full_html.startswith('<!DOCTYPE')
+    assert len(invoice_vat_10.invoice_copy_full_html) > 1000  # large html blob
 
     # do the same for vat 20%
     gross_price_vat_20 = social_event_price * social_event_amount
@@ -293,6 +295,8 @@ def test_invoices_from_buying_tickets(client):
     assert invoice_vat_20.price == gross_price_vat_20
     assert invoice_vat_20.net_price() == net_price_vat_20
     assert invoice_vat_20.vat_value() == vat_value_vat_20
+    assert invoice_vat_20.invoice_copy_full_html.startswith('<!DOCTYPE')
+    assert len(invoice_vat_20.invoice_copy_full_html) > 1000  # large html blob
 
     # each OrderItem should have a corresponding Ticket
     assert Ticket.objects.all().count() ==\
@@ -351,6 +355,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert invoice.code == "I/16.0001"
         assert invoice.emit_date == date(2016, 1, 1)
         assert invoice.issuer == "Bilbao FIXME"
+        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
         assert "Bilbao FIXME" in response.content.decode('utf-8')
@@ -360,6 +365,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert invoice.code == "I/17.0001"
         assert invoice.emit_date == date(2017, 1, 1)
         assert invoice.issuer == "Rimini FIXME"
+        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
         assert "Rimini FIXME" in response.content.decode('utf-8')
@@ -373,7 +379,8 @@ def test_if_invoice_stores_information_about_the_seller(client):
         invoice = create_order_and_invoice()
         assert invoice.code == "I/18.0001"
         assert invoice.emit_date == date(2018, 1, 1)
-        assert invoice.issuer == "TBA FIXME"
+        assert invoice.issuer == "Edinburgh FIXME"
+        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
-        assert "TBA FIXME" in response.content.decode('utf-8')
+        assert "Edinburgh FIXME" in response.content.decode('utf-8')
