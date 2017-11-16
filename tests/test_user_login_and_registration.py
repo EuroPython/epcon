@@ -4,6 +4,8 @@ from __future__ import unicode_literals, absolute_import
 
 from pytest import mark
 
+from django.core.urlresolvers import reverse
+
 from email_template.models import Email
 
 from assopy.models import User
@@ -77,9 +79,12 @@ def test_user_registration(client):
 
 
 @mark.django_db
-def test_393_emails_are_lowercased(client):
+def test_393_emails_are_lowercased_and_login_is_case_insensitive(client):
     """
     https://github.com/EuroPython/epcon/issues/393
+
+    Test if we can regiester new account if we use the same email with
+    different case.
     """
 
     create_homepage_in_cms()
@@ -90,7 +95,7 @@ def test_393_emails_are_lowercased(client):
     response = client.post(sign_up_url, {
         'first_name': 'Joe',
         'last_name': 'Doe',
-        'email': 'joedoe@example.com',
+        'email': 'JoeDoe@example.com',
         'password1': 'password',
         'password2': 'password',
     })
@@ -103,7 +108,7 @@ def test_393_emails_are_lowercased(client):
     response = client.post(sign_up_url, {
         'first_name': 'Joe',
         'last_name': 'Doe',
-        'email': 'JoeDoe@example.com',
+        'email': 'jOEdOE@example.com',
         'password1': 'password',
         'password2': 'password',
     })
@@ -113,3 +118,25 @@ def test_393_emails_are_lowercased(client):
     user = User.objects.get()  # still only one user
     assert user.name() == "Joe Doe"
     assert user.user.email == 'joedoe@example.com'
+
+    # activate user so we can log in
+    user.user.is_active = True
+    user.user.save()
+
+    # check if we can login with lowercase
+    login_url = reverse('login')
+
+    def check_login(email):
+        response = client.post(
+            login_url, {'email': email, 'password': 'password'}
+        )
+        # redirect means successful login, 200 means errors on form
+        assert response.status_code == 302
+        return True
+
+    # the emails will be lowercased in db, but user is still able to log in
+    # using whatever case they want
+    assert check_login(email='JoeDoe@example.com')
+    assert check_login(email='joedoe@example.com')
+    assert check_login(email='JoeDoe@example.com')
+    assert check_login(email='JOEDOE@example.com')
