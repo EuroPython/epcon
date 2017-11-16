@@ -23,7 +23,7 @@ from tests.common_tools import template_used, sequence_equals, serve  # NOQA
 
 
 @mark.django_db
-def test_592_dont_display_invoices_for_yeras_before_2018(client):
+def test_592_dont_display_invoices_for_years_before_2018(client):
     """
     https://github.com/EuroPython/epcon/issues/592
 
