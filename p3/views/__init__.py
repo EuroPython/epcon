@@ -72,30 +72,6 @@ def _assign_ticket(ticket, email):
             recipient = amodels.UserIdentity.objects.filter(email__iexact=email)[0].user.user
         except IndexError:
             recipient = None
-    # Look in the "genro" backend, if possible
-    if settings.GENRO_BACKEND and recipient is None:
-        from assopy.clients import genro
-        rid = genro.users(email)['r0']
-        if rid is not None:
-            # the email it's not associated to a django user, but genropy
-            # knows it. If rid is assigned to an assopy user I'll reuse the
-            # connected user. This check works when the ticket is assigned
-            # to a user, the user modifies its email but later the ticket
-            # is reassigned to the original email.
-            try:
-                recipient = amodels.User.objects.get(assopy_id=rid).user
-            except amodels.User.DoesNotExist:
-                pass
-            else:
-                if recipient.email != email:
-                    log.info(
-                            'email "%s" found on genropy; but user (%s) have a different email: "%s"',
-                        email.encode('utf-8'), unicode(recipient).encode('utf-8'), recipient.email.encode('utf-8'))
-                    email = recipient.email
-                else:
-                    log.info(
-                        'email "%s" found on genropy; user (%s)',
-                        email.encode('utf-8'), unicode(recipient).encode('utf-8'))
 
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
@@ -462,31 +438,6 @@ def whos_coming(request, conference=None):
         tpl = 'p3/whos_coming.html'
     return render(request, tpl, ctx)
 
-def genro_invoice_pdf(request, assopy_id):
-    import urllib
-    from assopy.clients import genro
-    from assopy.models import OrderItem
-
-    if not settings.GENRO_BACKEND:
-        raise http.Http404()
-
-    data = genro.invoice(assopy_id)
-
-    conferences = OrderItem.objects\
-        .filter(order__assopy_id=data['order_id'])\
-        .values_list('ticket__fare__conference', flat=True)\
-        .distinct()
-
-    try:
-        conference = filter(None, conferences)[0]
-    except IndexError:
-        raise http.Http404()
-
-    fname = '[%s] invoice.pdf' % (conference,)
-    f = urllib.urlopen(genro.invoice_url(assopy_id))
-    response = http.HttpResponse(f, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-    return response
 
 from p3.views.cart import *
 from p3.views.live import *
