@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.db import connection
 from django.db import models
 from django.db import transaction
+from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -668,9 +669,8 @@ class Talk(models.Model, UrlMixin):
     def __unicode__(self):
         return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('conference-talk', (), { 'slug': self.slug })
+        return reverse('conference-talk', kwargs={'slug': self.slug})
 
     get_url_path = get_absolute_url
 

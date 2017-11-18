@@ -12,6 +12,7 @@ from collections import defaultdict
 from django import dispatch
 from django.conf import settings as dsettings
 from django.contrib import auth
+from django.contrib.admin.util import quote
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -886,11 +887,9 @@ class Invoice(models.Model):
         if create and settings.IS_REAL_INVOICE(self.code):
             self.order.complete(ignore_cache=True)
 
-    @models.permalink
     def get_absolute_url(self):
-        from django.contrib.admin.util import quote
-        return ('assopy-invoice-pdf' , [quote(self.order.code),
-                                        quote(self.code),])
+        return reverse('assopy-invoice-html',
+                       [quote(self.order.code), quote(self.code)])
 
     def __unicode__(self):
         if self.code:
