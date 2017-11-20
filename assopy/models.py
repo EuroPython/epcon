@@ -642,8 +642,12 @@ class Order(models.Model):
         return r
 
     def confirm_order(self, payment_date):
-        # metodo per confermare un ordine simile a genro.confirm_order
-        # una volta confermato un ordine si crea una fattura con data
+        """
+        Creates invoices for the order.
+        """
+        # TODO: #397 - create tickets here, when order is confirmed; Currently
+        # it's happening when order is created resulting in creating tickets
+        # for unpaid orders.
         Invoice.objects.creates_from_order(self, payment_date=payment_date)
 
     def total(self, apply_discounts=True):
