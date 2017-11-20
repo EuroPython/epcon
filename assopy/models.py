@@ -180,9 +180,12 @@ def _fs_upload_to(subdir, attr=None):
 # query guardando i Conference.Ticket
 ticket_for_user = dispatch.Signal(providing_args=['tickets'])
 
+
 class User(models.Model):
     """
-    aka. AssopyUser
+    aka. AssopyUser; There are multiple models called 'User', this one, and the
+    bultin django one from django.contrib.auth.models; This model is often
+    referred to in other places as 'AssopyUser' for clarity.
     """
     user = models.OneToOneField("auth.User", related_name='assopy_user')
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
