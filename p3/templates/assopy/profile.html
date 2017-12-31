@@ -120,7 +120,7 @@
                     {% endif %}
                 {% endwith %}
 
-                {% with request.user.assopy_user.orders as orders %}
+                {% with request.user.assopy_user.get_orders as orders %}
                 <div class="profile-user-data tickets">
                     <h4>{% trans "Your orders" %}</h4>
                     <table class="table">
@@ -132,20 +132,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for o in orders.all %}
+                            {% for order in orders %}
                             <tr>
-                                <td>{{ o.code }}</td>
-                                <td>{{ o.created|date:"d M Y" }}</td>
+                                <td>{{ order.code }}</td>
+                                <td>{{ order.created|date:"d M Y" }}</td>
                                 <td>
-                                    {% with o.invoices.all as invoices %}
+                                    {% with order.invoices.all as invoices %}
                                     {% if not invoices %}
                                     {% trans "N/A" %}
                                     {% else %}
-                                        {% for i in invoices %}
-                                            {% if i.assopy_id %}
-                                                <a href="{% url 'genro-legacy-invoice' assopy_id=i.assopy_id %}">{{ i.code }}</a>
+                                        {% for invoice in invoices %}
+                                            {% if invoice.assopy_id %}
+                                                <a href="{% url 'genro-legacy-invoice' assopy_id=invoice.assopy_id %}">{{ invoice.code }}</a>
                                             {% else %}
-                                                <a href="{% url 'assopy-invoice-html' order_code=o.code code=i.code %}">{{ i.code }}</a>
+                                                <a href="{% url 'assopy-invoice-html' order_code=order.code code=invoice.code %}">{{ invoice.code }}</a>
                                                 {% comment %}
                                                 {% for cn in i.credit_notes.all %}
                                                     (<a href="{% url 'assopy-invoice-html' assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
