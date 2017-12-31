@@ -4,6 +4,8 @@ from __future__ import unicode_literals, absolute_import
 
 from pytest import mark
 
+from django.core.urlresolvers import reverse
+
 from email_template.models import Email
 
 from assopy.models import User
@@ -74,3 +76,67 @@ def test_user_registration(client):
     # checking if user is logged in.
     assert 'Joe Doe' in response.content
     assert 'Log out' in response.content
+
+
+@mark.django_db
+def test_393_emails_are_lowercased_and_login_is_case_insensitive(client):
+    """
+    https://github.com/EuroPython/epcon/issues/393
+
+    Test if we can regiester new account if we use the same email with
+    different case.
+    """
+
+    create_homepage_in_cms()
+    Email.objects.create(code='verify-account')
+
+    sign_up_url = "/accounts/new-account/"
+
+    response = client.post(sign_up_url, {
+        'first_name': 'Joe',
+        'last_name': 'Doe',
+        'email': 'JoeDoe@example.com',
+        'password1': 'password',
+        'password2': 'password',
+    })
+    assert response.status_code == 303
+
+    user = User.objects.get()
+    assert user.name() == "Joe Doe"
+    assert user.user.email == 'joedoe@example.com'
+
+    response = client.post(sign_up_url, {
+        'first_name': 'Joe',
+        'last_name': 'Doe',
+        'email': 'jOEdOE@example.com',
+        'password1': 'password',
+        'password2': 'password',
+    })
+    assert response.status_code == 200
+    assert response.context['form'].errors['email'] == ['Email already in use']
+
+    user = User.objects.get()  # still only one user
+    assert user.name() == "Joe Doe"
+    assert user.user.email == 'joedoe@example.com'
+
+    # activate user so we can log in
+    user.user.is_active = True
+    user.user.save()
+
+    # check if we can login with lowercase
+    login_url = reverse('login')
+
+    def check_login(email):
+        response = client.post(
+            login_url, {'email': email, 'password': 'password'}
+        )
+        # redirect means successful login, 200 means errors on form
+        assert response.status_code == 302
+        return True
+
+    # the emails will be lowercased in db, but user is still able to log in
+    # using whatever case they want
+    assert check_login(email='JoeDoe@example.com')
+    assert check_login(email='joedoe@example.com')
+    assert check_login(email='JoeDoe@example.com')
+    assert check_login(email='JOEDOE@example.com')
