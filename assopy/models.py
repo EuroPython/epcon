@@ -1,23 +1,4 @@
 # -*- coding: UTF-8 -*-
-from assopy import janrain
-from assopy import settings
-from common import django_urls
-
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro, vies
-from assopy.utils import check_database_schema, send_email
-from conference.models import Ticket
-from email_template import utils
-
-from django import dispatch
-from django.conf import settings as dsettings
-from django.contrib import auth
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
-from django.db import models
-from django.db.models.query import QuerySet
-from django.utils.translation import ugettext_lazy as _
-from django.utils.timezone import now
 
 import re
 import os
@@ -27,6 +8,25 @@ from uuid import uuid4
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
+
+from django import dispatch
+from django.conf import settings as dsettings
+from django.contrib import auth
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models.query import QuerySet
+from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
+
+from assopy import janrain
+from assopy import settings
+from assopy.utils import send_email
+from common import django_urls
+from conference.models import Ticket
+from conference.invoicing import ISSUER_BY_YEAR, render_invoice_as_html
+from email_template import utils
+
 
 log = logging.getLogger('assopy.models')
 
@@ -131,7 +131,9 @@ user_created = dispatch.Signal(providing_args=['profile_complete'])
 # sender).
 user_identity_created = dispatch.Signal(providing_args=['identity'])
 
+
 class UserManager(models.Manager):
+
     def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, assopy_id=None, send_mail=True):
         uname = janrain.suggest_username_from_email(email)
         duser = auth.models.User.objects.create_user(uname, email, password=password)
@@ -145,13 +147,15 @@ class UserManager(models.Manager):
         if assopy_id is not None:
             user.assopy_id = assopy_id
         user.save()
-        user_created.send(sender=user, profile_complete=(password is not None) or (token is not None))
+        user_created.send(
+            sender=user,
+            profile_complete=(password is not None) or (token is not None)
+        )
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
             duser.username, first_name, last_name, email,
         )
-        if assopy_id is not None and settings.GENRO_BACKEND:
-            genro.user_remote2local(user)
+
         if send_mail:
             utils.email(
                 'verify-account',
@@ -219,11 +223,6 @@ class User(models.Model):
             return self.user.email
         else:
             return name
-
-    def save(self, *args, **kwargs):
-        super(User, self).save(*args, **kwargs)
-        if self.assopy_id and settings.GENRO_BACKEND:
-            genro.user_local2remote(self)
 
     def get_orders(self):
         """
@@ -475,12 +474,8 @@ class OrderManager(models.Manager):
             try:
                 vat = f.vat_set.all()[0]
             except IndexError:
-                if settings.GENRO_BACKEND:
-                    vat = None
-                else :
-                    # se non è il BACKEND genro deve avere l'orderitems deve
-                    # avere associato un regime iva
-                    raise
+                raise
+
             vat_list.append(vat)
             cp = dict(params)
             del cp['qty']
@@ -514,17 +509,21 @@ class OrderManager(models.Manager):
                         item = c.applyToOrder(o)
                         if item:
                             item.save()
-                            log.debug('coupon "%s" applied, discount=%s, vat=%s', item.code, item.price, item.vat)
-        log.info('order "%s" and tickets created locally: tickets total=%s order total=%s', o.id, tickets_total, o.total())
-        if remote and settings.GENRO_BACKEND:
-            genro.create_order(
-                o,
-                return_url=dsettings.DEFAULT_URL_PREFIX + reverse('assopy-paypal-feedback-ok', kwargs={'code': '%(code)s'})
-            )
-            log.info('order "%s" created remotly -> #%s', o.id, o.code)
-        else:
-            o.code = settings.NEXT_ORDER_CODE(o)
-            o.save()
+                            log.debug(
+                                'coupon "%s" applied, discount=%s, vat=%s',
+                                item.code,
+                                item.price,
+                                item.vat
+                            )
+        log.info(
+            'order "%s" and tickets created locally: '
+            'tickets total=%s order total=%s',
+            o.id,
+            tickets_total,
+            o.total()
+        )
+        o.code = settings.NEXT_ORDER_CODE(o)
+        o.save()
         if o.total() == 0:
             o._complete = True
             o.save()
@@ -533,13 +532,16 @@ class OrderManager(models.Manager):
 
 
 class Vat(models.Model):
-    fares = models.ManyToManyField('conference.fare', null=True, blank=True, through='VatFare')
+    fares = models.ManyToManyField('conference.fare',
+                                   through='VatFare',
+                                   null=True, blank=True)
     value = models.DecimalField(max_digits=2, decimal_places=0)
-    description = models.CharField(null=True, blank=True, max_length = 125)
+    description = models.CharField(null=True, blank=True, max_length=125)
     invoice_notice = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s%% - %s" % (self.value , self.description or "")
+        return u"%s%% - %s" % (self.value, self.description or "")
+
 
 class VatFare(models.Model):
     fare = models.ForeignKey('conference.fare')
@@ -621,19 +623,13 @@ class Order(models.Model):
         if self._complete and not ignore_cache:
             return True
 
-        if settings.GENRO_BACKEND:
-            if not self.assopy_id:
-                # non ha senso chiamare .complete su un ordine non associato al
-                # backend
-                return False
-            invoices = [ i.payment_date for i in Invoice.objects.creates_from_order(self, update=True) ]
-        else:
-            invoices = [ i.payment_date for i in self.invoices.all()]
-            # un ordine per essere completo deve avere una fattura per ogni
-            # iva; questa martellata mette una pezza al comportamento della
-            # Invoice.objects.creates_from_order
-            if len(invoices) < len(self.vat_list()):
-                invoices.append(None)
+        invoices = [i.payment_date for i in self.invoices.all()]
+        # un ordine per essere completo deve avere una fattura per ogni
+        # iva; questa martellata mette una pezza al comportamento della
+        # Invoice.objects.creates_from_order
+        if len(invoices) < len(self.vat_list()):
+            invoices.append(None)
+
         # un ordine risulta pagato se tutte le sue fatture riportano la data
         # del pagamento
         r = len(invoices) > 0 and all(invoices)
@@ -646,8 +642,12 @@ class Order(models.Model):
         return r
 
     def confirm_order(self, payment_date):
-        # metodo per confermare un ordine simile a genro.confirm_order
-        # una volta confermato un ordine si crea una fattura con data
+        """
+        Creates invoices for the order.
+        """
+        # TODO: #397 - create tickets here, when order is confirmed; Currently
+        # it's happening when order is created resulting in creating tickets
+        # for unpaid orders.
         Invoice.objects.creates_from_order(self, payment_date=payment_date)
 
     def total(self, apply_discounts=True):
@@ -779,117 +779,91 @@ class InvoiceLog(models.Model):
 
 class InvoiceManager(models.Manager):
     def creates_from_order(self, order, update=False, payment_date=None):
-        if settings.GENRO_BACKEND:
-            if not order.assopy_id:
-                return
+        assert update is False
 
-            remote = dict((x['number'], x) for x in genro.order_invoices(order.assopy_id))
+        if order.total() == 0:
+            return
 
-            def _copy(invoice, data):
-                invoice.code = data['number']
-                invoice.assopy_id = data['id']
-                invoice.emit_date = data['invoice_date']
-                invoice.payment_date = data['payment_date']
-                invoice.price = str(data['gross_price'])
-                return invoice
+        def invoices_code(o, fake=False):
+            output = []
 
-            invoices = []
-            if update:
-                for i in order.invoices.all():
-                    try:
-                        data = remote.pop(i.code)
-                    except KeyError:
-                        i.delete()
-                    else:
-                        _copy(i, data)
-                        i.save()
-                        invoices.append(i)
+            def icode(buff=[None]):
 
-            for data in remote.values():
-                i = Invoice(order=order)
-                _copy(i, data)
-                i.save()
-                invoices.append(i)
-            return invoices
-        else:
-            assert update is False
+                if fake is False:
+                    last = settings.LAST_INVOICE_CODE
+                    next = settings.NEXT_INVOICE_CODE
+                else:
+                    last = settings.LAST_FAKE_INVOICE_CODE
+                    next = settings.NEXT_FAKE_INVOICE_CODE
 
-            if order.total() == 0:
-                return
+                if buff[0] is None:
+                    buff[0] = last(o)
+                buff[0] = next(buff[0],o)
+                return buff[0]
 
-            def invoices_code(o, fake=False):
-                output = []
+            for item in o.vat_list():
+                item.update({
+                    'code': icode(),
+                })
+                output.append(item)
+            return output
 
-                def icode(buff=[None]):
+        # # Genero un save point almeno isolo la transazione
+        # from django.db import connection
+        # cursor = connection.cursor()
+        # cursor.execute(
+        #     'savepoint pregenerateinvoice;'
+        # )
+        # salvo almeno sono sicuro di aver effettuato
+        # un operazione di insert nella transazione
+        # in modo da crere un lock su db che gestisce la concorrenza
+        # nella creazione di un indice univoco nella fattura
+        # questo è valido solo per db SQLITE
+        order.save()
 
-                    if fake is False:
-                        last = settings.LAST_INVOICE_CODE
-                        next = settings.NEXT_INVOICE_CODE
-                    else:
-                        last = settings.LAST_FAKE_INVOICE_CODE
-                        next = settings.NEXT_FAKE_INVOICE_CODE
+        invoices = []
+        vat_list = invoices_code(order, fake=payment_date is None)
 
-                    if buff[0] is None:
-                        buff[0] = last(o)
-                    buff[0] = next(buff[0],o)
-                    return buff[0]
+        emit_date = payment_date or datetime.now()
 
-                for item in o.vat_list():
-                    item.update({
-                        'code': icode(),
-                    })
-                    output.append(item)
-                return output
+        for vat_item in vat_list:
+            i, created = Invoice.objects.get_or_create(
+                order=order,
+                vat=vat_item['vat'],
+                price=vat_item['price'],
+                defaults={
+                    'code': vat_item['code'],
+                    'payment_date': payment_date,
+                    'emit_date': emit_date,
+                    'issuer': ISSUER_BY_YEAR[emit_date.year],
+                }
+            )
 
-            # # Genero un save point almeno isolo la transazione
-            # from django.db import connection
-            # cursor = connection.cursor()
-            # cursor.execute(
-            #     'savepoint pregenerateinvoice;'
-            # )
-            # salvo almeno sono sicuro di aver effettuato
-            # un operazione di insert nella transazione
-            # in modo da crere un lock su db che gestisce la concorrenza
-            # nella creazione di un indice univoco nella fattura
-            # questo è valido solo per db SQLITE
-            order.save()
+            if not created:
+                if not payment_date or i.payment_date:
+                    raise RuntimeError('Payment date mismatch')
+                else:
+                    i.payment_date = payment_date
+                    i.emit_date = emit_date
+                    i.code = vat_item['code']
 
-            invoices = []
-            vat_list = invoices_code(order, fake=payment_date is None)
-
-            emit_date = payment_date or datetime.now()
-
-            for vat_item in vat_list:
-                i, created = Invoice.objects.get_or_create(
-                    order=order,
-                    vat=vat_item['vat'],
-                    price=vat_item['price'],
-                    defaults={
-                        'code' : vat_item['code'],
-                        'payment_date' : payment_date,
-                        'emit_date' : emit_date,
-                    }
-                )
-                if not created:
-                    if not payment_date or i.payment_date:
-                        raise RuntimeError('Payment date mismatch')
-                    else:
-                        i.payment_date = payment_date
-                        i.emit_date = emit_date
-                        i.code = vat_item['code']
-                        i.save()
-
-                invoices.append(i)
-            return invoices
+            i.invoice_copy_full_html = render_invoice_as_html(i)
+            i.save()
+            invoices.append(i)
+        return invoices
 
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, related_name='invoices')
     code = models.CharField(max_length=20, null=True, unique=True)
-    assopy_id = models.CharField(max_length=22, unique=True, null=True, blank=True)
+    assopy_id = models.CharField(max_length=22, unique=True, 
+                                 null=True, blank=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    issuer = models.TextField()
+    invoice_copy_full_html = models.TextField()
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
@@ -903,20 +877,20 @@ class Invoice(models.Model):
     objects = InvoiceManager()
 
     def save(self, *args, **kwargs):
-        super(Invoice,self).save(*args, **kwargs)
-        if not settings.GENRO_BACKEND:
-            log, create = InvoiceLog.objects.get_or_create(
-                                order = self.order,
-                                code = self.code,
-                                invoice = self
-                          )
-            if create and settings.IS_REAL_INVOICE(self.code):
-                self.order.complete(ignore_cache=True)
+        super(Invoice, self).save(*args, **kwargs)
+        log, create = InvoiceLog.objects.get_or_create(
+            order=self.order,
+            code=self.code,
+            invoice=self
+        )
+        if create and settings.IS_REAL_INVOICE(self.code):
+            self.order.complete(ignore_cache=True)
 
     @models.permalink
     def get_absolute_url(self):
         from django.contrib.admin.util import quote
-        return ('assopy-invoice-pdf' , [quote(self.order.code), quote(self.code),])
+        return ('assopy-invoice-pdf' , [quote(self.order.code),
+                                        quote(self.code),])
 
     def __unicode__(self):
         if self.code:
@@ -1200,29 +1174,5 @@ Manage link: %s
             recipient_list=emails.get(order.method, emails[None]),
         )
     elif sender.status == 'refunded':
-        if settings.GENRO_BACKEND:
-            message = '''
-User: %s (%s)
-Order: %s assopy id: %s
-Items:
-%s
-Payment method: %s
-
-Manage link: %s
-            ''' % (
-                ctx['name'],
-                dsettings.DEFAULT_URL_PREFIX + reverse('admin:auth_user_change', args=(uid,)),
-                order.code,
-                order.assopy_id,
-                mail_items,
-                order.method,
-                dsettings.DEFAULT_URL_PREFIX + reverse('admin:assopy_refund_change', args=(sender.id,)),
-            )
-            send_email(
-                subject='Refund for %s done, credit note needed' % ctx['name'],
-                message=message,
-                recipient_list=settings.REFUND_EMAIL_ADDRESS['credit-note'],
-            )
-        else:
-            sender.emit_credit_note()
+        sender.emit_credit_note()
 refund_event.connect(on_refund_changed)

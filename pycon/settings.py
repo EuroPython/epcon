@@ -928,7 +928,6 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
 #
 # XXX What is this AssoPy stuff ?
 #
-GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False

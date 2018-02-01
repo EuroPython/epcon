@@ -3,7 +3,6 @@ from django.db import transaction
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 from assopy import models
-from assopy.clients import genro
 
 import datetime
 import logging
@@ -83,8 +82,6 @@ class Command(BaseCommand):
             # non sia stata registrata una fattura tra due sincornizzazioni (v.
             # _sync)
             if o.invoices.count() > 0:
-                continue
-            if genro.order_invoices(o.assopy_id):
                 continue
             if (today - o.created).days >= limit:
                 log.info('remove "%s" method=%s created=%s', o, o.method, o.created)

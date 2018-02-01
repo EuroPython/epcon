@@ -7,8 +7,6 @@ from django.utils.translation import ugettext as _
 
 from assopy import models
 from assopy import settings
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
 from conference import models as cmodels
 
 import logging

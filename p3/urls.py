@@ -46,7 +46,3 @@ urlpatterns += patterns('p3.views',
 
     url(r'^my-schedule/$', 'jump_to_my_schedule', name='p3-my-schedule'),
 )
-
-urlpatterns += patterns('p3.views',
-    url(r'^legacy/invoice/(?P<assopy_id>.+)/$', 'genro_invoice_pdf', name='genro-legacy-invoice'),
-)

@@ -26,9 +26,6 @@ from assopy import settings
 from assopy import utils as autils
 from common.decorators import render_to_json, render_to_template
 
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
-
 
 log = logging.getLogger('assopy.views')
 
@@ -419,46 +416,14 @@ def invoice(request, order_code, code, mode='html'):
         **userfilter
     )
     if mode == 'html':
-        order = invoice.order
-        address = '%s, %s' % (order.address, unicode(order.country))
-        ctx = {
-            'document': ('Fattura N.', 'Invoice N.'),
-            'title': unicode(invoice),
-            'code': invoice.code,
-            'emit_date': invoice.emit_date,
-            'order': {
-                'card_name': order.card_name,
-                'address': address,
-                'billing_notes': order.billing_notes,
-                'cf_code': order.cf_code,
-                'vat_number': order.vat_number,
-            },
-            'items': invoice.invoice_items(),
-            'note': invoice.note,
-            'price': {
-                'net': invoice.net_price(),
-                'vat': invoice.vat_value(),
-                'total': invoice.price,
-            },
-            'vat': invoice.vat,
-            'real': settings.IS_REAL_INVOICE(invoice.code),
-        }
-        return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
+        return http.HttpResponse(invoice.invoice_copy_full_html)
+
     else:
-        if settings.GENRO_BACKEND:
-            assopy_id = invoice.assopy_id
-            data = genro.invoice(assopy_id)
-            if data.get('credit_note'):
-                order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
-            else:
-                order = get_object_or_404(models.Order, assopy_id=data['order_id'])
-            raw = urllib.urlopen(genro.invoice_url(assopy_id))
-        else:
-            hurl = reverse('assopy-invoice-html', args=(order_code, code))
-            if not settings.WKHTMLTOPDF_PATH:
-                return HttpResponseRedirectSeeOther(hurl)
-            raw = _pdf(request, hurl)
-            order = invoice.order
+        hurl = reverse('assopy-invoice-html', args=(order_code, code))
+        if not settings.WKHTMLTOPDF_PATH:
+            return HttpResponseRedirectSeeOther(hurl)
+        raw = _pdf(request, hurl)
+        order = invoice.order
 
         from conference.models import Conference
         try:
