@@ -11,10 +11,18 @@ if hasattr(settings, 'ASSOPY_JANRAIN'):
 else:
     JANRAIN = None
 
+if hasattr(settings, 'GENRO_BACKEND'):
+    GENRO_BACKEND = settings.GENRO_BACKEND
+else:
+    GENRO_BACKEND = True
+
 try:
     BACKEND = settings.ASSOPY_BACKEND
 except AttributeError:
-    BACKEND = None
+    if GENRO_BACKEND:
+        raise ImproperlyConfigured('Assopy Backend not set')
+    else:
+        BACKEND = None
 
 CHECK_DB_SCHEMA = getattr(settings, 'ASSOPY_CHECK_DB_SCHEMA', True)
 

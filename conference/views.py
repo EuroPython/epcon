@@ -288,6 +288,18 @@ def schedule_xml(request, conference, slug):
         'timetable': utils.TimeTable2.fromSchedule(sch.id),
     }
 
+def genro_wrapper(request):
+    """
+    Shows in a iframe application of the conference.
+    """
+    try:
+        conf = dict(dsettings.GNR_CONFERENCE)
+    except AttributeError:
+        raise http.Http404()
+    conf['src'] += '?' + urllib.urlencode(request.GET)
+    return render_to_response(
+        'conference/genro_wrapper.html', conf,
+        context_instance = RequestContext(request))
 
 @render_to_json
 def places(request):

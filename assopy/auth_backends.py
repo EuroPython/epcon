@@ -5,6 +5,8 @@ from django.db import transaction
 
 from assopy import models
 from assopy import settings
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro
 
 import logging
 
@@ -16,6 +18,32 @@ class _AssopyBackend(ModelBackend):
         collega l'utente assopy passato con il backend; crea l'utente remoto se
         necessario.
         """
+        if not settings.GENRO_BACKEND:
+            return user
+        if user.assopy_id:
+            return user
+        name = unicode(user.user).encode('utf-8')
+        if not user.user.is_active:
+            log.info('cannot link a remote user to "%s": it\'s not active', name) 
+            return
+
+        log.info('a remote user is needed for "%s"', name)
+        # il lookup con l'email può ritornare più di un id; non è un
+        # problema dato che associo lo user con il backend solo quando ho
+        # verificato l'email (e la verifica non è necessaria se si loggano
+        # con janrain), quindi posso usare una qualsiasi delle identità
+        # remote. Poi un giorno implementeremo il merge delle identità.
+        rid = genro.users(email=user.user.email)['r0']
+        if rid is not None:
+            log.info('an existing match with the email "%s" is found: %s', user.user.email, rid)
+            user.assopy_id = rid
+            user.save()
+            genro.user_remote2local(user)
+        else:
+            rid = genro.create_user(user.user.first_name, user.user.last_name, user.user.email)
+            log.info('new remote user id: %s', rid)
+            user.assopy_id = rid
+            user.save()
         return user
 
     def get_user(self, user_id):
@@ -77,9 +105,15 @@ class EmailBackend(_AssopyBackend):
         except User.DoesNotExist:
             # nel db di django non c'è un utente con quella email, ma potrebbe
             # esserci un utente legacy nel backend di ASSOPY
-            if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
+            if not settings.GENRO_BACKEND or not settings.SEARCH_MISSING_USERS_ON_BACKEND:
                 return None
-
+            rid = genro.users(email=email, password=password)['r0']
+            if rid is not None:
+                log.info('"%s" is a valid remote user; a local user is needed', email)
+                auser = models.User.objects.create_user(email, password=password, active=True, assopy_id=rid, send_mail=False)
+                return auser.user
+            else:
+                return None
 
 class JanRainBackend(_AssopyBackend):
     def authenticate(self, identifier=None):
