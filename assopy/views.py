@@ -419,31 +419,8 @@ def invoice(request, order_code, code, mode='html'):
         **userfilter
     )
     if mode == 'html':
-        order = invoice.order
-        address = '%s, %s' % (order.address, unicode(order.country))
-        ctx = {
-            'document': ('Fattura N.', 'Invoice N.'),
-            'title': unicode(invoice),
-            'code': invoice.code,
-            'emit_date': invoice.emit_date,
-            'order': {
-                'card_name': order.card_name,
-                'address': address,
-                'billing_notes': order.billing_notes,
-                'cf_code': order.cf_code,
-                'vat_number': order.vat_number,
-            },
-            'items': invoice.invoice_items(),
-            'note': invoice.note,
-            'price': {
-                'net': invoice.net_price(),
-                'vat': invoice.vat_value(),
-                'total': invoice.price,
-            },
-            'vat': invoice.vat,
-            'real': settings.IS_REAL_INVOICE(invoice.code),
-        }
-        return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
+        return http.HttpResponse(invoice.invoice_copy_full_html)
+
     else:
         if settings.GENRO_BACKEND:
             assopy_id = invoice.assopy_id

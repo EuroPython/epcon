@@ -1,23 +1,4 @@
 # -*- coding: UTF-8 -*-
-from assopy import janrain
-from assopy import settings
-from common import django_urls
-
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro, vies
-from assopy.utils import check_database_schema, send_email
-from conference.models import Ticket
-from email_template import utils
-
-from django import dispatch
-from django.conf import settings as dsettings
-from django.contrib import auth
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
-from django.db import models
-from django.db.models.query import QuerySet
-from django.utils.translation import ugettext_lazy as _
-from django.utils.timezone import now
 
 import re
 import os
@@ -27,6 +8,27 @@ from uuid import uuid4
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
+
+from django import dispatch
+from django.conf import settings as dsettings
+from django.contrib import auth
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models.query import QuerySet
+from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
+
+from assopy import janrain
+from assopy import settings
+from assopy.utils import send_email
+from common import django_urls
+from conference.models import Ticket
+from conference.invoicing import ISSUER_BY_YEAR, render_invoice_as_html
+from email_template import utils
+
+if settings.GENRO_BACKEND:
+    from assopy.clients import genro, vies
 
 log = logging.getLogger('assopy.models')
 
@@ -865,11 +867,13 @@ class InvoiceManager(models.Manager):
                     vat=vat_item['vat'],
                     price=vat_item['price'],
                     defaults={
-                        'code' : vat_item['code'],
-                        'payment_date' : payment_date,
-                        'emit_date' : emit_date,
+                        'code': vat_item['code'],
+                        'payment_date': payment_date,
+                        'emit_date': emit_date,
+                        'issuer': ISSUER_BY_YEAR[emit_date.year],
                     }
                 )
+
                 if not created:
                     if not payment_date or i.payment_date:
                         raise RuntimeError('Payment date mismatch')
@@ -877,8 +881,9 @@ class InvoiceManager(models.Manager):
                         i.payment_date = payment_date
                         i.emit_date = emit_date
                         i.code = vat_item['code']
-                        i.save()
 
+                i.invoice_copy_full_html = render_invoice_as_html(i)
+                i.save()
                 invoices.append(i)
             return invoices
 
@@ -890,6 +895,9 @@ class Invoice(models.Model):
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    issuer = models.TextField()
+    invoice_copy_full_html = models.TextField()
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
