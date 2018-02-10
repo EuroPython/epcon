@@ -11,8 +11,6 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.utils.safestring import mark_safe
 from assopy import models, settings
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
 from collections import defaultdict
 from datetime import datetime
 
@@ -235,10 +233,7 @@ class OrderAdmin(admin.ModelAdmin):
             if form.is_valid():
                 d = form.cleaned_data['date']
                 for o in orders:
-                    if settings.GENRO_BACKEND:
-                        genro.confirm_order(o.assopy_id, o.total(), d)
-                    else:
-                        o.confirm_order(d)
+                    o.confirm_order(d)
                     o.complete()
                 return redirect('admin:assopy_order_changelist')
         else:
@@ -623,164 +618,159 @@ class RefundAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Refund, RefundAdmin)
 
-if not settings.GENRO_BACKEND:
 
-    class InvoiceAdminForm(forms.ModelForm):
-        class Meta:
-            model = models.Invoice
-            exclude = ("assopy_id",)
-            widgets = {
-                'price':ReadOnlyWidget,
-                'vat' : ReadOnlyWidget,
-                'order' : ReadOnlyWidget
-            }
+class InvoiceAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Invoice
+        exclude = ("assopy_id",)
+        widgets = {
+            'price':ReadOnlyWidget,
+            'vat' : ReadOnlyWidget,
+            'order' : ReadOnlyWidget
+        }
 
-    class InvoiceAdmin(admin.ModelAdmin):
-        actions = ('do_csv_invoices',)
-        list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
-        date_hierarchy = 'payment_date'
-        search_fields = (
-            'code', 'order__code', 'order__card_name',
-            'order__user__user__first_name', 'order__user__user__last_name', 'order__user__user__email',
-            'order__billing_notes',)
-        form = InvoiceAdminForm
+class InvoiceAdmin(admin.ModelAdmin):
+    actions = ('do_csv_invoices',)
+    list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
+    date_hierarchy = 'payment_date'
+    search_fields = (
+        'code', 'order__code', 'order__card_name',
+        'order__user__user__first_name', 'order__user__user__last_name', 'order__user__user__email',
+        'order__billing_notes',)
+    form = InvoiceAdminForm
 
-        def _order(self, o):
-            order = o.order
-            url = urlresolvers.reverse('admin:assopy_order_change', args=(order.id,))
-            return '<a href="%s">%s</a>' % (url, order.code)
-        _order.allow_tags = True
-        _order.admin_order_field = 'order'
+    def _order(self, o):
+        order = o.order
+        url = urlresolvers.reverse('admin:assopy_order_change', args=(order.id,))
+        return '<a href="%s">%s</a>' % (url, order.code)
+    _order.allow_tags = True
+    _order.admin_order_field = 'order'
 
-        def _user(self, o):
-            u = o.order.user.user
-            name = '%s %s' % (u.first_name, u.last_name)
-            admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
-            dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
-            html = '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
-            if o.order.card_name != name:
-                html += ' - ' + o.order.card_name
-            return html
-        _user.allow_tags = True
-        _user.admin_order_field = 'order__user__user__first_name'
+    def _user(self, o):
+        u = o.order.user.user
+        name = '%s %s' % (u.first_name, u.last_name)
+        admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
+        dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
+        html = '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
+        if o.order.card_name != name:
+            html += ' - ' + o.order.card_name
+        return html
+    _user.allow_tags = True
+    _user.admin_order_field = 'order__user__user__first_name'
 
-        def _invoice(self, i):
-            fake = not i.payment_date
-            if settings.GENRO_BACKEND:
-                view = genro.invoice_url(i.assopy_id)
-                download = view
-            else:
-                view = urlresolvers.reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
-                download = urlresolvers.reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
-            return '<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else '')
-        _invoice.allow_tags = True
-        _invoice.short_description = 'Download'
+    def _invoice(self, i):
+        fake = not i.payment_date
+        view = urlresolvers.reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
+        download = urlresolvers.reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
+        return '<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else '')
+    _invoice.allow_tags = True
+    _invoice.short_description = 'Download'
 
-        def has_delete_permission(self, request, obj=None):
-            if obj and obj.payment_date != None:
-                return False
-            else:
-                return super(InvoiceAdmin, self).has_delete_permission(request, obj)
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.payment_date != None:
+            return False
+        else:
+            return super(InvoiceAdmin, self).has_delete_permission(request, obj)
 
-        def do_csv_invoices(self, request, queryset):
-            import csv
-            from cStringIO import StringIO
-            columns = (
-                    'numero', 'Card name',
-                    'Customer:tipo IVA', 'Customer:Customer Type',
-                    'Codice Fiscale', 'Partita IVA', 'Nazione',
-                    'prezzo netto', 'IVA', 'Gross Price',
-                    'Invoice Date', 'Payment date',
-                    'Deposit Invoice', 'SIM Invoice', 'Voucher Invoice',
-                    'Billing notes')
+    def do_csv_invoices(self, request, queryset):
+        import csv
+        from cStringIO import StringIO
+        columns = (
+                'numero', 'Card name',
+                'Customer:tipo IVA', 'Customer:Customer Type',
+                'Codice Fiscale', 'Partita IVA', 'Nazione',
+                'prezzo netto', 'IVA', 'Gross Price',
+                'Invoice Date', 'Payment date',
+                'Deposit Invoice', 'SIM Invoice', 'Voucher Invoice',
+                'Billing notes')
 
-            def e(d):
-                for k, v in d.items():
-                    d[k] = v.encode('utf-8')
-                return d
+        def e(d):
+            for k, v in d.items():
+                d[k] = v.encode('utf-8')
+            return d
 
-            ofile = StringIO()
-            writer = csv.DictWriter(ofile, fieldnames=columns)
-            writer.writerow(dict(zip(columns, columns)))
-            for i in queryset.select_related('order', 'vat'):
-                writer.writerow(e({
-                    'numero': i.code,
-                    'Card name': i.order.card_name,
-                    'Customer:tipo IVA': i.vat.invoice_notice,
-                    'Customer:Customer Type': '',
-                    'Codice Fiscale': i.order.cf_code,
-                    'Partita IVA': i.order.vat_number,
-                    'Nazione': i.order.country_id,
-                    'prezzo netto': '%.2f' % i.net_price(),
-                    'IVA': '%.2f' % i.vat_value(),
-                    'Gross Price': '%.2f' % i.price,
-                    'Invoice Date': i.emit_date.strftime('%d-%m-%Y'),
-                    'Payment date': i.payment_date.strftime('%d-%m-%Y'),
-                    'Deposit Invoice': '',
-                    'SIM Invoice': '',
-                    'Voucher Invoice': '',
-                    'Billing notes': i.order.billing_notes,
-                }))
+        ofile = StringIO()
+        writer = csv.DictWriter(ofile, fieldnames=columns)
+        writer.writerow(dict(zip(columns, columns)))
+        for i in queryset.select_related('order', 'vat'):
+            writer.writerow(e({
+                'numero': i.code,
+                'Card name': i.order.card_name,
+                'Customer:tipo IVA': i.vat.invoice_notice,
+                'Customer:Customer Type': '',
+                'Codice Fiscale': i.order.cf_code,
+                'Partita IVA': i.order.vat_number,
+                'Nazione': i.order.country_id,
+                'prezzo netto': '%.2f' % i.net_price(),
+                'IVA': '%.2f' % i.vat_value(),
+                'Gross Price': '%.2f' % i.price,
+                'Invoice Date': i.emit_date.strftime('%d-%m-%Y'),
+                'Payment date': i.payment_date.strftime('%d-%m-%Y'),
+                'Deposit Invoice': '',
+                'SIM Invoice': '',
+                'Voucher Invoice': '',
+                'Billing notes': i.order.billing_notes,
+            }))
 
-            response = http.HttpResponse(ofile.getvalue(), content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=fatture.csv'
-            return response
-        do_csv_invoices.short_description = 'Download invoices as csv'
+        response = http.HttpResponse(ofile.getvalue(), content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=fatture.csv'
+        return response
+    do_csv_invoices.short_description = 'Download invoices as csv'
 
 
-    admin.site.register(models.Invoice,InvoiceAdmin)
+admin.site.register(models.Invoice,InvoiceAdmin)
 
-    admin.site.register(models.Vat)
+admin.site.register(models.Vat)
 
-    class InvoiceLogAdmin(admin.ModelAdmin):
-        list_display = (
-            'code', 'order', 'invoice','date'
-        )
+class InvoiceLogAdmin(admin.ModelAdmin):
+    list_display = (
+        'code', 'order', 'invoice','date'
+    )
 
-    admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
+admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
 
-    from conference import admin as cadmin
+from conference import admin as cadmin
 
-    class AssopyFareForm(forms.ModelForm):
-        vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
+class AssopyFareForm(forms.ModelForm):
+    vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
 
-        class Meta:
-            model = cadmin.models.Fare
-            fields = '__all__'
+    class Meta:
+        model = cadmin.models.Fare
+        fields = '__all__'
 
-        def __init__(self, *args, **kwargs):
-            instance = kwargs.get('instance',None)
-            if instance:
-                try:
-                    vat = instance.vat_set.all()[0]
-                    initial = kwargs.get('initial',{})
-                    initial.update({'vat' : vat })
-                    kwargs['initial'] = initial
-                except  IndexError:
-                    pass
-            super(AssopyFareForm, self).__init__(*args, **kwargs)
-
-    class AssopyFareAdmin(cadmin.FareAdmin):
-        form = AssopyFareForm
-        list_display = cadmin.FareAdmin.list_display + ('_vat',)
-
-        def _vat(self,obj):
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance',None)
+        if instance:
             try:
-                return obj.vat_set.all()[0]
-            except IndexError:
-                return None
-        _vat.short_description = 'VAT'
+                vat = instance.vat_set.all()[0]
+                initial = kwargs.get('initial',{})
+                initial.update({'vat' : vat })
+                kwargs['initial'] = initial
+            except  IndexError:
+                pass
+        super(AssopyFareForm, self).__init__(*args, **kwargs)
 
-        def save_model(self, request, obj, form, change):
-            super(AssopyFareAdmin, self).save_model(request, obj, form, change)
-            if 'vat' in form.cleaned_data:
-                # se la tariffa viene modificata dalla list_view 'vat' potrebbe
-                # non esserci
-                vat_fare, created = models.VatFare.objects.get_or_create(
-                    fare=obj, defaults={'vat': form.cleaned_data['vat']})
-                if not created and vat_fare.vat != form.cleaned_data['vat']:
-                    vat_fare.vat = form.cleaned_data['vat']
-                    vat_fare.save()
+class AssopyFareAdmin(cadmin.FareAdmin):
+    form = AssopyFareForm
+    list_display = cadmin.FareAdmin.list_display + ('_vat',)
 
-    admin.site.unregister(cadmin.models.Fare)
-    admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
+    def _vat(self,obj):
+        try:
+            return obj.vat_set.all()[0]
+        except IndexError:
+            return None
+    _vat.short_description = 'VAT'
+
+    def save_model(self, request, obj, form, change):
+        super(AssopyFareAdmin, self).save_model(request, obj, form, change)
+        if 'vat' in form.cleaned_data:
+            # se la tariffa viene modificata dalla list_view 'vat' potrebbe
+            # non esserci
+            vat_fare, created = models.VatFare.objects.get_or_create(
+                fare=obj, defaults={'vat': form.cleaned_data['vat']})
+            if not created and vat_fare.vat != form.cleaned_data['vat']:
+                vat_fare.vat = form.cleaned_data['vat']
+                vat_fare.save()
+
+admin.site.unregister(cadmin.models.Fare)
+admin.site.register(cadmin.models.Fare, AssopyFareAdmin)

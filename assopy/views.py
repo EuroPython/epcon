@@ -26,9 +26,6 @@ from assopy import settings
 from assopy import utils as autils
 from common.decorators import render_to_json, render_to_template
 
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
-
 
 log = logging.getLogger('assopy.views')
 
@@ -422,20 +419,11 @@ def invoice(request, order_code, code, mode='html'):
         return http.HttpResponse(invoice.invoice_copy_full_html)
 
     else:
-        if settings.GENRO_BACKEND:
-            assopy_id = invoice.assopy_id
-            data = genro.invoice(assopy_id)
-            if data.get('credit_note'):
-                order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
-            else:
-                order = get_object_or_404(models.Order, assopy_id=data['order_id'])
-            raw = urllib.urlopen(genro.invoice_url(assopy_id))
-        else:
-            hurl = reverse('assopy-invoice-html', args=(order_code, code))
-            if not settings.WKHTMLTOPDF_PATH:
-                return HttpResponseRedirectSeeOther(hurl)
-            raw = _pdf(request, hurl)
-            order = invoice.order
+        hurl = reverse('assopy-invoice-html', args=(order_code, code))
+        if not settings.WKHTMLTOPDF_PATH:
+            return HttpResponseRedirectSeeOther(hurl)
+        raw = _pdf(request, hurl)
+        order = invoice.order
 
         from conference.models import Conference
         try:
