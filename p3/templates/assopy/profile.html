@@ -142,12 +142,16 @@
                                     {% trans "N/A" %}
                                     {% else %}
                                         {% for invoice in invoices %}
-                                            <a href="{% url 'assopy-invoice-html' order_code=order.code code=invoice.code %}">{{ invoice.code }}</a>
-                                            {% comment %}
+                                            {% if invoice.assopy_id %}
+                                                <a href="{% url 'genro-legacy-invoice' assopy_id=invoice.assopy_id %}">{{ invoice.code }}</a>
+                                            {% else %}
+                                                <a href="{% url 'assopy-invoice-html' order_code=order.code code=invoice.code %}">{{ invoice.code }}</a>
+                                                {% comment %}
                                                 {% for cn in i.credit_notes.all %}
                                                     (<a href="{% url 'assopy-invoice-html' assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
                                                 {% endfor %}
-                                            {% endcomment %}
+                                                {% endcomment %}
+                                            {% endif %}
                                         {% endfor %}
                                     {% endif %}
                                     {% endwith %}

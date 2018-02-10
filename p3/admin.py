@@ -459,15 +459,23 @@ if 0:  # FIXME: remove hotels and sim
     admin.site.register(models.TicketRoom, TicketRoomAdmin)
 
 
-# TODO commented out becauxe it seems to be relevant only for Genro
-# class InvoiceAdmin(aadmin.InvoiceAdmin):
-#     def _invoice(self, i):
-#         return super(InvoiceAdmin, self)._invoice(i)
-#     _invoice.allow_tags = True
-#     _invoice.short_description = 'Download'
+class InvoiceAdmin(aadmin.InvoiceAdmin):
+    """
+    Specializzazione per gestire il download delle fatture generate con genro
+    """
 
-# admin.site.unregister(amodels.Invoice)
-# admin.site.register(amodels.Invoice, InvoiceAdmin)
+    def _invoice(self, i):
+        if i.assopy_id:
+            fake = not i.payment_date
+            view = urlresolvers.reverse('genro-legacy-invoice', kwargs={'assopy_id': i.assopy_id})
+            return '<a href="%s">View</a> %s' % (view, '[Not payed]' if fake else '')
+        else:
+            return super(InvoiceAdmin, self)._invoice(i)
+    _invoice.allow_tags = True
+    _invoice.short_description = 'Download'
+
+admin.site.unregister(amodels.Invoice)
+admin.site.register(amodels.Invoice, InvoiceAdmin)
 
 
 class VotoTalkAdmin(admin.ModelAdmin):
