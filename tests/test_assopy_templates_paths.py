@@ -69,6 +69,7 @@ def test_assopy_invoice(client):
         emit_date=timezone.now().date(),
         price=Decimal(1337),
         vat=vat_10,
+        invoice_copy_full_html='Here goes full html',
     )
 
     invoice_url = reverse('assopy-invoice-html', kwargs={
@@ -77,8 +78,11 @@ def test_assopy_invoice(client):
     })
 
     response = client.get(invoice_url)
-    make_sure_root_template_is_used(response, "assopy/invoice.html")
-    make_sure_root_template_is_used(response, "assopy/base_invoice.html")
+    # TODO(artcz) after we changed to pre-rendering and storing full html of
+    # the invoice we no longer use a template in this view.
+    # TBD if we need that test here anymore, since it supposed to test
+    # templates temporarily anyway.
+    assert response.content == 'Here goes full html'
 
 
 @mark.django_db
