@@ -25,6 +25,7 @@ from assopy import models
 from assopy import settings
 from assopy import utils as autils
 from common.decorators import render_to_json, render_to_template
+from common.http import PdfResponse
 
 
 log = logging.getLogger('assopy.views')
@@ -401,6 +402,7 @@ def bank_feedback_ok(request, code):
         'order': o,
     }
 
+
 @login_required
 def invoice(request, order_code, code, mode='html'):
     if not request.user.is_staff:
@@ -409,33 +411,20 @@ def invoice(request, order_code, code, mode='html'):
         }
     else:
         userfilter = {}
+
     invoice = get_object_or_404(
         models.Invoice,
         code=unquote(code),
         order__code=unquote(order_code),
         **userfilter
     )
+
     if mode == 'html':
         return http.HttpResponse(invoice.invoice_copy_full_html)
 
-    else:
-        hurl = reverse('assopy-invoice-html', args=(order_code, code))
-        if not settings.WKHTMLTOPDF_PATH:
-            return HttpResponseRedirectSeeOther(hurl)
-        raw = _pdf(request, hurl)
-        order = invoice.order
+    return PdfResponse(filename=invoice.get_invoice_filename(),
+                       content=invoice.invoice_copy_full_html)
 
-        from conference.models import Conference
-        try:
-            conf = Conference.objects\
-                .get(conference_start__year=order.created.year).code
-        except Conference.DoesNotExist:
-            conf = order.created.year
-        fname = '[%s invoice] %s.pdf' % (conf, invoice.code.replace('/', '-'))
-
-        response = http.HttpResponse(raw, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-        return response
 
 def _pdf(request, url):
     import subprocess

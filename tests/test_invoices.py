@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import
 from datetime import date, timedelta
 from decimal import Decimal
 
-from pytest import mark
+from pytest import mark, raises
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -20,6 +20,63 @@ from conference import settings as conference_settings
 from email_template.models import Email
 
 from tests.common_tools import template_used, sequence_equals, serve  # NOQA
+
+
+def _prepare_invoice_for_basic_test(order_code, invoice_code):
+    # default password is 'password123' per django_factory_boy
+    user = auth_factories.UserFactory(email='joedoe@example.com',
+                                      is_active=True)
+    assopy_user = AssopyUserFactory(user=user)
+
+    # FYI(artcz): Order.objects.create is overloaded method on
+    # OrderManager, that sets up a lot of unused stuff, going with manual
+    # .save().
+    order = Order(user=assopy_user, code=order_code)
+    order.save()
+    # create some random Vat instance to the invoice creation works
+    vat_10 = Vat.objects.create(value=10)
+
+    Invoice.objects.create(
+        code=invoice_code,
+        order=order,
+        emit_date=date.today(),
+        price=Decimal(1337),
+        vat=vat_10,
+        invoice_copy_full_html='Here goes full html',
+    )
+
+
+@mark.django_db
+def test_invoice_html(client):
+    # invoice_code must be validated via ASSOPY_IS_REAL_INVOICE
+    invoice_code, order_code = 'I123', 'asdf'
+    _prepare_invoice_for_basic_test(order_code, invoice_code)
+
+    client.login(email='joedoe@example.com', password='password123')
+    invoice_url = reverse('assopy-invoice-html', kwargs={
+        'order_code': order_code,
+        'code': invoice_code,
+    })
+    response = client.get(invoice_url)
+
+    assert response.content == 'Here goes full html'
+
+
+@mark.django_db
+def test_invoice_pdf(client):
+    # invoice_code must be validated via ASSOPY_IS_REAL_INVOICE
+    invoice_code, order_code = 'I123', 'asdf'
+    _prepare_invoice_for_basic_test(order_code, invoice_code)
+
+    client.login(email='joedoe@example.com', password='password123')
+    invoice_url = reverse('assopy-invoice-pdf', kwargs={
+        'order_code': order_code,
+        'code': invoice_code,
+    })
+
+    with raises(NotImplementedError):
+        # TODO: currently PDF invoices are not implemented
+        client.get(invoice_url)
 
 
 @mark.django_db

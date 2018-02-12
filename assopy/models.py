@@ -898,6 +898,9 @@ class Invoice(models.Model):
         else:
             return 'Invoice id:%d' % self.id
 
+    def get_invoice_filename(self):
+        return 'EuroPython_Invoice_%s.pdf' % self.code.replace('/', '-')
+
     def invoice_items(self):
         return self.order.orderitem_set.filter(vat=self.vat) \
                                   .values('code','description') \
