@@ -24,6 +24,28 @@ def template_used(response, template_name):
     return True
 
 
+def template_paths(response):
+    """
+    This should be used only in project-templates (not 3rd party apps
+    templates), to establish which exact template is being rendered (avoidoing
+    confusion as to which file is being used)
+    """
+    paths = []
+    for t in response.templates:
+        if t.name:
+            try:
+                path = t.origin.name.split(settings.PROJECT_DIR)[1]
+            except IndexError:
+                # if there's IndexError that means that template doesn't come
+                # from the project (it's probably from a third party app); in
+                # that case return full path not relative to the PROJECT_DIR.
+                path = t.origin.name
+
+            paths.append(path)
+
+    return paths
+
+
 def create_homepage_in_cms():
     # Need to create conference before creating pages
     Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
