@@ -24,7 +24,6 @@ from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
 from conference.models import Ticket
-from conference.invoicing import ISSUER_BY_YEAR, render_invoice_as_html
 from email_template import utils
 
 
@@ -642,13 +641,12 @@ class Order(models.Model):
         return r
 
     def confirm_order(self, payment_date):
-        """
-        Creates invoices for the order.
-        """
-        # TODO: #397 - create tickets here, when order is confirmed; Currently
-        # it's happening when order is created resulting in creating tickets
-        # for unpaid orders.
-        Invoice.objects.creates_from_order(self, payment_date=payment_date)
+        # TODO: this import is here to avoid circular import, but can be later
+        # moved once confirm_order is moved somewhere else.
+        from conference.invoicing import create_invoices_for_order
+        create_invoices_for_order(self,
+                                  emit_date=payment_date,
+                                  payment_date=payment_date)
 
     def total(self, apply_discounts=True):
         if apply_discounts:
@@ -778,79 +776,7 @@ class InvoiceLog(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
 class InvoiceManager(models.Manager):
-    def creates_from_order(self, order, update=False, payment_date=None):
-        assert update is False
-
-        if order.total() == 0:
-            return
-
-        def invoices_code(o, fake=False):
-            output = []
-
-            def icode(buff=[None]):
-
-                if fake is False:
-                    last = settings.LAST_INVOICE_CODE
-                    next = settings.NEXT_INVOICE_CODE
-                else:
-                    last = settings.LAST_FAKE_INVOICE_CODE
-                    next = settings.NEXT_FAKE_INVOICE_CODE
-
-                if buff[0] is None:
-                    buff[0] = last(o)
-                buff[0] = next(buff[0],o)
-                return buff[0]
-
-            for item in o.vat_list():
-                item.update({
-                    'code': icode(),
-                })
-                output.append(item)
-            return output
-
-        # # Genero un save point almeno isolo la transazione
-        # from django.db import connection
-        # cursor = connection.cursor()
-        # cursor.execute(
-        #     'savepoint pregenerateinvoice;'
-        # )
-        # salvo almeno sono sicuro di aver effettuato
-        # un operazione di insert nella transazione
-        # in modo da crere un lock su db che gestisce la concorrenza
-        # nella creazione di un indice univoco nella fattura
-        # questo è valido solo per db SQLITE
-        order.save()
-
-        invoices = []
-        vat_list = invoices_code(order, fake=payment_date is None)
-
-        emit_date = payment_date or datetime.now()
-
-        for vat_item in vat_list:
-            i, created = Invoice.objects.get_or_create(
-                order=order,
-                vat=vat_item['vat'],
-                price=vat_item['price'],
-                defaults={
-                    'code': vat_item['code'],
-                    'payment_date': payment_date,
-                    'emit_date': emit_date,
-                    'issuer': ISSUER_BY_YEAR[emit_date.year],
-                }
-            )
-
-            if not created:
-                if not payment_date or i.payment_date:
-                    raise RuntimeError('Payment date mismatch')
-                else:
-                    i.payment_date = payment_date
-                    i.emit_date = emit_date
-                    i.code = vat_item['code']
-
-            i.invoice_copy_full_html = render_invoice_as_html(i)
-            i.save()
-            invoices.append(i)
-        return invoices
+    pass
 
 
 class Invoice(models.Model):
@@ -877,13 +803,14 @@ class Invoice(models.Model):
     objects = InvoiceManager()
 
     def save(self, *args, **kwargs):
+        from conference.invoicing import is_real_invoice_code
         super(Invoice, self).save(*args, **kwargs)
         log, create = InvoiceLog.objects.get_or_create(
             order=self.order,
             code=self.code,
             invoice=self
         )
-        if create and settings.IS_REAL_INVOICE(self.code):
+        if create and is_real_invoice_code(self.code):
             self.order.complete(ignore_cache=True)
 
     @models.permalink
