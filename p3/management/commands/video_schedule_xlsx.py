@@ -114,10 +114,11 @@ def video_description(title, abstract,
         # Remove plural "s"
         session_type = session_type[:-1]
 
+    # XXX Make this configurables in settings
     return u"""\
 %(title)s
-[EuroPython 2017 - %(type)s - %(date)s - %(room)s]
-[Rimini, Italy]
+[EuroPython 2018 - %(type)s - %(date)s - %(room)s]
+[Edinburgh, UK]
 
 %(abstract)s
     """ % dict(

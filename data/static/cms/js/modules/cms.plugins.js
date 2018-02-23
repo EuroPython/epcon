@@ -15,6 +15,7 @@ require('../polyfills/array.prototype.findindex');
 var doc;
 var clipboard;
 var clipboardDraggable;
+var path = window.location.pathname + window.location.search;
 
 /**
  * Class for handling Plugins / Placeholders or Generics.
@@ -148,10 +149,8 @@ var Plugin = new Class({
 
         this.ui = {
             container: contents,
-            publish: $('.cms-btn-publish'),
             save: $('.cms-toolbar-item-switch-save-edit'),
             window: $(window),
-            revert: $('.cms-toolbar-revert'),
             dragbar: null,
             draggable: null,
             draggables: null,
@@ -223,7 +222,7 @@ var Plugin = new Class({
             e.stopPropagation();
 
             that.editPlugin(
-                that.options.urls.edit_plugin,
+                Helpers.updateUrlWithPath(that.options.urls.edit_plugin),
                 that.options.plugin_name,
                 that._getPluginBreadcrumbs()
             );
@@ -315,7 +314,11 @@ var Plugin = new Class({
         this.ui.container.on(this.doubleClick, function (e) {
             e.preventDefault();
             e.stopPropagation();
-            that.editPlugin(that.options.urls.edit_plugin, that.options.plugin_name, []);
+            that.editPlugin(
+                Helpers.updateUrlWithPath(that.options.urls.edit_plugin),
+                that.options.plugin_name,
+                []
+            );
         });
 
         // adds edit tooltip
@@ -398,6 +401,7 @@ var Plugin = new Class({
         var params = {
             placeholder_id: this.options.placeholder_id,
             plugin_type: type,
+            cms_path: path,
             plugin_language: this.options.plugin_language
         };
 
@@ -469,8 +473,6 @@ var Plugin = new Class({
         }
         CMS.API.locked = true;
 
-        var move = !!(opts || source_language);
-
         // set correct options
         var options = opts || this.options;
         var sourceLanguage = source_language;
@@ -494,7 +496,7 @@ var Plugin = new Class({
         };
         var request = {
             type: 'POST',
-            url: options.urls.copy_plugin,
+            url: Helpers.updateUrlWithPath(options.urls.copy_plugin),
             data: data,
             success: function () {
                 CMS.API.Messages.open({
@@ -515,14 +517,7 @@ var Plugin = new Class({
             }
         };
 
-        if (move) {
-            $.ajax(request);
-        } else {
-            // ensure clipboard is cleaned
-            CMS.API.Clipboard.clear(function () {
-                $.ajax(request);
-            });
-        }
+        $.ajax(request);
     },
 
     /**
@@ -549,37 +544,28 @@ var Plugin = new Class({
             csrfmiddlewaretoken: this.csrf
         };
 
-        // ensure clipboard is cleaned
-        CMS.API.Clipboard.clear(function () {
-            // cancel request if already in progress
-            if (CMS.API.locked) {
-                return false;
+        // move plugin
+        $.ajax({
+            type: 'POST',
+            url: Helpers.updateUrlWithPath(that.options.urls.move_plugin),
+            data: data,
+            success: function () {
+                CMS.API.Messages.open({
+                    message: CMS.config.lang.success
+                });
+                // if response is reload
+                CMS.API.Helpers.reloadBrowser();
+            },
+            error: function (jqXHR) {
+                CMS.API.locked = false;
+                var msg = CMS.config.lang.error;
+
+                // trigger error
+                CMS.API.Messages.open({
+                    message: msg + jqXHR.responseText || jqXHR.status + ' ' + jqXHR.statusText,
+                    error: true
+                });
             }
-            CMS.API.locked = true;
-
-            // move plugin
-            $.ajax({
-                type: 'POST',
-                url: that.options.urls.move_plugin,
-                data: data,
-                success: function () {
-                    CMS.API.Messages.open({
-                        message: CMS.config.lang.success
-                    });
-                    // if response is reload
-                    CMS.API.Helpers.reloadBrowser();
-                },
-                error: function (jqXHR) {
-                    CMS.API.locked = false;
-                    var msg = CMS.config.lang.error;
-
-                    // trigger error
-                    CMS.API.Messages.open({
-                        message: msg + jqXHR.responseText || jqXHR.status + ' ' + jqXHR.statusText,
-                        error: true
-                    });
-                }
-            });
         });
     },
 
@@ -677,7 +663,7 @@ var Plugin = new Class({
 
         $.ajax({
             type: 'POST',
-            url: options.urls.move_plugin,
+            url: Helpers.updateUrlWithPath(options.urls.move_plugin),
             data: data,
             success: function (response) {
                 // if response is reload
@@ -723,15 +709,7 @@ var Plugin = new Class({
             }
         });
 
-        // show publish / save buttons
-        this.ui.publish
-            .addClass('cms-btn-publish-active')
-            .removeClass('cms-btn-disabled')
-            .parent().show();
-        this.ui.window.trigger('resize');
-
-        // enable revert to live
-        this.ui.revert.removeClass('cms-toolbar-item-navigation-disabled');
+        CMS.API.Toolbar.onPublishAvailable();
     },
 
     /**
@@ -958,7 +936,11 @@ var Plugin = new Class({
      * @param {Object} response response from server
      */
     editPluginPostAjax: function (toolbar, response) {
-        this.editPlugin(response.url, this.options.plugin_name, response.breadcrumb);
+        this.editPlugin(
+            Helpers.updateUrlWithPath(response.url),
+            this.options.plugin_name,
+            response.breadcrumb
+        );
     },
 
     /**
@@ -1294,7 +1276,7 @@ var Plugin = new Class({
                 break;
             case 'edit':
                 that.editPlugin(
-                    that.options.urls.edit_plugin,
+                    Helpers.updateUrlWithPath(that.options.urls.edit_plugin),
                     that.options.plugin_name,
                     that._getPluginBreadcrumbs()
                 );
@@ -1321,7 +1303,7 @@ var Plugin = new Class({
                 break;
             case 'delete':
                 that.deletePlugin(
-                    that.options.urls.delete_plugin,
+                    Helpers.updateUrlWithPath(that.options.urls.delete_plugin),
                     that.options.plugin_name,
                     that._getPluginBreadcrumbs()
                 );
@@ -1788,7 +1770,7 @@ Plugin._initializeGlobalHandlers = function _initializeGlobalHandlers() {
         e.preventDefault();
         if (++clickCounter === 1) {
             timer = setTimeout(function () {
-                var anchor = $(e.currentTarget);
+                var anchor = $(e.target).closest('a');
 
                 clickCounter = 0;
                 // make sure that the target attribute is honoured on links

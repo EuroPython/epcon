@@ -331,7 +331,8 @@ CMS.API.Helpers = {
         var tmp = '';
         var urlArray = [];
         var urlParams = [];
-        var origin = url;
+        var hashParts = url.split('#');
+        var origin = hashParts.shift();
 
         // return url if there is no param
         if (url.split('?').length > 1) {
@@ -377,7 +378,7 @@ CMS.API.Helpers = {
         tmp = tmp.replace('&', '?');
         var newUrl = origin + tmp;
 
-        newUrl = newUrl.replace(/&/g, '&amp;');
+        newUrl = [newUrl.replace(/&/g, '&amp;')].concat(hashParts).join('#');
 
         return newUrl;
     },
@@ -608,8 +609,22 @@ CMS.API.Helpers = {
      */
     _getWindow: function () {
         return window;
-    }
+    },
 
+    /**
+     * We need to update the url with cms_path param for undo/redo
+     *
+     * @function updateUrlWithPath
+     * @private
+     * @param {String} url url
+     * @returns {String} modified url
+     */
+    updateUrlWithPath: function (url) {
+        var win = this._getWindow();
+        var path = win.location.pathname + win.location.search;
+
+        return this.makeURL(url, ['cms_path=' + encodeURIComponent(path)]);
+    }
 };
 
 // shorthand for jQuery(document).ready();

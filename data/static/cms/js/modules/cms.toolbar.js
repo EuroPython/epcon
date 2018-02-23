@@ -15,6 +15,19 @@ var TOOLBAR_OFFSCREEN_OFFSET = 10; // required to hide box-shadow
 var DEBUG_BAR_HEIGHT = 5; // TODO has to be fixed
 
 /**
+ * @function hideDropdownIfRequired
+ * @private
+ * @param {jQuery} publishBtn
+ */
+function hideDropdownIfRequired(publishBtn) {
+    var dropdown = publishBtn.closest('.cms-dropdown');
+
+    if (dropdown.length && dropdown.find('li[data-cms-hidden]').length === dropdown.find('li').length) {
+        dropdown.hide().attr('data-cms-hidden', 'true');
+    }
+}
+
+/**
  * The toolbar is the generic element which holds various components
  * together and provides several commonly used API methods such as
  * show/hide, message display or loader indication.
@@ -111,7 +124,8 @@ var Toolbar = new Class({
             navigations: container.find('.cms-toolbar-item-navigation'),
             buttons: container.find('.cms-toolbar-item-buttons'),
             messages: container.find('.cms-messages'),
-            structureBoard: container.find('.cms-structure')
+            structureBoard: container.find('.cms-structure'),
+            revert: $('.cms-toolbar-revert')
         };
     },
 
@@ -326,23 +340,29 @@ var Toolbar = new Class({
         // attach event for first page publish
         this.ui.buttons.each(function () {
             var btn = $(this);
+            var links = btn.find('a');
 
-            // in case the button has a data-rel attribute
-            if (btn.find('a').attr('data-rel')) {
-                btn.on(that.click, function (e) {
-                    e.preventDefault();
-                    that._delegate($(this).find('a'));
-                });
-            } else {
-                btn.find('a').on(that.click, function (e) {
-                    e.stopPropagation();
-                });
-            }
+            links.each(function (i, el) {
+                var link = $(el);
+
+                // in case the button has a data-rel attribute
+                if (link.attr('data-rel')) {
+                    link.on(that.click, function (e) {
+                        e.preventDefault();
+                        that._delegate($(this));
+                    });
+                } else {
+                    link.on(that.click, function (e) {
+                        e.stopPropagation();
+                    });
+                }
+            });
 
             // in case of the publish button
             btn.find('.cms-publish-page').on(that.click, function (e) {
                 if (!Helpers.secureConfirm(CMS.config.lang.publish)) {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                 }
             });
 
@@ -403,12 +423,14 @@ var Toolbar = new Class({
         }
 
         // hide publish button
-        publishBtn.hide();
+        publishBtn.hide().attr('data-cms-hidden', 'true');
 
         if ($('.cms-btn-publish-active').length) {
-            publishBtn.show();
+            publishBtn.show().removeAttr('data-cms-hidden');
             this.ui.window.trigger('resize');
         }
+
+        hideDropdownIfRequired(publishBtn);
 
         // check if debug is true
         if (CMS.config.debug) {
@@ -660,7 +682,7 @@ var Toolbar = new Class({
                 });
 
                 modal.open({
-                    url: el.attr('href'),
+                    url: Helpers.updateUrlWithPath(el.attr('href')),
                     title: el.data('name')
                 });
                 break;
@@ -807,6 +829,34 @@ var Toolbar = new Class({
             'important'
         );
         this._position.isSticky = false;
+    },
+
+    /**
+     * Show publish button and handle the case when it's in the dropdown.
+     * Also enable revert to live
+     *
+     * @method onPublishAvailable
+     * @public
+     */
+    onPublishAvailable: function showPublishButton() {
+        // show publish / save buttons
+        var publishBtn = $('.cms-btn-publish');
+
+        publishBtn
+            .addClass('cms-btn-publish-active')
+            .removeClass('cms-btn-disabled')
+            .parent().show().removeAttr('data-cms-hidden');
+
+        var dropdown = publishBtn.closest('.cms-dropdown[data-cms-hidden]');
+
+        if (dropdown.length) {
+            dropdown.show().removeAttr('data-cms-hidden');
+        }
+
+        this.ui.window.trigger('resize');
+
+        // enable revert to live
+        this.ui.revert.removeClass('cms-toolbar-item-navigation-disabled');
     }
 });
 
