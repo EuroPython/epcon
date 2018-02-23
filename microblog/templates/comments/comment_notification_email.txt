@@ -1,8 +1,0 @@
-{% load microblog_tags %}user: {{ comment.user_name }} - {{ comment.user_email }} [{{ comment.user_url }}]
-
-object: {% get_post_data content_object.id as c %}{{ c.content.headline }}
-object url: {{ c.url }}
-
-comment{% if not comment.is_public %} (moderated){% endif %}:
-{{ comment.comment }}
-

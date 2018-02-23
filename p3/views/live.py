@@ -1,13 +1,16 @@
 # -*- coding: UTF-8 -*-
 import datetime
-from assopy.views import render_to_json
-from conference import models as cmodels
-from conference.utils import TimeTable2
+
 from django import http
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
+
+from common.decorators import render_to_json
+from conference import models as cmodels
+from conference.utils import TimeTable2
 from p3 import dataaccess
+
 
 def _live_conference():
     conf = cmodels.Conference.objects.current()
@@ -51,6 +54,7 @@ def live_track_video(request, track):
 
 @render_to_json
 def live_track_events(request, track):
+    # FIXME: We don't handle the case where the track does not exist
     conf, date = _live_conference()
 
     tid = cmodels.Track.objects\
@@ -146,5 +150,3 @@ def live_events(request):
             'next': next,
         }
     return output
-
-

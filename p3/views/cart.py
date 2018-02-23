@@ -1,13 +1,16 @@
 # -*- coding: UTF-8 -*-
-from assopy import models as amodels
-from assopy import forms as aforms
-from assopy.views import render_to_json, HttpResponseRedirectSeeOther
 from django import forms
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.utils.translation import ugettext as _
+
+from assopy import forms as aforms
+from assopy import models as amodels
+from assopy.views import HttpResponseRedirectSeeOther
+from common.decorators import render_to_json
 from p3 import forms as p3forms
 from p3 import models
 

@@ -587,16 +587,6 @@ def conference_schedule(parser, token):
 
     return ScheduleNode(conference, schedule, var_name)
 
-# XXX - remove (dup)
-@register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
-def render_talk_report(context, speaker, conference, tags):
-    context.update({
-        'speaker': speaker,
-        'conference': conference,
-        'tags': tags,
-    })
-    return context
-
 @register.filter
 def add_number(value, arg):
     return value + float(arg)
@@ -794,42 +784,6 @@ def conference_multilingual_attribute(parser, token):
                 return value.body if value else ''
 
     return AttributeNode(instance, attribute, var_name, fallback)
-
-@register.tag
-def conference_hotels(parser, token):
-    """
-    {% conference_hotels as var %}
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    try:
-        if contents[1] != 'as':
-            raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-        var_name = contents[2]
-    except IndexError:
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-
-    class HotelsNode(TNode):
-        def __init__(self, var_name):
-            self.var_name = var_name
-
-        def render(self, context):
-            query = models.Hotel.objects.filter(visible = True).order_by('-modified', 'name')
-            if self.var_name:
-                context[self.var_name] = query
-                return ''
-            else:
-                return value
-    return HotelsNode(var_name)
-
-@register.inclusion_tag('conference/render_hotels.html')
-def render_hotels(hotels):
-    """
-    {% render_hotels hotels %}
-    """
-    return {
-        'hotels': hotels,
-    }
 
 @register.simple_tag()
 def video_cover_url(event, type='front', thumb=False):
@@ -1426,32 +1380,9 @@ def visible_talks(talks, filter_="all"):
     else:
         return  filter(lambda x: x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE, talks)
 
-@register.simple_tag(takes_context=True)
-def olark_chat(context):
-    # if there is no happy outbreak setting
-    key = dsettings.CONFERENCE_OLARK_KEY
-    # blob from: https://www.olark.com/install
-    blob = """
-<!-- begin olark code --><script type='text/javascript'>/*{literal}<![CDATA[*/
-window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){f[z]=function(){(a.s=a.s||[]).push(arguments)};var a=f[z]._={},q=c.methods.length;while(q--){(function(n){f[z][n]=function(){f[z]("call",n,arguments)}})(c.methods[q])}a.l=c.loader;a.i=nt;a.p={0:+new Date};a.P=function(u){a.p[u]=new Date-a.p[0]};function s(){a.P(r);f[z](r)}f.addEventListener?f.addEventListener(r,s,false):f.attachEvent("on"+r,s);var ld=function(){function p(hd){hd="head";return["<",hd,"></",hd,"><",i,' onl' + 'oad="var d=',g,";d.getElementsByTagName('head')[0].",j,"(d.",h,"('script')).",k,"='",l,"//",a.l,"'",'"',"></",i,">"].join("")}var i="body",m=d[i];if(!m){return setTimeout(ld,100)}a.P(1);var j="appendChild",h="createElement",k="src",n=d[h]("div"),v=n[j](d[h](z)),b=d[h]("iframe"),g="document",e="domain",o;n.style.display="none";m.insertBefore(n,m.firstChild).id=z;b.frameBorder="0";b.id=z+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){b.src="javascript:false"}b.allowTransparency="true";v[j](b);try{b.contentWindow[g].open()}catch(w){c[e]=d[e];o="javascript:var d="+g+".open();d.domain='"+d.domain+"';";b[k]=o+"void(0);"}try{var t=b.contentWindow[g];t.write(p());t.close()}catch(x){b[k]=o+'d.write("'+p().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}a.P(2)};ld()};nt()})({loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
-/* custom configuration goes here (www.olark.com/documentation) */
-olark.identify('%s');/*]]>{/literal}*/</script>
-<!-- end olark code -->
-    """ % key
-    user = context['request'].user
-    if user.is_authenticated():
-        from django.template.defaultfilters import escapejs
-        name = '%s %s' % (user.first_name, user.last_name)
-        blob += '''
-<script type="text/javascript">
-    olark('api.chat.updateVisitorNickname', {snippet: '%s'})</script>
-''' % (escapejs(name),)
-
-    return blob
-
 @register.filter
 def json_(val):
-    from conference.views import json_dumps
+    from common.jsonify import json_dumps
     return mark_safe(json_dumps(val))
 
 @register.filter

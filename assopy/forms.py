@@ -7,8 +7,6 @@ from django.utils.translation import ugettext as _
 
 from assopy import models
 from assopy import settings
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
 from conference import models as cmodels
 
 import logging
@@ -119,18 +117,22 @@ class BillingData(forms.ModelForm):
 
 BillingData = autostrip(BillingData)
 
+
 class NewAccountForm(forms.Form):
     first_name = forms.CharField(max_length=32)
     last_name = forms.CharField(max_length=32)
     email = forms.EmailField()
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Confirm password", widget=forms.PasswordInput)
+    password1 = forms.CharField(label="Password",
+                                widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Confirm password",
+                                widget=forms.PasswordInput)
 
     def clean_email(self):
         email = self.cleaned_data['email']
         if auth.models.User.objects.filter(email__iexact=email).count() > 0:
-            raise forms.ValidationError('email aready in use')
-        return email
+            raise forms.ValidationError('Email already in use')
+
+        return email.lower()
 
     def clean(self):
         if not self.is_valid():
@@ -140,7 +142,9 @@ class NewAccountForm(forms.Form):
             raise forms.ValidationError('password mismatch')
         return data
 
+
 NewAccountForm = autostrip(NewAccountForm)
+
 
 class FormTickets(forms.Form):
     payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))

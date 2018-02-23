@@ -1,0 +1,25 @@
+{% extends 'assopy/base_invoice.html' %}
+
+{% block EXTRA_HEAD %}
+    <style>
+        body {
+            margin: 0 10px;
+        }
+
+        .companyinfo {
+            line-height: 16px;
+        }
+    </style>
+{% endblock %}
+{% block HEADER %}
+    <div class="companylogo">
+        <!-- <img src="{{ STATIC_URL }}" /> -->
+    </div>
+    <div class="companyinfo">
+        {{ issuer }}
+    </div>
+    <div class="clear"></div>
+{% endblock %}
+
+{% block BANK %}
+{% endblock %}

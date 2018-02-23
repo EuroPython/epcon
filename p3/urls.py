@@ -2,7 +2,6 @@
 from django.conf.urls import url, patterns
 
 urlpatterns = patterns('p3.views',
-    url(r'^map.js/', 'map_js', name='p3-map-js'),
     url(r'^cart/$', 'cart', name='p3-cart'),
     url(r'^cart/calculator/$', 'calculator', name='p3-calculator'),
     url(r'^billing/$', 'billing', name='p3-billing'),
@@ -10,14 +9,9 @@ urlpatterns = patterns('p3.views',
     url(r'^tickets/(?P<tid>\d+)/$', 'ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'user', name='p3-user'),
 
-    url(r'^secure_media/(?P<path>.*)', 'secure_media', name='p3-secure-media'),
-
     url(r'^sprint-submission/$', 'sprint_submission', name='p3-sprint-submission'),
     url(r'^sprints/$', 'sprints', name='p3-sprints'),
     url(r'^sprints/(?P<sid>\d+)/$', 'sprint', name='p3-sprint'),
-
-    url(r'^sim_report/$', 'sim_report', name='p3-sim-report'),
-    url(r'^hotel_report/$', 'hotel_report', name='p3-hotel-report'),
 
     url(r'^p/profile/(?P<slug>[\w-]+)/$', 'p3_profile', name='p3-profile'),
     url(r'^p/profile/(?P<slug>[\w-]+)/avatar$', 'p3_profile_avatar', name='p3-profile-avatar'),
@@ -51,8 +45,4 @@ urlpatterns += patterns('p3.views',
         'schedule_list', name='p3-schedule-list'),
 
     url(r'^my-schedule/$', 'jump_to_my_schedule', name='p3-my-schedule'),
-)
-
-urlpatterns += patterns('p3.views',
-    url(r'^legacy/invoice/(?P<assopy_id>.+)/$', 'genro_invoice_pdf', name='genro-legacy-invoice'),
 )

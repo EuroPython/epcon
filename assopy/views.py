@@ -1,30 +1,32 @@
 # -*- coding: UTF-8 -*-
+import json
+import logging
+import urllib
+from datetime import datetime
+
 from django import forms
 from django import http
 from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.admin.util import unquote
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from email_template import utils
 
 from assopy import forms as aforms
 from assopy import janrain
 from assopy import models
 from assopy import settings
 from assopy import utils as autils
-if settings.GENRO_BACKEND:
-    from assopy.clients import genro
-from email_template import utils
+from common.decorators import render_to_json, render_to_template
+from common.http import PdfResponse
 
-import json
-import logging
-import urllib
-from datetime import datetime
 
 log = logging.getLogger('assopy.views')
 
@@ -36,58 +38,8 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
             url = dsettings.DEFAULT_URL_PREFIX + url
         super(HttpResponseRedirectSeeOther, self).__init__(url)
 
-# see: http://www.djangosnippets.org/snippets/821/
-def render_to(template):
-    """
-    Decorator for Django views that sends returned dict to render_to_response function
-    with given template and RequestContext as context instance.
-
-    If view doesn't return dict then decorator simply returns output.
-    Additionally view can return two-tuple, which must contain dict as first
-    element and string with template name as second. This string will
-    override template name, given as parameter
-
-    Parameters:
-
-     - template: template name to use
-    """
-    def renderer(func):
-        def wrapper(request, *args, **kw):
-            output = func(request, *args, **kw)
-            if isinstance(output, (list, tuple)):
-                return render_to_response(output[1], output[0], RequestContext(request))
-            elif isinstance(output, dict):
-                return render_to_response(template, output, RequestContext(request))
-            return output
-        return wrapper
-    return renderer
-
-def render_to_json(f):
-    from conference.views import json_dumps
-    if dsettings.DEBUG:
-        ct = 'text/plain'
-        j = lambda d: json_dumps(d, indent=2)
-    else:
-        ct = 'application/json'
-        j = json_dumps
-    def wrapper(*args, **kw):
-        try:
-            result = f(*args, **kw)
-        except Exception, e:
-            result = j(str(e))
-            status = 500
-        else:
-            if isinstance(result, http.HttpResponse):
-                return result
-            else:
-                from django.forms.util import ErrorDict
-                status = 200 if not isinstance(result, ErrorDict) else 400
-                result = j(result)
-        return http.HttpResponse(content=result, content_type=ct, status=status)
-    return wrapper
-
 @login_required
-@render_to('assopy/profile.html')
+@render_to_template('assopy/profile.html')
 def profile(request):
     user = request.user.assopy_user
     if request.method == 'POST':
@@ -122,7 +74,7 @@ def profile_identities(request):
         return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
 
 @login_required
-@render_to('assopy/billing.html')
+@render_to_template('assopy/billing.html')
 def billing(request, order_id=None):
     user = request.user.assopy_user
     if request.method == 'POST':
@@ -137,7 +89,7 @@ def billing(request, order_id=None):
         'form': form,
     }
 
-@render_to('assopy/new_account.html')
+@render_to_template('assopy/new_account.html')
 def new_account(request):
     if request.user.is_authenticated():
         return redirect('assopy-profile')
@@ -161,7 +113,7 @@ def new_account(request):
         'next': request.GET.get('next', '/'),
     }
 
-@render_to('assopy/new_account_feedback.html')
+@render_to_template('assopy/new_account_feedback.html')
 def new_account_feedback(request):
     try:
         user = models.User.objects.get(pk=request.session['new-account-user'])
@@ -292,7 +244,7 @@ def janrain_token(request):
             pass
     return HttpResponseRedirectSeeOther(redirect_to)
 
-@render_to('assopy/janrain_incomplete_profile.html')
+@render_to_template('assopy/janrain_incomplete_profile.html')
 def janrain_incomplete_profile(request):
     p = request.session['incomplete-profile']
     try:
@@ -331,15 +283,15 @@ def janrain_incomplete_profile(request):
         'form': form,
     }
 
-@render_to('assopy/janrain_incomplete_profile_feedback.html')
+@render_to_template('assopy/janrain_incomplete_profile_feedback.html')
 def janrain_incomplete_profile_feedback(request):
     return {}
 
-@render_to('assopy/janrain_login_mismatch.html')
+@render_to_template('assopy/janrain_login_mismatch.html')
 def janrain_login_mismatch(request):
     return {}
 
-@render_to('assopy/checkout.html')
+@render_to_template('assopy/checkout.html')
 def checkout(request):
     if request.method == 'POST':
         if not request.user.is_authenticated():
@@ -360,7 +312,7 @@ def checkout(request):
     }
 
 @login_required
-@render_to('assopy/tickets.html')
+@render_to_template('assopy/tickets.html')
 def tickets(request):
     if settings.TICKET_PAGE:
         return redirect(settings.TICKET_PAGE)
@@ -416,7 +368,7 @@ def paypal_cc_billing(request, code):
         )
     )
 
-@render_to('assopy/paypal_cancel.html')
+@render_to_template('assopy/paypal_cancel.html')
 def paypal_cancel(request, code):
     log.debug('Paypal billing cancel request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
@@ -427,7 +379,7 @@ def paypal_cancel(request, code):
 # from the browser (someone said HttpResponseRedirectSeeOther?), since we are not
 # executing anything critical I can skip the csrf check
 @csrf_exempt
-@render_to('assopy/paypal_feedback_ok.html')
+@render_to_template('assopy/paypal_feedback_ok.html')
 def paypal_feedback_ok(request, code):
     log.debug('Paypal billing OK request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
@@ -441,7 +393,7 @@ def paypal_feedback_ok(request, code):
     }
 
 @login_required
-@render_to('assopy/bank_feedback_ok.html')
+@render_to_template('assopy/bank_feedback_ok.html')
 def bank_feedback_ok(request, code):
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.user.user != request.user or o.method != 'bank':
@@ -449,6 +401,7 @@ def bank_feedback_ok(request, code):
     return {
         'order': o,
     }
+
 
 @login_required
 def invoice(request, order_code, code, mode='html'):
@@ -458,65 +411,20 @@ def invoice(request, order_code, code, mode='html'):
         }
     else:
         userfilter = {}
+
     invoice = get_object_or_404(
         models.Invoice,
         code=unquote(code),
         order__code=unquote(order_code),
         **userfilter
     )
+
     if mode == 'html':
-        order = invoice.order
-        address = '%s, %s' % (order.address, unicode(order.country))
-        ctx = {
-            'document': ('Fattura N.', 'Invoice N.'),
-            'title': unicode(invoice),
-            'code': invoice.code,
-            'emit_date': invoice.emit_date,
-            'order': {
-                'card_name': order.card_name,
-                'address': address,
-                'billing_notes': order.billing_notes,
-                'cf_code': order.cf_code,
-                'vat_number': order.vat_number,
-            },
-            'items': invoice.invoice_items(),
-            'note': invoice.note,
-            'price': {
-                'net': invoice.net_price(),
-                'vat': invoice.vat_value(),
-                'total': invoice.price,
-            },
-            'vat': invoice.vat,
-            'real': settings.IS_REAL_INVOICE(invoice.code),
-        }
-        return render_to_response('assopy/invoice.html', ctx, RequestContext(request))
-    else:
-        if settings.GENRO_BACKEND:
-            assopy_id = invoice.assopy_id
-            data = genro.invoice(assopy_id)
-            if data.get('credit_note'):
-                order = get_object_or_404(models.Order, invoices__credit_notes__assopy_id=assopy_id)
-            else:
-                order = get_object_or_404(models.Order, assopy_id=data['order_id'])
-            raw = urllib.urlopen(genro.invoice_url(assopy_id))
-        else:
-            hurl = reverse('assopy-invoice-html', args=(order_code, code))
-            if not settings.WKHTMLTOPDF_PATH:
-                return HttpResponseRedirectSeeOther(hurl)
-            raw = _pdf(request, hurl)
-            order = invoice.order
+        return http.HttpResponse(invoice.invoice_copy_full_html)
 
-        from conference.models import Conference
-        try:
-            conf = Conference.objects\
-                .get(conference_start__year=order.created.year).code
-        except Conference.DoesNotExist:
-            conf = order.created.year
-        fname = '[%s invoice] %s.pdf' % (conf, invoice.code.replace('/', '-'))
+    return PdfResponse(filename=invoice.get_invoice_filename(),
+                       content=invoice.invoice_copy_full_html)
 
-        response = http.HttpResponse(raw, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-        return response
 
 def _pdf(request, url):
     import subprocess
@@ -527,7 +435,7 @@ def _pdf(request, url):
         request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
         '--zoom',
         '1.3',
-        "%s%s" % (dsettings.DEFAULT_URL_PREFIX, url),
+        "%s" % request.build_absolute_uri(url),
         '-'
     ]
 
@@ -614,7 +522,7 @@ def credit_note(request, order_code, code, mode='html'):
     return response
 
 @login_required
-@render_to('assopy/voucher.html')
+@render_to_template('assopy/voucher.html')
 def voucher(request, order_id, item_id):
     item = get_object_or_404(models.OrderItem, order=order_id, id=item_id)
     if (not item.ticket or item.ticket.fare.payment_type != 'v' or item.order.user.user != request.user) and not request.user.is_superuser:

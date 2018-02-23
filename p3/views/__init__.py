@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect, render_to_response, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template import RequestContext, Template
 
 import p3.forms as p3forms
@@ -17,7 +17,8 @@ from p3 import models
 from p3 import utils as p3utils
 import assopy.models as amodels
 from assopy.forms import RefundItemForm
-from assopy.views import render_to, HttpResponseRedirectSeeOther
+from assopy.views import HttpResponseRedirectSeeOther
+from common.decorators import render_to_template
 from assopy import utils as autils
 from conference import forms as cforms
 from conference import models as cmodels
@@ -28,12 +29,8 @@ import uuid
 
 log = logging.getLogger('p3.views')
 
-def map_js(request):
-    return render_to_response(
-        'p3/map.js', {}, context_instance=RequestContext(request), content_type='text/javascript')
-
 @login_required
-@render_to('p3/tickets.html')
+@render_to_template('p3/tickets.html')
 def tickets(request):
     tickets = dataaccess.user_tickets(request.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
     return {
@@ -75,30 +72,6 @@ def _assign_ticket(ticket, email):
             recipient = amodels.UserIdentity.objects.filter(email__iexact=email)[0].user.user
         except IndexError:
             recipient = None
-    # Look in the "genro" backend, if possible
-    if settings.GENRO_BACKEND and recipient is None:
-        from assopy.clients import genro
-        rid = genro.users(email)['r0']
-        if rid is not None:
-            # the email it's not associated to a django user, but genropy
-            # knows it. If rid is assigned to an assopy user I'll reuse the
-            # connected user. This check works when the ticket is assigned
-            # to a user, the user modifies its email but later the ticket
-            # is reassigned to the original email.
-            try:
-                recipient = amodels.User.objects.get(assopy_id=rid).user
-            except amodels.User.DoesNotExist:
-                pass
-            else:
-                if recipient.email != email:
-                    log.info(
-                            'email "%s" found on genropy; but user (%s) have a different email: "%s"',
-                        email.encode('utf-8'), unicode(recipient).encode('utf-8'), recipient.email.encode('utf-8'))
-                    email = recipient.email
-                else:
-                    log.info(
-                        'email "%s" found on genropy; user (%s)',
-                        email.encode('utf-8'), unicode(recipient).encode('utf-8'))
 
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
@@ -295,7 +268,7 @@ def user(request, token):
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
 @login_required
-@render_to('p3/sprint_submission.html')
+@render_to_template('p3/sprint_submission.html')
 def sprint_submission(request):
     if request.method == 'POST':
         form = p3forms.FormSprint(data=request.POST)
@@ -313,7 +286,7 @@ def sprint_submission(request):
         'form': form,
     }
 
-@render_to('p3/sprints.html')
+@render_to_template('p3/sprints.html')
 def sprints(request):
     events = []
     attendees = defaultdict(list)
@@ -347,7 +320,7 @@ def sprints(request):
     }
 
 @login_required
-@render_to('p3/render_single_sprint.html')
+@render_to_template('p3/render_single_sprint.html')
 def sprint(request, sid):
     e = get_object_or_404(models.Sprint, pk=sid)
     if request.method == 'POST':
@@ -465,34 +438,8 @@ def whos_coming(request, conference=None):
         tpl = 'p3/whos_coming.html'
     return render(request, tpl, ctx)
 
-def genro_invoice_pdf(request, assopy_id):
-    import urllib
-    from assopy.clients import genro
-    from assopy.models import OrderItem
-
-    if not settings.GENRO_BACKEND:
-        raise http.Http404()
-
-    data = genro.invoice(assopy_id)
-
-    conferences = OrderItem.objects\
-        .filter(order__assopy_id=data['order_id'])\
-        .values_list('ticket__fare__conference', flat=True)\
-        .distinct()
-
-    try:
-        conference = filter(None, conferences)[0]
-    except IndexError:
-        raise http.Http404()
-
-    fname = '[%s] invoice.pdf' % (conference,)
-    f = urllib.urlopen(genro.invoice_url(assopy_id))
-    response = http.HttpResponse(f, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % fname
-    return response
 
 from p3.views.cart import *
 from p3.views.live import *
 from p3.views.profile import *
 from p3.views.schedule import *
-from p3.views.reports import *

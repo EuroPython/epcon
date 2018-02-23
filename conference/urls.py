@@ -20,7 +20,7 @@ urlpatterns = patterns('conference.views',
     url(r'^talks/(?P<slug>[\w-]+)/preview$', 'talk_preview', name='conference-talk-preview'),
 
     url(r'^places/', 'places', name='conference-places'),
-    url(r'^sponsors/(?P<sponsor>.*)/', 'sponsor', name='conference-sponsor'),
+    url(r'^sponsors/(?P<sponsor>.*)', 'sponsor_json', name='conference-sponsor-json'),
     url(r'^paper-submission/$', 'paper_submission', name='conference-paper-submission'),
     url(r'^voting/$', 'voting', name='conference-voting'),
 )

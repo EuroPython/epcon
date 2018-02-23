@@ -160,7 +160,6 @@ SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = '/media/'
 SECURE_MEDIA_URL = '/p3/secure_media/'
-
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -286,7 +285,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+
     'assopy.middleware.DebugInfo',
     'pycon.middleware.RisingResponse',
     'cms.middleware.user.CurrentUserMiddleware',
@@ -310,6 +311,11 @@ INSTALLED_APPS = (
     'filebrowser',
     # Warning: the sequence p3/assopy/admin is important to be able to
     # resolve correctly templates
+    # FIXME(artcz) ↑ this Warning is there because templates within apps are
+    # overlapping and inherit in a non-obvious way. This is currently being
+    # fixed, with the goal to move to a centralised templates/ location; once
+    # that's done this warning could be removed (and the order of the apps
+    # should be no longer relevant)
 
     'djangocms_admin_style',
     'django.contrib.auth',
@@ -347,8 +353,6 @@ INSTALLED_APPS = (
     #'pages',
     'mptt',
 
-    'microblog',
-
     'django_xmlrpc',
     'pingback',
     'rosetta',
@@ -362,7 +366,6 @@ INSTALLED_APPS = (
     'django_crontab',
     'formstyle',
 
-    'cms_migration',
     'markitup',
     'cms_utils',
 
@@ -548,24 +551,6 @@ TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder',
 #
 # We're not going to use this feature for EuroPython 2015+:
 #
-MICROBLOG_LINK = 'http://blog.europython.eu'
-MICROBLOG_TITLE = 'EuroPython Blog'
-MICROBLOG_DESCRIPTION = 'Latest news from EuroPython'
-MICROBLOG_DEFAULT_LANGUAGE = 'en'
-MICROBLOG_POST_LIST_PAGINATION = True
-MICROBLOG_POST_PER_PAGE = 10
-MICROBLOG_MODERATION_TYPE = 'akismet'
-MICROBLOG_AKISMET_KEY = 'no-key-set'
-MICROBLOG_EMAIL_RECIPIENTS = ['info@europython.eu']
-MICROBLOG_EMAIL_INTEGRATION = True
-
-MICROBLOG_TWITTER_USERNAME = 'europython'
-MICROBLOG_TWITTER_POST_URL_MANGLER = 'microblog.utils.bitly_url'
-MICROBLOG_TWITTER_INTEGRATION = False
-
-MICROBLOG_PINGBACK_SERVER = False
-MICROBLOG_TRACKBACK_SERVER = False
-
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
@@ -581,13 +566,6 @@ DJANGOCMS_GRID_CONFIG = {
 }
 
 
-def MICROBLOG_POST_FILTER(posts, user):
-    if user and user.is_staff:
-        return posts
-    else:
-        return filter(lambda x: x.is_published(), posts)
-
-
 #
 # Session management
 #
@@ -597,7 +575,6 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 #
 # XXX THESE NEED TO GO INTO OS.ENVIRON !!!
 #
-CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
 CONFERENCE_CONFERENCE = 'ep2018'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
@@ -781,7 +758,6 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
 
 CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.tickets_status',
-    'p3.stats.hotel_tickets',
     'p3.stats.conference_speakers',
     'p3.stats.conference_speakers_day',
     'p3.stats.speaker_status',
@@ -793,8 +769,8 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
 
 
 def CONFERENCE_VIDEO_COVER_EVENTS(conference):
-    from p3 import dataaccess
-    from p3 import models
+    from conference import dataaccess
+    from conference import models
     from datetime import timedelta
 
     conf = models.Conference.objects.get(code=conference)
@@ -957,7 +933,6 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
 #
 # XXX What is this AssoPy stuff ?
 #
-GENRO_BACKEND = False
 ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
@@ -993,7 +968,7 @@ P3_FARES_ENABLED = lambda u: True
 #P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
 P3_NEWSLETTER_SUBSCRIBE_URL = ""
 
-P3_TWITTER_USER = MICROBLOG_TWITTER_USERNAME
+P3_TWITTER_USER = 'europython'
 P3_USER_MESSAGE_FOOTER = '''
 
 This message was sent from a participant at the EuroPython conference.
@@ -1002,23 +977,15 @@ from other users you can change your privacy settings from this page:
 https://ep2018.europython.eu/accounts/profile/
 '''
 
-HAYSTACK_SITECONF = 'web_site.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
-
-
 def HCOMMENTS_RECAPTCHA(request):
     return not request.user.is_authenticated()
 
 
 def HCOMMENTS_THREAD_OWNERS(o):
     from p3.models import P3Talk
-    from microblog.models import Post
 
     if isinstance(o, P3Talk):
         return [s.user for s in o.get_all_speakers()]
-    elif isinstance(o, Post):
-        return [o.author, ]
-        return [o.author, ]
     return None
 
 
