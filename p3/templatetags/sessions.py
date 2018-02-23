@@ -75,7 +75,7 @@ def speaker_list_key(entry):
 
 EXAMPLE_ACCEPTEDSESSIONS = """
 {% load sessions %}
-{% acceptedsessions "ep2017" filter_types="t,r,p,i,h,m" as sessiondata %}
+{% acceptedsessions "ep2018" filter_types="t,r,p,i,h,m" as sessiondata %}
 
 {% for category in sessiondata %}
 <h3>{{ category.name }}</h3>
@@ -167,7 +167,7 @@ def acceptedsessions(conference, filter_types=None, filter_community=None):
 
 EXAMPLE_SPEAKERS = """
 {% load sessions %}
-{% speakers "ep2017" as speakerdata %}
+{% speakers "ep2018" as speakerdata %}
 
 {% for name, group in speakerdata.groups.items %}
 <h3>{{ name }} ...</h3>
