@@ -14,7 +14,7 @@
     Usage:
     
     cd epcon
-    ./manage.py build_social_ticket_search_app ep2017
+    ./manage.py build_social_ticket_search_app ep2018
     cd ep-social-ticket-search-app
     ./run.sh
     

@@ -598,11 +598,11 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 # XXX THESE NEED TO GO INTO OS.ENVIRON !!!
 #
 CONFERENCE_OLARK_KEY = '1751-12112149-10-1389'
-CONFERENCE_CONFERENCE = 'ep2017'
+CONFERENCE_CONFERENCE = 'ep2018'
 CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2017.europython.eu/en/talk-voting/'
-CONFERENCE_TALK_VOTING_ELIGIBLE = ('ep2015', 'ep2016', 'ep2017')
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2018.europython.eu/en/talk-voting/'
+CONFERENCE_TALK_VOTING_ELIGIBLE = ('ep2015', 'ep2016', 'ep2017', 'ep2018')
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -858,7 +858,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
             lines[ix] = line
         return lines
 
-    if conference in ('ep2012', 'ep2013', 'ep2015', 'ep2016', 'ep2017'):
+    if conference in ('ep2012', 'ep2013', 'ep2015', 'ep2016', 'ep2017', 'ep2018'):
         master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert(
             'RGBA')
 
@@ -873,7 +873,7 @@ def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
                 os.path.join(stuff, 'Arial_Unicode.ttf'),
                 21, encoding="unic")
             y = 175
-        elif conference in ('ep2013', 'ep2015', 'ep2016', 'ep2017'):
+        elif conference in ('ep2013', 'ep2015', 'ep2016', 'ep2017', 'ep2018'):
             ftitle = ImageFont.truetype(
                 os.path.join(stuff, 'League_Gothic.otf'),
                 36, encoding="unic")
@@ -982,9 +982,9 @@ ASSOPY_OTC_CODE_HANDLERS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2017.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2018.europython.eu'
 
-PINGBACK_TARGET_DOMAIN = 'ep2017.europython.eu'
+PINGBACK_TARGET_DOMAIN = 'ep2018.europython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
@@ -999,7 +999,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2017.europython.eu/accounts/profile/
+https://ep2018.europython.eu/accounts/profile/
 '''
 
 HAYSTACK_SITECONF = 'web_site.search_sites'

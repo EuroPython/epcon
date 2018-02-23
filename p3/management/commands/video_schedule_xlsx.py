@@ -2,7 +2,7 @@
 """ Update a video schedule XLSX file with the currently accepted
     talks.
 
-    Usage: manage.py video_schedule_xlsx ep2017 videos.xlsx
+    Usage: manage.py video_schedule_xlsx ep2018 videos.xlsx
 
     The script updates videos.xlsx in place.
 
