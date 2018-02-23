@@ -232,5 +232,30 @@
         // ]]>
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/vendor/retina.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+    <script>
+        window.addEventListener("load", function() {
+            window.cookieconsent.initialise({
+                "palette": {
+                    "popup": {
+                    "background": "#edeff5",
+                    "text": "#838391"
+                    },
+                    "button": {
+                    "background": "#4b81e8"
+                    }
+                },
+                "theme": "edgeless",
+                "content": {
+                    "message": "We use cookies to improve your experience and track website usage.",
+                    "dismiss": "I understand",
+                    "link": "Read more",
+                    "href": "https://ep2018.europython.eu/"
+                }
+            });
+        });
+    </script>
 </body>
 </html>
