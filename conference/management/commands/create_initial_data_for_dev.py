@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import timezone
@@ -7,6 +9,11 @@ from django.core.exceptions import FieldError
 
 from cms.api import create_page
 from conference.models import Conference
+from assopy.models import Vat
+from conference.fares import pre_create_typical_fares_for_conference
+
+
+DEFAULT_VAT_RATE = "0.2"  # 20%
 
 
 class Command(BaseCommand):
@@ -40,9 +47,17 @@ class Command(BaseCommand):
                     published=True,
                     publication_date=timezone.now(),
                 )
-                print "Created page: ", id, title, template
+                print("Created page: ", id, title, template)
 
             # FieldError happens to be what django cms is using when we want to
             # create another page with the same reverse_id
-            except FieldError, e:
-                print "Warning: ", e
+            except FieldError as e:
+                print("Warning: ", e)
+
+        print("Pre creating fares")
+        default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+        pre_create_typical_fares_for_conference(
+            settings.CONFERENCE_CONFERENCE,
+            default_vat_rate,
+            print_output=True
+        )

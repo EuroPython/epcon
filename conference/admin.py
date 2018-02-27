@@ -18,6 +18,14 @@ from conference import settings
 from conference import utils
 from conference import views
 
+from conference.fares import (
+    FARE_CODE_TYPES,
+    FARE_CODE_VARIANTS,
+    FARE_CODE_GROUPS,
+    FARE_CODE_REGEXES,
+)
+
+
 import csv
 import logging
 import re
@@ -1003,11 +1011,49 @@ class SpecialPlaceAdmin(admin.ModelAdmin):
 
 admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
+
+class FilterFareByTicketCode(admin.SimpleListFilter):
+
+    def lookups(self, request, model_admin):
+        return self.filter_by
+
+    def queryset(self, request, queryset):
+        if self.value() in dict(self.filter_by):
+            regex = FARE_CODE_REGEXES[self.parameter_name][self.value()]
+            return queryset.filter(code__regex=regex)
+
+
+class FilterFareByType(FilterFareByTicketCode):
+
+    title = 'Fare Type'
+    parameter_name = 'types'    # this is significant name
+    filter_by = FARE_CODE_TYPES._doubles
+
+
+class FilterFareByVariant(FilterFareByTicketCode):
+
+    title = 'Fare Variant'
+    parameter_name = 'variants'  # this is significant name
+    filter_by = FARE_CODE_VARIANTS._doubles
+
+
+class FilterFareByGroup(FilterFareByTicketCode):
+
+    title = 'Fare Group'
+    parameter_name = 'groups'
+    filter_by = FARE_CODE_GROUPS._doubles
+
+
 class FareAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'recipient_type',
                     'start_validity', 'end_validity')
-    list_filter = ('conference', )
-    list_editable = ('price',)
+    list_filter = ('conference',
+                   'ticket_type',
+                   FilterFareByType,
+                   FilterFareByVariant,
+                   FilterFareByGroup)
+    list_editable = ('price', 'start_validity', 'end_validity')
+    list_display_links = ('code', 'name')
     ordering = ('conference', 'start_validity', 'code')
 
     def changelist_view(self, request, extra_context=None):

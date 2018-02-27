@@ -17,6 +17,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
 from common.django_urls import UrlMixin
+from model_utils import Choices
 
 import tagging
 from tagging.fields import TagField
@@ -714,7 +715,9 @@ class FareManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-FARE_TICKET_TYPES = (
+# TODO(artcz) Convert those to Choices for easier enum-like interface
+
+FARE_TICKET_TYPES = Choices(
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
     ('event', 'Event'),
@@ -738,8 +741,8 @@ class Fare(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    start_validity = models.DateField(null=True)
-    end_validity = models.DateField(null=True)
+    start_validity = models.DateField(null=True, blank=True)
+    end_validity = models.DateField(null=True, blank=True)
     recipient_type = models.CharField(max_length=1, choices=FARE_TYPES, default='p')
     ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference', db_index=True)
     payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
@@ -756,7 +759,13 @@ class Fare(models.Model):
     def valid(self):
         #numb = len(list(Ticket.objects.all()))
         today = datetime.date.today()
-        validity = self.start_validity <= today <= self.end_validity
+        try:
+            validity = self.start_validity <= today <= self.end_validity
+        except TypeError:
+            # if we have TypeError that probably means either start or end (or
+            # both) are set to None. That by default means fare is invalid
+            # right now.
+            validity = False
         #validity = numb < settings.MAX_TICKETS
         return validity
 
