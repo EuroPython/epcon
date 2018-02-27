@@ -9,6 +9,7 @@ from httplib import (
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.core import mail
 from django.conf import settings
 from django.utils import timezone
 
@@ -195,3 +196,14 @@ class TestCFP(TestCase):
         # check the form again
         response = self.client.get(self.form_url)
         self.assertContains(response, "You have already submitted 2 proposals")
+
+        # NOTE(artcz)(2018-02-27)
+        # This assertion checks if we're not sending emails during the
+        # submission process.
+        # There is a signal that is triggered when new Talk is created
+        # (_new_paper_email) and it sends emails to people on the
+        # CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL list.
+        # For now this list is empty, so it shouldn't send any emails. If we
+        # ever change that (either by removing the signal or putting some
+        # emails on that list) – we should update this test
+        assert len(mail.outbox) == 0
