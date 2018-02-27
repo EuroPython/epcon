@@ -169,7 +169,7 @@ class TestCFP(TestCase):
         self.assertContains(response, talk_proposal['title'])
         self.assertContains(response, talk_url)
 
-        # Now that a talk is already propesed, second proposal will look
+        # Now that a talk is already proposed, second proposal will look
         # slightly different
         assert Speaker.objects.get()
         response = self.client.get(self.form_url)
