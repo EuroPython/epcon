@@ -15,7 +15,7 @@ from django.utils import timezone
 from django_factory_boy import auth as auth_factories
 
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
-from conference.models import Conference, Talk
+from conference.models import Conference, Talk, Speaker
 
 
 # TODO(artcz) add tests for CMS-based CFP page that redirects to the submission
@@ -84,13 +84,26 @@ class TestCFP(TestCase):
         assert Talk.objects.all().count() == 0
         self.client.login(email='joedoe@example.com', password='password123')
 
+        assert Speaker.objects.count() == 0
+        with self.assertRaises(Speaker.DoesNotExist):
+            self.user.speaker
+
         VALIDATION_FAILED_200     = HTTP_OK_200
         VALIDATION_SUCCESSFUL_303 = 303
 
-        required_fields = ['bio', 'first_name', 'last_name', 'abstract_short',
-                           'abstract', 'level', 'slides_agreement', 'phone',
-                           'birthday', 'personal_agreement', 'title', 'type',
-                           'tags', 'video_agreement']
+        required_proposal_fields = [
+            'title', 'abstract', 'abstract_short', 'level', 'tags',
+            'slides_agreement', 'video_agreement', 'type',
+        ]
+
+        required_speaker_fields = [
+            'bio', 'first_name', 'last_name', 'phone',
+            'birthday', 'personal_agreement',
+        ]
+
+        required_fields_for_first_proposal =\
+            required_speaker_fields + required_proposal_fields
+        required_fields_for_next_proposal = required_proposal_fields
 
         def required_fields_not_filled(response, fields):
             """
@@ -108,9 +121,13 @@ class TestCFP(TestCase):
         empty_submission = {}
         response = self.client.post(self.form_url, empty_submission)
         assert response.status_code == VALIDATION_FAILED_200
-        required_fields_not_filled(response, required_fields)
+        required_fields_not_filled(response,
+                                   required_fields_for_first_proposal)
 
-        dummy_data_in_all_required_fields = {f: "foo" for f in required_fields}
+        dummy_data_in_all_required_fields = {
+            f: "foo"
+            for f in required_fields_for_first_proposal
+        }
         response = self.client.post(self.form_url,
                                     dummy_data_in_all_required_fields)
         assert response.status_code == VALIDATION_FAILED_200
@@ -150,3 +167,31 @@ class TestCFP(TestCase):
         self.assertTemplateUsed(response, 'conference/profile.html')
         self.assertContains(response, talk_proposal['title'])
         self.assertContains(response, talk_url)
+
+        # Now that a talk is already propesed, second proposal will look
+        # slightly different
+        assert Speaker.objects.get()
+        response = self.client.get(self.form_url)
+        self.assertContains(response, "You have already submitted 1 proposal")
+
+        response = self.client.post(self.form_url, empty_submission)
+        required_fields_not_filled(response, required_fields_for_next_proposal)
+
+        talk_proposal = {
+            "type": "t_45",
+            "title": "More about EPCON testing",
+            "abstract_short": "Longer talk about testing",
+            "abstract": "Using django TestCase and pytest",
+            "level": "advanced",
+            "tags": "django, testing, slides",
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert Talk.objects.all().count() == 2
+
+        # check the form again
+        response = self.client.get(self.form_url)
+        self.assertContains(response, "You have already submitted 2 proposals")
