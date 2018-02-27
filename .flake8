@@ -1,0 +1,5 @@
+[flake8]
+# E272 - spaces before keyword
+# E221 – spaces before operator
+# E241 - multiple spaces after ':'
+ignore = E221, E272, E241, W503
