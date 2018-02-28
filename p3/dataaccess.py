@@ -5,10 +5,20 @@ from conference import models as cmodels
 from assopy import models as amodels
 from assopy import utils as autils
 from p3 import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
-cache_me = cachef.CacheFunction(prefix='p3:')
+
+# TODO(artcz) this is ugly but necessary for now, we should replace it with a
+# better caching solution later on.
+if settings.DISABLE_CACHING:
+    # Basically if caching is turned off return the same function that was put
+    # in. Therefore we're going to cheat the whole caching system.
+    def cache_me(*args, **kwargs):
+        return lambda *x: x[0]
+else:
+    cache_me = cachef.CacheFunction(prefix='p3:')
 
 
 def profile_data(uid, preload=None):
@@ -138,6 +148,7 @@ def _user_ticket(user, conference):
         .select_related('orderitem__order', 'fare')
     return qs
 
+
 def _ticket_complete(t):
     # considering complete tickets paid with bank transfer or by
     # admin.  Being the IPN notification almost simultaneous with the
@@ -149,7 +160,9 @@ def _ticket_complete(t):
         order = t.orderitem.order
     except amodels.OrderItem.DoesNotExist:
         return False
+
     return (order.method in ('bank', 'admin')) or order.complete()
+
 
 def all_user_tickets(uid, conference):
     """
@@ -166,7 +179,17 @@ def all_user_tickets(uid, conference):
         ))
     return output
 
+
 def _i_all_user_tickets(sender, **kw):
+    """
+    NOTE(artcz)(2018-02-28)
+    I think this _i_ means 'invalidate' (judging by the partial in
+    CacheFunction class.
+
+    So it's a signal(?) that invalidates the all_user_tickets caching.
+
+    However this signal doesnt seem to be attached to anything.
+    """
     o = kw['instance']
     if sender is models.TicketConference:
         conference = o.ticket.fare.conference
@@ -191,6 +214,7 @@ def _i_all_user_tickets(sender, **kw):
             return []
         params = [ (uid, conference) ]
     return [ 'all_user_tickets:%s:%s' % (uid, conference) for uid, conference in params ]
+
 
 all_user_tickets = cache_me(
     models=(models.TicketConference, cmodels.Ticket, amodels.Order,),
