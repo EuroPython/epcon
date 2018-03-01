@@ -1,5 +1,7 @@
 [flake8]
 # E272 - spaces before keyword
 # E221 – spaces before operator
+# E222 – spaces after operator
+# E251 – spaces after operator
 # E241 - multiple spaces after ':'
-ignore = E221, E272, E241, W503
+ignore = E221, E272, E241, W503, E251, E222

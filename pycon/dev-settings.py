@@ -3,6 +3,13 @@ from pycon.settings import *
 DEFAULT_URL_PREFIX='http://localhost:8000'
 DEBUG=True
 
+# Disable all the caching
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
 PAYPAL_TEST = True
 
 TEMPLATES[0]['OPTIONS']['debug'] = True

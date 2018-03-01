@@ -370,6 +370,8 @@ INSTALLED_APPS = (
     'cms_utils',
 
     'raven.contrib.django.raven_compat',
+
+    # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
 )
 
@@ -1286,6 +1288,9 @@ GRAPH_MODELS = {
     'group_models': True,
 }
 
+# This is used just for tests
+DISABLE_CACHING = False
+
 ### Override any settings with local settings
 #
 # IMPORTANT: This needs to be last in this module.
@@ -1297,4 +1302,3 @@ except ImportError, reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
-

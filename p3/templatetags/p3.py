@@ -576,8 +576,10 @@ def frozen_reason(ticket):
     else:
         return ''
 
+
 @register.assignment_tag(takes_context=True)
-def all_user_tickets(context, uid=None, conference=None, status="complete", fare_type="conference"):
+def all_user_tickets(context, uid=None, conference=None,
+                     status="complete", fare_type="conference"):
     if uid is None:
         uid = context['request'].user.id
     if conference is None:
@@ -589,7 +591,9 @@ def all_user_tickets(context, uid=None, conference=None, status="complete", fare
         tickets = filter(lambda x: not x[3], tickets)
     if fare_type != "all":
         tickets = filter(lambda x: x[1] == fare_type, tickets)
+
     return tickets
+
 
 @register.assignment_tag()
 def p3_tags():
