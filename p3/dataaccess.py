@@ -5,20 +5,11 @@ from conference import models as cmodels
 from assopy import models as amodels
 from assopy import utils as autils
 from p3 import models
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 
-# TODO(artcz) this is ugly but necessary for now, we should replace it with a
-# better caching solution later on.
-if settings.DISABLE_CACHING:
-    # Basically if caching is turned off return the same function that was put
-    # in. Therefore we're going to cheat the whole caching system.
-    def cache_me(*args, **kwargs):
-        return lambda *x: x[0]
-else:
-    cache_me = cachef.CacheFunction(prefix='p3:')
+cache_me = cachef.CacheFunction(prefix='p3:')
 
 
 def profile_data(uid, preload=None):
