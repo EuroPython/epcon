@@ -603,6 +603,7 @@ CONFERENCE_TALK_SUBCOMMUNITY = (
 ### Ticket information
 
 # T-shirt sizes
+# TODO: Make that into Choices
 CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
     ('fs', 'S (female)'),
     ('fm', 'M (female)'),

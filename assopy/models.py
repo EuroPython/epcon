@@ -912,6 +912,7 @@ class RefundManager(models.Manager):
             sender=r, old='', tickets=[ x.orderitem.ticket for x in items ]
         )
 
+# TODO make that into Choices
 REFUND_STATUS = (
     ('pending', 'Pending'),
     ('approved', 'Approved'),

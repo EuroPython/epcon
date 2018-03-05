@@ -110,6 +110,9 @@ class TicketConference(models.Model):
 
     objects = TicketConferenceManager()
 
+    def __str__(self):
+        return "for ticket: %s" % self.ticket
+
     def profile(self):
         if self.assigned_to:
             # Ticket assigned to someone else
