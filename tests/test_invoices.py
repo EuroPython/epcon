@@ -17,6 +17,7 @@ from assopy.models import Country, Invoice, Order, Vat, VatFare
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.models import AttendeeProfile, Fare, Ticket
 from conference import settings as conference_settings
+from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17
 from email_template.models import Email
 
 from tests.common_tools import template_used, sequence_equals, serve  # NOQA
@@ -411,21 +412,21 @@ def test_if_invoice_stores_information_about_the_seller(client):
         invoice = create_order_and_invoice()
         assert invoice.code == "I/16.0001"
         assert invoice.emit_date == date(2016, 1, 1)
-        assert invoice.issuer == "Bilbao FIXME"
+        assert invoice.issuer == ACPYSS_16
         assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
-        assert "Bilbao FIXME" in response.content.decode('utf-8')
+        assert ACPYSS_16 in response.content.decode('utf-8')
 
     with freeze_time("2017-01-01"):
         invoice = create_order_and_invoice()
         assert invoice.code == "I/17.0001"
         assert invoice.emit_date == date(2017, 1, 1)
-        assert invoice.issuer == "Rimini FIXME"
+        assert invoice.issuer == PYTHON_ITALIA_17
         assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
-        assert "Rimini FIXME" in response.content.decode('utf-8')
+        assert PYTHON_ITALIA_17 in response.content.decode('utf-8')
 
     with freeze_time("2018-01-01"):
         # (2017-11-14) for some reason we need to log in again to see the

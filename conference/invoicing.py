@@ -19,10 +19,28 @@ from django.db import transaction
 
 from assopy.models import Invoice, Order
 
+ACPYSS_16 = """
+Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
+P° Manuel Lardizabal 1, Oficina 307-20018 Donostia (Spain)
+VAT-ID ESG75119511
+Tel/Phone (+34) 943.01.80.47 | (+34) 688.64.52.32
+Email: info@pyss.org
+""".strip()
+
+PYTHON_ITALIA_17 = """
+Python Italia APS
+Via Mugellese, 1/A
+50013 Campi Bisenzio (FI)
+Italy
+VAT-ID: IT05753460483
+Codice Fiscale: 94144670489
+Contact Email: info@python.it
+""".strip()
+
 
 ISSUER_BY_YEAR = {
-    2016: "Bilbao FIXME",
-    2017: "Rimini FIXME",
+    2016: ACPYSS_16,
+    2017: PYTHON_ITALIA_17,
     2018: "Edinburgh FIXME",
 }
 
