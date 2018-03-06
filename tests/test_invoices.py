@@ -17,7 +17,7 @@ from assopy.models import Country, Invoice, Order, Vat, VatFare
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.models import AttendeeProfile, Fare, Ticket
 from conference import settings as conference_settings
-from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17
+from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17, EPS_18
 from email_template.models import Email
 
 from tests.common_tools import template_used, sequence_equals, serve  # NOQA
@@ -437,8 +437,8 @@ def test_if_invoice_stores_information_about_the_seller(client):
         invoice = create_order_and_invoice()
         assert invoice.code == "I/18.0001"
         assert invoice.emit_date == date(2018, 1, 1)
-        assert invoice.issuer == "Edinburgh FIXME"
+        assert invoice.issuer == EPS_18
         assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
-        assert "Edinburgh FIXME" in response.content.decode('utf-8')
+        assert EPS_18 in response.content.decode('utf-8')

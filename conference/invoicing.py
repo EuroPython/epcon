@@ -37,11 +37,20 @@ Codice Fiscale: 94144670489
 Contact Email: info@python.it
 """.strip()
 
+EPS_18 = """
+EuroPython Society
+c/o Open End AB
+Norra Ågatan 10
+41664  Göteborg
+Sweden
+EU VAT-ID: SE802417770401
+"""
+
 
 ISSUER_BY_YEAR = {
     2016: ACPYSS_16,
     2017: PYTHON_ITALIA_17,
-    2018: "Edinburgh FIXME",
+    2018: EPS_18,
 }
 
 REAL_INVOICE_PREFIX = "I/"
