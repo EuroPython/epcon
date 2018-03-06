@@ -9,15 +9,23 @@ from pytest import mark, raises
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.test.utils import override_settings
 
 from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
+import responses
 
 from assopy.models import Country, Invoice, Order, Vat, VatFare
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.models import AttendeeProfile, Fare, Ticket
 from conference import settings as conference_settings
 from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17, EPS_18
+from conference.exchangerates import (
+    DAILY_ECB_URL,
+    EXAMPLE_ECB_DAILY_XML,
+    get_ecb_rates_for_currency,
+    convert_from_EUR_using_latest_exrates
+)
 from email_template.models import Email
 
 from tests.common_tools import template_used, sequence_equals, serve  # NOQA
