@@ -46,7 +46,7 @@ class VatFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "assopy.Vat"
 
-    value = 21
+    value = 20
 
 
 class VatFareFactory(factory.django.DjangoModelFactory):
@@ -63,6 +63,8 @@ class FareFactory(factory.django.DjangoModelFactory):
 
     vats = factory.RelatedFactory(VatFareFactory, "fare")
     conference = "testconf"
+    # TODO: use correct fare codes based on available_fare_codes from
+    # conference/fares.py
     code = "TOSP"
     name = fuzzy.FuzzyText()
     price = 10

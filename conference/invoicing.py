@@ -20,8 +20,11 @@ from django.db.models import Max
 from django.db import transaction
 
 from assopy.models import Invoice, Order
-from conference.exchangerates import convert_from_EUR_using_latest_exrates
 
+from conference.exchangerates import (
+    convert_from_EUR_using_latest_exrates,
+    normalize_price
+)
 ACPYSS_16 = """
 Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
 P° Manuel Lardizabal 1, Oficina 307-20018 Donostia (Spain)
@@ -138,39 +141,46 @@ def create_invoices_for_order(order, emit_date, payment_date=None):
                     year=emit_date.year
                 )
 
-                invoice, _ = Invoice.objects.update_or_create(
-                    order=order,
-                    code=code,
-                    defaults={
-                        'issuer': ISSUER_BY_YEAR[emit_date.year],
-                        'vat': vat_item['vat'],
-                        'price': vat_item['price'],
-                        'payment_date': payment_date,
-                        'emit_date': emit_date
-                    }
-                )
+                gross_price = vat_item['price']
+                vat_rate    = normalize_price(1 + vat_item['vat'].value / 100)
+                net_price   = normalize_price(vat_item['price'] / vat_rate)
+                vat_price   = vat_item['price'] - net_price
 
                 currency = LOCAL_CURRENCY_BY_YEAR[emit_date.year]
                 if currency != 'EUR':
                     conversion = convert_from_EUR_using_latest_exrates(
-                        invoice.vat_value(), currency
+                        vat_price, currency
                     )
                 else:
                     conversion = {
                         'currency': 'EUR',
-                        'converted': invoice.vat_value(),
+                        'converted': vat_price,
                         'exrate': Decimal('1.0'),
                         'using_exrate_date': emit_date,
                     }
 
-                invoice.local_currency        = currency
-                invoice.vat_in_local_currency = conversion['converted']
-                invoice.exchange_rate         = conversion['exrate']
-                invoice.exchange_rate_date    = conversion['using_exrate_date']
+                invoice, _ = Invoice.objects.update_or_create(
+                    order=order,
+                    code=code,
+                    defaults={
+                        'issuer':         ISSUER_BY_YEAR[emit_date.year],
+                        'vat':            vat_item['vat'],
+                        'price':          gross_price,
+                        'payment_date':   payment_date,
+                        'emit_date':      emit_date,
+                        'local_currency': currency,
+                        'vat_in_local_currency': conversion['converted'],
+                        'exchange_rate':  conversion['exrate'],
+                        'exchange_rate_date': conversion['using_exrate_date'],
+                    }
+                )
 
                 html = render_invoice_as_html(invoice)
                 invoice.invoice_copy_full_html = html
                 invoice.save()
+
+                assert invoice.net_price() == net_price
+                assert invoice.vat_value() == vat_price
 
                 invoices.append(invoice)
 

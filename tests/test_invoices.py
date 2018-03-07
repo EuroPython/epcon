@@ -23,6 +23,8 @@ from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17, EPS_18
 from conference.exchangerates import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
+    EXAMPLE_ECB_DATE,
+    normalize_price,
 )
 from email_template.models import Email
 
@@ -48,6 +50,7 @@ def _prepare_invoice_for_basic_test(order_code, invoice_code):
         price=Decimal(1337),
         vat=vat_10,
         invoice_copy_full_html='Here goes full html',
+        exchange_rate_date=date.today(),
     )
 
 
@@ -125,6 +128,7 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
         emit_date=date(2017, 3, 13),
         price=Decimal(1337),
         vat=vat_10,
+        exchange_rate_date=date.today(),
     )
 
     # Doesn't matter when the invoice was issued (invoice.emit_date),
@@ -135,6 +139,7 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
         emit_date=date(2017, 3, 13),
         price=Decimal(1337),
         vat=vat_10,
+        exchange_rate_date=date.today(),
     )
 
     user_profile_url = reverse("assopy-profile")
@@ -154,12 +159,15 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
     assert template_used(response, 'assopy/profile.html')
 
 
+@responses.activate
 @mark.django_db
 @freeze_time("2018-01-01")
 def test_invoices_from_buying_tickets(client):
     """
     This is an example of a full flow, of creating and buying a new ticket.
     """
+    # because of 2018 we need to make sure that ECB rates are in place
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
 
     assert settings.P3_FARES_ENABLED
 
@@ -338,9 +346,10 @@ def test_invoices_from_buying_tickets(client):
     # check numbers for vat 10%
     gross_price_vat_10 = (
         ticket_price * ticket_amount
-        + social_event_price * social_event_amount
+      + social_event_price * social_event_amount
     )
-    net_price_vat_10 = gross_price_vat_10 / Decimal('1.1')
+
+    net_price_vat_10 = normalize_price(gross_price_vat_10 / Decimal('1.1'))
     vat_value_vat_10 = gross_price_vat_10 - net_price_vat_10
 
     assert invoice_vat_10.price == gross_price_vat_10
@@ -351,7 +360,7 @@ def test_invoices_from_buying_tickets(client):
 
     # do the same for vat 20%
     gross_price_vat_20 = social_event_price * social_event_amount
-    net_price_vat_20 = gross_price_vat_20 / Decimal('1.2')
+    net_price_vat_20 = normalize_price(gross_price_vat_20 / Decimal('1.2'))
     vat_value_vat_20 = gross_price_vat_20 - net_price_vat_20
 
     assert invoice_vat_20.price == gross_price_vat_20
@@ -465,14 +474,32 @@ def test_vat_in_GBP_for_2018(client):
         client.login(email='joedoe@example.com', password='password123')
         invoice = create_order_and_invoice(user.assopy_user, fare)
         assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
-        assert invoice.vat_in_local_currency == Decimal("1.55")
+        assert invoice.vat_value()           == Decimal("1.67")
+        assert invoice.vat_in_local_currency == Decimal("1.49")
         assert invoice.local_currency        == "GBP"
         assert invoice.exchange_rate         == Decimal('0.89165')
+        assert invoice.exchange_rate_date    == EXAMPLE_ECB_DATE
 
         response = client.get(invoice.get_absolute_url())
         content = response.content.decode('utf-8')
         # serve(response.content)
-        assert "Total VAT is GBP 1.55" in content
+        assert "Total VAT is GBP 1.49" in content
         # we're going to use whatever the date was received/cached from ECB XML
         # doesnt matter what emit date is
-        assert "Using ECB rate 0.89165 from March 6, 2018" in content
+        assert "ECB rate 0.89165 GBP/EUR from March 6, 2018" in content
+
+    with freeze_time("2017-05-05"):
+        client.login(email='joedoe@example.com', password='password123')
+        invoice = create_order_and_invoice(user.assopy_user, fare)
+        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.vat_value()           == Decimal("1.67")
+        assert invoice.vat_in_local_currency == Decimal("1.67")
+        assert invoice.local_currency        == "EUR"
+        assert invoice.exchange_rate         == Decimal('1.0')
+        assert invoice.exchange_rate_date    == date(2017, 5, 5)
+
+        response = client.get(invoice.get_absolute_url())
+        content = response.content.decode('utf-8')
+        # not showing any VAT conversion because in 2017 we had just EUR
+        assert "Total VAT" not in content
+        assert "ECB rate"  not in content

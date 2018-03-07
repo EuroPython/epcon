@@ -32,7 +32,7 @@ AND CONVERT EITHER TO OR FROM EUROS. KEEP THAT IN MIND.
 
 from __future__ import unicode_literals, absolute_import, print_function
 
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
 
 from django.core.cache import cache
@@ -50,6 +50,7 @@ CURRENCY_CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours
 DEFAULT_DECIMAL_PLACES = Decimal('0.01')
 
 # The actual XML will have more currencies.
+EXAMPLE_ECB_DATE = date(2018, 3, 6)
 EXAMPLE_ECB_DAILY_XML = """
 <?xml version="1.0" encoding="UTF-8"?>
 <gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01"
@@ -67,6 +68,14 @@ EXAMPLE_ECB_DAILY_XML = """
     </Cube>
 </gesmes:Envelope>
 """.strip()
+
+
+def normalize_price(price):
+    """
+    TODO: move this function somewhere else, it's not a most obvious place to
+    put it.
+    """
+    return price.quantize(Decimal(DEFAULT_DECIMAL_PLACES))
 
 
 def fetch_latest_ecb_exrates():
@@ -107,7 +116,7 @@ def convert_from_EUR_using_latest_exrates(amount_in_eur, to_currency):
     assert isinstance(amount_in_eur, Decimal)
 
     datestamp, exrate = get_ecb_rates_for_currency(to_currency)
-    new_amount = (amount_in_eur * exrate).quantize(DEFAULT_DECIMAL_PLACES)
+    new_amount = normalize_price(amount_in_eur * exrate)
 
     return {
         'converted': new_amount,

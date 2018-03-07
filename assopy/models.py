@@ -24,6 +24,7 @@ from assopy import janrain
 from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
+from conference.exchangerates import normalize_price
 from conference.models import Ticket
 from email_template import utils
 
@@ -803,8 +804,9 @@ class Invoice(models.Model):
         max_digits=10,
         decimal_places=5,
         # remove after testing
-        default=Decimal("0"),
+        default=Decimal("1"),
     )
+    exchange_rate_date = models.DateField()
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
@@ -853,7 +855,8 @@ class Invoice(models.Model):
         return self.price - self.net_price()
 
     def net_price(self):
-        return self.price / (1 + self.vat.value / 100)
+        return normalize_price(self.price / (1 + self.vat.value / 100))
+
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
