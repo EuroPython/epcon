@@ -22,11 +22,11 @@ from conference.fares import (
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
-from conference.models import Conference, Fare, AttendeeProfile, Ticket
+from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
 from email_template.models import Email
 
-from tests.common_tools import serve  # NOQA
+from tests.common_tools import make_user
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -35,15 +35,6 @@ DEFAULT_VAT_RATE = "0.2"  # 20%
 DEFAULT_SHIRT_SIZE        = 'l'
 DEFAULT_DIET              = 'omnivorous'
 DEFAULT_PYTHON_EXPERIENCE = 0
-
-
-def make_user():
-    user = auth_factories.UserFactory(
-        email='joedoe@example.com', is_active=True
-    )
-    AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug='foobar')
-    return user
 
 
 def make_basic_fare_setup():

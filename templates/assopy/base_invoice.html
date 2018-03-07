@@ -32,7 +32,7 @@
             }
             ol, ul {
                 list-style: none;
-            }
+              }
             blockquote, q {
                 quotes: none;
             }
@@ -376,8 +376,11 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
+              </div>
             <div class="clear"></div>
+            {% if invoice.local_currency != 'EUR' %}
+            <div style='margin-top: 1em;'>Total VAT is {{ invoice.local_currency }} {{ invoice.vat_in_local_currency }} – <em>Using ECB rate {{ invoice.exchange_rate }} from {{ invoice.exchange_rate_date }}</em></div>
+            {% endif %}
 
         </div>
     </body>

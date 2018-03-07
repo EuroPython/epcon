@@ -9,7 +9,6 @@ from pytest import mark, raises
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.test.utils import override_settings
 
 from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
@@ -17,30 +16,27 @@ import responses
 
 from assopy.models import Country, Invoice, Order, Vat, VatFare
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.stripe.tests.factories import FareFactory, OrderFactory
 from conference.models import AttendeeProfile, Fare, Ticket
 from conference import settings as conference_settings
 from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17, EPS_18
 from conference.exchangerates import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
-    get_ecb_rates_for_currency,
-    convert_from_EUR_using_latest_exrates
 )
 from email_template.models import Email
 
-from tests.common_tools import template_used, sequence_equals, serve  # NOQA
+from tests.common_tools import template_used, sequence_equals, make_user
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
     # default password is 'password123' per django_factory_boy
-    user = auth_factories.UserFactory(email='joedoe@example.com',
-                                      is_active=True)
-    assopy_user = AssopyUserFactory(user=user)
+    user = make_user()
 
     # FYI(artcz): Order.objects.create is overloaded method on
     # OrderManager, that sets up a lot of unused stuff, going with manual
     # .save().
-    order = Order(user=assopy_user, code=order_code)
+    order = Order(user=user.assopy_user, code=order_code)
     order.save()
     # create some random Vat instance to the invoice creation works
     vat_10 = Vat.objects.create(value=10)
@@ -383,13 +379,21 @@ def test_invoices_from_buying_tickets(client):
     assert 'I/18.0002' in response.content.decode('utf-8')
 
 
+def create_order_and_invoice(assopy_user, fare):
+    today = date.today()
+    order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
+    # TODO: confirm_order should instead return it's invoices
+    order.confirm_order(today)
+    return Invoice.objects.get(emit_date__year=today.year)
+
+
 @mark.django_db
 def test_if_invoice_stores_information_about_the_seller(client):
     """
     Testing #591
     https://github.com/EuroPython/epcon/issues/591
     """
-    from assopy.stripe.tests.factories import FareFactory, OrderFactory
+
     # need this email to generate invoices/orders
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
@@ -409,15 +413,8 @@ def test_if_invoice_stores_information_about_the_seller(client):
             'order_code': invoice.order.code,
         })
 
-    def create_order_and_invoice():
-        today = date.today()
-        order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
-        # TODO: confirm_order should instead return it's invoices
-        order.confirm_order(today)
-        return Invoice.objects.get(emit_date__year=today.year)
-
     with freeze_time("2016-01-01"):
-        invoice = create_order_and_invoice()
+        invoice = create_order_and_invoice(assopy_user, fare)
         assert invoice.code == "I/16.0001"
         assert invoice.emit_date == date(2016, 1, 1)
         assert invoice.issuer == ACPYSS_16
@@ -427,7 +424,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert ACPYSS_16 in response.content.decode('utf-8')
 
     with freeze_time("2017-01-01"):
-        invoice = create_order_and_invoice()
+        invoice = create_order_and_invoice(assopy_user, fare)
         assert invoice.code == "I/17.0001"
         assert invoice.emit_date == date(2017, 1, 1)
         assert invoice.issuer == PYTHON_ITALIA_17
@@ -442,7 +439,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         # otherwise it will produce 302 to /accounts/login/ on profile and
         # invoice views. (however the backend code will work fine)
         client.login(email='joedoe@example.com', password='password123')
-        invoice = create_order_and_invoice()
+        invoice = create_order_and_invoice(assopy_user, fare)
         assert invoice.code == "I/18.0001"
         assert invoice.emit_date == date(2018, 1, 1)
         assert invoice.issuer == EPS_18
@@ -450,3 +447,32 @@ def test_if_invoice_stores_information_about_the_seller(client):
 
         response = client.get(invoice_url(invoice))
         assert EPS_18 in response.content.decode('utf-8')
+
+
+@mark.django_db
+@responses.activate
+def test_vat_in_GBP_for_2018(client):
+    """
+    https://github.com/EuroPython/epcon/issues/617
+    """
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+
+    with freeze_time("2018-05-05"):
+        client.login(email='joedoe@example.com', password='password123')
+        invoice = create_order_and_invoice(user.assopy_user, fare)
+        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.vat_in_local_currency == Decimal("1.55")
+        assert invoice.local_currency        == "GBP"
+        assert invoice.exchange_rate         == Decimal('0.89165')
+
+        response = client.get(invoice.get_absolute_url())
+        content = response.content.decode('utf-8')
+        # serve(response.content)
+        assert "Total VAT is GBP 1.55" in content
+        # we're going to use whatever the date was received/cached from ECB XML
+        # doesnt matter what emit date is
+        assert "Using ECB rate 0.89165 from March 6, 2018" in content

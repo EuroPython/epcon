@@ -107,7 +107,7 @@ def convert_from_EUR_using_latest_exrates(amount_in_eur, to_currency):
     assert isinstance(amount_in_eur, Decimal)
 
     datestamp, exrate = get_ecb_rates_for_currency(to_currency)
-    new_amount = (amount_in_eur / exrate).quantize(DEFAULT_DECIMAL_PLACES)
+    new_amount = (amount_in_eur * exrate).quantize(DEFAULT_DECIMAL_PLACES)
 
     return {
         'converted': new_amount,

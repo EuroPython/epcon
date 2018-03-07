@@ -13,11 +13,14 @@ This module handles all things related to creating a new invoice, including
 
 from __future__ import unicode_literals, absolute_import
 
+from decimal import Decimal
+
 from django.template.loader import render_to_string
 from django.db.models import Max
 from django.db import transaction
 
 from assopy.models import Invoice, Order
+from conference.exchangerates import convert_from_EUR_using_latest_exrates
 
 ACPYSS_16 = """
 Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
@@ -49,10 +52,18 @@ https://www.europython-society.org
 """
 
 
+
 ISSUER_BY_YEAR = {
     2016: ACPYSS_16,
     2017: PYTHON_ITALIA_17,
     2018: EPS_18,
+}
+
+LOCAL_CURRENCY_BY_YEAR = {
+    # Used for local VAT calculations if required by local law.
+    2016: "EUR",
+    2017: "EUR",
+    2018: "GBP",
 }
 
 REAL_INVOICE_PREFIX = "I/"
@@ -139,6 +150,24 @@ def create_invoices_for_order(order, emit_date, payment_date=None):
                     }
                 )
 
+                currency = LOCAL_CURRENCY_BY_YEAR[emit_date.year]
+                if currency != 'EUR':
+                    conversion = convert_from_EUR_using_latest_exrates(
+                        invoice.vat_value(), currency
+                    )
+                else:
+                    conversion = {
+                        'currency': 'EUR',
+                        'converted': invoice.vat_value(),
+                        'exrate': Decimal('1.0'),
+                        'using_exrate_date': emit_date,
+                    }
+
+                invoice.local_currency        = currency
+                invoice.vat_in_local_currency = conversion['converted']
+                invoice.exchange_rate         = conversion['exrate']
+                invoice.exchange_rate_date    = conversion['using_exrate_date']
+
                 html = render_invoice_as_html(invoice)
                 invoice.invoice_copy_full_html = html
                 invoice.save()
@@ -181,6 +210,7 @@ def render_invoice_as_html(invoice):
         'vat': invoice.vat,
         'real': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
+        "invoice": invoice,
     }
 
     return render_to_string('assopy/invoice.html', ctx)
