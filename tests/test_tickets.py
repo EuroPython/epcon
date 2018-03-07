@@ -79,35 +79,39 @@ def test_basic_fare_setup(client):
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
         assert 'Sorry, no tickets are available' in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-03-11"):
         # Early Bird timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' in _response_content
-        assert 'TEDC' in _response_content
-        assert 'TRSP' not in _response_content
-        assert 'TRDC' not in _response_content
+        assert 'data-fare="TESP"' in _response_content
+        assert 'data-fare="TEDC"' in _response_content
+        assert 'data-fare="TRSP"' not in _response_content
+        assert 'data-fare="TRDC"' not in _response_content
         assert SOCIAL_EVENT_FARE_CODE not in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-05-11"):
         # Regular timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' not in _response_content
-        assert 'TEDC' not in _response_content
-        assert 'TRSP' in _response_content
-        assert 'TRDC' in _response_content
+        assert 'data-fare="TESP"' not in _response_content
+        assert 'data-fare="TEDC"' not in _response_content
+        assert 'data-fare="TRSP"' in _response_content
+        assert 'data-fare="TRDC"' in _response_content
         assert SOCIAL_EVENT_FARE_CODE not in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-06-25"):
         # Regular timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' not in _response_content
-        assert 'TRSP' in _response_content
-        assert 'TRDC' in _response_content
+        assert 'data-fare="TESP"' not in _response_content
+        assert 'data-fare="TRSP"' in _response_content
+        assert 'data-fare="TRDC"' in _response_content
         assert SOCIAL_EVENT_FARE_CODE in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
 
 # Same story as previously - using TestCase beacuse of django's asserts like
@@ -143,8 +147,9 @@ class TestBuyingTickets(TestCase):
             # Early Bird timeline
             response = self.client.get(cart_url)
             _response_content = response.content.decode('utf-8')
-            assert 'TESP' in _response_content
-            assert 'TEDC' in _response_content
+            assert 'data-fare="TESP"' in _response_content
+            assert 'data-fare="TEDC"' in _response_content
+            assert 'Buy tickets (1 of 2)' in _response_content
 
             assert Order.objects.all().count() == 0
             response = self.client.post(cart_url, {
@@ -161,6 +166,7 @@ class TestBuyingTickets(TestCase):
 
             self.assertRedirects(response, billing_url,
                                  status_code=PURCHASE_SUCCESSFUL_302)
+            self.assertContains(response, 'Buy tickets (2 of 2)')
             # Purchase was successful but it's first step, so still no Order
             assert Order.objects.all().count() == 0
 

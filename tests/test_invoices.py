@@ -14,10 +14,10 @@ from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
 import responses
 
-from assopy.models import Country, Invoice, Order, Vat, VatFare
+from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-from conference.models import AttendeeProfile, Fare, Ticket
+from conference.models import AttendeeProfile, Ticket
 from conference import settings as conference_settings
 from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17, EPS_18
 from conference.exchangerates import (
@@ -25,6 +25,10 @@ from conference.exchangerates import (
     EXAMPLE_ECB_DAILY_XML,
     EXAMPLE_ECB_DATE,
     normalize_price,
+)
+from conference.fares import (
+    SOCIAL_EVENT_FARE_CODE,
+    create_fare_for_conference
 )
 from email_template.models import Email
 
@@ -188,64 +192,35 @@ def test_invoices_from_buying_tickets(client):
     assert template_used(response, "p3/cart.html")
     assert 'Sorry, no tickets are available' in response.content
 
-    # 3. p3/cart.html is using {% fares_available %} assignment tag
-    # lets create some fares.
-    # just setting a single type of ticket, for testing. In reality there are
-    # 27 possible fare types for just the tickets
-    #   (early bird, regular, on desk)
-    # x (standard, stndard light, day pass)
-    # x (student, personal, company)
+    # 3. p3/cart.html is using {% fares_available %} assignment tag to display
+    # fares.  # For more details about fares check conference/fares.py
 
-    # fare_codes = [
-    #     'T' + ticket_type + ticket_variant + group_type
-    #     # E = Early Bird, R = Regular, D = on Desk
-    #     for ticket_type in ['E', 'R', 'D']
-    #     # S = Standard; L = Standard Light (no trainings); D = Day Pass
-    #     for ticket_variant in ['S', 'L', 'D']
-    #     # S = Student; P = Personal; C = Company
-    #     for group_type in ['S', 'P', 'C']
-    # ]
-
-    ticket_price = 100
+    ticket_price  = Decimal(100)
     ticket_amount = 20
-    social_event_price = 10
+    social_event_price  = Decimal(10)
     social_event_amount = 5
 
-    def create_fare(code, price, name, type, vat_rate):
-        # TODO: maybe use Fare factory(?)
-        fare = Fare.objects.create(
-            conference=settings.CONFERENCE_CONFERENCE,
-            name=name,
-            description=name,
-            code=code,
-            price=price,
-            ticket_type=type,
-            start_validity=date.today() - timedelta(days=10),
-            end_validity=date.today() + timedelta(days=10),
-        )
+    vat_rate_10, _ = Vat.objects.get_or_create(value=10)
+    vat_rate_20, _ = Vat.objects.get_or_create(value=20)
 
-        # fare also needs VAT
-        vat_rate, _ = Vat.objects.get_or_create(value=vat_rate)
-        VatFare.objects.get_or_create(fare=fare, vat=vat_rate)
-        return fare
+    CONFERENCE = settings.CONFERENCE_CONFERENCE
 
-    create_fare("TRSP",  # Ticket Regular Standard Personal
-                ticket_price,
-                "Regular Standard Ticket",
-                "conference",
-                vat_rate=10)
+    today = date.today()
+    yesterday, tomorrow = today - timedelta(days=1), today + timedelta(days=1)
 
-    create_fare("VOUPE03",  # hardcoded social event format
-                social_event_price,
-                "Social Event One",
-                "event",
-                vat_rate=10)
+    create_fare_for_conference(code="TRSP",  # Ticket Regular Standard Personal
+                               conference=CONFERENCE,
+                               price=ticket_price,
+                               start_validity=yesterday,
+                               end_validity=tomorrow,
+                               vat_rate=vat_rate_10)
 
-    create_fare("S123",  # some random social event id
-                social_event_price,
-                "Social Event Two",
-                "other",
-                vat_rate=20)
+    create_fare_for_conference(code=SOCIAL_EVENT_FARE_CODE,
+                               conference=CONFERENCE,
+                               price=social_event_price,
+                               start_validity=yesterday,
+                               end_validity=tomorrow,
+                               vat_rate=vat_rate_20)
 
     # 4. If Fare is created we should have one input on the cart.
     response = client.get(cart_url)
@@ -258,10 +233,9 @@ def test_invoices_from_buying_tickets(client):
     # There are plenty of tds but only TRSP should have data-fare set
     assert 'td class="fare" data-fare="TRSP">' in _response_content
     assert 'td class="fare" data-fare="TDCP">' not in _response_content
-    assert 'td class="fare" data-fare="">' in _response_content
+    assert 'td class="fare" data-fare="">'     in _response_content
     # social events
     assert 'td class="fare" data-fare="VOUPE03">' in _response_content
-    assert 'td class="fare" data-fare="S123">' in _response_content
 
     # and one input for TRSP where you can specify how many tickets
     # TODO: maybe it should have a different type than text?
@@ -273,9 +247,8 @@ def test_invoices_from_buying_tickets(client):
 
     response = client.post(cart_url, {
         'order_type': 'non-deductible',  # == Personal
-        'TRSP': ticket_amount,
+        'TRSP':    ticket_amount,
         'VOUPE03': social_event_amount,
-        'S123': social_event_amount,
     }, follow=True)
 
     billing_url = reverse('p3-billing')
@@ -302,7 +275,7 @@ def test_invoices_from_buying_tickets(client):
     order = Order.objects.get()
     # FIXME: confirming that max_tickets is only enforced in javascript
     assert order.orderitem_set.all().count() ==\
-        ticket_amount + social_event_amount * 2  # two social events
+        ticket_amount + social_event_amount
 
     # need to create an email template that's used in the purchasing process
     Email.objects.create(code='purchase-complete')
@@ -324,30 +297,24 @@ def test_invoices_from_buying_tickets(client):
         {'count': ticket_amount,
          'price': ticket_price * ticket_amount,
          'code': u'TRSP',
-         'description': u'Regular Standard Ticket'},
-        {'count': social_event_amount,
-         'price': social_event_price * social_event_amount,
-         'code': u'VOUPE03',
-         'description': u'Social Event One'},
+         'description': u'Regular Standard Personal'},
     ]
 
     expected_invoice_items_vat_20 = [
         {'count': social_event_amount,
          'price': social_event_price * social_event_amount,
-         'code': u'S123',
-         'description': u'Social Event Two'},
+         'code':  SOCIAL_EVENT_FARE_CODE,
+         'description': u'Social Event'},
     ]
 
     assert sequence_equals(invoice_vat_10.invoice_items(),
                            expected_invoice_items_vat_10)
+
     assert sequence_equals(invoice_vat_20.invoice_items(),
                            expected_invoice_items_vat_20)
 
     # check numbers for vat 10%
-    gross_price_vat_10 = (
-        ticket_price * ticket_amount
-      + social_event_price * social_event_amount
-    )
+    gross_price_vat_10 = ticket_price * ticket_amount
 
     net_price_vat_10 = normalize_price(gross_price_vat_10 / Decimal('1.1'))
     vat_value_vat_10 = gross_price_vat_10 - net_price_vat_10
@@ -358,8 +325,9 @@ def test_invoices_from_buying_tickets(client):
     assert invoice_vat_10.invoice_copy_full_html.startswith('<!DOCTYPE')
     assert len(invoice_vat_10.invoice_copy_full_html) > 1000  # large html blob
 
-    # do the same for vat 20%
+    # check numbers for vat 20%
     gross_price_vat_20 = social_event_price * social_event_amount
+
     net_price_vat_20 = normalize_price(gross_price_vat_20 / Decimal('1.2'))
     vat_value_vat_20 = gross_price_vat_20 - net_price_vat_20
 
@@ -370,8 +338,7 @@ def test_invoices_from_buying_tickets(client):
     assert len(invoice_vat_20.invoice_copy_full_html) > 1000  # large html blob
 
     # each OrderItem should have a corresponding Ticket
-    assert Ticket.objects.all().count() ==\
-        ticket_amount + social_event_amount * 2
+    assert Ticket.objects.all().count() == ticket_amount + social_event_amount
 
     # Check if user profile has the tickets and invoices available
     profile_url = reverse('assopy-profile')
@@ -406,15 +373,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
     # need this email to generate invoices/orders
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
-
-    user = auth_factories.UserFactory(
-        email='joedoe@example.com', is_active=True
-    )
-
-    assopy_user = AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug='foobar')
-
-    client.login(email='joedoe@example.com', password='password123')
+    user = make_user()
 
     def invoice_url(invoice):
         return reverse("assopy-invoice-html", kwargs={
@@ -423,7 +382,9 @@ def test_if_invoice_stores_information_about_the_seller(client):
         })
 
     with freeze_time("2016-01-01"):
-        invoice = create_order_and_invoice(assopy_user, fare)
+        # We need to log in again after every time travel, just in case.
+        client.login(email='joedoe@example.com', password='password123')
+        invoice = create_order_and_invoice(user.assopy_user, fare)
         assert invoice.code == "I/16.0001"
         assert invoice.emit_date == date(2016, 1, 1)
         assert invoice.issuer == ACPYSS_16
@@ -433,7 +394,9 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert ACPYSS_16 in response.content.decode('utf-8')
 
     with freeze_time("2017-01-01"):
-        invoice = create_order_and_invoice(assopy_user, fare)
+        # We need to log in again after every time travel, just in case.
+        client.login(email='joedoe@example.com', password='password123')
+        invoice = create_order_and_invoice(user.assopy_user, fare)
         assert invoice.code == "I/17.0001"
         assert invoice.emit_date == date(2017, 1, 1)
         assert invoice.issuer == PYTHON_ITALIA_17
@@ -443,12 +406,9 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert PYTHON_ITALIA_17 in response.content.decode('utf-8')
 
     with freeze_time("2018-01-01"):
-        # (2017-11-14) for some reason we need to log in again to see the
-        # future. This check won't work with any year above 2017 w/o relogin,
-        # otherwise it will produce 302 to /accounts/login/ on profile and
-        # invoice views. (however the backend code will work fine)
+        # We need to log in again after every time travel, just in case.
         client.login(email='joedoe@example.com', password='password123')
-        invoice = create_order_and_invoice(assopy_user, fare)
+        invoice = create_order_and_invoice(user.assopy_user, fare)
         assert invoice.code == "I/18.0001"
         assert invoice.emit_date == date(2018, 1, 1)
         assert invoice.issuer == EPS_18
