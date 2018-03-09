@@ -44,6 +44,8 @@ Norra Ågatan 10
 41664  Göteborg
 Sweden
 EU VAT-ID: SE802417770401
+Contact Email: billing@europython.eu
+https://www.europython-society.org
 """
 
 
