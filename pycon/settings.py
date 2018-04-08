@@ -596,8 +596,16 @@ CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
 # Conference sub-communities
 CONFERENCE_TALK_SUBCOMMUNITY = (
-    ('', _('All')),
-    ('pydata', _('PyData')),
+    ('business_track', _('Business Track')),
+    ('devops', _('DevOps')),
+    ('django', _('Django Track')),
+    ('education', _('Educational Track')),
+    ('general', _('General Python')),
+    ('hw_iot', _('Hardware/IoT Track')),
+    ('pydata', _('PyData Track')),
+    ('science', _('Science Track')),
+    ('web', _('Web Track')),
+    ('', 'None of the above')
 )
 
 ### Ticket information
