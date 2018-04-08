@@ -29,8 +29,6 @@ from . import settings, signals
 from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
 from taggit.managers import TaggableManager
 
-import inspect
-import traceback
 import logging
 
 log = logging.getLogger('conference.tags')
@@ -59,12 +57,6 @@ class ConferenceTag(TagBase):
 
     def save(self, **kw):
         if not self.pk:
-            frame = inspect.currentframe()
-            stack_trace = traceback.format_stack(frame)
-            log.debug(u'saving new tag {}'.format(self.name))
-            log.debug(u''.join(stack_trace[:-1]))
-
-            # We check if the conference already exists
             try:
                 c = ConferenceTag.objects.get(name__iexact=self.name)
             except ConferenceTag.DoesNotExist:
@@ -655,7 +647,7 @@ class Talk(models.Model, UrlMixin):
     def save(self, *args, **kwargs):
         # The duration is taken directly from talk's type, unless it was
         # customized
-        if (self.duration == 0 or 
+        if (self.duration == 0 or
             self.duration in TALK_DURATION.values()):
             # duration was previously set to a standard value, so update
             # the value to the talk length
