@@ -321,17 +321,20 @@ class SubmissionForm(forms.Form):
             speaker.save()
 
         talk = models.Talk.objects.createFromTitle(
-            title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
-            abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
-            status='proposed', language=data['language'],
-            level=data['level'], type=data['type']
+            title=data['title'],
+            sub_title=data['sub_title'],
+            prerequisites=data['prerequisites'],
+            abstract_short=data['abstract_short'],
+            abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE,
+            speaker=speaker,
+            status='proposed',
+            language=data['language'],
+            level=data['level'],
+            type=data['type']
         )
 
         talk.save()
         talk.setAbstract(data['abstract'])
-
-        tags = ', '.join(data['tags'])
-        log.debug(u'updating form, tags: {}'.format(tags))
 
         if 'tags' in data:
             valid_tags = validate_tags(data['tags'])
@@ -400,22 +403,32 @@ class TalkForm(forms.ModelForm):
         assert commit, "commit==False not supported yet"
         data = self.cleaned_data
         pk = self.instance.pk
+
+        tags = None
+
+        if 'tags' in self.cleaned_data:
+            tags = self.cleaned_data['tags']
+            del self.cleaned_data['tags']
+
         if not pk:
             assert speaker is not None
             self.instance = models.Talk.objects.createFromTitle(
-                title=data['title'], sub_title=data['sub_title'], prerequisites=data['prerequisites'],
-                abstract_short=data['abstract_short'], abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE, speaker=speaker,
-                status='proposed', language=data['language'],
-                level=data['level'], type=data['type']
+                title=data['title'],
+                sub_title=data['sub_title'],
+                prerequisites=data['prerequisites'],
+                abstract_short=data['abstract_short'],
+                abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE,
+                speaker=speaker,
+                status='proposed',
+                language=data['language'],
+                level=data['level'],
+                type=data['type']
             )
         talk = super(TalkForm, self).save(commit=commit)
         talk.setAbstract(data['abstract'])
 
-        tags = u', '.join(data['tags'])
-        log.debug(u'updating form, tags: {}'.format(tags))
-
-        if 'tags' in data:
-            valid_tags = validate_tags(data['tags'])
+        if tags:
+            valid_tags = validate_tags(tags)
 
             talk.tags.set(*(valid_tags))
 
