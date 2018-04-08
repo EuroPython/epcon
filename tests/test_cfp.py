@@ -264,3 +264,67 @@ class TestCFP(TestCase):
 
         assert ConferenceTag.objects.count() == 0
         assert Tag.objects.count() == 0
+
+    def test_ignores_new_tags_keeping_predefined_ones(self):
+        ConferenceTag.objects.create(name='django')
+        ConferenceTag.objects.create(name='love')
+
+        assert Talk.objects.all().count() == 0
+        assert ConferenceTag.objects.count() == 2
+        assert Tag.objects.count() == 0
+        self.client.login(email='joedoe@example.com', password='password123')
+
+        VALIDATION_SUCCESSFUL_303 = 303
+
+        talk_proposal = {
+            "type": "t_30",
+            'first_name': 'Joe',
+            'last_name': 'Doe',
+            "birthday": "2018-02-26",
+            'bio': "Python developer",
+            "title": "Testing EPCON CFP",
+            "abstract_short": "Short talk about testing CFP",
+            "abstract": "Using django TestCase and pytest",
+            "level": "advanced",
+            "phone": "41331237",
+            "tags": "django, testing, slides",
+            "personal_agreement": True,
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        profile_url = reverse("conference-myself-profile")
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_303
+
+        assert ConferenceTag.objects.count() == 2
+        talk = Talk.objects.last()
+
+        assert talk.tags.count() == 1
+
+        assert 'django' in talk.tags.all().values_list('name', flat=True)
+
+        # second proposal
+
+        talk_proposal = {
+            "type": "t_45",
+            "title": "More about EPCON testing",
+            "abstract_short": "Longer talk about testing",
+            "abstract": "Using django TestCase and pytest",
+            "level": "advanced",
+            "tags": "love, testing, slides",
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_303
+
+        assert ConferenceTag.objects.count() == 2
+
+        talk = Talk.objects.first()
+
+        assert talk.tags.count() == 1
+
+        assert talk.title == 'More about EPCON testing'
+        assert 'love' in talk.tags.all().values_list('name', flat=True)
