@@ -243,3 +243,24 @@ class TestCFP(TestCase):
         talk = Talk.objects.first()
 
         assert talk.tags.count() == 0
+
+        assert Speaker.objects.get()
+
+        # second proposal
+
+        talk_proposal = {
+            "type": "t_45",
+            "title": "More about EPCON testing",
+            "abstract_short": "Longer talk about testing",
+            "abstract": "Using django TestCase and pytest",
+            "level": "advanced",
+            "tags": "django, testing, slides",
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_303
+
+        assert ConferenceTag.objects.count() == 0
+        assert Tag.objects.count() == 0
