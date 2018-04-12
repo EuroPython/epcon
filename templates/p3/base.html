@@ -50,6 +50,7 @@
     <!-- For all browsers -->
     <!--[if (gt IE 8) | (IEMobile)]><!-->
         <link rel="stylesheet" href="{{ STATIC_URL }}p6/stylesheets/all.css" type="text/css" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}ep2018/css/all.css" type="text/css" />
         <link type="text/css" href="{{ STATIC_URL }}conference/jquery-ui/css/flick/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
     <!--
         <link rel="stylesheet" href="{{ STATIC_URL }}p6/s/pygments.css" type="text/css" media="all" />
@@ -144,10 +145,15 @@
 <div class="container">
 
 {% block HEADER %}
-    <header role="banner">
+    <header role="banner"class='image_carousel_1' data-current-picture-id='1' data-number-of-pictures='5'>
+    <img class='carousel-image' src='{% static "ep2018/img/carousel/castle.jpg" %}'>
+    <img class='carousel-image' src='{% static "ep2018/img/carousel/town.jpg" %}'>  
+    <img class='carousel-image' src='{% static "ep2018/img/carousel/lake.jpg" %}'>  
+    <img class='carousel-image' class='eicc' src='{% static "ep2018/img/carousel/eicc.jpg" %}'>  
+    <img class='carousel-image' src='{% static "ep2018/img/carousel/trees.jpg" %}'> 
         <div class="grid-container">
             <div class="grid-60 prefix-20">
-                <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}p6/images/europython-2018-logo-white-bg.png" alt="EuroPython 2018" ></a></div>
+                <div class="branding"><a href="/" title="Home"><img src="{{STATIC_URL}}ep2018/img/ep2018-logo-white-bg.png" width=500 alt="EuroPython 2018" ></a></div>
             </div>
         </div><!-- /grid-container -->
     </header>
@@ -232,5 +238,6 @@
         // ]]>
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/vendor/retina.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}ep2018/js/carousel.js"></script>
 </body>
 </html>
