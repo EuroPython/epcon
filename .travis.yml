@@ -11,4 +11,4 @@ python:
 install:
   - pip install -r requirements-dev.txt
 
-script: "py.test"
+script: "py.test -c pytest_ci.ini"
