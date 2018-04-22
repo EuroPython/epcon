@@ -15,6 +15,7 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
+from django.utils.deconstruct import deconstructible
 
 from common.django_urls import UrlMixin
 from model_utils import Choices
@@ -234,16 +235,30 @@ class MultilingualContent(models.Model):
 
     objects = MultilingualContentManager()
 
-def _fs_upload_to(subdir, attr=None, package='conference'):
-    if attr is None:
-        attr = lambda i: i.slug
-    def wrapper(instance, filename):
-        fpath = os.path.join(package, subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
+
+@deconstructible
+class _fs_upload_to(object):
+    """Deconstructible class to avoid django migrations' limitations on
+    python2. See https://code.djangoproject.com/ticket/22999 """
+
+    def __init__(self, subdir, attr=None, package='conference'):
+        self.subdir = subdir
+        self.attr = attr if attr is not None else 'slug'
+        self.package = package
+
+    def __call__(self, instance, filename):
+        fpath = os.path.join(
+            self.package,
+            self.subdir,
+            '%s%s' % (getattr(instance, self.attr), os.path.splitext(filename)[1].lower())
+        )
+
         ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+
         if os.path.exists(ipath):
             os.unlink(ipath)
+
         return fpath
-    return wrapper
 
 def postSaveResizeImageHandler(sender, **kwargs):
     tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
@@ -1335,7 +1350,7 @@ class Quote(models.Model):
     conference = models.CharField(max_length=20)
     text = models.TextField()
     activity = models.CharField(max_length=50, blank=True)
-    image = models.ImageField(upload_to=_fs_upload_to('quote', attr=lambda i: slugify(i.who)), blank=True)
+    image = models.ImageField(upload_to=_fs_upload_to('quote', 'who'), blank=True)
 
     class Meta:
         ordering = ['conference', 'who']

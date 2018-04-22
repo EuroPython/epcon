@@ -2,15 +2,12 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-from django.conf import settings
 import common.django_urls
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('conference', '__first__'),
     ]
 
     operations = [
@@ -42,8 +39,6 @@ class Migration(migrations.Migration):
                 ('items_per_usage', models.PositiveIntegerField(default=0, help_text=b"numero di righe d'ordine su cui questo coupon ha effetto")),
                 ('description', models.CharField(max_length=100, blank=True)),
                 ('value', models.CharField(help_text=b'importo, eg: 10, 15%, 8.5', max_length=8)),
-                ('conference', models.ForeignKey(to='conference.Conference')),
-                ('fares', models.ManyToManyField(to='conference.Fare', blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -65,6 +60,8 @@ class Migration(migrations.Migration):
                 ('emit_date', models.DateField()),
                 ('payment_date', models.DateField(null=True, blank=True)),
                 ('price', models.DecimalField(max_digits=6, decimal_places=2)),
+                ('issuer', models.TextField()),
+                ('invoice_copy_full_html', models.TextField()),
                 ('note', models.TextField(help_text=b"Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge", blank=True)),
             ],
         ),
@@ -74,7 +71,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('code', models.CharField(unique=True, max_length=20)),
                 ('date', models.DateTimeField(auto_now_add=True)),
-                ('invoice', models.ForeignKey(to='assopy.Invoice', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -90,9 +86,9 @@ class Migration(migrations.Migration):
                 ('billing_notes', models.TextField(blank=True)),
                 ('card_name', models.CharField(max_length=200, verbose_name='Card name')),
                 ('vat_number', models.CharField(max_length=22, verbose_name='Vat Number', blank=True)),
-                ('cf_code', models.CharField(max_length=16, verbose_name=b'Codice Fiscale', blank=True)),
+                ('cf_code', models.CharField(max_length=16, verbose_name='Fiscal Code', blank=True)),
                 ('address', models.CharField(max_length=150, verbose_name='Address', blank=True)),
-                ('country', models.ForeignKey(verbose_name='Country', to='assopy.Country', null=True)),
+                ('stripe_charge_id', models.CharField(max_length=64, unique=True, null=True, verbose_name='Charge Stripe ID')),
             ],
         ),
         migrations.CreateModel(
@@ -102,8 +98,6 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=10)),
                 ('price', models.DecimalField(max_digits=6, decimal_places=2)),
                 ('description', models.CharField(max_length=100, blank=True)),
-                ('order', models.ForeignKey(to='assopy.Order')),
-                ('ticket', models.OneToOneField(null=True, blank=True, to='conference.Ticket')),
             ],
         ),
         migrations.CreateModel(
@@ -116,16 +110,12 @@ class Migration(migrations.Migration):
                 ('reason', models.CharField(max_length=200, blank=True)),
                 ('internal_note', models.TextField(help_text=b'For internal use (not shown to the user)', blank=True)),
                 ('reject_reason', models.TextField(help_text=b'Included in the email sent to the user', blank=True)),
-                ('credit_note', models.OneToOneField(null=True, blank=True, to='assopy.CreditNote')),
-                ('invoice', models.ForeignKey(to='assopy.Invoice', null=True)),
             ],
         ),
         migrations.CreateModel(
             name='RefundOrderItem',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('orderitem', models.ForeignKey(to='assopy.OrderItem')),
-                ('refund', models.ForeignKey(to='assopy.Refund')),
             ],
         ),
         migrations.CreateModel(
@@ -146,10 +136,8 @@ class Migration(migrations.Migration):
                 ('assopy_id', models.CharField(max_length=22, unique=True, null=True)),
                 ('card_name', models.CharField(help_text='The name used for orders and invoices', max_length=200, verbose_name='Card name', blank=True)),
                 ('vat_number', models.CharField(help_text='Your VAT number if applicable', max_length=22, verbose_name='Vat Number', blank=True)),
-                ('cf_code', models.CharField(help_text='Needed only for Italian customers', max_length=16, verbose_name=b'Codice Fiscale', blank=True)),
+                ('cf_code', models.CharField(help_text='Needed only for Italian customers', max_length=16, verbose_name='Fiscal Code', blank=True)),
                 ('address', models.CharField(help_text='Insert the full address, including city and zip code. We will help you through google.', max_length=150, verbose_name='Address and City', blank=True)),
-                ('country', models.ForeignKey(verbose_name='Country', blank=True, to='assopy.Country', null=True)),
-                ('user', models.OneToOneField(related_name='assopy_user', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -165,7 +153,6 @@ class Migration(migrations.Migration):
                 ('photo', models.URLField()),
                 ('phoneNumber', models.CharField(max_length=20, blank=True)),
                 ('address', models.TextField(blank=True)),
-                ('user', models.ForeignKey(related_name='identities', to='assopy.User')),
             ],
         ),
         migrations.CreateModel(
@@ -175,7 +162,6 @@ class Migration(migrations.Migration):
                 ('service', models.CharField(max_length=20)),
                 ('token', models.CharField(max_length=200)),
                 ('secret', models.CharField(max_length=200)),
-                ('user', models.ForeignKey(related_name='oauth_infos', to='assopy.User')),
             ],
         ),
         migrations.CreateModel(
@@ -191,66 +177,6 @@ class Migration(migrations.Migration):
             name='VatFare',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('fare', models.ForeignKey(to='conference.Fare')),
-                ('vat', models.ForeignKey(to='assopy.Vat')),
             ],
-        ),
-        migrations.AddField(
-            model_name='vat',
-            name='fares',
-            field=models.ManyToManyField(to='conference.Fare', null=True, through='assopy.VatFare', blank=True),
-        ),
-        migrations.AddField(
-            model_name='token',
-            name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
-        ),
-        migrations.AddField(
-            model_name='refund',
-            name='items',
-            field=models.ManyToManyField(to='assopy.OrderItem', through='assopy.RefundOrderItem'),
-        ),
-        migrations.AddField(
-            model_name='orderitem',
-            name='vat',
-            field=models.ForeignKey(to='assopy.Vat'),
-        ),
-        migrations.AddField(
-            model_name='order',
-            name='user',
-            field=models.ForeignKey(related_name='orders', to='assopy.User'),
-        ),
-        migrations.AddField(
-            model_name='invoicelog',
-            name='order',
-            field=models.ForeignKey(to='assopy.Order', null=True),
-        ),
-        migrations.AddField(
-            model_name='invoice',
-            name='order',
-            field=models.ForeignKey(related_name='invoices', to='assopy.Order'),
-        ),
-        migrations.AddField(
-            model_name='invoice',
-            name='vat',
-            field=models.ForeignKey(to='assopy.Vat'),
-        ),
-        migrations.AddField(
-            model_name='creditnote',
-            name='invoice',
-            field=models.ForeignKey(related_name='credit_notes', to='assopy.Invoice'),
-        ),
-        migrations.AddField(
-            model_name='coupon',
-            name='user',
-            field=models.ForeignKey(blank=True, to='assopy.User', null=True),
-        ),
-        migrations.AlterUniqueTogether(
-            name='vatfare',
-            unique_together=set([('fare', 'vat')]),
-        ),
-        migrations.AlterUniqueTogether(
-            name='refundorderitem',
-            unique_together=set([('orderitem', 'refund')]),
         ),
     ]

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('django_comments', '0003_add_submit_date_index'),
-        ('contenttypes', '0001_initial'),
     ]
 
     operations = [
@@ -25,11 +25,7 @@ class Migration(migrations.Migration):
                 ('parent', models.ForeignKey(related_name='children', blank=True, to='hcomments.HComment', null=True)),
             ],
             options={
-                'ordering': ('submit_date',),
                 'abstract': False,
-                'verbose_name': 'comment',
-                'verbose_name_plural': 'comments',
-                'permissions': [('can_moderate', 'Can moderate comments')],
             },
             bases=('django_comments.comment', models.Model),
         ),
@@ -41,9 +37,6 @@ class Migration(migrations.Migration):
                 ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.AlterUniqueTogether(
             name='threadsubscription',
