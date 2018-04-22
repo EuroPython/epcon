@@ -177,7 +177,7 @@ class TalkBaseForm(forms.Form):
         widget=forms.TextInput(attrs={'size': 40}),
         required=False)
     abstract = forms.CharField(
-        max_length=1500,
+        max_length=5000,
         label=_('Abstract (longer version)'),
         help_text=_('<p>Description of the session proposal you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
         widget=MarkEditWidget)
