@@ -1,46 +1,27 @@
-/* This is customisation file for ep2018, build on top of p6/all.css 
+/* This is customisation file for ep2018, build on top of p6/all.css
  * It's included inside p5_homepage.html right below p6/all.css so that way
  * we can override all the settings here */
 
-header {
+.container > header {
     padding: 2em 0 30%;
     background-image: url('../img/carousel/castle.jpg');
     background-size: cover;
-    background-position: center -200px;
+    background-position: center -10%;
 }
 
-@media (max-width: 1024px) {
-    /* We want slightly different proportions on smaller screens – taller
-     * header and different background position for default background
-     * (castle.jpg) */
-    header {
-        background-position: top;
-        padding: 2em 0 50%;
-    }
+.home__branding {
+    width: 50%;
+    margin: 0 auto;
+    min-width: 320px;
 }
 
 section.discover-europython {
     background-image: none;
 }
 
-header img.carousel-image {
-    position: absolute;                           
-    top: 0;                                       
-    left: 0;                                      
-    min-width: 100%;                              
-    max-width: 250%;                              
-    height: auto;                                 
-    z-index: -1;                                  
-    display: none;                                
-    /* center/reposition the background image */    
-    left: 50%;                                    
-    transform: translateX(-50%) translateY(-250px);
-    top: 20px;                                    
-}                                                 
-
-.page {                                           
-    background: rgba(255, 255, 255, 0.95);        
-}                                                 
+.page {
+    background: rgba(255, 255, 255, 0.95);
+}
 
 .bg-red {
     background: #006e44;
