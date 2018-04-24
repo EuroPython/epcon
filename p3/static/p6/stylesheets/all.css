@@ -2205,7 +2205,6 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 .help-text p:last-child { margin-bottom: 0; }
 
 .content-tpl header { padding: 1.5em; }
-.content-tpl .branding img { height: 100px; }
 
 .calendar h4 { text-align: left; }
 
