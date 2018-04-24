@@ -6,7 +6,7 @@
     padding: 2em 0 30%;
     background-image: url('../img/carousel/castle.jpg');
     background-size: cover;
-    background-position: center -10%;
+    background-position: center 10%;
 }
 
 .home__branding {
