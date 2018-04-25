@@ -41,6 +41,7 @@ import requests
 from lxml import etree as ET
 
 
+HTTP_SUCCESS = 200
 DAILY_ECB_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 CURRENCY_CACHE_KEY = 'currency_xrates'
 CURRENCY_CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours
@@ -83,6 +84,7 @@ def fetch_latest_ecb_exrates():
     Example of the XML (see EXAMPLE_XML constant)
     """
     response = requests.get(DAILY_ECB_URL)
+    assert response.status_code == HTTP_SUCCESS, response.status_code
     info = ET.fromstring(response.content)[2][0]
     datestamp = datetime.strptime(info.attrib['time'], "%Y-%m-%d").date()
     rates = [x.attrib for x in info]
