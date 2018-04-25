@@ -771,17 +771,22 @@ def _order_feedback(sender, **kwargs):
 
 order_created.connect(_order_feedback)
 
+
 class InvoiceLog(models.Model):
     code =  models.CharField(max_length=20, unique=True)
     order = models.ForeignKey(Order, null=True)
     invoice = models.ForeignKey('Invoice', null=True)
     date = models.DateTimeField(auto_now_add=True)
 
+
 class InvoiceManager(models.Manager):
     pass
 
 
 class Invoice(models.Model):
+
+    PLACEHOLDER_EXRATE_DATE = date(2000, 1, 1)
+
     order = models.ForeignKey(Order, related_name='invoices')
     code = models.CharField(max_length=20, null=True, unique=True)
     assopy_id = models.CharField(max_length=22, unique=True,
@@ -806,7 +811,7 @@ class Invoice(models.Model):
         # remove after testing
         default=Decimal("1"),
     )
-    exchange_rate_date = models.DateField()
+    exchange_rate_date = models.DateField(default=PLACEHOLDER_EXRATE_DATE)
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
