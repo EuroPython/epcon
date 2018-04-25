@@ -15,6 +15,9 @@
     min-width: 320px;
 }
 
+.content-tpl .container > header { padding: 20px; }
+.content-tpl .container > header img { height: 150px; }
+
 section.discover-europython {
     background-image: none;
 }
