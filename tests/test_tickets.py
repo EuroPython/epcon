@@ -11,16 +11,21 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
 
-from django_factory_boy import auth as auth_factories
+# from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
+import responses
 
 from assopy.models import Vat, Order, Country, Refund, Invoice
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+# from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
+)
+from conference.exchangerates import (
+    DAILY_ECB_URL,
+    EXAMPLE_ECB_DAILY_XML,
 )
 from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
@@ -199,7 +204,13 @@ class TestBuyingTickets(TestCase):
             order = Order.objects.get()
             assert order.total() == 3000
             assert not order._complete
-            order.confirm_order(date.today())
+
+            with responses.RequestsMock() as rsps:
+                # mocking responses for the invoice VAT exchange rate feature
+                rsps.add(responses.GET, DAILY_ECB_URL,
+                         body=EXAMPLE_ECB_DAILY_XML)
+                order.confirm_order(date.today())
+
             assert order._complete
 
             response = self.client.get(my_profile_url)
@@ -422,7 +433,10 @@ class TestTicketManagementScenarios(TestCase):
             self.client.post(self.ticket_url, {'refund': 'asdf'})
 
         assert Invoice.objects.all().count() == 0
-        self.order.confirm_order(timezone.now().date())
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            self.order.confirm_order(timezone.now().date())
         assert Invoice.objects.all().count() == 1
 
         self.client.post(self.ticket_url, {'refund': 'asdf'})

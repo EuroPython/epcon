@@ -408,7 +408,10 @@ def test_if_invoice_stores_information_about_the_seller(client):
     with freeze_time("2018-01-01"):
         # We need to log in again after every time travel, just in case.
         client.login(email='joedoe@example.com', password='password123')
-        invoice = create_order_and_invoice(user.assopy_user, fare)
+        with responses.RequestsMock() as rsps:
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            invoice = create_order_and_invoice(user.assopy_user, fare)
+
         assert invoice.code == "I/18.0001"
         assert invoice.emit_date == date(2018, 1, 1)
         assert invoice.issuer == EPS_18
