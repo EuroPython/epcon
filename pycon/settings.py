@@ -600,6 +600,20 @@ CONFERENCE_TALK_SUBCOMMUNITY = (
     ('pydata', _('PyData')),
 )
 
+CONFERENCE_TALK_DOMAIN = (
+    ('business_track', _('Business Track')),
+    ('devops', _('DevOps')),
+    ('django', _('Django Track')),
+    ('education', _('Educational Track')),
+    ('general', _('General Python')),
+    ('hw_iot', _('Hardware/IoT Track')),
+    ('pydata', _('PyData Track')),
+    ('science', _('Science Track')),
+    ('web', _('Web Track')),
+    ('', 'None of the above')
+)
+
+
 ### Ticket information
 
 # T-shirt sizes
@@ -721,7 +735,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
     tickets = models.TicketConference.objects \
               .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
                       assigned_to=user.email)
-                      
+
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
     #tickets = models.TicketConference.objects \

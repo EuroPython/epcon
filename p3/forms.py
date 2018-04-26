@@ -92,10 +92,10 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
     )
 
 
-    sub_community = forms.ChoiceField(
-        label=_('Sub community'),
-        help_text=_('Select the sub community this talk is intended for, if any.'),
-        choices=models.TALK_SUBCOMMUNITY,
+    domain = forms.ChoiceField(
+        label=_('Domain / Track'),
+        help_text=_('Select the domain of the talk, this will help us with the conference scheduling.'),
+        choices=settings.CONFERENCE_TALK_DOMAIN,
         initial='',
         required=False)
 
@@ -122,9 +122,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
         # Set additional fields added in this form (compared to
         # cforms.SubmissionForm)
-        models.P3Talk.objects\
-            .create(talk=talk,
-                    sub_community=data['sub_community'])
+        models.P3Talk.objects.create(talk=talk)
+
         return talk
 
 

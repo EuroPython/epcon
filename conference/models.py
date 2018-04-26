@@ -637,6 +637,12 @@ class Talk(models.Model, UrlMixin):
     training_available = models.BooleanField(default=False)
     type = models.CharField(max_length=5, choices=TALK_TYPE, default='t_30')
 
+    domain = models.CharField(
+        max_length=20,
+        choices=dsettings.CONFERENCE_TALK_DOMAIN,
+        default=''
+    )
+
     #def _talk_duration(self):
     #    "Returns talk duration"
     #    duration = self.type
