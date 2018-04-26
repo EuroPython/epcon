@@ -155,24 +155,9 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     type = P3SubmissionForm.base_fields['type']
-    sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
-
-    def __init__(self, *args, **kwargs):
-        super(P3TalkForm, self).__init__(*args, **kwargs)
-        if self.instance:
-            #self.fields['duration'].initial = self.instance.duration
-            self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
-
-    def save(self, *args, **kwargs):
-        talk = super(P3TalkForm, self).save(*args, **kwargs)
-        talk.save()
-        talk.p3_talk.sub_community = self.cleaned_data['sub_community']
-        talk.p3_talk.save()
-        return talk
-
 
 class P3SpeakerForm(cforms.SpeakerForm):
     bio = forms.CharField(
