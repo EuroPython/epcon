@@ -4,6 +4,8 @@ import os
 import os.path
 import sys
 
+from model_utils import Choices
+
 # Configure DEBUG settings
 if os.environ.get('DEBUG') == 'True':
     DEBUG = True
@@ -600,7 +602,7 @@ CONFERENCE_TALK_SUBCOMMUNITY = (
     ('pydata', _('PyData')),
 )
 
-CONFERENCE_TALK_DOMAIN = (
+CONFERENCE_TALK_DOMAIN = Choices(
     ('business_track', _('Business Track')),
     ('devops', _('DevOps')),
     ('django', _('Django Track')),
