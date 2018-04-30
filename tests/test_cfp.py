@@ -382,8 +382,7 @@ class TestCFP(TestCase):
         assert Tag.objects.count() == 0
         self.client.login(email='joedoe@example.com', password='password123')
 
-        VALIDATION_SUCCESSFUL_303 = 303
-
+        VALIDATION_SUCCESSFUL_302 = 302
         abstract = 'aaaaaaaaaaaa'
 
         talk_proposal = {
@@ -404,9 +403,8 @@ class TestCFP(TestCase):
             "video_agreement": True,
         }
 
-        profile_url = reverse("conference-myself-profile")
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         talk = Talk.objects.first()
 
