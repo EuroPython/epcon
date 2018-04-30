@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
 from __future__ import with_statement
 
-import random
-import urllib
+from datetime import date
 from decimal import Decimal
-
 import os.path
+import random
+
 from django import forms
 from django import http
 from django.conf import settings as dsettings
@@ -13,12 +13,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 
 from common.decorators import render_to_json
@@ -352,16 +352,18 @@ def paper_submission(request):
 
     conf = models.Conference.objects.current()
 
-    # If there is no CFP, we raise a HTTP 404
     if not conf.cfp_start or not conf.cfp_end:
-        raise http.Http404()
+        return TemplateResponse(request,
+                                "conference/cfp/unkown_cfp_status.html")
 
-    # the CfP is closed
-    if not conf.cfp():
-        if settings.CFP_CLOSED:
-            return redirect(settings.CFP_CLOSED)
-        else:
-            raise http.Http404()
+    if date.today() < conf.cfp_start:
+        return TemplateResponse(request,
+                                "conference/cfp/cfp_not_started.html")
+
+    if date.today() > conf.cfp_end:
+        return TemplateResponse(request,
+                                "conference/cfp/cfp_already_closed.html")
+
 
     if speaker:
         proposed = list(speaker.talk_set.proposed(conference=settings.CONFERENCE))

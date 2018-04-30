@@ -3,7 +3,7 @@
 from datetime import timedelta
 from httplib import (
     OK as HTTP_OK_200,
-    NOT_FOUND as HTTP_NOT_FOUND_404,
+    # NOT_FOUND as HTTP_NOT_FOUND_404,
     FOUND as HTTP_REDIRECT_302
 )
 
@@ -58,22 +58,20 @@ class TestCFP(TestCase):
         self.conference.save()
         self.client.login(email='joedoe@example.com', password='password123')
 
-        # TODO(artcz) - this test is correct but I'd expect a different
-        # behaviour than 404 here. Something like a template saying "Sorry CFP
-        # is not yet opened"
         response = self.client.get(self.form_url, follow=True)
-        assert response.status_code == HTTP_NOT_FOUND_404
+        assert response.status_code == HTTP_OK_200
+        self.assertTemplateUsed(response,
+                                "conference/cfp/cfp_not_started.html")
 
     def test_accessing_cfp_form_after_CFP_is_closed(self):
         self.conference.cfp_end = timezone.now() - timedelta(days=1)
         self.conference.save()
         self.client.login(email='joedoe@example.com', password='password123')
 
-        # TODO(artcz) - this test is correct but I'd expect a different
-        # behaviour than 404 here. Something like a template saying "Sorry CFP
-        # is closed"
         response = self.client.get(self.form_url, follow=True)
-        assert response.status_code == HTTP_NOT_FOUND_404
+        assert response.status_code == HTTP_OK_200
+        self.assertTemplateUsed(response,
+                                "conference/cfp/cfp_already_closed.html")
 
     def test_accessing_cfp_form_while_cfp_is_live(self):
         self.client.login(email='joedoe@example.com', password='password123')
@@ -234,7 +232,6 @@ class TestCFP(TestCase):
             "video_agreement": True,
         }
 
-        profile_url = reverse("conference-myself-profile")
         response = self.client.post(self.form_url, talk_proposal)
         assert response.status_code == VALIDATION_SUCCESSFUL_303
 
@@ -293,7 +290,6 @@ class TestCFP(TestCase):
             "video_agreement": True,
         }
 
-        profile_url = reverse("conference-myself-profile")
         response = self.client.post(self.form_url, talk_proposal)
         assert response.status_code == VALIDATION_SUCCESSFUL_303
 
@@ -354,7 +350,6 @@ class TestCFP(TestCase):
             "video_agreement": True,
         }
 
-        profile_url = reverse("conference-myself-profile")
         response = self.client.post(self.form_url, talk_proposal)
         assert response.status_code == VALIDATION_SUCCESSFUL_303
 
