@@ -511,10 +511,11 @@ class TalkManager(models.Manager):
             return qs
 
     def createFromTitle(self, title, sub_title, conference, speaker, prerequisites, abstract_short, abstract_extra,
-        status='proposed', language='en', level='beginner', training_available=False, type='t_30'):
+        status='proposed', language='en', level='beginner', domain='', training_available=False, type='t_30'):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
+        talk.domain = domain
         talk.sub_title = sub_title
         talk.prerequisites = prerequisites
         talk.abstract_short = abstract_short
@@ -636,6 +637,12 @@ class Talk(models.Model, UrlMixin):
         choices=TALK_LEVEL)
     training_available = models.BooleanField(default=False)
     type = models.CharField(max_length=5, choices=TALK_TYPE, default='t_30')
+
+    domain = models.CharField(
+        max_length=20,
+        choices=dsettings.CONFERENCE_TALK_DOMAIN,
+        default=''
+    )
 
     #def _talk_duration(self):
     #    "Returns talk duration"

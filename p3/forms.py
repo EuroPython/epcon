@@ -91,11 +91,10 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         help_text=_('We will be recording the conference talks and publish them on the EuroPython YouTube channel and archive.org.'),
     )
 
-
-    sub_community = forms.ChoiceField(
-        label=_('Sub community'),
-        help_text=_('Select the sub community this talk is intended for, if any.'),
-        choices=models.TALK_SUBCOMMUNITY,
+    domain = forms.ChoiceField(
+        label=_('Domain / Track'),
+        help_text=_('Select the domain of the talk, this will help us with the conference scheduling.'),
+        choices=settings.CONFERENCE_TALK_DOMAIN,
         initial='',
         required=False)
 
@@ -122,9 +121,8 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
         # Set additional fields added in this form (compared to
         # cforms.SubmissionForm)
-        models.P3Talk.objects\
-            .create(talk=talk,
-                    sub_community=data['sub_community'])
+        models.P3Talk.objects.create(talk=talk)
+
         return talk
 
 
@@ -136,7 +134,13 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
     video_agreement = P3SubmissionForm.base_fields['video_agreement']
     type = P3SubmissionForm.base_fields['type']
-    sub_community = P3SubmissionForm.base_fields['sub_community']
+    domain = forms.ChoiceField(
+        label=_('Domain / Track'),
+        help_text=_('Select the domain of the talk, this will help us with the conference scheduling.'),
+        choices=settings.CONFERENCE_TALK_DOMAIN,
+        initial='',
+        required=False)
+
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', )
@@ -144,46 +148,16 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
     def __init__(self, *args, **kwargs):
         super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)
         if self.instance:
-            if self.instance.id:
-                self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
             # The speaker has already agreed to these when submitting
             # the first talk, so preset them
             self.fields['slides_agreement'].initial = True
             self.fields['video_agreement'].initial = True
 
-    def save(self, *args, **kwargs):
-        talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
-        talk.save()
-        try:
-            talk.p3_talk.sub_community = self.cleaned_data['sub_community']
-            talk.p3_talk.save()
-        except models.P3Talk.DoesNotExist:
-            models.P3Talk.objects\
-                .create(talk=talk,
-                        sub_community=self.cleaned_data['sub_community'])
-        return talk
-
-
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     type = P3SubmissionForm.base_fields['type']
-    sub_community = P3SubmissionForm.base_fields['sub_community']
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
-
-    def __init__(self, *args, **kwargs):
-        super(P3TalkForm, self).__init__(*args, **kwargs)
-        if self.instance:
-            #self.fields['duration'].initial = self.instance.duration
-            self.fields['sub_community'].initial = self.instance.p3_talk.sub_community
-
-    def save(self, *args, **kwargs):
-        talk = super(P3TalkForm, self).save(*args, **kwargs)
-        talk.save()
-        talk.p3_talk.sub_community = self.cleaned_data['sub_community']
-        talk.p3_talk.save()
-        return talk
-
 
 class P3SpeakerForm(cforms.SpeakerForm):
     bio = forms.CharField(

@@ -329,6 +329,7 @@ class SubmissionForm(forms.Form):
             speaker=speaker,
             status='proposed',
             language=data['language'],
+            domain=data['domain'],
             level=data['level'],
             type=data['type']
         )

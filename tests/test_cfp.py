@@ -381,3 +381,37 @@ class TestCFP(TestCase):
         talk = Talk.objects.first()
 
         assert talk.abstracts.all()[0].body == abstract
+
+    def test_allows_talk_domain(self):
+        assert Tag.objects.count() == 0
+        self.client.login(email='joedoe@example.com', password='password123')
+
+        VALIDATION_SUCCESSFUL_303 = 303
+
+        abstract = 'aaaaaaaaaaaa'
+
+        talk_proposal = {
+            "type": "t_30",
+            'first_name': 'Joe',
+            'last_name': 'Doe',
+            "birthday": "2018-02-26",
+            'bio': "Python developer",
+            "title": "Testing EPCON CFP",
+            "abstract_short": "Short talk about testing CFP",
+            "abstract": abstract,
+            "level": "advanced",
+            "phone": "41331237",
+            "domain": "django",
+            "tags": "django, testing, slides",
+            "personal_agreement": True,
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        profile_url = reverse("conference-myself-profile")
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_303
+
+        talk = Talk.objects.first()
+
+        assert talk.domain == 'django'
