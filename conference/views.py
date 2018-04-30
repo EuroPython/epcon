@@ -389,17 +389,24 @@ def paper_submission(request):
             else:
                 talk = form.save(speaker=speaker)
             messages.info(request, 'Your talk has been submitted, thank you!')
-            return HttpResponseRedirectSeeOther(reverse('conference-myself-profile'))
+            return redirect(reverse('cfp-thank-you-for-proposal'))
     else:
         if not proposed:
             form = fc(user=request.user)
         else:
             form = fc()
+
     return render_to_response('conference/paper_submission.html', {
         'speaker': speaker,
         'form': form,
         'proposed_talks': proposed,
     }, context_instance=RequestContext(request))
+
+
+def cfp_thank_you_for_proposal(request):
+    return TemplateResponse(
+        request, "conference/cfp/thank_you_for_proposal.html"
+    )
 
 
 def filter_talks_in_context(request, talks, voting_allowed):

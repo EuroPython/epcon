@@ -89,7 +89,7 @@ class TestCFP(TestCase):
             self.user.speaker
 
         VALIDATION_FAILED_200     = HTTP_OK_200
-        VALIDATION_SUCCESSFUL_303 = 303
+        VALIDATION_SUCCESSFUL_302 = 302
 
         required_proposal_fields = [
             'title', 'abstract', 'abstract_short', 'level', 'tags',
@@ -154,10 +154,11 @@ class TestCFP(TestCase):
         }
 
         profile_url = reverse("conference-myself-profile")
+        thank_you_url = reverse('cfp-thank-you-for-proposal')
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
-        self.assertRedirects(response, profile_url,
-                             status_code=303, fetch_redirect_response=False)
+        self.assertRedirects(response, thank_you_url,
+                             status_code=VALIDATION_SUCCESSFUL_302,
+                             fetch_redirect_response=False)
         talk_url = Talk.objects.get().get_absolute_url()
         assert talk_url == "/conference/talks/testing-epcon-cfp"
 
@@ -189,7 +190,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
         assert Talk.objects.all().count() == 2
 
         # check the form again
@@ -213,7 +214,7 @@ class TestCFP(TestCase):
         assert Tag.objects.count() == 0
         self.client.login(email='joedoe@example.com', password='password123')
 
-        VALIDATION_SUCCESSFUL_303 = 303
+        VALIDATION_SUCCESSFUL_302 = 302
 
         talk_proposal = {
             "type": "t_30",
@@ -233,7 +234,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         assert ConferenceTag.objects.count() == 0
         assert Tag.objects.count() == 0
@@ -257,7 +258,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         assert ConferenceTag.objects.count() == 0
         assert Tag.objects.count() == 0
@@ -271,7 +272,7 @@ class TestCFP(TestCase):
         assert Tag.objects.count() == 0
         self.client.login(email='joedoe@example.com', password='password123')
 
-        VALIDATION_SUCCESSFUL_303 = 303
+        VALIDATION_SUCCESSFUL_302 = 302
 
         talk_proposal = {
             "type": "t_30",
@@ -291,7 +292,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         assert ConferenceTag.objects.count() == 2
         talk = Talk.objects.last()
@@ -314,7 +315,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         assert ConferenceTag.objects.count() == 2
 
@@ -329,7 +330,7 @@ class TestCFP(TestCase):
         assert Tag.objects.count() == 0
         self.client.login(email='joedoe@example.com', password='password123')
 
-        VALIDATION_SUCCESSFUL_303 = 303
+        VALIDATION_SUCCESSFUL_302 = 302
 
         abstract = 'a' * 5000
 
@@ -351,7 +352,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         talk = Talk.objects.first()
 
@@ -371,7 +372,7 @@ class TestCFP(TestCase):
         }
 
         response = self.client.post(self.form_url, talk_proposal)
-        assert response.status_code == VALIDATION_SUCCESSFUL_303
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         talk = Talk.objects.first()
 
