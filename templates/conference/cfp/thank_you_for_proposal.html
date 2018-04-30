@@ -1,8 +1,14 @@
 {% extends "p3/base.html" %}
 
 {% block MAIN_CONTENT %}
-<h1>Thank you for your submission.</h1>
-<p>PLACHOLER: we'll be in touch</p>
-<p>DID YOU KNOW? You can increase your chances of getting through CFP by submitting more talk ideas</p>
-<p><a href='#'>Go back  to your profile</a> or <a href='#'>Submit another proposal</a></p>
+    <section>
+    <div class="grid-container">
+        <div class="grid-100">
+            <h1>Thank you for your proposal!</h1>
+            <p>We will contact you about the results.</p>
+            <p>Did you know that you can increase your chances of getting through CFP by submitting more talk ideas?</p>
+            <p><a href='{% url "conference-myself-profile" %}'>Go back  to your profile</a> or <a href='{% url 'conference-paper-submission' %}'>Submit another proposal</a></p>
+        </div>
+    </div>
+    </section>
 {% endblock MAIN_CONTENT %}
