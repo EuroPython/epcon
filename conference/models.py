@@ -8,7 +8,6 @@ from collections import defaultdict
 from django.conf import settings as dsettings
 from django.core import exceptions
 from django.core.cache import cache
-from django.db import connection
 from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
@@ -33,6 +32,9 @@ from taggit.managers import TaggableManager
 import logging
 
 log = logging.getLogger('conference.tags')
+
+
+CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
 
 
 # ConferenceTag and ConferenceTaggedItem are used to create a "namesapce"
@@ -74,18 +76,22 @@ class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
         verbose_name = _("Tagged Item")
         verbose_name_plural = _("Tagged Items")
 
+
 class ConferenceManager(models.Manager):
     def current(self):
-        key = 'CONFERENCE_CURRENT'
-        data = cache.get(key)
+        data = cache.get(CURRENT_CONFERENCE_CACHE_KEY)
+        a_week = 60 * 60 * 24 * 7
+
         if data is None:
             data = self.get(code=dsettings.CONFERENCE_CONFERENCE)
-            cache.set(key, data, 60*60*24*7)
+            cache.set(CURRENT_CONFERENCE_CACHE_KEY, data, a_week)
+
         return data
 
     @classmethod
     def clear_cache(cls, sender, **kwargs):
-        cache.delete('CONFERENCE_CURRENT')
+        cache.delete(CURRENT_CONFERENCE_CACHE_KEY)
+
 
 class Conference(models.Model):
     code = models.CharField(max_length=10, primary_key=True)
@@ -101,6 +107,14 @@ class Conference(models.Model):
 
     def __unicode__(self):
         return self.code
+
+    def save(self, *args, **kwargs):
+        """
+        Every time we make a change to any Conference, we should clear the
+        CONFERENCE_CURRENT cache.
+        """
+        cache.delete(CURRENT_CONFERENCE_CACHE_KEY)
+        super(Conference, self).save(*args, **kwargs)
 
     def days(self):
         output = []
