@@ -149,8 +149,8 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
         required=False)
 
     domain_level = forms.ChoiceField(
-        label=_('Domain Level'),
-        help_text=_('Select how advanced your domain level is'),
+        label=_('Domain Expertise'),
+        help_text=_('The domain expertise your audience should have to follow along (e.g. how much should one know about DevOps or Data Science already)'),
         choices=cmodels.TALK_LEVEL,
         initial='',
         required=False)
