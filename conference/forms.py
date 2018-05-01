@@ -196,11 +196,18 @@ class TalkBaseForm(forms.Form):
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
         choices=settings.TALK_SUBMISSION_LANGUAGES,
         required=False)
+
     level = forms.TypedChoiceField(
-        label=_('Audience level'),
-        help_text=_('Please choose a level suitable for the session. People attending the session will expect their skill level to be expected, so a talk for advanced Python users should have advanced level content.'),
+        label=_('Python Skill level'),
+        help_text=_('How experienced should the audience be in python'),
         choices=models.TALK_LEVEL,
-        initial='beginner')
+        initial=models.TALK_LEVEL.beginner)
+
+    domain_level = forms.TypedChoiceField(
+        label=_('Domain Expertise'),
+        help_text=_('The domain expertise your audience should have to follow along (e.g. how much should one know about DevOps or Data Science already)'),
+        choices=models.TALK_LEVEL,
+        initial=models.TALK_LEVEL.beginner)
 
     # Talk tags
     tags = TagField(
@@ -265,6 +272,7 @@ class SubmissionForm(forms.Form):
     prerequisites = TalkBaseForm.base_fields['prerequisites']
     language = TalkBaseForm.base_fields['language']
     level = TalkBaseForm.base_fields['level']
+    domain_level = TalkBaseForm.base_fields['level']
     tags = TalkBaseForm.base_fields['tags']
     abstract_extra = TalkBaseForm.base_fields['abstract_extra']
 
@@ -330,6 +338,7 @@ class SubmissionForm(forms.Form):
             status='proposed',
             language=data['language'],
             domain=data['domain'],
+            domain_level=data['domain_level'],
             level=data['level'],
             type=data['type']
         )

@@ -16,7 +16,13 @@ from django.utils import timezone
 from django_factory_boy import auth as auth_factories
 
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
-from conference.models import Conference, Talk, Speaker, ConferenceTag
+from conference.models import (
+    Conference,
+    Talk,
+    Speaker,
+    ConferenceTag,
+    TALK_LEVEL
+)
 from taggit.models import Tag
 
 
@@ -378,7 +384,7 @@ class TestCFP(TestCase):
 
         assert talk.abstracts.all()[0].body == abstract
 
-    def test_allows_talk_domain(self):
+    def test_allows_talk_domain_and_domain_level(self):
         assert Tag.objects.count() == 0
         self.client.login(email='joedoe@example.com', password='password123')
 
@@ -394,9 +400,10 @@ class TestCFP(TestCase):
             "title": "Testing EPCON CFP",
             "abstract_short": "Short talk about testing CFP",
             "abstract": abstract,
-            "level": "advanced",
+            "level": TALK_LEVEL.advanced,
             "phone": "41331237",
             "domain": "django",
+            "domain_level": TALK_LEVEL.intermediate,
             "tags": "django, testing, slides",
             "personal_agreement": True,
             "slides_agreement": True,
@@ -409,3 +416,5 @@ class TestCFP(TestCase):
         talk = Talk.objects.first()
 
         assert talk.domain == 'django'
+        assert talk.domain_level == TALK_LEVEL.intermediate
+        assert talk.level == TALK_LEVEL.advanced
