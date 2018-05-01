@@ -98,6 +98,13 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         initial='',
         required=False)
 
+    domain_level = forms.ChoiceField(
+        label=_('Domain Expertise'),
+        help_text=_('The domain expertise your audience should have to follow along (e.g. how much should one know about DevOps or Data Science already)'),
+        choices=cmodels.TALK_LEVEL,
+        initial=cmodels.TALK_LEVEL.beginner,
+        required=False)
+
     def __init__(self, user, *args, **kwargs):
         data = {}
         data.update(kwargs.get('initial', {}))
@@ -141,6 +148,12 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
         initial='',
         required=False)
 
+    domain_level = forms.ChoiceField(
+        label=_('Domain Level'),
+        help_text=_('Select how advanced your domain level is'),
+        choices=cmodels.TALK_LEVEL,
+        initial='',
+        required=False)
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', )
@@ -152,6 +165,7 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
             # the first talk, so preset them
             self.fields['slides_agreement'].initial = True
             self.fields['video_agreement'].initial = True
+
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     type = P3SubmissionForm.base_fields['type']

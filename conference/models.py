@@ -494,11 +494,12 @@ VIDEO_TYPE = (
     ('download', 'Download'),
 )
 
-TALK_LEVEL = (
+TALK_LEVEL = Choices(
     ('beginner',     _('Beginner')),
     ('intermediate', _('Intermediate')),
     ('advanced',     _('Advanced')),
 )
+
 
 class TalkManager(models.Manager):
     def get_queryset(self):
@@ -524,12 +525,19 @@ class TalkManager(models.Manager):
                 qs = qs.filter(conference=conference)
             return qs
 
-    def createFromTitle(self, title, sub_title, conference, speaker, prerequisites, abstract_short, abstract_extra,
-        status='proposed', language='en', level='beginner', domain='', training_available=False, type='t_30'):
+    def createFromTitle(self, title, sub_title, conference, speaker,
+                        prerequisites, abstract_short, abstract_extra,
+                        status='proposed', language='en',
+                        level=TALK_LEVEL.beginner,
+                        domain_level=TALK_LEVEL.beginner,
+                        domain='',
+                        training_available=False,
+                        type='t_30'):
         slug = slugify(title)
         talk = Talk()
         talk.title = title
         talk.domain = domain
+        talk.domain_level = domain_level
         talk.sub_title = sub_title
         talk.prerequisites = prerequisites
         talk.abstract_short = abstract_short
@@ -633,22 +641,29 @@ class Talk(models.Model, UrlMixin):
 
     abstract_extra = models.TextField(
         verbose_name=_('Talk abstract extra'),
-        help_text=_('<p>Please enter instructions for attendees.</p>'), default="")
+        help_text=_('<p>Please enter instructions for attendees.</p>'),
+        default="")
 
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
-    video_type = models.CharField(max_length=30, choices=VIDEO_TYPE, blank=True)
+    video_type = models.CharField(max_length=30, choices=VIDEO_TYPE,
+                                  blank=True)
     video_url = models.TextField(blank=True)
-    video_file = models.FileField(upload_to=_fs_upload_to('videos'), blank=True)
+    video_file = models.FileField(upload_to=_fs_upload_to('videos'),
+                                  blank=True)
     teaser_video = models.URLField(
         _('Teaser video'),
         blank=True,
         help_text=_('Insert the url for your teaser video'))
     status = models.CharField(max_length=8, choices=TALK_STATUS)
+
+    # TODO: should be renamed to python_level,
+    # because we added also domain_level
     level = models.CharField(
-        _('Audience level'),
+        _('Audience Python level'),
         default='beginner',
         max_length=12,
         choices=TALK_LEVEL)
+
     training_available = models.BooleanField(default=False)
     type = models.CharField(max_length=5, choices=TALK_TYPE, default='t_30')
 
@@ -657,18 +672,18 @@ class Talk(models.Model, UrlMixin):
         choices=dsettings.CONFERENCE_TALK_DOMAIN,
         default=''
     )
+    domain_level = models.CharField(
+        _("Audience Domain Level"),
+        default=TALK_LEVEL.beginner,
+        max_length=12,
+        choices=TALK_LEVEL  # using the same Choices as regular talk level
+    )
 
-    #def _talk_duration(self):
-    #    "Returns talk duration"
-    #    duration = self.type
-    #    return int(duration.split("_")[1])
-    #duration = property(_talk_duration)
-    # Old duration code
-    # Duration of the talk (including the session of Q&A)
     duration = models.IntegerField(
         _('Duration'),
         default=0,
-        help_text=_('This is the duration of the talk. Set to 0 to use the default talk duration.'))
+        help_text=_('This is the duration of the talk. '
+                    'Set to 0 to use the default talk duration.'))
 
     # Suggested Tags, normally, should use a submission model.
     suggested_tags = models.CharField(max_length=100, blank=True)
