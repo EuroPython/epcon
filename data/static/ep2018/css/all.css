@@ -22,10 +22,6 @@ section.discover-europython {
     background-image: none;
 }
 
-.discover-europython div {
-    transition: transform 100ms;
-}
-
 .page {
     background: rgba(255, 255, 255, 0.95);
 }
