@@ -180,12 +180,12 @@ class TalkBaseForm(forms.Form):
         max_length=5000,
         label=_('Abstract (longer version)'),
         help_text=_('<p>Description of the session proposal you are submitting. Be sure to include the goals and any prerequisite required to fully understand it. See the section <em>Submitting Your Talk, Trainings, Helpdesk or Poster</em> of the CFP for further details.</p><p>Suggested size: 1500 chars.</p>'),
-        widget=MarkEditWidget)
+        widget=forms.Textarea)
     abstract_short = forms.CharField(
         max_length=500,
         label=_('Abstract (short version)'),
         help_text=_('<p>We need a short description e.g. for YouTube and other distribution channels with limited space for abstracts. <u>You could just use a shorter version of the long abstract</u>.</p><p>Suggested size: <500 chars.</p>'),
-        widget=MarkEditWidget)
+        widget=forms.Textarea)
     prerequisites = forms.CharField(
         label=_('Prerequisites for attending the session'),
         help_text=_('What should attendees be familiar with already, important for intermediate and advanced talks.<br />E.g. data visualization basics, data analysis'),
@@ -218,7 +218,7 @@ class TalkBaseForm(forms.Form):
     abstract_extra = forms.CharField(
         label=_('Additional information for talk reviewers'),
         help_text=_('<p>Please add anything you may find useful for the review of your session proposal, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
-        widget=MarkEditWidget,
+        widget=forms.Textarea,
         required=False)
 
 # This form is used for new talk submissions and only when the speaker
