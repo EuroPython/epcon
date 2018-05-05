@@ -418,3 +418,28 @@ class TestCFP(TestCase):
         assert talk.domain == 'django'
         assert talk.domain_level == TALK_LEVEL.intermediate
         assert talk.level == TALK_LEVEL.advanced
+
+        # second proposal
+
+        talk_proposal = {
+            "type": "t_45",
+            "title": "More about EPCON testing",
+            "abstract_short": "Longer talk about testing",
+            "abstract": abstract,
+            "level": TALK_LEVEL.intermediate,
+            "tags": "love, testing, slides",
+            "domain": "devops",
+            "domain_level": TALK_LEVEL.advanced,
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
+
+        talk = Talk.objects.first()
+
+        assert talk.abstracts.all()[0].body == abstract
+        assert talk.domain == 'devops'
+        assert talk.domain_level == TALK_LEVEL.advanced
+        assert talk.level == TALK_LEVEL.intermediate
