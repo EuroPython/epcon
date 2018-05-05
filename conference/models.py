@@ -54,6 +54,7 @@ class ConferenceTagManager(models.Manager):
             key = 'usage' if asc else '-usage'
             return self.annotate_with_usage().order_by(key)
 
+
 class ConferenceTag(TagBase):
     objects = ConferenceTagManager()
     category = models.CharField(max_length=50, default='', blank=True)
