@@ -188,7 +188,7 @@ class P3SpeakerForm(cforms.SpeakerForm):
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
-        widget=cforms.MarkEditWidget,)
+        widget=forms.Textarea,)
 
 
 class FormTicket(forms.ModelForm):
@@ -290,7 +290,7 @@ class P3ProfileForm(cforms.ProfileForm):
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
-        widget=cforms.MarkEditWidget,
+        widget=forms.Textarea,
         required=False,)
     tagline = forms.CharField(
         label=_('Tagline'),
@@ -399,7 +399,7 @@ class P3ProfileBioForm(P3ProfileForm):
     bio = forms.CharField(
         label=_('Compact biography'),
         help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
-        widget=cforms.MarkEditWidget,
+        widget=forms.Textarea,
         required=False,)
     class Meta:
         model = cmodels.AttendeeProfile
