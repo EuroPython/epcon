@@ -414,6 +414,9 @@ class TestCFP(TestCase):
         assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         talk = Talk.objects.first()
+        # Checking issue #654 – if talk is accessible after submission
+        response = self.client.get(talk.get_absolute_url())
+        self.assertTemplateUsed(response, "conference/talk.html")
 
         assert talk.domain == 'django'
         assert talk.domain_level == TALK_LEVEL.intermediate
@@ -438,6 +441,9 @@ class TestCFP(TestCase):
         assert response.status_code == VALIDATION_SUCCESSFUL_302
 
         talk = Talk.objects.first()
+        # Checking issue #654 – if talk is accessible after submission
+        response = self.client.get(talk.get_absolute_url())
+        self.assertTemplateUsed(response, "conference/talk.html")
 
         assert talk.abstracts.all()[0].body == abstract
         assert talk.domain == 'devops'

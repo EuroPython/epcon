@@ -1242,6 +1242,7 @@ def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=
     })
     return render_to_string('conference/render_schedule_list.html', ctx)
 
+
 @register.filter
 def markdown2(text, arg=''):
     from markdown2 import markdown
@@ -1254,9 +1255,11 @@ def markdown2(text, arg=''):
 
     return mark_safe(markdown(text, safe_mode=safe_mode, extras=extensions))
 
-@register.simple_tag(takes_context=True)
-def tagged_items(context, tag):
+
+@register.simple_tag
+def tagged_items(tag):
     return dataaccess.tags().get(tag, {})
+
 
 @register.simple_tag(takes_context=True)
 def tags_for_talks(context, conference=None, status="accepted"):

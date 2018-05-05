@@ -166,6 +166,17 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
             self.fields['slides_agreement'].initial = True
             self.fields['video_agreement'].initial = True
 
+    def save(self, *args, **kwargs):
+        # TODO/FIXME(artcz) – added this from P3SubmissionForm, because talks
+        # submitted via this form later complained about P3Talk missing.
+        # However I'm not sure if we even need that, but due to time
+        # constraints we can't refactors this right now.
+        # Set additional fields added in this form (compared to
+        # cforms.SubmissionForm)
+        talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
+        models.P3Talk.objects.create(talk=talk)
+        return talk
+
 
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     type = P3SubmissionForm.base_fields['type']
