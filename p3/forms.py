@@ -93,7 +93,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
     domain = forms.ChoiceField(
         label=_('Domain / Track'),
-        help_text=_('Select the domain of the talk, this will help us with the conference scheduling.'),
+        help_text=_('Select the domain / track suggestion for the talk. This will help us with the conference scheduling.'),
         choices=settings.CONFERENCE_TALK_DOMAIN,
         initial='',
         required=False)
