@@ -38,7 +38,10 @@ from decimal import Decimal
 from django.core.cache import cache
 
 import requests
+from requests.exceptions import HTTPError, ConnectionError
 from lxml import etree as ET
+
+from conference.models import ExchangeRate
 
 
 HTTP_SUCCESS = 200
@@ -84,7 +87,8 @@ def fetch_latest_ecb_exrates():
     Example of the XML (see EXAMPLE_XML constant)
     """
     response = requests.get(DAILY_ECB_URL)
-    assert response.status_code == HTTP_SUCCESS, response.status_code
+    # Raise exception if status_code != 200 or ConnectionError
+    response.raise_for_status()
     info = ET.fromstring(response.content)[2][0]
     datestamp = datetime.strptime(info.attrib['time'], "%Y-%m-%d").date()
     rates = [x.attrib for x in info]
@@ -92,6 +96,24 @@ def fetch_latest_ecb_exrates():
     return dict(
         datestamp=datestamp,
         **{x['currency']: Decimal(x['rate']) for x in rates}
+    )
+
+
+def get_latest_ecb_rates_from_db(currency):
+    # if there are no ExchangeRates cached, this is going to raise
+    # DoesNotExist; and we're going to assume there is at least one
+    # ExchangeRate for that currency in the database.
+    exrate = ExchangeRate.objects.filter(currency=currency).latest('datestamp')
+    return {
+        'datestamp': exrate.datestamp,
+        exrate.currency: exrate.rate
+    }
+
+
+def store_exrates_in_db(currency, exrates):
+    ExchangeRate.objects.update_or_create(
+        datestamp=exrates['datestamp'], currency=currency,
+        defaults={'rate': exrates[currency]}
     )
 
 
@@ -108,8 +130,16 @@ def get_ecb_rates_for_currency(currency):
     if cached:
         exrates = cached
     else:
-        exrates = fetch_latest_ecb_exrates()
+        try:
+            exrates = fetch_latest_ecb_exrates()
+            store_new_exrates = True
+        except (HTTPError, ConnectionError):
+            exrates = get_latest_ecb_rates_from_db(currency)
+            store_new_exrates = False
+
         cache.set(CURRENCY_CACHE_KEY, exrates, CURRENCY_CACHE_TIMEOUT)
+        if store_new_exrates:
+            store_exrates_in_db(currency, exrates)
 
     return (exrates['datestamp'], exrates[currency])
 

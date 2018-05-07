@@ -1428,3 +1428,21 @@ class VotoTalk(models.Model):
 #post_save.connect(_clear_schedule_cache, sender=EventInterest)
 
 from conference import listeners
+
+
+# ========================================
+# ExchangeRates
+# TODO: split conference/models.py to multiple files and put it this model in a
+# separate file.
+# ========================================
+class ExchangeRate(models.Model):
+    """
+    Store Exchange Rate relative to Euro
+    """
+    datestamp = models.DateField()
+    currency = models.CharField(max_length=3)  # iso 4217 currency code
+    # rate == how much curency for 1 EUR.
+    rate = models.DecimalField(max_digits=10, decimal_places=5)
+
+    def __str__(self):
+        return "%s %s" % (self.currency, self.datestamp)
