@@ -1257,3 +1257,10 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         return render_to_response('admin/conference/conferencetag/merge.html', ctx, context_instance=template.RequestContext(request))
 
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
+
+
+class ExchangeRateAdmin(admin.ModelAdmin):
+    list_display = ('datestamp', 'currency', 'rate')
+
+
+admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
