@@ -39,31 +39,6 @@ nav[role=navigation] {
     border-bottom: none;
 }
 
-
-/* header.carousel_bg_white {                               */
-/*     background-color: white;                             */
-/* }                                                        */
-
-/* header.image_carousel_1 {                                */
-/*     background-image: url('../img/carousel/castle.jpg'); */
-/*     background: none;                                    */
-/* }                                                        */
-
-/* header.image_carousel_2 {                                */
-/*     background-image: url('../img/carousel/town.jpg');   */
-/*     background: none;                                    */
-/* }                                                        */
-
-/* header.image_carousel_3 {                                */
-/*     background-image: url('../img/carousel/lake.jpg');   */
-/*     background: none;                                    */
-/* }                                                        */
-/* header.image_carousel_4 {                                */
-/*     background-image: url('../img/carousel/eicc.jpg');   */
-/*     background: none;                                    */
-/* }                                                        */
-
-/* header.image_carousel_5 {                                */
-/*     background-image: url('../img/carousel/trees.jpg');  */
-/*     background: none;                                    */
-/* }                                                        */
+.discover-europython div {
+    transition: transform 100ms;
+}
