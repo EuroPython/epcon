@@ -271,7 +271,7 @@ a:hover, a:active { outline: 0; }
 
 ::-moz-selection { background-color: white; color: #146C47; text-shadow: none; }
 
-::selection { background-color: white; color: #146C47; text-shadow: none; }
+::selection { background-color: #006e44; color: white; text-shadow: none; }
 
 .swatch { margin: 0 0 1.5em 0; padding: 0; }
 
