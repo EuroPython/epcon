@@ -27,6 +27,7 @@ section.discover-europython {
 }
 
 .bg-red {
+    /* TODO: this is not red ;) */
     background: #006e44;
 }
 
@@ -39,31 +40,15 @@ nav[role=navigation] {
     border-bottom: none;
 }
 
+.discover-europython div {
+    transition: transform 100ms;
+}
 
-/* header.carousel_bg_white {                               */
-/*     background-color: white;                             */
-/* }                                                        */
-
-/* header.image_carousel_1 {                                */
-/*     background-image: url('../img/carousel/castle.jpg'); */
-/*     background: none;                                    */
-/* }                                                        */
-
-/* header.image_carousel_2 {                                */
-/*     background-image: url('../img/carousel/town.jpg');   */
-/*     background: none;                                    */
-/* }                                                        */
-
-/* header.image_carousel_3 {                                */
-/*     background-image: url('../img/carousel/lake.jpg');   */
-/*     background: none;                                    */
-/* }                                                        */
-/* header.image_carousel_4 {                                */
-/*     background-image: url('../img/carousel/eicc.jpg');   */
-/*     background: none;                                    */
-/* }                                                        */
-
-/* header.image_carousel_5 {                                */
-/*     background-image: url('../img/carousel/trees.jpg');  */
-/*     background: none;                                    */
-/* }                                                        */
+.sponsor .btn {
+    background: #006f44;
+    color: white;
+}
+.sponsor .btn:hover {
+    background: #da291c;
+    color: white;
+}
