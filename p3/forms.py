@@ -128,7 +128,7 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
 
         # Set additional fields added in this form (compared to
         # cforms.SubmissionForm)
-        models.P3Talk.objects.create(talk=talk)
+        models.P3Talk.objects.get_or_create(talk=talk)
 
         return talk
 
@@ -174,7 +174,7 @@ class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
         # Set additional fields added in this form (compared to
         # cforms.SubmissionForm)
         talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
-        models.P3Talk.objects.create(talk=talk)
+        models.P3Talk.objects.get_or_create(talk=talk)
         return talk
 
 

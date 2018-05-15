@@ -449,3 +449,56 @@ class TestCFP(TestCase):
         assert talk.domain == 'devops'
         assert talk.domain_level == TALK_LEVEL.advanced
         assert talk.level == TALK_LEVEL.intermediate
+
+    def test_662_editing_cfp_proposal(self):
+        """
+        https://github.com/EuroPython/epcon/issues/662
+        """
+
+        self.client.login(email=self.user.email, password='password123')
+        VALIDATION_SUCCESSFUL_302 = 302
+        EDIT_SUCCESSFUL_303 = 303
+        abstract = 'aaaaaaaaaaaa'
+
+        talk_proposal = {
+            "type": "t_30",
+            'first_name': 'Joe',
+            'last_name': 'Doe',
+            "birthday": "2018-02-26",
+            'bio': "Python developer",
+            "title": "Testing EPCON CFP",
+            "abstract_short": "Short talk about testing CFP",
+            "abstract": abstract,
+            "level": TALK_LEVEL.advanced,
+            "phone": "41331237",
+            "domain": "django",
+            "domain_level": TALK_LEVEL.intermediate,
+            "tags": "django, testing, slides",
+            "personal_agreement": True,
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
+
+        talk = Talk.objects.first()
+        assert talk.abstract_short == "Short talk about testing CFP"
+        self.assertTemplateUsed(
+            self.client.get(talk.get_absolute_url()),
+            "conference/talk.html"
+        )
+
+        talk_proposal["abstract_short"] = "First edit"
+        response = self.client.post(talk.get_absolute_url(), talk_proposal)
+        assert response.status_code == EDIT_SUCCESSFUL_303
+
+        talk = Talk.objects.first()
+        assert talk.abstract_short == "First edit"
+
+        talk_proposal["abstract_short"] = "Second edit"
+        response = self.client.post(talk.get_absolute_url(), talk_proposal)
+        assert response.status_code == EDIT_SUCCESSFUL_303
+
+        talk = Talk.objects.first()
+        assert talk.abstract_short == "Second edit"
