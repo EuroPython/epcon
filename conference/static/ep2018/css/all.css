@@ -27,6 +27,7 @@ section.discover-europython {
 }
 
 .bg-red {
+    /* TODO: this is not red ;) */
     background: #006e44;
 }
 
@@ -41,4 +42,13 @@ nav[role=navigation] {
 
 .discover-europython div {
     transition: transform 100ms;
+}
+
+.sponsor .btn {
+    background: #006f44;
+    color: white;
+}
+.sponsor .btn:hover {
+    background: #da291c;
+    color: white;
 }

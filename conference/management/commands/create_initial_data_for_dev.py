@@ -34,6 +34,7 @@ class Command(BaseCommand):
             ('privacy', 'PRIVACY', 'content-1col.html'),
             ('conduct-code', 'CONDUCT-CODE', 'content.html'),
             ('staff', 'STAFF', 'content.html'),
+            ('sponsor', 'SPONSOR', 'content.html'),
         ]
 
         for id, title, template in pages:

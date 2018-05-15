@@ -270,11 +270,8 @@ a:hover, a:active { outline: 0; }
 .intro a { text-decoration: underline; color: white; }
 
 /* those four below should have identical colors */
-::-moz-selection { background-color: #006e44; color: white; text-shadow: none; }
-::selection { background-color: #006e44; color: white; text-shadow: none; }
-/* and these two as well */
-.bg-red ::-moz-selection { background-color: #111; color: white; text-shadow: none; }
-.bg-red ::selection { background-color: #111; color: white; text-shadow: none; }
+::-moz-selection { background-color: #00b140; color: white; text-shadow: none; }
+::selection { background-color: #00b140; color: white; text-shadow: none; }
 
 .swatch { margin: 0 0 1.5em 0; padding: 0; }
 
