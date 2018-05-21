@@ -553,7 +553,6 @@ class TestCFP(TestCase):
         admin_talk_edit = {
             '_save': 'Save',
             'abstract_short': 'Short talk about testing CFP',
-            'abstract_extra': 'Extra abstract',
             'abstracts_en': 'aaaaaaaaaaaa',
             'conference': 'ep2018',
             'domain': settings.CONFERENCE_TALK_DOMAIN.other,

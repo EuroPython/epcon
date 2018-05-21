@@ -644,6 +644,7 @@ class Talk(models.Model, UrlMixin):
     abstract_extra = models.TextField(
         verbose_name=_('Talk abstract extra'),
         help_text=_('<p>Please enter instructions for attendees.</p>'),
+        blank=True,
         default="")
 
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
