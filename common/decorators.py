@@ -68,9 +68,12 @@ def render_to_template(template):  # pragma: no cover
             if tpl.endswith('xml'):
                 ct = 'text/xml' if dsettings.DEBUG else 'application/xml'
             if isinstance(output, dict):
-                if request.is_ajax() and dsettings.TEMPLATE_FOR_AJAX_REQUEST:
+                if request.is_ajax():
                     tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)
-                return render_to_response(tpl, output, RequestContext(request), content_type=ct)
+                return render_to_response(tpl,
+                                          output,
+                                          RequestContext(request),
+                                          content_type=ct)
             else:
                 return output
         return wrapper
