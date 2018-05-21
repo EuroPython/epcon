@@ -612,7 +612,7 @@ CONFERENCE_TALK_DOMAIN = Choices(
     ('pydata', _('PyData Track')),
     ('science', _('Science Track')),
     ('web', _('Web Track')),
-    ('', 'Other')
+    ('', 'other', _('Other'))
 )
 
 

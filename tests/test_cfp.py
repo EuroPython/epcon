@@ -12,6 +12,7 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from django_factory_boy import auth as auth_factories
 
@@ -47,8 +48,12 @@ class TestCFP(TestCase):
         )
 
         # default password is 'password123' per django_factory_boy
-        self.user = auth_factories.UserFactory(email='joedoe@example.com',
-                                               is_active=True)
+        admin = User.objects.create_superuser(
+            'admin', 'admin@example.com', 'admin')
+        AssopyUserFactory(user=admin)
+
+        self.user = auth_factories.UserFactory(
+            email='joedoe@example.com', is_active=True)
         AssopyUserFactory(user=self.user)
 
         self.form_url = reverse("conference-paper-submission")
@@ -502,3 +507,81 @@ class TestCFP(TestCase):
 
         talk = Talk.objects.first()
         assert talk.abstract_short == "Second edit"
+
+    def test_665_edit_with_other_in_django_admin(self):
+        """
+        https://github.com/EuroPython/epcon/issues/665
+        """
+        self.client.login(email=self.user.email, password='password123')
+        VALIDATION_SUCCESSFUL_302 = 302
+        EDIT_SUCCESSFUL_302       = 302
+        abstract = 'aaaaaaaaaaaa'
+
+        talk_proposal = {
+            "type": "t_30",
+            'first_name': 'Joe',
+            'last_name': 'Doe',
+            "birthday": "2018-02-26",
+            'bio': "Python developer",
+            "title": "Testing EPCON CFP",
+            "abstract_short": "Short talk about testing CFP",
+            "abstract": abstract,
+            "level": TALK_LEVEL.advanced,
+            "phone": "41331237",
+            "domain": settings.CONFERENCE_TALK_DOMAIN.django,
+            "domain_level": TALK_LEVEL.intermediate,
+            "tags": "django, testing, slides",
+            "personal_agreement": True,
+            "slides_agreement": True,
+            "video_agreement": True,
+        }
+
+        response = self.client.post(self.form_url, talk_proposal)
+        assert response.status_code == VALIDATION_SUCCESSFUL_302
+
+        talk = Talk.objects.first()
+
+        # relogin as staff user
+        self.client.login(email='admin@example.com', password='admin')
+        response = self.client.get(talk.get_admin_url())
+        self.assertTemplateUsed(response, "admin/change_form.html")
+
+        # TODO: this should be probably dynamically generated from the GET
+        # response above, but not sure how to correctly dump formset to dict,
+        # so instead I just served it's response and did parse_qsl on the
+        # whole POST.
+        admin_talk_edit = {
+            '_save': 'Save',
+            'abstract_short': 'Short talk about testing CFP',
+            'abstract_extra': 'Extra abstract',
+            'abstracts_en': 'aaaaaaaaaaaa',
+            'conference': 'ep2018',
+            'domain': settings.CONFERENCE_TALK_DOMAIN.other,
+            'domain_level': 'intermediate',
+            'duration': '30',
+            'language': 'en',
+            'level': 'advanced',
+            'slug': 'testing-epcon-cfp',
+            'status': 'proposed',
+            'tags': "django, testing, slides",
+            'talkspeaker_set-0-id': '1',
+            'talkspeaker_set-0-speaker': '2',
+            'talkspeaker_set-0-talk': '1',
+            'talkspeaker_set-1-talk': '1',
+            'talkspeaker_set-INITIAL_FORMS': '1',
+            'talkspeaker_set-MAX_NUM_FORMS': '1000',
+            'talkspeaker_set-MIN_NUM_FORMS': '0',
+            'talkspeaker_set-TOTAL_FORMS': '2',
+            'talkspeaker_set-__prefix__-talk': '1',
+            'title': 'Testing EPCON CFP',
+            'type': 't_30'
+        }
+
+        assert settings.CONFERENCE_TALK_DOMAIN.other == ''
+        response = self.client.post(talk.get_admin_url(), admin_talk_edit)
+        assert response.status_code == EDIT_SUCCESSFUL_302
+
+        talk = Talk.objects.first()
+        assert talk.domain != settings.CONFERENCE_TALK_DOMAIN.django
+        assert talk.domain == settings.CONFERENCE_TALK_DOMAIN.other
+        assert talk.domain == ''

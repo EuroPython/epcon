@@ -8,13 +8,14 @@ from collections import defaultdict
 from django.conf import settings as dsettings
 from django.core import exceptions
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext as _
 from django.utils.deconstruct import deconstructible
+from django.utils.translation import ugettext as _
 
 from common.django_urls import UrlMixin
 from model_utils import Choices
@@ -671,7 +672,8 @@ class Talk(models.Model, UrlMixin):
     domain = models.CharField(
         max_length=20,
         choices=dsettings.CONFERENCE_TALK_DOMAIN,
-        default=''
+        default=dsettings.CONFERENCE_TALK_DOMAIN.other,
+        blank=True
     )
     domain_level = models.CharField(
         _("Audience Domain Level"),
@@ -713,9 +715,11 @@ class Talk(models.Model, UrlMixin):
     def __unicode__(self):
         return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('conference-talk', (), { 'slug': self.slug })
+        return reverse('conference-talk', args=[self.slug])
+
+    def get_admin_url(self):
+        return reverse('admin:conference_talk_change', args=[self.id])
 
     get_url_path = get_absolute_url
 
