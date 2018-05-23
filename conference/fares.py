@@ -2,8 +2,6 @@
 
 from __future__ import unicode_literals, absolute_import, print_function
 
-from django.conf import settings
-
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
@@ -65,13 +63,19 @@ def available_fare_codes():
     return fare_codes
 
 
+AVAILABLE_FARE_CODES = available_fare_codes()
+
+
 def is_fare_code_valid(fare_code):
-    return fare_code in available_fare_codes()
+    return fare_code in AVAILABLE_FARE_CODES
 
 
-def create_fare(code, name, price, start_validity, end_validity, vat_rate):
+def create_fare_for_conference(code, conference, price,
+                               start_validity, end_validity,
+                               vat_rate):
 
     assert is_fare_code_valid(code)
+    assert isinstance(conference, str), "conference should be a string"
     assert isinstance(vat_rate, Vat)
     assert start_validity <= end_validity
 
@@ -83,11 +87,11 @@ def create_fare(code, name, price, start_validity, end_validity, vat_rate):
     recipient_type = code[3].lower()  # same as lowercase last letter of code
 
     fare, _ = Fare.objects.get_or_create(
-        conference=settings.CONFERENCE_CONFERENCE,
+        conference=conference,
         code=code,
-        name=name,
+        name=AVAILABLE_FARE_CODES[code],
         defaults=dict(
-            description=name,
+            description=AVAILABLE_FARE_CODES[code],
             price=price,
             recipient_type=recipient_type,
             ticket_type=ticket_type,
@@ -101,13 +105,12 @@ def create_fare(code, name, price, start_validity, end_validity, vat_rate):
 
 def pre_create_typical_fares_for_conference(conference, vat_rate,
                                             print_output=False):
-
-    fare_codes = available_fare_codes()
     fares = []
 
-    for fare_code, fare_name in fare_codes.items():
-        fare = create_fare(
-            code=fare_code, name=fare_name,
+    for fare_code in AVAILABLE_FARE_CODES.keys():
+        fare = create_fare_for_conference(
+            code=fare_code,
+            conference=conference,
             price=1000,  # high random price, we'll change it later
             start_validity=None, end_validity=None,
             vat_rate=vat_rate,

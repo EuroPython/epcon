@@ -46,6 +46,7 @@ python-twitter==2.2
 pytz
 raven==5.1.1
 requests==2.5.3
+responses==0.8.1
 requests-oauthlib==0.4.2
 simplejson==3.6.5
 six==1.9.0

@@ -11,22 +11,27 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
 
-from django_factory_boy import auth as auth_factories
+# from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
+import responses
 
 from assopy.models import Vat, Order, Country, Refund, Invoice
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+# from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
-from conference.models import Conference, Fare, AttendeeProfile, Ticket
+from conference.exchangerates import (
+    DAILY_ECB_URL,
+    EXAMPLE_ECB_DAILY_XML,
+)
+from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
 from email_template.models import Email
 
-from tests.common_tools import serve  # NOQA
+from tests.common_tools import make_user
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -35,15 +40,6 @@ DEFAULT_VAT_RATE = "0.2"  # 20%
 DEFAULT_SHIRT_SIZE        = 'l'
 DEFAULT_DIET              = 'omnivorous'
 DEFAULT_PYTHON_EXPERIENCE = 0
-
-
-def make_user():
-    user = auth_factories.UserFactory(
-        email='joedoe@example.com', is_active=True
-    )
-    AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug='foobar')
-    return user
 
 
 def make_basic_fare_setup():
@@ -88,35 +84,39 @@ def test_basic_fare_setup(client):
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
         assert 'Sorry, no tickets are available' in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-03-11"):
         # Early Bird timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' in _response_content
-        assert 'TEDC' in _response_content
-        assert 'TRSP' not in _response_content
-        assert 'TRDC' not in _response_content
+        assert 'data-fare="TESP"' in _response_content
+        assert 'data-fare="TEDC"' in _response_content
+        assert 'data-fare="TRSP"' not in _response_content
+        assert 'data-fare="TRDC"' not in _response_content
         assert SOCIAL_EVENT_FARE_CODE not in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-05-11"):
         # Regular timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' not in _response_content
-        assert 'TEDC' not in _response_content
-        assert 'TRSP' in _response_content
-        assert 'TRDC' in _response_content
+        assert 'data-fare="TESP"' not in _response_content
+        assert 'data-fare="TEDC"' not in _response_content
+        assert 'data-fare="TRSP"' in _response_content
+        assert 'data-fare="TRDC"' in _response_content
         assert SOCIAL_EVENT_FARE_CODE not in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-06-25"):
         # Regular timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' not in _response_content
-        assert 'TRSP' in _response_content
-        assert 'TRDC' in _response_content
+        assert 'data-fare="TESP"' not in _response_content
+        assert 'data-fare="TRSP"' in _response_content
+        assert 'data-fare="TRDC"' in _response_content
         assert SOCIAL_EVENT_FARE_CODE in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
 
 # Same story as previously - using TestCase beacuse of django's asserts like
@@ -152,8 +152,9 @@ class TestBuyingTickets(TestCase):
             # Early Bird timeline
             response = self.client.get(cart_url)
             _response_content = response.content.decode('utf-8')
-            assert 'TESP' in _response_content
-            assert 'TEDC' in _response_content
+            assert 'data-fare="TESP"' in _response_content
+            assert 'data-fare="TEDC"' in _response_content
+            assert 'Buy tickets (1 of 2)' in _response_content
 
             assert Order.objects.all().count() == 0
             response = self.client.post(cart_url, {
@@ -170,6 +171,7 @@ class TestBuyingTickets(TestCase):
 
             self.assertRedirects(response, billing_url,
                                  status_code=PURCHASE_SUCCESSFUL_302)
+            self.assertContains(response, 'Buy tickets (2 of 2)')
             # Purchase was successful but it's first step, so still no Order
             assert Order.objects.all().count() == 0
 
@@ -202,7 +204,13 @@ class TestBuyingTickets(TestCase):
             order = Order.objects.get()
             assert order.total() == 3000
             assert not order._complete
-            order.confirm_order(date.today())
+
+            with responses.RequestsMock() as rsps:
+                # mocking responses for the invoice VAT exchange rate feature
+                rsps.add(responses.GET, DAILY_ECB_URL,
+                         body=EXAMPLE_ECB_DAILY_XML)
+                order.confirm_order(date.today())
+
             assert order._complete
 
             response = self.client.get(my_profile_url)
@@ -425,7 +433,10 @@ class TestTicketManagementScenarios(TestCase):
             self.client.post(self.ticket_url, {'refund': 'asdf'})
 
         assert Invoice.objects.all().count() == 0
-        self.order.confirm_order(timezone.now().date())
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            self.order.confirm_order(timezone.now().date())
         assert Invoice.objects.all().count() == 1
 
         self.client.post(self.ticket_url, {'refund': 'asdf'})

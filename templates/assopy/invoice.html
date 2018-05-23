@@ -8,6 +8,7 @@
 
         .companyinfo {
             line-height: 16px;
+            white-space: pre;
         }
     </style>
 {% endblock %}
@@ -15,9 +16,7 @@
     <div class="companylogo">
         <!-- <img src="{{ STATIC_URL }}" /> -->
     </div>
-    <div class="companyinfo">
-        {{ issuer }}
-    </div>
+    <div class="companyinfo">{{ issuer }}</div>
     <div class="clear"></div>
 {% endblock %}
 

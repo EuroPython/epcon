@@ -12,6 +12,7 @@ from collections import defaultdict
 from django import dispatch
 from django.conf import settings as dsettings
 from django.contrib import auth
+from django.contrib.admin.util import quote
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -23,6 +24,7 @@ from assopy import janrain
 from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
+from conference.exchangerates import normalize_price
 from conference.models import Ticket
 from email_template import utils
 
@@ -769,20 +771,25 @@ def _order_feedback(sender, **kwargs):
 
 order_created.connect(_order_feedback)
 
+
 class InvoiceLog(models.Model):
     code =  models.CharField(max_length=20, unique=True)
     order = models.ForeignKey(Order, null=True)
     invoice = models.ForeignKey('Invoice', null=True)
     date = models.DateTimeField(auto_now_add=True)
 
+
 class InvoiceManager(models.Manager):
     pass
 
 
 class Invoice(models.Model):
+
+    PLACEHOLDER_EXRATE_DATE = date(2000, 1, 1)
+
     order = models.ForeignKey(Order, related_name='invoices')
     code = models.CharField(max_length=20, null=True, unique=True)
-    assopy_id = models.CharField(max_length=22, unique=True, 
+    assopy_id = models.CharField(max_length=22, unique=True,
                                  null=True, blank=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
@@ -790,6 +797,21 @@ class Invoice(models.Model):
 
     issuer = models.TextField()
     invoice_copy_full_html = models.TextField()
+
+    local_currency = models.CharField(max_length=3, default="EUR")
+    vat_in_local_currency = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        # remove after testing
+        default=Decimal("0"),
+    )
+    exchange_rate = models.DecimalField(
+        max_digits=10,
+        decimal_places=5,
+        # remove after testing
+        default=Decimal("1"),
+    )
+    exchange_rate_date = models.DateField(default=PLACEHOLDER_EXRATE_DATE)
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
@@ -813,11 +835,11 @@ class Invoice(models.Model):
         if create and is_real_invoice_code(self.code):
             self.order.complete(ignore_cache=True)
 
-    @models.permalink
     def get_absolute_url(self):
-        from django.contrib.admin.util import quote
-        return ('assopy-invoice-pdf' , [quote(self.order.code),
-                                        quote(self.code),])
+        # defaulting to HTML for now
+        return reverse("assopy-invoice-html", args=[
+            quote(self.order.code), quote(self.code)
+        ])
 
     def __unicode__(self):
         if self.code:
@@ -838,7 +860,8 @@ class Invoice(models.Model):
         return self.price - self.net_price()
 
     def net_price(self):
-        return self.price / (1 + self.vat.value / 100)
+        return normalize_price(self.price / (1 + self.vat.value / 100))
+
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful

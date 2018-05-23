@@ -1,14 +1,18 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import unicode_literals, absolute_import, print_function
 
 from wsgiref.simple_server import make_server
 
-from cms.api import create_page
-
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import timezone
 
+from django_factory_boy import auth as auth_factories
+
+from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from cms.api import create_page
+from conference.models import AttendeeProfile
 from conference.models import Conference
 
 
@@ -71,7 +75,7 @@ def serve(content, host='0.0.0.0', port=9876):
         return [content]
 
     srv = make_server(host, port, render)
-    print "Go to http://{}:{}".format(host, port)
+    print("Go to http://{}:{}".format(host, port))
     srv.serve_forever()
 
 
@@ -87,3 +91,16 @@ def sequence_equals(sequence1, sequence2):
         assert item_from_s1 == item_from_s2, (item_from_s1, item_from_s2)
 
     return True
+
+
+def make_user():
+    user = auth_factories.UserFactory(
+        email='joedoe@example.com', is_active=True
+    )
+    AssopyUserFactory(user=user)
+    AttendeeProfile.objects.create(user=user, slug='joedoe')
+    return user
+
+
+def clear_all_the_caches():
+    cache.clear()
