@@ -14,7 +14,11 @@
         <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
         <div class="well">
             {% if form.errors %}
-                <div class="alert alert-error">{% trans "Invalid credentials" %}</div>
+                <div class='alert alert-error'>
+                    There are some errors on the form. Remember that all fields are required.<br>
+                    {{ form.non_field_errors }}
+
+                </div>
             {% endif %}
             <form action="" method="post">
                 <fieldset>

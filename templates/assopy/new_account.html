@@ -8,12 +8,20 @@
             <h1>{% trans "Create a new account" %}</h1>
        </div><!-- /grid -->
        <div class="grid-50">
-            <div class="well">
+           <div class="well">
+
+            {% if form.non_field_errors %}
+                <div class='alert alert-error'>
+                    There are some errors on the form. Remember that all fields are required.<br>
+                    {{ form.non_field_errors }}
+
+                </div>
+            {% endif %}
+
+
+
                 <form action=".?next={{ next }}" method="post">
                     <fieldset>
-                        {% if form.non_field_errors %}
-                            <p class="errornote">{{ form.non_field_errors }}</p>
-                        {% endif %}
                         {% for f in form %}{{ f|field }}{% endfor %}
                     </fieldset>
                     <fieldset>

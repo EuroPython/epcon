@@ -31,6 +31,10 @@ I consent to the use of my data subject to the <a href='/privacy/'>EuroPython
 data privacy policy</a>
 """.strip()
 
+GDPR_PRIVACY_POLICY_ERROR = """
+You need to consent to use of your data before we can continue
+""".strip()
+
 
 class LoginForm(auth.forms.AuthenticationForm):
     email = forms.EmailField()
@@ -44,6 +48,9 @@ class LoginForm(auth.forms.AuthenticationForm):
 
     def clean(self):
         data = self.cleaned_data
+        if not data.get('i_accept_privacy_policy'):
+            raise forms.ValidationError(GDPR_PRIVACY_POLICY_ERROR)
+
         if data.get('email') and data.get('password'):
             user = auth.authenticate(email=data['email'],
                                      password=data['password'])
@@ -152,8 +159,12 @@ class NewAccountForm(forms.Form):
         return email.lower()
 
     def clean(self):
+        if not self.cleaned_data.get('i_accept_privacy_policy'):
+            raise forms.ValidationError(GDPR_PRIVACY_POLICY_ERROR)
+
         if not self.is_valid():
             return super(NewAccountForm, self).clean()
+
         data = self.cleaned_data
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')

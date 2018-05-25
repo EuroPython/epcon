@@ -2,6 +2,16 @@
  * It's included inside p5_homepage.html right below p6/all.css so that way
  * we can override all the settings here */
 
+/* EP 2018 color palette */
+/* Stored here for reference so we can easily find the colors later */
+._dark_green  { color: #006f44 rgb(0, 111, 68); }
+._light_green { color: #00b140 rgb(0, 177, 64); }
+._dark_red    { color: #da291c rgb(218, 41, 28); }
+._light_red   { color: #9a3324 rgb(154, 51, 36); }
+._yellow      { color: #efdf00 rgb(239, 223, 0); }
+._black       { color: #231f20 rgb(35, 31, 32); }
+
+
 .container > header {
     padding: 2em 0 30%;
     background-image: url('../img/carousel/castle.jpg');
@@ -54,3 +64,6 @@ nav[role=navigation] {
 }
 
 a.btn-primary, a.btn-primary:hover { color: white; }
+/* colors per ep2018 palette */
+.alert.alert-error { background: #da291c; color: white }
+.alert.alert-warning { background: #efdf00; }
