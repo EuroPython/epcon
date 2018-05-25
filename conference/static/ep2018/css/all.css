@@ -52,3 +52,5 @@ nav[role=navigation] {
     background: #da291c;
     color: white;
 }
+
+a.btn-primary, a.btn-primary:hover { color: white; }
