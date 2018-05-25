@@ -732,11 +732,14 @@ def CONFERENCE_VOTING_ALLOWED(user):
     # People who have a ticket for the current conference assigned to
     # them can vote
     from p3 import models
+
     # Starting with EP2017, we allow people who have bought tickets in the
-    # past, to also past to participate in talk voting.
+    # past, to also participate in talk voting.
     tickets = models.TicketConference.objects \
               .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
                       assigned_to=user.email)
+    if tickets.count() > 0:
+        return True    
 
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
@@ -744,15 +747,18 @@ def CONFERENCE_VOTING_ALLOWED(user):
     #          .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
     #                  assigned_to=user.email)
 
-    # Old query:
-    #from django.db.models import Q
-    # tickets = models.TicketConference.objects \
-    #     .available(user, CONFERENCE_CONFERENCE) \
-    #     .filter(Q(orderitem__order___complete=True) | Q(
-    #     orderitem__order__method='admin')) \
-    #     .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
-    #     p3_conference__assigned_to=user.email))
-    return tickets.count() > 0
+    # Old query (for tickets bought before 2017)
+    from django.db.models import Q
+    for conf in CONFERENCE_TALK_VOTING_ELIGIBLE:
+        tickets = models.TicketConference.objects \
+             .available(user, conf) \
+             .filter(Q(orderitem__order___complete=True) | Q(
+             orderitem__order__method='admin')) \
+             .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
+             p3_conference__assigned_to=user.email))
+        if tickets.count() > 0:
+            return True    
+    return False
 
 
 def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
