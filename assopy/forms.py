@@ -26,21 +26,19 @@ def autostrip(cls):
     return cls
 
 
-GDPR_PRIVACY_POLICY_CHECKBOX = """
+PRIVACY_POLICY_CHECKBOX = """
 I consent to the use of my data subject to the <a href='/privacy/'>EuroPython
 data privacy policy</a>
 """.strip()
 
-GDPR_PRIVACY_POLICY_ERROR = """
+PRIVACY_POLICY_ERROR = """
 You need to consent to use of your data before we can continue
 """.strip()
 
 
 class LoginForm(auth.forms.AuthenticationForm):
     email = forms.EmailField()
-    i_accept_privacy_policy = forms.BooleanField(
-        label=GDPR_PRIVACY_POLICY_CHECKBOX
-    )
+    i_accept_privacy_policy = forms.BooleanField(PRIVACY_POLICY_CHECKBOX)
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
@@ -49,7 +47,7 @@ class LoginForm(auth.forms.AuthenticationForm):
     def clean(self):
         data = self.cleaned_data
         if not data.get('i_accept_privacy_policy'):
-            raise forms.ValidationError(GDPR_PRIVACY_POLICY_ERROR)
+            raise forms.ValidationError(PRIVACY_POLICY_ERROR)
 
         if data.get('email') and data.get('password'):
             user = auth.authenticate(email=data['email'],
@@ -148,7 +146,7 @@ class NewAccountForm(forms.Form):
 
     # Keep this in sync with LoginForm.i_accept_privacy_policy
     i_accept_privacy_policy = forms.BooleanField(
-        label=GDPR_PRIVACY_POLICY_CHECKBOX
+        label=PRIVACY_POLICY_CHECKBOX
     )
 
     def clean_email(self):
@@ -160,7 +158,7 @@ class NewAccountForm(forms.Form):
 
     def clean(self):
         if not self.cleaned_data.get('i_accept_privacy_policy'):
-            raise forms.ValidationError(GDPR_PRIVACY_POLICY_ERROR)
+            raise forms.ValidationError(PRIVACY_POLICY_ERROR)
 
         if not self.is_valid():
             return super(NewAccountForm, self).clean()
