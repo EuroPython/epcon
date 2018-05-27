@@ -11,6 +11,16 @@
 ._yellow      { color: #efdf00 rgb(239, 223, 0); }
 ._black       { color: #231f20 rgb(35, 31, 32); }
 
+.feedback-bar {
+    position: fixed;
+    z-index: 10;
+    background: black;
+    color: white;
+    padding: 10px;
+    top: 70px;
+    left: 20px;
+    box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.4);
+}
 
 .container > header {
     padding: 2em 0 30%;
