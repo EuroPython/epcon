@@ -16,13 +16,17 @@ from conference.models import AttendeeProfile
 from conference.models import Conference
 
 
-def template_used(response, template_name):
+HTTP_OK = 200
+
+
+def template_used(response, template_name, http_status=HTTP_OK):
     """
     :response: respone from django test client.
     :template_name: string with path to template.
 
     :rtype: bool
     """
+    assert response.status_code == http_status, response.status_code
     templates = [t.name for t in response.templates if t.name]
     assert template_name in templates, templates
     return True

@@ -25,8 +25,20 @@ def autostrip(cls):
         setattr(field_object, 'clean', clean_func)
     return cls
 
+
+PRIVACY_POLICY_CHECKBOX = """
+I consent to the use of my data subject to the <a href='/privacy/'>EuroPython
+data privacy policy</a>
+""".strip()
+
+PRIVACY_POLICY_ERROR = """
+You need to consent to use of your data before we can continue
+""".strip()
+
+
 class LoginForm(auth.forms.AuthenticationForm):
     email = forms.EmailField()
+    i_accept_privacy_policy = forms.BooleanField(PRIVACY_POLICY_CHECKBOX)
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
@@ -34,14 +46,19 @@ class LoginForm(auth.forms.AuthenticationForm):
 
     def clean(self):
         data = self.cleaned_data
+        if not data.get('i_accept_privacy_policy'):
+            raise forms.ValidationError(PRIVACY_POLICY_ERROR)
+
         if data.get('email') and data.get('password'):
-            user = auth.authenticate(email=data['email'], password=data['password'])
+            user = auth.authenticate(email=data['email'],
+                                     password=data['password'])
             self.user_cache = user
             if user is None:
                 raise forms.ValidationError('Invalid credentials')
             elif not user.is_active:
                 raise forms.ValidationError('This account is inactive.')
         return data
+
 
 class SetPasswordForm(auth.forms.SetPasswordForm):
     def save(self, *args, **kwargs):
@@ -127,6 +144,11 @@ class NewAccountForm(forms.Form):
     password2 = forms.CharField(label="Confirm password",
                                 widget=forms.PasswordInput)
 
+    # Keep this in sync with LoginForm.i_accept_privacy_policy
+    i_accept_privacy_policy = forms.BooleanField(
+        label=PRIVACY_POLICY_CHECKBOX
+    )
+
     def clean_email(self):
         email = self.cleaned_data['email']
         if auth.models.User.objects.filter(email__iexact=email).count() > 0:
@@ -135,8 +157,12 @@ class NewAccountForm(forms.Form):
         return email.lower()
 
     def clean(self):
+        if not self.cleaned_data.get('i_accept_privacy_policy'):
+            raise forms.ValidationError(PRIVACY_POLICY_ERROR)
+
         if not self.is_valid():
             return super(NewAccountForm, self).clean()
+
         data = self.cleaned_data
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')

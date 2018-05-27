@@ -229,6 +229,7 @@ class TestBuyingTickets(TestCase):
             assert response.context['form'].errors['__all__'] == ['No tickets']
 
         # and then test assigning the tickets
+        self.client.login(email='joedoe@example.com', password='password123')
         response = self.client.get(tickets_url, follow=True)
         self.assertRedirects(response, p3_tickets_url)
 

@@ -8,22 +8,23 @@
     <div class="grid-100">
         <h1>{% trans "Log into EuroPython" %}</h1>
     </div>
+
     <div class="grid-50">
-        <h2>{% trans "By using one of your existing web accounts" %}</h2>
-        <p class="">{% trans "You will be able to specify billing and personal info later; e.g.: you can use your personal Google account to buy tickets for your company and the Google name will not appear anywhere." %}</p>
-        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ next }}">Login with Google</a>
-    </div>
-    <div class="grid-50">
-        <h2>{% trans "Or use your email and password" %}</h2>
+        <h2>By using your email and password</h2>
         <p>{% trans "If you <i>really</i> don’t want to use an existing web account but you prefer a standard registration and login&nbsp;form." %}</p>
         <div class="well">
             {% if form.errors %}
-                <div class="alert alert-error">{% trans "Invalid credentials" %}</div>
+                <div class='alert alert-error'>
+                    There are some errors on the form. Remember that all fields are required.<br>
+                    {{ form.non_field_errors }}
+
+                </div>
             {% endif %}
             <form action="" method="post">
                 <fieldset>
                     {{ form.email|form_field }}
                     {{ form.password|form_field }}
+                    {{ form.i_accept_privacy_policy|form_field }}
                     <input type="hidden" name="next" value="{{ next }}" />
                     <button class="btn btn-primary" name="" value="" type="submit">{% trans "Log in" %}</button>
                 </fieldset>
@@ -31,6 +32,12 @@
             </form>
         </div>
     </div>
+
+    <div class="grid-50">
+       {% include "registration/partials/_login_with_google.html" %}
+   </div>
+
+    
 
     <hr />
 
