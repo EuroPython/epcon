@@ -600,6 +600,12 @@ class Order(models.Model):
 
     stripe_charge_id = models.CharField(_('Charge Stripe ID'), max_length=64, unique=True, null=True)
 
+    payment_date = models.DateTimeField(
+        help_text="Auto filled by the payments backend",
+        blank=True,
+        null=True,
+    )
+
     objects = OrderManager()
 
     def __unicode__(self):
@@ -643,12 +649,10 @@ class Order(models.Model):
         return r
 
     def confirm_order(self, payment_date):
-        # TODO: this import is here to avoid circular import, but can be later
-        # moved once confirm_order is moved somewhere else.
-        from conference.invoicing import create_invoices_for_order
-        create_invoices_for_order(self,
-                                  emit_date=payment_date,
-                                  payment_date=payment_date)
+        # NOTE(artcz)(2018-05-28)
+        # This used to generate invoices, currently it just fills payment date.
+        self.payment_date = payment_date
+        self.save()
 
     def total(self, apply_discounts=True):
         if apply_discounts:
