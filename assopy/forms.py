@@ -38,7 +38,9 @@ You need to consent to use of your data before we can continue
 
 class LoginForm(auth.forms.AuthenticationForm):
     email = forms.EmailField()
-    i_accept_privacy_policy = forms.BooleanField(PRIVACY_POLICY_CHECKBOX)
+    i_accept_privacy_policy = forms.BooleanField(
+        label=PRIVACY_POLICY_CHECKBOX
+    )
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)

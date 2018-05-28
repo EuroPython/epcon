@@ -19,7 +19,12 @@ from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
 from conference.models import AttendeeProfile, Ticket
 from conference import settings as conference_settings
-from conference.invoicing import ACPYSS_16, PYTHON_ITALIA_17, EPS_18
+from conference.invoicing import (
+    ACPYSS_16,
+    PYTHON_ITALIA_17,
+    EPS_18,
+    create_invoices_for_order
+)
 from conference.exchangerates import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
@@ -283,8 +288,15 @@ def test_invoices_from_buying_tickets(client):
     # no invoices
     assert Invoice.objects.all().count() == 0
     # static date, because of #592 choosing something in 2018
-    order.confirm_order(date(2018, 1, 1))
+    SOME_RANDOM_DATE = date(2018, 1, 1)
+    order.confirm_order(SOME_RANDOM_DATE)
+    assert order.payment_date == SOME_RANDOM_DATE
+    assert not order._complete
 
+    # still no invoices created, we have to explicitly call the create function
+    assert Invoice.objects.all().count() == 0
+
+    create_invoices_for_order(order)
     # multiple items per invoice, one invoice per vat rate.
     assert Invoice.objects.all().count() == 2
 
@@ -358,8 +370,8 @@ def test_invoices_from_buying_tickets(client):
 def create_order_and_invoice(assopy_user, fare):
     today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
-    # TODO: confirm_order should instead return it's invoices
     order.confirm_order(today)
+    create_invoices_for_order(order)
     return Invoice.objects.get(emit_date__year=today.year)
 
 

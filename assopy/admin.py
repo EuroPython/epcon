@@ -57,6 +57,7 @@ class OrderAdminForm(forms.ModelForm):
         ('cc', 'Credit Card'),
         ('bank', 'Bank'),
     ))
+
     class Meta:
         model = models.Order
         exclude = ('method',)
@@ -77,6 +78,7 @@ class OrderAdminForm(forms.ModelForm):
         self.instance.method = self.cleaned_data['method']
         return super(OrderAdminForm, self).save(*args, **kwargs)
 
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'code', '_user', '_email',
@@ -93,6 +95,7 @@ class OrderAdmin(admin.ModelAdmin):
         'user__user__first_name', 'user__user__last_name', 'user__user__email',
         'billing_notes',
     )
+    readonly_fields = ['payment_date']
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
 

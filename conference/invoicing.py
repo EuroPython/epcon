@@ -120,9 +120,11 @@ def next_invoice_code_for_year(prefix, year):
     return template % {'year_two_digits': year % 1000, 'sequential_id': '0001'}
 
 
-def create_invoices_for_order(order, emit_date, payment_date=None):
+def create_invoices_for_order(order):
     assert isinstance(order, Order)
 
+    payment_date = order.payment_date
+    emit_date = payment_date if payment_date else order.created
     prefix = REAL_INVOICE_PREFIX if payment_date else FAKE_INVOICE_PREFIX
 
     # First transaction takes care of "create all invoices or nothing"
