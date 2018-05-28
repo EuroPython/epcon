@@ -138,10 +138,14 @@ def calculator(request):
                 coupons.append(data['coupon'])
             totals = amodels.Order\
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
-            try:
-                booking = models.HotelBooking.objects\
-                    .get(conference=settings.CONFERENCE_CONFERENCE)
-            except models.HotelBooking.DoesNotExist:
+            if 0:
+                # We no longer support HotelBookings
+                try:
+                    booking = models.HotelBooking.objects\
+                        .get(conference=settings.CONFERENCE_CONFERENCE)
+                except models.HotelBooking.DoesNotExist:
+                    booking = None
+            else:
                 booking = None
 
             def _fmt(x):
