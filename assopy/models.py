@@ -650,9 +650,13 @@ class Order(models.Model):
 
     def confirm_order(self, payment_date):
         # NOTE(artcz)(2018-05-28)
-        # This used to generate invoices, currently it just fills payment date.
+        # This used to generate invoices, currently it just fills payment date,
+        # and creates placeholder
+        # To avoid ciruclar import
+        from conference.invoicing import create_invoices_for_order
         self.payment_date = payment_date
         self.save()
+        create_invoices_for_order(self, force_placeholder=True)
 
     def total(self, apply_discounts=True):
         if apply_discounts:

@@ -23,7 +23,8 @@ from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
     EPS_18,
-    create_invoices_for_order
+    VAT_NOT_AVAILABLE_PLACEHOLDER,
+    upgrade_invoice_placeholder_to_real_invoice,
 )
 from conference.exchangerates import (
     DAILY_ECB_URL,
@@ -291,14 +292,22 @@ def test_invoices_from_buying_tickets(client):
     SOME_RANDOM_DATE = date(2018, 1, 1)
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
-    assert not order._complete
 
-    # still no invoices created, we have to explicitly call the create function
-    assert Invoice.objects.all().count() == 0
-
-    create_invoices_for_order(order)
     # multiple items per invoice, one invoice per vat rate.
+    # 2 invoices but they are both placeholders
     assert Invoice.objects.all().count() == 2
+    assert Invoice.objects.filter(
+        invoice_copy_full_html=VAT_NOT_AVAILABLE_PLACEHOLDER
+    ).count() == 2
+
+    # and we can then upgrade all invoices to non-placeholders
+    for _invoice in Invoice.objects.all():
+        upgrade_invoice_placeholder_to_real_invoice(_invoice)
+
+    assert Invoice.objects.all().count() == 2
+    assert Invoice.objects.filter(
+        invoice_copy_full_html=VAT_NOT_AVAILABLE_PLACEHOLDER
+    ).count() == 0
 
     invoice_vat_10 = Invoice.objects.get(vat__value=10)
     invoice_vat_20 = Invoice.objects.get(vat__value=20)
@@ -371,8 +380,11 @@ def create_order_and_invoice(assopy_user, fare):
     today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
     order.confirm_order(today)
-    create_invoices_for_order(order)
-    return Invoice.objects.get(emit_date__year=today.year)
+    # confirm_order by default creates placeholders, but for those tests we can
+    # upgrade them to proper invoices anyway.
+    return upgrade_invoice_placeholder_to_real_invoice(
+        Invoice.objects.get(order=order)
+    )
 
 
 @mark.django_db

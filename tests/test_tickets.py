@@ -27,7 +27,6 @@ from conference.exchangerates import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
 )
-from conference.invoicing import create_invoices_for_order
 from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
 from email_template.models import Email
@@ -206,15 +205,11 @@ class TestBuyingTickets(TestCase):
             assert order.total() == 3000
             assert not order._complete
 
-            # this doesn't require call to ECB, just explicit invoice creation
-            order.confirm_order(date.today())
-            assert not order._complete
-
             with responses.RequestsMock() as rsps:
                 # mocking responses for the invoice VAT exchange rate feature
                 rsps.add(responses.GET, DAILY_ECB_URL,
                          body=EXAMPLE_ECB_DAILY_XML)
-                create_invoices_for_order(order)
+                order.confirm_order(date.today())
 
             assert order._complete
 
@@ -440,13 +435,10 @@ class TestTicketManagementScenarios(TestCase):
 
         assert Invoice.objects.all().count() == 0
 
-        self.order.confirm_order(timezone.now().date())
-        assert Invoice.objects.all().count() == 0
-
         with responses.RequestsMock() as rsps:
             # mocking responses for the invoice VAT exchange rate feature
             rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
-            create_invoices_for_order(self.order)
+            self.order.confirm_order(timezone.now().date())
 
         assert Invoice.objects.all().count() == 1
 
