@@ -23,6 +23,7 @@ from conference.fares import (
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
+from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
 from conference.exchangerates import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
@@ -213,9 +214,18 @@ class TestBuyingTickets(TestCase):
 
             assert order._complete
 
+            invoice = Invoice.objects.get()
+            assert invoice.html == VAT_NOT_AVAILABLE_PLACEHOLDER
+
             response = self.client.get(my_profile_url)
             self.assertContains(response, 'View your tickets (3)')
             self.assertContains(response, tickets_url)
+            self.assertContains(response, VAT_NOT_AVAILABLE_PLACEHOLDER)
+
+            response = self.client.get(p3_tickets_url)
+            latest_ticket = Ticket.objects.latest('id')
+            ticket_url = reverse('p3-ticket', kwargs={'tid': latest_ticket.id})
+            self.assertContains(response, ticket_url)
 
         with freeze_time("2018-05-11"):
             # need to relogin everytime we timetravel

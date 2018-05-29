@@ -132,24 +132,24 @@
                                 <td>{{ order.code }}</td>
                                 <td>{{ order.created|date:"d M Y" }}</td>
                                 <td>
-                                    {% with order.invoices.all as invoices %}
+                                  {% with order.invoices.all as invoices %}
                                     {% if not invoices %}
-                                    {% trans "N/A" %}
+                                      N/A
                                     {% else %}
-                                        {% for invoice in invoices %}
-                                            {% if invoice.html == VAT_NOT_AVAILABLE_PLACEHOLDER %}
-                                                {{ VAT_NOT_AVAILABLE_PLACEHOLDER }}
-                                            {% else %}
-                                                <a href="{% url 'assopy-invoice-html' order_code=order.code code=invoice.code %}">{{ invoice.code }}</a>
-                                            {% endif %}
-                                            {% comment %}
-                                                {% for cn in i.credit_notes.all %}
-                                                    (<a href="{% url 'assopy-invoice-html' assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
-                                                {% endfor %}
-                                            {% endcomment %}
-                                        {% endfor %}
+                                      {% for invoice in invoices %}
+                                        {% if invoice.html == VAT_NOT_AVAILABLE_PLACEHOLDER %}
+                                          {{ VAT_NOT_AVAILABLE_PLACEHOLDER }}
+                                        {% else %}
+                                          <a href="{% url 'assopy-invoice-html' order_code=order.code code=invoice.code %}">{{ invoice.code }}</a>
+                                        {% endif %}
+                                        {% comment %}
+                                          {% for cn in i.credit_notes.all %}
+                                            (<a href="{% url 'assopy-invoice-html' assopy_id=cn.assopy_id %}">{{ cn.code }}</a> refund)
+                                          {% endfor %}
+                                        {% endcomment %}
+                                      {% endfor %}
                                     {% endif %}
-                                    {% endwith %}
+                                  {% endwith %}
                                 </td>
                             </tr>
                             {% endfor %}

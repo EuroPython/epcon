@@ -804,7 +804,7 @@ class Invoice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     issuer = models.TextField()
-    invoice_copy_full_html = models.TextField()
+    html = models.TextField()
 
     local_currency = models.CharField(max_length=3, default="EUR")
     vat_in_local_currency = models.DecimalField(

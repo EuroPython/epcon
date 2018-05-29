@@ -184,11 +184,10 @@ def create_invoices_for_order(order, force_placeholder=False):
                 )
 
                 if force_placeholder:
-                    html = VAT_NOT_AVAILABLE_PLACEHOLDER
+                    invoice.html = VAT_NOT_AVAILABLE_PLACEHOLDER
                 else:
-                    html = render_invoice_as_html(invoice)
+                    invoice.html = render_invoice_as_html(invoice)
 
-                invoice.invoice_copy_full_html = html
                 invoice.save()
 
                 assert invoice.net_price() == net_price
@@ -201,7 +200,7 @@ def create_invoices_for_order(order, force_placeholder=False):
 
 def upgrade_invoice_placeholder_to_real_invoice(invoice):
     invoice.issuer = ISSUER_BY_YEAR[invoice.emit_date.year]
-    invoice.invoice_copy_full_html = render_invoice_as_html(invoice)
+    invoice.html = render_invoice_as_html(invoice)
     invoice.save()
     return invoice
 

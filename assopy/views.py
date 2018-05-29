@@ -422,10 +422,10 @@ def invoice(request, order_code, code, mode='html'):
     )
 
     if mode == 'html':
-        return http.HttpResponse(invoice.invoice_copy_full_html)
+        return http.HttpResponse(invoice.html)
 
     return PdfResponse(filename=invoice.get_invoice_filename(),
-                       content=invoice.invoice_copy_full_html)
+                       content=invoice.html)
 
 
 def _pdf(request, url):
