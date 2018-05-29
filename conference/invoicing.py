@@ -25,6 +25,8 @@ from conference.exchangerates import (
     convert_from_EUR_using_latest_exrates,
     normalize_price
 )
+
+
 ACPYSS_16 = """
 Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
 P° Manuel Lardizabal 1, Oficina 307-20018 Donostia (Spain)
@@ -52,8 +54,7 @@ Sweden
 EU VAT-ID: SE802417770401
 Contact Email: billing@europython.eu
 https://www.europython-society.org
-"""
-
+""".strip()
 
 
 ISSUER_BY_YEAR = {
@@ -76,6 +77,11 @@ invoice_code_templates = {
     REAL_INVOICE_PREFIX: "I/%(year_two_digits)s.%(sequential_id)s",
     FAKE_INVOICE_PREFIX: "F/%(year_two_digits)s.%(sequential_id)s",
 }
+
+VAT_NOT_AVAILABLE_PLACEHOLDER = """
+VAT invoices will be generated as soon as we have been issued a VAT ID.
+Please stay tuned.
+""".strip()
 
 
 def is_real_invoice_code(invoice_code):
@@ -120,7 +126,7 @@ def next_invoice_code_for_year(prefix, year):
     return template % {'year_two_digits': year % 1000, 'sequential_id': '0001'}
 
 
-def create_invoices_for_order(order):
+def create_invoices_for_order(order, force_placeholder=False):
     assert isinstance(order, Order)
 
     payment_date = order.payment_date
@@ -177,8 +183,11 @@ def create_invoices_for_order(order):
                     }
                 )
 
-                html = render_invoice_as_html(invoice)
-                invoice.invoice_copy_full_html = html
+                if force_placeholder:
+                    invoice.html = VAT_NOT_AVAILABLE_PLACEHOLDER
+                else:
+                    invoice.html = render_invoice_as_html(invoice)
+
                 invoice.save()
 
                 assert invoice.net_price() == net_price
@@ -187,6 +196,13 @@ def create_invoices_for_order(order):
                 invoices.append(invoice)
 
     return invoices
+
+
+def upgrade_invoice_placeholder_to_real_invoice(invoice):
+    invoice.issuer = ISSUER_BY_YEAR[invoice.emit_date.year]
+    invoice.html = render_invoice_as_html(invoice)
+    invoice.save()
+    return invoice
 
 
 def render_invoice_as_html(invoice):
@@ -220,7 +236,7 @@ def render_invoice_as_html(invoice):
             'total': invoice.price,
         },
         'vat': invoice.vat,
-        'real': is_real_invoice_code(invoice.code),
+        'is_real_invoice': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
         "invoice": invoice,
     }

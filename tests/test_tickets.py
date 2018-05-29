@@ -23,11 +23,11 @@ from conference.fares import (
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
+from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
 from conference.exchangerates import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
 )
-from conference.invoicing import create_invoices_for_order
 from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
 from email_template.models import Email
@@ -206,21 +206,26 @@ class TestBuyingTickets(TestCase):
             assert order.total() == 3000
             assert not order._complete
 
-            # this doesn't require call to ECB, just explicit invoice creation
-            order.confirm_order(date.today())
-            assert not order._complete
-
             with responses.RequestsMock() as rsps:
                 # mocking responses for the invoice VAT exchange rate feature
                 rsps.add(responses.GET, DAILY_ECB_URL,
                          body=EXAMPLE_ECB_DAILY_XML)
-                create_invoices_for_order(order)
+                order.confirm_order(date.today())
 
             assert order._complete
+
+            invoice = Invoice.objects.get()
+            assert invoice.html == VAT_NOT_AVAILABLE_PLACEHOLDER
 
             response = self.client.get(my_profile_url)
             self.assertContains(response, 'View your tickets (3)')
             self.assertContains(response, tickets_url)
+            self.assertContains(response, VAT_NOT_AVAILABLE_PLACEHOLDER)
+
+            response = self.client.get(p3_tickets_url)
+            latest_ticket = Ticket.objects.latest('id')
+            ticket_url = reverse('p3-ticket', kwargs={'tid': latest_ticket.id})
+            self.assertContains(response, ticket_url)
 
         with freeze_time("2018-05-11"):
             # need to relogin everytime we timetravel
@@ -440,13 +445,10 @@ class TestTicketManagementScenarios(TestCase):
 
         assert Invoice.objects.all().count() == 0
 
-        self.order.confirm_order(timezone.now().date())
-        assert Invoice.objects.all().count() == 0
-
         with responses.RequestsMock() as rsps:
             # mocking responses for the invoice VAT exchange rate feature
             rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
-            create_invoices_for_order(self.order)
+            self.order.confirm_order(timezone.now().date())
 
         assert Invoice.objects.all().count() == 1
 

@@ -70,7 +70,7 @@ def test_assopy_invoice(client):
         emit_date=timezone.now().date(),
         price=Decimal(1337),
         vat=vat_10,
-        invoice_copy_full_html='Here goes full html',
+        html='Here goes full html',
         exchange_rate_date=date.today(),
     )
 

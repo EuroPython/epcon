@@ -23,7 +23,8 @@ from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
     EPS_18,
-    create_invoices_for_order
+    VAT_NOT_AVAILABLE_PLACEHOLDER,
+    upgrade_invoice_placeholder_to_real_invoice,
 )
 from conference.exchangerates import (
     DAILY_ECB_URL,
@@ -58,7 +59,7 @@ def _prepare_invoice_for_basic_test(order_code, invoice_code):
         emit_date=date.today(),
         price=Decimal(1337),
         vat=vat_10,
-        invoice_copy_full_html='Here goes full html',
+        html='Here goes full html',
         exchange_rate_date=date.today(),
     )
 
@@ -291,14 +292,22 @@ def test_invoices_from_buying_tickets(client):
     SOME_RANDOM_DATE = date(2018, 1, 1)
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
-    assert not order._complete
 
-    # still no invoices created, we have to explicitly call the create function
-    assert Invoice.objects.all().count() == 0
-
-    create_invoices_for_order(order)
     # multiple items per invoice, one invoice per vat rate.
+    # 2 invoices but they are both placeholders
     assert Invoice.objects.all().count() == 2
+    assert Invoice.objects.filter(
+        html=VAT_NOT_AVAILABLE_PLACEHOLDER
+    ).count() == 2
+
+    # and we can then upgrade all invoices to non-placeholders
+    for _invoice in Invoice.objects.all():
+        upgrade_invoice_placeholder_to_real_invoice(_invoice)
+
+    assert Invoice.objects.all().count() == 2
+    assert Invoice.objects.filter(
+        html=VAT_NOT_AVAILABLE_PLACEHOLDER
+    ).count() == 0
 
     invoice_vat_10 = Invoice.objects.get(vat__value=10)
     invoice_vat_20 = Invoice.objects.get(vat__value=20)
@@ -334,8 +343,8 @@ def test_invoices_from_buying_tickets(client):
     assert invoice_vat_10.price == gross_price_vat_10
     assert invoice_vat_10.net_price() == net_price_vat_10
     assert invoice_vat_10.vat_value() == vat_value_vat_10
-    assert invoice_vat_10.invoice_copy_full_html.startswith('<!DOCTYPE')
-    assert len(invoice_vat_10.invoice_copy_full_html) > 1000  # large html blob
+    assert invoice_vat_10.html.startswith('<!DOCTYPE')
+    assert len(invoice_vat_10.html) > 1000  # large html blob
 
     # check numbers for vat 20%
     gross_price_vat_20 = social_event_price * social_event_amount
@@ -346,8 +355,8 @@ def test_invoices_from_buying_tickets(client):
     assert invoice_vat_20.price == gross_price_vat_20
     assert invoice_vat_20.net_price() == net_price_vat_20
     assert invoice_vat_20.vat_value() == vat_value_vat_20
-    assert invoice_vat_20.invoice_copy_full_html.startswith('<!DOCTYPE')
-    assert len(invoice_vat_20.invoice_copy_full_html) > 1000  # large html blob
+    assert invoice_vat_20.html.startswith('<!DOCTYPE')
+    assert len(invoice_vat_20.html) > 1000  # large html blob
 
     # each OrderItem should have a corresponding Ticket
     assert Ticket.objects.all().count() == ticket_amount + social_event_amount
@@ -371,8 +380,11 @@ def create_order_and_invoice(assopy_user, fare):
     today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
     order.confirm_order(today)
-    create_invoices_for_order(order)
-    return Invoice.objects.get(emit_date__year=today.year)
+    # confirm_order by default creates placeholders, but for those tests we can
+    # upgrade them to proper invoices anyway.
+    return upgrade_invoice_placeholder_to_real_invoice(
+        Invoice.objects.get(order=order)
+    )
 
 
 @mark.django_db
@@ -400,7 +412,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert invoice.code == "I/16.0001"
         assert invoice.emit_date == date(2016, 1, 1)
         assert invoice.issuer == ACPYSS_16
-        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
         assert ACPYSS_16 in response.content.decode('utf-8')
@@ -412,7 +424,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert invoice.code == "I/17.0001"
         assert invoice.emit_date == date(2017, 1, 1)
         assert invoice.issuer == PYTHON_ITALIA_17
-        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
         assert PYTHON_ITALIA_17 in response.content.decode('utf-8')
@@ -427,7 +439,7 @@ def test_if_invoice_stores_information_about_the_seller(client):
         assert invoice.code == "I/18.0001"
         assert invoice.emit_date == date(2018, 1, 1)
         assert invoice.issuer == EPS_18
-        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.html.startswith('<!DOCTYPE')
 
         response = client.get(invoice_url(invoice))
         assert EPS_18 in response.content.decode('utf-8')
@@ -448,7 +460,7 @@ def test_vat_in_GBP_for_2018(client):
     with freeze_time("2018-05-05"):
         client.login(email='joedoe@example.com', password='password123')
         invoice = create_order_and_invoice(user.assopy_user, fare)
-        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.html.startswith('<!DOCTYPE')
         assert invoice.vat_value()           == Decimal("1.67")
         assert invoice.vat_in_local_currency == Decimal("1.49")
         assert invoice.local_currency        == "GBP"
@@ -466,7 +478,7 @@ def test_vat_in_GBP_for_2018(client):
     with freeze_time("2017-05-05"):
         client.login(email='joedoe@example.com', password='password123')
         invoice = create_order_and_invoice(user.assopy_user, fare)
-        assert invoice.invoice_copy_full_html.startswith('<!DOCTYPE')
+        assert invoice.html.startswith('<!DOCTYPE')
         assert invoice.vat_value()           == Decimal("1.67")
         assert invoice.vat_in_local_currency == Decimal("1.67")
         assert invoice.local_currency        == "EUR"
