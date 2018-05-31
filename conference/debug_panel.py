@@ -19,7 +19,11 @@ def get_current_commit_hash():
     process = subprocess.Popen(
         command.split(), stdout=subprocess.PIPE, cwd=settings.PROJECT_DIR
     )
-    return process.communicate()[0]
+    full_hash = process.communicate()[0]
+    return "%s %s" % (full_hash[:8], full_hash)
+
+
+commit_hash_in_current_process = get_current_commit_hash()
 
 
 @staff_member_required
@@ -27,8 +31,9 @@ def debug_panel(request):
 
     debug_vars = [
         ('Current_Commit_Hash', get_current_commit_hash()),
-        ('Django_Version', django.VERSION),
-        ('Python_Version', platform.python_version()),
+        ('Commit_Hash_in_current_process', commit_hash_in_current_process),
+        ('Django_Version',      django.VERSION),
+        ('Python_Version',      platform.python_version()),
     ]
 
     allowed_settings = [
