@@ -460,6 +460,7 @@ class SpeakerManager(models.Manager):
                 qs = qs.filter(talk__type=talk_type)
         return Speaker.objects.filter(user__in=qs)
 
+
 class Speaker(models.Model, UrlMixin):
     user = models.OneToOneField('auth.User', primary_key=True)
 
@@ -474,7 +475,7 @@ class Speaker(models.Model, UrlMixin):
         in function of the status and the selected conference.
         """
         qs = TalkSpeaker.objects.filter(speaker=self)
-        if status in ('proposed', 'accepted', 'canceled'):
+        if status in TALK_STATUS._db_values:
             qs = qs.filter(talk__status=status)
         elif status is not None:
             raise ValueError('status unknown')
@@ -484,11 +485,14 @@ class Speaker(models.Model, UrlMixin):
             qs = qs.filter(talk__conference=conference)
         return Talk.objects.filter(id__in=qs.values('talk'))
 
+
 TALK_LANGUAGES = dsettings.LANGUAGES
-TALK_STATUS = (
+
+TALK_STATUS = Choices(
     ('proposed', _('Proposed')),
     ('accepted', _('Accepted')),
     ('canceled', _('Canceled')),
+    ('waitlist', _('Waitlist')),
 )
 
 VIDEO_TYPE = (
@@ -511,25 +515,34 @@ class TalkManager(models.Manager):
         return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
+
         def proposed(self, conference=None):
-            qs = self.filter(status='proposed')
+            qs = self.filter(status=TALK_STATUS.proposed)
             if conference:
                 qs = qs.filter(conference=conference)
             return qs
+
         def accepted(self, conference=None):
-            qs = self.filter(status='accepted')
+            qs = self.filter(status=TALK_STATUS.accepted)
             if conference:
                 qs = qs.filter(conference=conference)
             return qs
+
         def canceled(self, conference=None):
-            qs = self.filter(status='canceled')
+            qs = self.filter(status=TALK_STATUS.canceled)
+            if conference:
+                qs = qs.filter(conference=conference)
+            return qs
+
+        def waitlist(self, conference=None):
+            qs = self.filter(status=TALK_STATUS.waitlist)
             if conference:
                 qs = qs.filter(conference=conference)
             return qs
 
     def createFromTitle(self, title, sub_title, conference, speaker,
                         prerequisites, abstract_short, abstract_extra,
-                        status='proposed', language='en',
+                        status=TALK_STATUS.proposed, language='en',
                         level=TALK_LEVEL.beginner,
                         domain_level=TALK_LEVEL.beginner,
                         domain='',
