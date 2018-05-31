@@ -14,7 +14,7 @@
         {% if not ocomplete %}
         <h1>{% trans "Waiting for Paypal response..." %}</h1>
         <div>
-            <p>{% blocktrans with code=order.code url="mailto:helpdesk@euroython.eu" %}
+            <p>{% blocktrans with code=order.code url="mailto:helpdesk@europython.eu" %}
                 Are you waiting for too long? <a href="{{ url }}">Write to us</a>
                 specifying your order number {{ code }}
             {% endblocktrans %}</p>
