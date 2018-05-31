@@ -1,6 +1,4 @@
 # -*- coding: UTF-8 -*-
-from conference import cachef
-from conference import models
 
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -10,9 +8,11 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
 
-from taggit.models import TaggedItem
-
 import django_comments as comments
+
+from conference import cachef
+from conference import models
+
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 
@@ -572,6 +572,7 @@ def _i_profile_data(sender, **kw):
 
     return [ 'profile:%s' % x for x in uids ]
 
+
 def profile_data(uid, preload=None):
     if preload is None:
         preload = {}
@@ -595,12 +596,15 @@ def profile_data(uid, preload=None):
     except KeyError:
         bio = profile.getBio()
 
-    talks_map = {
-        'by_conf': {'all': []},
-        'accepted': {'all': []},
-        'proposed': {'all': []},
-        'canceled': {'all': []},
-    }
+    # NOTE(artcz)(2018-05-31)
+    # I updated it to automatically fill the map with all available statuses.
+    # (previously it was staticly defined dict).
+    # However... I don't know why it's there, maybe we would be better with
+    # defaultdict?
+    talks_map = {talk_status: {'all': []}
+                 for talk_status in models.TALK_STATUS._db_values}
+    talks_map['by_conf'] = {'all': []}
+
     for t in talks:
         tid = t['talk']
         conf = t['talk__conference']
@@ -671,6 +675,7 @@ def profiles_data(pids):
         output.append(val)
 
     return output
+
 
 def fares(conference):
     output = []
