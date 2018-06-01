@@ -32,7 +32,7 @@ AND CONVERT EITHER TO OR FROM EUROS. KEEP THAT IN MIND.
 
 from __future__ import unicode_literals, absolute_import, print_function
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from decimal import Decimal
 
 from django.core.cache import cache
@@ -130,12 +130,29 @@ def get_ecb_rates_for_currency(currency):
     if cached:
         exrates = cached
     else:
+        # NOTE(artcz)(2018-06-01)
+        # This is a quick ugly workaround for the dblock error we've seen in
+        # tracebacks on production. Basically the idea is we have more cache
+        # misses then expected, and we should fallback to the database first if
+        # possible.
+        # TODO: make it a bit nicer.
         try:
-            exrates = fetch_latest_ecb_exrates()
-            store_new_exrates = True
-        except (HTTPError, ConnectionError):
-            exrates = get_latest_ecb_rates_from_db(currency)
+            latest_exrate_in_db = get_latest_ecb_rates_from_db(currency)
+        except ExchangeRate.DoesNotExist:
+            latest_exrate_in_db = {'datestamp': None}
+
+        today, yesterday = date.today(), date.today() - timedelta(days=1)
+
+        if latest_exrate_in_db['datestamp'] in [today, yesterday]:
             store_new_exrates = False
+            exrates = latest_exrate_in_db
+        else:
+            try:
+                exrates = fetch_latest_ecb_exrates()
+                store_new_exrates = True
+            except (HTTPError, ConnectionError):
+                exrates = get_latest_ecb_rates_from_db(currency)
+                store_new_exrates = False
 
         cache.set(CURRENCY_CACHE_KEY, exrates, CURRENCY_CACHE_TIMEOUT)
         if store_new_exrates:
