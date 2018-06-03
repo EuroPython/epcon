@@ -9,6 +9,8 @@ from django.views import defaults
 from filebrowser.sites import site as fsite
 
 import p3.forms as pforms
+from conference.debug_panel import debug_panel
+
 
 admin.autodiscover()
 admin.site.index_template = 'p3/admin/index.html'
@@ -34,6 +36,9 @@ urlpatterns = [
 
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('django.contrib.auth.urls', namespace='auth')),
+
+    # production debug panel, doesn't even have a name=
+    url(r'^nothing-to-see-here/$', debug_panel),
 ]
 
 if settings.DEBUG:
@@ -47,7 +52,8 @@ if settings.DEBUG:
         url(r'^400/$', defaults.bad_request),
     ]
 
-urlpatterns += i18n_patterns('',
+urlpatterns += i18n_patterns(
+    '',
     url(r'^', include('cms.urls')),
 )
 
