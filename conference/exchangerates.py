@@ -32,7 +32,7 @@ AND CONVERT EITHER TO OR FROM EUROS. KEEP THAT IN MIND.
 
 from __future__ import unicode_literals, absolute_import, print_function
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from decimal import Decimal
 
 from django.core.cache import cache
@@ -73,6 +73,8 @@ EXAMPLE_ECB_DAILY_XML = """
 </gesmes:Envelope>
 """.strip()
 
+SUPPORTED_CURRENCIES = ["GBP", "JPY", "USD"]
+
 
 def normalize_price(price):
     """
@@ -99,6 +101,31 @@ def fetch_latest_ecb_exrates():
     )
 
 
+def store_exrates_in_db(currency, exrates):
+    return ExchangeRate.objects.update_or_create(
+        datestamp=exrates['datestamp'], currency=currency,
+        defaults={'rate': exrates[currency]}
+    )
+
+
+def check_for_exrates_updates(currency):
+    """
+    This function should be called from cron.
+    """
+    try:
+        exrates = fetch_latest_ecb_exrates()
+    except (HTTPError, ConnectionError):
+        print("Error handling goes here...")
+        return
+
+    exrate, status = store_exrates_in_db(currency, exrates)
+    if status:
+        print("New exrate created!", exrate)
+        return exrate
+    print("Still the same %s exrate...." % currency)
+    return exrate
+
+
 def get_latest_ecb_rates_from_db(currency):
     # if there are no ExchangeRates cached, this is going to raise
     # DoesNotExist; and we're going to assume there is at least one
@@ -110,53 +137,16 @@ def get_latest_ecb_rates_from_db(currency):
     }
 
 
-def store_exrates_in_db(currency, exrates):
-    ExchangeRate.objects.update_or_create(
-        datestamp=exrates['datestamp'], currency=currency,
-        defaults={'rate': exrates[currency]}
-    )
-
-
 def get_ecb_rates_for_currency(currency):
     """
-    IMPORATANT: This returns latest copy it has from cache OR if cache is
-    invalid (or nonexistent) it will fetch new data via
-    fetch_latest_ecb_exrates()
-
-    Then it returns tuple with the datestamp and Decimal value of conversion
-    rate.
+    Returns tuple with the datestamp and Decimal value of conversion rate.
     """
     cached = cache.get(CURRENCY_CACHE_KEY)
     if cached:
         exrates = cached
     else:
-        # NOTE(artcz)(2018-06-01)
-        # This is a quick ugly workaround for the dblock error we've seen in
-        # tracebacks on production. Basically the idea is we have more cache
-        # misses then expected, and we should fallback to the database first if
-        # possible.
-        # TODO: make it a bit nicer.
-        try:
-            latest_exrate_in_db = get_latest_ecb_rates_from_db(currency)
-        except ExchangeRate.DoesNotExist:
-            latest_exrate_in_db = {'datestamp': None}
-
-        today, yesterday = date.today(), date.today() - timedelta(days=1)
-
-        if latest_exrate_in_db['datestamp'] in [today, yesterday]:
-            store_new_exrates = False
-            exrates = latest_exrate_in_db
-        else:
-            try:
-                exrates = fetch_latest_ecb_exrates()
-                store_new_exrates = True
-            except (HTTPError, ConnectionError):
-                exrates = get_latest_ecb_rates_from_db(currency)
-                store_new_exrates = False
-
+        exrates = get_latest_ecb_rates_from_db(currency)
         cache.set(CURRENCY_CACHE_KEY, exrates, CURRENCY_CACHE_TIMEOUT)
-        if store_new_exrates:
-            store_exrates_in_db(currency, exrates)
 
     return (exrates['datestamp'], exrates[currency])
 
