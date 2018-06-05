@@ -24,9 +24,10 @@ from conference.fares import (
     SOCIAL_EVENT_FARE_CODE
 )
 from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
-from conference.exchangerates import (
+from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
+    fetch_and_store_latest_ecb_exrates,
 )
 from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
@@ -127,6 +128,10 @@ class TestBuyingTickets(TestCase):
     def setUp(self):
         self.user = make_user()
         make_basic_fare_setup()
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            fetch_and_store_latest_ecb_exrates()
 
     def test_buying_early_bird_only_during_early_bird_window(self):
 
@@ -206,12 +211,7 @@ class TestBuyingTickets(TestCase):
             assert order.total() == 3000
             assert not order._complete
 
-            with responses.RequestsMock() as rsps:
-                # mocking responses for the invoice VAT exchange rate feature
-                rsps.add(responses.GET, DAILY_ECB_URL,
-                         body=EXAMPLE_ECB_DAILY_XML)
-                order.confirm_order(date.today())
-
+            order.confirm_order(date.today())
             assert order._complete
 
             invoice = Invoice.objects.get()
@@ -302,6 +302,11 @@ class TestTicketManagementScenarios(TestCase):
         self.VALIDATION_ERROR_400      = 400
         self.MAIN_USER_EMAIL  = self.user.email
         self.OTHER_USER_EMAIL = 'foobar@example.com'
+
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            fetch_and_store_latest_ecb_exrates()
 
     def prefix(self, fieldname):
         """For some reason the website is using prefixed fields...
@@ -445,10 +450,7 @@ class TestTicketManagementScenarios(TestCase):
 
         assert Invoice.objects.all().count() == 0
 
-        with responses.RequestsMock() as rsps:
-            # mocking responses for the invoice VAT exchange rate feature
-            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
-            self.order.confirm_order(timezone.now().date())
+        self.order.confirm_order(timezone.now().date())
 
         assert Invoice.objects.all().count() == 1
 
