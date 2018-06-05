@@ -35,10 +35,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 from datetime import datetime, date
 from decimal import Decimal
 
-from django.core.cache import cache
-
 import requests
-from requests.exceptions import HTTPError, ConnectionError
 from lxml import etree as ET
 
 from conference.models import ExchangeRate
@@ -46,8 +43,6 @@ from conference.models import ExchangeRate
 
 HTTP_SUCCESS = 200
 DAILY_ECB_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
-CURRENCY_CACHE_KEY = 'currency_xrates'
-CURRENCY_CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours
 
 # we probably can assume rounding to 0.01 for most of the currencie we're going
 # to ever use.
@@ -73,7 +68,11 @@ EXAMPLE_ECB_DAILY_XML = """
 </gesmes:Envelope>
 """.strip()
 
-SUPPORTED_CURRENCIES = ["GBP", "JPY", "USD"]
+SUPPORTED_CURRENCIES = ["GBP"]
+
+
+class CurrencyNotSupported(Exception):
+    pass
 
 
 def normalize_price(price):
@@ -84,7 +83,7 @@ def normalize_price(price):
     return price.quantize(Decimal(DEFAULT_DECIMAL_PLACES))
 
 
-def fetch_latest_ecb_exrates():
+def fetch_and_store_latest_ecb_exrates():
     """
     Example of the XML (see EXAMPLE_XML constant)
     """
@@ -95,35 +94,18 @@ def fetch_latest_ecb_exrates():
     datestamp = datetime.strptime(info.attrib['time'], "%Y-%m-%d").date()
     rates = [x.attrib for x in info]
 
-    return dict(
-        datestamp=datestamp,
-        **{x['currency']: Decimal(x['rate']) for x in rates}
-    )
+    exrates = []
+    for item in rates:
+        if item['currency'] in SUPPORTED_CURRENCIES:
+            exrate, created = ExchangeRate.objects.update_or_create(
+                datestamp=datestamp,
+                currency=item['currency'],
+                defaults={'rate': Decimal(item['rate'])}
+            )
+            exrates.append(exrate)
+            print(exrate, "NEW EXRATE!" if created else "<noupdate>")
 
-
-def store_exrates_in_db(currency, exrates):
-    return ExchangeRate.objects.update_or_create(
-        datestamp=exrates['datestamp'], currency=currency,
-        defaults={'rate': exrates[currency]}
-    )
-
-
-def check_for_exrates_updates(currency):
-    """
-    This function should be called from cron.
-    """
-    try:
-        exrates = fetch_latest_ecb_exrates()
-    except (HTTPError, ConnectionError):
-        print("Error handling goes here...")
-        return
-
-    exrate, status = store_exrates_in_db(currency, exrates)
-    if status:
-        print("New exrate created!", exrate)
-        return exrate
-    print("Still the same %s exrate...." % currency)
-    return exrate
+    return exrates
 
 
 def get_latest_ecb_rates_from_db(currency):
@@ -141,13 +123,10 @@ def get_ecb_rates_for_currency(currency):
     """
     Returns tuple with the datestamp and Decimal value of conversion rate.
     """
-    cached = cache.get(CURRENCY_CACHE_KEY)
-    if cached:
-        exrates = cached
-    else:
-        exrates = get_latest_ecb_rates_from_db(currency)
-        cache.set(CURRENCY_CACHE_KEY, exrates, CURRENCY_CACHE_TIMEOUT)
-
+    # UPDATE 2018-06-05 -- read directly from the database, and skip caching
+    if currency not in SUPPORTED_CURRENCIES:
+        raise CurrencyNotSupported("Currently we don't support %s" % currency)
+    exrates = get_latest_ecb_rates_from_db(currency)
     return (exrates['datestamp'], exrates[currency])
 
 

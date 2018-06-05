@@ -4,10 +4,7 @@ from __future__ import print_function
 
 from django.core.management.base import BaseCommand
 
-from conference.exchangerates import (
-    SUPPORTED_CURRENCIES,
-    check_for_exrates_updates
-)
+from conference.exchangerates import fetch_and_store_latest_ecb_exrates
 
 
 class Command(BaseCommand):
@@ -16,5 +13,5 @@ class Command(BaseCommand):
     stores them in db.
     """
     def handle(self, *args, **options):
-        for currency in SUPPORTED_CURRENCIES:
-            check_for_exrates_updates(currency)
+        print("PULLING LATEST ECB RATES")
+        fetch_and_store_latest_ecb_exrates()
