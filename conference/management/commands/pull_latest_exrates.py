@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from django.core.management.base import BaseCommand
 
-from conference.exchangerates import fetch_and_store_latest_ecb_exrates
+from conference.currencies import fetch_and_store_latest_ecb_exrates
 
 
 class Command(BaseCommand):

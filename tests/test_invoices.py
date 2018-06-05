@@ -26,7 +26,7 @@ from conference.invoicing import (
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
 )
-from conference.exchangerates import (
+from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
     EXAMPLE_ECB_DATE,

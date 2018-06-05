@@ -16,8 +16,8 @@ this URL
 The way it works is this xml shows latest (published every day at 1600 CET) ECB
 exchange rates.
 
-What we're going to do is take that XML, parse it, and then cache the results
-for 24 hours, because we're just interested in using latest value (if we need
+What we're going to do is take that XML, parse it, and then store the result in
+DB for later, but we're mostly interested in using latest value (if we need
 historical values we can get full XML since 1999 here:
 
     https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml
@@ -76,10 +76,6 @@ class CurrencyNotSupported(Exception):
 
 
 def normalize_price(price):
-    """
-    TODO: move this function somewhere else, it's not a most obvious place to
-    put it.
-    """
     return price.quantize(Decimal(DEFAULT_DECIMAL_PLACES))
 
 

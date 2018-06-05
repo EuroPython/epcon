@@ -24,7 +24,7 @@ from assopy import janrain
 from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
-from conference.exchangerates import normalize_price
+from conference.currencies import normalize_price
 from conference.models import Ticket
 from email_template import utils
 

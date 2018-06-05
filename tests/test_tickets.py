@@ -24,7 +24,7 @@ from conference.fares import (
     SOCIAL_EVENT_FARE_CODE
 )
 from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
-from conference.exchangerates import (
+from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
     fetch_and_store_latest_ecb_exrates,

@@ -10,7 +10,7 @@ import responses
 
 from tests.common_tools import clear_all_the_caches
 
-from conference.exchangerates import (
+from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
     CurrencyNotSupported,
