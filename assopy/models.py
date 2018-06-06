@@ -574,6 +574,7 @@ ORDER_PAYMENT = (
 # Enabled order payment options
 ENABLED_ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
+    ('bank', 'Bank'),
 )
 
 class Order(models.Model):
