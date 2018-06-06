@@ -564,10 +564,16 @@ order_created = dispatch.Signal(providing_args=['raw_items'])
 # backend attraverso il metodo Order.complete.
 purchase_completed = dispatch.Signal(providing_args=[])
 
+# Implemented order payment options
 ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
     ('paypal', 'PayPal'),
-    #('bank', 'Bank'),
+    ('bank', 'Bank'),
+)
+
+# Enabled order payment options
+ENABLED_ORDER_PAYMENT = (
+    ('cc', 'Credit Card'),
 )
 
 class Order(models.Model):
