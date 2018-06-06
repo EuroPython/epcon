@@ -21,7 +21,7 @@ from django.db import transaction
 
 from assopy.models import Invoice, Order
 
-from conference.exchangerates import (
+from conference.currencies import (
     convert_from_EUR_using_latest_exrates,
     normalize_price
 )
