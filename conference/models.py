@@ -508,6 +508,7 @@ TALK_LEVEL = Choices(
 
 
 class TalkManager(models.Manager):
+
     def get_queryset(self):
         return self._QuerySet(self.model)
 
@@ -516,29 +517,24 @@ class TalkManager(models.Manager):
 
     class _QuerySet(QuerySet):
 
-        def proposed(self, conference=None):
-            qs = self.filter(status=TALK_STATUS.proposed)
+        def _filter_by_status(self, status, conference=None):
+            assert status in TALK_STATUS._db_values
+            qs = self.filter(status=status)
             if conference:
                 qs = qs.filter(conference=conference)
             return qs
+
+        def proposed(self, conference=None):
+            return self._filter_by_status(TALK_STATUS.proposed)
 
         def accepted(self, conference=None):
-            qs = self.filter(status=TALK_STATUS.accepted)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
+            return self._filter_by_status(TALK_STATUS.accepted)
 
         def canceled(self, conference=None):
-            qs = self.filter(status=TALK_STATUS.canceled)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
+            return self._filter_by_status(TALK_STATUS.canceled)
 
         def waitlist(self, conference=None):
-            qs = self.filter(status=TALK_STATUS.waitlist)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
+            return self._filter_by_status(TALK_STATUS.waitlist)
 
     def createFromTitle(self, title, sub_title, conference, speaker,
                         prerequisites, abstract_short, abstract_extra,
