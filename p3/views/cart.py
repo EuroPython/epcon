@@ -14,9 +14,8 @@ from common.decorators import render_to_json
 from p3 import forms as p3forms
 from p3 import models
 
-
 class P3BillingData(aforms.BillingData):
-    payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='cc')
+    payment = forms.ChoiceField(choices=amodels.ENABLED_ORDER_PAYMENT, initial='cc')
     code_conduct = forms.BooleanField(
         label=_('I have read and accepted the <a href="/coc" target="blank">EuroPython 2018 Code of Conduct</a> as well as the <a href="/privacy" target="blank">EuroPython 2018 Privacy Policy</a>.'))
 
