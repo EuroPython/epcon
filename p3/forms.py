@@ -193,7 +193,7 @@ class P3SpeakerForm(cforms.SpeakerForm):
 
 class FormTicket(forms.ModelForm):
     ticket_name = forms.CharField(max_length=60, required=False, help_text='Name of the attendee')
-    days = forms.MultipleChoiceField(label=_('Probable days of attendance'), choices=tuple(), widget=forms.CheckboxSelectMultiple, help_text=_('This ticket grants you full access to the conference. The above selection is just for helping out the organizers'),required=False)
+    days = forms.MultipleChoiceField(label=_('Probable days of attendance'), choices=tuple(), widget=forms.CheckboxSelectMultiple, help_text=_('Please note: The above selection is just for helping the organizers with the catering estimates. It is not binding for you.'),required=False)
 
     class Meta:
         model = models.TicketConference
