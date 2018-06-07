@@ -2201,6 +2201,10 @@ body > div.draft { position: fixed; top: 0; left: 0; width: 100px; bottom: 0; z-
 
 .ep-cms .place th, .conference-schedules.list .event .details .abstract .place th { border-bottom: 1px dotted #94946F; text-transform: capitalize; padding-right: 10px; }
 
+.ep-cms table { width: 100%; }
+
+.ep-cms td, .ep-cms th {border: 1px solid black; padding: 6px; }
+
 .help-text { color: #555555; margin: 40px 0; }
 .help-text p:last-child { margin-bottom: 0; }
 
