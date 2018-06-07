@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
-""" Create coupons for speakers:
-
-    Talk        - 25%
-    Poster      - 25%
-    Helpdesk    - 25%
-    Interactive - 25%
-    Panel       - 25%
+""" Create training pass coupons for trainers:
 
     Training    - 100%
 
@@ -33,6 +27,8 @@ from assopy.models import Coupon
 
 ### Globals
 
+_debug = 0
+
 # Discounts
 #
 # See cmodels.TALK_TYPES; this dictionary maps the first char of the talk
@@ -41,12 +37,7 @@ from assopy.models import Coupon
 # The coupon_prefix must have 3 chars.
 #
 TALK_TYPE_DISCOUNTS = {
-    't': ('TLK', '25%'),  # Talk
-    'i': ('INT', '25%'),  # Interactive
-    'r': ('TRN', '100%'), # Training
-    'p': ('PST', '25%'),  # Poster
-    'n': ('PAN', '25%'),  # Panel
-    'h': ('HPD', '25%'),  # Helpdesk
+    'r': ('TRP', '100%'), # Training passes
 }
 
 # Coupon prefixes used in the above dictionary
@@ -54,10 +45,13 @@ COUPON_PREFIXES = tuple(prefix
                         for ttype, (prefix, discount)
                         in TALK_TYPE_DISCOUNTS.items())
 
-# Add special keynote coupon prefix
-COUPON_PREFIXES += ('KEY',)
+# MAL 2018-06-07: Program WG decided against giving training passes to
+# keynote speakers.
 
-assert 'TLK' in COUPON_PREFIXES
+# Add special keynote coupon prefix
+#COUPON_PREFIXES += ('KYT',)
+
+assert 'TRP' in COUPON_PREFIXES
 
 ###
 
@@ -93,6 +87,7 @@ class Command(BaseCommand):
                     talk__status='accepted',
                     helper=False)\
             .select_related('talk', 'speaker__user')
+        if _debug: print ('Found %i speakers' % len(qs))
         for row in qs:
             talk_code = row.talk.type[0]
             if talk_code not in TALK_TYPE_DISCOUNTS:
@@ -107,25 +102,20 @@ class Command(BaseCommand):
                 entry = None
 
             # Handle special cases
-            if admin_type == 'k':
-                # Keynote talk
-                coupon_prefix = 'KEY'
-                discount_code = '100%'
-                # Force an override
-                entry = None
+            if 0:
+               pass
+
+#            elif admin_type == 'k':
+#                # Keynote talk
+#                coupon_prefix = 'KYT'
+#                discount_code = '100%'
+#                # Force an override
+#                entry = None
 
             elif admin_type:
                 # All other admin types are not eligible for coupons
                 continue
                 
-            if talk_code == 'r':
-                # Override existing talk discount with training; this
-                # means that someone who does e.g. both a talk and
-                # training, will get the higher training discount
-                if (entry is not None and
-                    entry['discount'] != '100%'):
-                    entry = None
-
             # Entry already exists, so don't create a new coupon
             if entry is not None:
                 continue
@@ -144,11 +134,17 @@ class Command(BaseCommand):
                 }
             speakers[row.speaker_id] = entry
 
-        # Valid fares (conference fares only, no training passes)
+        if _debug: print ('%i speakers are eligible' % len(speakers))
+
+        # Valid fares (training pass fares only)
         fares = cmodels.Fare.objects\
             .filter(conference=conference.code,
-                    ticket_type='conference')\
-            .exclude(code__startswith='TRT')
+                    ticket_type='conference',
+                    code__startswith='TRT')
+        if _debug:
+            print ('Found %i fares: %r' % (
+                      len(fares), 
+                      [unicode(f) for f in fares]))
 
         # Get set of existing codes
         codes = set(c['code'] for c in Coupon.objects\
@@ -223,11 +219,12 @@ class Command(BaseCommand):
             c.max_usage = 1
             c.items_per_usage = 1
             c.value = value
-            c.description = '[%s] %s Speaker Discount' % (
+            c.description = '[%s] %s Trainer Discount' % (
                 conference, entry['prefix'])
             if not self.dry_run:
                 c.save()
                 c.fares = fares
+                if _debug: print ('Added fares %r to %r' % (fares, c))
             data.append(data_row)
 
         # Output CSV data, UTF-8 encoded
