@@ -278,6 +278,7 @@ def render_cart_rows(context, fare_type, form):
         #   'S' - standard
         #   'L' - standard light (without trainings)
         #   'D' - day pass
+        #   'T' - training pass
         # - fourth letter: group type
         #   'S' - student
         #   'P' - personal
@@ -285,7 +286,7 @@ def render_cart_rows(context, fare_type, form):
         #
         fares = dict((f['code'][2:], f) for f in fares_list if f['code'][0] == 'T')
         rows = []
-        for t in ('S', 'L', 'D'):
+        for t in ('S', 'L', 'D', 'T'):
             # To simplify the template fares are packed in triplets:
             # student, private, company.
             #
