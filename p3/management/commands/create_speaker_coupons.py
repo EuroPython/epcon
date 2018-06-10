@@ -26,6 +26,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.db.models import Q
 
 from conference import models as cmodels
 from assopy.models import Coupon
@@ -89,9 +90,9 @@ class Command(BaseCommand):
         # Find speakers eligible for coupons
         speakers = {}
         qs = cmodels.TalkSpeaker.objects\
-            .filter(talk__conference=conference.code, 
-                    talk__status='accepted',
-                    helper=False)\
+            .filter(Q(talk__conference=conference.code), 
+                    Q(talk__status='accepted') | Q(talk__status='waitlist'),
+                    Q(helper=False))\
             .select_related('talk', 'speaker__user')
         for row in qs:
             talk_code = row.talk.type[0]
@@ -141,6 +142,7 @@ class Command(BaseCommand):
                 'prefix': coupon_prefix,
                 'talk_id': row.talk.id,
                 'speaker_id': row.speaker_id,
+                'talk_status': row.talk.status,
                 }
             speakers[row.speaker_id] = entry
 
@@ -164,6 +166,24 @@ class Command(BaseCommand):
             .values('user__user__email', 'code')
             if (c['code'].startswith(COUPON_PREFIXES)
                 and c['user__user__email'])
+            )
+
+        # Output header
+        csv_header = (
+            'email',
+            'name',
+            'prefix',
+            'code',
+            'discount',
+            'donated',
+            'amount',
+            'title', 
+            'duration', 
+            'type', 
+            'admin_type', 
+            'talk_id', 
+            'speaker_id',
+            'talk_status',
             )
 
         # Create coupons
@@ -199,7 +219,7 @@ class Command(BaseCommand):
                     codes.add(code)
                     break
 
-            # Build CSV data
+            # Build CSV data (see csv_header for order)
             data_row = (
                 user.email,
                 name,
@@ -214,6 +234,7 @@ class Command(BaseCommand):
                 entry['admin_type'],
                 entry['talk_id'],
                 entry['speaker_id'],
+                entry['talk_status'],
                 )
 
             # Create coupon
@@ -231,10 +252,7 @@ class Command(BaseCommand):
             data.append(data_row)
 
         # Output CSV data, UTF-8 encoded
-        data.insert(0, (
-            # Header
-            'email', 'name', 'prefix', 'code', 'discount', 'donated', 'amount',
-            'title', 'duration', 'type', 'admin_type', 'talk_id', 'speaker_id'))
+        data.insert(0, csv_header)
         for row in data:
             csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
                         for x in row)
