@@ -1,21 +1,19 @@
 # coding: utf-8
 
 from django.http import HttpResponse
+from weasyprint import HTML
 
 
 class PdfResponse(HttpResponse):
 
     def __init__(self, filename, content, **kwargs):
-
-        disposition = 'attachment; filename="%s"' % filename
+        disposition = 'filename="%s"' % filename
         pdf_content = self.convert_to_pdf(content)
-        response = HttpResponse(
-            pdf_content, content_type='application/pdf', **kwargs
-        )
-        response['Content-Disposition'] = disposition
+        super(PdfResponse, self).__init__(content=pdf_content, **kwargs)
+        self['Content-Type']        = 'application/pdf'
+        self['Content-Disposition'] = disposition
 
-        return response
+        # return response
 
     def convert_to_pdf(self, content):
-        # TODO(artcz) Implement proper PDF rendering
-        raise NotImplementedError
+        return HTML(string=content).write_pdf()

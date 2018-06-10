@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import
 from datetime import date, timedelta
 from decimal import Decimal
 
-from pytest import mark, raises
+from pytest import mark
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -39,7 +39,12 @@ from conference.fares import (
 )
 from email_template.models import Email
 
-from tests.common_tools import template_used, sequence_equals, make_user
+from tests.common_tools import (  # NOQA
+    template_used,
+    sequence_equals,
+    make_user,
+    serve_response
+)
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
@@ -60,7 +65,7 @@ def _prepare_invoice_for_basic_test(order_code, invoice_code):
         emit_date=date.today(),
         price=Decimal(1337),
         vat=vat_10,
-        html='Here goes full html',
+        html='<html>Here goes full html</html>',
         exchange_rate_date=date.today(),
     )
 
@@ -78,7 +83,7 @@ def test_invoice_html(client):
     })
     response = client.get(invoice_url)
 
-    assert response.content == 'Here goes full html'
+    assert response.content == '<html>Here goes full html</html>'
 
 
 @mark.django_db
@@ -93,9 +98,9 @@ def test_invoice_pdf(client):
         'code': invoice_code,
     })
 
-    with raises(NotImplementedError):
-        # TODO: currently PDF invoices are not implemented
-        client.get(invoice_url)
+    response = client.get(invoice_url)
+    assert response.status_code == 200
+    assert response['Content-type'] == 'application/pdf'
 
 
 @mark.django_db
@@ -480,6 +485,10 @@ def test_vat_in_GBP_for_2018(client):
         # we're going to use whatever the date was received/cached from ECB XML
         # doesnt matter what emit date is
         assert "ECB rate 0.89165 GBP/EUR from March 6, 2018" in content
+
+        # response = client.get(invoice.get_html_url())
+        # import pdb; pdb.set_trace()
+        # serve_response(response)
 
     with freeze_time("2017-05-05"):
         client.login(email='joedoe@example.com', password='password123')

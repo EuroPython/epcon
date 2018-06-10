@@ -851,7 +851,15 @@ class Invoice(models.Model):
 
     def get_absolute_url(self):
         # defaulting to HTML for now
+        return self.get_html_url()
+
+    def get_html_url(self):
         return reverse("assopy-invoice-html", args=[
+            quote(self.order.code), quote(self.code)
+        ])
+
+    def get_pdf_url(self):
+        return reverse("assopy-invoice-pdf", args=[
             quote(self.order.code), quote(self.code)
         ])
 

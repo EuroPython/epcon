@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals, absolute_import, print_function
 
+import httplib
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
@@ -63,20 +64,25 @@ def create_homepage_in_cms():
                 publication_date=timezone.now())
 
 
-def serve(content, host='0.0.0.0', port=9876):
+def serve_response(response, host='0.0.0.0', port=9876):
     """
-    Useful when doing stuff with pdb -- can serve aribtrary string with http.
+    Useful when doing stuff with pdb -- can serve django's response with http.
+    use case: looking at response in tests.
 
-    use case: looking at response.content in tests.
-
-    usage: 1) serve(response.content),
+    usage: 1) serve(response),
            2) go to http://localhost:9876/
            3) PROFIT
     """
 
-    def render(env, sr):
-        sr(b'200 OK', [(b'Content-Type', b'text/html'), ])
-        return [content]
+    def render(env, start_response):
+        status = b'%s %s' % (
+            str(response.status_code),
+            httplib.responses[response.status_code]
+        )
+        # ._headers is a {'content-type': ('Content-Type', 'text/html')} type
+        # of dict, that's why we need just .values
+        start_response(status, response._headers.values())
+        return [response.content]
 
     srv = make_server(host, port, render)
     print("Go to http://{}:{}".format(host, port))
