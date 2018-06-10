@@ -100,6 +100,7 @@ class Command(BaseCommand):
                 continue
             coupon_prefix, discount_code = TALK_TYPE_DISCOUNTS[talk_code]
             admin_type = row.talk.admin_type
+            talk_status = row.talk.status
 
             # Get possibly already existing entry
             if row.speaker_id in speakers:
@@ -126,6 +127,11 @@ class Command(BaseCommand):
                 if (entry is not None and
                     entry['discount'] != '100%'):
                     entry = None
+
+            if talk_code == 'r' and talk_status == 'waitlist':
+                # Training entries on the waiting list only get a
+                # 25% coupon, not a 100% one
+                discount_code = '25%'
 
             # Entry already exists, so don't create a new coupon
             if entry is not None:
