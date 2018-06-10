@@ -224,4 +224,5 @@ def speakers(conference, filter_types=None):
             'fullname': name,
         })
     data['groups'] = groups
+    data['groups_list'] = sorted(groups.items())
     return data
