@@ -208,6 +208,12 @@ def upgrade_invoice_placeholder_to_real_invoice(invoice):
 def render_invoice_as_html(invoice):
     assert isinstance(invoice, Invoice)
 
+    items = invoice.invoice_items()
+    for item in items:
+        item['net_price'] = normalize_price(
+            item['price'] / (1 + invoice.vat.value / 100)
+        )
+
     # TODO this is copied as-is from assopy/views.py, but can be simplified
     # TODO: also if there are any images included in the invoice make sure to
     # base64 them.
@@ -217,6 +223,10 @@ def render_invoice_as_html(invoice):
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
+        # TODO: get it from Conference instance
+        'conference_name': "EuroPython 2018",
+        "conference_location": "Edinburgh",
+        "bank_info": "",
         'document': ('Fattura N.', 'Invoice N.'),
         'title': unicode(invoice),
         'code': invoice.code,
@@ -228,7 +238,7 @@ def render_invoice_as_html(invoice):
             'cf_code': order.cf_code,
             'vat_number': order.vat_number,
         },
-        'items': invoice.invoice_items(),
+        'items': items,
         'note': invoice.note,
         'price': {
             'net': invoice.net_price(),

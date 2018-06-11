@@ -67,8 +67,9 @@
             }
 
             .section {
-                border: 1px solid black;
-                margin-top:0.5cm;
+              border: 1px solid #fff;
+              border-top: 2px solid #eee;
+              margin-top:0.5cm;
             }
 
             .companyinfo {
@@ -79,7 +80,21 @@
             .companylogo {
                 font-size: 90%;
                 float: left;
-            }
+              }
+
+              .companylogo {
+                height: 5em;
+              }
+
+              .companylogo h1 {
+                font-size: 2em;
+                line-height: 2em;
+              }
+
+              .companylogo h2 {
+                font-size: 1.5em;
+                line-height: 1.2em;
+              }
 
             .table {
                 width: 100%;
@@ -89,7 +104,7 @@
                 border: 0px none;
             }
             .table td, .table th {
-                border: 1px solid black;
+                border: 1px solid #fff;
             }
             .table tr:first-child th,
             .table tr:first-child td {
@@ -108,7 +123,8 @@
             }
 
             td.customer {
-                width: 6cm;
+              width: 6cm;
+              line-height: 1.2em;
             }
 
             .cell-legend {
@@ -135,21 +151,33 @@
             .currency {
                 text-align: right;
                 width: 1.7cm;
+                color: #444;
                 margin: 0 0 0 auto;
             }
             .currency:before {
                 content: "€";
                 float: left;
-            }
+              }
+
+              .currency-total {
+                text-align: right;
+                width: 3cm;
+                font-size: 1.5em;
+                margin: 0 0 0 auto;
+              }
+              .currency-total:before {
+                content: "€";
+                float: left;
+              }
 
             .invoice-items {
-                min-height: 10cm;
+                min-height: 5cm;
                 position: relative;
             }
 
             .invoice-items TD {
-                padding: 0.1cm;
-                border-bottom: 1px dotted #000!important;
+                padding: 0.3cm 0.1cm;
+                border-bottom: 1px dotted #ddd !important;
                 border-top:none;
             }
 
@@ -220,16 +248,17 @@
     {% endblock %}
     </head>
     <body>
-        <div class="container">
-            <div>
-                {% block HEADER %}
-                    <div class="companylogo">
-                        <!-- <img src="{{ STATIC_URL }}" /> -->
-                    </div>
-                    <div class="companyinfo">{{ issuer }}</div>
-                    <div class="clear"></div>
-                {% endblock %}
-            </div>
+      <div class="container">
+        <div>
+          {% block HEADER %}
+          <div class="companylogo">
+            <h1>{{ conference_name }}</h1>
+            <h2>{{ conference_location }}</h2>
+          </div>
+          <div class="companyinfo">{{ issuer }}</div>
+          <div class="clear"></div>
+          {% endblock %}
+        </div>
             <div class="section invoice-detail">
                 <table class="table">
                     <tbody>
@@ -248,7 +277,7 @@
                                     Date
                                 </div>
                                 <div class="cell-content">
-                                    {{ emit_date|default:'' }}
+                                    {{ emit_date|default:''|date:"Y-m-d" }}
                                 </div>
                             </td>
                             {% else %}
@@ -283,7 +312,7 @@
                                 </div>
                                 <div class="cell-content">
                                     {{ order.card_name }} <br/>
-                                    {{ order.address|safe }}<br/>
+                                    {{ order.address|safe|linebreaks }}<br/>
                                     {% if order.cf_code %}{{ order.cf_code }}<br/>{% endif %}
                                     {% if order.vat_number %}{{ order.vat_number }}<br/>{% endif %}
                                     {{ order.billing_notes|linebreaks }}<br/>
@@ -296,9 +325,7 @@
                                     Bank
                                 </div>
                                 <div class="cell-content">
-                                    {% block BANK %}
-                                        BLOCK_BANK BLOCK
-                                    {% endblock %}
+                                  {% if bank_info %}{{ bank_info }}{% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -310,25 +337,28 @@
                     <thead>
                         <tr>
                             <th class="invoice-items-w1">
-                                <div class="cell-legend">
+                                <div class="cell-legend" style='text-align: left;'>
                                     Code
                                 </div>
                             </th>
                             <th>
-                                <div class="cell-legend">
+                                <div class="cell-legend" style='text-align: left;'>
                                     Description
                                 </div>
-                            </th>
-                            <th class="invoice-items-w0">
+                              </th>
+
+
+                              <th class="invoice-items-w0">
                                 <div class="cell-legend">
-                                    Quantity
+                                  VAT rate
                                 </div>
-                            </th>
-                            <th class="invoice-items-w1">
-                                <div class="cell-legend">
-                                    Total
+                              </th>
+
+                              <th class="invoice-items-w1">
+                                <div class="cell-legend" style='text-align: right;'>
+                                  Net price
                                 </div>
-                            </th>
+                              </th>
                          </tr>
                      </thead>
                      <tbody>
@@ -339,12 +369,17 @@
                                     {{ item.code }}
                                 {% endif %}
                             </td>
-                            <td>
+                            <td style='line-height: 1.2em'>
                                  {{ item.description }}
                             </td>
                             <td class="invoice-items-w0 number">
-                                 {{ item.count }}
+                              {{ item.count }}
                             </td>
+
+                            <td class="invoice-items-w0 number">
+                              {{ vat.value }}%
+                            </td>
+
                             <td class="invoice-items-w1">
                                 <div class="currency">{{ item.price }}</div>
                             </td>
@@ -361,7 +396,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <div class="cell-legend">
+                                <div class="cell-legend" style='text-align: right'>
                                     Net price
                                 </div>
                                 <div class="cell-content">
@@ -369,12 +404,12 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="cell-legend">
-                                    VAT
+                                <div class="cell-legend" style='text-align: right'>
+                                    Total VAT
                                 </div>
                                 <div class="cell-content">
                                     {% if price.vat %}
-                                        <div class="vat_value">{{ vat.value }}% </div>
+                                    <!-- <div class="vat_value">{{ vat.value }}% </div> -->
                                         <div class="currency">{{ price.vat|floatformat:2 }}</div>
                                     {% endif %}
                                     {% if vat.invoice_notice %}
@@ -385,20 +420,21 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="cell-legend">
-                                    Total
+                                <div class="cell-legend" style='text-align: right'>
+                                    Gross Total
                                 </div>
                                 <div class="cell-content">
-                                    <div class="currency">{{ price.total|floatformat:2 }}</div>
+                                    <div class="currency-total">{{ price.total|floatformat:2 }}</div>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
               </div>
-            <div class="clear"></div>
+              <div class="clear"></div>
+              <div style='margin-top: 3em;'>Unless otherwise indicated, time of supply corresponds to the invoice date.</div>
             {% if invoice.local_currency != 'EUR' %}
-            <div style='margin-top: 1em;'>Total VAT is {{ invoice.local_currency }} {{ invoice.vat_in_local_currency }} – <em>ECB rate {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date }}</em></div>
+            <div style='margin-top: 1em;'>Total VAT is {{ invoice.local_currency }} {{ invoice.vat_in_local_currency }} – <em>ECB rate {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date|date:"Y-m-d" }}</em></div>
             {% endif %}
 
         </div>

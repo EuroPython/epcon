@@ -64,6 +64,27 @@ def create_homepage_in_cms():
                 publication_date=timezone.now())
 
 
+def serve_text(text, host='0.0.0.0', port=9876):
+    """
+    Useful when doing stuff with pdb -- can serve arbitrary string with http.
+    use case: looking at some html in tests.
+
+    usage: 1) serve(invoice.html),
+           2) go to http://localhost:9876/
+           3) PROFIT
+    """
+
+    def render(env, start_response):
+        status = b'200 OK'
+        headers = [(b'Content-Type', b'text/html')]
+        start_response(status, headers)
+        return [text]
+
+    srv = make_server(host, port, render)
+    print("Go to http://{}:{}".format(host, port))
+    srv.serve_forever()
+
+
 def serve_response(response, host='0.0.0.0', port=9876):
     """
     Useful when doing stuff with pdb -- can serve django's response with http.
