@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+
 from django import forms
 from django.contrib import auth
 from django.conf import settings as dsettings
@@ -138,6 +139,7 @@ BillingData = autostrip(BillingData)
 
 
 class NewAccountForm(forms.Form):
+
     first_name = forms.CharField(max_length=32)
     last_name = forms.CharField(max_length=32)
     email = forms.EmailField()
@@ -146,10 +148,38 @@ class NewAccountForm(forms.Form):
     password2 = forms.CharField(label="Confirm password",
                                 widget=forms.PasswordInput)
 
+    # Additional captcha field with simple python questions
+    # https://github.com/EuroPython/epcon/issues/703
+    captcha_question = forms.CharField(widget=forms.HiddenInput)
+    captcha_answer = forms.CharField()
+
     # Keep this in sync with LoginForm.i_accept_privacy_policy
     i_accept_privacy_policy = forms.BooleanField(
         label=PRIVACY_POLICY_CHECKBOX
     )
+
+    def __init__(self, *args, **kwargs):
+        super(NewAccountForm, self).__init__(*args, **kwargs)
+        random_question = self.get_random_captcha_question()
+        if random_question:
+            self.fields['captcha_question'].initial = random_question.question
+            self.fields['captcha_answer'].label     = random_question.question
+        else:
+            del self.fields['captcha_question']
+            del self.fields['captcha_answer']
+
+    def get_random_captcha_question(self):
+        try:
+            return cmodels.CaptchaQuestion.objects.get_random_question()
+        except cmodels.CaptchaQuestion.NoQuestionsAvailable:
+            return None
+
+    def clean_captcha_answer(self):
+        question = self.cleaned_data['captcha_question']
+        cq = cmodels.CaptchaQuestion.objects.get(question=question)
+        if cq.answer.strip() != self.cleaned_data['captcha_answer'].strip():
+            raise forms.ValidationError("Sorry, that's a wrong answer")
+        return self.cleaned_data['captcha_question']
 
     def clean_email(self):
         email = self.cleaned_data['email']

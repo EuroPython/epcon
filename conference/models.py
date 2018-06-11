@@ -19,6 +19,7 @@ from django.utils.translation import ugettext as _
 
 from common.django_urls import UrlMixin
 from model_utils import Choices
+from model_utils.models import TimeStampedModel
 
 import tagging
 from tagging.fields import TagField
@@ -1460,3 +1461,34 @@ class ExchangeRate(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.currency, self.datestamp)
+
+
+# ========================================
+# CaptchaQuestions
+# TODO: split conference/models.py to multiple files and put it this model in a
+# separate file.
+# ========================================
+
+class CaptchaQuestionManager(models.Manager):
+
+    def get_random_question(self):
+        qs = self.get_queryset().filter(enabled=True)
+        try:
+            return qs.order_by("?")[0]
+        except IndexError:
+            raise CaptchaQuestion.NoQuestionsAvailable()
+
+
+class CaptchaQuestion(TimeStampedModel):
+
+    class NoQuestionsAvailable(Exception):
+        pass
+
+    question = models.CharField(max_length=255)
+    answer   = models.CharField(max_length=255)
+    enabled  = models.BooleanField(default=True)
+
+    objects = CaptchaQuestionManager()
+
+    def __str__(self):
+        return self.question
