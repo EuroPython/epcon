@@ -58,7 +58,6 @@ class Command(BaseCommand):
             count += 1
             if count % 1000 == 0:
                 print ('Deleted %i spam users.' % count)
-                break
         
         if self.dry_run:
             print ('Would have deleted %i spam users.' % count)
