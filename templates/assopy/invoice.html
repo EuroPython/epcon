@@ -303,7 +303,7 @@
                                     Currency
                                 </div>
                                 <div class="cell-content">
-                                    Euro
+                                  {{ currency }}
                                 </div>
                             </td>
                             <td rowspan ="3" class="customer">
@@ -320,14 +320,16 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="3">
-                                <div class="cell-legend">
-                                    Bank
-                                </div>
-                                <div class="cell-content">
-                                  {% if bank_info %}{{ bank_info }}{% endif %}
-                                </div>
-                            </td>
+                          <td colspan="3">
+                            {% if bank_info %}
+                            <div class="cell-legend">
+                              Bank
+                            </div>
+                            <div class="cell-content">
+                              {{ bank_info }}
+                            </div>
+                            {% endif %}
+                          </td>
                         </tr>
                     </tbody>
                 </table>

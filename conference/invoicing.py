@@ -227,6 +227,7 @@ def render_invoice_as_html(invoice):
         'conference_name': "EuroPython 2018",
         "conference_location": "Edinburgh",
         "bank_info": "",
+        "currency": invoice.local_currency,
         'document': ('Fattura N.', 'Invoice N.'),
         'title': unicode(invoice),
         'code': invoice.code,

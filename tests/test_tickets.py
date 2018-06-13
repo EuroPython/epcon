@@ -208,7 +208,7 @@ class TestBuyingTickets(TestCase):
             self.assertNotContains(response, tickets_url)
 
             order = Order.objects.get()
-            assert order.total() == 3000
+            assert order.total() == 630  # because 210 per ticket
             assert not order._complete
 
             order.confirm_order(date.today())

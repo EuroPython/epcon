@@ -86,7 +86,11 @@ def create_fare_for_conference(code, conference, price,
 
     # This is inefficient, we should pass Conference object as argument instead
     # of name.
-    conference = Conference.objects.get(code=conference)
+    conference, _ = Conference.objects.get_or_create(
+        code=conference,
+        # There should probably be a spearate setting for a name...
+        name=conference,
+    )
 
     recipient_type = code[3].lower()  # same as lowercase last letter of code
 

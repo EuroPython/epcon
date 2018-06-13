@@ -18,7 +18,7 @@ from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
 # from common.http import PdfResponse
-from conference.models import AttendeeProfile, Ticket, Conference, Fare
+from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings
 from conference.invoicing import (
     ACPYSS_16,
@@ -210,7 +210,7 @@ def test_invoices_from_buying_tickets(client):
     assert 'Sorry, no tickets are available' in response.content
 
     # 3. p3/cart.html is using {% fares_available %} assignment tag to display
-    # fares.  # For more details about fares check conference/fares.py
+    # fares.  For more details about fares check conference/fares.py
 
     ticket_price  = Decimal(100)
     ticket_amount = 20
@@ -220,10 +220,10 @@ def test_invoices_from_buying_tickets(client):
     vat_rate_10, _ = Vat.objects.get_or_create(value=10)
     vat_rate_20, _ = Vat.objects.get_or_create(value=20)
 
-    CONFERENCE = settings.CONFERENCE_CONFERENCE
-
     today = date.today()
     yesterday, tomorrow = today - timedelta(days=1), today + timedelta(days=1)
+
+    CONFERENCE = settings.CONFERENCE_CONFERENCE
 
     create_fare_for_conference(code="TRSP",  # Ticket Regular Standard Personal
                                conference=CONFERENCE,
@@ -329,14 +329,14 @@ def test_invoices_from_buying_tickets(client):
         {'count': ticket_amount,
          'price': ticket_price * ticket_amount,
          'code': u'TRSP',
-         'description': u'Regular Standard Personal'},
+         'description': u'ep2018 - Regular Standard Personal'},
     ]
 
     expected_invoice_items_vat_20 = [
         {'count': social_event_amount,
          'price': social_event_price * social_event_amount,
          'code':  SOCIAL_EVENT_FARE_CODE,
-         'description': u'Social Event'},
+         'description': u'ep2018 - Social Event'},
     ]
 
     assert sequence_equals(invoice_vat_10.invoice_items(),
@@ -488,7 +488,7 @@ def test_vat_in_GBP_for_2018(client):
         assert "Total VAT is GBP 1.49" in content
         # we're going to use whatever the date was received/cached from ECB XML
         # doesnt matter what emit date is
-        assert "ECB rate 0.89165 GBP/EUR from March 6, 2018" in content
+        assert "ECB rate 0.89165 GBP/EUR from 2018-03-06" in content
 
         # response = client.get(invoice.get_html_url())
         # import pdb; pdb.set_trace()
@@ -507,7 +507,8 @@ def test_vat_in_GBP_for_2018(client):
         response = client.get(invoice.get_absolute_url())
         content = response.content.decode('utf-8')
         # not showing any VAT conversion because in 2017 we had just EUR
-        assert "Total VAT" not in content
+        assert "EUR"  in content
+        assert "Total VAT is" not in content
         assert "ECB rate"  not in content
 
 
@@ -524,10 +525,6 @@ def test_create_invoice_with_many_items():
     Freezing it at 2018 so we can easily check EP2018 invoices.
     """
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
-    Conference.objects.get_or_create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name="EuroPython 2018"
-    )
 
     Email.objects.create(code='purchase-complete')
     user = make_user()
