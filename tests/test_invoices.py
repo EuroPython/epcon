@@ -515,7 +515,7 @@ def test_vat_in_GBP_for_2018(client):
 @mark.django_db
 @responses.activate
 @freeze_time("2018-05-05")
-def test_create_invoice_with_many_items():
+def test_create_invoice_with_many_items(client):
     """
     This test is meant to be used to test invoice template design.
     It creates a lot of different items on the invoice, and after that we can
@@ -553,3 +553,11 @@ def test_create_invoice_with_many_items():
     #     filename="some-invoice.pdf",
     #     content=render_invoice_as_html(invoice)
     # ))
+
+    # testing debug panel
+    # url = reverse("debugpanel_invoice_forcepreview",
+    #               kwargs={'invoice_id': invoice.id})
+    # url = reverse('debugpanel_invoice_placeholders')
+    # client.login(email='joedoe@example.com', password='password123')
+    # response = client.get(url)
+    # serve_response(response)
