@@ -57,7 +57,7 @@ def debug_panel_invoice_placeholders(request):
 @staff_member_required
 def debug_panel_invoice_force_preview(request, invoice_id):
     invoice = Invoice.objects.get(id=invoice_id)
-    return PdfResponse(filname=invoice.get_invoice_filename(),
+    return PdfResponse(filename=invoice.get_invoice_filename(),
                        content=render_invoice_as_html(invoice))
 
 
