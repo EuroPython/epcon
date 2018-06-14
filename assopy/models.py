@@ -863,6 +863,9 @@ class Invoice(models.Model):
             quote(self.order.code), quote(self.code)
         ])
 
+    def get_admin_url(self):
+        return reverse('admin:assopy_invoice_change', args=[self.id])
+
     def __unicode__(self):
         if self.code:
             return ' #%s' % self.code
