@@ -46,6 +46,10 @@
                 border-spacing: 0;
             }
 
+
+            .text-right  { text-align: right; }
+            .text-left   { text-align: left; }
+            .text-center { text-align: center; }
             /*
              *  Layout
              */
@@ -315,7 +319,7 @@
                                     {{ order.address|safe|linebreaks }}<br/>
                                     {% if order.cf_code %}{{ order.cf_code }}<br/>{% endif %}
                                     {% if order.vat_number %}{{ order.vat_number }}<br/>{% endif %}
-                                    {{ order.billing_notes|linebreaks }}<br/>
+                                    {% if order.billing_notes %}{{ order.billing_notes|linebreaks }}<br/>{% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -339,25 +343,30 @@
                     <thead>
                         <tr>
                             <th class="invoice-items-w1">
-                                <div class="cell-legend" style='text-align: left;'>
+                                <div class="cell-legend text-left">
                                     Code
                                 </div>
                             </th>
                             <th>
-                                <div class="cell-legend" style='text-align: left;'>
+                                <div class="cell-legend text-left">
                                     Description
                                 </div>
                               </th>
 
+                              <th class="invoice-items-w0">
+                                <div class="cell-legend text-center">
+                                  Quantity
+                                </div>
+                              </th>
 
                               <th class="invoice-items-w0">
-                                <div class="cell-legend">
+                                <div class="cell-legend text-center">
                                   VAT rate
                                 </div>
                               </th>
 
                               <th class="invoice-items-w1">
-                                <div class="cell-legend" style='text-align: right;'>
+                                <div class="cell-legend text-right">
                                   Net price
                                 </div>
                               </th>
@@ -398,7 +407,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <div class="cell-legend" style='text-align: right'>
+                                <div class="cell-legend text-right">
                                     Net price
                                 </div>
                                 <div class="cell-content">
@@ -406,7 +415,7 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="cell-legend" style='text-align: right'>
+                                <div class="cell-legend text-right">
                                     Total VAT
                                 </div>
                                 <div class="cell-content">
@@ -422,7 +431,7 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="cell-legend" style='text-align: right'>
+                                <div class="cell-legend text-right">
                                     Gross Total
                                 </div>
                                 <div class="cell-content">
