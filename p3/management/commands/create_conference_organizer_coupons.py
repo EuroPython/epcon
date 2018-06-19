@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-""" Create EPS community discount coupons.
+""" Create EPS Python conference organizer discount coupons.
 
     Parameters: <conference> <count>
 
-    Valid for conference tickets, 50 uses at most and one item per
-    order.  Not valid for the social event.
+    Valid for conference tickets, one use and one item per order.  Not valid
+    for the social event.
 
     Created coupons are written as CSV data to stdout.
 
@@ -25,13 +25,13 @@ from assopy.models import Coupon
 ### Globals
 
 # Coupon prefix
-COUPON_PREFIX = 'EPS'
+COUPON_PREFIX = 'PYO'
 
 # Discount
-EPS_COMMUNITY_DISCOUNT = '10%'
+EPS_PYORGANIZER_DISCOUNT = '100%'
 
 # Max usage per coupon
-COUPON_MAX_USAGE = 50
+COUPON_MAX_USAGE = 1
 
 # Max items per order
 COUPON_ITEMS_PER_USAGE = 1
@@ -83,7 +83,7 @@ class Command(BaseCommand):
         for i in range(number_of_coupons):
 
             coupon_prefix = COUPON_PREFIX
-            value = EPS_COMMUNITY_DISCOUNT
+            value = EPS_PYORGANIZER_DISCOUNT
 
             # Determine a new code
             while True:
@@ -100,7 +100,7 @@ class Command(BaseCommand):
             c.max_usage = COUPON_MAX_USAGE
             c.items_per_usage = COUPON_ITEMS_PER_USAGE
             c.value = value
-            c.description = 'EPS Community Discount'
+            c.description = 'EPS Python Conference Organizer Discount'
             if not self.dry_run:
                 c.save()
                 c.fares = fares
