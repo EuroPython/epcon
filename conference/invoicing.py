@@ -70,6 +70,18 @@ LOCAL_CURRENCY_BY_YEAR = {
     2018: "GBP",
 }
 
+EP_CITY_FOR_YEAR = {
+    2016: "Bilbao",
+    2017: "Rimini",
+    2018: "Edinburgh",
+}
+
+ADDITIONAL_TEXT_FOR_YEAR = {
+    2016: "",
+    2017: "",
+    2018: "assopy/invoices/_additional_text_for_2018.html",
+}
+
 REAL_INVOICE_PREFIX = "I/"
 FAKE_INVOICE_PREFIX = "F/"   # pro forma(?)
 
@@ -225,7 +237,7 @@ def render_invoice_as_html(invoice):
     ctx = {
         # TODO: get it from Conference instance
         'conference_name': "EuroPython 2018",
-        "conference_location": "Edinburgh",
+        "conference_location": EP_CITY_FOR_YEAR[invoice.emit_date.year],
         "bank_info": "",
         "currency": invoice.local_currency,
         'document': ('Fattura N.', 'Invoice N.'),
@@ -250,6 +262,7 @@ def render_invoice_as_html(invoice):
         'is_real_invoice': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
         "invoice": invoice,
+        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year]
     }
 
     return render_to_string('assopy/invoice.html', ctx)

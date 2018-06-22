@@ -232,7 +232,9 @@
                 color: #555;
                 text-decoration: underline;
                 margin: 0 2mm;
-            }
+              }
+
+              p { line-height: 1.5em; }
 
         -->
     </style>
@@ -368,7 +370,7 @@
 
                               <th class="invoice-items-w1">
                                 <div class="cell-legend text-right">
-                                  Gross price
+                                  Net price
                                 </div>
                               </th>
                          </tr>
@@ -393,7 +395,7 @@
                             </td>
 
                             <td class="invoice-items-w1">
-                                <div class="currency">{{ item.price }}</div>
+                                <div class="currency">{{ item.net_price }}</div>
                             </td>
                          </tr>
                          {% endfor %}
@@ -444,7 +446,9 @@
                 </table>
               </div>
               <div class="clear"></div>
-              <div style='margin-top: 3em;'>Unless otherwise indicated, time of supply corresponds to the invoice date.</div>
+              <div style='margin-top: 3em;'>
+                {% include additional_text %}
+              </div>
             {% if invoice.local_currency != 'EUR' %}
             <div style='margin-top: 1em;'>Total UK VAT is {{ invoice.local_currency }} {{ invoice.vat_in_local_currency }} – <em>ECB rate {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date|date:"Y-m-d" }}</em></div>
             {% endif %}
