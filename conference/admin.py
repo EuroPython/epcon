@@ -1256,6 +1256,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         }
         return render_to_response('admin/conference/conferencetag/merge.html', ctx, context_instance=template.RequestContext(request))
 
+
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
 
 
@@ -1264,3 +1265,11 @@ class ExchangeRateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
+
+
+class CaptchaQuestionAdmin(admin.ModelAdmin):
+    list_display = ('question', 'enabled')
+    list_filter = ('enabled',)
+
+
+admin.site.register(models.CaptchaQuestion)
