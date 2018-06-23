@@ -140,7 +140,7 @@
                                         {% if invoice.html == VAT_NOT_AVAILABLE_PLACEHOLDER %}
                                           {{ VAT_NOT_AVAILABLE_PLACEHOLDER }}
                                         {% else %}
-                                          <a href="{% url 'assopy-invoice-html' order_code=order.code code=invoice.code %}">{{ invoice.code }}</a>
+                                            <a href="{{ invoice.get_absolute_url }}">{{ invoice.code }}</a>
                                         {% endif %}
                                         {% comment %}
                                           {% for cn in i.credit_notes.all %}
