@@ -8,6 +8,7 @@ import random
 from pytest import mark
 
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 from django.conf import settings
 
 from django_factory_boy import auth as auth_factories
@@ -387,7 +388,7 @@ def test_invoices_from_buying_tickets(client):
     assert 'I/18.0002' in response.content.decode('utf-8')
 
 
-def create_order_and_invoice(assopy_user, fare):
+def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
     today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
 
@@ -397,11 +398,13 @@ def create_order_and_invoice(assopy_user, fare):
         fetch_and_store_latest_ecb_exrates()
 
     order.confirm_order(today)
-    # confirm_order by default creates placeholders, but for those tests we can
-    # upgrade them to proper invoices anyway.
-    return upgrade_invoice_placeholder_to_real_invoice(
-        Invoice.objects.get(order=order)
-    )
+
+    # confirm_order by default creates placeholders, but for most of the tests
+    # we can upgrade them to proper invoices anyway.
+    invoice = Invoice.objects.get(order=order)
+    if keep_as_placeholder:
+        return invoice
+    return upgrade_invoice_placeholder_to_real_invoice(invoice)
 
 
 @mark.django_db
@@ -561,3 +564,36 @@ def test_create_invoice_with_many_items(client):
     # client.login(email='joedoe@example.com', password='password123')
     # response = client.get(url)
     # serve_response(response)
+
+
+@mark.django_db
+@responses.activate
+@freeze_time("2018-05-05")
+def test_upgrade_invoices_for_2018_command(client):
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+    with freeze_time("2018-05-05"):
+        client.login(email='joedoe@example.com', password='password123')
+        invoice1 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+        assert invoice1.html == VAT_NOT_AVAILABLE_PLACEHOLDER
+        invoice2 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+        assert invoice2.html == VAT_NOT_AVAILABLE_PLACEHOLDER
+        assert invoice1.code != invoice2.code
+
+    placeholders = Invoice.objects.filter(html=VAT_NOT_AVAILABLE_PLACEHOLDER)
+    all_invoices = Invoice.objects.all()
+    assert all_invoices.count() == 2
+    assert placeholders.count() == 2
+
+    call_command('upgrade_placeholder_invoices_for_2018')
+
+    placeholders = Invoice.objects.filter(html=VAT_NOT_AVAILABLE_PLACEHOLDER)
+    all_invoices = Invoice.objects.all()
+    assert all_invoices.count() == 2
+    assert placeholders.count() == 0
