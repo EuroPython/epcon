@@ -18,7 +18,7 @@ import responses
 from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-# from common.http import PdfResponse
+from common.http import PdfResponse
 from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings
 from conference.invoicing import (
@@ -27,7 +27,7 @@ from conference.invoicing import (
     EPS_18,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
-    # render_invoice_as_html,
+    render_invoice_as_html,
 )
 from conference.currencies import (
     DAILY_ECB_URL,
@@ -172,7 +172,7 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
     assert invoice_code_2018 in response.content.decode('utf-8')
     assert order_code_2018 in response.content.decode('utf-8')
 
-    assert reverse("assopy-invoice-html", kwargs={
+    assert reverse("assopy-invoice-pdf", kwargs={
         'code': invoice_code_2018,
         'order_code': order_code_2018,
     }) in response.content.decode('utf-8')
@@ -485,17 +485,20 @@ def test_vat_in_GBP_for_2018(client):
         assert invoice.exchange_rate         == Decimal('0.89165')
         assert invoice.exchange_rate_date    == EXAMPLE_ECB_DATE
 
-        response = client.get(invoice.get_absolute_url())
+        response = client.get(invoice.get_html_url())
         content = response.content.decode('utf-8')
-        # serve(response.content)
-        assert "Total VAT is GBP 1.49" in content
+        # The wording used to be different, so we had both checks in one line,
+        # but beacuse of template change we had to separate them
+        assert 'local-currency="GBP"' in content
+        assert 'total-vat-in-local-currency="1.49"' in content
+
         # we're going to use whatever the date was received/cached from ECB XML
         # doesnt matter what emit date is
-        assert "ECB rate 0.89165 GBP/EUR from 2018-03-06" in content
+        assert "ECB rate used for VAT is 0.89165 GBP/EUR from 2018-03-06"\
+            in content
 
-        # response = client.get(invoice.get_html_url())
-        # import pdb; pdb.set_trace()
-        # serve_response(response)
+        response = client.get(invoice.get_absolute_url())
+        assert response['Content-Type'] == 'application/pdf'
 
     with freeze_time("2017-05-05"):
         client.login(email='joedoe@example.com', password='password123')
@@ -507,12 +510,15 @@ def test_vat_in_GBP_for_2018(client):
         assert invoice.exchange_rate         == Decimal('1.0')
         assert invoice.exchange_rate_date    == date(2017, 5, 5)
 
-        response = client.get(invoice.get_absolute_url())
+        response = client.get(invoice.get_html_url())
         content = response.content.decode('utf-8')
         # not showing any VAT conversion because in 2017 we had just EUR
         assert "EUR"  in content
         assert "Total VAT is" not in content
         assert "ECB rate"  not in content
+
+        response = client.get(invoice.get_absolute_url())
+        assert response['Content-Type'] == 'application/pdf'
 
 
 @mark.django_db

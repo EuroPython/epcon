@@ -152,7 +152,7 @@
             .vat_value {
                 float: left;
             }
-            .currency {
+            .currency, .currency-gbp {
                 text-align: right;
                 width: 1.7cm;
                 color: #444;
@@ -160,6 +160,10 @@
             }
             .currency:before {
                 content: "€";
+                float: left;
+              }
+            .currency-gbp:before {
+                content: "£";
                 float: left;
               }
 
@@ -281,6 +285,12 @@
                             <td>
                                 <div class="cell-legend">
                                     Date
+                                </div>
+                                <div class="cell-content">
+                                    {{ emit_date|default:''|date:"Y-m-d" }}
+                                </div>
+                                <div class="cell-legend">
+                                  Time of supply
                                 </div>
                                 <div class="cell-content">
                                     {{ emit_date|default:''|date:"Y-m-d" }}
@@ -418,20 +428,28 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="cell-legend text-right">
-                                    Total VAT
+                              <div class="cell-legend text-right">
+                                Total VAT
+                              </div>
+                              <div class="cell-content">
+                                {% if price.vat %}
+                                <!-- <div class="vat_value">{{ vat.value }}% </div> -->
+                                <div class="currency">{{ price.vat|floatformat:2 }}</div>
+                                {% endif %}
+                                {% if vat.invoice_notice %}
+                                <div class="invoices-vat-notes">
+                                  {{ vat.invoice_notice }}
                                 </div>
-                                <div class="cell-content">
-                                    {% if price.vat %}
-                                    <!-- <div class="vat_value">{{ vat.value }}% </div> -->
-                                        <div class="currency">{{ price.vat|floatformat:2 }}</div>
-                                    {% endif %}
-                                    {% if vat.invoice_notice %}
-                                        <div class="invoices-vat-notes">
-                                            {{ vat.invoice_notice }}
-                                        </div>
-                                    {% endif %}
+                                {% endif %}
+                              </div>
+                              <div class="cell-legend text-right" data-local-currency="{{ invoice.local_currency }}">
+                                in {{ invoice.local_currency }}(*)
+                              </div>
+                              <div class="cell-content text-right">
+                                <div class='currency-{{ invoice.local_currency|lower }}' data-total-vat-in-local-currency="{{ invoice.vat_in_local_currency }}">
+                                  {{ invoice.vat_in_local_currency }}
                                 </div>
+                              </div>
                             </td>
                             <td>
                                 <div class="cell-legend text-right">
@@ -441,16 +459,23 @@
                                     <div class="currency-total">{{ price.total|floatformat:2 }}</div>
                                 </div>
                             </td>
-                        </tr>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td class='text-right'>
+                            </td>
+                          </tr>
                     </tbody>
                 </table>
               </div>
               <div class="clear"></div>
+              {% if additional_text %}
               <div style='margin-top: 3em;'>
                 {% include additional_text %}
               </div>
+              {% endif %}
             {% if invoice.local_currency != 'EUR' %}
-            <div style='margin-top: 1em;'>Total UK VAT is {{ invoice.local_currency }} {{ invoice.vat_in_local_currency }} – <em>ECB rate {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date|date:"Y-m-d" }}</em></div>
+            <div style='margin-top: 1em;'><em>(*) - ECB rate used for VAT is {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date|date:"Y-m-d" }}</em></div>
             {% endif %}
 
         </div>
