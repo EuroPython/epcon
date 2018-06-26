@@ -659,10 +659,13 @@ class Order(models.Model):
         # This used to generate invoices, currently it just fills payment date,
         # and creates placeholder
         # To avoid ciruclar import
-        from conference.invoicing import create_invoices_for_order
+        from conference.invoicing import (
+            create_invoices_for_order,
+            FORCE_PLACEHOLDER
+        )
         self.payment_date = payment_date
         self.save()
-        create_invoices_for_order(self, force_placeholder=True)
+        create_invoices_for_order(self, force_placeholder=FORCE_PLACEHOLDER)
 
     def total(self, apply_discounts=True):
         if apply_discounts:

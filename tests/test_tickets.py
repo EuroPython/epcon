@@ -23,7 +23,7 @@ from conference.fares import (
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
-from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
+from conference import invoicing
 from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
@@ -42,6 +42,11 @@ DEFAULT_VAT_RATE = "0.2"  # 20%
 DEFAULT_SHIRT_SIZE        = 'l'
 DEFAULT_DIET              = 'omnivorous'
 DEFAULT_PYTHON_EXPERIENCE = 0
+
+# TODO/NOTE(artcz)(2018-06-26) – We use this for settings, but we should
+# actually implement two sets of tests – one for full placeholder behaviour and
+# one for non-placeholder behaviour.
+invoicing.FORCE_PLACEHOLDER = True
 
 
 def make_basic_fare_setup():
@@ -215,12 +220,13 @@ class TestBuyingTickets(TestCase):
             assert order._complete
 
             invoice = Invoice.objects.get()
-            assert invoice.html == VAT_NOT_AVAILABLE_PLACEHOLDER
+            assert invoice.html == invoicing.VAT_NOT_AVAILABLE_PLACEHOLDER
 
             response = self.client.get(my_profile_url)
             self.assertContains(response, 'View your tickets (3)')
             self.assertContains(response, tickets_url)
-            self.assertContains(response, VAT_NOT_AVAILABLE_PLACEHOLDER)
+            self.assertContains(response,
+                                invoicing.VAT_NOT_AVAILABLE_PLACEHOLDER)
 
             response = self.client.get(p3_tickets_url)
             latest_ticket = Ticket.objects.latest('id')

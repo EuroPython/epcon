@@ -18,16 +18,17 @@ import responses
 from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-from common.http import PdfResponse
+# from common.http import PdfResponse
 from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings
+from conference import invoicing  # for monkey patching below
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
     EPS_18,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
-    render_invoice_as_html,
+    # render_invoice_as_html,
 )
 from conference.currencies import (
     DAILY_ECB_URL,
@@ -50,6 +51,11 @@ from tests.common_tools import (  # NOQA
     serve_response,
     serve_text
 )
+
+# TODO/NOTE(artcz)(2018-06-26) – We use this for settings, but we should
+# actually implement two sets of tests – one for full placeholder behaviour and
+# one for non-placeholder behaviour.
+invoicing.FORCE_PLACEHOLDER = True
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
@@ -305,14 +311,14 @@ def test_invoices_from_buying_tickets(client):
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
 
-    # multiple items per invoice, one invoice per vat rate.
-    # 2 invoices but they are both placeholders
+    # # multiple items per invoice, one invoice per vat rate.
+    # # 2 invoices but they are both placeholders
     assert Invoice.objects.all().count() == 2
     assert Invoice.objects.filter(
         html=VAT_NOT_AVAILABLE_PLACEHOLDER
     ).count() == 2
 
-    # and we can then upgrade all invoices to non-placeholders
+    # # and we can then upgrade all invoices to non-placeholders
     for _invoice in Invoice.objects.all():
         upgrade_invoice_placeholder_to_real_invoice(_invoice)
 
@@ -576,6 +582,8 @@ def test_create_invoice_with_many_items(client):
 @responses.activate
 @freeze_time("2018-05-05")
 def test_upgrade_invoices_for_2018_command(client):
+    """
+    """
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()

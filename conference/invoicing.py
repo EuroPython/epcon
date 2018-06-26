@@ -95,6 +95,11 @@ VAT invoices will be generated as soon as we have been issued a VAT ID.
 Please stay tuned.
 """.strip()
 
+# NOTE(artcz)(2018-06-26) – This is a global setting that decides whether we
+# issue placeholders (basically Invoice is normal but it's html is equal to
+# VAT_NOT_AVAILABLE_PLACEHOLDER – or regular invoice with a proper template.
+FORCE_PLACEHOLDER = False
+
 
 def is_real_invoice_code(invoice_code):
     return invoice_code.startswith(REAL_INVOICE_PREFIX)
