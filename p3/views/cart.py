@@ -247,6 +247,9 @@ def billing(request):
 
             o = amodels.Order.objects.create(**kw)
             if totals['total'] == 0:
+                # Nothing to pay, complete order and we're done
+                o.confirm_order(o.created)
+                o.complete()
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
 
             if settings.STRIPE_ENABLED and order_data['payment'] == 'cc':
