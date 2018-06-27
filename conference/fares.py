@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
-from conference.models import Fare, FARE_TICKET_TYPES
+from conference.models import Conference, Fare, FARE_TICKET_TYPES
 
 
 # due to historical reasons this one is basically hardcoded in various places.
@@ -84,14 +84,23 @@ def create_fare_for_conference(code, conference, price,
     else:
         ticket_type = FARE_TICKET_TYPES.conference
 
+    # This is inefficient, we should pass Conference object as argument instead
+    # of name.
+    conference, _ = Conference.objects.get_or_create(
+        code=conference,
+        # There should probably be a spearate setting for a name...
+        name=conference,
+    )
+
     recipient_type = code[3].lower()  # same as lowercase last letter of code
 
+    name = "%s - %s" % (conference.name, AVAILABLE_FARE_CODES[code])
     fare, _ = Fare.objects.get_or_create(
-        conference=conference,
+        conference=conference.code,
         code=code,
-        name=AVAILABLE_FARE_CODES[code],
+        name=name,
         defaults=dict(
-            description=AVAILABLE_FARE_CODES[code],
+            description=name,
             price=price,
             recipient_type=recipient_type,
             ticket_type=ticket_type,
@@ -111,7 +120,7 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
         fare = create_fare_for_conference(
             code=fare_code,
             conference=conference,
-            price=1000,  # high random price, we'll change it later
+            price=210,  # random price, we'll change it later (div. by 3)
             start_validity=None, end_validity=None,
             vat_rate=vat_rate,
         )

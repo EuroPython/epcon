@@ -659,10 +659,13 @@ class Order(models.Model):
         # This used to generate invoices, currently it just fills payment date,
         # and creates placeholder
         # To avoid ciruclar import
-        from conference.invoicing import create_invoices_for_order
+        from conference.invoicing import (
+            create_invoices_for_order,
+            FORCE_PLACEHOLDER
+        )
         self.payment_date = payment_date
         self.save()
-        create_invoices_for_order(self, force_placeholder=True)
+        create_invoices_for_order(self, force_placeholder=FORCE_PLACEHOLDER)
 
     def total(self, apply_discounts=True):
         if apply_discounts:
@@ -850,10 +853,21 @@ class Invoice(models.Model):
             self.order.complete(ignore_cache=True)
 
     def get_absolute_url(self):
-        # defaulting to HTML for now
+        return self.get_pdf_url()
+
+    def get_html_url(self):
+        """Render invoice as html -- fallback in case PDF doesn't work"""
         return reverse("assopy-invoice-html", args=[
             quote(self.order.code), quote(self.code)
         ])
+
+    def get_pdf_url(self):
+        return reverse("assopy-invoice-pdf", args=[
+            quote(self.order.code), quote(self.code)
+        ])
+
+    def get_admin_url(self):
+        return reverse('admin:assopy_invoice_change', args=[self.id])
 
     def __unicode__(self):
         if self.code:

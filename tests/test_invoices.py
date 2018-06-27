@@ -1,13 +1,14 @@
 # coding: utf-8
-
 from __future__ import unicode_literals, absolute_import
 
 from datetime import date, timedelta
 from decimal import Decimal
+import random
 
-from pytest import mark, raises
+from pytest import mark
 
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 from django.conf import settings
 
 from django_factory_boy import auth as auth_factories
@@ -17,14 +18,17 @@ import responses
 from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-from conference.models import AttendeeProfile, Ticket
+# from common.http import PdfResponse
+from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings
+from conference import invoicing  # for monkey patching below
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
     EPS_18,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
+    # render_invoice_as_html,
 )
 from conference.currencies import (
     DAILY_ECB_URL,
@@ -35,11 +39,23 @@ from conference.currencies import (
 )
 from conference.fares import (
     SOCIAL_EVENT_FARE_CODE,
-    create_fare_for_conference
+    create_fare_for_conference,
+    pre_create_typical_fares_for_conference,
 )
 from email_template.models import Email
 
-from tests.common_tools import template_used, sequence_equals, make_user
+from tests.common_tools import (  # NOQA
+    template_used,
+    sequence_equals,
+    make_user,
+    serve_response,
+    serve_text
+)
+
+# TODO/NOTE(artcz)(2018-06-26) – We use this for settings, but we should
+# actually implement two sets of tests – one for full placeholder behaviour and
+# one for non-placeholder behaviour.
+invoicing.FORCE_PLACEHOLDER = True
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
@@ -60,7 +76,7 @@ def _prepare_invoice_for_basic_test(order_code, invoice_code):
         emit_date=date.today(),
         price=Decimal(1337),
         vat=vat_10,
-        html='Here goes full html',
+        html='<html>Here goes full html</html>',
         exchange_rate_date=date.today(),
     )
 
@@ -78,7 +94,7 @@ def test_invoice_html(client):
     })
     response = client.get(invoice_url)
 
-    assert response.content == 'Here goes full html'
+    assert response.content == '<html>Here goes full html</html>'
 
 
 @mark.django_db
@@ -93,9 +109,9 @@ def test_invoice_pdf(client):
         'code': invoice_code,
     })
 
-    with raises(NotImplementedError):
-        # TODO: currently PDF invoices are not implemented
-        client.get(invoice_url)
+    response = client.get(invoice_url)
+    assert response.status_code == 200
+    assert response['Content-type'] == 'application/pdf'
 
 
 @mark.django_db
@@ -162,7 +178,7 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
     assert invoice_code_2018 in response.content.decode('utf-8')
     assert order_code_2018 in response.content.decode('utf-8')
 
-    assert reverse("assopy-invoice-html", kwargs={
+    assert reverse("assopy-invoice-pdf", kwargs={
         'code': invoice_code_2018,
         'order_code': order_code_2018,
     }) in response.content.decode('utf-8')
@@ -201,7 +217,7 @@ def test_invoices_from_buying_tickets(client):
     assert 'Sorry, no tickets are available' in response.content
 
     # 3. p3/cart.html is using {% fares_available %} assignment tag to display
-    # fares.  # For more details about fares check conference/fares.py
+    # fares.  For more details about fares check conference/fares.py
 
     ticket_price  = Decimal(100)
     ticket_amount = 20
@@ -211,10 +227,10 @@ def test_invoices_from_buying_tickets(client):
     vat_rate_10, _ = Vat.objects.get_or_create(value=10)
     vat_rate_20, _ = Vat.objects.get_or_create(value=20)
 
-    CONFERENCE = settings.CONFERENCE_CONFERENCE
-
     today = date.today()
     yesterday, tomorrow = today - timedelta(days=1), today + timedelta(days=1)
+
+    CONFERENCE = settings.CONFERENCE_CONFERENCE
 
     create_fare_for_conference(code="TRSP",  # Ticket Regular Standard Personal
                                conference=CONFERENCE,
@@ -295,14 +311,14 @@ def test_invoices_from_buying_tickets(client):
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
 
-    # multiple items per invoice, one invoice per vat rate.
-    # 2 invoices but they are both placeholders
+    # # multiple items per invoice, one invoice per vat rate.
+    # # 2 invoices but they are both placeholders
     assert Invoice.objects.all().count() == 2
     assert Invoice.objects.filter(
         html=VAT_NOT_AVAILABLE_PLACEHOLDER
     ).count() == 2
 
-    # and we can then upgrade all invoices to non-placeholders
+    # # and we can then upgrade all invoices to non-placeholders
     for _invoice in Invoice.objects.all():
         upgrade_invoice_placeholder_to_real_invoice(_invoice)
 
@@ -320,14 +336,14 @@ def test_invoices_from_buying_tickets(client):
         {'count': ticket_amount,
          'price': ticket_price * ticket_amount,
          'code': u'TRSP',
-         'description': u'Regular Standard Personal'},
+         'description': u'ep2018 - Regular Standard Personal'},
     ]
 
     expected_invoice_items_vat_20 = [
         {'count': social_event_amount,
          'price': social_event_price * social_event_amount,
          'code':  SOCIAL_EVENT_FARE_CODE,
-         'description': u'Social Event'},
+         'description': u'ep2018 - Social Event'},
     ]
 
     assert sequence_equals(invoice_vat_10.invoice_items(),
@@ -378,7 +394,7 @@ def test_invoices_from_buying_tickets(client):
     assert 'I/18.0002' in response.content.decode('utf-8')
 
 
-def create_order_and_invoice(assopy_user, fare):
+def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
     today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
 
@@ -388,11 +404,13 @@ def create_order_and_invoice(assopy_user, fare):
         fetch_and_store_latest_ecb_exrates()
 
     order.confirm_order(today)
-    # confirm_order by default creates placeholders, but for those tests we can
-    # upgrade them to proper invoices anyway.
-    return upgrade_invoice_placeholder_to_real_invoice(
-        Invoice.objects.get(order=order)
-    )
+
+    # confirm_order by default creates placeholders, but for most of the tests
+    # we can upgrade them to proper invoices anyway.
+    invoice = Invoice.objects.get(order=order)
+    if keep_as_placeholder:
+        return invoice
+    return upgrade_invoice_placeholder_to_real_invoice(invoice)
 
 
 @mark.django_db
@@ -473,13 +491,20 @@ def test_vat_in_GBP_for_2018(client):
         assert invoice.exchange_rate         == Decimal('0.89165')
         assert invoice.exchange_rate_date    == EXAMPLE_ECB_DATE
 
-        response = client.get(invoice.get_absolute_url())
+        response = client.get(invoice.get_html_url())
         content = response.content.decode('utf-8')
-        # serve(response.content)
-        assert "Total VAT is GBP 1.49" in content
+        # The wording used to be different, so we had both checks in one line,
+        # but beacuse of template change we had to separate them
+        assert 'local-currency="GBP"' in content
+        assert 'total-vat-in-local-currency="1.49"' in content
+
         # we're going to use whatever the date was received/cached from ECB XML
         # doesnt matter what emit date is
-        assert "ECB rate 0.89165 GBP/EUR from March 6, 2018" in content
+        assert "ECB rate used for VAT is 0.89165 GBP/EUR from 2018-03-06"\
+            in content
+
+        response = client.get(invoice.get_absolute_url())
+        assert response['Content-Type'] == 'application/pdf'
 
     with freeze_time("2017-05-05"):
         client.login(email='joedoe@example.com', password='password123')
@@ -491,8 +516,98 @@ def test_vat_in_GBP_for_2018(client):
         assert invoice.exchange_rate         == Decimal('1.0')
         assert invoice.exchange_rate_date    == date(2017, 5, 5)
 
-        response = client.get(invoice.get_absolute_url())
+        response = client.get(invoice.get_html_url())
         content = response.content.decode('utf-8')
         # not showing any VAT conversion because in 2017 we had just EUR
-        assert "Total VAT" not in content
+        assert "EUR"  in content
+        assert "Total VAT is" not in content
         assert "ECB rate"  not in content
+
+        response = client.get(invoice.get_absolute_url())
+        assert response['Content-Type'] == 'application/pdf'
+
+
+@mark.django_db
+@responses.activate
+@freeze_time("2018-05-05")
+def test_create_invoice_with_many_items(client):
+    """
+    This test is meant to be used to test invoice template design.
+    It creates a lot of different items on the invoice, and after that we can
+    use serve(content) to easily check in the browser how the Invoice looks
+    like.
+
+    Freezing it at 2018 so we can easily check EP2018 invoices.
+    """
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+
+    Email.objects.create(code='purchase-complete')
+    user = make_user()
+
+    vat_rate_20, _ = Vat.objects.get_or_create(value=20)
+    CONFERENCE = settings.CONFERENCE_CONFERENCE
+
+    pre_create_typical_fares_for_conference(CONFERENCE, vat_rate_20)
+
+    # Don't need to set dates for this test.
+    # set_early_bird_fare_dates(CONFERENCE, yesterday, tomorrow)
+    # set_regular_fare_dates(CONFERENCE, yesterday, tomorrow)
+    random_fares = random.sample(Fare.objects.all(), 3)
+
+    order = OrderFactory(user=user.assopy_user, items=[
+        (fare, {'qty': i}) for i, fare in enumerate(random_fares, 1)
+    ])
+    with responses.RequestsMock() as rsps:
+        # mocking responses for the invoice VAT exchange rate feature
+        rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+        fetch_and_store_latest_ecb_exrates()
+
+    order.confirm_order(date.today())
+    # invoice = Invoice.objects.get()
+    # serve_response(PdfResponse(
+    #     filename="some-invoice.pdf",
+    #     content=render_invoice_as_html(invoice)
+    # ))
+
+    # testing debug panel
+    # url = reverse("debugpanel_invoice_forcepreview",
+    #               kwargs={'invoice_id': invoice.id})
+    # url = reverse('debugpanel_invoice_placeholders')
+    # client.login(email='joedoe@example.com', password='password123')
+    # response = client.get(url)
+    # serve_response(response)
+
+
+@mark.django_db
+@responses.activate
+@freeze_time("2018-05-05")
+def test_upgrade_invoices_for_2018_command(client):
+    """
+    """
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+    with freeze_time("2018-05-05"):
+        client.login(email='joedoe@example.com', password='password123')
+        invoice1 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+        assert invoice1.html == VAT_NOT_AVAILABLE_PLACEHOLDER
+        invoice2 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+        assert invoice2.html == VAT_NOT_AVAILABLE_PLACEHOLDER
+        assert invoice1.code != invoice2.code
+
+    placeholders = Invoice.objects.filter(html=VAT_NOT_AVAILABLE_PLACEHOLDER)
+    all_invoices = Invoice.objects.all()
+    assert all_invoices.count() == 2
+    assert placeholders.count() == 2
+
+    call_command('upgrade_placeholder_invoices_for_2018')
+
+    placeholders = Invoice.objects.filter(html=VAT_NOT_AVAILABLE_PLACEHOLDER)
+    all_invoices = Invoice.objects.all()
+    assert all_invoices.count() == 2
+    assert placeholders.count() == 0

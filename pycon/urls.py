@@ -9,7 +9,11 @@ from django.views import defaults
 from filebrowser.sites import site as fsite
 
 import p3.forms as pforms
-from conference.debug_panel import debug_panel
+from conference.debug_panel import (
+    debug_panel_index,
+    debug_panel_invoice_placeholders,
+    debug_panel_invoice_force_preview,
+)
 
 
 admin.autodiscover()
@@ -38,7 +42,13 @@ urlpatterns = [
     url('', include('django.contrib.auth.urls', namespace='auth')),
 
     # production debug panel, doesn't even have a name=
-    url(r'^nothing-to-see-here/$', debug_panel),
+    url(r'^nothing-to-see-here/$', debug_panel_index),
+    url(r'^nothing-to-see-here/invoices/$',
+        debug_panel_invoice_placeholders,
+        name='debugpanel_invoice_placeholders'),
+    url(r'^nothing-to-see-here/invoices/(?P<invoice_id>\d+)/$',
+        debug_panel_invoice_force_preview,
+        name="debugpanel_invoice_forcepreview"),
 ]
 
 if settings.DEBUG:

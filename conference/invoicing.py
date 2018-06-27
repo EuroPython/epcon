@@ -70,6 +70,18 @@ LOCAL_CURRENCY_BY_YEAR = {
     2018: "GBP",
 }
 
+EP_CITY_FOR_YEAR = {
+    2016: "Bilbao",
+    2017: "Rimini",
+    2018: "Edinburgh",
+}
+
+ADDITIONAL_TEXT_FOR_YEAR = {
+    2016: "",
+    2017: "",
+    2018: "assopy/invoices/_additional_text_for_2018.html",
+}
+
 REAL_INVOICE_PREFIX = "I/"
 FAKE_INVOICE_PREFIX = "F/"   # pro forma(?)
 
@@ -82,6 +94,11 @@ VAT_NOT_AVAILABLE_PLACEHOLDER = """
 VAT invoices will be generated as soon as we have been issued a VAT ID.
 Please stay tuned.
 """.strip()
+
+# NOTE(artcz)(2018-06-26) – This is a global setting that decides whether we
+# issue placeholders (basically Invoice is normal but it's html is equal to
+# VAT_NOT_AVAILABLE_PLACEHOLDER – or regular invoice with a proper template.
+FORCE_PLACEHOLDER = False
 
 
 def is_real_invoice_code(invoice_code):
@@ -208,6 +225,12 @@ def upgrade_invoice_placeholder_to_real_invoice(invoice):
 def render_invoice_as_html(invoice):
     assert isinstance(invoice, Invoice)
 
+    items = invoice.invoice_items()
+    for item in items:
+        item['net_price'] = normalize_price(
+            item['price'] / (1 + invoice.vat.value / 100)
+        )
+
     # TODO this is copied as-is from assopy/views.py, but can be simplified
     # TODO: also if there are any images included in the invoice make sure to
     # base64 them.
@@ -217,6 +240,11 @@ def render_invoice_as_html(invoice):
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
+        # TODO: get it from Conference instance
+        'conference_name': "EuroPython 2018",
+        "conference_location": EP_CITY_FOR_YEAR[invoice.emit_date.year],
+        "bank_info": "",
+        "currency": invoice.local_currency,
         'document': ('Fattura N.', 'Invoice N.'),
         'title': unicode(invoice),
         'code': invoice.code,
@@ -228,7 +256,7 @@ def render_invoice_as_html(invoice):
             'cf_code': order.cf_code,
             'vat_number': order.vat_number,
         },
-        'items': invoice.invoice_items(),
+        'items': items,
         'note': invoice.note,
         'price': {
             'net': invoice.net_price(),
@@ -239,6 +267,7 @@ def render_invoice_as_html(invoice):
         'is_real_invoice': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
         "invoice": invoice,
+        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year]
     }
 
     return render_to_string('assopy/invoice.html', ctx)
