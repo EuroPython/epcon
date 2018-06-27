@@ -12,6 +12,8 @@ def generate_invoices_for_zero_amount_orders_for_year(year):
     for o in orders:
         if not o.complete():
             continue
+        if o.total() > 0:
+            continue
         print ('Creating invoice for order %r' % o)
         o.confirm_order(o.created)
         o.complete()
