@@ -234,8 +234,9 @@ select[name=tracks] {
 </div>
 <script type="text/javascript">
 (function() {
+    var DEFAULT_SLOT_LENGTH = 30;
     var dashboard = $('#dashboard');
-    var slot_length_px=10;
+    var slot_length_px=DEFAULT_SLOT_LENGTH;
     // in teoria non ci dovrebbe essere bisogno di tenere in un globale l'elemento draggato,
     // ma chrome ha qualche bug nell'implementazione dell'oggetto DataTranser e la funzione
     // .getData funziona solo in alcuni eventi;
@@ -243,7 +244,7 @@ select[name=tracks] {
 
     var ctrlPressed = false;
     $(window).keydown(function(evt) {
-      if (evt.which == 17) { 
+      if (evt.which == 17) {
         ctrlPressed = true;
       }
     }).keyup(function(evt) {
@@ -280,7 +281,7 @@ select[name=tracks] {
 
     function Ruler(track, slot_length_px) {
         if(!slot_length_px)
-            slot_length_px = 10;
+            slot_length_px = DEFAULT_SLOT_LENGTH;
         var dates = [
             new Date(track.attr('data-date') + ' 8:00'),
             new Date(track.attr('data-date') + ' 21:00')
@@ -573,7 +574,7 @@ select[name=tracks] {
                     });
                 $('.body form', dlg).ajaxForm({
                     dataType: 'json',
-                    beforeSubmit: function(arr, form, options) { 
+                    beforeSubmit: function(arr, form, options) {
                         all_tracks = false;
                         for(var ix=0; ix<arr.length; ix++) {
                             if(arr[ix].name == 'copy') {
