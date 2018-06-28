@@ -129,11 +129,13 @@ class OrderAdmin(admin.ModelAdmin):
         return html
     _user.short_description = 'buyer'
     _user.allow_tags = True
+    _user.admin_order_field = 'user__user__last_name'
 
     def _email(self, o):
         return '<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email)
     _email.short_description = 'buyer email'
     _email.allow_tags = True
+    _email.admin_order_field = 'user__user__email'
 
     def _items(self, o):
         return o.orderitem_set.exclude(ticket=None).count()
@@ -141,6 +143,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def _created(self, o):
         return o.created.strftime('%d %b %Y - %H:%M:%S')
+    _created.admin_order_field = 'created'
 
     def _total_nodiscount(self, o):
         return o.total(apply_discounts=False)
@@ -157,8 +160,7 @@ class OrderAdmin(admin.ModelAdmin):
     def _invoice(self, o):
         from django.contrib.admin.util import quote
         output = []
-        # MAL: PDF generation is currently broken, so always show the HTML
-        # version
+        # MAL: PDF generation is slower, so default to HTML
         if 1 or dsettings.DEBUG:
             vname = 'assopy-invoice-html'
         else:
@@ -176,6 +178,7 @@ class OrderAdmin(admin.ModelAdmin):
             )
         return ' '.join(output)
     _invoice.allow_tags = True
+    _invoice.admin_order_field = 'invoices'
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
