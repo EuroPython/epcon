@@ -526,16 +526,16 @@ class TalkManager(models.Manager):
             return qs
 
         def proposed(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.proposed)
+            return self._filter_by_status(TALK_STATUS.proposed, conference=conference)
 
         def accepted(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.accepted)
+            return self._filter_by_status(TALK_STATUS.accepted, conference=conference)
 
         def canceled(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.canceled)
+            return self._filter_by_status(TALK_STATUS.canceled, conference=conference)
 
         def waitlist(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.waitlist)
+            return self._filter_by_status(TALK_STATUS.waitlist, conference=conference)
 
     def createFromTitle(self, title, sub_title, conference, speaker,
                         prerequisites, abstract_short, abstract_extra,

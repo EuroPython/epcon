@@ -100,9 +100,14 @@ def talk_title(talk):
 
 def talk_abstract(talk):
 
+    abstract = talk.getAbstract()
+    if abstract:
+        text = format_text(talk.getAbstract().body)
+    else:
+        text = ''
     return '<p>By %s</p>\n\n%s' % (
         speaker_listing(talk),
-        format_text(talk.getAbstract().body))
+        text)
 
 def event_title(event):
 
