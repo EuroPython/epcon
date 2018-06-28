@@ -3,15 +3,17 @@
 
 import json
 import logging as log
-from   optparse import make_option
-from   collections import OrderedDict
+from optparse import make_option
+from collections import OrderedDict
 
-from   django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError
 
-from   assopy import models as assopy_models
+from assopy import models as assopy_models
 
-from ...utils import (get_profile_company,
-                      get_all_order_tickets)
+from ...utils import (
+    get_profile_company,
+    get_all_order_tickets
+)
 
 ### Helpers
 
@@ -55,15 +57,15 @@ class Command(BaseCommand):
             raise CommandError('--status should be one of '
                                '(all, complete, incomplete)' )
 
-        tkts = get_all_order_tickets(conference)
-        if not tkts:
+        tickets = get_all_order_tickets(conference)
+        if not tickets:
             raise IndexError('Could not find any tickets for '
                              'conference {}.'.format(conference))
 
         if options['ticket_id']:
-            tkt_id = int(options['ticket_id'])
-            tkts = [t for t in tkts if t.id == tkt_id]
-            if not tkts:
+            ticket_id = int(options['ticket_id'])
+            tickets = [ticket for ticket in tickets if ticket.id == ticket_id]
+            if not tickets:
                 raise IndexError('Could not find any ticket with '
                                  'ticket_id {}.'.format(options['ticket_id']))
 
@@ -83,14 +85,14 @@ class Command(BaseCommand):
                         }
 
         profiles = [] #OrderedDict()
-        for t in tkts:
-            p3_tkt = t.p3_conference
+        for ticket in tickets:
+            p3_tkt = ticket.p3_conference
             subj   = dflt_profile.copy()
 
             try:
                 profile = p3_tkt.profile()
             except:
-                msg = 'Could not find a profile for ticket_id {}.'.format(t.id)
+                msg = 'Could not find a profile for ticket_id {}.'.format(ticket.id)
                 if options['raise']:
                     #raise AttributeError(msg)
                     log.error(msg)
@@ -99,20 +101,23 @@ class Command(BaseCommand):
                 else:
                     log.error(msg)
 
-            title, company  = get_profile_company(profile)
-            subj['title']   = title.encode('utf-8')
+            title, company = get_profile_company(profile)
+            subj['title'] = title.encode('utf-8')
             subj['company'] = company.encode('utf-8')
-            subj['name'   ] = profile.user.first_name.encode('utf-8')
+            subj['name'] = profile.user.first_name.encode('utf-8')
             subj['surname'] = profile.user.last_name.encode('utf-8')
             subj['tagline'] = p3_tkt.tagline.encode('utf-8')
             subj['pypower'] = p3_tkt.python_experience
-            subj['tshirt']  = p3_tkt.shirt_size.encode('utf-8')
-            subj['email'  ] = profile.user.email.encode('utf-8')
-            subj['phone'  ] = profile.phone.encode('utf-8')
+            subj['tshirt'] = p3_tkt.shirt_size.encode('utf-8')
+            subj['email'] = profile.user.email.encode('utf-8')
+            subj['phone'] = profile.phone.encode('utf-8')
             subj['compweb'] = profile.company_homepage.encode('utf-8')
             subj['persweb'] = profile.personal_homepage.encode('utf-8')
-            subj['id']      = t.id
-            subj['frozen']  = t.frozen
+            subj['id'] = ticket.id
+            subj['frozen'] = ticket.frozen
+            subj['fare_code'] = ticket.fare.code
+            subj['recipient_type'] = ticket.fare.recipient_type
+            subj['ticket_type'] = ticket.fare.ticket_type
 
             profiles.append(subj)
 
