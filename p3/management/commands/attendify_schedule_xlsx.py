@@ -55,6 +55,13 @@ if 0:
 else:
     ADJUST_POSTER_SESSIONS = False
 
+# Plenary sessions will have 2-3 tracks assigned. We use the
+# plenary room in this case.
+PLENARY_ROOM = 'Smarkets'
+
+# Breaks have more than 3 tracks assigned.
+BREAK_ROOM = 'Lennox'
+
 ### Helpers
 
 def profile_url(user):
@@ -151,7 +158,13 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     else:
         time_range = event.get_time_range()
         tracks = event.tracks.all()
-        if tracks:
+        if len(tracks) > 3:
+            # Must be a break
+            room = BREAK_ROOM
+        elif len(tracks) > 1:
+            # Must be a plenary session
+            room = PLENARY_ROOM
+        elif tracks:
             room = tracks[0].title
         else:
             room = u''

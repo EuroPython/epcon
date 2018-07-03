@@ -619,14 +619,19 @@ class TrackAdmin(admin.ModelAdmin):
                     '_date',
                     'track',
                     'title',
+                    'order',
                     )
     ordering = ('schedule',
+                'order',
                 'track',
                 )
     list_filter = ('schedule',
                    'schedule__slug',
                    'track',
                    'title')
+    list_editable = ('track',
+                     'order',
+                    )
     search_fields = ['schedule__conference',
                      'schedule__slug',
                      'track',
