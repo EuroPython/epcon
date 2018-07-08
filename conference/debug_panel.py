@@ -4,13 +4,16 @@
 Things in this file are related to a special debug panel that helps us debug
 things in production.
 """
-
+import csv
+import datetime
 import platform
 import subprocess
 
 import django
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.template.response import TemplateResponse
 
 from common.http import PdfResponse
@@ -87,3 +90,76 @@ def debug_panel_index(request):
     return TemplateResponse(request, "conference/debugpanel/index.html", {
         'debug_vars': debug_vars
     })
+
+
+# business functions
+def export_account_invoices(start_date, end_date=None):
+    if end_date is None:
+        end_date = datetime.date.today()
+
+    invoices = Invoice.objects.filter(emit_date__range=(start_date, end_date))
+    for invoice in invoices:
+        yield invoice
+
+
+def export_account_invoices_to_csv(fp, start_date, end_date=None):
+    writer = csv.writer(fp, quoting=csv.QUOTE_ALL)
+    for invoice in export_account_invoices(start_date, end_date):
+        user = invoice.order.user.user
+        result = [
+            invoice.code,
+            invoice.emit_date,
+            invoice.order.user.user.get_full_name(),
+            invoice.order.address,
+            invoice.order.country.name,
+            invoice.order.vat_number,
+            invoice.price,
+            invoice.vat_in_local_currency,
+            invoice.total,
+        ]
+        writer.writerow(result)
+
+
+@staff_member_required
+def debug_panel_invoice_export(request):
+    # import pdb; pdb.set_trace()
+    start_date_param = request.GET.get('start_date')
+    if start_date_param is None:
+        start_date = datetime.date(2018, 1, 1)
+    else:
+        start_date = datetime.datetime.strptime(start_date_param, '%Y-%m-%d')
+
+    end_date_param = request.GET.get('end_date')
+    if end_date_param is None:
+        end_date = datetime.date(2018, 1, 1)
+    else:
+        end_date = datetime.datetime.strptime(end_date_param, '%Y-%m-%d')
+
+    invoices = export_account_invoices(start_date, end_date)
+
+    return render(request, 'conference/debugpanel/invoices_export.html',
+                  {'invoices': invoices,
+                   'start_date': start_date,
+                   'end_date': end_date})
+
+
+@staff_member_required
+def debug_panel_invoice_export_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="export-invoices.csv"'
+
+    start_date_param = request.GET.get('start_date')
+    if start_date_param is None:
+        start_date = datetime.date(2018, 1, 1)
+    else:
+        start_date = datetime.datetime.strptime(start_date_param, '%Y-%m-%d')
+
+    end_date_param = request.GET.get('end_date')
+    if end_date_param is None:
+        end_date = datetime.date(2018, 1, 1)
+    else:
+        end_date = datetime.datetime.strptime(end_date_param, '%Y-%m-%d')
+
+    export_account_invoices_to_csv(response, start_date, end_date)
+
+    return response

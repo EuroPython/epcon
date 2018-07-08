@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <style type="text/css">
+            body {
+                font-family: monospace;
+                line-height: 1.5em;
+            }
+
+            th {
+                text-align: left;
+            }
+
+            td, th {
+                padding: .5em;
+            }
+
+            tr:hover td {
+                background: yellow;
+            }
+
+            .text-right {
+                text-align: right;
+            }
+        </style>
+
+    </head>
+    <body>
+        <h2>Invoices (from {{ start_date|date:"Y-m-d" }} to {{ end_date|date:"Y-m-d" }})</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Emit Date</th>
+                <th>Attendee name</th>
+                <th>Address</th>
+                <th>Country</th>
+                <th>VAT</th>
+                <th>Price</th>
+                <th>Vat in Local Currency</th>
+                <th class="text-right">Total</th>
+                <th>Links</th>
+            </tr>
+            {% for invoice in invoices %}
+                <tr id="invoice_{{ invoice.id }}">
+                    <td>{{ invoice.code }}</td>
+                    <td>{{ invoice.emit_date }}</td>
+                    <td>{{ invoice.order.user.user.get_full_name }}</td>
+                    <td>{{ invoice.order.address }}</td>
+                    <td>{{ invoice.order.country.name }}</td>
+                    <td>{{ invoice.order.vat_number }}</td>
+                    <td>{{ invoice.price }}</td>
+                    <td>{{ invoice.vat_in_local_currency }}</td>
+                    <td>{{ invoice.total }}</td>
+                    <th class='text-right'>{{ invoice.price }}</th>
+                    <td>
+                        {{ request.GET.urlencode }}
+                        <a href='{% url 'debugpanel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
+                        | <a href='{{ invoice.get_admin_url }}'>See in admin</a>
+                        | <a href='{{ invoice.get_absolute_url }}'>URL for user</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <a href="{% url 'debugpanel_invoice_export_csv' %}?{{ request.GET.urlencode|safe }}">Download the CSV file</a>
+    </body>
+</html>

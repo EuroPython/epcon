@@ -13,6 +13,8 @@ from conference.debug_panel import (
     debug_panel_index,
     debug_panel_invoice_placeholders,
     debug_panel_invoice_force_preview,
+    debug_panel_invoice_export,
+    debug_panel_invoice_export_csv
 )
 
 
@@ -49,6 +51,12 @@ urlpatterns = [
     url(r'^nothing-to-see-here/invoices/(?P<invoice_id>\d+)/$',
         debug_panel_invoice_force_preview,
         name="debugpanel_invoice_forcepreview"),
+    url(r'^nothing-to-see-here/invoices_export/$',
+        debug_panel_invoice_export,
+        name='debugpanel_invoice_export'),
+    url(r'^nothing-to-see-here/invoices_export.csv$',
+        debug_panel_invoice_export_csv,
+        name='debugpanel_invoice_export_csv')
 ]
 
 if settings.DEBUG:
