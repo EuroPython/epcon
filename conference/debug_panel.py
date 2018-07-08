@@ -92,7 +92,6 @@ def debug_panel_index(request):
 
 @staff_member_required
 def debug_panel_invoice_export(request):
-    # import pdb; pdb.set_trace()
     start_date, end_date = get_start_end_dates(request)
 
     invoices = export_account_invoices(start_date, end_date)
@@ -115,7 +114,7 @@ def get_start_end_dates(request):
         end_date = datetime.date(2018, 1, 1)
     else:
         end_date = datetime.datetime.strptime(end_date_param, '%Y-%m-%d')
-    return end_date, start_date
+    return start_date, end_date
 
 
 @staff_member_required
