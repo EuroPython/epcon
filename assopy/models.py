@@ -742,7 +742,7 @@ class OrderItem(models.Model):
             return None
 
     def get_readonly_fields(self, request, obj=None):
-	# Make fields read-only if an invoice for the order already exists
+	    # Make fields read-only if an invoice for the order already exists
         if obj and self.order.invoices.exclude(payment_date=None).exists():
             return self.readonly_fields + ('ticket', 'price', 'vat', 'code')
         return self.readonly_fields
@@ -840,6 +840,10 @@ class Invoice(models.Model):
         help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
 
     objects = InvoiceManager()
+
+    @property
+    def total(self):
+        return self.price + self.vat_in_local_currency
 
     def save(self, *args, **kwargs):
         from conference.invoicing import is_real_invoice_code
