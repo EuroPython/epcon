@@ -841,10 +841,6 @@ class Invoice(models.Model):
 
     objects = InvoiceManager()
 
-    @property
-    def total(self):
-        return self.price + self.vat_in_local_currency
-
     def save(self, *args, **kwargs):
         from conference.invoicing import is_real_invoice_code
         super(Invoice, self).save(*args, **kwargs)
@@ -893,6 +889,14 @@ class Invoice(models.Model):
 
     def net_price(self):
         return normalize_price(self.price / (1 + self.vat.value / 100))
+
+    @property
+    def net_price_in_local_currency(self):
+        return self.net_price() * self.exchange_rate
+
+    @property
+    def price_in_local_currency(self):
+        return self.price * self.exchange_rate
 
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
