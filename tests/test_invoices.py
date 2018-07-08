@@ -7,7 +7,6 @@ from datetime import date, timedelta
 from decimal import Decimal
 import random
 
-import pytest
 from django.http import QueryDict
 from pytest import mark
 
@@ -661,7 +660,6 @@ def test_export_invoice_csv(client):
 
 @mark.django_db
 @responses.activate
-# @pytest.mark.skip('nothing')
 def test_export_invoice_csv_before_period(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
@@ -691,7 +689,6 @@ def test_export_invoice_csv_before_period(client):
 
 @mark.django_db
 @responses.activate
-# @pytest.mark.skip('nothing')
 def test_export_invoice(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
