@@ -22,7 +22,7 @@
       <tr>
         <td>{{ invoice.code }}</td>
         <td>{{ invoice.payment_date }}</td>
-        <th class='text-right'>{{ invoice.price }}</th>
+        <td class='text-right'>{{ invoice.price }}</td>
         <td>
           <a href='{% url 'debugpanel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
           | <a href='{{ invoice.get_admin_url }}'>See in admin</a>
