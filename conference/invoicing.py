@@ -13,6 +13,9 @@ This module handles all things related to creating a new invoice, including
 
 from __future__ import unicode_literals, absolute_import
 
+import csv
+import datetime
+
 from decimal import Decimal
 
 from django.template.loader import render_to_string
@@ -271,3 +274,30 @@ def render_invoice_as_html(invoice):
     }
 
     return render_to_string('assopy/invoice.html', ctx)
+
+
+def export_account_invoices(start_date, end_date=None):
+    if end_date is None:
+        end_date = datetime.date.today()
+
+    invoices = Invoice.objects.filter(emit_date__range=(start_date, end_date))
+    for invoice in invoices:
+        yield invoice
+
+
+def export_account_invoices_to_csv(fp, start_date, end_date=None):
+    writer = csv.writer(fp, quoting=csv.QUOTE_ALL)
+    for invoice in export_account_invoices(start_date, end_date):
+        user = invoice.order.user.user
+        result = [
+            invoice.code,
+            invoice.emit_date,
+            invoice.order.user.user.get_full_name(),
+            invoice.order.address,
+            invoice.order.country.name,
+            invoice.order.vat_number,
+            invoice.price,
+            invoice.vat_in_local_currency,
+            invoice.total,
+        ]
+        writer.writerow(result)
