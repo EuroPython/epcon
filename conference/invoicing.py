@@ -296,8 +296,8 @@ def export_account_invoices_to_csv(fp, start_date, end_date=None):
             invoice.order.address,
             invoice.order.country.name,
             invoice.order.vat_number,
-            invoice.price,
+            invoice.net_price_in_local_currency,
             invoice.vat_in_local_currency,
-            invoice.total,
+            invoice.price_in_local_currency,
         ]
         writer.writerow(result)

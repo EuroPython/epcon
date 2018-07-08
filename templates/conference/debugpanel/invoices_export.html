@@ -47,11 +47,10 @@
                     <td>{{ invoice.order.address }}</td>
                     <td>{{ invoice.order.country.name }}</td>
                     <td>{{ invoice.order.vat_number }}</td>
-                    <td>{{ invoice.price }}</td>
+                    <td>{{ invoice.net_price_in_local_currency }}</td>
                     <td>{{ invoice.vat_in_local_currency }}</td>
-                    <td>{{ invoice.total }}</td>
-                    <th class='text-right'>{{ invoice.price }}</th>
-                    <td>
+                    <td class='text-right'>{{ invoice.price_in_local_currency }}</td>
+s                    <td>
                         {{ request.GET.urlencode }}
                         <a href='{% url 'debugpanel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
                         | <a href='{{ invoice.get_admin_url }}'>See in admin</a>

@@ -7,6 +7,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 import random
 
+import pytest
 from django.http import QueryDict
 from pytest import mark
 
@@ -653,13 +654,14 @@ def test_export_invoice_csv(client):
     next(iter_column)   # ignore the address
     assert next(iter_column) == invoice1.order.country.name
     assert next(iter_column) == invoice1.order.vat_number
-    assert decimal.Decimal(next(iter_column)) == invoice1.price
+    assert decimal.Decimal(next(iter_column)) == invoice1.net_price_in_local_currency
     assert decimal.Decimal(next(iter_column)) == invoice1.vat_in_local_currency
-    assert decimal.Decimal(next(iter_column)) == invoice1.total
+    assert decimal.Decimal(next(iter_column)) == invoice1.price_in_local_currency
 
 
 @mark.django_db
 @responses.activate
+# @pytest.mark.skip('nothing')
 def test_export_invoice_csv_before_period(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
@@ -689,6 +691,7 @@ def test_export_invoice_csv_before_period(client):
 
 @mark.django_db
 @responses.activate
+# @pytest.mark.skip('nothing')
 def test_export_invoice(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
