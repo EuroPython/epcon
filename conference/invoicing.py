@@ -277,7 +277,20 @@ def render_invoice_as_html(invoice):
     return render_to_string('assopy/invoice.html', ctx)
 
 
-def export_account_invoices(start_date, end_date=None):
+CSV_2018_REPORT_COLUMNS = [
+    'ID',
+    'Emit Date',
+    'Attendee Name',
+    'Address',
+    'Country',
+    'VAT ID',
+    'Price in GBP',
+    'VAT in GBP',
+    'Total in GBP',
+]
+
+
+def export_invoices_to_2018_tax_report(start_date, end_date=None):
     if end_date is None:
         end_date = datetime.date.today()
 
@@ -288,34 +301,36 @@ def export_account_invoices(start_date, end_date=None):
         price__gt=0
     )
     for invoice in invoices:
-        yield invoice, OrderedDict([
-            ('ID',            invoice.code),
-            ('Emit Date',     invoice.emit_date),
-            # This may be wrong if we assign ticket to another attendee
-            ('Attendee Name', invoice.order.user.user.get_full_name()),
-            ('Address',       invoice.order.address),
-            ('Country',       invoice.order.country.name),
-            ('VAT ID',        invoice.order.vat_number),
-            ('Price',         invoice.net_price_in_local_currency),
-            ('VAT in Local Currency', invoice.vat_in_local_currency),
-            ('Total',         invoice.price_in_local_currency),
-        ])
+        # Building it that way because of possible holes in the data (like in
+        # the case of the country)
+        output = OrderedDict()
+        output["ID"] = invoice.code
+        output['Emit Date']     = invoice.emit_date.strftime("%Y-%m-%d")
+        # This may be wrong if we assign ticket to another attendee
+        output['Attendee Name'] = invoice.order.user.user.get_full_name()
+        output['Address']       = invoice.order.address
+        try:
+            output['Country']   = invoice.order.country.name
+        except AttributeError:
+            # If country is None, then .name would cause AttributeError
+            output['Country']   = ""
+
+        output['VAT ID']        = invoice.order.vat_number
+        output['Price in %s' % invoice.local_currency] =\
+            invoice.net_price_in_local_currency
+        output['VAT in %s' % invoice.local_currency] =\
+            invoice.vat_in_local_currency
+        output['Total in %s' % invoice.local_currency] =\
+            invoice.price_in_local_currency
+
+        yield invoice, output
 
 
-def export_account_invoices_to_csv(fp, start_date, end_date=None):
-    COLUMNS = [
-        # This is redefinition of columns defined in export_account_invoices
-        # but I don't have an idea yet of how to DRY it.
-        'ID',
-        'Emit Date',
-        'Attendee Name',
-        'Address',
-        'Country',
-        'VAT ID',
-        'Price',
-        'VAT in Local Currency',
-        'Total',
-    ]
-    writer = csv.DictWriter(fp, COLUMNS, quoting=csv.QUOTE_ALL)
-    for invoice, to_export in export_account_invoices(start_date, end_date):
+def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
+    writer = csv.DictWriter(fp, CSV_2018_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
+    writer.writeheader()
+
+    for invoice, to_export in export_invoices_to_2018_tax_report(
+        start_date, end_date
+    ):
         writer.writerow(to_export)

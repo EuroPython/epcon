@@ -31,6 +31,7 @@ from conference.invoicing import (
     EPS_18,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
+    CSV_2018_REPORT_COLUMNS,
     # render_invoice_as_html,
 )
 from conference.currencies import (
@@ -644,6 +645,7 @@ def test_export_invoice_csv(client):
     assert response['content-type'] == 'text/csv'
 
     invoice_reader = csv.reader(response.content.splitlines())
+    next(invoice_reader)  # skip header
     invoice = next(invoice_reader)
 
     iter_column = iter(invoice)
@@ -690,6 +692,8 @@ def test_export_invoice_csv_before_period(client):
     assert response['content-type'] == 'text/csv'
 
     invoice_reader = csv.reader(response.content.splitlines())
+    header = next(invoice_reader)
+    assert header == CSV_2018_REPORT_COLUMNS
     assert next(invoice_reader, None) is None
 
 

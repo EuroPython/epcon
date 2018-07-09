@@ -19,8 +19,8 @@ from conference.invoicing import (
     Invoice,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     render_invoice_as_html,
-    export_account_invoices,
-    export_account_invoices_to_csv
+    export_invoices_to_2018_tax_report,
+    export_invoices_to_2018_tax_report_csv,
 )
 
 
@@ -93,7 +93,9 @@ def debug_panel_index(request):
 @staff_member_required
 def debug_panel_invoice_export(request):
     start_date, end_date = get_start_end_dates(request)
-    invoices_and_exported = export_account_invoices(start_date, end_date)
+    invoices_and_exported = export_invoices_to_2018_tax_report(
+        start_date, end_date
+    )
 
     return TemplateResponse(
         request, 'conference/debugpanel/invoices_export.html', {
@@ -126,10 +128,10 @@ def get_start_end_dates(request):
 @staff_member_required
 def debug_panel_invoice_export_csv(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="export-invoices.csv"'
+    response['Content-Disposition'] =\
+        'attachment; filename="export-invoices.csv"'
 
     start_date, end_date = get_start_end_dates(request)
-
-    export_account_invoices_to_csv(response, start_date, end_date)
+    export_invoices_to_2018_tax_report_csv(response, start_date, end_date)
 
     return response
