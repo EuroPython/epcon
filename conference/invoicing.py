@@ -281,7 +281,12 @@ def export_account_invoices(start_date, end_date=None):
     if end_date is None:
         end_date = datetime.date.today()
 
-    invoices = Invoice.objects.filter(emit_date__range=(start_date, end_date))
+    invoices = Invoice.objects.filter(
+        emit_date__range=(start_date, end_date),
+        # skip fully discounted (zero-amount) invoices, because they are not
+        # relevant for the report.
+        price__gt=0
+    )
     for invoice in invoices:
         yield invoice, OrderedDict([
             ('ID',            invoice.code),
