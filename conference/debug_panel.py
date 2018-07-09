@@ -104,16 +104,21 @@ def debug_panel_invoice_export(request):
 
 
 def get_start_end_dates(request):
+    DEFAULT_START_DATE = datetime.date(2018, 1, 1)
+    DEFAULT_END_DATE   = datetime.date.today()
+
     start_date_param = request.GET.get('start_date')
     if start_date_param is None:
-        start_date = datetime.date(2018, 1, 1)
+        start_date = DEFAULT_START_DATE
     else:
         start_date = datetime.datetime.strptime(start_date_param, '%Y-%m-%d')
+
     end_date_param = request.GET.get('end_date')
     if end_date_param is None:
-        end_date = datetime.date(2018, 1, 1)
+        end_date = DEFAULT_END_DATE
     else:
         end_date = datetime.datetime.strptime(end_date_param, '%Y-%m-%d')
+
     return start_date, end_date
 
 

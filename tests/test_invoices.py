@@ -669,7 +669,7 @@ def test_export_invoice_csv_before_period(client):
     client.login(email=user.email, password='password123')
 
     with freeze_time("2018-04-05"):
-        invoice1 = create_order_and_invoice(
+        create_order_and_invoice(
             user.assopy_user, fare, keep_as_placeholder=True
         )
 
@@ -678,7 +678,9 @@ def test_export_invoice_csv_before_period(client):
     query_dict['end_date'] = date.today()
     query_string = query_dict.urlencode()
 
-    response = client.get(reverse('debugpanel_invoice_export_csv') + '?' + query_string)
+    response = client.get(
+        reverse('debugpanel_invoice_export_csv') + '?' + query_string
+    )
 
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
@@ -707,7 +709,9 @@ def test_export_invoice(client):
     query_dict['end_date'] = date.today()
     query_string = query_dict.urlencode()
 
-    response = client.get(reverse('debugpanel_invoice_export') + '?' + query_string)
+    response = client.get(
+        reverse('debugpanel_invoice_export') + '?' + query_string
+    )
 
     assert response.status_code == 200
     assert response['content-type'].startswith('text/html')
