@@ -13,10 +13,11 @@ This module handles all things related to creating a new invoice, including
 
 from __future__ import unicode_literals, absolute_import
 
-import csv
+from collections import OrderedDict
+from decimal import Decimal
 import datetime
 
-from decimal import Decimal
+import unicodecsv as csv
 
 from django.template.loader import render_to_string
 from django.db.models import Max
@@ -282,22 +283,34 @@ def export_account_invoices(start_date, end_date=None):
 
     invoices = Invoice.objects.filter(emit_date__range=(start_date, end_date))
     for invoice in invoices:
-        yield invoice
+        yield invoice, OrderedDict([
+            ('ID',            invoice.code),
+            ('Emit Date',     invoice.emit_date),
+            # This may be wrong if we assign ticket to another attendee
+            ('Attendee Name', invoice.order.user.user.get_full_name()),
+            ('Address',       invoice.order.address),
+            ('Country',       invoice.order.country.name),
+            ('VAT ID',        invoice.order.vat_number),
+            ('Price',         invoice.net_price_in_local_currency),
+            ('VAT in Local Currency', invoice.vat_in_local_currency),
+            ('Total',         invoice.price_in_local_currency),
+        ])
 
 
 def export_account_invoices_to_csv(fp, start_date, end_date=None):
-    writer = csv.writer(fp, quoting=csv.QUOTE_ALL)
-    for invoice in export_account_invoices(start_date, end_date):
-        user = invoice.order.user.user
-        result = [
-            invoice.code,
-            invoice.emit_date,
-            invoice.order.user.user.get_full_name(),
-            invoice.order.address,
-            invoice.order.country.name,
-            invoice.order.vat_number,
-            invoice.net_price_in_local_currency,
-            invoice.vat_in_local_currency,
-            invoice.price_in_local_currency,
-        ]
-        writer.writerow(result)
+    COLUMNS = [
+        # This is redefinition of columns defined in export_account_invoices
+        # but I don't have an idea yet of how to DRY it.
+        'ID',
+        'Emit Date',
+        'Attendee Name',
+        'Address',
+        'Country',
+        'VAT ID',
+        'Price',
+        'VAT in Local Currency',
+        'Total',
+    ]
+    writer = csv.DictWriter(fp, COLUMNS, quoting=csv.QUOTE_ALL)
+    for invoice, to_export in export_account_invoices(start_date, end_date):
+        writer.writerow(to_export)

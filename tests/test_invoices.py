@@ -636,7 +636,9 @@ def test_export_invoice_csv(client):
     query_dict['end_date'] = date.today()
     query_string = query_dict.urlencode()
 
-    response = client.get(reverse('debugpanel_invoice_export_csv') + '?' + query_string)
+    response = client.get(
+        reverse('debugpanel_invoice_export_csv') + '?' + query_string
+    )
 
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
@@ -653,9 +655,11 @@ def test_export_invoice_csv(client):
     next(iter_column)   # ignore the address
     assert next(iter_column) == invoice1.order.country.name
     assert next(iter_column) == invoice1.order.vat_number
-    assert decimal.Decimal(next(iter_column)) == invoice1.net_price_in_local_currency
+    assert decimal.Decimal(next(iter_column)) ==\
+        invoice1.net_price_in_local_currency
     assert decimal.Decimal(next(iter_column)) == invoice1.vat_in_local_currency
-    assert decimal.Decimal(next(iter_column)) == invoice1.price_in_local_currency
+    assert decimal.Decimal(next(iter_column)) ==\
+        invoice1.price_in_local_currency
 
 
 @mark.django_db

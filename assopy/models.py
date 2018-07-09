@@ -892,11 +892,17 @@ class Invoice(models.Model):
 
     @property
     def net_price_in_local_currency(self):
-        return self.net_price() * self.exchange_rate
+        """
+        In order to make it more correct instead of computing value by
+        multiplying self.net_price() by exchange_rate we're going to subtract
+        vat value from converted gross price. That way net + vat will always
+        add up to gross.
+        """
+        return self.price_in_local_currency - self.vat_in_local_currency
 
     @property
     def price_in_local_currency(self):
-        return self.price * self.exchange_rate
+        return normalize_price(self.price * self.exchange_rate)
 
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:

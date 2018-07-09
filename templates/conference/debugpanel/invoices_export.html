@@ -1,75 +1,62 @@
 <html>
-    <head>
-        <style type="text/css">
-            body {
-                font-family: monospace;
-                line-height: 1.5em;
-            }
+  <head>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        line-height: 1.5em;
+      }
 
-            th {
-                text-align: left;
-            }
+      th {
+        text-align: left;
+      }
 
-            td, th {
-                padding: .5em;
-            }
+      td, th {
+        padding: .5em;
+      }
 
-            tr:hover td {
-                background: yellow;
-            }
+      tr:hover td {
+        background: yellow;
+      }
 
-            .text-right {
-                text-align: right;
-              }
+      .text-right {
+        text-align: right;
+      }
 
-            .btn { padding: 1em; border: 1px solid #aaa; background: #efe }
-        </style>
+      .btn { padding: 1em; border: 1px solid #aaa; background: #efe }
+    </style>
 
-    </head>
-    <body>
-      <h2>Invoices (from {{ start_date|date:"Y-m-d" }} to {{ end_date|date:"Y-m-d" }})</h2>
+  </head>
+  <body>
+    <h2>Invoices (from {{ start_date|date:"Y-m-d" }} to {{ end_date|date:"Y-m-d" }})</h2>
 
-      <form method='GET' action='.'>
-        <label> Start date: <input name='start_date' value="{{ start_date|date:"Y-m-d" }}"></label>
-        <label> End date:   <input name='end_date'   value="{{ end_date|date:"Y-m-d" }}"></label>
-        <input type='submit' value='Set dates'>
-      </form>
-      <p style='margin: 2em 0;'>
-        <a class='btn' href="{% url 'debugpanel_invoice_export_csv' %}?{{ request.GET.urlencode|safe }}">Download the CSV file</a>
+    <form method='GET' action='.'>
+      <label> Start date: <input name='start_date' value="{{ start_date|date:"Y-m-d" }}"></label>
+      <label> End date:   <input name='end_date'   value="{{ end_date|date:"Y-m-d" }}"></label>
+      <input type='submit' value='Set dates'>
+    </form>
+    <p style='margin: 2em 0;'>
+    <a class='btn' href="{% url 'debugpanel_invoice_export_csv' %}?{{ request.GET.urlencode|safe }}">Download the CSV file</a>
 
-      </p>
+    </p>
 
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Emit Date</th>
-                <th>Attendee name</th>
-                <th>Address</th>
-                <th>Country</th>
-                <th>VAT ID</th>
-                <th>Price</th>
-                <th>Vat in Local Currency</th>
-                <th class="text-right">Total</th>
-                <th>Links</th>
-            </tr>
+    <table>
+      {% for invoice, to_export in invoices_and_exported %}
+      {% if forloop.first %}
+      <tr>
+        {% for k in to_export.keys %}
+        <th>{{ k }}</th>
+        {% endfor %}
+        <th>+++</th>
+      </tr>
+      {% endif %}
 
-            {% for invoice in invoices %}
-                <tr id="invoice_{{ invoice.id }}">
-                    <td>{{ invoice.code }}</td>
-                    <td>{{ invoice.emit_date }}</td>
-                    <td>{{ invoice.order.user.user.get_full_name }}</td>
-                    <td>{{ invoice.order.address }}</td>
-                    <td>{{ invoice.order.country.name }}</td>
-                    <td>{{ invoice.order.vat_number }}</td>
-                    <td>{{ invoice.net_price_in_local_currency }}</td>
-                    <td>{{ invoice.vat_in_local_currency }}</td>
-                    <td class='text-right'>{{ invoice.price_in_local_currency }}</td>
-                    <td>
-                        <a href='{% url 'debugpanel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
-                        | <a href='{{ invoice.get_admin_url }}'>See in admin</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </body>
+      <tr id="invoice_{{ invoice.id }}">
+        {% for v in to_export.values %}
+        <td>{{ v }}</td>
+        {% endfor %}
+        <td><a href='{{ invoice.get_absolute_url }}'>Invoice URL</a></td>
+      </tr>
+      {% endfor %}{# invoice in output #}
+    </table>
+  </body>
 </html>

@@ -93,14 +93,15 @@ def debug_panel_index(request):
 @staff_member_required
 def debug_panel_invoice_export(request):
     start_date, end_date = get_start_end_dates(request)
+    invoices_and_exported = export_account_invoices(start_date, end_date)
 
-    invoices = export_account_invoices(start_date, end_date)
-
-    return TemplateResponse(request, 'conference/debugpanel/invoices_export.html', {
-        'invoices': invoices,
-        'start_date': start_date,
-        'end_date': end_date
-    })
+    return TemplateResponse(
+        request, 'conference/debugpanel/invoices_export.html', {
+            'invoices_and_exported': invoices_and_exported,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+    )
 
 
 def get_start_end_dates(request):
