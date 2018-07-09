@@ -296,9 +296,6 @@ def export_invoices_to_2018_tax_report(start_date, end_date=None):
 
     invoices = Invoice.objects.filter(
         emit_date__range=(start_date, end_date),
-        # skip fully discounted (zero-amount) invoices, because they are not
-        # relevant for the report.
-        price__gt=0
     )
     for invoice in invoices:
         # Building it that way because of possible holes in the data (like in
