@@ -284,9 +284,9 @@ CSV_2018_REPORT_COLUMNS = [
     'Address',
     'Country',
     'VAT ID',
-    'Price in GBP',
+    'Net Price in GBP',
     'VAT in GBP',
-    'Total in GBP',
+    'Gross Price in GBP',
 ]
 
 
@@ -316,11 +316,11 @@ def export_invoices_to_2018_tax_report(start_date, end_date=None):
             output['Country']   = ""
 
         output['VAT ID']        = invoice.order.vat_number
-        output['Price in %s' % invoice.local_currency] =\
+        output['Net Price in %s' % invoice.local_currency] =\
             invoice.net_price_in_local_currency
         output['VAT in %s' % invoice.local_currency] =\
             invoice.vat_in_local_currency
-        output['Total in %s' % invoice.local_currency] =\
+        output['Gross Price in %s' % invoice.local_currency] =\
             invoice.price_in_local_currency
 
         yield invoice, output
