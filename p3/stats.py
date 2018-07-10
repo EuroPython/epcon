@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db.models import Q, Count
 from p3 import models
 from conference import models as cmodels
+from conference.fares import TRAINING_PASS_FARE_CODES
 
 
 def _create_option(id, title, total_qs, **kwargs):
@@ -49,6 +50,11 @@ def _assigned_tickets(conf, ticket_type='conference'):
 def _unassigned_tickets(conf, ticket_type='conference', only_complete=True):
     return _tickets(conf, ticket_type, only_complete=only_complete)\
         .filter(Q(p3_conference=None)|Q(name='')|Q(p3_conference__assigned_to=''))
+
+
+def _sold_training_passes(conf, ticket_type='conference', only_complete=True):
+    return _tickets(conf, ticket_type, only_complete=only_complete)\
+        .filter(fare__code__in=TRAINING_PASS_FARE_CODES)
 
 
 def shirt_sizes(conf):
@@ -165,7 +171,14 @@ def tickets_status(conf, code=None):
         output = ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03)
 
     else:
-        if code in ('ticket_sold', 'assigned_tickets', 'unassigned_tickets', 'multiple_assignments', ):
+        if code in [
+            'ticket_sold',
+            'assigned_tickets',
+            'unassigned_tickets',
+            'multiple_assignments',
+            'sold_training_passes',
+        ]:
+            # TODO: this should probably be refactored or at least renamed
             output = ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
 
         elif code in ('orphan_tickets',):
@@ -203,6 +216,8 @@ def ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
         qs = _assigned_tickets(conf)
     elif code == 'unassigned_tickets':
         qs = _unassigned_tickets(conf)
+    elif code == 'sold_training_passes':
+        qs = _sold_training_passes(conf)
     elif code == 'multiple_assignments':
         qs = _tickets(conf, 'conference') \
             .filter(p3_conference__assigned_to__in=multiple_assignments \
@@ -390,6 +405,8 @@ def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recru
         _create_option('ticket_sold', 'Sold tickets', _tickets(conf, 'conference')),
         _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
         _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
+        _create_option('sold_training_passes', '(sold) Training passses',
+                       _sold_training_passes(conf)),
         # _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),  # FIXME: remove hotels and sim
         _create_option('voupe03_tickets', 'Social event tickets (VOUPE03)', voupe03),
         _create_option('spam_recruiting', 'Recruiting emails (opt-in)', spam_recruiting),

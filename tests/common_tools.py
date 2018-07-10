@@ -124,10 +124,10 @@ def sequence_equals(sequence1, sequence2):
     return True
 
 
-def make_user():
+def make_user(**kwargs):
     user = auth_factories.UserFactory(
         email='joedoe@example.com', is_active=True,
-        is_staff=True  # TEMPORARY FOR PDF DEBUG TESTS
+        **kwargs
     )
     AssopyUserFactory(user=user)
     AttendeeProfile.objects.create(user=user, slug='joedoe')

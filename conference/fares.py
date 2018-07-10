@@ -48,6 +48,13 @@ FARE_CODE_REGEXES = {
     }
 }
 
+TRAINING_PASS_FARE_CODES = [
+    # TODO: this is a temporary list of training pass codes used in 2018 EP, so
+    # we can reuse the list in some other pieces of code.
+    # TODO: it should be possible to get that from FARE_CODE_* settings above.
+    "TRTC", "TRTP", "TRTS",
+]
+
 
 def available_fare_codes():
     fare_codes = {
