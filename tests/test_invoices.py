@@ -639,7 +639,8 @@ def test_export_invoice_csv(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse('debugpanel_invoice_export_csv') + '?' + query_string
+        reverse('debug_panel_invoice_export_for_tax_report_2018_csv')
+        + '?' + query_string
     )
 
     assert response.status_code == 200
@@ -686,7 +687,8 @@ def test_export_invoice_csv_before_period(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse('debugpanel_invoice_export_csv') + '?' + query_string
+        reverse('debug_panel_invoice_export_for_tax_report_2018_csv')
+        + '?' + query_string
     )
 
     assert response.status_code == 200
@@ -719,7 +721,8 @@ def test_export_invoice(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse('debugpanel_invoice_export') + '?' + query_string
+        reverse('debug_panel_invoice_export_for_tax_report_2018')
+        + '?' + query_string
     )
 
     assert response.status_code == 200
@@ -749,7 +752,8 @@ def test_export_invoice_accounting_json(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse('debugpanel_invoice_export_for_accounting_json') + '?' + query_string
+        reverse('debug_panel_invoice_export_for_payment_reconciliation_json')
+        + '?' + query_string
     )
 
     assert response.status_code == 200

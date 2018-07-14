@@ -91,22 +91,6 @@ def debug_panel_index(request):
     })
 
 
-@staff_member_required
-def debug_panel_invoice_export(request):
-    start_date, end_date = get_start_end_dates(request)
-    invoices_and_exported = export_invoices_to_2018_tax_report(
-        start_date, end_date
-    )
-
-    return TemplateResponse(
-        request, 'conference/debugpanel/invoices_export.html', {
-            'invoices_and_exported': invoices_and_exported,
-            'start_date': start_date,
-            'end_date': end_date
-        }
-    )
-
-
 def get_start_end_dates(request):
     DEFAULT_START_DATE = datetime.date(2018, 1, 1)
     DEFAULT_END_DATE   = datetime.date.today()
@@ -127,7 +111,23 @@ def get_start_end_dates(request):
 
 
 @staff_member_required
-def debug_panel_invoice_export_csv(request):
+def debug_panel_invoice_export_for_tax_report_2018(request):
+    start_date, end_date = get_start_end_dates(request)
+    invoices_and_exported = export_invoices_to_2018_tax_report(
+        start_date, end_date
+    )
+
+    return TemplateResponse(
+        request, 'conference/debugpanel/invoices_export.html', {
+            'invoices_and_exported': invoices_and_exported,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+    )
+
+
+@staff_member_required
+def debug_panel_invoice_export_for_tax_report_2018_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] =\
         'attachment; filename="export-invoices.csv"'
@@ -139,7 +139,7 @@ def debug_panel_invoice_export_csv(request):
 
 
 @staff_member_required
-def debug_panel_invoice_export_accounting_json(request):
+def debug_panel_invoice_export_for_payment_reconciliation_json(request):
     start_date, end_date = get_start_end_dates(request)
     response = JsonResponse({
         # list() to flatten the generator – otherwise it's not serilizable
