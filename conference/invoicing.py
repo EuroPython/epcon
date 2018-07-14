@@ -16,7 +16,6 @@ from __future__ import unicode_literals, absolute_import
 from collections import OrderedDict
 from decimal import Decimal
 import datetime
-import json
 
 import unicodecsv as csv
 
@@ -334,7 +333,7 @@ def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
         writer.writerow(to_export)
 
 
-def export_invoices_for_accounting(start_date, end_date=None):
+def export_invoices_for_payment_reconciliation(start_date, end_date=None):
     if end_date is None:
         end_date = datetime.date.today()
 
@@ -354,10 +353,3 @@ def export_invoices_for_accounting(start_date, end_date=None):
         }
 
         yield output
-
-
-def export_invoices_for_accounting_json(fp, start_date, end_date=None):
-    json.dump({
-        'invoices': list(export_invoices_for_accounting(
-            start_date, end_date))
-    }, fp)

@@ -11,7 +11,7 @@ import subprocess
 import django
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 
 from common.http import PdfResponse
@@ -21,7 +21,7 @@ from conference.invoicing import (
     render_invoice_as_html,
     export_invoices_to_2018_tax_report,
     export_invoices_to_2018_tax_report_csv,
-    export_invoices_for_accounting_json,
+    export_invoices_for_payment_reconciliation,
 )
 
 
@@ -140,11 +140,15 @@ def debug_panel_invoice_export_csv(request):
 
 @staff_member_required
 def debug_panel_invoice_export_accounting_json(request):
-    response = HttpResponse(content_type='application/json')
+    start_date, end_date = get_start_end_dates(request)
+    response = JsonResponse({
+        # list() to flatten the generator – otherwise it's not serilizable
+        'invoices': list(export_invoices_for_payment_reconciliation(
+            start_date, end_date
+        ))
+    })
     response['Content-Disposition'] =\
         'attachment; filename="export-invoices.json"'
 
-    start_date, end_date = get_start_end_dates(request)
-    export_invoices_for_accounting_json(response, start_date, end_date)
-
+    # TODO: this json maybe big, maybe we could use StreamingHttpResponse?
     return response
