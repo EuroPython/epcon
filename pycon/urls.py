@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 from django.conf import settings
 from django.conf.urls import include, url
@@ -13,8 +13,9 @@ from conference.debug_panel import (
     debug_panel_index,
     debug_panel_invoice_placeholders,
     debug_panel_invoice_force_preview,
-    debug_panel_invoice_export,
-    debug_panel_invoice_export_csv
+    debug_panel_invoice_export_for_tax_report_2018,
+    debug_panel_invoice_export_for_tax_report_2018_csv,
+    debug_panel_invoice_export_for_payment_reconciliation_json,
 )
 
 
@@ -47,16 +48,19 @@ urlpatterns = [
     url(r'^nothing-to-see-here/$', debug_panel_index),
     url(r'^nothing-to-see-here/invoices/$',
         debug_panel_invoice_placeholders,
-        name='debugpanel_invoice_placeholders'),
+        name='debug_panel_invoice_placeholders'),
     url(r'^nothing-to-see-here/invoices/(?P<invoice_id>\d+)/$',
         debug_panel_invoice_force_preview,
-        name="debugpanel_invoice_forcepreview"),
+        name="debug_panel_invoice_forcepreview"),
     url(r'^nothing-to-see-here/invoices_export/$',
-        debug_panel_invoice_export,
-        name='debugpanel_invoice_export'),
+        debug_panel_invoice_export_for_tax_report_2018,
+        name='debug_panel_invoice_export_for_tax_report_2018'),
     url(r'^nothing-to-see-here/invoices_export.csv$',
-        debug_panel_invoice_export_csv,
-        name='debugpanel_invoice_export_csv')
+        debug_panel_invoice_export_for_tax_report_2018_csv,
+        name='debug_panel_invoice_export_for_tax_report_2018_csv'),
+    url(r'^nothing-to-see-here/invoices_export_for_accounting.json$',
+        debug_panel_invoice_export_for_payment_reconciliation_json,
+        name='debug_panel_invoice_export_for_payment_reconciliation_json'),
 ]
 
 if settings.DEBUG:
