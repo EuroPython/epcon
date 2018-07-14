@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 from django.conf import settings
 from django.conf.urls import include, url
@@ -14,7 +14,8 @@ from conference.debug_panel import (
     debug_panel_invoice_placeholders,
     debug_panel_invoice_force_preview,
     debug_panel_invoice_export,
-    debug_panel_invoice_export_csv
+    debug_panel_invoice_export_csv,
+    debug_panel_invoice_export_accounting_json,
 )
 
 
@@ -56,7 +57,10 @@ urlpatterns = [
         name='debugpanel_invoice_export'),
     url(r'^nothing-to-see-here/invoices_export.csv$',
         debug_panel_invoice_export_csv,
-        name='debugpanel_invoice_export_csv')
+        name='debugpanel_invoice_export_csv'),
+    url(r'^nothing-to-see-here/invoices_export_for_accounting.json$',
+        debug_panel_invoice_export_accounting_json,
+        name='debugpanel_invoice_export_for_accounting_json'),
 ]
 
 if settings.DEBUG:

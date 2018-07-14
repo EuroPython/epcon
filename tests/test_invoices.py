@@ -6,6 +6,7 @@ import decimal
 from datetime import date, timedelta
 from decimal import Decimal
 import random
+import json
 
 from django.http import QueryDict
 from pytest import mark
@@ -725,3 +726,40 @@ def test_export_invoice(client):
     assert response['content-type'].startswith('text/html')
 
     assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content
+
+
+@mark.django_db
+@responses.activate
+def test_export_invoice_accounting_json(client):
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+
+    client.login(email=user.email, password='password123')
+
+    with freeze_time('2018-05-05'):
+        invoice1 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+
+    query_dict = QueryDict(mutable=True)
+    query_dict['start_date'] = date(2018, 1, 1)
+    query_dict['end_date'] = date.today()
+    query_string = query_dict.urlencode()
+
+    response = client.get(
+        reverse('debugpanel_invoice_export_for_accounting_json') + '?' + query_string
+    )
+
+    assert response.status_code == 200
+    assert response['content-type'].startswith('application/json')
+
+    data = json.loads(response.content)['invoices']
+    assert len(data) == 1
+    assert data[0]['ID'] == invoice1.code
+    assert decimal.Decimal(data[0]['net']) == invoice1.net_price()
+    assert decimal.Decimal(data[0]['vat']) == invoice1.vat_value()
+    assert decimal.Decimal(data[0]['gross']) == invoice1.price
+    assert data[0]['order'] == invoice1.order.code
+    assert data[0]['stripe'] == invoice1.order.stripe_charge_id
