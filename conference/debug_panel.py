@@ -21,6 +21,7 @@ from conference.invoicing import (
     render_invoice_as_html,
     export_invoices_to_2018_tax_report,
     export_invoices_to_2018_tax_report_csv,
+    export_invoices_for_accounting_json,
 )
 
 
@@ -133,5 +134,17 @@ def debug_panel_invoice_export_csv(request):
 
     start_date, end_date = get_start_end_dates(request)
     export_invoices_to_2018_tax_report_csv(response, start_date, end_date)
+
+    return response
+
+
+@staff_member_required
+def debug_panel_invoice_export_accounting_json(request):
+    response = HttpResponse(content_type='application/json')
+    response['Content-Disposition'] =\
+        'attachment; filename="export-invoices.json"'
+
+    start_date, end_date = get_start_end_dates(request)
+    export_invoices_for_accounting_json(response, start_date, end_date)
 
     return response
