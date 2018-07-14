@@ -4,22 +4,23 @@
 Things in this file are related to a special debug panel that helps us debug
 things in production.
 """
-
+import datetime
 import platform
 import subprocess
 
 import django
-from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
 from django.template.response import TemplateResponse
 
 from common.http import PdfResponse
-
-
 from conference.invoicing import (
     Invoice,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
-    render_invoice_as_html
+    render_invoice_as_html,
+    export_invoices_to_2018_tax_report,
+    export_invoices_to_2018_tax_report_csv,
 )
 
 
@@ -87,3 +88,50 @@ def debug_panel_index(request):
     return TemplateResponse(request, "conference/debugpanel/index.html", {
         'debug_vars': debug_vars
     })
+
+
+@staff_member_required
+def debug_panel_invoice_export(request):
+    start_date, end_date = get_start_end_dates(request)
+    invoices_and_exported = export_invoices_to_2018_tax_report(
+        start_date, end_date
+    )
+
+    return TemplateResponse(
+        request, 'conference/debugpanel/invoices_export.html', {
+            'invoices_and_exported': invoices_and_exported,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+    )
+
+
+def get_start_end_dates(request):
+    DEFAULT_START_DATE = datetime.date(2018, 1, 1)
+    DEFAULT_END_DATE   = datetime.date.today()
+
+    start_date_param = request.GET.get('start_date')
+    if start_date_param is None:
+        start_date = DEFAULT_START_DATE
+    else:
+        start_date = datetime.datetime.strptime(start_date_param, '%Y-%m-%d')
+
+    end_date_param = request.GET.get('end_date')
+    if end_date_param is None:
+        end_date = DEFAULT_END_DATE
+    else:
+        end_date = datetime.datetime.strptime(end_date_param, '%Y-%m-%d')
+
+    return start_date, end_date
+
+
+@staff_member_required
+def debug_panel_invoice_export_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] =\
+        'attachment; filename="export-invoices.csv"'
+
+    start_date, end_date = get_start_end_dates(request)
+    export_invoices_to_2018_tax_report_csv(response, start_date, end_date)
+
+    return response

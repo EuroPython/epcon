@@ -1,10 +1,13 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+import csv
+import decimal
 from datetime import date, timedelta
 from decimal import Decimal
 import random
 
+from django.http import QueryDict
 from pytest import mark
 
 from django.core.urlresolvers import reverse
@@ -28,6 +31,7 @@ from conference.invoicing import (
     EPS_18,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
+    CSV_2018_REPORT_COLUMNS,
     # render_invoice_as_html,
 )
 from conference.currencies import (
@@ -611,3 +615,113 @@ def test_upgrade_invoices_for_2018_command(client):
     all_invoices = Invoice.objects.all()
     assert all_invoices.count() == 2
     assert placeholders.count() == 0
+
+
+@mark.django_db
+@responses.activate
+def test_export_invoice_csv(client):
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+
+    client.login(email=user.email, password='password123')
+
+    with freeze_time("2018-05-05"):
+        invoice1 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+
+    query_dict = QueryDict(mutable=True)
+    query_dict['start_date'] = date(2018, 1, 1)
+    query_dict['end_date'] = date.today()
+    query_string = query_dict.urlencode()
+
+    response = client.get(
+        reverse('debugpanel_invoice_export_csv') + '?' + query_string
+    )
+
+    assert response.status_code == 200
+    assert response['content-type'] == 'text/csv'
+
+    invoice_reader = csv.reader(response.content.splitlines())
+    next(invoice_reader)  # skip header
+    invoice = next(invoice_reader)
+
+    iter_column = iter(invoice)
+    assert next(iter_column) == invoice1.code
+
+    assert next(iter_column) == '2018-05-05'
+    assert next(iter_column) == invoice1.order.user.user.get_full_name()
+
+    next(iter_column)   # ignore the address
+    assert next(iter_column) == invoice1.order.country.name
+    assert next(iter_column) == invoice1.order.vat_number
+    assert decimal.Decimal(next(iter_column)) ==\
+        invoice1.net_price_in_local_currency
+    assert decimal.Decimal(next(iter_column)) == invoice1.vat_in_local_currency
+    assert decimal.Decimal(next(iter_column)) ==\
+        invoice1.price_in_local_currency
+
+
+@mark.django_db
+@responses.activate
+def test_export_invoice_csv_before_period(client):
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+
+    client.login(email=user.email, password='password123')
+
+    with freeze_time("2018-04-05"):
+        create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+
+    query_dict = QueryDict(mutable=True)
+    query_dict['start_date'] = date(2018, 5, 1)
+    query_dict['end_date'] = date.today()
+    query_string = query_dict.urlencode()
+
+    response = client.get(
+        reverse('debugpanel_invoice_export_csv') + '?' + query_string
+    )
+
+    assert response.status_code == 200
+    assert response['content-type'] == 'text/csv'
+
+    invoice_reader = csv.reader(response.content.splitlines())
+    header = next(invoice_reader)
+    assert header == CSV_2018_REPORT_COLUMNS
+    assert next(invoice_reader, None) is None
+
+
+@mark.django_db
+@responses.activate
+def test_export_invoice(client):
+    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+    Email.objects.create(code='purchase-complete')
+    fare = FareFactory()
+    user = make_user()
+
+    client.login(email=user.email, password='password123')
+
+    with freeze_time('2018-05-05'):
+        invoice1 = create_order_and_invoice(
+            user.assopy_user, fare, keep_as_placeholder=True
+        )
+
+    query_dict = QueryDict(mutable=True)
+    query_dict['start_date'] = date(2018, 1, 1)
+    query_dict['end_date'] = date.today()
+    query_string = query_dict.urlencode()
+
+    response = client.get(
+        reverse('debugpanel_invoice_export') + '?' + query_string
+    )
+
+    assert response.status_code == 200
+    assert response['content-type'].startswith('text/html')
+
+    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content
