@@ -575,9 +575,9 @@ def test_create_invoice_with_many_items(client):
     # ))
 
     # testing debug panel
-    # url = reverse("debugpanel_invoice_forcepreview",
+    # url = reverse("debug_panel_invoice_forcepreview",
     #               kwargs={'invoice_id': invoice.id})
-    # url = reverse('debugpanel_invoice_placeholders')
+    # url = reverse('debug_panel_invoice_placeholders')
     # client.login(email='joedoe@example.com', password='password123')
     # response = client.get(url)
     # serve_response(response)
