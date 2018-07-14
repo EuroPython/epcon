@@ -13,7 +13,11 @@ This module handles all things related to creating a new invoice, including
 
 from __future__ import unicode_literals, absolute_import
 
+from collections import OrderedDict
 from decimal import Decimal
+import datetime
+
+import unicodecsv as csv
 
 from django.template.loader import render_to_string
 from django.db.models import Max
@@ -271,3 +275,81 @@ def render_invoice_as_html(invoice):
     }
 
     return render_to_string('assopy/invoice.html', ctx)
+
+
+CSV_2018_REPORT_COLUMNS = [
+    'ID',
+    'Emit Date',
+    'Attendee Name',
+    'Address',
+    'Country',
+    'VAT ID',
+    'Net Price in GBP',
+    'VAT in GBP',
+    'Gross Price in GBP',
+]
+
+
+def export_invoices_to_2018_tax_report(start_date, end_date=None):
+    if end_date is None:
+        end_date = datetime.date.today()
+
+    invoices = Invoice.objects.filter(
+        emit_date__range=(start_date, end_date),
+    )
+    for invoice in invoices:
+        # Building it that way because of possible holes in the data (like in
+        # the case of the country)
+        output = OrderedDict()
+        output["ID"] = invoice.code
+        output['Emit Date']     = invoice.emit_date.strftime("%Y-%m-%d")
+        # This may be wrong if we assign ticket to another attendee
+        output['Attendee Name'] = invoice.order.user.user.get_full_name()
+        output['Address']       = invoice.order.address
+        try:
+            output['Country']   = invoice.order.country.name
+        except AttributeError:
+            # If country is None, then .name would cause AttributeError
+            output['Country']   = ""
+
+        output['VAT ID']        = invoice.order.vat_number
+        output['Net Price in %s' % invoice.local_currency] =\
+            invoice.net_price_in_local_currency
+        output['VAT in %s' % invoice.local_currency] =\
+            invoice.vat_in_local_currency
+        output['Gross Price in %s' % invoice.local_currency] =\
+            invoice.price_in_local_currency
+
+        yield invoice, output
+
+
+def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
+    writer = csv.DictWriter(fp, CSV_2018_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
+    writer.writeheader()
+
+    for invoice, to_export in export_invoices_to_2018_tax_report(
+        start_date, end_date
+    ):
+        writer.writerow(to_export)
+
+
+def export_invoices_for_payment_reconciliation(start_date, end_date=None):
+    if end_date is None:
+        end_date = datetime.date.today()
+
+    invoices = Invoice.objects.filter(
+        emit_date__range=(start_date, end_date),
+    )
+    for invoice in invoices:
+        # Building it that way because of possible holes in the data (like in
+        # the case of the country)
+        output = {
+            'ID': invoice.code,
+            'net': str(invoice.net_price()),
+            'vat': str(invoice.vat_value()),
+            'gross': str(invoice.price),
+            'order': invoice.order.code,
+            'stripe': invoice.order.stripe_charge_id,
+        }
+
+        yield output

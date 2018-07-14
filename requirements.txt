@@ -63,3 +63,4 @@ django-model-utils==3.1.1
 # Going with older version because the newer one conflicts with the html5lib
 # version we need in other dependency
 WeasyPrint==0.29
+unicodecsv==0.14.1

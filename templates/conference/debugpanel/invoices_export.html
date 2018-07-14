@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        line-height: 1.5em;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      td, th {
+        padding: .5em;
+      }
+
+      tr:hover td {
+        background: yellow;
+      }
+
+      .text-right {
+        text-align: right;
+      }
+
+      .btn { padding: 1em; border: 1px solid #aaa; background: #efe }
+    </style>
+
+  </head>
+  <body>
+    <h2>Invoices (from {{ start_date|date:"Y-m-d" }} to {{ end_date|date:"Y-m-d" }})</h2>
+
+    <form method='GET' action='.'>
+      <label> Start date: <input name='start_date' value="{{ start_date|date:"Y-m-d" }}"></label>
+      <label> End date:   <input name='end_date'   value="{{ end_date|date:"Y-m-d" }}"></label>
+      <input type='submit' value='Set dates'>
+    </form>
+    <p style='margin: 2em 0;'>
+    <a class='btn' href="{% url 'debug_panel_invoice_export_for_tax_report_2018_csv' %}?{{ request.GET.urlencode|safe }}">Download the CSV file</a>
+    <a class='btn' href="{% url "debug_panel_invoice_export_for_payment_reconciliation_json" %}?{{ request.GET.urlencode|safe }}">Download as JSON (for payment reco)</a>
+
+    </p>
+
+    <table>
+      {% for invoice, to_export in invoices_and_exported %}
+      {% if forloop.first %}
+      <tr>
+        {% for k in to_export.keys %}
+        <th>{{ k }}</th>
+        {% endfor %}
+        <th>+++</th>
+      </tr>
+      {% endif %}
+
+      <tr id="invoice_{{ invoice.id }}">
+        {% for v in to_export.values %}
+        <td>{{ v }}</td>
+        {% endfor %}
+        <td><a href='{{ invoice.get_absolute_url }}'>Invoice URL</a></td>
+      </tr>
+      {% endfor %}{# invoice in output #}
+    </table>
+  </body>
+</html>

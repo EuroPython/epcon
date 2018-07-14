@@ -742,7 +742,7 @@ class OrderItem(models.Model):
             return None
 
     def get_readonly_fields(self, request, obj=None):
-	# Make fields read-only if an invoice for the order already exists
+	    # Make fields read-only if an invoice for the order already exists
         if obj and self.order.invoices.exclude(payment_date=None).exists():
             return self.readonly_fields + ('ticket', 'price', 'vat', 'code')
         return self.readonly_fields
@@ -889,6 +889,20 @@ class Invoice(models.Model):
 
     def net_price(self):
         return normalize_price(self.price / (1 + self.vat.value / 100))
+
+    @property
+    def net_price_in_local_currency(self):
+        """
+        In order to make it more correct instead of computing value by
+        multiplying self.net_price() by exchange_rate we're going to subtract
+        vat value from converted gross price. That way net + vat will always
+        add up to gross.
+        """
+        return self.price_in_local_currency - self.vat_in_local_currency
+
+    @property
+    def price_in_local_currency(self):
+        return normalize_price(self.price * self.exchange_rate)
 
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:

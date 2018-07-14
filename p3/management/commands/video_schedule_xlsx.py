@@ -92,7 +92,14 @@ def talk_title(talk):
 
 def talk_abstract(talk):
 
-    return format_text(talk.getAbstract().body)
+    abstract = talk.getAbstract()
+    if abstract:
+        text = format_text(talk.getAbstract().body)
+    else:
+        text = ''
+    return '<p>By %s</p>\n\n%s' % (
+        speaker_listing(talk),
+        text)
 
 def event_title(event):
 
@@ -146,7 +153,12 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         abstract = talk_abstract(talk)
         if event is None:
             event = talk.get_event()
-        uid = event.id
+        if event is None:
+            print ('Warning: %r does not have an event associated with it; '
+                   'using talk.id as UID' % talk)
+            uid = talk.id
+        else:
+            uid = event.id
 
     # Determine time_range and room
     if event is None:
