@@ -304,10 +304,6 @@ class TestTicketManagementScenarios(TestCase):
         assert response.status_code == PURCHASE_SUCCESSFUL_302
         assert Order.objects.all().count() == 1
         self.order = Order.objects.get()
-        # confirm order
-        self.order.confirm_order(date.today())
-        assert self.order._complete
-
         self.ticket = Ticket.objects.latest('id')
         self.ticket_url = reverse('p3-ticket', kwargs={'tid': self.ticket.id})
         # p3_conference is associated TicketConference instance
@@ -366,7 +362,9 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
 
     def test_assign_ticket_to_another_user_case_insensitive(self):
-        #import pdb; pdb.set_trace()
+        # we need to confirm the order for the tickets to display in the profile
+        self.order.confirm_order(date.today())
+
         other_user = make_user(self.OTHER_USER_EMAIL)
 
         response = self.client.post(self.ticket_url, {
