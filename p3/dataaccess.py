@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels
@@ -132,7 +132,7 @@ def _user_ticket(user, conference):
         .conference(conference)
 
     q2 = cmodels.Ticket.objects\
-        .filter(p3_conference__assigned_to=user.email)\
+        .filter(p3_conference__assigned_to__iexact=user.email)\
         .filter(fare__conference=conference)
 
     qs = (q1 | q2)\

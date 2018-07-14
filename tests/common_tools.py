@@ -13,7 +13,7 @@ from django_factory_boy import auth as auth_factories
 
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from cms.api import create_page
-from conference.models import AttendeeProfile
+from conference.models import AttendeeProfile, AttendeeProfileManager
 from conference.models import Conference
 
 
@@ -124,13 +124,13 @@ def sequence_equals(sequence1, sequence2):
     return True
 
 
-def make_user():
+def make_user(email='joedoe@example.com'):
     user = auth_factories.UserFactory(
-        email='joedoe@example.com', is_active=True,
+        email=email, is_active=True,
         is_staff=True  # TEMPORARY FOR PDF DEBUG TESTS
     )
     AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug='joedoe')
+    AttendeeProfile.objects.getOrCreateForUser(user=user)
     return user
 
 
