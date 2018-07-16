@@ -17,7 +17,7 @@ def test_if_stats_are_not_accessible_to_regular_users(client):
     Mainly tests if we don't get a random 500 due to an obvious bug in a lower
     level code.
     """
-    make_user(is_staff=False)
+    make_user(is_staff=False, password='joedoe')
     client.login(email='joedoe@example.com', password='joedoe')
     response = client.get(URL)
     assert response.status_code == HTTP_LOGIN_REQUIRED_REDIRECT_302
