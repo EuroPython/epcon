@@ -12,6 +12,7 @@ from django.db import transaction
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 
 import common.decorators
+from common.jsonify import json_dumps
 from conference import dataaccess
 from conference import models
 from conference import settings
@@ -869,7 +870,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                     ev.split(time=data['split_time'])
             else:
                 raise ValueError()
-            return http.HttpResponse(content=views.json_dumps({}), content_type="text/javascript")
+            return http.HttpResponse(content=json_dumps({}), content_type="text/javascript")
         else:
             if ev.talk_id != None:
                 form = SimplifiedTalkForm(data={
@@ -921,7 +922,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             output = {
                 'tracks': [ t.id for t in tracks ],
             }
-            return http.HttpResponse(content=views.json_dumps(output), content_type="text/javascript")
+            return http.HttpResponse(content=json_dumps(output), content_type="text/javascript")
         else:
             form = TrackForm(instance=track)
             tpl = Template('''
@@ -1176,7 +1177,6 @@ class TicketAdmin(admin.ModelAdmin):
         return output
 
     def stats_data_view(self, request):
-        from common.jsonify import json_dumps
         output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
