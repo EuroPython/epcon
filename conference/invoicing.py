@@ -280,7 +280,8 @@ def render_invoice_as_html(invoice):
 CSV_2018_REPORT_COLUMNS = [
     'ID',
     'Emit Date',
-    'Attendee Name',
+    'Buyer Name',
+    'Business Name',
     'Address',
     'Country',
     'VAT ID',
@@ -304,7 +305,8 @@ def export_invoices_to_2018_tax_report(start_date, end_date=None):
         output["ID"] = invoice.code
         output['Emit Date']     = invoice.emit_date.strftime("%Y-%m-%d")
         # This may be wrong if we assign ticket to another attendee
-        output['Attendee Name'] = invoice.order.user.user.get_full_name()
+        output['Buyer Name'] = invoice.order.user.user.get_full_name()
+        output['Business Name'] = invoice.order.card_name
         output['Address']       = invoice.order.address
         try:
             output['Country']   = invoice.order.country.name
