@@ -39,6 +39,13 @@ _debug = 0
 # These must match the talk .type or .admin_type
 from accepted_talks import TYPE_NAMES
 
+# License notice to attach to talks
+LICENSE = """
+
+License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
+Please see our speaker release agreement for details: https://ep2018.europython.eu/en/speaker-release-agreement/
+"""
+
 # Special handling of poster sessions
 if 0:
     # Poster sessions don't have events associated with them, so use
@@ -115,7 +122,7 @@ def video_title(title, speakers=u''):
 
 def video_description(title, abstract, 
                      year=u'2017', session_type=u'Talks', date=u'*',
-                     room=u'*'):
+                     room=u'*', license=LICENSE):
 
     if session_type.endswith(u's'):
         # Remove plural "s"
@@ -128,12 +135,14 @@ def video_description(title, abstract,
 [Edinburgh, UK]
 
 %(abstract)s
+%(license)s
     """ % dict(
         title=title,
         type=session_type,
         date=date,
         room=room,
-        abstract=abstract)
+        abstract=abstract,
+        license=license)
 
 def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 
