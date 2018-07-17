@@ -624,7 +624,7 @@ def test_export_invoice_csv(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
-    user = make_user()
+    user = make_user(is_staff=True)
 
     client.login(email=user.email, password='password123')
 
@@ -672,7 +672,7 @@ def test_export_invoice_csv_before_period(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
-    user = make_user()
+    user = make_user(is_staff=True)
 
     client.login(email=user.email, password='password123')
 
@@ -706,7 +706,7 @@ def test_export_invoice(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
-    user = make_user()
+    user = make_user(is_staff=True)
 
     client.login(email=user.email, password='password123')
 
@@ -737,7 +737,7 @@ def test_export_invoice_accounting_json(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
-    user = make_user()
+    user = make_user(is_staff=True)
 
     client.login(email=user.email, password='password123')
 

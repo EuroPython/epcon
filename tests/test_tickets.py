@@ -263,6 +263,11 @@ class TestTicketManagementScenarios(TestCase):
         """
         self.user = make_user()
         make_basic_fare_setup()
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            fetch_and_store_latest_ecb_exrates()
+
         Email.objects.create(code='purchase-complete')
         Email.objects.create(code='ticket-assigned')
         Email.objects.create(code='refund-credit-note')
@@ -355,6 +360,38 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.diet              == DEFAULT_DIET
         assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
+
+    def test_assign_ticket_to_another_user_case_insensitive(self):
+        # we need to confirm the order for the tickets to display in the profile
+        self.order.confirm_order(date.today())
+
+        other_user = make_user(self.OTHER_USER_EMAIL)
+
+        response = self.client.post(self.ticket_url, {
+            # This is the only field we're interested in
+            self.prefix('assigned_to'): self.OTHER_USER_EMAIL.upper(),
+
+            # but all the other fields are required.
+            self.prefix('python_experience'): 3,
+            self.prefix('diet'):             'vegetarian',
+            self.prefix('shirt_size'):       'xl',
+        })
+        assert response.status_code == self.VALIDATION_SUCCESSFUL_200
+        self.tc.refresh_from_db()
+        # only care about case insensitive match
+        assert self.tc.assigned_to.lower() == self.OTHER_USER_EMAIL.lower()
+
+        # switch user
+        self.client.login(email=self.OTHER_USER_EMAIL, password='password123')
+        self.tc.refresh_from_db()
+
+        response = self.client.get(self.my_profile_url)
+        self.assertContains(response, 'View your tickets')
+        self.assertContains(response, self.tickets_url)
+
+        # Check that ticket is visible
+        response = self.client.get(self.p3_tickets_url)
+        self.assertContains(response, self.ticket_url)
 
     def test_reclaim_ticket(self):
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
