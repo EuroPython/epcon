@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import mimetypes
 import os
@@ -166,7 +166,7 @@ def render_ticket(context, ticket):
             single_day=ticket.fare.code[2] == 'D',
         )
         if inst and inst.assigned_to:
-            blocked = inst.assigned_to != user.email
+            blocked = inst.assigned_to.lower() != user.email.lower()
         else:
             blocked = False
     elif ticket.fare.code in ('SIM01',):
