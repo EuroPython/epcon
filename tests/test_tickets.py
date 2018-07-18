@@ -393,6 +393,9 @@ class TestTicketManagementScenarios(TestCase):
         response = self.client.get(self.p3_tickets_url)
         self.assertContains(response, self.ticket_url)
 
+        # And that it has an "Edit this ticket"
+        self.assertContains(response, "Edit this ticket")
+
     def test_reclaim_ticket(self):
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
         self.client.post(self.ticket_url, {
