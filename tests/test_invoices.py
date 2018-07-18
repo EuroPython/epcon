@@ -655,6 +655,7 @@ def test_export_invoice_csv(client):
 
     assert next(iter_column) == '2018-05-05'
     assert next(iter_column) == invoice1.order.user.user.get_full_name()
+    assert next(iter_column) == invoice1.order.card_name
 
     next(iter_column)   # ignore the address
     assert next(iter_column) == invoice1.order.country.name
