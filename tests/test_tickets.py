@@ -396,6 +396,32 @@ class TestTicketManagementScenarios(TestCase):
         # And that it has an "Edit this ticket"
         self.assertContains(response, "Edit this ticket")
 
+        # Check that it can be edited
+        # defaults
+        assert self.tc.assigned_to.lower() == self.OTHER_USER_EMAIL.lower()
+        assert self.tc.diet              == DEFAULT_DIET
+        assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
+        assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
+
+        response = self.client.post(self.ticket_url, {
+            # Looks liek assigned_to is a mandatory requirement as well, w/o it
+            # it would pass the validation but not save the results inside TC.
+            # possible FIXME(?)
+            self.prefix('assigned_to'):       self.OTHER_USER_EMAIL.upper(),
+            self.prefix('python_experience'): 5,
+            self.prefix('diet'):             'other',
+            self.prefix('shirt_size'):       'fm',
+        })
+        assert response.status_code == self.VALIDATION_SUCCESSFUL_200
+
+        self.tc.refresh_from_db()
+        assert self.tc.assigned_to.lower() == self.OTHER_USER_EMAIL.lower()
+        assert self.tc.diet              == 'other'
+        assert self.tc.shirt_size        == 'fm'
+        assert self.tc.python_experience == 5
+
+
+
     def test_reclaim_ticket(self):
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
         self.client.post(self.ticket_url, {
