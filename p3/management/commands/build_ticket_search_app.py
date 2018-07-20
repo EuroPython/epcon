@@ -49,6 +49,14 @@ TEMPLATE = u"""\
 <head>
 <meta charset=utf-8 />
 <title>EuroPython %(year)s Ticket Search App</title>
+<style>
+.training {
+    color: blue;
+}
+.conference {
+    color: red;
+}
+</style>
 </head>
 <body>
 
@@ -197,19 +205,27 @@ def create_app_file(conference, output_file):
          u'<tbody class="list">',
          ]
     for id, (ticket, profile, name, email) in attendee_list:
+        code = ticket.fare.code
+        if ticket.fare.code.startswith('TRT'):
+            ticket_class = 'training'
+        else:
+            ticket_class = 'conference'
         l.append((u'<tr>'
                   u'<td class="name">%s</td>'
                   u'<td class="email hide-on-small-only">%s</td>'
-                  u'<td class="tid">%s</td>'
+                  u'<td class="tid %s">%s</td>'
                   u'<td class="tcode hide-on-small-only">%s</td>'
                   u'</tr>' %
                   (name,
                    email,
+                   ticket_class,
                    id,
                    ticket.fare.code)))
     l.extend([u'</tbody>',
               u'</table>',
-              u'<p>%i attendees in total.</p>' % len(attendee_list),
+              u'<p>%i tickets in total. '
+              u'Color coding: <span class="training">TID</span> = Training Pass. '
+              u'<span class="conference">TID</span> = Conference Ticket.</p>' % len(attendee_list),
               ])
     output.write((TEMPLATE % {
                       'listing': u'\n'.join(l),
