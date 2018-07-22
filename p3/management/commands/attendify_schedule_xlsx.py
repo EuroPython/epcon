@@ -59,8 +59,9 @@ else:
 # plenary room in this case.
 PLENARY_ROOM = 'Smarkets'
 
-# Breaks have more than 3 tracks assigned.
-BREAK_ROOM = 'Lennox'
+# Breaks have more than 3 tracks assigned. Since this changes between
+# the days, we don't set the room name.
+BREAK_ROOM = ''
 
 ### Helpers
 
