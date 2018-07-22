@@ -356,10 +356,13 @@ class Command(BaseCommand):
 
             # Add talks from bag to data
             for talk in bag:
-                add_event(data,
-                          talk=talk,
-                          talk_events=talk_events,
-                          session_type=type_name)
+                for event in talk.get_event_list():
+                    # A talk may have multiple events associated with it
+                    add_event(data,
+                              talk=talk,
+                              event=event,
+                              talk_events=talk_events,
+                              session_type=type_name)
 
         # Add events which are not talks
         for schedule in models.Schedule.objects.filter(conference=conference):
