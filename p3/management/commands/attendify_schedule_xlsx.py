@@ -69,13 +69,18 @@ def profile_url(user):
     return urlresolvers.reverse('conference-profile',
                                 args=[user.attendeeprofile.slug])
 
-def speaker_listing(talk):
+def speaker_listing(talk, filter_special_entries=True):
 
-    return u', '.join(
-        u'<i>%s %s</i>' % (
-            speaker.user.first_name,
-            speaker.user.last_name)
-        for speaker in talk.get_all_speakers())
+    l = []
+    for speaker in talk.get_all_speakers():
+        full_name =  u'%s %s' % (
+            speaker.user.first_name.title(),
+            speaker.user.last_name.title())
+        if filter_special_entries:
+            if full_name in (u'To Be Announced', u'Tobey Announced'):
+                continue
+        l.append(full_name)
+    return u', '.join(l)
 
 def format_text(text, remove_tags=False, output_html=True):
 
@@ -112,7 +117,7 @@ def talk_abstract(talk):
         text = format_text(talk.getAbstract().body)
     else:
         text = ''
-    return '<p>By %s</p>\n\n%s' % (
+    return '<p>By <i>%s</i></p>\n\n%s' % (
         speaker_listing(talk),
         text)
 
@@ -137,9 +142,11 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
             raise TypeError('need either talk or event given')
         title = event_title(event)
         abstract = event_abstract(event)
+        speakers = u''
     else:
         title = talk_title(talk)
         abstract = talk_abstract(talk)
+        speakers = speaker_listing(talk)
         if event is None:
             event = talk.get_event()
 
@@ -191,6 +198,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         abstract,
         room,
         session_type,
+        speakers,
         uid,
         ))
 
@@ -198,7 +206,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 SCHEDULE_WS_START_DATA = 5
 
 # Column number of UID columns (Python 0-based index)
-SCHEDULE_UID_COLUMN = 7
+SCHEDULE_UID_COLUMN = 8
 
 # Number of columns to make row unique (title, date, start, end)
 SCHEDULE_UNIQUE_COLS = 4
@@ -326,10 +334,13 @@ class Command(BaseCommand):
 
             # Add talks from bag to data
             for talk in bag:
-                add_event(data,
-                          talk=talk,
-                          talk_events=talk_events,
-                          session_type=type_name)
+                for event in talk.get_event_list():
+                    # A talk may have multiple events associated with it
+                    add_event(data,
+                              talk=talk,
+                              event=event,
+                              talk_events=talk_events,
+                              session_type=type_name)
 
         # Add events which are not talks
         for schedule in models.Schedule.objects.filter(conference=conference):
