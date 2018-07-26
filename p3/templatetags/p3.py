@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import mimetypes
 import os
@@ -166,7 +166,7 @@ def render_ticket(context, ticket):
             single_day=ticket.fare.code[2] == 'D',
         )
         if inst and inst.assigned_to:
-            blocked = inst.assigned_to != user.email
+            blocked = inst.assigned_to.lower() != user.email.lower()
         else:
             blocked = False
     elif ticket.fare.code in ('SIM01',):
@@ -278,6 +278,7 @@ def render_cart_rows(context, fare_type, form):
         #   'S' - standard
         #   'L' - standard light (without trainings)
         #   'D' - day pass
+        #   'T' - training pass
         # - fourth letter: group type
         #   'S' - student
         #   'P' - personal
@@ -285,7 +286,7 @@ def render_cart_rows(context, fare_type, form):
         #
         fares = dict((f['code'][2:], f) for f in fares_list if f['code'][0] == 'T')
         rows = []
-        for t in ('S', 'L', 'D'):
+        for t in ('S', 'L', 'D', 'T'):
             # To simplify the template fares are packed in triplets:
             # student, private, company.
             #

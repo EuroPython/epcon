@@ -39,6 +39,13 @@ _debug = 0
 # These must match the talk .type or .admin_type
 from accepted_talks import TYPE_NAMES
 
+# License notice to attach to talks
+LICENSE = """
+
+License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
+Please see our speaker release agreement for details: https://ep2018.europython.eu/en/speaker-release-agreement/
+"""
+
 # Special handling of poster sessions
 if 0:
     # Poster sessions don't have events associated with them, so use
@@ -49,6 +56,14 @@ if 0:
     POSTER_ROOM = u'Exhibition Hall'
 else:
     ADJUST_POSTER_SESSIONS = False
+
+# Plenary sessions will have 2-3 tracks assigned. We use the
+# plenary room in this case.
+PLENARY_ROOM = 'Smarkets'
+
+# Breaks have more than 3 tracks assigned. Since this changes between
+# the days, we don't set the room name.
+BREAK_ROOM = ''
 
 ### Helpers
 
@@ -92,7 +107,14 @@ def talk_title(talk):
 
 def talk_abstract(talk):
 
-    return format_text(talk.getAbstract().body)
+    abstract = talk.getAbstract()
+    if abstract:
+        text = format_text(talk.getAbstract().body)
+    else:
+        text = ''
+    return '<p>By %s</p>\n\n%s' % (
+        speaker_listing(talk),
+        text)
 
 def event_title(event):
 
@@ -108,7 +130,7 @@ def video_title(title, speakers=u''):
 
 def video_description(title, abstract, 
                      year=u'2017', session_type=u'Talks', date=u'*',
-                     room=u'*'):
+                     room=u'*', license=LICENSE):
 
     if session_type.endswith(u's'):
         # Remove plural "s"
@@ -121,12 +143,14 @@ def video_description(title, abstract,
 [Edinburgh, UK]
 
 %(abstract)s
+%(license)s
     """ % dict(
         title=title,
         type=session_type,
         date=date,
         room=room,
-        abstract=abstract)
+        abstract=abstract,
+        license=license)
 
 def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 
@@ -146,7 +170,12 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         abstract = talk_abstract(talk)
         if event is None:
             event = talk.get_event()
-        uid = event.id
+        if event is None:
+            print ('Warning: %r does not have an event associated with it; '
+                   'using talk.id as UID' % talk)
+            uid = talk.id
+        else:
+            uid = event.id
 
     # Determine time_range and room
     if event is None:
@@ -163,7 +192,13 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     else:
         time_range = event.get_time_range()
         tracks = event.tracks.all()
-        if tracks:
+        if len(tracks) > 3:
+            # Must be a break
+            room = BREAK_ROOM
+        elif len(tracks) > 1:
+            # Must be a plenary session
+            room = PLENARY_ROOM
+        elif tracks:
             room = tracks[0].title
         else:
             room = u''
@@ -335,10 +370,13 @@ class Command(BaseCommand):
 
             # Add talks from bag to data
             for talk in bag:
-                add_event(data,
-                          talk=talk,
-                          talk_events=talk_events,
-                          session_type=type_name)
+                for event in talk.get_event_list():
+                    # A talk may have multiple events associated with it
+                    add_event(data,
+                              talk=talk,
+                              event=event,
+                              talk_events=talk_events,
+                              session_type=type_name)
 
         # Add events which are not talks
         for schedule in models.Schedule.objects.filter(conference=conference):

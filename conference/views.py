@@ -129,12 +129,16 @@ def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
         'voting': conf.voting(),
     }
 
-@render_to_template('conference/talk.xml')
+
 @talk_access
 def talk_xml(request, slug, talk, full_access):
-    return {
-        'talk': talk,
-    }
+    return TemplateResponse(
+        request,
+        'conference/talk.xml',
+        {'talk': talk},
+        content_type='application/xml'
+    )
+
 
 def talk_video(request, slug):  # pragma: no cover
     tlk = get_object_or_404(models.Talk, slug=slug)

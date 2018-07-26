@@ -11,22 +11,29 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
 
-from django_factory_boy import auth as auth_factories
+# from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
+import responses
 
 from assopy.models import Vat, Order, Country, Refund, Invoice
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+# from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
-from conference.models import Conference, Fare, AttendeeProfile, Ticket
+from conference import invoicing
+from conference.currencies import (
+    DAILY_ECB_URL,
+    EXAMPLE_ECB_DAILY_XML,
+    fetch_and_store_latest_ecb_exrates,
+)
+from conference.models import Conference, Fare, Ticket
 from p3.models import TicketConference
 from email_template.models import Email
 
-from tests.common_tools import serve  # NOQA
+from tests.common_tools import make_user
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -36,14 +43,10 @@ DEFAULT_SHIRT_SIZE        = 'l'
 DEFAULT_DIET              = 'omnivorous'
 DEFAULT_PYTHON_EXPERIENCE = 0
 
-
-def make_user():
-    user = auth_factories.UserFactory(
-        email='joedoe@example.com', is_active=True
-    )
-    AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug='foobar')
-    return user
+# TODO/NOTE(artcz)(2018-06-26) – We use this for settings, but we should
+# actually implement two sets of tests – one for full placeholder behaviour and
+# one for non-placeholder behaviour.
+invoicing.FORCE_PLACEHOLDER = True
 
 
 def make_basic_fare_setup():
@@ -88,35 +91,39 @@ def test_basic_fare_setup(client):
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
         assert 'Sorry, no tickets are available' in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-03-11"):
         # Early Bird timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' in _response_content
-        assert 'TEDC' in _response_content
-        assert 'TRSP' not in _response_content
-        assert 'TRDC' not in _response_content
+        assert 'data-fare="TESP"' in _response_content
+        assert 'data-fare="TEDC"' in _response_content
+        assert 'data-fare="TRSP"' not in _response_content
+        assert 'data-fare="TRDC"' not in _response_content
         assert SOCIAL_EVENT_FARE_CODE not in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-05-11"):
         # Regular timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' not in _response_content
-        assert 'TEDC' not in _response_content
-        assert 'TRSP' in _response_content
-        assert 'TRDC' in _response_content
+        assert 'data-fare="TESP"' not in _response_content
+        assert 'data-fare="TEDC"' not in _response_content
+        assert 'data-fare="TRSP"' in _response_content
+        assert 'data-fare="TRDC"' in _response_content
         assert SOCIAL_EVENT_FARE_CODE not in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
     with freeze_time("2018-06-25"):
         # Regular timeline
         response = client.get(cart_url)
         _response_content = response.content.decode('utf-8')
-        assert 'TESP' not in _response_content
-        assert 'TRSP' in _response_content
-        assert 'TRDC' in _response_content
+        assert 'data-fare="TESP"' not in _response_content
+        assert 'data-fare="TRSP"' in _response_content
+        assert 'data-fare="TRDC"' in _response_content
         assert SOCIAL_EVENT_FARE_CODE in _response_content
+        assert 'Buy tickets (1 of 2)' in _response_content
 
 
 # Same story as previously - using TestCase beacuse of django's asserts like
@@ -126,6 +133,10 @@ class TestBuyingTickets(TestCase):
     def setUp(self):
         self.user = make_user()
         make_basic_fare_setup()
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            fetch_and_store_latest_ecb_exrates()
 
     def test_buying_early_bird_only_during_early_bird_window(self):
 
@@ -152,8 +163,9 @@ class TestBuyingTickets(TestCase):
             # Early Bird timeline
             response = self.client.get(cart_url)
             _response_content = response.content.decode('utf-8')
-            assert 'TESP' in _response_content
-            assert 'TEDC' in _response_content
+            assert 'data-fare="TESP"' in _response_content
+            assert 'data-fare="TEDC"' in _response_content
+            assert 'Buy tickets (1 of 2)' in _response_content
 
             assert Order.objects.all().count() == 0
             response = self.client.post(cart_url, {
@@ -170,6 +182,7 @@ class TestBuyingTickets(TestCase):
 
             self.assertRedirects(response, billing_url,
                                  status_code=PURCHASE_SUCCESSFUL_302)
+            self.assertContains(response, 'Buy tickets (2 of 2)')
             # Purchase was successful but it's first step, so still no Order
             assert Order.objects.all().count() == 0
 
@@ -200,14 +213,25 @@ class TestBuyingTickets(TestCase):
             self.assertNotContains(response, tickets_url)
 
             order = Order.objects.get()
-            assert order.total() == 3000
+            assert order.total() == 630  # because 210 per ticket
             assert not order._complete
+
             order.confirm_order(date.today())
             assert order._complete
+
+            invoice = Invoice.objects.get()
+            assert invoice.html == invoicing.VAT_NOT_AVAILABLE_PLACEHOLDER
 
             response = self.client.get(my_profile_url)
             self.assertContains(response, 'View your tickets (3)')
             self.assertContains(response, tickets_url)
+            self.assertContains(response,
+                                invoicing.VAT_NOT_AVAILABLE_PLACEHOLDER)
+
+            response = self.client.get(p3_tickets_url)
+            latest_ticket = Ticket.objects.latest('id')
+            ticket_url = reverse('p3-ticket', kwargs={'tid': latest_ticket.id})
+            self.assertContains(response, ticket_url)
 
         with freeze_time("2018-05-11"):
             # need to relogin everytime we timetravel
@@ -221,6 +245,7 @@ class TestBuyingTickets(TestCase):
             assert response.context['form'].errors['__all__'] == ['No tickets']
 
         # and then test assigning the tickets
+        self.client.login(email='joedoe@example.com', password='password123')
         response = self.client.get(tickets_url, follow=True)
         self.assertRedirects(response, p3_tickets_url)
 
@@ -238,6 +263,11 @@ class TestTicketManagementScenarios(TestCase):
         """
         self.user = make_user()
         make_basic_fare_setup()
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            fetch_and_store_latest_ecb_exrates()
+
         Email.objects.create(code='purchase-complete')
         Email.objects.create(code='ticket-assigned')
         Email.objects.create(code='refund-credit-note')
@@ -284,6 +314,11 @@ class TestTicketManagementScenarios(TestCase):
         self.MAIN_USER_EMAIL  = self.user.email
         self.OTHER_USER_EMAIL = 'foobar@example.com'
 
+        with responses.RequestsMock() as rsps:
+            # mocking responses for the invoice VAT exchange rate feature
+            rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+            fetch_and_store_latest_ecb_exrates()
+
     def prefix(self, fieldname):
         """For some reason the website is using prefixed fields...
         And the prefix has to match the ticket we're trying to modify.
@@ -325,6 +360,67 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.diet              == DEFAULT_DIET
         assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
+
+    def test_assign_ticket_to_another_user_case_insensitive(self):
+        # we need to confirm the order for the tickets to display in the profile
+        self.order.confirm_order(date.today())
+
+        other_user = make_user(self.OTHER_USER_EMAIL)
+
+        response = self.client.post(self.ticket_url, {
+            # This is the only field we're interested in
+            self.prefix('assigned_to'): self.OTHER_USER_EMAIL.upper(),
+
+            # but all the other fields are required.
+            self.prefix('python_experience'): 3,
+            self.prefix('diet'):             'vegetarian',
+            self.prefix('shirt_size'):       'xl',
+        })
+        assert response.status_code == self.VALIDATION_SUCCESSFUL_200
+        self.tc.refresh_from_db()
+        # only care about case insensitive match
+        assert self.tc.assigned_to.lower() == self.OTHER_USER_EMAIL.lower()
+
+        # switch user
+        self.client.login(email=self.OTHER_USER_EMAIL, password='password123')
+        self.tc.refresh_from_db()
+
+        response = self.client.get(self.my_profile_url)
+        self.assertContains(response, 'View your tickets')
+        self.assertContains(response, self.tickets_url)
+
+        # Check that ticket is visible
+        response = self.client.get(self.p3_tickets_url)
+        self.assertContains(response, self.ticket_url)
+
+        # And that it has an "Edit this ticket"
+        self.assertContains(response, "Edit this ticket")
+
+        # Check that it can be edited
+        # defaults
+        assert self.tc.assigned_to.lower() == self.OTHER_USER_EMAIL.lower()
+        assert self.tc.diet              == DEFAULT_DIET
+        assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
+        assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
+
+        response = self.client.post(self.ticket_url, {
+            # Looks liek assigned_to is a mandatory requirement as well, w/o it
+            # it would pass the validation but not save the results inside TC.
+            # possible FIXME(?)
+            self.prefix('assigned_to'):       self.OTHER_USER_EMAIL.upper(),
+            self.prefix('python_experience'): 5,
+            self.prefix('diet'):             'other',
+            self.prefix('shirt_size'):       'fm',
+        })
+        assert response.status_code == self.VALIDATION_SUCCESSFUL_200
+
+        self.tc.refresh_from_db()
+        assert self.tc.assigned_to.lower() == self.OTHER_USER_EMAIL.lower()
+        assert self.tc.diet              == 'other'
+        assert self.tc.shirt_size        == 'fm'
+        assert self.tc.python_experience == 5
+
+
 
     def test_reclaim_ticket(self):
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
@@ -425,7 +521,9 @@ class TestTicketManagementScenarios(TestCase):
             self.client.post(self.ticket_url, {'refund': 'asdf'})
 
         assert Invoice.objects.all().count() == 0
+
         self.order.confirm_order(timezone.now().date())
+
         assert Invoice.objects.all().count() == 1
 
         self.client.post(self.ticket_url, {'refund': 'asdf'})

@@ -37,7 +37,8 @@ def get_user_account_from_email(email, default='raise', active_only=True):
     except auth.models.User.MultipleObjectsReturned:
         # The system expects to only have one user record per email,
         # so let's reraise the error to have it fixed in the database.
-        raise
+        raise auth.models.User.MultipleObjectsReturned(
+            'Found multiple records for user with email %r' % email)
 
 def send_email(force=False, *args, **kwargs):
     if force is False and not settings.SEND_EMAIL_TO:

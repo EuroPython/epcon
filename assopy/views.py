@@ -26,6 +26,7 @@ from assopy import settings
 from assopy import utils as autils
 from common.decorators import render_to_json, render_to_template
 from common.http import PdfResponse
+from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
 
 
 log = logging.getLogger('assopy.views')
@@ -53,6 +54,7 @@ def profile(request):
     return {
         'user': user,
         'form': form,
+        'VAT_NOT_AVAILABLE_PLACEHOLDER': VAT_NOT_AVAILABLE_PLACEHOLDER,
     }
 
 @login_required
@@ -420,10 +422,10 @@ def invoice(request, order_code, code, mode='html'):
     )
 
     if mode == 'html':
-        return http.HttpResponse(invoice.invoice_copy_full_html)
+        return http.HttpResponse(invoice.html)
 
     return PdfResponse(filename=invoice.get_invoice_filename(),
-                       content=invoice.invoice_copy_full_html)
+                       content=invoice.html)
 
 
 def _pdf(request, url):

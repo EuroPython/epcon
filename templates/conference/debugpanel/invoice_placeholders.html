@@ -1,0 +1,35 @@
+<html>
+  <body>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        line-height: 1.5em;
+      }
+      th { text-align: left; }
+      td, th { padding: .5em; }
+      tr:hover td { background: yellow; }
+      .text-right { text-align: right; }
+    </style>
+    <h2>We currently still have {{ placeholders|length }} placeholder(s)</h2>
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>payment_date</th>
+        <th class='text-right'>price</th>
+        <th>Links</th>
+      </tr>
+      {% for invoice in placeholders %}
+      <tr>
+        <td>{{ invoice.code }}</td>
+        <td>{{ invoice.payment_date }}</td>
+        <td class='text-right'>{{ invoice.price }}</td>
+        <td>
+          <a href='{% url 'debug_panel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
+          | <a href='{{ invoice.get_admin_url }}'>See in admin</a>
+          | <a href='{{ invoice.get_absolute_url }}'>URL for user</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

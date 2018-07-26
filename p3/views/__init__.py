@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django import forms
 from django import http
 from django.conf import settings
@@ -124,7 +124,7 @@ def ticket(request, tid):
     else:
         assigned_to = p3c.assigned_to
     if t.user != request.user:
-        if assigned_to is None or assigned_to != request.user.email:
+        if assigned_to is None or assigned_to.lower() != request.user.email.lower():
             raise http.Http404()
     if request.method == 'POST':
         if t.frozen:

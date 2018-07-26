@@ -13,11 +13,23 @@ This module handles all things related to creating a new invoice, including
 
 from __future__ import unicode_literals, absolute_import
 
+from collections import OrderedDict
+from decimal import Decimal
+import datetime
+
+import unicodecsv as csv
+
 from django.template.loader import render_to_string
 from django.db.models import Max
 from django.db import transaction
 
 from assopy.models import Invoice, Order
+
+from conference.currencies import (
+    convert_from_EUR_using_latest_exrates,
+    normalize_price
+)
+
 
 ACPYSS_16 = """
 Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
@@ -46,13 +58,32 @@ Sweden
 EU VAT-ID: SE802417770401
 Contact Email: billing@europython.eu
 https://www.europython-society.org
-"""
+""".strip()
 
 
 ISSUER_BY_YEAR = {
     2016: ACPYSS_16,
     2017: PYTHON_ITALIA_17,
     2018: EPS_18,
+}
+
+LOCAL_CURRENCY_BY_YEAR = {
+    # Used for local VAT calculations if required by local law.
+    2016: "EUR",
+    2017: "EUR",
+    2018: "GBP",
+}
+
+EP_CITY_FOR_YEAR = {
+    2016: "Bilbao",
+    2017: "Rimini",
+    2018: "Edinburgh",
+}
+
+ADDITIONAL_TEXT_FOR_YEAR = {
+    2016: "",
+    2017: "",
+    2018: "assopy/invoices/_additional_text_for_2018.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"
@@ -62,6 +93,16 @@ invoice_code_templates = {
     REAL_INVOICE_PREFIX: "I/%(year_two_digits)s.%(sequential_id)s",
     FAKE_INVOICE_PREFIX: "F/%(year_two_digits)s.%(sequential_id)s",
 }
+
+VAT_NOT_AVAILABLE_PLACEHOLDER = """
+VAT invoices will be generated as soon as we have been issued a VAT ID.
+Please stay tuned.
+""".strip()
+
+# NOTE(artcz)(2018-06-26) – This is a global setting that decides whether we
+# issue placeholders (basically Invoice is normal but it's html is equal to
+# VAT_NOT_AVAILABLE_PLACEHOLDER – or regular invoice with a proper template.
+FORCE_PLACEHOLDER = False
 
 
 def is_real_invoice_code(invoice_code):
@@ -106,9 +147,11 @@ def next_invoice_code_for_year(prefix, year):
     return template % {'year_two_digits': year % 1000, 'sequential_id': '0001'}
 
 
-def create_invoices_for_order(order, emit_date, payment_date=None):
+def create_invoices_for_order(order, force_placeholder=False):
     assert isinstance(order, Order)
 
+    payment_date = order.payment_date
+    emit_date = payment_date if payment_date else order.created
     prefix = REAL_INVOICE_PREFIX if payment_date else FAKE_INVOICE_PREFIX
 
     # First transaction takes care of "create all invoices or nothing"
@@ -127,29 +170,70 @@ def create_invoices_for_order(order, emit_date, payment_date=None):
                     year=emit_date.year
                 )
 
+                gross_price = vat_item['price']
+                vat_rate    = normalize_price(1 + vat_item['vat'].value / 100)
+                net_price   = normalize_price(vat_item['price'] / vat_rate)
+                vat_price   = vat_item['price'] - net_price
+
+                currency = LOCAL_CURRENCY_BY_YEAR[emit_date.year]
+                if currency != 'EUR':
+                    conversion = convert_from_EUR_using_latest_exrates(
+                        vat_price, currency
+                    )
+                else:
+                    conversion = {
+                        'currency': 'EUR',
+                        'converted': vat_price,
+                        'exrate': Decimal('1.0'),
+                        'using_exrate_date': emit_date,
+                    }
+
                 invoice, _ = Invoice.objects.update_or_create(
                     order=order,
                     code=code,
                     defaults={
-                        'issuer': ISSUER_BY_YEAR[emit_date.year],
-                        'vat': vat_item['vat'],
-                        'price': vat_item['price'],
-                        'payment_date': payment_date,
-                        'emit_date': emit_date
+                        'issuer':         ISSUER_BY_YEAR[emit_date.year],
+                        'vat':            vat_item['vat'],
+                        'price':          gross_price,
+                        'payment_date':   payment_date,
+                        'emit_date':      emit_date,
+                        'local_currency': currency,
+                        'vat_in_local_currency': conversion['converted'],
+                        'exchange_rate':  conversion['exrate'],
+                        'exchange_rate_date': conversion['using_exrate_date'],
                     }
                 )
 
-                html = render_invoice_as_html(invoice)
-                invoice.invoice_copy_full_html = html
+                if force_placeholder:
+                    invoice.html = VAT_NOT_AVAILABLE_PLACEHOLDER
+                else:
+                    invoice.html = render_invoice_as_html(invoice)
+
                 invoice.save()
+
+                assert invoice.net_price() == net_price
+                assert invoice.vat_value() == vat_price
 
                 invoices.append(invoice)
 
     return invoices
 
 
+def upgrade_invoice_placeholder_to_real_invoice(invoice):
+    invoice.issuer = ISSUER_BY_YEAR[invoice.emit_date.year]
+    invoice.html = render_invoice_as_html(invoice)
+    invoice.save()
+    return invoice
+
+
 def render_invoice_as_html(invoice):
     assert isinstance(invoice, Invoice)
+
+    items = invoice.invoice_items()
+    for item in items:
+        item['net_price'] = normalize_price(
+            item['price'] / (1 + invoice.vat.value / 100)
+        )
 
     # TODO this is copied as-is from assopy/views.py, but can be simplified
     # TODO: also if there are any images included in the invoice make sure to
@@ -160,6 +244,11 @@ def render_invoice_as_html(invoice):
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
+        # TODO: get it from Conference instance
+        'conference_name': "EuroPython 2018",
+        "conference_location": EP_CITY_FOR_YEAR[invoice.emit_date.year],
+        "bank_info": "",
+        "currency": invoice.local_currency,
         'document': ('Fattura N.', 'Invoice N.'),
         'title': unicode(invoice),
         'code': invoice.code,
@@ -171,7 +260,7 @@ def render_invoice_as_html(invoice):
             'cf_code': order.cf_code,
             'vat_number': order.vat_number,
         },
-        'items': invoice.invoice_items(),
+        'items': items,
         'note': invoice.note,
         'price': {
             'net': invoice.net_price(),
@@ -179,8 +268,90 @@ def render_invoice_as_html(invoice):
             'total': invoice.price,
         },
         'vat': invoice.vat,
-        'real': is_real_invoice_code(invoice.code),
+        'is_real_invoice': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
+        "invoice": invoice,
+        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year]
     }
 
     return render_to_string('assopy/invoice.html', ctx)
+
+
+CSV_2018_REPORT_COLUMNS = [
+    'ID',
+    'Emit Date',
+    'Buyer Name',
+    'Business Name',
+    'Address',
+    'Country',
+    'VAT ID',
+    'Net Price in GBP',
+    'VAT in GBP',
+    'Gross Price in GBP',
+]
+
+
+def export_invoices_to_2018_tax_report(start_date, end_date=None):
+    if end_date is None:
+        end_date = datetime.date.today()
+
+    invoices = Invoice.objects.filter(
+        emit_date__range=(start_date, end_date),
+    )
+    for invoice in invoices:
+        # Building it that way because of possible holes in the data (like in
+        # the case of the country)
+        output = OrderedDict()
+        output["ID"] = invoice.code
+        output['Emit Date']     = invoice.emit_date.strftime("%Y-%m-%d")
+        # This may be wrong if we assign ticket to another attendee
+        output['Buyer Name'] = invoice.order.user.user.get_full_name()
+        output['Business Name'] = invoice.order.card_name
+        output['Address']       = invoice.order.address
+        try:
+            output['Country']   = invoice.order.country.name
+        except AttributeError:
+            # If country is None, then .name would cause AttributeError
+            output['Country']   = ""
+
+        output['VAT ID']        = invoice.order.vat_number
+        output['Net Price in %s' % invoice.local_currency] =\
+            invoice.net_price_in_local_currency
+        output['VAT in %s' % invoice.local_currency] =\
+            invoice.vat_in_local_currency
+        output['Gross Price in %s' % invoice.local_currency] =\
+            invoice.price_in_local_currency
+
+        yield invoice, output
+
+
+def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
+    writer = csv.DictWriter(fp, CSV_2018_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
+    writer.writeheader()
+
+    for invoice, to_export in export_invoices_to_2018_tax_report(
+        start_date, end_date
+    ):
+        writer.writerow(to_export)
+
+
+def export_invoices_for_payment_reconciliation(start_date, end_date=None):
+    if end_date is None:
+        end_date = datetime.date.today()
+
+    invoices = Invoice.objects.filter(
+        emit_date__range=(start_date, end_date),
+    )
+    for invoice in invoices:
+        # Building it that way because of possible holes in the data (like in
+        # the case of the country)
+        output = {
+            'ID': invoice.code,
+            'net': str(invoice.net_price()),
+            'vat': str(invoice.vat_value()),
+            'gross': str(invoice.price),
+            'order': invoice.order.code,
+            'stripe': invoice.order.stripe_charge_id,
+        }
+
+        yield output

@@ -12,6 +12,7 @@ from collections import defaultdict
 from django import dispatch
 from django.conf import settings as dsettings
 from django.contrib import auth
+from django.contrib.admin.util import quote
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -23,6 +24,7 @@ from assopy import janrain
 from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
+from conference.currencies import normalize_price
 from conference.models import Ticket
 from email_template import utils
 
@@ -562,10 +564,16 @@ order_created = dispatch.Signal(providing_args=['raw_items'])
 # backend attraverso il metodo Order.complete.
 purchase_completed = dispatch.Signal(providing_args=[])
 
+# Implemented order payment options
 ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
     ('paypal', 'PayPal'),
-    #('bank', 'Bank'),
+    ('bank', 'Bank'),
+)
+
+# Enabled order payment options
+ENABLED_ORDER_PAYMENT = (
+    ('cc', 'Credit Card'),
 )
 
 class Order(models.Model):
@@ -597,6 +605,12 @@ class Order(models.Model):
     address = models.CharField(_('Address'), max_length=150, blank=True)
 
     stripe_charge_id = models.CharField(_('Charge Stripe ID'), max_length=64, unique=True, null=True)
+
+    payment_date = models.DateTimeField(
+        help_text="Auto filled by the payments backend",
+        blank=True,
+        null=True,
+    )
 
     objects = OrderManager()
 
@@ -641,12 +655,17 @@ class Order(models.Model):
         return r
 
     def confirm_order(self, payment_date):
-        # TODO: this import is here to avoid circular import, but can be later
-        # moved once confirm_order is moved somewhere else.
-        from conference.invoicing import create_invoices_for_order
-        create_invoices_for_order(self,
-                                  emit_date=payment_date,
-                                  payment_date=payment_date)
+        # NOTE(artcz)(2018-05-28)
+        # This used to generate invoices, currently it just fills payment date,
+        # and creates placeholder
+        # To avoid ciruclar import
+        from conference.invoicing import (
+            create_invoices_for_order,
+            FORCE_PLACEHOLDER
+        )
+        self.payment_date = payment_date
+        self.save()
+        create_invoices_for_order(self, force_placeholder=FORCE_PLACEHOLDER)
 
     def total(self, apply_discounts=True):
         if apply_discounts:
@@ -723,7 +742,7 @@ class OrderItem(models.Model):
             return None
 
     def get_readonly_fields(self, request, obj=None):
-	# Make fields read-only if an invoice for the order already exists
+	    # Make fields read-only if an invoice for the order already exists
         if obj and self.order.invoices.exclude(payment_date=None).exists():
             return self.readonly_fields + ('ticket', 'price', 'vat', 'code')
         return self.readonly_fields
@@ -769,27 +788,47 @@ def _order_feedback(sender, **kwargs):
 
 order_created.connect(_order_feedback)
 
+
 class InvoiceLog(models.Model):
     code =  models.CharField(max_length=20, unique=True)
     order = models.ForeignKey(Order, null=True)
     invoice = models.ForeignKey('Invoice', null=True)
     date = models.DateTimeField(auto_now_add=True)
 
+
 class InvoiceManager(models.Manager):
     pass
 
 
 class Invoice(models.Model):
+
+    PLACEHOLDER_EXRATE_DATE = date(2000, 1, 1)
+
     order = models.ForeignKey(Order, related_name='invoices')
     code = models.CharField(max_length=20, null=True, unique=True)
-    assopy_id = models.CharField(max_length=22, unique=True, 
+    assopy_id = models.CharField(max_length=22, unique=True,
                                  null=True, blank=True)
     emit_date = models.DateField()
     payment_date = models.DateField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     issuer = models.TextField()
-    invoice_copy_full_html = models.TextField()
+    html = models.TextField()
+
+    local_currency = models.CharField(max_length=3, default="EUR")
+    vat_in_local_currency = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        # remove after testing
+        default=Decimal("0"),
+    )
+    exchange_rate = models.DecimalField(
+        max_digits=10,
+        decimal_places=5,
+        # remove after testing
+        default=Decimal("1"),
+    )
+    exchange_rate_date = models.DateField(default=PLACEHOLDER_EXRATE_DATE)
 
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
@@ -813,11 +852,22 @@ class Invoice(models.Model):
         if create and is_real_invoice_code(self.code):
             self.order.complete(ignore_cache=True)
 
-    @models.permalink
     def get_absolute_url(self):
-        from django.contrib.admin.util import quote
-        return ('assopy-invoice-pdf' , [quote(self.order.code),
-                                        quote(self.code),])
+        return self.get_pdf_url()
+
+    def get_html_url(self):
+        """Render invoice as html -- fallback in case PDF doesn't work"""
+        return reverse("assopy-invoice-html", args=[
+            quote(self.order.code), quote(self.code)
+        ])
+
+    def get_pdf_url(self):
+        return reverse("assopy-invoice-pdf", args=[
+            quote(self.order.code), quote(self.code)
+        ])
+
+    def get_admin_url(self):
+        return reverse('admin:assopy_invoice_change', args=[self.id])
 
     def __unicode__(self):
         if self.code:
@@ -838,7 +888,22 @@ class Invoice(models.Model):
         return self.price - self.net_price()
 
     def net_price(self):
-        return self.price / (1 + self.vat.value / 100)
+        return normalize_price(self.price / (1 + self.vat.value / 100))
+
+    @property
+    def net_price_in_local_currency(self):
+        """
+        In order to make it more correct instead of computing value by
+        multiplying self.net_price() by exchange_rate we're going to subtract
+        vat value from converted gross price. That way net + vat will always
+        add up to gross.
+        """
+        return self.price_in_local_currency - self.vat_in_local_currency
+
+    @property
+    def price_in_local_currency(self):
+        return normalize_price(self.price * self.exchange_rate)
+
 
 if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
     from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful

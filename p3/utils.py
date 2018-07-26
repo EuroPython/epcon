@@ -372,12 +372,13 @@ def get_all_order_tickets(conference=settings.CONFERENCE_CONFERENCE):
 
     year = conference_year(conference)
 
-    orders          = assopy_models.Order.objects.filter(_complete=True)
-    conf_orders     = (order for order in orders if order.code.startswith('O/{}.'.format(year)))
-    tickets         = (ordi.ticket
-                       for order in conf_orders
-                       for ordi in order.orderitem_set.all()
-                       if ordi.ticket is not None)
+    orders = assopy_models.Order.objects.filter(_complete=True)
+    conf_orders = (order for order in orders if order.code.startswith('O/{}.'.format(year)))
+    tickets = (
+        ordi.ticket for order in conf_orders
+        for ordi in order.orderitem_set.all()
+        if ordi.ticket is not None
+    )
     conf_order_tkts = [tk for tk in tickets if is_valid_ticket(tk, conference)]
     return conf_order_tkts
 

@@ -1,11 +1,18 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# coding: utf-8
+
+from __future__ import absolute_import, unicode_literals
+
+import random
 
 from django.utils import timezone
 
 import factory
 from factory import fuzzy
+from faker import Faker
 
+from conference.fares import AVAILABLE_FARE_CODES
+
+fake = Faker()
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -24,12 +31,26 @@ class AssopyUserFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
 
 
+class CountryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'assopy.Country'
+
+    iso = factory.Faker('country_code')
+    name = factory.Faker('country')
+
+
 class OrderFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "assopy.Order"
 
     user = factory.SubFactory(AssopyUserFactory)
     payment = "cc"
+
+    country = factory.SubFactory(CountryFactory)
+
+    @factory.lazy_attribute
+    def address(self):
+        return '\n'.join([fake.address(), self.country.name])
 
 
 class OrderItemFactory(factory.django.DjangoModelFactory):
@@ -46,7 +67,7 @@ class VatFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "assopy.Vat"
 
-    value = 21
+    value = 20
 
 
 class VatFareFactory(factory.django.DjangoModelFactory):
@@ -63,9 +84,15 @@ class FareFactory(factory.django.DjangoModelFactory):
 
     vats = factory.RelatedFactory(VatFareFactory, "fare")
     conference = "testconf"
-    code = "TOSP"
-    name = fuzzy.FuzzyText()
     price = 10
+
+    @factory.lazy_attribute
+    def code(self):
+        return random.choice(AVAILABLE_FARE_CODES.keys())
+
+    @factory.lazy_attribute
+    def name(self):
+        return "EuroPython2018 – %s" % AVAILABLE_FARE_CODES[self.code]
 
     @factory.lazy_attribute
     def start_validity(self):

@@ -8,16 +8,18 @@ from collections import defaultdict
 from django.conf import settings as dsettings
 from django.core import exceptions
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext as _
 from django.utils.deconstruct import deconstructible
+from django.utils.translation import ugettext as _
 
 from common.django_urls import UrlMixin
 from model_utils import Choices
+from model_utils.models import TimeStampedModel
 
 import tagging
 from tagging.fields import TagField
@@ -459,6 +461,7 @@ class SpeakerManager(models.Manager):
                 qs = qs.filter(talk__type=talk_type)
         return Speaker.objects.filter(user__in=qs)
 
+
 class Speaker(models.Model, UrlMixin):
     user = models.OneToOneField('auth.User', primary_key=True)
 
@@ -473,7 +476,7 @@ class Speaker(models.Model, UrlMixin):
         in function of the status and the selected conference.
         """
         qs = TalkSpeaker.objects.filter(speaker=self)
-        if status in ('proposed', 'accepted', 'canceled'):
+        if status in TALK_STATUS._db_values:
             qs = qs.filter(talk__status=status)
         elif status is not None:
             raise ValueError('status unknown')
@@ -483,11 +486,14 @@ class Speaker(models.Model, UrlMixin):
             qs = qs.filter(talk__conference=conference)
         return Talk.objects.filter(id__in=qs.values('talk'))
 
+
 TALK_LANGUAGES = dsettings.LANGUAGES
-TALK_STATUS = (
+
+TALK_STATUS = Choices(
     ('proposed', _('Proposed')),
     ('accepted', _('Accepted')),
     ('canceled', _('Canceled')),
+    ('waitlist', _('Waitlist')),
 )
 
 VIDEO_TYPE = (
@@ -503,6 +509,7 @@ TALK_LEVEL = Choices(
 
 
 class TalkManager(models.Manager):
+
     def get_queryset(self):
         return self._QuerySet(self.model)
 
@@ -510,25 +517,29 @@ class TalkManager(models.Manager):
         return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
-        def proposed(self, conference=None):
-            qs = self.filter(status='proposed')
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
-        def accepted(self, conference=None):
-            qs = self.filter(status='accepted')
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
-        def canceled(self, conference=None):
-            qs = self.filter(status='canceled')
+
+        def _filter_by_status(self, status, conference=None):
+            assert status in TALK_STATUS._db_values
+            qs = self.filter(status=status)
             if conference:
                 qs = qs.filter(conference=conference)
             return qs
 
+        def proposed(self, conference=None):
+            return self._filter_by_status(TALK_STATUS.proposed, conference=conference)
+
+        def accepted(self, conference=None):
+            return self._filter_by_status(TALK_STATUS.accepted, conference=conference)
+
+        def canceled(self, conference=None):
+            return self._filter_by_status(TALK_STATUS.canceled, conference=conference)
+
+        def waitlist(self, conference=None):
+            return self._filter_by_status(TALK_STATUS.waitlist, conference=conference)
+
     def createFromTitle(self, title, sub_title, conference, speaker,
                         prerequisites, abstract_short, abstract_extra,
-                        status='proposed', language='en',
+                        status=TALK_STATUS.proposed, language='en',
                         level=TALK_LEVEL.beginner,
                         domain_level=TALK_LEVEL.beginner,
                         domain='',
@@ -643,6 +654,7 @@ class Talk(models.Model, UrlMixin):
     abstract_extra = models.TextField(
         verbose_name=_('Talk abstract extra'),
         help_text=_('<p>Please enter instructions for attendees.</p>'),
+        blank=True,
         default="")
 
     slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
@@ -671,7 +683,8 @@ class Talk(models.Model, UrlMixin):
     domain = models.CharField(
         max_length=20,
         choices=dsettings.CONFERENCE_TALK_DOMAIN,
-        default=''
+        default=dsettings.CONFERENCE_TALK_DOMAIN.other,
+        blank=True
     )
     domain_level = models.CharField(
         _("Audience Domain Level"),
@@ -713,15 +726,23 @@ class Talk(models.Model, UrlMixin):
     def __unicode__(self):
         return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('conference-talk', (), { 'slug': self.slug })
+        return reverse('conference-talk', args=[self.slug])
+
+    def get_admin_url(self):
+        return reverse('admin:conference_talk_change', args=[self.id])
 
     get_url_path = get_absolute_url
 
     def get_event(self):
         try:
             return self.event_set.all()[0]
+        except IndexError:
+            return None
+
+    def get_event_list(self):
+        try:
+            return self.event_set.all()
         except IndexError:
             return None
 
@@ -1428,3 +1449,52 @@ class VotoTalk(models.Model):
 #post_save.connect(_clear_schedule_cache, sender=EventInterest)
 
 from conference import listeners
+
+
+# ========================================
+# ExchangeRates
+# TODO: split conference/models.py to multiple files and put it this model in a
+# separate file.
+# ========================================
+class ExchangeRate(models.Model):
+    """
+    Store Exchange Rate relative to Euro
+    """
+    datestamp = models.DateField()
+    currency = models.CharField(max_length=3)  # iso 4217 currency code
+    # rate == how much curency for 1 EUR.
+    rate = models.DecimalField(max_digits=10, decimal_places=5)
+
+    def __str__(self):
+        return "%s %s" % (self.currency, self.datestamp)
+
+
+# ========================================
+# CaptchaQuestions
+# TODO: split conference/models.py to multiple files and put it this model in a
+# separate file.
+# ========================================
+
+class CaptchaQuestionManager(models.Manager):
+
+    def get_random_question(self):
+        qs = self.get_queryset().filter(enabled=True)
+        try:
+            return qs.order_by("?")[0]
+        except IndexError:
+            raise CaptchaQuestion.NoQuestionsAvailable()
+
+
+class CaptchaQuestion(TimeStampedModel):
+
+    class NoQuestionsAvailable(Exception):
+        pass
+
+    question = models.CharField(max_length=255)
+    answer   = models.CharField(max_length=255)
+    enabled  = models.BooleanField(default=True)
+
+    objects = CaptchaQuestionManager()
+
+    def __str__(self):
+        return self.question

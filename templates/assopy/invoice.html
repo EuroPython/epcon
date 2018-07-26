@@ -1,6 +1,249 @@
-{% extends 'assopy/base_invoice.html' %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <title>{{ title }}</title>
+        <meta name="description" content="" />
+    <style>
+        <!--
+            html, body, div, span, applet, object, iframe,
+            h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+            a, abbr, acronym, address, big, cite, code,
+            del, dfn, em, img, ins, kbd, q, s, samp,
+            small, strike, strong, sub, sup, tt, var,
+            b, u, i, center,
+            dl, dt, dd, ol, ul, li,
+            fieldset, form, label, legend,
+            table, caption, tbody, tfoot, thead, tr, th, td,
+            article, aside, canvas, details, embed,
+            figure, figcaption, footer, header, hgroup,
+            menu, nav, output, ruby, section, summary,
+            time, mark, audio, video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+            }
+            body {
+                line-height: 1;
+            }
+            ol, ul {
+                list-style: none;
+              }
+            blockquote, q {
+                quotes: none;
+            }
+            blockquote:before, blockquote:after,
+            q:before, q:after {
+                content: '';
+                content: none;
+            }
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
 
-{% block EXTRA_HEAD %}
+
+            .text-right  { text-align: right; }
+            .text-left   { text-align: left; }
+            .text-center { text-align: center; }
+            /*
+             *  Layout
+             */
+
+            @page { margin: 1.5cm }
+
+            .clear {
+                clear: both;
+            }
+
+            body {
+                font-family: Arial,'DejaVu Sans','Liberation Sans',Freesans,sans-serif;
+                font-size: 10pt;
+                line-height: 10.2pt;
+            }
+
+            .container {
+                width: 18cm
+            }
+
+            .section {
+              border: 1px solid #fff;
+              border-top: 2px solid #eee;
+              margin-top:0.5cm;
+            }
+
+            .companyinfo {
+                font-size: 90%;
+                float: right;
+            }
+
+            .companylogo {
+                font-size: 90%;
+                float: left;
+              }
+
+              .companylogo {
+                height: 5em;
+              }
+
+              .companylogo h1 {
+                font-size: 2em;
+                line-height: 2em;
+              }
+
+              .companylogo h2 {
+                font-size: 1.5em;
+                line-height: 1.2em;
+              }
+
+            .table {
+                width: 100%;
+            }
+            .table {
+                border-collapse: collapse;
+                border: 0px none;
+            }
+            .table td, .table th {
+                border: 1px solid #fff;
+            }
+            .table tr:first-child th,
+            .table tr:first-child td {
+                border-top: 0;
+            }
+            .table tr:last-child td {
+                border-bottom: 0;
+            }
+            .table tr td:first-child,
+            .table tr th:first-child {
+                border-left: 0;
+            }
+            .table tr td:last-child,
+            .table tr th:last-child {
+                border-right: 0;
+            }
+
+            td.customer {
+              width: 6cm;
+              line-height: 1.2em;
+            }
+
+            .cell-legend {
+                font-size: 70%;
+                color: #333;
+                margin: 0.1cm;
+            }
+
+            .alt-language{
+                font-style: italic;
+            }
+
+            .cell-content {
+                margin: 0.1cm;
+            }
+
+            .number {
+                text-align: center;
+            }
+
+            .vat_value {
+                float: left;
+            }
+            .currency, .currency-gbp {
+                text-align: right;
+                width: 1.7cm;
+                color: #444;
+                margin: 0 0 0 auto;
+            }
+            .currency:before {
+                content: "€";
+                float: left;
+              }
+            .currency-gbp:before {
+                content: "£";
+                float: left;
+              }
+
+              .currency-total {
+                text-align: right;
+                width: 3cm;
+                font-size: 1.5em;
+                margin: 0 0 0 auto;
+              }
+              .currency-total:before {
+                content: "€";
+                float: left;
+              }
+
+            .invoice-items {
+                min-height: 5cm;
+                position: relative;
+            }
+
+            .invoice-items TD {
+                padding: 0.3cm 0.1cm;
+                border-bottom: 1px dotted #ddd !important;
+                border-top:none;
+            }
+
+            .invoice-items-w0 {
+                width: 2cm;
+            }
+
+            .invoice-items-w1 {
+                width: 2.4cm;
+            }
+
+            .invoice-items TH DIV {
+            }
+
+            .invoice-detail TD {
+            }
+
+            .invoice-amount {
+                display: inline-block;
+                float: right;
+            }
+
+            .invoice-amount TD {
+                height: 1cm;
+                width: 6cm;
+            }
+
+            .invoice-amount TABLE {
+                width: 15cm;
+            }
+
+            .invoices-vat-notes {
+                text-align: right;
+                margin-top: 0.2cm;
+                font-size: small;
+                font-style: italic;
+            }
+            .invoice_note {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                padding: 0 5mm;
+                font-size: 150%;
+                line-height: 150%;
+                color: #777;
+            }
+            .invoice_note b {
+                color: #555;
+                text-decoration: underline;
+                margin: 0 2mm;
+              }
+
+              p { line-height: 1.5em; }
+
+        -->
+    </style>
+
+    {% block EXTRA_HEAD  %}
     <style>
         body {
             margin: 0 10px;
@@ -8,18 +251,233 @@
 
         .companyinfo {
             line-height: 16px;
+            white-space: pre;
         }
     </style>
-{% endblock %}
-{% block HEADER %}
-    <div class="companylogo">
-        <!-- <img src="{{ STATIC_URL }}" /> -->
-    </div>
-    <div class="companyinfo">
-        {{ issuer }}
-    </div>
-    <div class="clear"></div>
-{% endblock %}
 
-{% block BANK %}
-{% endblock %}
+    {% endblock %}
+    </head>
+    <body>
+      <div class="container">
+        <div>
+          {% block HEADER %}
+          <div class="companylogo">
+            <h1>{{ conference_name }}</h1>
+            <h2>{{ conference_location }}</h2>
+          </div>
+          <div class="companyinfo">{{ issuer }}</div>
+          <div class="clear"></div>
+          {% endblock %}
+        </div>
+            <div class="section invoice-detail">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            {% if is_real_invoice %}
+                            <td>
+                                <div class="cell-legend">
+                                    Invoice No.
+                                </div>
+                                <div class="cell-content">
+                                    {{ code|default:'' }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    Date
+                                </div>
+                                <div class="cell-content">
+                                    {{ emit_date|default:''|date:"Y-m-d" }}
+                                </div>
+                                <div class="cell-legend">
+                                  Time of supply
+                                </div>
+                                <div class="cell-content">
+                                    {{ emit_date|default:''|date:"Y-m-d" }}
+                                </div>
+                            </td>
+                            {% else %}
+                            <td>
+                                <div class="cell-legend">
+                                    Proforma No.
+                                </div>
+                                <div class="cell-content">
+                                    {{ code|default:'' }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend">
+                                    &nbsp;
+                                </div>
+                                <div class="cell-content">
+                                    Non-VAT Document
+                                </div>
+                            </td>
+                            {% endif %}
+                            <td>
+                                <div class="cell-legend">
+                                    Currency
+                                </div>
+                                <div class="cell-content">
+                                  {# This should stay in Euros, even if the {{ currency }} for VAT calculations is different #}
+                                  EUR
+                                </div>
+                            </td>
+                            <td rowspan ="3" class="customer">
+                                <div class="cell-legend">
+                                    Customer
+                                </div>
+                                <div class="cell-content">
+                                    {{ order.card_name }} <br/>
+                                    {{ order.address|safe|linebreaks }}<br/>
+                                    {% if order.cf_code %}{{ order.cf_code }}<br/>{% endif %}
+                                    {% if order.vat_number %}{{ order.vat_number }}<br/>{% endif %}
+                                    {% if order.billing_notes %}{{ order.billing_notes|linebreaks }}<br/>{% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                          <td colspan="3">
+                            {% if bank_info %}
+                            <div class="cell-legend">
+                              Bank
+                            </div>
+                            <div class="cell-content">
+                              {{ bank_info }}
+                            </div>
+                            {% endif %}
+                          </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="section invoice-items">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="invoice-items-w1">
+                                <div class="cell-legend text-left">
+                                    Code
+                                </div>
+                            </th>
+                            <th>
+                                <div class="cell-legend text-left">
+                                    Description
+                                </div>
+                              </th>
+
+                              <th class="invoice-items-w0">
+                                <div class="cell-legend text-center">
+                                  Quantity
+                                </div>
+                              </th>
+
+                              <th class="invoice-items-w0">
+                                <div class="cell-legend text-center">
+                                  VAT rate
+                                </div>
+                              </th>
+
+                              <th class="invoice-items-w1">
+                                <div class="cell-legend text-right">
+                                  Net price
+                                </div>
+                              </th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td class="invoice-items-w1">
+                                {% if not item.code.0 == '_' %}
+                                    {{ item.code }}
+                                {% endif %}
+                            </td>
+                            <td style='line-height: 1.2em'>
+                                 {{ item.description }}
+                            </td>
+                            <td class="invoice-items-w0 number">
+                              {{ item.count }}
+                            </td>
+
+                            <td class="invoice-items-w0 number">
+                              {{ vat.value }}%
+                            </td>
+
+                            <td class="invoice-items-w1">
+                                <div class="currency">{{ item.net_price }}</div>
+                            </td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                </table>
+                {% if note %}
+                <h3 class="invoice_note">{{ note|safe }}</h3>
+                {% endif %}
+            </div>
+            <div class="section invoice-amount">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="cell-legend text-right">
+                                    Net price
+                                </div>
+                                <div class="cell-content">
+                                    <div class="currency">{{ price.net|floatformat:2 }}</div>
+                                </div>
+                            </td>
+                            <td>
+                              <div class="cell-legend text-right">
+                                Total VAT
+                              </div>
+                              <div class="cell-content">
+                                {% if price.vat %}
+                                <!-- <div class="vat_value">{{ vat.value }}% </div> -->
+                                <div class="currency">{{ price.vat|floatformat:2 }}</div>
+                                {% endif %}
+                                {% if vat.invoice_notice %}
+                                <div class="invoices-vat-notes">
+                                  {{ vat.invoice_notice }}
+                                </div>
+                                {% endif %}
+                              </div>
+                              <div class="cell-legend text-right" data-local-currency="{{ invoice.local_currency }}">
+                                in {{ invoice.local_currency }}(*)
+                              </div>
+                              <div class="cell-content text-right">
+                                <div class='currency-{{ invoice.local_currency|lower }}' data-total-vat-in-local-currency="{{ invoice.vat_in_local_currency }}">
+                                  {{ invoice.vat_in_local_currency }}
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                                <div class="cell-legend text-right">
+                                    Gross Total
+                                </div>
+                                <div class="cell-content">
+                                    <div class="currency-total">{{ price.total|floatformat:2 }}</div>
+                                </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td class='text-right'>
+                            </td>
+                          </tr>
+                    </tbody>
+                </table>
+              </div>
+              <div class="clear"></div>
+              {% if additional_text %}
+              <div style='margin-top: 3em;'>
+                {% include additional_text %}
+              </div>
+              {% endif %}
+            {% if invoice.local_currency != 'EUR' %}
+            <div style='margin-top: 1em;'><em>(*) - ECB rate used for VAT is {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date|date:"Y-m-d" }}</em></div>
+            {% endif %}
+
+        </div>
+    </body>
+</html>

@@ -38,6 +38,9 @@
     <meta name="msapplication-square150x150logo" content="{{ STATIC_URL }}p6/images/ms-icon-150x150.png">
     <meta name="msapplication-square310x310logo" content="{{ STATIC_URL }}p6/images/ms-icon-310x310.png">
 
+    <!-- Ownership verifications -->
+    <meta name="p:domain_verify" content="625a31163a6c46fa2101e157d2387ee5"/>
+
     <!-- Twitter card -->
     {% block TWITTER_CARD %}
     {% endblock %}
@@ -206,16 +209,13 @@
         }
     </script>
 
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-    <script type="text/javascript">
-        var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
-        document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
-    </script>
+    <!-- No parallax this year...
     <script type="text/javascript">
         $('.discover-europython').parallax({
             speed : 0.3
         });
     </script>
+    -->
     <!-- @@TODO We should really use head.js -->
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/vendor/bootstrap-min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/nav-patterns/responsive-nav.min.js"></script>
@@ -250,8 +250,8 @@
                 },
                 "theme": "edgeless",
                 "content": {
-                    "message": "We use cookies to improve your experience and track website usage.",
-                    "dismiss": "I understand",
+                    "message": "We kindly ask you for your consent to use your data subject to our privacy policy.",
+                    "dismiss": "Agreed",
                     "link": "Read more",
                     "href": "/privacy/"
                 }

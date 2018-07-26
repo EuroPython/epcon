@@ -14,9 +14,8 @@ from common.decorators import render_to_json
 from p3 import forms as p3forms
 from p3 import models
 
-
 class P3BillingData(aforms.BillingData):
-    payment = forms.ChoiceField(choices=amodels.ORDER_PAYMENT, initial='cc')
+    payment = forms.ChoiceField(choices=amodels.ENABLED_ORDER_PAYMENT, initial='cc')
     code_conduct = forms.BooleanField(
         label=_('I have read and accepted the <a href="/coc" target="blank">EuroPython 2018 Code of Conduct</a> as well as the <a href="/privacy" target="blank">EuroPython 2018 Privacy Policy</a>.'))
 
@@ -138,10 +137,14 @@ def calculator(request):
                 coupons.append(data['coupon'])
             totals = amodels.Order\
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
-            try:
-                booking = models.HotelBooking.objects\
-                    .get(conference=settings.CONFERENCE_CONFERENCE)
-            except models.HotelBooking.DoesNotExist:
+            if 0:
+                # We no longer support HotelBookings
+                try:
+                    booking = models.HotelBooking.objects\
+                        .get(conference=settings.CONFERENCE_CONFERENCE)
+                except models.HotelBooking.DoesNotExist:
+                    booking = None
+            else:
                 booking = None
 
             def _fmt(x):
@@ -244,6 +247,9 @@ def billing(request):
 
             o = amodels.Order.objects.create(**kw)
             if totals['total'] == 0:
+                # Nothing to pay, complete order and we're done
+                o.confirm_order(o.created)
+                o.complete()
                 return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
 
             if settings.STRIPE_ENABLED and order_data['payment'] == 'cc':

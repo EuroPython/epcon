@@ -57,6 +57,7 @@ class OrderAdminForm(forms.ModelForm):
         ('cc', 'Credit Card'),
         ('bank', 'Bank'),
     ))
+
     class Meta:
         model = models.Order
         exclude = ('method',)
@@ -77,6 +78,7 @@ class OrderAdminForm(forms.ModelForm):
         self.instance.method = self.cleaned_data['method']
         return super(OrderAdminForm, self).save(*args, **kwargs)
 
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'code', '_user', '_email',
@@ -93,6 +95,7 @@ class OrderAdmin(admin.ModelAdmin):
         'user__user__first_name', 'user__user__last_name', 'user__user__email',
         'billing_notes',
     )
+    readonly_fields = ['payment_date']
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
 
@@ -126,11 +129,13 @@ class OrderAdmin(admin.ModelAdmin):
         return html
     _user.short_description = 'buyer'
     _user.allow_tags = True
+    _user.admin_order_field = 'user__user__last_name'
 
     def _email(self, o):
         return '<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email)
     _email.short_description = 'buyer email'
     _email.allow_tags = True
+    _email.admin_order_field = 'user__user__email'
 
     def _items(self, o):
         return o.orderitem_set.exclude(ticket=None).count()
@@ -138,6 +143,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def _created(self, o):
         return o.created.strftime('%d %b %Y - %H:%M:%S')
+    _created.admin_order_field = 'created'
 
     def _total_nodiscount(self, o):
         return o.total(apply_discounts=False)
@@ -154,8 +160,7 @@ class OrderAdmin(admin.ModelAdmin):
     def _invoice(self, o):
         from django.contrib.admin.util import quote
         output = []
-        # MAL: PDF generation is currently broken, so always show the HTML
-        # version
+        # MAL: PDF generation is slower, so default to HTML
         if 1 or dsettings.DEBUG:
             vname = 'assopy-invoice-html'
         else:
@@ -173,6 +178,7 @@ class OrderAdmin(admin.ModelAdmin):
             )
         return ' '.join(output)
     _invoice.allow_tags = True
+    _invoice.admin_order_field = 'invoices'
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
@@ -312,10 +318,40 @@ class CouponAdminForm(forms.ModelForm):
     def clean_code(self):
         return self.cleaned_data['code'].upper()
 
+class CouponValidListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'validity'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'valid'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'valid coupon'),
+            ('no', 'used / invalid coupon'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'no':
+            result = False
+        elif self.value() == 'yes':
+            result = True
+        else:
+            # No filter
+            return queryset
+        ids = [coupon.id
+               for coupon in queryset
+               if bool(coupon.valid(coupon.user)) is result]
+        return queryset.filter(id__in=ids)
+
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_valid')
+    list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_valid', '_usage')
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email',)
-    list_filter = ('conference',)
+    list_filter = ('conference',
+                   CouponValidListFilter,
+                   'value',
+                   )
     form = CouponAdminForm
 
     def get_queryset(self, request):
@@ -339,9 +375,13 @@ class CouponAdmin(admin.ModelAdmin):
     _user.short_description = 'user'
     _user.allow_tags = True
 
+    def _usage(self, o):
+        return models.OrderItem.objects.filter(ticket=None, code=o.code).count()
+    _usage.short_description = 'usage'
+
     def _valid(self, o):
         return o.valid(o.user)
-    _valid.short_description = 'valid (maybe not used?)'
+    _valid.short_description = 'valid'
     _valid.boolean = True
 
 admin.site.register(models.Coupon, CouponAdmin)

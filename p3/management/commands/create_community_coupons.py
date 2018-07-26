@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
 """ Create EPS community discount coupons.
 
-    Valid for conference tickets, 100 uses at most and one item per
+    Parameters: <conference> <count>
+
+    Valid for conference tickets, 50 uses at most and one item per
     order.  Not valid for the social event.
 
     Created coupons are written as CSV data to stdout.
@@ -29,7 +31,7 @@ COUPON_PREFIX = 'EPS'
 EPS_COMMUNITY_DISCOUNT = '10%'
 
 # Max usage per coupon
-COUPON_MAX_USAGE = 100
+COUPON_MAX_USAGE = 50
 
 # Max items per order
 COUPON_ITEMS_PER_USAGE = 1

@@ -92,11 +92,13 @@ def add_speaker(data, speaker):
     # Skip speakers without public profile. Speaker profiles must be
     # public, but you never know. See conference/models.py
     if profile.visibility != 'p':
+        print ('Skipping profile %r - profile not public' % profile)
         return
 
     # Collect data
-    first_name = speaker.user.first_name.title()
-    last_name = speaker.user.last_name.title()
+    first_name = user.first_name.title()
+    last_name = user.last_name.title()
+    full_name = first_name + u' ' + last_name
     company = profile.company
     position = profile.job_title
     profile_text = (u'<a href="%s%s">Profile on EuroPython Website</a>' %
@@ -106,8 +108,13 @@ def add_speaker(data, speaker):
         twitter = twitter.split('/')[-1]
 
     # Skip special entries
-    full_name = first_name + last_name
-    if first_name == 'To Be' and last_name == 'Announced':
+    #
+    # Note: When filtering special entries here, we also have to
+    # filter them in the speaker_listing() in the schedule script,
+    # since when using speaker names in the Attendify schedule,
+    # Attendify complains if it cannot find the speakers listed for an
+    # event.
+    if full_name in (u'To Be Announced', u'Tobey Announced'):
         return
    
     # UID

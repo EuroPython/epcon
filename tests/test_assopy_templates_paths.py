@@ -12,6 +12,7 @@ that it's easier to figure out which template is being used.
 
 from __future__ import unicode_literals, absolute_import
 
+from datetime import date
 from decimal import Decimal
 
 from django.core.urlresolvers import reverse
@@ -69,7 +70,8 @@ def test_assopy_invoice(client):
         emit_date=timezone.now().date(),
         price=Decimal(1337),
         vat=vat_10,
-        invoice_copy_full_html='Here goes full html',
+        html='Here goes full html',
+        exchange_rate_date=date.today(),
     )
 
     invoice_url = reverse('assopy-invoice-html', kwargs={
