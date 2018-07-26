@@ -41,12 +41,15 @@ import urlparse
 # Debug output ?
 _debug = 1
 
+<<<<<<< cfb678caede560028d2f24c0e7f46b69b08569bd
+=======
 # Website URL to use for making the profile links absolute
 WEBSITE_URL = 'https://ep2018.europython.eu/'
 
 # These must match the talk .type or .admin_type
 from accepted_talks import TYPE_NAMES
 
+>>>>>>> Fix speaker profile URLs.
 ### Helpers
 
 def profile_url(user):
