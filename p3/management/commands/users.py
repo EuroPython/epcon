@@ -34,4 +34,4 @@ class Command(BaseCommand):
                                'date-joined': str(u.user.date_joined).encode('utf-8'),
                                }
 
-        print(json.dumps(users, indent=2, separators=(',', ': ')))
+        print((json.dumps(users, indent=2, separators=(',', ': '))))

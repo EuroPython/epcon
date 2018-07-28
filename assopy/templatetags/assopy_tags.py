@@ -9,7 +9,7 @@ from django.core import paginator
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 register = template.Library()
 
@@ -78,7 +78,7 @@ def field(field, cls=None):
         classes.append('error')
 
     widget = field.field.widget
-    if isinstance(widget, (forms.HiddenInput,)):
+    if isinstance(widget, forms.HiddenInput):
         return str(field)
     else:
         if not tpl_key:
@@ -140,7 +140,7 @@ def field_display_value(field):
     val = field_value(field)
     if hasattr(field.field, 'choices'):
         data = dict(field.field.choices)
-        if isinstance(field.field, (forms.MultipleChoiceField,)):# forms.TypedMultipleChoiceField)):
+        if isinstance(field.field, forms.MultipleChoiceField):# forms.TypedMultipleChoiceField)):
             output = []
             for x in val:
                 output.append(data.get(x, ''))
@@ -151,13 +151,13 @@ def field_display_value(field):
 
 @register.filter
 def field_widget(field, attrs):
-    attrs = dict(map(lambda _: _.strip(), x.split('=')) for x in attrs.split(','))
+    attrs = dict([_.strip() for _ in x.split('=')] for x in attrs.split(','))
     field.field.widget.attrs.update(attrs)
     return field
 
 @register.filter
 def as_range(value):
-    return range(value)
+    return list(range(value))
 
 @register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
 def render_janrain_box(context, next=None, mode='embed'):
@@ -169,7 +169,7 @@ def render_janrain_box(context, next=None, mode='embed'):
         domain = settings.JANRAIN['domain']
         if not domain.endswith('/'):
             domain += '/'
-        u = '%sopenid/embed?token_url=%s' % (domain, urllib.quote_plus(dsettings.DEFAULT_URL_PREFIX + reverse('assopy-janrain-token')))
+        u = '%sopenid/embed?token_url=%s' % (domain, urllib.parse.quote_plus(dsettings.DEFAULT_URL_PREFIX + reverse('assopy-janrain-token')))
     else:
         u = None
     return {
@@ -274,7 +274,7 @@ def add_page_number_to_query(context, page, get=None):
     else:
         get = dict(get)
     get['page'] = page
-    return urllib.urlencode(get)
+    return urllib.parse.urlencode(get)
 
 @register.inclusion_tag('assopy/render_voucher.html', takes_context=True)
 def render_voucher(context, item):

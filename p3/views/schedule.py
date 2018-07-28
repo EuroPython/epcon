@@ -71,7 +71,7 @@ def _build_timetables(schedules, events=None, partner=None):
             tts.append((row['id'], tt))
 
     if partner:
-        for date, evts in partner.items():
+        for date, evts in list(partner.items()):
             for ix, row in enumerate(schedules):
                 if row['date'] == date:
                     sid, tt = tts[ix]
@@ -91,16 +91,16 @@ def _build_timetables(schedules, events=None, partner=None):
     # Remove empty timetables
     def not_empty(o):
         tt = o[1]
-        events = tt.events.values()
+        events = list(tt.events.values())
         return bool(events and events[0])
-    tts = filter(not_empty, tts)
+    tts = list(filter(not_empty, tts))
 
     # Sort timetables by date
     def key(o):
         # timetable has an indirect reference to the day, I need to get it
         # from one of the events.
         tt = o[1]
-        events = tt.events.values()
+        events = list(tt.events.values())
         ev0 = events[0][0]
         return ev0['time']
     tts.sort(key=key)
@@ -154,7 +154,7 @@ def schedule_list(request, conference):
     ctx = {
         'conference': conference,
         'sids': sids,
-        'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
+        'timetables': list(zip(sids, list(map(TimeTable2.fromSchedule, sids)))),
     }
     return render(request, 'p3/schedule_list.html', ctx)
 
@@ -190,7 +190,7 @@ def my_schedule(request, conference):
     pfares = [ f for f in fares(conference) if f['id'] in qs ]
     partner = _partner_as_event(pfares)
 
-    schedules = schedules_data(events.keys())
+    schedules = schedules_data(list(events.keys()))
     tts = _build_timetables(schedules, events=events, partner=partner)
     ctx = {
         'conference': conference,

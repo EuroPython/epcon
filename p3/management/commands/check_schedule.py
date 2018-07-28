@@ -55,16 +55,16 @@ class Command(BaseCommand):
                 for talk in type_talks[type]:
                     schedules = list(talk_schedule(talk))
                     if not schedules:
-                        print('ERROR: {} (id: {}) "{}" is not '
-                              'scheduled'.format(talk_type(talk), talk.id, talk))
+                        print(('ERROR: {} (id: {}) "{}" is not '
+                              'scheduled'.format(talk_type(talk), talk.id, talk)))
                     elif len(schedules) > 1:
-                        print('ERROR: {} (id: {}) "{}" is '
+                        print(('ERROR: {} (id: {}) "{}" is '
                               'scheduled {} times: {} in {}.'.format(talk_type(talk),
                                                                      talk.id,
                                                                      talk,
                                                                      len(schedules),
                                                                      schedules,
-                                                                     talk_track_title(talk)))
+                                                                     talk_track_title(talk))))
 
 
         if options['all_accepted']:
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 for talk in type_talks[type]:
                     schedules = list(talk_schedule(talk))
                     if talk.status != 'accepted' and schedules:
-                        print('ERROR: {} (id: {}) "{}" is scheduled but '
+                        print(('ERROR: {} (id: {}) "{}" is scheduled but '
                               'not accepted.'.format(talk_type(talk),
                                                      talk.id,
-                                                     talk))
+                                                     talk)))

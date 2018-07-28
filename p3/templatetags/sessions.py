@@ -4,7 +4,7 @@
     to be escaped in MarkItUp CMS plugins.
 
 """
-from __future__ import unicode_literals
+
 from django import template
 from django.core import urlresolvers
 from conference import models
@@ -54,7 +54,7 @@ def speaker_listing(talk):
 
 def speaker_name(speaker):
 
-    name = u'%s %s' % (
+    name = '%s %s' % (
         speaker.user.first_name,
         speaker.user.last_name)
 
@@ -64,7 +64,7 @@ def speaker_name(speaker):
 def speaker_list_key(entry):
 
     speaker = entry[1]
-    name = u'%s %s' % (
+    name = '%s %s' % (
         speaker.user.first_name,
         speaker.user.last_name)
 
@@ -200,7 +200,7 @@ def speakers(conference, filter_types=None):
             speaker_dict[speaker_name(speaker)] = speaker
 
     # Prepare list
-    speaker_list = speaker_dict.items()
+    speaker_list = list(speaker_dict.items())
     speaker_list.sort(key=speaker_list_key)
 
     data = {

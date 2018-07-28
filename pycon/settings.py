@@ -355,8 +355,8 @@ INSTALLED_APPS = (
     #'pages',
     'mptt',
 
-    'django_xmlrpc',
-    'pingback',
+    # 'django_xmlrpc',
+    # 'pingback',
     'rosetta',
 
     'email_template',
@@ -371,7 +371,7 @@ INSTALLED_APPS = (
     'markitup',
     'cms_utils',
 
-    'raven.contrib.django.raven_compat',
+    # 'raven.contrib.django.raven_compat',
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
@@ -1296,7 +1296,7 @@ if check.startswith(MEDIA_ROOT):
     if not DEBUG:
         raise RuntimeError('SECURE_MEDIA_ROOT cannot be a subdir of MEDIA_ROOT')
     else:
-        print
+        print()
         'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
 
 
@@ -1304,7 +1304,7 @@ if not SECRET_KEY:
     if not DEBUG:
         raise RuntimeError('SECRET_KEY not set')
     else:
-        print
+        print()
         'WARN, SECRET_KEY not set'
 
 GRAPH_MODELS = {
@@ -1322,7 +1322,7 @@ DISABLE_CACHING = False
 
 try:
     from pycon.settings_locale import *
-except ImportError, reason:
+except ImportError as reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass

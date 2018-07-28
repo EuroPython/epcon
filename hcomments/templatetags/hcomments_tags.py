@@ -7,7 +7,7 @@ from hcomments import models
 from hcomments import settings
 
 import hashlib
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 register = template.Library()
 
@@ -119,7 +119,7 @@ def gravatar(email, args=''):
 
     # construct the url
     gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(email.lower()).hexdigest()
-    gravatar_url += urllib.urlencode({
+    gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': str(size),
         'rating': rating,

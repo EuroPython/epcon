@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from __future__ import absolute_import
+
 import mimetypes
 import os
 import os.path
@@ -198,7 +198,7 @@ class TNode(template.Node):
 def conference_talks(conference=None, status="accepted", tag=None, type=None):
     if conference is None:
         conference = [settings.CONFERENCE]
-    elif isinstance(conference, basestring):
+    elif isinstance(conference, str):
         conference = [ conference ]
     qs = models.Talk.objects\
         .filter(conference__in=conference)\
@@ -228,7 +228,7 @@ def schedule_context(schedule):
 
     TIME_STEP = 15
     dbtracks = dict((t.track, (ix, t)) for ix, t in enumerate(schedule.track_set.all()))
-    _itracks = dict(dbtracks.values())
+    _itracks = dict(list(dbtracks.values()))
     dbevents = defaultdict(list)
     for e in schedule.event_set.select_related('talk', 'sponsor__sponsorincome_set'):
         dbevents[e.start_time].append(e)
@@ -394,7 +394,7 @@ def render_schedule(context, schedule):
     """
     if isinstance(schedule, int):
         sid = schedule
-    elif isinstance(schedule, basestring):
+    elif isinstance(schedule, str):
         try:
             c, s = schedule.split('/')
         except ValueError:
@@ -524,7 +524,7 @@ def overbooked_events(context, conference):
     c = _request_cache(context['request'], 'schedules_overbook')
     if not c:
         data = models.Schedule.objects.expected_attendance(conference)
-        for k, v in data.items():
+        for k, v in list(data.items()):
             if not v['overbook']:
                 del data[k]
         c['items'] = data
@@ -601,7 +601,7 @@ def splitonspace(value):
 
 @register.filter
 def image_resized(value, size='resized'):
-    if isinstance(value, basestring):
+    if isinstance(value, str):
         url = value
         if not url.startswith(dsettings.DEFAULT_URL_PREFIX + dsettings.MEDIA_URL):
             return url
@@ -625,11 +625,11 @@ def intersected(value, arg):
 
 @register.filter
 def splitbysize(value, arg):
-    from itertools import izip
+    
     def grouper(n, iterable, fillvalue=None):
         "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
         args = [iter(iterable)] * n
-        return list(izip(*args))
+        return list(zip(*args))
     arg = int(arg)
     value = list(value)
     if len(value) % arg:
@@ -643,10 +643,10 @@ def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
     data = dataaccess.sponsor(conference)
     if only_tags:
         t = set((only_tags,))
-        data = filter(lambda x: len(x['tags'] & t)>0, data)
+        data = [x for x in data if len(x['tags'] & t)>0]
     if exclude_tags:
         t = set((exclude_tags,))
-        data = filter(lambda x: len(x['tags'] & t)==0, data)
+        data = [x for x in data if len(x['tags'] & t)==0]
     return data
 
 @register.tag
@@ -776,7 +776,7 @@ def conference_multilingual_attribute(parser, token):
                         elif dlang_single in contents:
                             value = contents[dlang_single]
                         else:
-                            value = contents.values()[0]
+                            value = list(contents.values())[0]
             if self.var_name:
                 context[self.var_name] = value
                 return ''
@@ -803,7 +803,7 @@ def embed_video(context, value, args=""):
     """
     {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
     """
-    args = dict( map(lambda _: _.strip(), x.split('=')) for x in args.split(',') if '=' in x )
+    args = dict( [_.strip() for _ in x.split('=')] for x in args.split(',') if '=' in x )
     video_url = video_path = None
 
     if isinstance(value, models.Talk):
@@ -940,7 +940,7 @@ def voting_data(conference):
         for tid, type, language in results:
             groups[type][language].append(tid)
 
-    for k, v in groups.items():
+    for k, v in list(groups.items()):
         groups[k] = dict(v)
 
     return {
@@ -958,7 +958,7 @@ def convert_twitter_links(text, args=None):
 
 @register.simple_tag()
 def randint():
-    return random.randint(0, sys.maxint)
+    return random.randint(0, sys.maxsize)
 
 @register.filter
 def truncate_chars(text, length):
@@ -1218,7 +1218,7 @@ def current_conference():
 
 @register.simple_tag()
 def conference_fares(conf=settings.CONFERENCE):
-    return filter(lambda f: f['valid'], dataaccess.fares(conf))
+    return [f for f in dataaccess.fares(conf) if f['valid']]
 
 @register.simple_tag(takes_context=True)
 def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
@@ -1227,11 +1227,11 @@ def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=
     events = dataaccess.events(conf=conference)
     if exclude_tags:
         exclude = set(exclude_tags.split(','))
-        events = filter(lambda x: len(x['tags'] & exclude) == 0, events)
+        events = [x for x in events if len(x['tags'] & exclude) == 0]
 
     if exclude_tracks:
         exclude = set(exclude_tracks.split(','))
-        events = filter(lambda x: len(set(x['tracks']) & exclude) == 0, events)
+        events = [x for x in events if len(set(x['tracks']) & exclude) == 0]
 
     grouped = defaultdict(list)
     for e in events:
@@ -1290,7 +1290,7 @@ def event_data(eid):
 def talks_data(tids, conference=None):
     data = dataaccess.talks_data(tids)
     if conference:
-        data = filter(lambda x: x['conference'] == conference, data)
+        data = [x for x in data if x['conference'] == conference]
     return data
 
 @register.assignment_tag()
@@ -1362,7 +1362,7 @@ def ordered_talks(talks, criteria="conference"):
     grouped = defaultdict(list)
     for t in talks:
         grouped[t['conference']].append(t)
-    return sorted(grouped.items(), reverse=True)
+    return sorted(list(grouped.items()), reverse=True)
 
 #XXX: rimuovere, gli stessi dati sono presenti nella cache ritornata da profile_data
 @register.simple_tag()
@@ -1379,9 +1379,9 @@ def visible_talks(talks, filter_="all"):
     if isinstance(talks[0], int):
         talks = dataaccess.talks_data(talks)
     if filter_ == "accepted":
-        return filter(lambda x: x['status'] == 'accepted', talks)
+        return [x for x in talks if x['status'] == 'accepted']
     else:
-        return  filter(lambda x: x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE, talks)
+        return  [x for x in talks if x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE]
 
 @register.filter
 def json_(val):
@@ -1455,7 +1455,7 @@ def sum_(context, varname, *args):
     if not args:
         r = None
     else:
-        args = filter(None, args)
+        args = [_f for _f in args if _f]
         try:
             r = sum(args[1:], args[0])
         except Exception:
@@ -1513,7 +1513,7 @@ def conference_js_data(tags=None):
 
     cts = dict(ContentType.objects.all().values_list('id', 'model'))
     items = {}
-    for t, objects in tags.items():
+    for t, objects in list(tags.items()):
         key = t.name.encode('utf-8')
         if key not in items:
             items[key] = {}

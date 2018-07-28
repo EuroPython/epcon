@@ -64,7 +64,7 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
 
 def p3_profile_avatar(request, slug):
     p = get_object_or_404(cmodels.AttendeeProfile, slug=slug).p3_profile
-    from urllib2 import urlopen
+    from urllib.request import urlopen
     try:
         img = urlopen(p.profile_image_url())
     except Exception:

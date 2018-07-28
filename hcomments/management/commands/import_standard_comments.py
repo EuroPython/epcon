@@ -22,9 +22,9 @@ class Command(BaseCommand):
 
         cursor = connection.cursor()
 
-        print len(comments), 'comments found'
+        print(len(comments), 'comments found')
         for ix, comment in enumerate(comments.values()):
-            print comment.user_name + ': ', repr(comment.comment[:50])
+            print(comment.user_name + ': ', repr(comment.comment[:50]))
             params = (comment.id, ix+1)
             cursor.execute(sql, params)
 

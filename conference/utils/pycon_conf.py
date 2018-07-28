@@ -3,7 +3,7 @@ URL = 'http://assopy.pycon.it/conference/getinfo.py/empty_attendees'
 
 SUBJECT = "[PyCon Tre] dati mancanti / incomplete data"
 
-BODY = u"""Ciao, [English version below]
+BODY = """Ciao, [English version below]
 
 questa e-mail è stata inviata automaticamente da AssoPy perché
 hai acquistato almeno un biglietto per PyCon Tre.

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from datetime import timedelta
-from httplib import (
+from http.client import (
     OK as HTTP_OK_200,
     # NOT_FOUND as HTTP_NOT_FOUND_404,
     FOUND as HTTP_REDIRECT_302

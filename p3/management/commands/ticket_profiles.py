@@ -121,4 +121,4 @@ class Command(BaseCommand):
 
             profiles.append(subj)
 
-        print(json.dumps(profiles, indent=2, separators=(',', ': ')))
+        print((json.dumps(profiles, indent=2, separators=(',', ': '))))

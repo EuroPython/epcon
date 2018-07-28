@@ -117,5 +117,5 @@ class Command(BaseCommand):
             output = sorted([usr.get_full_name().encode('utf-8') for usr in users])
 
         if output:
-            print(', '.join(output))
+            print((', '.join(output)))
 

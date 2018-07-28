@@ -62,10 +62,10 @@ class Command(BaseCommand):
             tickets = tickets.filter(id__in=options['ids'].split(','))
             cmdargs.extend(['-e', '0', '-p', 'A4', '-n', '4'])
 
-        print >>sys.stderr, '* %d tickets' % tickets.count()
+        print('* %d tickets' % tickets.count(), file=sys.stderr)
         files = utils.render_badge(tickets, cmdargs=cmdargs, stderr=None)
         name, f, input_data = files[0]
         if options['input_data']:
             file(options['input_data'], 'w').write(input_data)
-        print name, f
+        print(name, f)
 

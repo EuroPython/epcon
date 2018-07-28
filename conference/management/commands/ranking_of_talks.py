@@ -31,13 +31,13 @@ class Command(BaseCommand):
         talks = models.Talk.objects\
             .filter(conference=conference, status='proposed')
         if options['show_input']:
-            print utils._input_for_ranking_of_talks(talks, missing_vote=options['missing_vote'])
+            print(utils._input_for_ranking_of_talks(talks, missing_vote=options['missing_vote']))
         else:
             qs = models.VotoTalk.objects\
                 .filter(talk__in=talks)\
                 .values('user')
             votes = qs.count()
             users = qs.distinct().count()
-            print '%d talks / %d users / %d votes' % (talks.count(), users, votes)
+            print('%d talks / %d users / %d votes' % (talks.count(), users, votes))
             for ix, t in enumerate(utils.ranking_of_talks(talks, missing_vote=options['missing_vote'])):
-                print ix+1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8')
+                print(ix+1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8'))

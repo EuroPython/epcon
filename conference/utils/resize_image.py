@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import ConfigParser
+import configparser
 import fnmatch
 import logging
 import os
@@ -45,18 +45,18 @@ def inspect():
                 yield os.path.join(root, f)
 
 def parseConfigFile(fpath):
-    parser = ConfigParser.SafeConfigParser()
+    parser = configparser.SafeConfigParser()
     good = parser.read(fpath)
     if not good:
         raise ValueError('invalid file')
     try:
         output = parser.get('resize', 'output')
-    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+    except (configparser.NoSectionError, configparser.NoOptionError):
         log.warn('output value not found, fallbak to "resized"')
         output = 'resized'
     try:
         rule = parser.get('resize', 'rule')
-    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+    except (configparser.NoSectionError, configparser.NoOptionError):
         raise ValueError('value resize/rule not found')
     actions = [ r.split('=', 1) for r in rule.split(';') ]
     out = []
@@ -78,9 +78,9 @@ class Resize(object):
         for action, params in self.cfg:
             try:
                 img = getattr(self, action)(img, *params)
-            except AttributeError, e:
+            except AttributeError as e:
                 raise ValueError('invalid action: %s' % action)
-            except TypeError, e:
+            except TypeError as e:
                 raise ValueError('invalid params for action: %s' % action)
         if not options.dry_run:
             img.save(dst, 'JPEG', quality=90)
@@ -127,7 +127,7 @@ class Resize(object):
         """
         ridimensiona in maniera proporzionale
         """
-        size = map(float, size.split('x'))
+        size = list(map(float, size.split('x')))
         iw, ih = img.size
         rw = iw / size[0]
         rh = ih / size[1]
@@ -144,7 +144,7 @@ class Resize(object):
         crea una nuova canvas con il color passato e ci incolla sopra (centrata
         l'immagine passata)
         """
-        size = map(int, size.split('x'))
+        size = list(map(int, size.split('x')))
         if size[0] == -1:
             size[0] = img.size[0]
         if size[1] == -1:
@@ -163,7 +163,7 @@ class Resize(object):
         return i
 
     def reduce_canvas(self, img, size):
-        nw, nh = map(int, size.split('x'))
+        nw, nh = list(map(int, size.split('x')))
         w, h = img.size
 
         if nw < w or nh < h:
@@ -210,7 +210,7 @@ for cpath in inspect():
     log.info('config file found: %s', cpath)
     try:
         output, cfg = parseConfigFile(cpath)
-    except ValueError, e:
+    except ValueError as e:
         log.warn('skipping config file: %s', e)
         continue
     src_dir = os.path.dirname(cpath)
@@ -221,7 +221,7 @@ for cpath in inspect():
             os.makedirs(dst_dir)
     try:
         count = resize_dir(cfg, src_dir, dst_dir)
-    except ValueError, e:
+    except ValueError as e:
         log.warn('aborting: %s', e)
         sys.exit(1)
     log.info('resized %d files', count)

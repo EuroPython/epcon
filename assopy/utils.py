@@ -58,7 +58,7 @@ def dotted_import(path):
 
     try:
         mod = import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('Error importing %s: "%s"' % (path, e))
 
     try:
@@ -106,10 +106,10 @@ def check_database_schema():
 
 def geocode(address, region=''):
     import json
-    import urllib
+    import urllib.request, urllib.parse, urllib.error
 
     def _e(s):
-        return s.encode('utf-8') if isinstance(s, unicode) else s
+        return s.encode('utf-8') if isinstance(s, str) else s
 
     params = {
         'address': _e(address.strip()),
@@ -117,8 +117,8 @@ def geocode(address, region=''):
     }
     if region:
         params['region'] = _e(region.strip())
-    url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode(params)
-    data = json.loads(urllib.urlopen(url).read())
+    url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.parse.urlencode(params)
+    data = json.loads(urllib.request.urlopen(url).read())
     return data
 
 def geocode_country(address, region=''):
