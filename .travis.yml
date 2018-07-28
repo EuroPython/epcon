@@ -1,14 +1,22 @@
-before_install:
-  - sudo apt-get install graphviz
-  
-language: python
+---
 
-cache: pip
+services:
+    - docker
 
-python:
-  - "2.7"
+addons:
+  apt:
+    update: true
 
 install:
-  - pip install -r requirements-dev.txt
+  - docker build -f docker/Dockerfile  -t europython/epcon:$TRAVIS_COMMIT -t europython/epcon:latest .
 
-script: "py.test -c pytest_ci.ini"
+script: 
+  - docker run europython/epcon:$TRAVIS_COMMIT tests
+
+deploy:
+  provider: script
+  script: scripts/docker_push.sh
+  on:
+    branch: dev/ep2019
+    repo: EuroPython/epcon
+    tags: false

@@ -14,7 +14,7 @@ pytest-sugar==0.8.0
 pytest-watch==4.1.0
 pytest-xdist==1.18.1
 django-coverage-plugin
--e git+https://github.com/FactoryBoy/django-factory_boy#egg=master
+git+https://github.com/FactoryBoy/django-factory_boy#egg=master
 django-pdb
 django-test-without-migrations
 line_profiler
