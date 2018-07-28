@@ -43,6 +43,23 @@ class TicketConferenceModelTestCase(TestCase):
 
         self.assertEqual(attendee_profile, profile)
 
+    def test_assigned_to_email_is_saved_as_lowercase(self):
+        """
+        The attribute assigned_to of the model TicketConference should
+        be always saved in lowercase regardless of input.
+        For example: if the input is JoeDoe@Example.com, the field
+        assigned_to should be saved as joedoe@example.com
+
+        Issue #740, https://github.com/EuroPython/epcon/issues/740
+        EuroPython 2018 Edinburgh, sprints
+        author: Cezar Pendarovski
+        """
+        self.user.email = 'JoeDoe@Example.com'
+        self.user.save()
+        ticket = TicketFactory(user=self.user)
+        ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
+        self.assertEqual(self.user.email.lower(), ticket_conference.assigned_to)
+
 
 class P3ProfileModelTestCase(TestCase):
     def setUp(self):

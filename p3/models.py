@@ -111,6 +111,10 @@ class TicketConference(models.Model):
     def __str__(self):
         return "for ticket: %s" % self.ticket
 
+    def save(self, *args, **kwargs):
+        self.assigned_to = self.assigned_to.lower()
+        super(TicketConference, self).save(*args, **kwargs)
+
     def profile(self):
         if self.assigned_to:
             # Ticket assigned to someone else
