@@ -2,20 +2,12 @@
 """ Print information of the users who got unassigned tickets."""
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
 from django.conf import settings
-from conference import models
-from conference import utils
 
 from p3 import models as p3_models
-from conference import models as conf_models
 from assopy import models as assopy_models
 
-from collections import defaultdict, OrderedDict
 from optparse import make_option
-import operator
-import simplejson as json
-import traceback
 
 ### Globals
 

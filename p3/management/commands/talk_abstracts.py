@@ -3,15 +3,10 @@
 Print out a JSON of accepted talks with the abstracts, schedule and speaker tickets status.
 """
 from   django.core.management.base import BaseCommand, CommandError
-from   conference   import models
-
-from   p3           import models as p3_models
-from   assopy       import models as assopy_models
 
 from   collections  import OrderedDict
 from   optparse     import make_option
 import simplejson   as json
-import traceback
 
 from ...utils import(speaker_companies,
                      speaker_listing,

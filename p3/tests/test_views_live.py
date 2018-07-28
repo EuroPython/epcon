@@ -1,9 +1,7 @@
 import datetime
-import unittest
 
-import mock
 from django.core.urlresolvers import reverse
-from django.test import TestCase, override_settings, RequestFactory
+from django.test import TestCase, override_settings
 
 from conference.tests.factories.attendee_profile import AttendeeProfileFactory
 from conference.tests.factories.conference import ConferenceFactory

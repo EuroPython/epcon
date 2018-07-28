@@ -8,7 +8,6 @@ from django.contrib import admin
 from django.conf import settings as dsettings
 from django.conf.urls import url, patterns
 from django.core import urlresolvers
-from django.db import transaction
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 
 import common.decorators
@@ -17,7 +16,6 @@ from conference import dataaccess
 from conference import models
 from conference import settings
 from conference import utils
-from conference import views
 
 from conference.fares import (
     FARE_CODE_TYPES,

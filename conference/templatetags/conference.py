@@ -5,10 +5,8 @@ import os
 import os.path
 import re
 from django.utils.translation import get_language_from_request
-import httplib2
 import random
 import sys
-import simplejson
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from django import template
@@ -28,7 +26,7 @@ from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conver
 from conference.signals import timetable_prepare
 from conference.utils import TimeTable
 
-from tagging.models import Tag, TaggedItem
+from tagging.models import Tag
 from tagging.utils import parse_tag_input
 
 mimetypes.init()

@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 from django.core.management.base import BaseCommand
-from assopy import models as amodels
 from conference import models as cmodels
 
 def make_speaker_profiles_public_for_conference(conference):

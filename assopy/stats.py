@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from assopy import models
 from conference import models as cmodels
-from django.db.models import Q
 from collections import defaultdict
 from decimal import Decimal
 
