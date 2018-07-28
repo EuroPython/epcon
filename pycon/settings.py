@@ -38,15 +38,8 @@ else:
         del os.environ['HTTPS']
     HTTPS = False
 
-import django
-
-from distutils.version import StrictVersion
-
 #from django.utils.translation import ugettext as _
 _ = lambda x:x
-
-LESS_THAN_18 = StrictVersion(django.get_version()) < StrictVersion('1.8')
-LESS_THAN_17 = StrictVersion(django.get_version()) < StrictVersion('1.7')
 
 ADMINS = (
     ('web-wg', 'web-wg@europython.eu'),
@@ -250,34 +243,6 @@ TEMPLATES = [{
     },
 }]
 
-if LESS_THAN_18:
-    TEMPLATE_CONTEXT_PROCESSORS = [
-        "django.contrib.auth.context_processors.auth",
-        'django.contrib.messages.context_processors.messages',
-        "django.core.context_processors.i18n",
-        "django.core.context_processors.debug",
-        "django.core.context_processors.request",
-        "django.core.context_processors.media",
-        'django.core.context_processors.csrf',
-        'django.core.context_processors.request',
-        "django.core.context_processors.tz",
-        'p3.context_processors.settings',
-        'conference.context_processors.current_url',
-        'conference.context_processors.stuff',
-        "sekizai.context_processors.sekizai",
-        "cms.context_processors.cms_settings",
-        "django.core.context_processors.static",
-
-        'social.apps.django_app.context_processors.backends',
-        'social.apps.django_app.context_processors.login_redirect',
-    ]
-
-    # doing this here instead of checking django cms version
-    MIGRATION_MODULES = {
-        'cms': 'cms.migrations_django',
-        'menus': 'menus.migrations_django',
-    }
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -320,6 +285,7 @@ INSTALLED_APPS = (
     # should be no longer relevant)
 
     'djangocms_admin_style',
+    'django_comments',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -333,6 +299,7 @@ INSTALLED_APPS = (
     'assopy',
     'assopy.stripe',
     'conference',
+    'hcomments',
 
     'social.apps.django_app.default',
 
@@ -378,9 +345,6 @@ INSTALLED_APPS = (
     # 'sslserver',
 )
 
-# prevent issue with django.apps not being found
-if not LESS_THAN_17:
-    INSTALLED_APPS += ('django_comments', 'hcomments', )
 
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
