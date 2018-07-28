@@ -3,6 +3,8 @@
 
 URL = 'http://assopy.pycon.it/conference/getinfo.py/geo_sold'
 
+from __future__ import print_function
+
 import urllib2
 import simplejson
 from datetime import datetime, date, time, timedelta
@@ -17,7 +19,7 @@ for entry in attendees:
     data[w] += entry['numero_biglietti']
 
 
-print 'attendees:', sum(data.values())
+print('attendees:', sum(data.values()))
 from pygooglechart import XYLineChart, Axis
 
 rows = sorted(data.items())

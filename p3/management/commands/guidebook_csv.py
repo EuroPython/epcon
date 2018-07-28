@@ -12,6 +12,8 @@
     Sample Session:  Presentation XYZ,4/21/11,4:00 PM,6:00 PM,Room 101,Key Event; Track 1,John Doe will be presenting on XYZ.
 
 """
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.utils.html import strip_tags
@@ -135,9 +137,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
-                   'associated with it; skipping' %
-                   (title, type))
+            print('Talk %r (type %r) does not have an event '
+                  'associated with it; skipping' %
+                  (title, type))
             return
     else:
         time_range = event.get_time_range()

@@ -13,6 +13,8 @@
     use the newer attendify_schedule_xlsx.py command instead.
 
 """
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.utils.html import strip_tags
@@ -128,9 +130,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
-                   'associated with it; skipping' %
-                   (title, talk.type))
+            print('Talk %r (type %r) does not have an event '
+                  'associated with it; skipping' %
+                  (title, talk.type))
             return
     else:
         time_range = event.get_time_range()
@@ -203,7 +205,7 @@ class Command(BaseCommand):
                 type = 'm'
             elif (admin_type == 'k' or 
                   talk.title.lower().startswith('keynote')):
-                #print ('found keynote: %r' % talk)
+                # print('found keynote: %r' % talk)
                 type = 'k'
             else:
                 type = talk_type

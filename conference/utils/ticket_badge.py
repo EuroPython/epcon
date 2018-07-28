@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 import json
 import math
 import optparse
@@ -209,7 +211,7 @@ for group_type, data in sorted(groups.items()):
             page = assemble_page(images)
 
             name = '[%s] pag %s-%s.tif' % (group_type, str(count).zfill(2), str(pages).zfill(2))
-            print >>sys.stderr, name
+            print(name, file=sys.stderr)
             add_page(name, page)
 
         count += 1

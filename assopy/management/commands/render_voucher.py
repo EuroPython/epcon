@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 import os.path
 import subprocess
 import urlparse
@@ -53,6 +55,6 @@ class Command(BaseCommand):
             if options['session_id']:
                 cmdline += [ '--cookie', settings.SESSION_COOKIE_NAME, options['session_id'] ]
             cmdline += [ url, fpath ]
-            print fpath
+            print(fpath)
             p = subprocess.Popen(cmdline, close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p.communicate()

@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -659,7 +661,7 @@ if 0: # FIXME: remove hotels and sim
             # filter |field and inserting the error at that point.
             errors = [None] * len(rows)
             if hasattr(self, '_errors'):
-                print self._errors
+                print(self._errors)
                 for e in self._errors:
                     try:
                         ix, msg = e.split(':', 1)

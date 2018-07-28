@@ -2,6 +2,8 @@
 """ Delete users creating by spambots.
 
 """
+from __future__ import print_function
+
 from optparse import make_option
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -36,15 +38,15 @@ class Command(BaseCommand):
         spam_users = amodels.User.objects.filter(
             user__first_name = '金诚送38元',
         )
-        print ('Found %i (potential) spam users.' % len(spam_users))
-        
+        print('Found %i (potential) spam users.' % len(spam_users))
+
         count = 0
         for user in spam_users:
         
             # Filter out users with tickets
             tickets = user.tickets()
             if tickets:
-                print ('Spam user %r has %i tickets: skipping.' % (
+                print('Spam user %r has %i tickets: skipping.' % (
                     user.user.get_username(), len(tickets)))
                 continue
                 
@@ -55,9 +57,9 @@ class Command(BaseCommand):
                 user.user.delete()
             count += 1
             if count % 1000 == 0:
-                print ('Deleted %i spam users.' % count)
-        
+                print('Deleted %i spam users.' % count)
+
         if self.dry_run:
-            print ('Would have deleted %i spam users.' % count)
+            print('Would have deleted %i spam users.' % count)
         else:
-            print ('Deleted %i spam users.' % count)
+            print('Deleted %i spam users.' % count)

@@ -16,7 +16,7 @@ def make_speaker_profiles_public_for_conference(conference):
         user = speaker.user
         profile = cmodels.AttendeeProfile.objects.get(user=user)
         if profile.visibility != 'p':
-            print ('Setting profile %r to public' % profile)
+            print('Setting profile %r to public' % profile)
             profile.visibility = 'p'
             profile.save()
 

@@ -15,6 +15,7 @@ public domain.
 
 This module is for the procedures that don't do I/O or anything like that.
 """
+from __future__ import print_function
 
 from string import *
 import re
@@ -116,64 +117,69 @@ def print_ranks(winmat,candlist):
 		if c_wins<n-1-i:
 			ties=1
 			if i==0:
-				print "Tie for first place."
+				print("Tie for first place.")
 			else:
-				print " ... ties prevent full ranking \n"
+				print(" ... ties prevent full ranking \n")
 			break
-		print candlist[c],
+		print(candlist[c], end=' ')
 		if i<n-1:
-			print ">",
-	
+			print(">", end=' ')
+
 	if ties:
-		print "Some ties exist.  See table."	
-		print "      ",
-		for j in xrange(n): 
-			print rjust(candlist[j],5),
-		print
+		print("Some ties exist.  See table.")
+		print("      ", end=' ')
+		for j in xrange(n):
+			print(rjust(candlist[j],5), end=' ')
+		print()
 		for i in xrange(n):
-			print ljust(candlist[i],3),
-			print "  ",
+			print(ljust(candlist[i],3), end=' ')
+			print('  ', end=' ')
 			for j in xrange(n):
-				if i==j: print "    X",
+				if i==j:
+					print('    X', end=' ')
 				elif winmat[i][j]>winmat[j][i]:
-					print "    1",
+					print("    1", end=' ')
 				elif winmat[j][i]>winmat[i][j]:
-					print "    0",
+					print("    0", end=' ')
 				else:
-					print "    ?",
-			print 
-	print
+					print("    ?", end=' ')
+			print()
+	print()
 
 def print_some_scores(x,candlist,act):
 	n=x.shape[0]
-	print '      ',
+	print('      ', end=' ')
 	for j in act:
-		print rjust(candlist[j],5),
-	print
+		print(rjust(candlist[j],5), end=' ')
+	print()
 	for i in act:
-		print ljust(candlist[i],3), '  ',
+		print(ljust(candlist[i],3), '  ', end=' ')
 		for j in act:
-			if i==j: print '    X',
-			else: print rjust(`x[i,j]`,5),
-		print
-	print
+			if i==j:
+				print('    X', end=' ')
+			else:
+				print(rjust('x[i,j]', 5), end=' ')
+		print()
+	print()
 
 def print_scores(x,candlist,act=None):
 	if(act):
 		print_some_scores(x,candlist,act)
 		return
 	n=x.shape[0]
-	print '      ',
+	print('      ', end=' ')
 	for j in xrange(n):
-		print rjust(candlist[j],5),
-	print
+		print(rjust(candlist[j],5), end=' ')
+	print()
 	for i in xrange(n):
-		print ljust(candlist[i],3), '  ',
+		print(ljust(candlist[i],3), '  ', end=' ')
 		for j in xrange(n):
-			if i==j: print '    X',
-			else: print rjust(`x[i,j]`,5),
-		print
-	print
+			if i==j:
+				print('    X', end=' ')
+			else:
+				print(rjust('x[i,j]', 5), end=' ')
+		print()
+	print()
 
 def candRange(start,end): # translates selected range of candidates into list
 	

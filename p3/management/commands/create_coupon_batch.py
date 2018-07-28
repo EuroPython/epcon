@@ -11,6 +11,8 @@
     Use --dry-run to test drive the script.
 
 """
+from __future__ import print_function
+
 import string
 import random
 from optparse import make_option
@@ -133,4 +135,4 @@ class Command(BaseCommand):
         for row in data:
             csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
                         for x in row)
-            print (u','.join(csv_data).encode('utf-8'))
+            print(u','.join(csv_data).encode('utf-8'))

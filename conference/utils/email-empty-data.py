@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
 
 import sys
 import urllib2
@@ -12,15 +13,15 @@ from pytz import timezone
 try:
     conf_fpath = sys.argv[1]
 except IndexError:
-    print >> sys.stderr, 'Usage: %s conf_module.py' % (sys.argv[0],)
+    print('Usage: %s conf_module.py' % (sys.argv[0],), file=sys.stderr)
     sys.exit(1)
 
 conf = {}
 try:
     execfile(conf_fpath, {}, conf)
 except SyntaxError as e:
-    print >> sys.stderr, 'the conf module is incorrect'
-    print >> sys.stderr, e
+    print('the conf module is incorrect', file=sys.stderr)
+    print(e, file=sys.stderr)
     sys.exit(2)
 
 g = globals()
@@ -28,7 +29,7 @@ for key in 'SERVER', 'REPLYTO', 'FROM', 'BODY', 'SUBJECT', 'URL':
     try:
         g[key] = conf[key]
     except KeyError:
-        print >> sys.stderr, 'setting %s is missing' % key
+        print('setting %s is missing' % key, file=sys.stderr)
         sys.exit(3)
 
 data = simplejson.loads(urllib2.urlopen(URL).read())
@@ -54,7 +55,7 @@ try:
         if not email or not username:
             continue
         if email in skip_email:
-            print email, '(skipped)'
+            print(email, '(skipped)')
             continue
         body = BODY % { 'email': email, 'username': username }
         paragraphs = map(lambda p: textwrap.wrap(p, width=72), body.split('\n\n'))
@@ -63,7 +64,7 @@ try:
 
         email = email.encode('utf-8')
         e = envelope % (email, body.encode('utf-8'))
-        print email
+        print(email)
         server.sendmail(FROM, [ email ], e)
 finally:
     server.quit()
