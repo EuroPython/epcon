@@ -15,6 +15,10 @@ source ../epcon-env/bin/activate
 title "PIP install dev requirements"
 pip install -r requirements-dev.txt
 
+title "install platform requirements"
+if [[ `uname` == "Darwin" ]]; then
+    brew install cairo pango
+fi
 
 title "Copy settings"
 [[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
