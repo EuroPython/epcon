@@ -20,3 +20,4 @@ django-test-without-migrations
 line_profiler
 django-devserver
 cprofilev
+django-sslserver==0.20
