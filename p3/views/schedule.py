@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from common.decorators import render_to_json
 from conference import models as cmodels
 from conference.utils import TimeTable2
 

@@ -30,13 +30,8 @@ from django.core import urlresolvers
 from django.conf import settings
 from django.utils.html import strip_tags
 from conference import models as cmodels
-from conference import utils
 from p3 import models
 
-import datetime
-from collections import defaultdict
-from optparse import make_option
-import operator
 import markdown2
 import openpyxl
 
@@ -44,9 +39,6 @@ import openpyxl
 
 # Debug output ?
 _debug = 1
-
-# These must match the talk .type or .admin_type
-from accepted_talks import TYPE_NAMES
 
 ### Helpers
 

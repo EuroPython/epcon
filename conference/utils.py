@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings as dsettings
-from django.core.cache import cache
 from django.core.mail import send_mail as real_send_mail
 from django.core.urlresolvers import reverse
 
@@ -13,7 +12,6 @@ import os.path
 import re
 import subprocess
 import tempfile
-import urllib2
 from collections import defaultdict
 
 log = logging.getLogger('conference')

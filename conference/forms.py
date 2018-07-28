@@ -3,7 +3,6 @@ from django import forms
 from django.conf import settings as dsettings
 from django.contrib.admin import widgets as admin_widgets
 from django.core import mail
-from django.db import transaction
 from django.forms import widgets
 from django.forms.utils import flatatt
 from django.utils.encoding import force_unicode

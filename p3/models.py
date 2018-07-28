@@ -14,9 +14,7 @@ from assopy import utils as autils
 
 from conference.models import (Ticket,
                                ConferenceTaggedItem,
-                               AttendeeProfile,
-                               TalkSpeaker,
-                               Speaker)
+                               AttendeeProfile)
 from taggit.managers import TaggableManager
 from .helpers import get_secure_storage
 

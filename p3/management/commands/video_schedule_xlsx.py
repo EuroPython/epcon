@@ -22,12 +22,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.utils.html import strip_tags
 from conference import models
-from conference import utils
 
 import datetime
-from collections import defaultdict
-from optparse import make_option
-import operator
 import markdown2
 import openpyxl
 
