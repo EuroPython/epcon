@@ -59,9 +59,10 @@ def create_homepage_in_cms():
     # Need to create conference before creating pages
     Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
                                      name=settings.CONFERENCE_CONFERENCE)
-    create_page(title='HOME', template='django_cms/p5_homepage.html',
-                language='en', reverse_id='home', published=True,
-                publication_date=timezone.now())
+    homepage = create_page(
+        title='HOME', template='django_cms/p5_homepage.html', language='en',
+        reverse_id='home', published=True, publication_date=timezone.now())
+    homepage.set_as_homepage()
 
 
 def serve_text(text, host='0.0.0.0', port=9876):
