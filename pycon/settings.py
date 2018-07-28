@@ -375,6 +375,7 @@ INSTALLED_APPS = (
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
+    # 'sslserver',
 )
 
 # prevent issue with django.apps not being found
