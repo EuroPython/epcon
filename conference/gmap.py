@@ -1,7 +1,11 @@
 # -*- coding: UTF-8 -*-
 import urllib
-import httplib
 import simplejson
+
+try:
+    from http.client import HTTPConnection
+except ImportError:
+    from httplib import HTTPConnection
 
 G = 'maps.google.com'
 
@@ -22,7 +26,7 @@ def geocode(address, key, country):  # pragma: no cover
         params['gl'] = country
 
     url = '/maps/geo?' + urllib.urlencode(params.items())
-    conn = httplib.HTTPConnection(G)
+    conn = HTTPConnection(G)
     try:
         conn.request('GET', url)
         r = conn.getresponse()
