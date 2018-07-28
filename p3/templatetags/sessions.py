@@ -6,7 +6,6 @@
 """
 from __future__ import unicode_literals
 from django import template
-from django.core import urlresolvers
 from conference import models
 
 from ..utils import profile_url, talk_title

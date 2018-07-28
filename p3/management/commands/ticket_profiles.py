@@ -4,11 +4,8 @@
 import json
 import logging as log
 from optparse import make_option
-from collections import OrderedDict
 
 from django.core.management.base import BaseCommand, CommandError
-
-from assopy import models as assopy_models
 
 from ...utils import (
     get_profile_company,

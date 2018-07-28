@@ -33,6 +33,14 @@ RUN IN DEBUG MODE
 DEBUG=True python manage.py runserver
 ```
 
+SERVING THE PAGE LOCALLY OVER HTTPS
+-----------------
+
+Make sure `sslserver` is in `settings.INSTALLED_APPS`. Then run the server locally using:
+```bash
+python manage.py runsslserver
+```
+
 CONTRIBUTING
 ------------
 

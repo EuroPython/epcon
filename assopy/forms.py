@@ -3,7 +3,6 @@
 from django import forms
 from django.contrib import auth
 from django.conf import settings as dsettings
-from django.db import transaction
 from django.utils.translation import ugettext as _
 
 from assopy import models

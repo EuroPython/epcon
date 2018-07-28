@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 
 if hasattr(settings, 'ASSOPY_JANRAIN'):
     JANRAIN = {

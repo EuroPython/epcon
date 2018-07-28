@@ -6,11 +6,10 @@ from django.conf import settings as dsettings
 from django.conf.urls import url, patterns
 from django.contrib import admin
 from django.core import urlresolvers
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.utils.safestring import mark_safe
-from assopy import models, settings
+from assopy import models
 from collections import defaultdict
 from datetime import datetime
 
