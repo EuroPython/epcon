@@ -356,7 +356,6 @@ INSTALLED_APPS = (
     'mptt',
 
     'django_xmlrpc',
-    'pingback',
     'rosetta',
 
     'email_template',
