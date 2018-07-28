@@ -11,7 +11,7 @@ if os.environ.get('DEBUG') == 'True':
     DEBUG = True
 else:
     DEBUG = False
-    
+
 # For development, we always run in debug mode...
 #DEBUG=True
 
@@ -375,7 +375,7 @@ INSTALLED_APPS = (
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
-    # 'sslserver',
+    'sslserver',
 )
 
 # prevent issue with django.apps not being found
@@ -740,7 +740,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
               .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
                       assigned_to=user.email)
     if tickets.count() > 0:
-        return True    
+        return True
 
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
@@ -758,7 +758,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
              .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
              p3_conference__assigned_to=user.email))
         if tickets.count() > 0:
-            return True    
+            return True
     return False
 
 
