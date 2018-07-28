@@ -18,7 +18,7 @@ except IndexError:
 conf = {}
 try:
     execfile(conf_fpath, {}, conf)
-except SyntaxError, e:
+except SyntaxError as e:
     print >> sys.stderr, 'the conf module is incorrect'
     print >> sys.stderr, e
     sys.exit(2)

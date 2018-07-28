@@ -200,7 +200,7 @@ def janrain_token(request):
         return http.HttpResponseBadRequest()
     try:
         profile = janrain.auth_info(settings.JANRAIN['secret'], token)
-    except Exception, e:
+    except Exception as e:
         log.warn('exception during janrain auth info: "%s"', str(e))
         return HttpResponseRedirectSeeOther(dsettings.LOGIN_URL)
 

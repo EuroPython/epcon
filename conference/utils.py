@@ -24,7 +24,7 @@ def dotted_import(path):
 
     try:
         mod = import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('Error importing %s: "%s"' % (path, e))
 
     try:

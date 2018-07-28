@@ -317,7 +317,7 @@ def vote_engine(fin=None,fout=None,opts=None):
 	if opts: sys.argv=opts
 	try:
 		vote_main()
-	except RuntimeError,e:
+	except RuntimeError as e:
 		print e.args[0]
 	sys.stdin=old_in
 	sys.stdout=old_out

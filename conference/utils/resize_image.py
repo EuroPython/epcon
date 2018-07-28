@@ -78,9 +78,9 @@ class Resize(object):
         for action, params in self.cfg:
             try:
                 img = getattr(self, action)(img, *params)
-            except AttributeError, e:
+            except AttributeError as e:
                 raise ValueError('invalid action: %s' % action)
-            except TypeError, e:
+            except TypeError as e:
                 raise ValueError('invalid params for action: %s' % action)
         if not options.dry_run:
             img.save(dst, 'JPEG', quality=90)
@@ -210,7 +210,7 @@ for cpath in inspect():
     log.info('config file found: %s', cpath)
     try:
         output, cfg = parseConfigFile(cpath)
-    except ValueError, e:
+    except ValueError as e:
         log.warn('skipping config file: %s', e)
         continue
     src_dir = os.path.dirname(cpath)
@@ -221,7 +221,7 @@ for cpath in inspect():
             os.makedirs(dst_dir)
     try:
         count = resize_dir(cfg, src_dir, dst_dir)
-    except ValueError, e:
+    except ValueError as e:
         log.warn('aborting: %s', e)
         sys.exit(1)
     log.info('resized %d files', count)
