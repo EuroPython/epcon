@@ -62,11 +62,11 @@ class Command(BaseCommand):
         )
 
         writer = csv.DictWriter(sys.stdout, columns)
-        writer.writerow(dict(zip(columns, columns)))
+        writer.writerow(dict(list(zip(columns, columns))))
 
         def utf8(d):
             d = dict(d)
-            for k, v in d.items():
+            for k, v in list(d.items()):
                 try:
                     d[k] = v.encode('utf-8')
                 except:

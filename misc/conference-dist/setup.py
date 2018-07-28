@@ -9,7 +9,7 @@ def recurse(path):
     B = 'conference'
     output = []
     for dirpath, dirnames, filenames in os.walk(os.path.join(B, path)):
-        for d in filter(lambda x: x[0] == '.', dirnames):
+        for d in [x for x in dirnames if x[0] == '.']:
             dirnames.remove(d)
         for f in filenames:
             output.append(os.path.join(dirpath, f)[len(B)+1:])
@@ -28,7 +28,7 @@ setup(name='conference',
         'conference.templatetags',
     ],
     package_data={
-        'conference': sum(map(recurse, ('deps', 'locale', 'static', 'templates', 'utils')), []),
+        'conference': sum(list(map(recurse, ('deps', 'locale', 'static', 'templates', 'utils'))), []),
     },
     install_requires=[
         'httplib2',

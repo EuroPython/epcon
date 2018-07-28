@@ -53,7 +53,7 @@ TALK_TYPE_DISCOUNTS = {
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
                         for ttype, (prefix, discount)
-                        in TALK_TYPE_DISCOUNTS.items())
+                        in list(TALK_TYPE_DISCOUNTS.items()))
 
 # Add special keynote coupon prefix
 COUPON_PREFIXES += ('KEY',)
@@ -194,12 +194,12 @@ class Command(BaseCommand):
 
         # Create coupons
         data = []
-        for sid, entry in speakers.items():
+        for sid, entry in list(speakers.items()):
 
             # Get coupon data
             coupon_prefix = entry['prefix']
             user = entry['spk'].user
-            name = u'%s %s' % (user.first_name, user.last_name)
+            name = '%s %s' % (user.first_name, user.last_name)
             value = entry['discount']
             title = entry['title']
 
@@ -260,6 +260,6 @@ class Command(BaseCommand):
         # Output CSV data, UTF-8 encoded
         data.insert(0, csv_header)
         for row in data:
-            csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+            csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print (u','.join(csv_data).encode('utf-8'))
+            print((','.join(csv_data).encode('utf-8')))

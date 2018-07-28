@@ -29,9 +29,9 @@ try:
 	sys.stdout=open("output.txt","w")
 	votemain.vote_main()
 	pause=0
-except IOError, e:
+except IOError as e:
 	sys_stdout.write(str(e) + "\n")
-except RuntimeError,e:
+except RuntimeError as e:
 	sys_stdout.write(e.args[0] + "\n")
 if pause:
 	try:

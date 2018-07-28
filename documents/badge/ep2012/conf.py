@@ -33,7 +33,7 @@ def tickets(tickets):
                 1/0
         groups[g]['attendees'].append(t)
 
-    for v in groups.values():
+    for v in list(groups.values()):
         v['attendees'].sort(key=lambda x: x['name'])
     return groups
 

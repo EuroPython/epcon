@@ -3,21 +3,21 @@
 
 URL = 'http://assopy.pycon.it/conference/getinfo.py/geo_sold'
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import simplejson
 from datetime import datetime, date, time, timedelta
 from collections import defaultdict
 
-attendees = simplejson.loads(urllib2.urlopen(URL).read())
+attendees = simplejson.loads(urllib.request.urlopen(URL).read())
 
 data = defaultdict(lambda: 0)
 for entry in attendees:
-    m, d, y = map(int, entry['data_acquisto'].split('/'))
+    m, d, y = list(map(int, entry['data_acquisto'].split('/')))
     w = date(y, m, d)
     data[w] += entry['numero_biglietti']
 
 
-print 'attendees:', sum(data.values())
+print('attendees:', sum(data.values()))
 from pygooglechart import XYLineChart, Axis
 
 rows = sorted(data.items())
@@ -45,7 +45,7 @@ chart = XYLineChart(
     width = 1000, height = 300,
     title = title, y_range = [0, 420]
 )
-x_values = range(len(rows))
+x_values = list(range(len(rows)))
 
 chart.add_data(x_values)
 row = []
@@ -64,9 +64,9 @@ chart.add_data([ 0 ] * len(x_values))
 chart.set_colours(['000000', 'ff0000', '000000'])
 chart.add_fill_range('99ccff', 0, 2)
 
-axis = range(0, 420, 420 / 6)
+axis = list(range(0, 420, 420 / 6))
 axis[-1] = 420
-chart.set_axis_labels(Axis.LEFT, map(str, axis))
+chart.set_axis_labels(Axis.LEFT, list(map(str, axis)))
 
 
 axis = [ datetime.combine(start, time()) ]
@@ -81,7 +81,7 @@ for ix, d in enumerate(axis):
 
 chart.set_axis_labels(Axis.BOTTOM, axis)
 
-for pos in deadlines.values():
+for pos in list(deadlines.values()):
     p = float(pos) / len(rows)
     chart.add_vertical_range('9966cc', p, p + 0.004)
 

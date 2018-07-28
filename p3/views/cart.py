@@ -103,7 +103,7 @@ def cart(request):
     for f in form.available_fares():
         if not f.code.startswith('_'):
             fares[f.code] = f
-    fares_ordered = sorted(fares.values(), key=lambda x: x.name)
+    fares_ordered = sorted(list(fares.values()), key=lambda x: x.name)
     ctx = {
         'form': form,
         'fares': fares,
@@ -164,7 +164,7 @@ def calculator(request):
                 params = row[1]
                 if 'period' in params:
                     start = booking.booking_start
-                    params['period'] = map(lambda x: (x-start).days, params['period'])
+                    params['period'] = [(x-start).days for x in params['period']]
                 tickets.append((fcode, params, _fmt(total)))
                 grand_total += total
             output['tickets'] = tickets
@@ -259,7 +259,7 @@ def billing(request):
                 return HttpResponseRedirectSeeOther(
                     reverse(
                         urlname,
-                        kwargs={'code': unicode(o.code).replace('/', '-')}))
+                        kwargs={'code': str(o.code).replace('/', '-')}))
             elif o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:

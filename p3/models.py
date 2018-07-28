@@ -139,8 +139,8 @@ if 0: # FIXME: remove hotels and sim
         # a non-unicode string containing non-ascii chars is used it's transformed
         # in unicode correctly, but later it's passed to os.stat that will
         # call str() on it. The solution is to return only an ascii string.
-        if not isinstance(fpath, unicode):
-            fpath = unicode(fpath, 'utf-8')
+        if not isinstance(fpath, str):
+            fpath = str(fpath, 'utf-8')
         return fpath.encode('ascii', 'ignore')
 
     TICKET_SIM_TYPE = (
@@ -313,7 +313,7 @@ if 0: # FIXME: remove hotels and sim
                     period[start][rt]['reserved'] += 1
                     start += inc
 
-            for dstatus in period.values():
+            for dstatus in list(period.values()):
                 for hr in rooms:
                     s = dstatus[hr.room_type]
                     s['free'] = s['available'] - s['reserved']
@@ -360,7 +360,7 @@ if 0: # FIXME: remove hotels and sim
             start += inc
             while start <= end:
                 day_status = reservations[start]
-                for room_type, room_status in day_status.items():
+                for room_type, room_status in list(day_status.items()):
                     if output[room_type]['free'] > room_status['free']:
                         output[room_type] = room_status
                 start += inc
@@ -378,9 +378,9 @@ if 0: # FIXME: remove hotels and sim
             grouped = defaultdict(lambda: defaultdict(lambda: 0))
             for room, beds, period in items:
                 grouped[tuple(period)][room] += beds
-            for period, rooms in grouped.items():
+            for period, rooms in list(grouped.items()):
                 hstatus = self.beds_status(period)
-                for room_type, beds in rooms.items():
+                for room_type, beds in list(rooms.items()):
                     if hstatus[room_type]['free'] < beds:
                         raise ValueError((period, room_type))
             return True

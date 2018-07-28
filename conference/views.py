@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import with_statement
+# -*- coding: UTF-8 -*-
+
 
 from datetime import date
 from decimal import Decimal
@@ -261,7 +261,7 @@ def schedule_event_booking(request, conference, slug, eid):
                     pass
         else:
             try:
-                msg = unicode(form.errors['value'][0])
+                msg = str(form.errors['value'][0])
             except:
                 msg = ""
             return http.HttpResponseBadRequest(msg)
@@ -276,7 +276,7 @@ def schedule_event_booking(request, conference, slug, eid):
 def schedule_events_booking_status(request, conference):
     data = dataaccess.conference_booking_status(conference)
     uid = request.user.id if request.user.is_authenticated() else 0
-    for k, v in data.items():
+    for k, v in list(data.items()):
         if uid and uid in v['booked']:
             v['user'] = True
         else:
@@ -445,7 +445,7 @@ def filter_talks_in_context(request, talks, voting_allowed):
         # tag as a filter to those associated with talk.
         allowed = set()
         ctt = ContentType.objects.get_for_model(models.Talk)
-        for t, usage in dataaccess.tags().items():
+        for t, usage in list(dataaccess.tags().items()):
             for cid, oid in usage:
                 if cid == ctt.id:
                     allowed.add(t.name)
@@ -475,7 +475,7 @@ def filter_talks_in_context(request, talks, voting_allowed):
         t['ordinal'] = ordinal[t['id']]
         return True
 
-    talks = filter(filter_vote, talks.values('id'))
+    talks = list(filter(filter_vote, talks.values('id')))
     if talk_order != 'speaker':
         def key(x):
             if x['user_vote']:
@@ -514,7 +514,7 @@ def voting(request):
             return http.HttpResponseBadRequest('anonymous user not allowed')
 
         data = dict((x.id, x) for x in talks)
-        for k, v in filter(lambda x: x[0].startswith('vote-'), request.POST.items()):
+        for k, v in [x for x in list(request.POST.items()) if x[0].startswith('vote-')]:
             try:
                 talk = data[int(k[5:])]
             except KeyError:
@@ -554,7 +554,7 @@ def voting(request):
                 widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
             )
             talk_type = forms.ChoiceField(
-                label=u'Session type',
+                label='Session type',
                 choices=(('all', 'All'),) + tuple(settings.TALK_TYPES_TO_BE_VOTED),
                 required=False,
                 initial='all',
@@ -620,7 +620,7 @@ def voting(request):
             # as a filter to those associated with talk.
             allowed = set()
             ctt = ContentType.objects.get_for_model(models.Talk)
-            for t, usage in dataaccess.tags().items():
+            for t, usage in list(dataaccess.tags().items()):
                 for cid, oid in usage:
                     if cid == ctt.id:
                         allowed.add(t.name)
@@ -650,7 +650,7 @@ def voting(request):
             t['user_vote'] = votes.get(t['id'])
             t['ordinal'] = ordinal[t['id']]
             return True
-        talks = filter(filter_vote, talks.values('id'))
+        talks = list(filter(filter_vote, talks.values('id')))
 
         # Fix talk order, if necessary
         if talk_order == 'vote':
@@ -723,7 +723,7 @@ def covers(request, conference):
     from collections import defaultdict
     tracks = defaultdict(dict)
     for s in schedules:
-        for t in s['tracks'].values():
+        for t in list(s['tracks'].values()):
             tracks[s['id']][t.track] = t.title
 
     grouped = defaultdict(lambda: defaultdict(list))

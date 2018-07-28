@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import absolute_import, unicode_literals
+
 
 import random
 
@@ -88,7 +88,7 @@ class FareFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def code(self):
-        return random.choice(AVAILABLE_FARE_CODES.keys())
+        return random.choice(list(AVAILABLE_FARE_CODES.keys()))
 
     @factory.lazy_attribute
     def name(self):

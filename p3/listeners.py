@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-import models
+from . import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.listeners import fare_price, fare_tickets
@@ -67,7 +67,7 @@ purchase_completed.connect(on_purchase_completed)
 def on_ticket_for_user(sender, **kwargs):
     from p3 import dataaccess
     tickets = dataaccess.user_tickets(sender.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
-    map(kwargs['tickets'].append, tickets)
+    list(map(kwargs['tickets'].append, tickets))
 
 ticket_for_user.connect(on_ticket_for_user)
 
@@ -250,11 +250,11 @@ def _on_event_booked(sender, **kw):
     if booked:
         log.info(
             "\"%s\" has booked the event \"%s\", automatically subscribed to the talk's comments",
-            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
+            '{0} {1}'.format(user.first_name, user.last_name), talk.title)
     else:
         log.info(
             "\"%s\" has cancelled the reservation for the event \"%s\", automatically unsubscribed to the talk's comments",
-            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
+            '{0} {1}'.format(user.first_name, user.last_name), talk.title)
 
     if booked:
         ThreadSubscription.objects.subscribe(talk, user)

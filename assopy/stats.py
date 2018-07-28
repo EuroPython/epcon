@@ -60,7 +60,7 @@ def movimento_cassa(**kw):
         'out': 0,
         'errors': 0,
     }
-    for k, v in output.items():
+    for k, v in list(output.items()):
         data = sorted(v.items())
         output[k] = data
         totals[k] = sum([x[1][1] for x in data])
@@ -169,14 +169,14 @@ def prezzo_biglietti_ricalcolato(**kw):
                 'name': fname,
                 'price': price,
             })
-    for oid, items in grouped.items():
+    for oid, items in list(grouped.items()):
         _calc_prices(oid, items)
 
     # dopo l'utilizzo di _calc_prices ottengo dei prezzi che non trovo
     # più tra le tariffe ordinarie, raggruppo gli OrderItem risultanti
     # per codice tariffa e nuovo prezzo
     tcp = {}
-    for rows in grouped.values():
+    for rows in list(grouped.values()):
         for item in rows:
             code = item['code']
             if code not in tcp:
@@ -190,9 +190,9 @@ def prezzo_biglietti_ricalcolato(**kw):
                 tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
             tcp[code]['prices'][price]['count'] += 1
     # Replace prices dicts with sorted lists
-    for code in tcp.keys():
+    for code in list(tcp.keys()):
         prices_list = [entry
-                       for price, entry in sorted(tcp[code]['prices'].items(),
+                       for price, entry in sorted(list(tcp[code]['prices'].items()),
                                                   reverse=True)]
         tcp[code]['prices'] = prices_list
     # Create list sorted by fare code

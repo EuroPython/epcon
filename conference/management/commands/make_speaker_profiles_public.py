@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+
 from django.core.management.base import BaseCommand
 from conference import models as cmodels
 

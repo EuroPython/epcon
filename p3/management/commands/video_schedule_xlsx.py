@@ -33,7 +33,7 @@ import openpyxl
 _debug = 0
 
 # These must match the talk .type or .admin_type
-from accepted_talks import TYPE_NAMES
+from .accepted_talks import TYPE_NAMES
 
 # License notice to attach to talks
 LICENSE = """
@@ -49,7 +49,7 @@ if 0:
     ADJUST_POSTER_SESSIONS = True
     POSTER_START = datetime.datetime(2016,7,19,15,15) # TBD
     POSTER_DURATION = datetime.timedelta(minutes=90)
-    POSTER_ROOM = u'Exhibition Hall'
+    POSTER_ROOM = 'Exhibition Hall'
 else:
     ADJUST_POSTER_SESSIONS = False
 
@@ -70,8 +70,8 @@ def profile_url(user):
 
 def speaker_listing(talk):
 
-    return u', '.join(
-        u'%s %s' % (
+    return ', '.join(
+        '%s %s' % (
             speaker.user.first_name,
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
@@ -120,20 +120,20 @@ def event_abstract(event):
 
     return format_text(event.abstract)
 
-def video_title(title, speakers=u''):
+def video_title(title, speakers=''):
 
-    return u'%s - %s' % (speakers, title)
+    return '%s - %s' % (speakers, title)
 
 def video_description(title, abstract, 
-                     year=u'2017', session_type=u'Talks', date=u'*',
-                     room=u'*', license=LICENSE):
+                     year='2017', session_type='Talks', date='*',
+                     room='*', license=LICENSE):
 
-    if session_type.endswith(u's'):
+    if session_type.endswith('s'):
         # Remove plural "s"
         session_type = session_type[:-1]
 
     # XXX Make this configurables in settings
-    return u"""\
+    return """\
 %(title)s
 [EuroPython 2018 - %(type)s - %(date)s - %(room)s]
 [Edinburgh, UK]
@@ -156,7 +156,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     if talk is None:
         if event is None:
             raise TypeError('need either talk or event given')
-        speakers = u''
+        speakers = ''
         title = event_title(event)
         abstract = event_abstract(event)
         uid = event.id
@@ -167,8 +167,8 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         if event is None:
             event = talk.get_event()
         if event is None:
-            print ('Warning: %r does not have an event associated with it; '
-                   'using talk.id as UID' % talk)
+            print(('Warning: %r does not have an event associated with it; '
+                   'using talk.id as UID' % talk))
             uid = talk.id
         else:
             uid = event.id
@@ -181,9 +181,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
+            print(('Talk %r (type %r) does not have an event '
                    'associated with it; skipping' %
-                   (title, talk.type))
+                   (title, talk.type)))
             return
     else:
         time_range = event.get_time_range()
@@ -197,7 +197,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         elif tracks:
             room = tracks[0].title
         else:
-            room = u''
+            room = ''
         if talk_events is not None:
             talk_events[event.pk] = event
         
@@ -247,14 +247,14 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 
     # Load workbook
     wb = openpyxl.load_workbook(schedule_xlsx)
-    assert wb.sheetnames == [u'Schedule']
+    assert wb.sheetnames == ['Schedule']
     ws = wb['Schedule']
 
     # Extract data values
     ws_data = list(ws.values)[SCHEDULE_WS_START_DATA:]
-    print ('read %i data lines' % len(ws_data))
-    print ('first line: %r' % ws_data[:1])
-    print ('last line: %r' % ws_data[-1:])
+    print(('read %i data lines' % len(ws_data)))
+    print(('first line: %r' % ws_data[:1]))
+    print(('last line: %r' % ws_data[-1:]))
 
     # Reconcile UIDs / talks
     uids = {}
@@ -269,7 +269,7 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     for line in new_data:
         key = unique_columns(line)
         if key not in uids:
-            print ('New or rescheduled talk %s found' % (key,))
+            print(('New or rescheduled talk %s found' % (key,)))
             uid = line[SCHEDULE_UID_COLUMN]
         else:
             uid = uids[key]
@@ -280,13 +280,13 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     # Replace old data with new data
     old_data_rows = len(ws_data)
     new_data_rows = len(new_data)
-    print ('new data: %i data lines' % new_data_rows)
+    print(('new data: %i data lines' % new_data_rows))
     offset = SCHEDULE_WS_START_DATA + 1
-    print ('new_data = %i rows' % len(new_data))
+    print(('new_data = %i rows' % len(new_data)))
     for j, row in enumerate(ws[offset: offset + new_data_rows - 1]):
         new_row = new_data[j]
         if _debug:
-            print ('updating row %i with %r' % (j, new_row))
+            print(('updating row %i with %r' % (j, new_row)))
         if len(row) > len(new_row):
             row = row[:len(new_row)]
         for i, cell in enumerate(row):
@@ -297,7 +297,7 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
         for j, row in enumerate(ws[offset + new_data_rows + 1:
                                    offset + old_data_rows + 1]):
             if _debug:
-                print ('clearing row %i' % (j,))
+                print(('clearing row %i' % (j,)))
             for i, cell in enumerate(row):
                 cell.value = None
 

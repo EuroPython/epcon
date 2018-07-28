@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import unicode_literals, absolute_import
+
 
 import csv
 import decimal
@@ -99,7 +99,7 @@ def test_invoice_html(client):
     })
     response = client.get(invoice_url)
 
-    assert response.content == '<html>Here goes full html</html>'
+    assert response.content.decode('utf-8') == '<html>Here goes full html</html>'
 
 
 @mark.django_db
@@ -219,7 +219,7 @@ def test_invoices_from_buying_tickets(client):
     cart_url = reverse('p3-cart')
     response = client.get(cart_url)
     assert template_used(response, "p3/cart.html")
-    assert 'Sorry, no tickets are available' in response.content
+    assert 'Sorry, no tickets are available' in response.content.decode('utf-8')
 
     # 3. p3/cart.html is using {% fares_available %} assignment tag to display
     # fares.  For more details about fares check conference/fares.py
@@ -340,15 +340,15 @@ def test_invoices_from_buying_tickets(client):
     expected_invoice_items_vat_10 = [
         {'count': ticket_amount,
          'price': ticket_price * ticket_amount,
-         'code': u'TRSP',
-         'description': u'ep2018 - Regular Standard Personal'},
+         'code': 'TRSP',
+         'description': 'ep2018 - Regular Standard Personal'},
     ]
 
     expected_invoice_items_vat_20 = [
         {'count': social_event_amount,
          'price': social_event_price * social_event_amount,
          'code':  SOCIAL_EVENT_FARE_CODE,
-         'description': u'ep2018 - Social Event'},
+         'description': 'ep2018 - Social Event'},
     ]
 
     assert sequence_equals(invoice_vat_10.invoice_items(),
@@ -557,7 +557,7 @@ def test_create_invoice_with_many_items(client):
     # Don't need to set dates for this test.
     # set_early_bird_fare_dates(CONFERENCE, yesterday, tomorrow)
     # set_regular_fare_dates(CONFERENCE, yesterday, tomorrow)
-    random_fares = random.sample(Fare.objects.all(), 3)
+    random_fares = random.sample(list(Fare.objects.all()), 3)
 
     order = OrderFactory(user=user.assopy_user, items=[
         (fare, {'qty': i}) for i, fare in enumerate(random_fares, 1)
@@ -646,7 +646,7 @@ def test_export_invoice_csv(client):
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
 
-    invoice_reader = csv.reader(response.content.splitlines())
+    invoice_reader = csv.reader(response.content.decode('utf-8').splitlines())
     next(invoice_reader)  # skip header
     invoice = next(invoice_reader)
 
@@ -695,7 +695,7 @@ def test_export_invoice_csv_before_period(client):
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
 
-    invoice_reader = csv.reader(response.content.splitlines())
+    invoice_reader = csv.reader(response.content.decode('utf-8').splitlines())
     header = next(invoice_reader)
     assert header == CSV_2018_REPORT_COLUMNS
     assert next(invoice_reader, None) is None
@@ -729,7 +729,7 @@ def test_export_invoice(client):
     assert response.status_code == 200
     assert response['content-type'].startswith('text/html')
 
-    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content
+    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content.decode('utf-8')
 
 
 @mark.django_db
@@ -760,7 +760,7 @@ def test_export_invoice_accounting_json(client):
     assert response.status_code == 200
     assert response['content-type'].startswith('application/json')
 
-    data = json.loads(response.content)['invoices']
+    data = json.loads(response.content.decode('utf-8'))['invoices']
     assert len(data) == 1
     assert data[0]['ID'] == invoice1.code
     assert decimal.Decimal(data[0]['net']) == invoice1.net_price()

@@ -3,7 +3,7 @@ import json
 import logging
 import random
 import re
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 log = logging.getLogger('assopy.janrain')
 
@@ -19,7 +19,7 @@ def _request(method, params):
     # supportiamo solo json
     params = dict(params)
     params['format'] = 'json'
-    r = urllib.urlopen(url, urllib.urlencode(params))
+    r = urllib.request.urlopen(url, urllib.parse.urlencode(params))
     message = r.read()
     try:
         data = json.loads(message)

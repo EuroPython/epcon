@@ -198,7 +198,7 @@ class Deadline(models.Model):
             if not fallback:
                 raise DeadlineContent.DoesNotExist()
 
-        return contents.values()[0]
+        return list(contents.values())[0]
 
 class DeadlineContent(models.Model):
     """
@@ -244,7 +244,7 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, records.values()[0])
+                return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType)
@@ -320,7 +320,7 @@ class AttendeeProfileManager(models.Manager):
     def randomUUID(self, length=6):
         import string
         import random
-        return ''.join(random.sample(string.letters + string.digits, length))
+        return ''.join(random.sample(string.ascii_letters + string.digits, length))
 
     # TODO: Use the savepoint.
     # Remember that, at least up to 1.4 django, SQLite backend does not support
@@ -717,7 +717,7 @@ class Talk(models.Model, UrlMixin):
         # The duration is taken directly from talk's type, unless it was
         # customized
         if (self.duration == 0 or
-            self.duration in TALK_DURATION.values()):
+            self.duration in list(TALK_DURATION.values())):
             # duration was previously set to a standard value, so update
             # the value to the talk length
             self.duration = TALK_DURATION[self.type]
@@ -1017,7 +1017,7 @@ class ScheduleManager(models.Manager):
         # Parallel obviously can not participate in both, so the
         # his vote should be scaled
         scores = defaultdict(lambda: 0.0)
-        for evt, users in events.items():
+        for evt, users in list(events.items()):
             group = list(Event.objects.group_events_by_times(events, event=evt))[0]
             while users:
                 u = users.pop()
@@ -1144,7 +1144,7 @@ class EventManager(models.Manager):
         def extract_group(event, events):
             group = []
             r0 = event.get_time_range()
-            for ix in reversed(range(len(events))):
+            for ix in reversed(list(range(len(events)))):
                 r1 = events[ix].get_time_range()
                 if r0[0].date() == r1[0].date() and overlap(r0, r1):
                     group.append(events.pop(ix))
@@ -1155,7 +1155,7 @@ class EventManager(models.Manager):
             yield group
         else:
             sorted_events = sorted(
-                filter(lambda x: x.get_duration() > 0, events),
+                [x for x in events if x.get_duration() > 0],
                 key=lambda x: x.get_duration())
             while sorted_events:
                 evt0 = sorted_events.pop()

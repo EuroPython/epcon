@@ -11,7 +11,7 @@ git remote add upstream git@github.com:europython/epcon.git || true
 
 title "Make virtualenv"
 
-virtualenv -p python2.7 ../epcon-env
+virtualenv -p python3.7 ../epcon-env
 source ../epcon-env/bin/activate
 
 title "PIP install dev requirements"

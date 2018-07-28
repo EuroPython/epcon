@@ -26,7 +26,7 @@ def list_talk():
     cursor.execute(query)
     rows = cursor.fetchall()
     for row in rows:
-        print '%s ! %s %s' % row
+        print('%s ! %s %s' % row)
 
 def extract_talk(id):
     qtalk = """
@@ -51,7 +51,7 @@ def extract_talk(id):
     """
     cursor.execute(qtalk, (id,))
     talks = cursor.fetchall()
-    enc = lambda x: unicode(x or '', 'utf-8')
+    enc = lambda x: str(x or '', 'utf-8')
     T = ET.Element('talk')
     for talk in talks:
         ET.SubElement(T, 'title').text = enc(talk[0])
@@ -62,7 +62,7 @@ def extract_talk(id):
         ET.SubElement(T, 'abstract', {'lang': 'en'}).text = enc(talk[4])
         ET.SubElement(T, 'tags').text = enc(talk[5])
         def merge(*args):
-            args = filter(None, args)
+            args = [_f for _f in args if _f]
             x = ' '.join(args)
             return x.strip()
 
@@ -108,7 +108,7 @@ finally:
 
 if SPEAKER_IMG:
     if os.path.exists('speakers.zip'):
-        print >> sys.stderr, "speakers.zip already exists"
+        print("speakers.zip already exists", file=sys.stderr)
         sys.exit(1)
     zip = zipfile.ZipFile('speakers.zip', 'w')
     for img, name in _speakers:

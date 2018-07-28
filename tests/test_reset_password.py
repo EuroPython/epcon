@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import
+
 
 from pytest import mark
 
@@ -25,8 +25,8 @@ def test_reset_password(client):
     response = client.get(url)
     assert template_used(response, 'registration/password_reset_form.html')
     # make sure that we're not using default template from django admin
-    assert 'Django Administration' not in response.content
-    assert 'input id="id_email"' in response.content
+    assert 'Django Administration' not in response.content.decode('utf-8')
+    assert 'input id="id_email"' in response.content.decode('utf-8')
 
     # --------
     response = client.post(url, {'email': 'joedoe@example.com'})
@@ -57,9 +57,9 @@ def test_reset_password(client):
     response = client.get(url_from_email)
     # This should be a template with two password inputs
     assert template_used(response, 'registration/password_reset_confirm.html')
-    assert 'Django Administration' not in response.content
-    assert 'name="new_password1"' in response.content
-    assert 'name="new_password2"' in response.content
+    assert 'Django Administration' not in response.content.decode('utf-8')
+    assert 'name="new_password1"' in response.content.decode('utf-8')
+    assert 'name="new_password2"' in response.content.decode('utf-8')
 
     # --------
     response = client.post(url_from_email, {
@@ -67,4 +67,4 @@ def test_reset_password(client):
         'new_password2': 'asdf',
     }, follow=True)
     assert template_used(response, 'registration/password_reset_complete.html')
-    assert 'Django Administration' not in response.content
+    assert 'Django Administration' not in response.content.decode('utf-8')

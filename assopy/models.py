@@ -51,10 +51,10 @@ def _cache(f):
 
 def _gravatar(email, size=80, default='identicon', rating='r'):
     # import code for encoding urls and generating md5 hashes
-    import urllib, hashlib
+    import urllib.request, urllib.parse, urllib.error, hashlib
 
     gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({
+    gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,
         'rating': rating,
@@ -266,7 +266,7 @@ class UserIdentityManager(models.Manager):
             birthday = profile.get('birthday', '').split('-')
             if birthday[0] == '0000':
                 birthday[0] = '1900'
-            identifier.birthday = date(*map(int, birthday))
+            identifier.birthday = date(*list(map(int, birthday)))
         try:
             identifier.email = profile['verifiedEmail']
         except KeyError:
@@ -305,7 +305,7 @@ class UserOAuthInfo(models.Model):
     secret = models.CharField(max_length=200)
 
     def __unicode__(self):
-        return u'{0} token for {1}'.format(self.service, self.user)
+        return '{0} token for {1}'.format(self.service, self.user)
 
 class Coupon(models.Model):
     conference = models.ForeignKey('conference.Conference')
@@ -386,7 +386,7 @@ class Coupon(models.Model):
         apply_to = rows
         fares = set(self.fares.all().values_list('code', flat=True))
         if fares:
-            apply_to = filter(lambda x: x[0].code in fares, apply_to)
+            apply_to = [x for x in apply_to if x[0].code in fares]
 
         if self.items_per_usage:
             # il coupon è valido solo per un numero massimo di item, lo applico
@@ -541,7 +541,7 @@ class Vat(models.Model):
     invoice_notice = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s%% - %s" % (self.value, self.description or "")
+        return "%s%% - %s" % (self.value, self.description or "")
 
 
 class VatFare(models.Model):
@@ -630,7 +630,7 @@ class Order(models.Model):
             vat_list[i.vat]['vat'] = i.vat
             vat_list[i.vat]['orderItems'].append(i)
             vat_list[i.vat]['price'] += i.price
-        return vat_list.values()
+        return list(vat_list.values())
 
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
@@ -881,7 +881,8 @@ class Invoice(models.Model):
     def invoice_items(self):
         return self.order.orderitem_set.filter(vat=self.vat) \
                                   .values('code','description') \
-                                  .annotate(price=models.Sum('price'), count=models.Count('price')) \
+                                  .annotate(price=models.Sum('price'),
+                                            count=models.Count('price')) \
                                   .order_by('-price')
 
     def vat_value(self):
@@ -1119,7 +1120,7 @@ def on_refund_changed(sender, **kw):
         pass
     uid = items[0].order.user.user_id
     order = items[0].order
-    mail_items = '\n'.join([ u' * %s - € %s' % (x.description, x.price) for x in items ])
+    mail_items = '\n'.join([ ' * %s - € %s' % (x.description, x.price) for x in items ])
     if sender.status == 'pending':
         message = '''
 User: %s (%s)

@@ -120,6 +120,6 @@ class Command(BaseCommand):
             'code', 'value', 'max_usage', 'items_per_usage',
             ))
         for row in data:
-            csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+            csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print (u','.join(csv_data).encode('utf-8'))
+            print((','.join(csv_data).encode('utf-8')))

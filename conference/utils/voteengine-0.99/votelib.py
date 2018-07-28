@@ -52,8 +52,8 @@ def int_to_alpha(x):
 # change the matrix to a winning-votes matrix
 def zero_defeats(x): 
 	n=x.shape[0]
-	for i in xrange(n):
-		for j in xrange(i+1,n):
+	for i in range(n):
+		for j in range(i+1,n):
 			if x[i,j]==x[j,i]: x[i,j]=x[j,i]=0
 			elif x[i,j]>x[j,i]: x[j,i]=0
 			else: x[i,j]=0
@@ -61,8 +61,8 @@ def zero_defeats(x):
 # change the matrix to a marginal matrix
 def to_margins(x): 
 	n=x.shape[0]
-	for i in xrange(n):
-		for j in xrange(i+1,n):
+	for i in range(n):
+		for j in range(i+1,n):
 			m=x[i,j]-x[j,i]
 			x[i,j]=m
 			x[j,i]=-m
@@ -82,13 +82,13 @@ def break_ties(winmat,tiebreaker):
 	while 1:
 		for i in tiebreaker:
 			if done[i]>0: continue
-			for j in xrange(n):
+			for j in range(n):
 				if i==j or done[j]>0: continue
 				if winmat[j,i]>0: break
 			else: break # if no defeat, use this i
 		else: break # no i was undefeated.  Must be done
 		done[i]=1
-		for j in xrange(n):
+		for j in range(n):
 			if done[j]==0: winmat[i,j]=1
 
 #winmat - matrix of wins and ties, no contradictions allowed
@@ -99,81 +99,81 @@ def print_ranks(winmat,candlist):
 
 	wins=numpy.zeros((n),numpy.int32)
 
-	for i in xrange(n):
-		for j in xrange(n):
+	for i in range(n):
+		for j in range(n):
 			if winmat[i,j]>winmat[j,i]: wins[i]=wins[i]+1;
 
 	order=[]
-	for i in xrange(n):
+	for i in range(n):
 		order= order+ [(wins[i],i)]
 	order.sort()
 	order.reverse()
 
 	ties=0
 	
-	for i in xrange(n):
+	for i in range(n):
 		(c_wins,c)=order[i]
 		if c_wins<n-1-i:
 			ties=1
 			if i==0:
-				print "Tie for first place."
+				print("Tie for first place.")
 			else:
-				print " ... ties prevent full ranking \n"
+				print(" ... ties prevent full ranking \n")
 			break
-		print candlist[c],
+		print(candlist[c], end=' ')
 		if i<n-1:
-			print ">",
+			print(">", end=' ')
 	
 	if ties:
-		print "Some ties exist.  See table."	
-		print "      ",
-		for j in xrange(n): 
-			print rjust(candlist[j],5),
-		print
-		for i in xrange(n):
-			print ljust(candlist[i],3),
-			print "  ",
-			for j in xrange(n):
-				if i==j: print "    X",
+		print("Some ties exist.  See table.")	
+		print("      ", end=' ')
+		for j in range(n): 
+			print(rjust(candlist[j],5), end=' ')
+		print()
+		for i in range(n):
+			print(ljust(candlist[i],3), end=' ')
+			print("  ", end=' ')
+			for j in range(n):
+				if i==j: print("    X", end=' ')
 				elif winmat[i][j]>winmat[j][i]:
-					print "    1",
+					print("    1", end=' ')
 				elif winmat[j][i]>winmat[i][j]:
-					print "    0",
+					print("    0", end=' ')
 				else:
-					print "    ?",
-			print 
-	print
+					print("    ?", end=' ')
+			print() 
+	print()
 
 def print_some_scores(x,candlist,act):
 	n=x.shape[0]
-	print '      ',
+	print('      ', end=' ')
 	for j in act:
-		print rjust(candlist[j],5),
-	print
+		print(rjust(candlist[j],5), end=' ')
+	print()
 	for i in act:
-		print ljust(candlist[i],3), '  ',
+		print(ljust(candlist[i],3), '  ', end=' ')
 		for j in act:
-			if i==j: print '    X',
-			else: print rjust(`x[i,j]`,5),
-		print
-	print
+			if i==j: print('    X', end=' ')
+			else: print(rjust(repr(x[i,j]),5), end=' ')
+		print()
+	print()
 
 def print_scores(x,candlist,act=None):
 	if(act):
 		print_some_scores(x,candlist,act)
 		return
 	n=x.shape[0]
-	print '      ',
-	for j in xrange(n):
-		print rjust(candlist[j],5),
-	print
-	for i in xrange(n):
-		print ljust(candlist[i],3), '  ',
-		for j in xrange(n):
-			if i==j: print '    X',
-			else: print rjust(`x[i,j]`,5),
-		print
-	print
+	print('      ', end=' ')
+	for j in range(n):
+		print(rjust(candlist[j],5), end=' ')
+	print()
+	for i in range(n):
+		print(ljust(candlist[i],3), '  ', end=' ')
+		for j in range(n):
+			if i==j: print('    X', end=' ')
+			else: print(rjust(repr(x[i,j]),5), end=' ')
+		print()
+	print()
 
 def candRange(start,end): # translates selected range of candidates into list
 	
@@ -210,7 +210,7 @@ def candRange(start,end): # translates selected range of candidates into list
 		carry=0
 		c=""
 		if start_alpha_raw: c=c+int_to_alpha(current_alpha)
-		if start_num_raw: c=c+`current_num`
+		if start_num_raw: c=c+repr(current_num)
 		list=list+[c]
 		if start_num_raw:
 			if current_num==end_num:
@@ -228,8 +228,8 @@ def candRange(start,end): # translates selected range of candidates into list
 
 def floyd(m):
 	n=m.shape[0]
-	for k in xrange(n):
-		for i in xrange(n):
-			for j in xrange(n):
+	for k in range(n):
+		for i in range(n):
+			for j in range(n):
 				m[i,j]=max(m[i,j],min(m[i,k],m[k,j]))
 	

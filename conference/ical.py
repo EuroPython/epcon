@@ -4,7 +4,7 @@ from datetime import datetime
 # FIXME: We can use an external library.
 
 def encode(line):
-    if isinstance(line, unicode):
+    if isinstance(line, str):
         line = line.encode('utf-8')
     if not line.endswith('\r\n'):
         line += '\r\n'
@@ -34,20 +34,22 @@ def encode(line):
 def content(name, value, params=None):
     if params:
         t = []
-        for pname, pvalue in params.items():
+        for pname, pvalue in list(params.items()):
             if ',' in pvalue or ';' in pvalue or ':' in pvalue:
                 pvalue = '"%s"' % pvalue
             t.append('%s=%s' % (pname, pvalue))
         name += ';' + ';'.join(t)
-    if isinstance(name, unicode):
+    if isinstance(name, str):
         name = name.encode('utf-8')
-    if isinstance(value, unicode):
+    if isinstance(value, str):
         value = value.encode('utf-8')
     return encode('%s:%s' % (name, value))
 
 def TEXT(value):
-    if isinstance(value, unicode):
-        value = value.encode('utf-8')
+    if isinstance(value, bytes):
+        value = value.decode('utf-8')
+    # if isinstance(value, str):
+    #     value = value.encode('utf-8')
     elif not isinstance(value, str):
         value = str(value)
     return value\
@@ -73,7 +75,7 @@ def DURATION(value):
 
 def URI(value):
     return value
-        
+
 def Property(value, params=None, fmt=TEXT, property_values=1, values_sep=','):
     if value is None:
         return None
@@ -98,7 +100,7 @@ class Component(dict):
 
     def encode(self):
         yield content('BEGIN', self.name)
-        for name, prop in self.items():
+        for name, prop in list(self.items()):
             if prop is None:
                 continue
             value, params = prop

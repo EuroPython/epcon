@@ -9,7 +9,7 @@ def recurse(path):
     B = 'assopy'
     output = []
     for dirpath, dirnames, filenames in os.walk(os.path.join(B, path)):
-        for d in filter(lambda x: x[0] == '.', dirnames):
+        for d in [x for x in dirnames if x[0] == '.']:
             dirnames.remove(d)
         for f in filenames:
             output.append(os.path.join(dirpath, f)[len(B)+1:])
@@ -30,7 +30,7 @@ setup(name='assopy',
         'assopy.stripe',
     ],
     package_data={
-        'assopy': sum(map(recurse, ('deps', 'locale', 'static', 'templates', 'fixtures')), []),
+        'assopy': sum(list(map(recurse, ('deps', 'locale', 'static', 'templates', 'fixtures'))), []),
     },
     install_requires=[
         'suds',

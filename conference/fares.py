@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import, print_function
+
 
 from model_utils import Choices
 
@@ -77,7 +77,8 @@ def create_fare_for_conference(code, conference, price,
     assert is_fare_code_valid(code)
     assert isinstance(conference, str), "conference should be a string"
     assert isinstance(vat_rate, Vat)
-    assert start_validity <= end_validity
+    if start_validity is not None and end_validity is not None:
+        assert start_validity <= end_validity
 
     if code == SOCIAL_EVENT_FARE_CODE:
         ticket_type = FARE_TICKET_TYPES.event
@@ -116,7 +117,7 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
                                             print_output=False):
     fares = []
 
-    for fare_code in AVAILABLE_FARE_CODES.keys():
+    for fare_code in list(AVAILABLE_FARE_CODES.keys()):
         fare = create_fare_for_conference(
             code=fare_code,
             conference=conference,

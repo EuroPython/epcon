@@ -232,7 +232,7 @@ class FormTicket(forms.ModelForm):
         if self.single_day:
             raw = [ raw ]
         try:
-            data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
+            data = [datetime.datetime.strptime(x, '%Y-%m-%d') for x in [_f for _f in raw if _f]]
         except Exception:
             raise forms.ValidationError('data format not valid')
         conf = cmodels.Conference.objects.current()
@@ -564,11 +564,11 @@ if 0: # FIXME: remove hotels and sim
             if len(fares) != len(qtys) or len(periods) != len(fares) * 2:
                 raise ValueError('')
 
-            from itertools import izip_longest
+            from itertools import zip_longest
             def grouper(n, iterable, fillvalue=None):
                 "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
                 args = [iter(iterable)] * n
-                return izip_longest(fillvalue=fillvalue, *args)
+                return zip_longest(fillvalue=fillvalue, *args)
 
             start = self.booking.booking_start
             values = []
@@ -576,7 +576,7 @@ if 0: # FIXME: remove hotels and sim
                 values.append({
                     'fare': row[0],
                     'qty': row[1],
-                    'period': map(lambda x: start+datetime.timedelta(days=int(x)), row[2]),
+                    'period': [start+datetime.timedelta(days=int(x)) for x in row[2]],
                 })
 
             return values
@@ -630,7 +630,7 @@ if 0: # FIXME: remove hotels and sim
                     'label': '',
                     'type': '',
                     'qty': entry['qty'],
-                    'period': map(lambda x: (x-start).days, entry['period']),
+                    'period': [(x-start).days for x in entry['period']],
                     'fare': entry['fare'],
                     'fares': [],
                     'minimum_night': self.booking.minimum_night,
@@ -659,7 +659,7 @@ if 0: # FIXME: remove hotels and sim
             # filter |field and inserting the error at that point.
             errors = [None] * len(rows)
             if hasattr(self, '_errors'):
-                print self._errors
+                print(self._errors)
                 for e in self._errors:
                     try:
                         ix, msg = e.split(':', 1)
@@ -721,7 +721,7 @@ class P3FormTickets(aforms.FormTickets):
         # Moreover each reservation must specify the "period".
 
         # These cases will be handled in custom code of clean
-        for k in self.fields.keys():
+        for k in list(self.fields.keys()):
             if k.startswith('H'):
                 del self.fields[k]
 
@@ -767,7 +767,7 @@ class P3FormTickets(aforms.FormTickets):
 
             # Only participants are allowed to buy
             conference_tickets = 0
-            for k, v in self.cleaned_data.items():
+            for k, v in list(self.cleaned_data.items()):
                 if k[0] == 'T' and v:
                     conference_tickets += v
             if not conference_tickets:

@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
         sessions = OrderedDict()
         # Print list of submissions
-        for type_name, session_talks in talks.items():
+        for type_name, session_talks in list(talks.items()):
             if not session_talks:
                 continue
 
@@ -79,10 +79,10 @@ class Command(BaseCommand):
 
                 schedule = talk_schedule(talk)
                 if not schedule and VERBOSE:
-                    print('ERROR: Talk {} is not scheduled.'.format(talk))
+                    print(('ERROR: Talk {} is not scheduled.'.format(talk)))
 
                 if len(schedule) > 1 and VERBOSE:
-                    print('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule))
+                    print(('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule)))
 
                 sessions[type_name][talk.id] = {
                 'id':             talk.id,
@@ -93,7 +93,7 @@ class Command(BaseCommand):
                 'track_title':    ', '.join(talk_track_title(talk)).encode('utf-8'),
                 'timerange':      ', '.join(schedule).encode('utf-8'),
                 'tags':           [str(t) for t in talk.tags.all()],
-                'url':            u'https://{}.europython.eu/{}'.format(conference, talk.get_absolute_url()).encode('utf-8'),
+                'url':            'https://{}.europython.eu/{}'.format(conference, talk.get_absolute_url()).encode('utf-8'),
                 'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
                 'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
                 'title':          clean_title(talk.title).encode('utf-8'),
@@ -104,13 +104,13 @@ class Command(BaseCommand):
                 'abstract_long':  [abst.body.encode('utf-8') for abst in talk.abstracts.all()],
                 'abstract_short': talk.abstract_short.encode('utf-8'),
                 'abstract_extra': talk.abstract_extra.encode('utf-8'),
-                'speakers':       u', '.join(speaker_listing(talk)).encode('utf-8'),
-                'companies':      u', '.join(speaker_companies(talk)).encode('utf-8'),
-                'emails':         u', '.join(speaker_emails(talk)).encode('utf-8'),
-                'twitters':       u', '.join(speaker_twitters(talk)).encode('utf-8'),
+                'speakers':       ', '.join(speaker_listing(talk)).encode('utf-8'),
+                'companies':      ', '.join(speaker_companies(talk)).encode('utf-8'),
+                'emails':         ', '.join(speaker_emails(talk)).encode('utf-8'),
+                'twitters':       ', '.join(speaker_twitters(talk)).encode('utf-8'),
                 }
 
                 if options['votes']:
                     sessions[type_name][talk.id]['user_votes'] = talk_votes(talk)
 
-        print(json.dumps(sessions, indent=2))
+        print((json.dumps(sessions, indent=2)))

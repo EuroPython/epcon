@@ -42,7 +42,7 @@ def _ASSOPY_NEXT_ORDER_CODE(order):
     Ritorna un codice di ordine nel formato specificato
     """
     import datetime
-    import models
+    from . import models
     try:
         last_code = models.Order.objects \
                       .filter(code__startswith='O/%s.' % str(datetime.date.today().year)[2:]) \
@@ -61,7 +61,7 @@ def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
     Ritorna Il prossimo codice per una nota di credito
     """
     import datetime
-    import models
+    from . import models
     try:
         last_code = models.CreditNote.objects \
                       .filter(code__startswith='C/%s.' % str(datetime.date.today().year)[2:]) \

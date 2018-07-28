@@ -3,7 +3,7 @@ URL = 'http://booking.bettersoftware.it/conference/getinfo.py/empty_attendees'
 
 SUBJECT = "[Better Software 2009] dati mancanti per il tuo badge di ingresso"
 
-BODY = u"""Ciao,
+BODY = """Ciao,
 
 questa mail è inviata automaticamente dal nostro gestionale a tutti gli
 utenti che hanno acquistato un biglietto per Better Software 2009.
