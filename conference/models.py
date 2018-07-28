@@ -210,7 +210,11 @@ class DeadlineContent(models.Model):
     body = models.TextField()
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation
+)
+
 
 class MultilingualContentManager(models.Manager):
     def setContent(self, object, content, language, body):
@@ -245,7 +249,7 @@ class MultilingualContentManager(models.Manager):
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
     language = models.CharField(max_length = 3)
     content = models.CharField(max_length = 20)
     body = models.TextField()
@@ -386,7 +390,7 @@ class AttendeeProfile(models.Model):
     job_title = models.CharField(_('Job title'), max_length=50, blank=True)
 
     location = models.CharField(_('Location'), max_length=100, blank=True)
-    bios = generic.GenericRelation(MultilingualContent)
+    bios = GenericRelation(MultilingualContent)
 
     visibility = models.CharField(max_length=1, choices=ATTENDEEPROFILE_VISIBILITY, default='x')
 
@@ -643,7 +647,7 @@ class Talk(models.Model, UrlMixin):
     admin_type = models.CharField(max_length=1, choices=TALK_ADMIN_TYPE, blank=True)
     speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
     language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES, default="en")
-    abstracts = generic.GenericRelation(
+    abstracts = GenericRelation(
         MultilingualContent,
         verbose_name=_('Talk abstract'),
         help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
@@ -1401,7 +1405,7 @@ class DidYouKnow(models.Model):
     Do you know that ?
     """
     visible = models.BooleanField('visible', default = True)
-    messages = generic.GenericRelation(MultilingualContent)
+    messages = GenericRelation(MultilingualContent)
 
 class Quote(models.Model):
     who = models.CharField(max_length=100)

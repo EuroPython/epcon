@@ -335,7 +335,6 @@ class DeadlineAdmin(admin.ModelAdmin):
 admin.site.register(models.Deadline, DeadlineAdmin)
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.fields import ReverseGenericRelatedObjectsDescriptor
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
