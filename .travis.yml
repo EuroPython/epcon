@@ -1,6 +1,6 @@
 before_install:
   - sudo apt-get install graphviz
-  
+
 language: python
 
 cache: pip
@@ -8,7 +8,11 @@ cache: pip
 python:
   - "2.7"
 
-install:
-  - pip install -r requirements-dev.txt
-
-script: "py.test -c pytest_ci.ini"
+matrix:
+  include:
+    - name: "tests"
+      install: pip install -r requirements-dev.txt
+      script: py.test -c pytest_ci.ini
+    - name: "isort"
+      install: pip install isort
+      script: isort --recursive --check-only --diff
