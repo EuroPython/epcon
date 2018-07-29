@@ -34,4 +34,5 @@ htmlcov/
 .cache/
 coverage.xml
 prof/
+.pytest_cache/
 .vagrant
