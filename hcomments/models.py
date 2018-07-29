@@ -13,6 +13,9 @@ class HComment(MPTTModel, Comment):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     tree = TreeManager()
 
+    class Meta:
+        app_label = 'hcomments'
+
 
 class ThreadSubscriptionManager(models.Manager):
     def unsubscribe(self, object, user):
@@ -42,3 +45,4 @@ class ThreadSubscription(models.Model):
 
     class Meta:
         unique_together = ('user', 'object_id', 'content_type')
+        app_label = 'hcomments'
