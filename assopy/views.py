@@ -9,7 +9,7 @@ from django import http
 from django.conf import settings as dsettings
 from django.contrib import auth
 from django.contrib import messages
-from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
