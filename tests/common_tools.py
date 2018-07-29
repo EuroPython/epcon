@@ -64,6 +64,8 @@ def create_homepage_in_cms():
         reverse_id='home', published=True, publication_date=timezone.now())
     homepage.set_as_homepage()
 
+    return homepage
+
 
 def serve_text(text, host='0.0.0.0', port=9876):
     """

@@ -4,14 +4,14 @@ from __future__ import print_function
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import FieldError
 
 from cms.api import create_page
-from conference.models import Conference
 from assopy.models import Vat
 from conference.fares import pre_create_typical_fares_for_conference
-
+from tests.common_tools import create_homepage_in_cms
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
 
@@ -21,15 +21,14 @@ class Command(BaseCommand):
     Creates bunch of data that's required for new developer setup.
     Mostly django CMS pages.
     """
+    @transaction.atomic
     def handle(self, *args, **options):
 
-        Conference.objects.get_or_create(
-            code=settings.CONFERENCE_CONFERENCE,
-            name=settings.CONFERENCE_CONFERENCE,
-        )
+        homepage = create_homepage_in_cms()
+
+        print("Created page: ", homepage.id, homepage.title_set.first().title, homepage.template)
 
         pages = [
-            ('home', 'HOME', 'p5_homepage.html'),
             ('contacts', 'CONTACTS', 'content.html'),
             ('privacy', 'PRIVACY', 'content-1col.html'),
             ('conduct-code', 'CONDUCT-CODE', 'content.html'),
