@@ -4,8 +4,8 @@ from datetime import datetime
 # FIXME: We can use an external library.
 
 def encode(line):
-    if isinstance(line, str):
-        line = line.encode('utf-8')
+    if isinstance(line, bytes):
+        line = line.decode('utf-8')
     if not line.endswith('\r\n'):
         line += '\r\n'
     if len(line) > 75:
