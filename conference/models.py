@@ -108,7 +108,7 @@ class Conference(models.Model):
 
     objects = ConferenceManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
     def save(self, *args, **kwargs):

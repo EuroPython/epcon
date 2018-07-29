@@ -80,7 +80,7 @@ class Country(models.Model):
         ordering = ['name']
         verbose_name_plural = 'Countries'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class TokenManager(models.Manager):
@@ -214,7 +214,7 @@ class User(models.Model):
 
     objects = UserManager()
 
-    def __unicode__(self):
+    def __str__(self):
         name = self.card_name or self.name()
         return 'Assopy user: %s (%s)' % (name, self.id)
 
@@ -304,7 +304,7 @@ class UserOAuthInfo(models.Model):
     token = models.CharField(max_length=200)
     secret = models.CharField(max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} token for {1}'.format(self.service, self.user)
 
 class Coupon(models.Model):
@@ -320,7 +320,7 @@ class Coupon(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     fares = models.ManyToManyField('conference.Fare', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.code, self.value)
 
     def clean(self):
@@ -540,7 +540,7 @@ class Vat(models.Model):
     description = models.CharField(null=True, blank=True, max_length=125)
     invoice_notice = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s%% - %s" % (self.value, self.description or "")
 
 
@@ -614,7 +614,7 @@ class Order(models.Model):
 
     objects = OrderManager()
 
-    def __unicode__(self):
+    def __str__(self):
         msg = 'Order %d' % self.id
         if self.code:
             msg += ' #%s' % self.code
@@ -869,7 +869,7 @@ class Invoice(models.Model):
     def get_admin_url(self):
         return reverse('admin:assopy_invoice_change', args=[self.id])
 
-    def __unicode__(self):
+    def __str__(self):
         if self.code:
             return ' #%s' % self.code
         else:
@@ -922,7 +922,7 @@ class CreditNote(models.Model):
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    def __unicode__(self):
+    def __str__(self):
         return ' #%s' % self.code
 
     def note_items(self):
