@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from conference import models as cmodels
 from hcomments import models as hmodels
@@ -15,5 +17,5 @@ class Command(BaseCommand):
         for row in qs:
             u = row.speaker.user
             t = row.talk
-            print '%s %s -> %s' % (u.first_name, u.last_name, t.title)
+            print('%s %s -> %s' % (u.first_name, u.last_name, t.title))
             hmodels.ThreadSubscription.objects.subscribe(t, u)

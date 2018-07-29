@@ -2,6 +2,8 @@
 """ Print out a listing of accepted talks.
 
 """
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from conference import models
 
@@ -75,7 +77,7 @@ class Command(BaseCommand):
                 type = 'm'
             elif (admin_type == 'k' or
                   talk.title.lower().startswith('keynote')):
-                #print ('found keynote: %r' % talk)
+                # print('found keynote: %r' % talk)
                 type = 'k'
             elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):
                 # Don't list these placeholders or plenary sessions
@@ -92,22 +94,22 @@ class Command(BaseCommand):
                 talk_types[type] = [talk]
 
         # Print list of submissions
-        print ('<h2>Accepted submissions</h2>')
+        print('<h2>Accepted submissions</h2>')
         for type, type_name, description in TYPE_NAMES:
             bag = talk_types.get(type, [])
             if not bag:
                 continue
             # Sort by talk title using title case
             bag.sort(key=lambda talk: talk_title(talk).title())
-            print ('')
-            print ('<h3>%s</h3>' % type_name)
+            print('')
+            print('<h3>%s</h3>' % type_name)
             if description:
-                print ('<p>%s</p>' % description)
-            print ('<ul>')
+                print('<p>%s</p>' % description)
+            print('<ul>')
             for talk in bag:
-                print ((u'<li><a href="%s">%s</a> by %s</li>' % (
+                print((u'<li><a href="%s">%s</a> by %s</li>' % (
                     talk.get_absolute_url(),
                     talk_title(talk),
                     speaker_listing(talk))
                     ).encode('utf-8'))
-            print ('</ul>')
+            print('</ul>')

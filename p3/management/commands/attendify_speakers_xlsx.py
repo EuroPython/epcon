@@ -25,6 +25,8 @@
     Row A6: Start of data
 
 """
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.conf import settings
@@ -78,7 +80,7 @@ def add_speaker(data, speaker):
     # Skip speakers without public profile. Speaker profiles must be
     # public, but you never know. See conference/models.py
     if profile.visibility != 'p':
-        print ('Skipping profile %r - profile not public' % profile)
+        print('Skipping profile %r - profile not public' % profile)
         return
 
     # Collect data
@@ -139,9 +141,9 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
 
     # Extract data values
     ws_data = list(ws.values)[SPEAKERS_WS_START_DATA:]
-    print ('read %i data lines' % len(ws_data))
-    print ('first line: %r' % ws_data[:1])
-    print ('last line: %r' % ws_data[-1:])
+    print('read %i data lines' % len(ws_data))
+    print('first line: %r' % ws_data[:1])
+    print('last line: %r' % ws_data[-1:])
 
     # Reconcile UIDs / talks
     uids = {}
@@ -156,7 +158,7 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
     for line in new_data:
         key = tuple(line[:SPEAKERS_UNIQUE_COLS])
         if key not in uids:
-            print ('New speaker %s found' % (key,))
+            print('New speaker %s found' % (key,))
             uid = u''
         else:
             uid = uids[key]
@@ -167,13 +169,13 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
     # Replace old data with new data
     old_data_rows = len(ws_data)
     new_data_rows = len(new_data)
-    print ('new data: %i data lines' % new_data_rows)
+    print('new data: %i data lines' % new_data_rows)
     offset = SPEAKERS_WS_START_DATA + 1
-    print ('new_data = %i rows' % len(new_data))
+    print('new_data = %i rows' % len(new_data))
     for j, row in enumerate(ws[offset: offset + new_data_rows - 1]):
         new_row = new_data[j]
         if _debug:
-            print ('updating row %i with %r' % (j, new_row))
+            print('updating row %i with %r' % (j, new_row))
         if len(row) > len(new_row):
             row = row[:len(new_row)]
         for i, cell in enumerate(row):
@@ -184,7 +186,7 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
         for j, row in enumerate(ws[offset + new_data_rows + 1:
                                    offset + old_data_rows + 1]):
             if _debug:
-                print ('clearing row %i' % (j,))
+                print('clearing row %i' % (j,))
             for i, cell in enumerate(row):
                 cell.value = None
 

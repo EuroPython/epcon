@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from django.db import connection, transaction
 from django_comments.models import Comment
 from django.core.management.base import BaseCommand
@@ -22,9 +24,9 @@ class Command(BaseCommand):
 
         cursor = connection.cursor()
 
-        print len(comments), 'comments found'
+        print(len(comments), 'comments found')
         for ix, comment in enumerate(comments.values()):
-            print comment.user_name + ': ', repr(comment.comment[:50])
+            print(comment.user_name + ': ', repr(comment.comment[:50]))
             params = (comment.id, ix+1)
             cursor.execute(sql, params)
 

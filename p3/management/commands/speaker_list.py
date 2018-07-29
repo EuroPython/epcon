@@ -2,6 +2,8 @@
 """ Print out a listing of speakers.
 
 """
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from conference import models
@@ -87,22 +89,22 @@ class Command(BaseCommand):
         speaker_list.sort(key=speaker_list_key)
 
         # Print list of speakers
-        print ('<h2>Speakers</h2>')
+        print('<h2>Speakers</h2>')
         group = ''
         for entry in speaker_list:
             name, speaker = entry
             sort_name = speaker_list_key(entry)
             if not group:
                 group = sort_name[0]
-                print ('<h3>%s ...</h3>' % group)
-                print ('<ul>')
+                print('<h3>%s ...</h3>' % group)
+                print('<ul>')
             elif group != sort_name[0]:
-                print ('</ul>')
+                print('</ul>')
                 group = sort_name[0]
-                print ('<h3>%s ...</h3>' % group)
-                print ('<ul>')
-            print ((u'<li><a href="%s">%s</a></li>' % (
+                print('<h3>%s ...</h3>' % group)
+                print('<ul>')
+            print((u'<li><a href="%s">%s</a></li>' % (
                 profile_url(speaker.user),
                 name)).encode('utf-8'))
-        print ('</ul>')
-        print ('<p>%i speakers in total.</p>' % len(speaker_list))
+        print('</ul>')
+        print('<p>%i speakers in total.</p>' % len(speaker_list))

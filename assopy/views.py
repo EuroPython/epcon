@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 import json
 import logging
 import urllib
@@ -200,7 +202,7 @@ def janrain_token(request):
         return http.HttpResponseBadRequest()
     try:
         profile = janrain.auth_info(settings.JANRAIN['secret'], token)
-    except Exception, e:
+    except Exception as e:
         log.warn('exception during janrain auth info: "%s"', str(e))
         return HttpResponseRedirectSeeOther(dsettings.LOGIN_URL)
 
@@ -441,7 +443,7 @@ def _pdf(request, url):
         '-'
     ]
 
-    #print command_args
+    # print(command_args)
 
     popen = subprocess.Popen(
         command_args,
@@ -452,7 +454,7 @@ def _pdf(request, url):
 
     raw, _ = popen.communicate()
 
-    #print raw
+    # print(raw)
 
     return raw
 
@@ -507,7 +509,7 @@ def credit_note(request, order_code, code, mode='html'):
     else:
         hurl = reverse('assopy-credit_note-html', args=(order_code, code))
         if not settings.WKHTMLTOPDF_PATH:
-            print "NO WKHTMLTOPDF_PATH SET"
+            print("NO WKHTMLTOPDF_PATH SET")
             return HttpResponseRedirectSeeOther(hurl)
         raw = _pdf(request, hurl)
 

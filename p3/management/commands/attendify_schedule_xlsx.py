@@ -23,6 +23,8 @@
     Row A6: Start of data
 
 """
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.utils.html import strip_tags
@@ -155,9 +157,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
-                   'associated with it; skipping' %
-                   (title, talk.type))
+            print('Talk %r (type %r) does not have an event '
+                  'associated with it; skipping' %
+                  (title, talk.type))
             return
     else:
         time_range = event.get_time_range()
@@ -217,9 +219,9 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 
     # Extract data values
     ws_data = list(ws.values)[SCHEDULE_WS_START_DATA:]
-    print ('read %i data lines' % len(ws_data))
-    print ('first line: %r' % ws_data[:1])
-    print ('last line: %r' % ws_data[-1:])
+    print('read %i data lines' % len(ws_data))
+    print('first line: %r' % ws_data[:1])
+    print('last line: %r' % ws_data[-1:])
 
     # Reconcile UIDs / talks
     uids = {}
@@ -234,7 +236,7 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     for line in new_data:
         key = tuple(line[:SCHEDULE_UNIQUE_COLS])
         if key not in uids:
-            print ('New or rescheduled talk %s found' % (key,))
+            print('New or rescheduled talk %s found' % (key,))
             uid = u''
         else:
             uid = uids[key]
@@ -245,13 +247,13 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     # Replace old data with new data
     old_data_rows = len(ws_data)
     new_data_rows = len(new_data)
-    print ('new data: %i data lines' % new_data_rows)
+    print('new data: %i data lines' % new_data_rows)
     offset = SCHEDULE_WS_START_DATA + 1
-    print ('new_data = %i rows' % len(new_data))
+    print('new_data = %i rows' % len(new_data))
     for j, row in enumerate(ws[offset: offset + new_data_rows - 1]):
         new_row = new_data[j]
         if _debug:
-            print ('updating row %i with %r' % (j, new_row))
+            print('updating row %i with %r' % (j, new_row))
         if len(row) > len(new_row):
             row = row[:len(new_row)]
         for i, cell in enumerate(row):
@@ -262,7 +264,7 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
         for j, row in enumerate(ws[offset + new_data_rows + 1:
                                    offset + old_data_rows + 1]):
             if _debug:
-                print ('clearing row %i' % (j,))
+                print('clearing row %i' % (j,))
             for i, cell in enumerate(row):
                 cell.value = None
 

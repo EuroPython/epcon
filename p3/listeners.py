@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 import logging
 import models
 
@@ -130,7 +132,7 @@ fare_tickets.connect(create_hotel_tickets)
 
 def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
 
-    #print ('create_p3_conference_tickets: %r %r %r' % (sender, params, kws))
+    # print('create_p3_conference_tickets: %r %r %r' % (sender, params, kws))
     fare = sender
 
     # Only create conference tickets with this helper

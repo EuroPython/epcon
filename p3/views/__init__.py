@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 from django import forms
 from django import http
 from django.conf import settings
@@ -136,7 +138,7 @@ def ticket(request, tid):
             t = cmodels.Ticket.objects.get(id=t.id)
         elif t.fare.ticket_type == 'conference':
 
-            #print ('ticket name 0: %r' % t.name)
+            # print('ticket name 0: %r' % t.name)
 
             #
             # MAL: TBD This code needs a serious refactoring. There
@@ -177,7 +179,7 @@ def ticket(request, tid):
                 x.assigned_to = assigned_to
             x.save()
 
-            #print ('ticket name 1: %r' % t.name)
+            # print('ticket name 1: %r' % t.name)
 
             if t.user == request.user:
                 old = assigned_to or ''
@@ -197,7 +199,7 @@ def ticket(request, tid):
                         # Assign to the buyer
                         p3utils.assign_ticket_to_user(t, t.user)
 
-            #print ('ticket name 2: %r' % t.name)
+            # print('ticket name 2: %r' % t.name)
 
             if t.user != request.user and not request.user.first_name and not request.user.last_name and data['ticket_name']:
                 # the user has neither first or last name inthe progle (and also
@@ -213,7 +215,7 @@ def ticket(request, tid):
                 request.user.last_name = l
                 request.user.save()
 
-            #print ('ticket name 3: %r' % t.name)
+            # print('ticket name 3: %r' % t.name)
 
         elif t.fare.code in ('SIM01',):
             try:

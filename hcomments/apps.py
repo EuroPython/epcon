@@ -7,10 +7,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django_comments.models import Comment
 
-import models
-
 
 def send_email_to_subscribers(sender, **kwargs):
+    from . import models
     subscripted = models.ThreadSubscription.objects.subscriptions(kwargs['instance'].content_object)
     for u in filter(lambda x: x.email, subscripted):
         ctx = {
@@ -28,6 +27,7 @@ class HCommentsConfig(AppConfig):
     verbose_name = "HComments"
 
     def ready(self):
+        from . import models
         post_save.connect(send_email_to_subscribers, sender=Comment)
         post_save.connect(send_email_to_subscribers, sender=models.HComment)
 

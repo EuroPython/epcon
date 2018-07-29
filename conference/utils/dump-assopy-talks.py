@@ -7,6 +7,8 @@ USER = 'assopy'
 PASSWORD = 'assopy'
 SPEAKER_IMG = '/home/assopy/genro/data/sites/assopy09/data/speakers'
 
+from __future__ import print_function
+
 import sys
 import psycopg2
 from xml.etree import cElementTree as ET
@@ -26,7 +28,7 @@ def list_talk():
     cursor.execute(query)
     rows = cursor.fetchall()
     for row in rows:
-        print '%s ! %s %s' % row
+        print('%s ! %s %s' % row)
 
 def extract_talk(id):
     qtalk = """
@@ -108,7 +110,7 @@ finally:
 
 if SPEAKER_IMG:
     if os.path.exists('speakers.zip'):
-        print >> sys.stderr, "speakers.zip already exists"
+        print("speakers.zip already exists", file=sys.stderr)
         sys.exit(1)
     zip = zipfile.ZipFile('speakers.zip', 'w')
     for img, name in _speakers:

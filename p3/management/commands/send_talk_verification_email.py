@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from conference import models
 from datetime import datetime
@@ -45,9 +47,8 @@ class Command(BaseCommand):
                 tpl = 'verify-training-data'
             else:
                 raise ValueError('unknown talk type')
-            print email, '->', row.talk.title, '(%s)' % row.talk.type, row.talk.created
+            print(email, '->', row.talk.title, '(%s)' % row.talk.type, row.talk.created)
             data.append((email, ctx, tpl))
 
         for email, ctx, tpl in data:
             utils.email(tpl, ctx, to=[email]).send()
-

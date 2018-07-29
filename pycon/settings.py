@@ -323,7 +323,6 @@ INSTALLED_APPS = (
     'mptt',
 
     'django_xmlrpc',
-    'pingback',
     'rosetta',
 
     'email_template',
@@ -1286,7 +1285,7 @@ DISABLE_CACHING = False
 
 try:
     from pycon.settings_locale import *
-except ImportError, reason:
+except ImportError:  # as reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass

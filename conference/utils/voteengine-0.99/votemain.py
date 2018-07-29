@@ -15,6 +15,7 @@ public domain.
 
 This module contains the heart of the program.
 """
+from __future__ import print_function
 
 from string import *
 import re
@@ -285,20 +286,20 @@ def vote_main():
 	
 	except EOFError:
 		if o.cand_l==None:
-			print "Empty File.  Nothing to do."
+			print("Empty File.  Nothing to do.")
 			return
 	global lineno
 	lineno=-1
-	
-	print 'VOTES  ' , o.n_votes
+
+	print('VOTES  ' , o.n_votes)
 	if o.record_pw:
 		if o.zero_def: 
 			zero_defeats(o.pw_tbl)
-			print "Defeats Zero'd out"
+			print("Defeats Zero'd out")
 
 		else:
 			to_margins(o.pw_tbl)
-			print "Margins"
+			print("Margins")
 		print_scores(o.pw_tbl,o.cand_l)
 
 	if o.method_nm=="table":
@@ -317,8 +318,8 @@ def vote_engine(fin=None,fout=None,opts=None):
 	if opts: sys.argv=opts
 	try:
 		vote_main()
-	except RuntimeError,e:
-		print e.args[0]
+	except RuntimeError as e:
+		print(e.args[0])
 	sys.stdin=old_in
 	sys.stdout=old_out
 	sys.argv=old_argv

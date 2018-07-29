@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -12,7 +14,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         for u in amodels.User.objects.all().select_related('user'):
-            print u.name()
+            print(u.name())
             try:
                 profile = cmodels.AttendeeProfile.objects.get(user=u.user)
             except cmodels.AttendeeProfile.DoesNotExist:
