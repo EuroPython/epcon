@@ -69,11 +69,6 @@ urlpatterns = [
     url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$', 'assopy.views.voucher', name='assopy-orderitem-voucher'),
     url(r'orders/(?P<order_id>\d+)/(?P<item_id>\d+)/refund$', 'assopy.views.refund', name='assopy-orderitem-refund'),
     url(r'orders/(?P<assopy_id>.+)/completed$', 'assopy.views.order_complete', name='assopy-order-complete'),
-    url(r'^paypal/redirect/(?P<code>.+)/$','assopy.views.paypal_billing', name='assopy-paypal-redirect'),
-    url(r'^paypal/cc/redirect/(?P<code>.+)/$','assopy.views.paypal_cc_billing', name='assopy-cc-paypal-redirect'),
-
-    url(r'paypal_return/(?P<code>.+)/$', 'assopy.views.paypal_feedback_ok', name='assopy-paypal-feedback-ok'),
-    url(r'^paypal/cancel/(?P<code>.+)/$','assopy.views.paypal_cancel', name='assopy-paypal-feedback-cancel'),
     url(r'bank_return/(?P<code>.+)/$', 'assopy.views.bank_feedback_ok', name='assopy-bank-feedback-ok'),
 
     url(
@@ -102,11 +97,6 @@ urlpatterns = [
         kwargs={'mode': 'pdf'},
     ),
 ]
-
-if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
-    urlpatterns += [
-        url(r'^paypal/standard-ipn/', include('paypal.standard.ipn.urls')),
-    ]
 
 if 'assopy.stripe' in dsettings.INSTALLED_APPS:
     urlpatterns += [

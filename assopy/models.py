@@ -433,9 +433,9 @@ class OrderManager(models.Manager):
             """
             restituisce tutti gli ordini "usabili", cioè tutti gli ordini con
             metodo bonifico (a prescindere se risultano pagati o meno) e tutti
-            gli ordini con metodo paypal (o cc) completati.
+            gli ordini con metodo cc completati.
             """
-            qs = self.filter(models.Q(method='bank')|models.Q(method__in=('cc', 'paypal'), _complete=True))
+            qs = self.filter(models.Q(method='bank')|models.Q(method__eq='cc'), _complete=True)
             if include_admin:
                 qs = qs.filter(method='admin')
             return qs
@@ -567,7 +567,6 @@ purchase_completed = dispatch.Signal(providing_args=[])
 # Implemented order payment options
 ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
-    ('paypal', 'PayPal'),
     ('bank', 'Bank'),
 )
 
@@ -763,7 +762,7 @@ class OrderItem(models.Model):
                 Per tutti gli altri pagamenti
         """
         order = self.order
-        if order.method in ('paypal', 'cc') and order.created > now() - timedelta(days=60):
+        if order.method == 'cc' and order.created > now() - timedelta(days=60):
             return 'direct'
         return 'payment'
 
@@ -904,15 +903,6 @@ class Invoice(models.Model):
     def price_in_local_currency(self):
         return normalize_price(self.price * self.exchange_rate)
 
-
-if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
-    from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
-    def confirm_order(sender, **kwargs):
-        ipn_obj = sender
-        o = Order.objects.get(code=ipn_obj.custom)
-        o.confirm_order(ipn_obj.payment_date)
-
-    paypal_payment_was_successful.connect(confirm_order)
 
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')

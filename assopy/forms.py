@@ -204,7 +204,7 @@ NewAccountForm = autostrip(NewAccountForm)
 
 
 class FormTickets(forms.Form):
-    payment = forms.ChoiceField(choices=(('paypal', 'PayPal'),('bank', 'Bank')))
+    payment = forms.ChoiceField(choices=(('bank', 'Bank')))
     order_type = forms.ChoiceField(
         choices=(
             ('non-deductible', _('Personal Purchase')),
@@ -252,10 +252,6 @@ class RefundItemForm(forms.Form):
         max_length=200,
         help_text=_("""Please enter the reason of your refund request"""),
         widget=forms.Textarea)
-    paypal = forms.EmailField(
-        label=_("Your paypal address"),
-        help_text=_("""If you prefer to receive payment via paypal"""),
-        required=False)
     bank = forms.CharField(
         label=_("Bank routing information"),
         help_text=_("""Please specify IBAN, BIC and bank address (if in Europe) or any needed information for a worldwide transfer"""),
@@ -269,70 +265,7 @@ class RefundItemForm(forms.Form):
     def clean(self):
         data = self.cleaned_data
         if self.item.refund_type() == 'payment':
-            if not data.get('paypal') and not data.get('bank'):
-                raise forms.ValidationError('Please specify at least one of the paypal account or the bank details')
+            if not data.get('bank'):
+                raise forms.ValidationError('Please specify  the bank details')
         return data
 
-if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
-
-    from paypal.standard.forms import PayPalPaymentsForm
-    from paypal.standard.widgets import ValueHiddenInput
-    from paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
-
-    class PayPalForm(PayPalPaymentsForm):
-        #Do not prompt buyers for a shipping address.
-        #Allowable values are:
-        #
-        #0 – prompt for an address, but do not require one
-        #1 – do not prompt for an address
-        #2 – prompt for an address, and require one
-        no_shipping = forms.IntegerField(initial=1)
-
-        address_override = forms.IntegerField(initial=0)
-
-        def __init__(self, order, *args, **kwargs):
-            from django.db import models
-            initial = settings.PAYPAL_DEFAULT_FORM_CONTEXT(order)
-            initial.update({'cmd':self.CMD_CHOICES[1][0]})
-            kwargs['initial'] = initial
-            super(PayPalForm, self).__init__(*args, **kwargs)
-
-            items = list(order.orderitem_set \
-                              .filter(price__gte=0).values('code','description','price') \
-                              .annotate(count=models.Count('price')) \
-                              .order_by('-price'))
-
-            discount =  order.total(apply_discounts=False) - order.total()
-
-            if discount > 0:
-                self.fields['discount_amount_cart'] = forms.IntegerField(
-                                            widget=ValueHiddenInput(),
-                                            initial= discount
-                                        )
-            self.fields['upload'] = forms.IntegerField(
-                                        widget=ValueHiddenInput(),
-                                        initial=1
-                                    )
-            for n, item in enumerate(items, start=1):
-                self.fields['item_name_%d' % n ] = forms.CharField(
-                                                        widget=ValueHiddenInput(),
-                                                        initial=settings.PAYPAL_ITEM_NAME(item)
-                                                    )
-                self.fields['quantity_%d' % n ] = forms.CharField(
-                                                        widget=ValueHiddenInput(),
-                                                        initial=item['count']
-                                                    )
-                self.fields['amount_%d' % n ] = forms.CharField(
-                                        widget=ValueHiddenInput(),
-                                        initial=item['price']
-                                    )
-        def paypal_url(self):
-            return SANDBOX_POSTBACK_ENDPOINT if getattr(dsettings, 'PAYPAL_TEST') else POSTBACK_ENDPOINT
-
-        def as_url_args(self):
-            import urllib
-            data = dict(
-                        [(f.field.widget.attrs.get('name', f.html_name), f.value())
-                         for f in self if f.value()]
-                        )
-            return urllib.urlencode(data)

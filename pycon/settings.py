@@ -326,7 +326,6 @@ INSTALLED_APPS = (
     'rosetta',
 
     'email_template',
-    'paypal.standard.ipn',
     'filer',
     'easy_thumbnails',
 
@@ -1205,19 +1204,6 @@ STRIPE_COMPANY_NAME = os.environ.get("STRIPE_COMPANY_NAME")
 STRIPE_COMPANY_LOGO = os.environ.get("STRIPE_COMPANY_LOGO")
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
-
-#
-# Paypay payment integration
-#
-
-# Paypal merchant email
-PAYPAL_RECEIVER_EMAIL = os.environ.get("PAYPAL_RECEIVER_EMAIL")
-
-# If the merchant account is a debug one set this flag to True
-if os.environ.get('PAYPAL_TEST') == 'False':
-    PAYPAL_TEST = False
-else:
-    PAYPAL_TEST = True
 
 #
 # Janrain account

@@ -143,10 +143,9 @@ def _user_ticket(user, conference):
 def _ticket_complete(t):
     # considering complete tickets paid with bank transfer or by
     # admin.  Being the IPN notification almost simultaneous with the
-    # user coming back on our site, by filtering out unconfirmed orders
-    # I'm also excluding old records sitting in the db because of
-    # unconfirmed paypal payments or because the user came back to
-    # our site using the back button.
+    # user coming back on our site, by filtering out unconfirmed
+    # orders I'm also excluding old records sitting in the db because
+    # the user came back to our site using the back button.
     try:
         order = t.orderitem.order
     except amodels.OrderItem.DoesNotExist:

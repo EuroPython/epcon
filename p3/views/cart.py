@@ -254,12 +254,6 @@ def billing(request):
 
             if settings.STRIPE_ENABLED and order_data['payment'] == 'cc':
                 return redirect('assopy-stripe-checkout', pk=o.pk)
-            elif order_data['payment'] in ('paypal', 'cc'):
-                urlname = 'assopy-paypal-redirect' if order_data['payment'] == 'paypal' else 'assopy-cc-paypal-redirect'
-                return HttpResponseRedirectSeeOther(
-                    reverse(
-                        urlname,
-                        kwargs={'code': unicode(o.code).replace('/', '-')}))
             elif o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:
