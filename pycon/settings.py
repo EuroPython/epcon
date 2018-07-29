@@ -323,7 +323,6 @@ INSTALLED_APPS = (
     'mptt',
 
     'django_xmlrpc',
-    'pingback',
     'rosetta',
 
     'email_template',
@@ -949,7 +948,6 @@ ASSOPY_OTC_CODE_HANDLERS = {
 #
 DEFAULT_URL_PREFIX = 'https://ep2018.europython.eu'
 
-PINGBACK_TARGET_DOMAIN = 'ep2018.europython.eu'
 COMMENTS_APP = 'hcomments'
 
 P3_FARES_ENABLED = lambda u: True
