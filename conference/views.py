@@ -181,7 +181,7 @@ def talk_video(request, slug):  # pragma: no cover
         return settings.X_SENDFILE['f'](tlk, url=vurl, fpath=vfile, content_type=mt)
     else:
         raise RuntimeError('invalid X_SENDFILE')
-    fname = '%s%s' % (tlk.title.encode('utf-8'), vext.encode('utf-8'))
+    fname = '%s%s' % (tlk.title, vext)
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
 

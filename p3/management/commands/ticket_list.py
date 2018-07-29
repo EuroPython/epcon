@@ -100,7 +100,7 @@ class Command(BaseCommand):
             letter = None
             for t in conference_tickets:
                 row = [
-                    t['name'].encode('utf-8'),
+                    t['name'],
                     'STAFF' if t['ticket'].ticket_type == 'staff' else t['ticket'].fare.name,
                     t['ticket'].p3_conference.days if t['ticket'].p3_conference and t['ticket'].fare.code[2] == 'D' else '',
                 ]
@@ -113,12 +113,12 @@ class Command(BaseCommand):
                 print('\t'.join(map(str, row)))
                 for linked in t['additional']:
                     row = [
-                        '%s%s' % ('(*) ' if linked['maybe'] else '', linked['ticket'].name.encode('utf-8')),
+                        '%s%s' % ('(*) ' if linked['maybe'] else '', linked['ticket'].name),
                         linked['ticket'].fare.code,
                         linked['ticket'].fare.name,
                     ]
                     print('\t', '\t'.join(map(str, row)))
-            
+
             if alien_tickets:
                 print('\n\n')
                 print('\t\t\t', 'ALIEN')
@@ -126,7 +126,7 @@ class Command(BaseCommand):
                 print('\n\n')
                 for t in alien_tickets:
                     row = [
-                        t['name'].encode('utf-8'),
+                        t['name'],
                         'STAFF' if t['ticket'].ticket_type == 'staff' else t['ticket'].fare.name,
                         t['ticket'].p3_conference.days if t['ticket'].p3_conference and t['ticket'].fare.code[2] == 'D' else '',
                     ]
@@ -134,7 +134,7 @@ class Command(BaseCommand):
         else:
             for fare, items in list(non_conference_tickets.items()):
                 print('\n\n')
-                print('\t\t\t', fare.code, fare.name.encode('utf-8'))
+                print('\t\t\t', fare.code, fare.name)
                 print('-' * 80)
                 print('\n\n')
                 def k(x):
@@ -143,8 +143,8 @@ class Command(BaseCommand):
                 for t in sorted(items, key=k):
                     if t['maybe']:
                         print('(*)', end=' ')
-                    print(k(t).encode('utf-8'), '->', end=' ') 
+                    print(k(t), '->', end=' ')
                     if t['conference']:
-                        print(t['conference']['name'].encode('utf-8'))
+                        print(t['conference']['name'])
                     else:
                         print('')

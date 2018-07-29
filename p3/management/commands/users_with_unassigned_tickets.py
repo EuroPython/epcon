@@ -104,9 +104,9 @@ class Command(BaseCommand):
             users.add(ut.user)
 
         if options['emails']:
-            output = sorted([usr.email.encode('utf-8') for usr in users])
+            output = sorted([usr.email for usr in users])
         else:
-            output = sorted([usr.get_full_name().encode('utf-8') for usr in users])
+            output = sorted([usr.get_full_name() for usr in users])
 
         if output:
             print((', '.join(output)))

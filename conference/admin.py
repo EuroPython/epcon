@@ -221,7 +221,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         writer = csv.writer(buff)
         writer.writerow(colnames)
         for row in result['data']:
-            writer.writerow([ row.get(c, '').encode('utf-8') for c in colid ])
+            writer.writerow([ row.get(c, '') for c in colid ])
 
         fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
         r = http.HttpResponse(buff.getvalue(), content_type="text/csv")
@@ -455,7 +455,7 @@ class SpeakerAdmin(admin.ModelAdmin):
     list_display = ('_avatar', '_user', '_email', '_company')
     search_fields = ('user__first_name', 'user__last_name', 'user__email',
                      'user__attendeeprofile__company')
-    list_filter = ('talk__conference', 'talk__status', 
+    list_filter = ('talk__conference', 'talk__status',
                    'user__attendeeprofile__company')
     list_select_related = True
     form = SpeakerAdminForm
@@ -518,7 +518,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         if o.user.attendeeprofile:
             return o.user.attendeeprofile.company
     _company.admin_order_field = 'user__attendeeprofile__company'
-    
+
     def _email(self, o):
         return o.user.email
     _user.admin_order_field = 'user__email'
@@ -632,7 +632,7 @@ class TalkAdmin(admin.ModelAdmin):
         for t in queryset:
             for s in t.get_all_speakers():
                 name = '{} {}'.format(s.user.first_name, s.user.last_name)
-                writer.writerow((t.status, t.title.encode('utf-8'), name.encode('utf-8'), s.user.email.encode('utf-8')))
+                writer.writerow((t.status, t.title, name, s.user.email))
         response = http.HttpResponse(buff.getvalue(), content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename=speakers.csv'
         return response

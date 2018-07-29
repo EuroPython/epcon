@@ -26,12 +26,12 @@ class Command(BaseCommand):
                 log.error('Error with user {}.'.format(u.id))
                 users[u.id] = {'assopy_id': u.id,}
             else:
-                users[u.id] = {'name': user_name.encode('utf-8'),
+                users[u.id] = {'name': user_name,
                                'assopy_id': u.id,
                                'id': user_id,
-                               'username': u.user.get_username().encode('utf-8'),
-                               'email': u.user.email.encode('utf-8'),
-                               'date-joined': str(u.user.date_joined).encode('utf-8'),
+                               'username': u.user.get_username(),
+                               'email': u.user.email,
+                               'date-joined': str(u.user.date_joined),
                                }
 
         print((json.dumps(users, indent=2, separators=(',', ': '))))

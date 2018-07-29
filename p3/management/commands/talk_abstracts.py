@@ -74,7 +74,7 @@ class Command(BaseCommand):
             sessions[type_name] = OrderedDict()
 
             # Sort by talk title using title case
-            session_talks.sort(key=lambda talk: clean_title(talk.title).encode('utf-8').title())
+            session_talks.sort(key=lambda talk: clean_title(talk.title).title())
             for talk in session_talks:
 
                 schedule = talk_schedule(talk)
@@ -86,28 +86,28 @@ class Command(BaseCommand):
 
                 sessions[type_name][talk.id] = {
                 'id':             talk.id,
-                'admin_type':     talk.get_admin_type_display().encode('utf-8'),
-                'type':           talk.get_type_display().encode('utf-8'),
+                'admin_type':     talk.get_admin_type_display(),
+                'type':           talk.get_type_display(),
                 'duration':       talk.duration,
-                'level':          talk.get_level_display().encode('utf-8'),
-                'track_title':    ', '.join(talk_track_title(talk)).encode('utf-8'),
-                'timerange':      ', '.join(schedule).encode('utf-8'),
+                'level':          talk.get_level_display(),
+                'track_title':    ', '.join(talk_track_title(talk)),
+                'timerange':      ', '.join(schedule),
                 'tags':           [str(t) for t in talk.tags.all()],
-                'url':            'https://{}.europython.eu/{}'.format(conference, talk.get_absolute_url()).encode('utf-8'),
-                'tag_categories': [tag.category.encode('utf-8') for tag in talk.tags.all()],
-                'sub_community':  talk.p3_talk.sub_community.encode('utf-8'),
-                'title':          clean_title(talk.title).encode('utf-8'),
-                'sub_title':      clean_title(talk.sub_title).encode('utf-8'),
-                'status':         talk.status.encode('utf-8'),
-                'language':       talk.get_language_display().encode('utf-8'),
+                'url':            'https://{}.europython.eu/{}'.format(conference, talk.get_absolute_url()),
+                'tag_categories': [tag.category for tag in talk.tags.all()],
+                'sub_community':  talk.p3_talk.sub_community,
+                'title':          clean_title(talk.title),
+                'sub_title':      clean_title(talk.sub_title),
+                'status':         talk.status,
+                'language':       talk.get_language_display(),
                 'have_tickets':   have_tickets(talk, conference),
-                'abstract_long':  [abst.body.encode('utf-8') for abst in talk.abstracts.all()],
-                'abstract_short': talk.abstract_short.encode('utf-8'),
-                'abstract_extra': talk.abstract_extra.encode('utf-8'),
-                'speakers':       ', '.join(speaker_listing(talk)).encode('utf-8'),
-                'companies':      ', '.join(speaker_companies(talk)).encode('utf-8'),
-                'emails':         ', '.join(speaker_emails(talk)).encode('utf-8'),
-                'twitters':       ', '.join(speaker_twitters(talk)).encode('utf-8'),
+                'abstract_long':  [abst.body for abst in talk.abstracts.all()],
+                'abstract_short': talk.abstract_short,
+                'abstract_extra': talk.abstract_extra,
+                'speakers':       ', '.join(speaker_listing(talk)),
+                'companies':      ', '.join(speaker_companies(talk)),
+                'emails':         ', '.join(speaker_emails(talk)),
+                'twitters':       ', '.join(speaker_twitters(talk)),
                 }
 
                 if options['votes']:

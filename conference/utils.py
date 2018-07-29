@@ -61,7 +61,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
         '-cands %s -tie %s' % (cands, tie),
     ]
     for t in talks:
-        vinput.append('# %s - %s' % (t.id, t.title.encode('utf-8')))
+        vinput.append('# %s - %s' % (t.id, t.title))
 
     votes = VotoTalk.objects\
         .filter(talk__in=tids)\
@@ -390,7 +390,7 @@ def collapse_events(tt, threshold):
     """
     if isinstance(threshold, int):
         threshold = { None: threshold }
-    
+
     output = []
     for time, events in tt.iterOnTimes():
         limits = []
@@ -483,7 +483,7 @@ class TimeTable(object):
         for r in rows[1:]:
             ref = TimeTable.Reference(time, r, evt, flex)
             self._setEvent(ref, flex)
-            
+
         step = self.sumTime(time, self.slot)
         while count > 1:
             for r in rows:

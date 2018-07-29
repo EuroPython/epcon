@@ -12,12 +12,12 @@
     exists.
 
     Usage:
-    
+
     cd epcon
     ./manage.py build_social_ticket_search_app ep2018
     cd ep-social-ticket-search-app
     ./run.sh
-    
+
     This will build the search app and start a web server running
     on port 8000. Pointing a browser at http://localhost:8000/ will
     then load the app into the browser.
@@ -76,8 +76,8 @@ var fuzzyOptions = {
   threshold: 0.1,
   multiSearch: true
 };
-var ticketList = new List('ticket-list', { 
-  valueNames: ['name', 'email', 'tid'], 
+var ticketList = new List('ticket-list', {
+  valueNames: ['name', 'email', 'tid'],
   plugins: [ListFuzzySearch(fuzzyOptions)]
 });
 </script>
@@ -108,7 +108,7 @@ def attendee_name(ticket, profile=None):
     # Use ticket name if not set in profile
     if not name:
         name = ticket.name.strip()
-        
+
     # Convert to title case, if not an email address
     if '@' not in name:
         name = name.title()
@@ -181,7 +181,7 @@ def create_app_file(conference, output_file):
     output.write((TEMPLATE % {
                       'listing': '\n'.join(l),
                       'year': conference[2:],
-                  }).encode('utf-8'))
+                  }))
 
 ###
 
@@ -200,7 +200,7 @@ class Command(BaseCommand):
     args = '<conference> [<output-file>]'
 
     def handle(self, *args, **options):
-        
+
         try:
             conference = args[0]
         except IndexError:

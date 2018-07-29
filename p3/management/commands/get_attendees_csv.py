@@ -64,16 +64,6 @@ class Command(BaseCommand):
         writer = csv.DictWriter(sys.stdout, columns)
         writer.writerow(dict(list(zip(columns, columns))))
 
-        def utf8(d):
-            d = dict(d)
-            for k, v in list(d.items()):
-                try:
-                    d[k] = v.encode('utf-8')
-                except:
-                    pass
-            return d
-
-
         #for s in sorted(attendees, key=lambda x: x.user.assopy_user.name()):
 
         for t in con_tickets:
@@ -168,4 +158,4 @@ class Command(BaseCommand):
                 COL_COMWEB: comp,
                 COL_PERWEB: per
             }
-            writer.writerow(utf8(row))
+            writer.writerow(row)

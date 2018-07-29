@@ -122,4 +122,4 @@ class Command(BaseCommand):
         for row in data:
             csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print((','.join(csv_data).encode('utf-8')))
+            print((','.join(csv_data)))
