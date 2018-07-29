@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -eo pipefail
+
 function title {
     echo -e "\n\n\n" $1 "\n--------"
 }
 
-
-git remote add upstream git@github.com:europython/epcon.git
+which git   # ensure that git is available before next command
+git remote add upstream git@github.com:europython/epcon.git || true
 
 title "Make virtualenv"
 
