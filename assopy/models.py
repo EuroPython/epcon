@@ -12,7 +12,7 @@ from collections import defaultdict
 from django import dispatch
 from django.conf import settings as dsettings
 from django.contrib import auth
-from django.contrib.admin.util import quote
+from django.contrib.admin.utils import quote
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models

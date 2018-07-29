@@ -157,7 +157,7 @@ class OrderAdmin(admin.ModelAdmin):
     _total_payed.short_description = 'Payed'
 
     def _invoice(self, o):
-        from django.contrib.admin.util import quote
+        from django.contrib.admin.utils import quote
         output = []
         # MAL: PDF generation is slower, so default to HTML
         if 1 or dsettings.DEBUG:
