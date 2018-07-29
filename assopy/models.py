@@ -881,8 +881,8 @@ class Invoice(models.Model):
     def invoice_items(self):
         return self.order.orderitem_set.filter(vat=self.vat) \
                                   .values('code','description') \
-                                  .annotate(price=models.Sum('price'),
-                                            count=models.Count('price')) \
+                                  .annotate(count=models.Count('price'),
+                                            price=models.Sum('price')) \
                                   .order_by('-price')
 
     def vat_value(self):
