@@ -670,7 +670,7 @@ class InvoiceAdminForm(forms.ModelForm):
 
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ('do_csv_invoices',)
-    list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
+    list_display = ('__str__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
     date_hierarchy = 'payment_date'
     search_fields = (
         'code', 'order__code', 'order__card_name',

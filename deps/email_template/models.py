@@ -13,7 +13,7 @@ class Email(models.Model):
     cc = models.TextField('Cc address', blank = True)
     bcc = models.TextField('Bcc address', blank = True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'email_template: %s' % self.code
 
     def render(self, ctx, mark_safestring=True):

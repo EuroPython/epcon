@@ -190,7 +190,7 @@ if 0: # FIXME: remove hotels and sim
             help_text=_("suggested last bookable day (used in the cart as the default last day)"))
         minimum_night = models.PositiveIntegerField(default=1)
 
-        def __unicode__(self):
+        def __str__(self):
             return '{}: {}-{}'.format(self.conference_id, self.booking_start, self.booking_end)
 
 
@@ -216,7 +216,7 @@ if 0: # FIXME: remove hotels and sim
         class Meta:
             unique_together = (('booking', 'room_type'),)
 
-        def __unicode__(self):
+        def __str__(self):
             return '%s: %s' % (self.conference, self.get_room_type_display())
 
         def clean(self):
@@ -409,7 +409,7 @@ if 0: # FIXME: remove hotels and sim
 
         objects = TicketRoomManager()
 
-        def __unicode__(self):
+        def __str__(self):
             return '%s (%s) %s -> %s' % (self.room_type.get_room_type_display(),
                                          self.get_ticket_type_display(),
                                          self.checkin, self.checkout)
@@ -421,7 +421,7 @@ class Donation(models.Model):
     amount = models.DecimalField(max_digits=6, decimal_places=2)
     message = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s donation of %s' % (self.user.name(), self.date)
 
 class Sprint(models.Model):
