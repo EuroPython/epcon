@@ -45,7 +45,7 @@ class Command(BaseCommand):
             name = item.ticket.name or item.order.user.name()
 
             fname = '%s - %s (%s).pdf' % (name, str(item.ticket), item.ticket.id)
-            fpath = os.path.join(options['output'], fname.encode('utf-8'))
+            fpath = os.path.join(options['output'], fname)
 
             upath = reverse('assopy-orderitem-voucher', kwargs={'order_id': item.order_id, 'item_id': item.id})
             url = urllib.parse.urljoin(settings.DEFAULT_URL_PREFIX, upath)

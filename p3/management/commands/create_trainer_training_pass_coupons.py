@@ -83,7 +83,7 @@ class Command(BaseCommand):
         # Find speakers eligible for coupons
         speakers = {}
         qs = cmodels.TalkSpeaker.objects\
-            .filter(talk__conference=conference.code, 
+            .filter(talk__conference=conference.code,
                     talk__status='accepted',
                     helper=False)\
             .select_related('talk', 'speaker__user')
@@ -115,7 +115,7 @@ class Command(BaseCommand):
             elif admin_type:
                 # All other admin types are not eligible for coupons
                 continue
-                
+
             # Entry already exists, so don't create a new coupon
             if entry is not None:
                 continue
@@ -143,7 +143,7 @@ class Command(BaseCommand):
                     code__startswith='TRT')
         if _debug:
             print(('Found %i fares: %r' % (
-                      len(fares), 
+                      len(fares),
                       [str(f) for f in fares])))
 
         # Get set of existing codes
@@ -174,7 +174,7 @@ class Command(BaseCommand):
             title = entry['title']
 
             # Check for reserved slots
-            if (entry['admin_type'] == 'x' or 
+            if (entry['admin_type'] == 'x' or
                 'reserved for' in title.lower()):
                 continue
 
@@ -235,4 +235,4 @@ class Command(BaseCommand):
         for row in data:
             csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print((','.join(csv_data).encode('utf-8')))
+            print((','.join(csv_data)))

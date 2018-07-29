@@ -57,9 +57,9 @@ class Command(BaseCommand):
         #     help='Help text',
         # ),
     )
-    
+
     args = '<conference>'
-    
+
     def handle(self, *args, **options):
         try:
             conference = args[0]
@@ -115,5 +115,5 @@ class Command(BaseCommand):
                     talk.get_absolute_url(),
                     talk_title(talk),
                     speaker_listing(talk))
-                    ).encode('utf-8')))
+                    )))
             print ('</ul>')

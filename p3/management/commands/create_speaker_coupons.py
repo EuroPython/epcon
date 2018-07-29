@@ -90,7 +90,7 @@ class Command(BaseCommand):
         # Find speakers eligible for coupons
         speakers = {}
         qs = cmodels.TalkSpeaker.objects\
-            .filter(Q(talk__conference=conference.code), 
+            .filter(Q(talk__conference=conference.code),
                     Q(talk__status='accepted') | Q(talk__status='waitlist'),
                     Q(helper=False))\
             .select_related('talk', 'speaker__user')
@@ -119,7 +119,7 @@ class Command(BaseCommand):
             elif admin_type:
                 # All other admin types are not eligible for coupons
                 continue
-                
+
             if talk_code == 'r':
                 # Override existing talk discount with training; this
                 # means that someone who does e.g. both a talk and
@@ -183,11 +183,11 @@ class Command(BaseCommand):
             'discount',
             'donated',
             'amount',
-            'title', 
-            'duration', 
-            'type', 
-            'admin_type', 
-            'talk_id', 
+            'title',
+            'duration',
+            'type',
+            'admin_type',
+            'talk_id',
             'speaker_id',
             'talk_status',
             )
@@ -204,7 +204,7 @@ class Command(BaseCommand):
             title = entry['title']
 
             # Check for reserved slots
-            if (entry['admin_type'] == 'x' or 
+            if (entry['admin_type'] == 'x' or
                 'reserved for' in title.lower()):
                 continue
 
@@ -262,4 +262,4 @@ class Command(BaseCommand):
         for row in data:
             csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print((','.join(csv_data).encode('utf-8')))
+            print((','.join(csv_data)))

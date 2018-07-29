@@ -106,6 +106,6 @@ class Command(BaseCommand):
                 print ('<ul>')
             print((('<li><a href="%s">%s</a></li>' % (
                 profile_url(speaker.user),
-                name)).encode('utf-8')))
+                name))))
         print ('</ul>')
         print(('<p>%i speakers in total.</p>' % len(speaker_list)))

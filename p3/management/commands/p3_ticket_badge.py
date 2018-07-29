@@ -51,4 +51,4 @@ class Command(BaseCommand):
         with file(output + '.check', 'w') as f:
             for t in tickets:
                 if not t.orderitem.order._complete:
-                    f.write('Ticket: %s(%d) - Order: %s\n' % (t.name.encode('utf-8'), t.id, t.orderitem.order.code.encode('utf-8')))
+                    f.write('Ticket: %s(%d) - Order: %s\n' % (t.name, t.id, t.orderitem.order.code))

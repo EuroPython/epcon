@@ -39,7 +39,7 @@ envelope = """\
 From: %(from)s
 To: %%s
 Subject: %(subject)s
-Reply-To: %(reply)s 
+Reply-To: %(reply)s
 Date: %(date)s
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -61,8 +61,8 @@ try:
         paragraphs = ['\n'.join(l) for l in paragraphs]
         body = '\n\n'.join(paragraphs)
 
-        email = email.encode('utf-8')
-        e = envelope % (email, body.encode('utf-8'))
+        email = email
+        e = envelope % (email, body)
         print(email)
         server.sendmail(FROM, [ email ], e)
 finally:

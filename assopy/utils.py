@@ -109,7 +109,7 @@ def geocode(address, region=''):
     import urllib.request, urllib.parse, urllib.error
 
     def _e(s):
-        return s.encode('utf-8') if isinstance(s, str) else s
+        return s.decode('utf-8') if isinstance(s, bytes) else s
 
     params = {
         'address': _e(address.strip()),

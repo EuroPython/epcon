@@ -724,16 +724,11 @@ class InvoiceAdmin(admin.ModelAdmin):
                 'Deposit Invoice', 'SIM Invoice', 'Voucher Invoice',
                 'Billing notes')
 
-        def e(d):
-            for k, v in list(d.items()):
-                d[k] = v.encode('utf-8')
-            return d
-
         ofile = StringIO()
         writer = csv.DictWriter(ofile, fieldnames=columns)
         writer.writerow(dict(list(zip(columns, columns))))
         for i in queryset.select_related('order', 'vat'):
-            writer.writerow(e({
+            writer.writerow({
                 'numero': i.code,
                 'Card name': i.order.card_name,
                 'Customer:tipo IVA': i.vat.invoice_notice,
@@ -750,7 +745,7 @@ class InvoiceAdmin(admin.ModelAdmin):
                 'SIM Invoice': '',
                 'Voucher Invoice': '',
                 'Billing notes': i.order.billing_notes,
-            }))
+            })
 
         response = http.HttpResponse(ofile.getvalue(), content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=fatture.csv'

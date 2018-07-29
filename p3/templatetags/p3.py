@@ -424,8 +424,6 @@ def com_com_registration(user):
     if user.phone and user.phone.startswith('+39'):
         params['ita_mobile'] = user.phone
     params['username'] = name.lower().replace(' ', '').replace('.', '')[:12]
-    for k, v in list(params.items()):
-        params[k] = v.encode('utf-8')
     return url + urllib.parse.urlencode(params)
 
 @register.inclusion_tag('p3/box_next_events.html', takes_context=True)

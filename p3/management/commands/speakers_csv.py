@@ -38,14 +38,6 @@ class Command(BaseCommand):
         )
         writer = csv.DictWriter(sys.stdout, columns)
         writer.writerow(dict(list(zip(columns, columns))))
-        def utf8(d):
-            d = dict(d)
-            for k, v in list(d.items()):
-                try:
-                    d[k] = v.encode('utf-8')
-                except:
-                    pass
-            return d
         for s in sorted(speakers, key=lambda x: x.user.assopy_user.name()):
             profile = models.AttendeeProfile.objects.get(user=s.user)
             if profile.job_title and profile.company:
@@ -66,4 +58,4 @@ class Command(BaseCommand):
                 #'orders': ' '.join(set(t.orderitem.order.code for t in tickets)),
                 #'discounts': ' '.join(set(row.code for t in tickets for row in t.orderitem.order.orderitem_set.all() if row.price < 0)),
             }
-            writer.writerow(utf8(row))
+            writer.writerow(row)

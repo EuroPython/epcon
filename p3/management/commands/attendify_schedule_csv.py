@@ -82,7 +82,7 @@ def format_text(text, remove_tags=False, output_html=True):
     if output_html:
         text = markdown2.markdown(text)
 
-    return text    
+    return text
 
 def talk_title(talk):
 
@@ -145,7 +145,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
             room = ''
         if talk_events is not None:
             talk_events[event.pk] = event
-        
+
     # Don't add entries for events without title
     if not title:
         return
@@ -154,10 +154,10 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     date = time_range[0].strftime('%m/%d/%Y')
     start_time = time_range[0].strftime('%H:%M')
     stop_time = time_range[1].strftime('%H:%M')
-    
+
     # UID
     uid = ''
-    
+
     data.append((
         title,
         date,
@@ -168,7 +168,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         session_type,
         uid,
         ))
-    
+
 
 ###
 
@@ -201,11 +201,11 @@ class Command(BaseCommand):
         for talk in talks:
             talk_type = talk.type[:1]
             admin_type = talk.admin_type[:1]
-            if (admin_type == 'm' or 
-               'EPS' in talk.title or 
+            if (admin_type == 'm' or
+               'EPS' in talk.title or
                'EuroPython 20' in talk.title):
                 type = 'm'
-            elif (admin_type == 'k' or 
+            elif (admin_type == 'k' or
                   talk.title.lower().startswith('keynote')):
                 #print ('found keynote: %r' % talk)
                 type = 'k'
@@ -225,7 +225,7 @@ class Command(BaseCommand):
             bag = talk_types.get(type, [])
             if not bag:
                 continue
-            
+
             # Sort by talk title using title case
             bag.sort(key=lambda talk: talk_title(talk).title())
 
@@ -239,13 +239,13 @@ class Command(BaseCommand):
                 if event.pk in talk_events:
                     continue
                 add_event(data, event=event)
-                
+
         # Output CSV data, UTF-8 encoded
         data.insert(0, CSV_HEADERS)
         with open(csv_file, 'wb') as f:
             for row in data:
                 csv_data = ('"%s"' % (str(x).replace('"', '""'))
                             for x in row)
-                f.write(','.join(csv_data).encode('utf-8'))
+                f.write(','.join(csv_data))
                 f.write('\n')
 

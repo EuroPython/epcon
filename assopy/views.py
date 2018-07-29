@@ -361,7 +361,7 @@ def paypal_cc_billing(request, code):
         "country": o.country,
         "address_name": o.card_name,
     }
-    qparms = urllib.parse.urlencode([ (k,x.encode('utf-8') if isinstance(x, str) else x) for k,x in list(cc_data.items()) ])
+    qparms = urllib.parse.urlencode([ (k, x) for k, x in list(cc_data.items()) ])
     return HttpResponseRedirectSeeOther(
         "%s?%s&%s" % (
             form.paypal_url(),
