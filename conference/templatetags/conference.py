@@ -1123,7 +1123,8 @@ def name_abbrv(name):
         else:
             break
 
-    return '%s. %s' % (name[0], last_name)
+    return "%s %s" % (name, last_name,)
+    # return '%s. %s' % (name[0], last_name)
 
 @register.filter
 def main_event(events):
