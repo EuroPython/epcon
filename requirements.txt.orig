@@ -23,7 +23,10 @@ django-xmlrpc==0.1.5
 easy-thumbnails==2.3
 ecdsa==0.13
 -e git+https://github.com/dcramer/django-paypal.git#egg=django_paypal-master
+<<<<<<< a7298a48fcbde3d4da6d4c5d3aef8576bc534170
+=======
 Fabric==1.10.1
+>>>>>>> Fix the requirements about the security issues
 gunicorn==19.5.0
 html2text==2015.2.18
 html5lib==0.95
