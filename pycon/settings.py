@@ -682,7 +682,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
         return True
 
     # Speakers of the current conference are always allowed to vote
-    from p3.models import TalkSpeaker, Speaker
+    from conference.models import TalkSpeaker, Speaker
     try:
         count = TalkSpeaker.objects.filter(
             talk__conference=CONFERENCE_CONFERENCE,
