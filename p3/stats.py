@@ -39,6 +39,21 @@ def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
     return qs
 
 
+def _tickets_with_unique_email(conf, ticket_type='conference'):
+    assigned_tickets = _assigned_tickets(conf, ticket_type)
+    email_ids = dict(
+        (ticket.p3_conference.assigned_to, ticket.id)
+        for ticket in assigned_tickets)
+    # MAL 2018-07-31: This is a hack: since most emails will be
+    # unique, the id__in filter does not overflow. Doing the reverse
+    # will cause a SQL error due to too many SQL variables.
+    all_ids = set(ticket.id
+                  for ticket in assigned_tickets)
+    ids = set(email_ids.values())
+    duplicate_email_ids = all_ids - ids
+    return assigned_tickets.filter(
+        ~Q(id__in=duplicate_email_ids))
+
 def _assigned_tickets(conf, ticket_type='conference'):
     return _tickets(conf, ticket_type)\
         .exclude(p3_conference=None)\
@@ -161,12 +176,20 @@ def tickets_status(conf, code=None):
     from p3.utils import spam_recruiter_by_conf
     spam_recruiting = spam_recruiter_by_conf(conf)
     if code is None:
-        # FIXME: remove hotel and sim (sim_tickets has been removed from the parameters of ticket_status_no_code function
-        output = ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03)
-
+        # FIXME: remove hotel and sim (sim_tickets has been removed
+        # from the parameters of ticket_status_no_code function
+        output = ticket_status_no_code(conf,
+                                       multiple_assignments,
+                                       orphan_tickets,
+                                       spam_recruiting,
+                                       voupe03)
     else:
-        if code in ('ticket_sold', 'assigned_tickets', 'unassigned_tickets', 'multiple_assignments', ):
-            output = ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
+        if code in ('ticket_sold', 'assigned_tickets',
+                    'unassigned_tickets', 'multiple_assignments',
+                    'tickets_with_unique_email'):
+            output = ticket_status_for_un_assigned_sold_tickets(code,
+                                                                conf,
+                                                                multiple_assignments)
 
         elif code in ('orphan_tickets',):
             output = ticket_status_for_orphant_tickets(code, orphan_tickets)
@@ -199,6 +222,8 @@ def ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
     }
     if code == 'ticket_sold':
         qs = _tickets(conf, 'conference')
+    elif code == 'tickets_with_unique_email':
+        qs = _tickets_with_unique_email(conf)
     elif code == 'assigned_tickets':
         qs = _assigned_tickets(conf)
     elif code == 'unassigned_tickets':
@@ -388,6 +413,7 @@ if 0: # FIXME: remove hotels and sim
 def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03):
     return [
         _create_option('ticket_sold', 'Sold tickets', _tickets(conf, 'conference')),
+        _create_option('tickets_with_unique_email', 'Sold tickets with unique email', _tickets_with_unique_email(conf, 'conference')),
         _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
         _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
         # _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),  # FIXME: remove hotels and sim
