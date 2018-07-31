@@ -39,11 +39,15 @@ from optparse import make_option
 import operator
 import markdown2
 import openpyxl
+import urlparse
 
 ### Globals
 
 # Debug output ?
 _debug = 1
+
+# Website URL to use for making the profile links absolute
+WEBSITE_URL = 'https://ep2018.europython.eu/'
 
 # These must match the talk .type or .admin_type
 from accepted_talks import TYPE_NAMES
@@ -52,8 +56,10 @@ from accepted_talks import TYPE_NAMES
 
 def profile_url(user):
 
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
+    return urlparse.urljoin(
+        WEBSITE_URL,
+        urlresolvers.reverse('conference-profile',
+                             args=[user.attendeeprofile.slug]))
 
 def format_text(text, remove_tags=False, output_html=True):
 
