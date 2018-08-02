@@ -9,8 +9,10 @@ from django.utils import timezone
 from django.core.exceptions import FieldError
 
 from cms.api import create_page
+
 from assopy.models import Vat
 from conference.fares import pre_create_typical_fares_for_conference
+from conference.models import Conference
 from tests.common_tools import create_homepage_in_cms
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -23,6 +25,8 @@ class Command(BaseCommand):
     """
     @transaction.atomic
     def handle(self, *args, **options):
+        Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
+                                         name=settings.CONFERENCE_CONFERENCE)
 
         homepage = create_homepage_in_cms()
 
