@@ -61,9 +61,9 @@ Development Guidelines
 To give you some direction of where we're going with the codebase, here's a
 short of list of things we have in mind for the near future.
 
-* Current codebase needs major refactorings and updates, and we really
+* The current codebase needs major refactorings and updates, and we really
   appreciate all the help, but before doing anything big please talk to us
-  (EuroPython Web WG), so we can coordiante with other ongoing developments.
+  (EuroPython Web WG), so we can coordinate with other ongoing developments.
 
   You can use github issues for that, or find us on our public telegram group
   here -> https://t.me/sprintseuropythonsite
@@ -74,18 +74,18 @@ short of list of things we have in mind for the near future.
   long term plan)
 
 * We've chosen to go with an approach of rewriting the epcon 'in place', which
-  in plain english means we're adding new features and APIs (python functions
+  in plain English means we're adding new features and APIs (python functions
   and classes) within `conference/` app, and then slowly removing old pieces of
   logic from old apps. See `conference/invoicing.py` for an example.
 
 * We use pytest and prefer the pytest tests over DjangoTestCase tests, however
-  both are fine. Similar as above, we have new `tests/` directory and we put
-  all tests, organised by topic in those files. See `tests/test_invoicing.py`
+  both are fine. Similar as above, we have a new `tests/` directory and we put
+  all tests, organised by topic, in those files. See `tests/test_invoicing.py`
 
 * We prefer integration tests (ie. using django test client) over unit tests,
   particulary for old features/pieces of code. Given that our current test
-  coverage is lower than we'd like it to be, pull request that just add tests are
-  very welcome.
+  coverage is lower than we'd like it to be, pull requests that just add tests
+  are very welcome.
 
 * We also like WIP (Work In Progress) pull requests, and Proof-of-Concept
   proposals. If you'd like to work on something, that may take a long time,
@@ -94,8 +94,3 @@ short of list of things we have in mind for the near future.
 * Branch names that start with `feature/` `bugfix/` `tests/` and have
   descriptive names like `docs/update-readme-with-dev-guidelines` are
   preferable to 'patch-1' ;)
-
-
-  help there's a list of issues, and you can submit your own as well, but
-before doing anything big please talk to us (using github issues/comments, or
-on our public telegram group here -> 
