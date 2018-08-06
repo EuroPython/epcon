@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 from django_comments.templatetags import comments as cc
 

@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from collections import defaultdict
 from conference.models import Ticket, Speaker, Talk
 from django.contrib.auth.models import User

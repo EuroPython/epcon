@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 # see: http://code.google.com/p/django-urls/
 # see: http://code.djangoproject.com/wiki/ReplacingGetAbsoluteUrl

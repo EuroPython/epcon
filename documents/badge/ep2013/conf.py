@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from PIL import Image, ImageFont
 
 _FONT_INFO = 'Arial_Unicode.ttf'

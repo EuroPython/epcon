@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.conf import settings
 
 if hasattr(settings, 'ASSOPY_JANRAIN'):

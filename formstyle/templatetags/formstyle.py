@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django import forms
 from django import template
 from django.utils.safestring import mark_safe
