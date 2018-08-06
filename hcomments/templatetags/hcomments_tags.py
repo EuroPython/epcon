@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django import template
 from django.contrib.contenttypes.models import ContentType
 from django.template import Context

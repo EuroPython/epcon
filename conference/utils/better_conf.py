@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 URL = 'http://booking.bettersoftware.it/conference/getinfo.py/empty_attendees'
 
 SUBJECT = "[Better Software 2009] dati mancanti per il tuo badge di ingresso"

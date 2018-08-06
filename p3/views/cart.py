@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_required

@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.conf import settings
 
 # callable invoked in order to determine if the current user can moderate the comment.
