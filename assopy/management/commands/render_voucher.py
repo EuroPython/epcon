@@ -32,7 +32,7 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('codice conferenza non specificato')
 
-        oids = list(map(int, args[1:]))
+        oids = [int(arg) for arg in args[1:]]
 
         from django.db.models import Q
         qs = models.OrderItem.objects\

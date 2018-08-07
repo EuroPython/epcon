@@ -97,9 +97,10 @@ def conference_ticket_badge(tickets):
         else:
             tagline = p3c.tagline
             experience = p3c.python_experience
-            tdays = [datetime.date(*list(map(int, x.split('-')))) for x in [_f for _f in p3c.days.split(',') if _f]]
+            tdays = [datetime.datetime.strptime(s.strip(), '%Y-%m-%d').date()
+                     for s in p3c.days.split(',') if s]
             cdays = conferences[t.fare.conference]['days']
-            days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
+            days = ','.join([str(cdays.index(x) + 1) for x in tdays])
             badge_image = p3c.badge_image.path if p3c.badge_image else None
         if p3c and p3c.assigned_to:
             profile = AttendeeProfile.objects\

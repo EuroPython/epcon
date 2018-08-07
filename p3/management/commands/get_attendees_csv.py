@@ -62,7 +62,7 @@ class Command(BaseCommand):
         )
 
         writer = csv.DictWriter(sys.stdout, columns)
-        writer.writerow(dict(list(zip(columns, columns))))
+        writer.writeheader()
 
         #for s in sorted(attendees, key=lambda x: x.user.assopy_user.name()):
 
