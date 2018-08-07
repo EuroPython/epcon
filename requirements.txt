@@ -39,14 +39,14 @@ python-memcached>=1.48
 python-oembed
 python-openid==2.2.5
 python-social-auth==0.2.9
-python-twitter==2.2
+python-twitter==3.4.2
 pytz
 # raven==5.1.1
 requests==2.5.3
 responses==0.8.1
 requests-oauthlib==0.4.2
 simplejson==3.6.5
-six==1.9.0
+six>1.9.0
 stripe
 suds-jurko
 Unidecode==0.04.17
