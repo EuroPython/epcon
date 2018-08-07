@@ -263,11 +263,10 @@ class UserIdentityManager(models.Manager):
         identifier.gender = profile.get('gender')
 
         if 'birthday' in profile:
-            birthday = profile.birthday
-            if birthday[:4] == '0000':
-                birthday = '1900' + birthday[4:]
-            identifier.birthday = datetime.strptime(birthday.strip(),
-                                                    '%Y-%m-%d').date()
+            bday = profile.birthday.strip()
+            if bday[:4] == '0000':
+                bday = '1900' + bday[4:]
+            identifier.birthday = datetime.strptime(bday, '%Y-%m-%d').date()
         try:
             identifier.email = profile['verifiedEmail']
         except KeyError:
