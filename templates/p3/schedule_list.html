@@ -41,7 +41,7 @@
                             by
                             <div class="speakers">
                                 {% for s in e.talk.speakers %}
-                                <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                                <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </div>
                         {% else %}
