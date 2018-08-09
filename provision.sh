@@ -15,7 +15,7 @@ virtualenv -p python2.7 ../epcon-env
 source ../epcon-env/bin/activate
 
 title "PIP install dev requirements"
-pip install -r requirements-dev.txt
+pip install -r requirements/dev.txt
 
 title "install platform requirements"
 if [[ `uname` == "Darwin" ]]; then

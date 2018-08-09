@@ -9,6 +9,6 @@ python:
   - "2.7"
 
 install:
-  - pip install -r requirements-dev.txt
+  - pip install -r requirements/dev.txt
 
 script: "py.test -c pytest_ci.ini"
