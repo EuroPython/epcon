@@ -183,8 +183,6 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
-from django.conf import global_settings
-
 #
 # XXX THESE SHOULD GO INTO THE OS.ENVIRON !
 #
@@ -428,9 +426,7 @@ AUTHENTICATION_BACKENDS = (
     'assopy.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 
-    'social.backends.facebook.FacebookOAuth2',
    'social.backends.google.GoogleOAuth2',
-   'social.backends.twitter.TwitterOAuth',
    # 'django.contrib.auth.backends.ModelBackend',
 )
 
