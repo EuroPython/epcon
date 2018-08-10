@@ -272,10 +272,6 @@ msgstr "Le tue fatture"
 msgid "Order: %(ocode)s of %(odate)s"
 msgstr "Ordine: %(ocode)s del %(odate)s"
 
-#: templates/assopy/render_janrain_box.html:4
-msgid "Add another account"
-msgstr "Aggiungi un account"
-
 #: templates/assopy/render_voucher.html:9
 msgid "Voucher code"
 msgstr "Codice Voucher"

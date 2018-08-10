@@ -257,10 +257,6 @@ msgstr ""
 msgid "Order: %(ocode)s of %(odate)s"
 msgstr ""
 
-#: templates/assopy/render_janrain_box.html:4
-msgid "Add another account"
-msgstr ""
-
 #: templates/assopy/render_voucher.html:9
 msgid "Voucher code"
 msgstr ""

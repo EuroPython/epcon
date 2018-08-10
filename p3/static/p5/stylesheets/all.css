@@ -4422,12 +4422,6 @@ nav[role=navigation].active {
  *
  * This file is non-free. See README.md for an explanation.
  */
-.janrain-box {
-  width: 400px;
-  display: block;
-  /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
-  min-height: 240px; }
-
 form .field.error .errorlist {
   margin: 0;
   padding: 0;

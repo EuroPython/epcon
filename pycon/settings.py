@@ -11,7 +11,7 @@ if os.environ.get('DEBUG') == 'True':
     DEBUG = True
 else:
     DEBUG = False
-    
+
 # For development, we always run in debug mode...
 #DEBUG=True
 
@@ -426,7 +426,6 @@ LOGGING = {
 AUTHENTICATION_BACKENDS = (
     'assopy.auth_backends.IdBackend',
     'assopy.auth_backends.EmailBackend',
-    'assopy.auth_backends.JanRainBackend',
     'django.contrib.auth.backends.ModelBackend',
 
     'social.backends.facebook.FacebookOAuth2',
@@ -703,7 +702,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
               .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
                       assigned_to=user.email)
     if tickets.count() > 0:
-        return True    
+        return True
 
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
@@ -721,7 +720,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
              .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
              p3_conference__assigned_to=user.email))
         if tickets.count() > 0:
-            return True    
+            return True
     return False
 
 
@@ -1220,14 +1219,6 @@ else:
     PAYPAL_TEST = True
 
 #
-# Janrain account
-#
-ASSOPY_JANRAIN = {
-    'domain': '',
-    'app_id': '',
-    'secret': '',
-}
-
 #
 # Sentry account
 #

@@ -83,7 +83,7 @@ def on_user_created(sender, **kw):
         # The user has been created using email+password form, I won't get other data
         AttendeeProfile.objects.getOrCreateForUser(sender.user)
     else:
-        # The user has been created using janrain, I don't create the profile now
+        # The user has been created, I don't create the profile now
         # waiting for the first identity
         pass
 
