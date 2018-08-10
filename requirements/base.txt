@@ -29,16 +29,13 @@ httplib2==0.9
 lxml==3.4.2
 markdown2==2.3.5
 oauthlib==0.7.2
-paramiko==1.17.6
 Pillow==2.6.1
 polib==1.0.6
 Pygments==2.0.2
 PyJWT==0.4.1
-python-memcached==1.48
 python-oembed==0.2.1
 python-openid==2.2.5
 python-social-auth==0.2.9
-python-twitter==2.2
 pytz
 raven==5.1.1
 requests==2.5.3
@@ -47,8 +44,8 @@ requests-oauthlib==0.4.2
 simplejson==3.6.5
 six==1.9.0
 stripe==1.19.1
-suds==0.4
 Unidecode==0.04.17
+# artcz: as far as I can tell this is for hcomments only
 django-recaptcha==1.0.5
 django-contrib-comments==1.7.1
 django_extensions==1.6.7

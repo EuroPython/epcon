@@ -20,8 +20,6 @@ REFUND_EMAIL_ADDRESS = getattr(settings, 'ASSOPY_REFUND_EMAIL_ADDRESS', {
     'credit-note': SEND_EMAIL_TO,
 })
 
-VIES_WSDL_URL = getattr(settings, 'ASSOPY_VIES_WSDL_URL', 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl')
-
 OTC_CODE_HANDLERS = {
     'v': 'assopy.views.OTCHandler_V',
     'j': 'assopy.views.OTCHandler_J',

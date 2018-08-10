@@ -58,22 +58,6 @@ class P3BillingDataCompany(P3BillingData):
         self.fields['card_name'].label = _('Company Name')
         self.fields['address'].required = True
 
-#    def clean_vat_number(self):
-#        # I can verify only european ids using vies
-#        vat = self.cleaned_data['vat_number']
-#        country = self.instance.country
-#        if vat and country and country.vat_company_verify == 'v':
-#            from assopy.clients import vies
-#            try:
-#                check = vies.check_vat(country.pk, vat)
-#            except Exception:
-#                # VIES servicy may fail for unknown reasons, I don't want
-#                # to lose an order because of that.
-#                pass
-#            else:
-#                if not check:
-#                    raise forms.ValidationError('According to VIES, this is not a valid vat number')
-#        return vat
 
 def cart(request):
     u = None
