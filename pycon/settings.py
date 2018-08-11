@@ -930,10 +930,6 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
     'credit-note': ['billing@europython.eu'],
 }
 
-ASSOPY_OTC_CODE_HANDLERS = {
-    'e': 'p3.views.OTCHandler_E',
-}
-
 #
 # This URL needs to be set to the main URL of the site.
 #
