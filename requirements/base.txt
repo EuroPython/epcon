@@ -7,7 +7,7 @@ django-classy-tags==0.8.0
 django-cms==3.5.2
 djangocms-admin-style==1.2.6
 djangocms-grid==1.3
-djangocms-text-ckeditor==3.3.0
+djangocms-text-ckeditor==3.5.3
 django-crontab==0.4.2
 django-filebrowser-no-grappelli==3.6.2
 django-filer==1.2.5
