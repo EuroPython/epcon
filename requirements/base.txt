@@ -36,7 +36,7 @@ requests==2.5.3
 responses==0.8.1
 requests-oauthlib==0.4.2
 simplejson==3.6.5
-six==1.9.0
+six
 stripe==1.19.1
 
 # artcz: as far as I can tell this is for hcomments only
