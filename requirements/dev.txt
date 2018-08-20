@@ -2,7 +2,6 @@
 
 freezegun
 factory_boy
-selenium
 mock
 coverage
 pytest==3.0.3
