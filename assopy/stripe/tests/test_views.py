@@ -6,8 +6,8 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, LiveServerTestCase
 from django.utils import timezone
 
-from selenium.webdriver.firefox.webdriver import WebDriver
-from selenium.webdriver.support.wait import WebDriverWait
+# from selenium.webdriver.firefox.webdriver import WebDriver
+# from selenium.webdriver.support.wait import WebDriverWait
 
 import stripe
 
