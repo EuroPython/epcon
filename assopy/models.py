@@ -15,6 +15,7 @@ from django.contrib import auth
 from django.contrib.admin.utils import quote
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
@@ -448,6 +449,14 @@ class OrderManager(models.Manager):
             return t if t is not None else 0
 
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
+
+        # FIXME/TODO(artcz)(2018-08-20)
+        # Temporary import to avoid ciruclar. To get a smaller PR I want to
+        # import just the next_order_code. Target here is to replace this
+        # create() function with proper implementation in conference/orders.py,
+        # similar to how conference/invoicing.py works.
+        from conference.orders import next_order_code_for_year
+
         if coupons:
             for c in coupons:
                 if not c.valid(user):
@@ -523,7 +532,10 @@ class OrderManager(models.Manager):
             tickets_total,
             o.total()
         )
-        o.code = settings.NEXT_ORDER_CODE(o)
+
+        # TODO: replace this timezone.now().year with proper date that can be
+        # passed as an argument
+        o.code = next_order_code_for_year(timezone.now().year)
         o.save()
         if o.total() == 0:
             o._complete = True
