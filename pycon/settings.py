@@ -335,8 +335,6 @@ INSTALLED_APPS = (
     'markitup',
     'cms_utils',
 
-    'raven.contrib.django.raven_compat',
-
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
     # 'sslserver',
@@ -1212,14 +1210,6 @@ if os.environ.get('PAYPAL_TEST') == 'False':
     PAYPAL_TEST = False
 else:
     PAYPAL_TEST = True
-
-#
-#
-# Sentry account
-#
-RAVEN_CONFIG = {
-    'dsn': '',
-}
 
 #
 # EMail setup
