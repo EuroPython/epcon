@@ -21,24 +21,6 @@ REFUND_EMAIL_ADDRESS = getattr(settings, 'ASSOPY_REFUND_EMAIL_ADDRESS', {
 })
 
 
-def _ASSOPY_NEXT_ORDER_CODE(order):
-    """
-    Ritorna un codice di ordine nel formato specificato
-    """
-    import datetime
-    import models
-    try:
-        last_code = models.Order.objects \
-                      .filter(code__startswith='O/%s.' % str(datetime.date.today().year)[2:]) \
-                      .order_by('-code') \
-                      .values_list('code',flat=True)[0]
-        last_number = int(last_code[5:])
-    except IndexError:
-        last_number = 0
-
-    return "O/%s.%s" % (str(datetime.date.today().year)[2:], str(last_number + 1).zfill(4))
-
-NEXT_ORDER_CODE = getattr(settings, 'ASSOPY_NEXT_ORDER_CODE', _ASSOPY_NEXT_ORDER_CODE)
 
 def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
     """
