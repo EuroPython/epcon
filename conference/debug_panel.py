@@ -9,19 +9,24 @@ import platform
 import subprocess
 
 import django
+from django import forms
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
+from django.shortcuts import redirect
 
 from common.http import PdfResponse
 from conference.invoicing import (
     Invoice,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
+    REAL_INVOICE_PREFIX,
+    next_invoice_code_for_year,
     render_invoice_as_html,
     export_invoices_to_2018_tax_report,
     export_invoices_to_2018_tax_report_csv,
     export_invoices_for_payment_reconciliation,
+    extract_customer_info,
 )
 
 
@@ -152,3 +157,65 @@ def debug_panel_invoice_export_for_payment_reconciliation_json(request):
 
     # TODO: this json maybe big, maybe we could use StreamingHttpResponse?
     return response
+
+
+@staff_member_required
+def reissue_invoice(request, invoice_id):
+    """
+    Displays form that can issue another invoice based on previous one.
+    Pre-fills the form with old invoice data.
+    """
+    old_invoice = Invoice.objects.get(pk=invoice_id)
+
+    class ReissueInvoiceForm(forms.ModelForm):
+        """
+        TODO: this is a temporary location for the prototype. Move it somewhere
+        else later.
+        """
+
+        class Meta:
+            model = Invoice
+            fields = ['emit_date', 'customer']
+
+    if request.method == 'POST':
+        form = ReissueInvoiceForm(data=request.POST)
+        if form.is_valid():
+            new_code = next_invoice_code_for_year(
+                REAL_INVOICE_PREFIX,
+                old_invoice.emit_date.year
+            )
+
+            new_invoice = Invoice(
+                order=old_invoice.order,
+                code=new_code,
+                emit_date=form.cleaned_data['emit_date'],
+                payment_date=old_invoice.payment_date,
+                price=old_invoice.price,
+                issuer=old_invoice.issuer,
+                customer=form.cleaned_data['customer'],
+                local_currency=old_invoice.local_currency,
+                vat_in_local_currency=old_invoice.vat_in_local_currency,
+                exchange_rate=old_invoice.exchange_rate,
+                exchange_rate_date=old_invoice.exchange_rate_date,
+                vat=old_invoice.vat
+            )
+
+            new_invoice.html = render_invoice_as_html(new_invoice)
+            new_invoice.save()
+
+            return redirect('debug_panel_invoice_export_for_tax_report_2018')
+    else:
+        customer = (
+            old_invoice.customer
+            or extract_customer_info(old_invoice.order)
+        )
+        form = ReissueInvoiceForm(initial={
+            'customer': customer,
+            'emit_date': old_invoice.emit_date,
+        })
+
+    return TemplateResponse(
+        request,
+        'conference/debugpanel/reissue_invoice.html',
+        {'form': form, 'old_invoice': old_invoice}
+    )
