@@ -272,6 +272,8 @@ def render_invoice_as_html(invoice):
         'title': unicode(invoice),
         'code': invoice.code,
         'emit_date': invoice.emit_date,
+        # TODO: possibly we need to stare it as separate date
+        'time_of_supply': invoice.payment_date,
         'order': {
             'card_name': order.card_name,
             'address': address,
