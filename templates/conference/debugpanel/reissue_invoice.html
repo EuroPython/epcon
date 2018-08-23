@@ -29,6 +29,7 @@
   <body>
     <h1>Creating new invoice from {{ invoice }}</h1>
     <form method='POST' action='.'>
+      {% csrf_token %}
       {{ form.as_p }}
       <p>
       <input type="submit" value="issue new invoice">
