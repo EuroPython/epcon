@@ -330,7 +330,7 @@
                                 <div class="cell-content">
                                   {# TODO: this invoice.customer is a new thing, ultimately we'd like to use just that, but we'd need to backfill invoice.customer for old data first #}
                                   {% if invoice.customer %}
-                                    {{ invoice.customer }}
+                                    {{ invoice.customer|safe|linebreaks }}
                                   {% else %}
                                     {{ order.card_name }} <br/>
                                     {{ order.address|safe|linebreaks }}<br/>
