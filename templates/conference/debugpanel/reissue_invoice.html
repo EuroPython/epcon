@@ -27,7 +27,7 @@
 
   </head>
   <body>
-    <h1>Creating new invoice from {{ invoice }}</h1>
+    <h1>Creating new invoice from {{ old_invoice.code }}</h1>
     <form method='POST' action='.'>
       {% csrf_token %}
       {{ form.as_p }}
