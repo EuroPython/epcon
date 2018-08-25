@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib
 import httplib
-import simplejson
+import json
 
 G = 'maps.google.com'
 
@@ -27,7 +27,7 @@ def geocode(address, key, country):  # pragma: no cover
         conn.request('GET', url)
         r = conn.getresponse()
         if r.status == 200:
-            return simplejson.loads(r.read())
+            return json.loads(r.read())
         else:
             return {'Status': {'code': r.status }}
     finally:
