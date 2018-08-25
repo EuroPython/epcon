@@ -4,11 +4,11 @@
 URL = 'http://assopy.pycon.it/conference/getinfo.py/geo_sold'
 
 import urllib2
-import simplejson
+import json
 from datetime import datetime, date, time, timedelta
 from collections import defaultdict
 
-attendees = simplejson.loads(urllib2.urlopen(URL).read())
+attendees = json.loads(urllib2.urlopen(URL).read())
 
 data = defaultdict(lambda: 0)
 for entry in attendees:
