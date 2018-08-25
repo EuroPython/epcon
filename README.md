@@ -18,7 +18,7 @@ You are thus welcome to fork away and reuse/enhance this project, as long as you
 INSTALL & SETUP
 ---------------
 
-Run provision.sh. Read it for more details.
+Run `provision.sh`. Read it for more details.
 
 Edit `pycon/settings_locale.py` to your taste!
 
