@@ -282,6 +282,11 @@ INSTALLED_APPS = (
     # that's done this warning could be removed (and the order of the apps
     # should be no longer relevant)
 
+    # The conference app needs to be declared ahead of the `django` ones as
+    # it overrides some of django-admin commands. Moving other local apps here
+    # re-introduces deprecation warnings.
+    'conference',
+
     'djangocms_admin_style',
     'django_comments',
     'django.contrib.auth',
@@ -296,7 +301,6 @@ INSTALLED_APPS = (
     'p3',
     'assopy',
     'assopy.stripe',
-    'conference',
     'hcomments',
 
     'social.apps.django_app.default',
@@ -337,7 +341,7 @@ INSTALLED_APPS = (
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
-    # 'sslserver',
+    'sslserver',
 )
 
 

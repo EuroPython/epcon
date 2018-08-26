@@ -35,3 +35,6 @@ htmlcov/
 coverage.xml
 prof/
 .vagrant
+
+# py.test cache
+.pytest_cache/
