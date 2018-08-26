@@ -34,7 +34,6 @@ title "Generate data"
 mkdir -p data/site
 
 python manage.py migrate
-python manage.py createsuperuser
 python manage.py create_initial_data_for_dev
 
 

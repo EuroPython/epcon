@@ -26,6 +26,8 @@ Edit `pycon/settings_locale.py` to your taste!
 python manage.py runserver
 ```
 
+You can access the admin pages using the `admin` username. You can login to the public pages using either `alice@europython.eu` or `bob@europython.eu`. All users' passwords are `europython`.
+
 RUN IN DEBUG MODE
 -----------------
 

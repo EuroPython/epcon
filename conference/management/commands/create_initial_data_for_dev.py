@@ -10,10 +10,11 @@ from django.core.exceptions import FieldError
 
 from cms.api import create_page
 
-from assopy.models import Vat
+from assopy import models as assopy_models
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.models import Conference
 from tests.common_tools import create_homepage_in_cms
+
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
 
@@ -58,8 +59,20 @@ class Command(BaseCommand):
             except FieldError as e:
                 print("Warning: ", e)
 
+        print("Creating an admin user")
+        assopy_models.User.objects.create_superuser(
+            username='admin', email='admin@admin.com', password='europython')
+
+        print("Creating regular users")
+        assopy_models.User.objects.create_user(
+            email='alice@europython.eu', password='europython', send_mail=False)
+        assopy_models.User.objects.create_user(
+            email='bob@europython.eu', password='europython', send_mail=False)
+        assopy_models.User.objects.create_user(
+            email='cesar@europython.eu', password='europython', send_mail=False)
+
         print("Pre creating fares")
-        default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+        default_vat_rate, _ = assopy_models.Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
         pre_create_typical_fares_for_conference(
             settings.CONFERENCE_CONFERENCE,
             default_vat_rate,
