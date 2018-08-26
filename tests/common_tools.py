@@ -61,7 +61,9 @@ def create_homepage_in_cms():
                                      name=settings.CONFERENCE_CONFERENCE)
     homepage = create_page(
         title='HOME', template='django_cms/p5_homepage.html', language='en',
-        reverse_id='home', published=True, publication_date=timezone.now())
+        reverse_id='home', published=True, publication_date=timezone.now(),
+        in_navigation=True,
+    )
     homepage.set_as_homepage()
 
     return homepage

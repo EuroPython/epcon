@@ -66,6 +66,7 @@ class Command(BaseCommand):
                     reverse_id=id,
                     published=True,
                     publication_date=timezone.now(),
+                    in_navigation=True,
                 )
                 print("Created page: ", page.reverse_id, title, page.template)
 
