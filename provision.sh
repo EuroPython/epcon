@@ -21,6 +21,11 @@ title "install platform requirements"
 if [[ `uname` == "Darwin" ]]; then
     brew install cairo pango
 fi
+ubuntu_regex='^Distributor ID:[[:space:]]+Ubuntu$'
+if [[ `lsb_release -i` =~ ubuntu_regex ]]; then
+    echo 'Installing missing Ubuntu packages'
+    sudo apt-get install libxml2-dev libxslt1-dev python-dev
+fi
 
 title "Copy settings"
 [[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
