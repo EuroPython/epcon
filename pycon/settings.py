@@ -341,9 +341,8 @@ INSTALLED_APPS = (
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
-    'sslserver',
+    # 'sslserver',
 )
-
 
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
