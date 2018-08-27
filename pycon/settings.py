@@ -16,9 +16,6 @@ from model_utils import Choices
 _ = lambda x:x
 
 
-# PROJECT_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
-
-
 class Base(Configuration):
     DEBUG = values.BooleanValue(False)
 
@@ -59,30 +56,14 @@ class Base(Configuration):
     ALLOWED_HOSTS_FROM_ENV = values.Value('*', environ_name='ALLOWED_HOSTS')
 
     # Project directories settings.
-    PROJECT_DIR = values.Value(os.path.normpath(os.path.join(os.path.dirname(__file__), '..')))
-    @property
-    def DATA_DIR(self):
-        if self.DATA_DIR_FROM_ENV:
-            return self.DATA_DIR_FROM_ENV
-        else:
-            return os.path.join(self.PROJECT_DIR, 'data')
-    DATA_DIR_FROM_ENV = values.Value(environ_name='DATA_DIR')
+    PROJECT_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+    DATA_DIR = values.Value(os.path.join(PROJECT_DIR, 'data'))
+    OTHER_STUFF = values.Value(os.path.join(PROJECT_DIR, 'documents'))
+    LOGS_DIR = os.path.join(PROJECT_DIR, 'logs/')
 
     @property
     def SITE_DATA_ROOT(self):
         return self.DATA_DIR + '/site'
-
-    @property
-    def OTHER_STUFF(self):
-        if self.OTHER_STUFF_FRON_ENV:
-            return self.OTHER_STUFF_FRON_ENV
-        else:
-            return os.path.join(self.PROJECT_DIR, 'documents')
-    OTHER_STUFF_FRON_ENV = values.Value(environ_name='OTHER_STUFF')
-
-    @property
-    def LOGS_DIR(self):
-        return os.path.join(self.PROJECT_DIR, 'logs/')
 
     # Absolute filesystem path to the directory that will hold user-uploaded files.
     # Example: "/home/media/media.lawrence.com/media/"
@@ -235,38 +216,38 @@ class Base(Configuration):
     @property
     def TEMPLATES(self):
         return [{
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [
-                os.path.join(self.PROJECT_DIR, 'templates'),
-            ],
-            'OPTIONS': {
-                'debug': self.DEBUG,
-                'context_processors': [
-                    "django.contrib.auth.context_processors.auth",
-                    'django.contrib.messages.context_processors.messages',
-                    "django.core.context_processors.i18n",
-                    "django.core.context_processors.debug",
-                    "django.core.context_processors.request",
-                    "django.core.context_processors.media",
-                    'django.core.context_processors.csrf',
-                    'django.core.context_processors.request',
-                    "django.core.context_processors.tz",
-                    'p3.context_processors.settings',
-                    'conference.context_processors.current_url',
-                    'conference.context_processors.stuff',
-                    "sekizai.context_processors.sekizai",
-                    "cms.context_processors.cms_settings",
-                    "django.core.context_processors.static",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(self.PROJECT_DIR, 'templates'),
+        ],
+        'OPTIONS': {
+            'debug': self.DEBUG,
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                'django.contrib.messages.context_processors.messages',
+                "django.core.context_processors.i18n",
+                "django.core.context_processors.debug",
+                "django.core.context_processors.request",
+                "django.core.context_processors.media",
+                'django.core.context_processors.csrf',
+                'django.core.context_processors.request',
+                "django.core.context_processors.tz",
+                'p3.context_processors.settings',
+                'conference.context_processors.current_url',
+                'conference.context_processors.stuff',
+                "sekizai.context_processors.sekizai",
+                "cms.context_processors.cms_settings",
+                "django.core.context_processors.static",
 
-                    'social.apps.django_app.context_processors.backends',
-                    'social.apps.django_app.context_processors.login_redirect',
-                ],
-                'loaders': [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ],
-            },
-        }]
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
+        },
+    }]
 
     MIDDLEWARE_CLASSES = (
         'django.contrib.sessions.middleware.SessionMiddleware',
@@ -293,13 +274,11 @@ class Base(Configuration):
     # Python dotted path to the WSGI application used by Django's runserver.
     WSGI_APPLICATION = 'pycon.wsgi.application'
 
-    def LOCALE_PATHS(self):
-        return (
-            os.path.join(self.PROJECT_DIR, 'locale'),
-        )
+    LOCALE_PATHS = (
+        os.path.join(PROJECT_DIR, 'locale'),
+    )
 
     INSTALLED_APPS = (
-        # 'test_without_migrations',
         'filebrowser',
         # Warning: the sequence p3/assopy/admin is important to be able to
         # resolve correctly templates
@@ -363,7 +342,6 @@ class Base(Configuration):
         'cms_utils',
     )
 
-
     # Google ReCaptcha settings
     RECAPTCHA_OPTIONS = {
         'theme': 'clean',
@@ -383,61 +361,59 @@ class Base(Configuration):
     # the site admins on every HTTP 500 error when DEBUG=False.
     # See http://docs.djangoproject.com/en/dev/topics/logging for
     # more details on how to customize your logging configuration.
-    @property
-    def LOGGING(self):
-        return {
-            'version': 1,
-            'disable_existing_loggers': False,
-            'formatters': {
-                'verbose': {
-                    'format': '%(asctime)s [%(process)d] %(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
-                },
-                'simple': {
-                    'format': '%(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
-                },
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(asctime)s [%(process)d] %(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
             },
-            'filters': {
-                'require_debug_false': {
-                    '()': 'django.utils.log.RequireDebugFalse'
-                }
+            'simple': {
+                'format': '%(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
             },
-            'handlers': {
-                'mail_admins': {
-                    'level': 'ERROR',
-                    'filters': ['require_debug_false'],
-                    'class': 'django.utils.log.AdminEmailHandler'
-                },
-                'console': {
-                    'level': 'DEBUG',
-                    'class': 'logging.StreamHandler',
-                    'formatter': 'simple',
-                },
-                'file': {
-                    'level': 'DEBUG',
-                    'class': 'logging.FileHandler',
-                    'filename': os.path.join(self.LOGS_DIR, 'conference.log'),
-                    'encoding': 'utf-8',
-                    'formatter': 'verbose',
-                },
-            },
-            'loggers': {
-                'django.request': {
-                    'handlers': ['file', 'mail_admins'],
-                    'level': 'ERROR',
-                    'propagate': True,
-                },
-                'conference.tags': {
-                    'handlers': ['console', 'file'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'assopy.views': {
-                    'handlers': ['file'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
+        },
+        'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
             }
+        },
+        'handlers': {
+            'mail_admins': {
+                'level': 'ERROR',
+                'filters': ['require_debug_false'],
+                'class': 'django.utils.log.AdminEmailHandler'
+            },
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(LOGS_DIR, 'conference.log'),
+                'encoding': 'utf-8',
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'django.request': {
+                'handlers': ['file', 'mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'conference.tags': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'assopy.views': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
         }
+    }
 
     AUTHENTICATION_BACKENDS = (
         'assopy.auth_backends.IdBackend',
@@ -447,7 +423,6 @@ class Base(Configuration):
         'social.backends.google.GoogleOAuth2',
         # 'django.contrib.auth.backends.ModelBackend',
     )
-
 
     # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
     # trailing slash.
@@ -1293,12 +1268,12 @@ class Base(Configuration):
             else:
                 print('WARN, SECRET_KEY not set')
 
+        if not os.path.exists(cls.LOGS_DIR):
+            os.makedirs(cls.LOGS_DIR)
+
     @classmethod
     def post_setup(cls):
         super(Base, cls).post_setup()
-
-        if not os.path.exists(settings.LOGS_DIR):
-            os.makedirs(settings.LOGS_DIR)
 
         # files under SECURE_MEDIA_BOOT must be served by django, this if
         # is needed to avoid they end up in a subdir of MEDIA_ROOT that is
