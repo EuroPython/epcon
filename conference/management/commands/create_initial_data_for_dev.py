@@ -81,11 +81,11 @@ class Command(BaseCommand):
 
         print("Creating regular users")
         assopy_models.User.objects.create_user(
-            email='alice@europython.eu', password='europython', send_mail=False)
+            email='alice@europython.eu', password='europython', active=True, send_mail=False)
         assopy_models.User.objects.create_user(
-            email='bob@europython.eu', password='europython', send_mail=False)
+            email='bob@europython.eu', password='europython', active=True, send_mail=False)
         assopy_models.User.objects.create_user(
-            email='cesar@europython.eu', password='europython', send_mail=False)
+            email='cesar@europython.eu', password='europython', active=True, send_mail=False)
 
         print("Creating sponsors")
         SponsorIncomeFactory(
