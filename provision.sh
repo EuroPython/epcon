@@ -22,7 +22,7 @@ if [[ `uname` == "Darwin" ]]; then
     brew install cairo pango
 fi
 ubuntu_regex='^Distributor ID:[[:space:]]+Ubuntu$'
-if [[ `lsb_release -i` =~ ubuntu_regex ]]; then
+if [[ -x "$(command -v lsb_release)" && `lsb_release -i` =~ $ubuntu_regex ]]; then
     echo 'Installing missing Ubuntu packages'
     sudo apt-get install libxml2-dev libxslt1-dev python-dev
 fi
