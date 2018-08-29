@@ -20,8 +20,6 @@ INSTALL & SETUP
 
 Run `provision.sh`. Read it for more details.
 
-Edit `pycon/settings_locale.py` to your taste!
-
 ```bash
 python manage.py runserver
 ```
@@ -30,15 +28,15 @@ RUN IN DEBUG MODE
 -----------------
 
 ```bash
-DEBUG=True python manage.py runserver
+python manage.py runserver --configuration=Dev
 ```
 
 SERVING THE PAGE LOCALLY OVER HTTPS
 -----------------
 
-Make sure `sslserver` is in `settings.INSTALLED_APPS`. Then run the server locally using:
+Run the server locally using:
 ```bash
-python manage.py runsslserver
+python manage.py runsslserver --configuration=Dev
 ```
 
 CONTRIBUTING

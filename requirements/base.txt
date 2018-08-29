@@ -4,6 +4,7 @@ Django==1.8.16
 pytz
 django-authority==0.13.1
 django-classy-tags==0.8.0
+django-configurations==2.1
 django-cms==3.5.2
 djangocms-admin-style==1.2.6
 djangocms-grid==1.3
@@ -44,11 +45,14 @@ stripe==1.19.1
 django-recaptcha==1.0.5
 
 django-contrib-comments==1.7.1
-django_extensions==1.6.7
 openpyxl==2.4.8
-ipython==5.4.1
 decorator==4.1.2
 django-model-utils==3.1.1
+
+# umgelurgel: those can probably be moved to dev requirements unless
+# django shell access is required in production
+django_extensions==1.6.7
+ipython==5.4.1
 
 # Going with older version because the newer one conflicts with the html5lib
 # version we need in other dependency

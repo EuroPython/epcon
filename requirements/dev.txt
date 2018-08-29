@@ -13,6 +13,7 @@ pytest-sugar
 pytest-watch
 pytest-xdist
 django-coverage-plugin
+# umgelurgel: Module unsupported for 3 years, probably a candidate for removal
 -e git+https://github.com/FactoryBoy/django-factory_boy#egg=master
 django-pdb
 django-test-without-migrations

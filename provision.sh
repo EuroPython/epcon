@@ -27,9 +27,6 @@ if [[ -x "$(command -v lsb_release)" && `lsb_release -i` =~ $ubuntu_regex ]]; th
     sudo apt-get install libxml2-dev libxslt1-dev python-dev
 fi
 
-title "Copy settings"
-[[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
-
 title "Generate data"
 mkdir -p data/site
 
