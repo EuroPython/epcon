@@ -358,8 +358,10 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
         return '<img src="%s" height="32" />' % (self._profiles[o.user_id]['image'],)
     _avatar.allow_tags = True
 
+
 admin.site.unregister(cmodels.Speaker)
 admin.site.register(cmodels.Speaker, SpeakerAdmin)
+
 
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('_name', 'date', 'amount')
@@ -372,102 +374,8 @@ class DonationAdmin(admin.ModelAdmin):
     _name.short_description = 'name'
     _name.admin_order_field = 'user__user__first_name'
 
+
 admin.site.register(models.Donation, DonationAdmin)
-
-if 0:  # FIXME: remove hotels and sim
-    class HotelBookingAdmin(admin.ModelAdmin):
-        list_display = ('conference', 'booking_start', 'booking_end', 'minimum_night')
-
-    admin.site.register(models.HotelBooking, HotelBookingAdmin)
-
-
-    class HotelRoomAdmin(admin.ModelAdmin):
-        list_display = ('_conference', 'room_type', 'quantity', 'amount',)
-        list_editable = ('quantity', 'amount',)
-        list_filter = ('booking__conference',)
-        list_select_related = True
-
-        def _conference(self, o):
-            return o.booking.conference_id
-
-        def get_urls(self):
-            urls = super(HotelRoomAdmin, self).get_urls()
-            my_urls = patterns('',
-                url(r'^tickets/$', self.admin_site.admin_view(self.ticket_list), name='p3-hotelrooms-tickets-data'),
-            )
-            return my_urls + urls
-
-        def ticket_list(self, request):
-            from common.jsonify import json_dumps
-            day_ix = int(request.GET['day'])
-            room_type = request.GET['type']
-            rdays = models.TicketRoom.objects.reserved_days()
-            day = rdays[day_ix]
-
-            qs = models.TicketRoom.objects.valid_tickets()\
-                .filter(room_type__room_type=room_type, checkin__lte=day, checkout__gte=day)\
-                .select_related('ticket__user', 'ticket__orderitem__order')\
-                .order_by('ticket__orderitem__order__created')
-
-            output = []
-            for row in qs:
-                user = row.ticket.user
-                order = row.ticket.orderitem.order
-                name = u'{0} {1}'.format(user.first_name, user.last_name)
-                if row.ticket.name and row.ticket.name != name:
-                    name = u'{0} ({1})'.format(row.ticket.name, name)
-                output.append({
-                    'user': {
-                        'id': user.id,
-                        'name': name,
-                    },
-                    'order': {
-                        'id': order.id,
-                        'code': order.code,
-                        'method': order.method,
-                        'complete': order._complete,
-                    },
-                    'period': (row.checkin, row.checkout, row.checkout == day),
-                })
-            return http.HttpResponse(json_dumps(output), 'text/javascript')
-
-    admin.site.register(models.HotelRoom, HotelRoomAdmin)
-
-    class TicketRoomAdmin(admin.ModelAdmin):
-        list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
-        list_select_related = True
-        search_fields = ('ticket__user__first_name', 'ticket__user__last_name', 'ticket__user__email', 'ticket__orderitem__order__code')
-        raw_id_fields = ('ticket', )
-        list_filter = ('room_type__room_type',)
-
-        def _user(self, o):
-            return o.ticket.user
-
-        def _room_type(self, o):
-            return o.room_type.get_room_type_display()
-
-        def _order_code(self, o):
-            return o.ticket.orderitem.order.code
-
-        def _order_date(self, o):
-            return o.ticket.orderitem.order.created
-
-        def _order_confirmed(self, o):
-            return o.ticket.orderitem.order._complete
-        _order_confirmed.boolean = True
-
-    admin.site.register(models.TicketRoom, TicketRoomAdmin)
-
-
-# TODO commented out becauxe it seems to be relevant only for Genro
-# class InvoiceAdmin(aadmin.InvoiceAdmin):
-#     def _invoice(self, i):
-#         return super(InvoiceAdmin, self)._invoice(i)
-#     _invoice.allow_tags = True
-#     _invoice.short_description = 'Download'
-
-# admin.site.unregister(amodels.Invoice)
-# admin.site.register(amodels.Invoice, InvoiceAdmin)
 
 
 class VotoTalkAdmin(admin.ModelAdmin):
@@ -485,6 +393,7 @@ class VotoTalkAdmin(admin.ModelAdmin):
         return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
     _name.allow_tags = True
     _name.admin_order_field = 'user__first_name'
+
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
@@ -737,6 +646,7 @@ def prezzo_biglietti_ricalcolato(**kw):
                 tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
             tcp[code]['prices'][price]['count'] += 1
     return tcp.values()
+
 prezzo_biglietti_ricalcolato.template = '''
 <table>
     <tr>
@@ -757,7 +667,3 @@ prezzo_biglietti_ricalcolato.template = '''
     {% endfor %}
 </table>
 '''
-
-# Monkey patch our version into assopy package:
-if 0:
-    astats.prezzo_biglietti_ricalcolato = prezzo_biglietti_ricalcolato

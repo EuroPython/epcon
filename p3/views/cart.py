@@ -121,15 +121,11 @@ def calculator(request):
                 coupons.append(data['coupon'])
             totals = amodels.Order\
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
-            if 0:
-                # We no longer support HotelBookings
-                try:
-                    booking = models.HotelBooking.objects\
-                        .get(conference=settings.CONFERENCE_CONFERENCE)
-                except models.HotelBooking.DoesNotExist:
-                    booking = None
-            else:
-                booking = None
+
+            # NOTE(artcz)(2018-09-05) this was related to hotel bookings. left
+            # here for compatibility below. probably not needed and can be
+            # removed
+            booking = None
 
             def _fmt(x):
                 if x == 0:
