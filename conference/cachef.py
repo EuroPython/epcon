@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.core.cache import cache
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import Signal

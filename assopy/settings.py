@@ -1,14 +1,5 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.conf import settings
-
-if hasattr(settings, 'ASSOPY_JANRAIN'):
-    JANRAIN = {
-        'domain': settings.ASSOPY_JANRAIN['domain'],
-        'app_id': settings.ASSOPY_JANRAIN['app_id'],
-        'secret': settings.ASSOPY_JANRAIN['secret'],
-    }
-else:
-    JANRAIN = None
 
 try:
     BACKEND = settings.ASSOPY_BACKEND
@@ -29,32 +20,12 @@ REFUND_EMAIL_ADDRESS = getattr(settings, 'ASSOPY_REFUND_EMAIL_ADDRESS', {
     'credit-note': SEND_EMAIL_TO,
 })
 
-VIES_WSDL_URL = getattr(settings, 'ASSOPY_VIES_WSDL_URL', 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl')
-
 OTC_CODE_HANDLERS = {
     'v': 'assopy.views.OTCHandler_V',
     'j': 'assopy.views.OTCHandler_J',
 }
 OTC_CODE_HANDLERS.update(getattr(settings, 'ASSOPY_OTC_CODE_HANDLERS', {}))
 
-def _ASSOPY_NEXT_ORDER_CODE(order):
-    """
-    Ritorna un codice di ordine nel formato specificato
-    """
-    import datetime
-    import models
-    try:
-        last_code = models.Order.objects \
-                      .filter(code__startswith='O/%s.' % str(datetime.date.today().year)[2:]) \
-                      .order_by('-code') \
-                      .values_list('code',flat=True)[0]
-        last_number = int(last_code[5:])
-    except IndexError:
-        last_number = 0
-
-    return "O/%s.%s" % (str(datetime.date.today().year)[2:], str(last_number + 1).zfill(4))
-
-NEXT_ORDER_CODE = getattr(settings, 'ASSOPY_NEXT_ORDER_CODE', _ASSOPY_NEXT_ORDER_CODE)
 
 def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
     """

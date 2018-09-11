@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
 from django_comments.models import Comment
@@ -12,6 +12,9 @@ from mptt.models import MPTTModel
 class HComment(MPTTModel, Comment):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     tree = TreeManager()
+
+    class Meta:
+        app_label = 'hcomments'
 
 
 class ThreadSubscriptionManager(models.Manager):
@@ -42,3 +45,4 @@ class ThreadSubscription(models.Model):
 
     class Meta:
         unique_together = ('user', 'object_id', 'content_type')
+        app_label = 'hcomments'

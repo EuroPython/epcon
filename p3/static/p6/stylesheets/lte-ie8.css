@@ -2048,8 +2048,6 @@ nav[role=navigation].active { max-height: 25em; }
 #navigation-toggle li.right.lang a:hover { background-color: #EEE; }
 
 /* Copyright (C) 2009-2013, Python Italia APS All rights reserved.  This file is non-free. See README.md for an explanation. */
-.janrain-box { width: 400px; display: block; /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */ min-height: 240px; }
-
 form .field.error .errorlist { margin: 0; padding: 0; color: firebrick; }
 
 .overlay { position: absolute !important; display: none; z-index: 10000; background: white; padding: 0.75em 30px; width: 35em; min-height: 15em; box-shadow: 0 0 15px #3c3a34; }

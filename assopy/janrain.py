@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 import json
 import logging
 import random
@@ -7,41 +7,6 @@ import urllib
 
 log = logging.getLogger('assopy.janrain')
 
-BASE = 'https://rpxnow.com/api/v2/'
-
-class JanRainException(Exception):
-    pass
-
-def _request(method, params):
-    url = BASE + method
-    log.debug('call %s', url)
-
-    # supportiamo solo json
-    params = dict(params)
-    params['format'] = 'json'
-    r = urllib.urlopen(url, urllib.urlencode(params))
-    message = r.read()
-    try:
-        data = json.loads(message)
-    except ValueError:
-        log.warn('malformed response from janrain, not a json: message=%s', message)
-        raise JanRainException(-10, '')
-    try:
-        stat = data['stat']
-    except KeyError:
-        log.warn('malformed response from janrain: message=%s', message)
-        raise JanRainException(-10, '')
-    if stat == 'fail':
-        log.warn('call failed: err=%s', r.read())
-        raise JanRainException(data['err']['code'], data['err']['msg'])
-    return data
-
-def auth_info(api_key, token):
-    params = {
-        'apiKey': api_key,
-        'token': token,
-    }
-    return _request('auth_info', params)['profile']
 
 def _valid_username(u):
     from django.contrib import auth

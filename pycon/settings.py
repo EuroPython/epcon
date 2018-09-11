@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 # Django settings for pycon project.
 import os
 import os.path
@@ -11,7 +11,7 @@ if os.environ.get('DEBUG') == 'True':
     DEBUG = True
 else:
     DEBUG = False
-    
+
 # For development, we always run in debug mode...
 #DEBUG=True
 
@@ -183,8 +183,6 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
-from django.conf import global_settings
-
 #
 # XXX THESE SHOULD GO INTO THE OS.ENVIRON !
 #
@@ -337,8 +335,6 @@ INSTALLED_APPS = (
     'markitup',
     'cms_utils',
 
-    'raven.contrib.django.raven_compat',
-
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
     # 'sslserver',
@@ -426,12 +422,9 @@ LOGGING = {
 AUTHENTICATION_BACKENDS = (
     'assopy.auth_backends.IdBackend',
     'assopy.auth_backends.EmailBackend',
-    'assopy.auth_backends.JanRainBackend',
     'django.contrib.auth.backends.ModelBackend',
 
-    'social.backends.facebook.FacebookOAuth2',
    'social.backends.google.GoogleOAuth2',
-   'social.backends.twitter.TwitterOAuth',
    # 'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -703,7 +696,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
               .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
                       assigned_to=user.email)
     if tickets.count() > 0:
-        return True    
+        return True
 
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
@@ -721,7 +714,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
              .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
              p3_conference__assigned_to=user.email))
         if tickets.count() > 0:
-            return True    
+            return True
     return False
 
 
@@ -922,7 +915,6 @@ def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
 #
 # XXX What is this AssoPy stuff ?
 #
-ASSOPY_VIES_WSDL_URL = None
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_TICKET_PAGE = 'p3-tickets'
@@ -1218,22 +1210,6 @@ if os.environ.get('PAYPAL_TEST') == 'False':
     PAYPAL_TEST = False
 else:
     PAYPAL_TEST = True
-
-#
-# Janrain account
-#
-ASSOPY_JANRAIN = {
-    'domain': '',
-    'app_id': '',
-    'secret': '',
-}
-
-#
-# Sentry account
-#
-RAVEN_CONFIG = {
-    'dsn': '',
-}
 
 #
 # EMail setup

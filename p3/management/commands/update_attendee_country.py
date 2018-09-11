@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand, CommandError
 from p3 import models
 from assopy import utils

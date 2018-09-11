@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 URL = 'http://assopy.pycon.it/conference/getinfo.py/empty_attendees'
 
 SUBJECT = "[PyCon Tre] dati mancanti / incomplete data"

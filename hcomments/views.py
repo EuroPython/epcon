@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 from django import http
 from django.contrib.admin.views.decorators import staff_member_required

@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 import datetime
 import os.path
 from collections import defaultdict, OrderedDict
@@ -226,8 +226,7 @@ def conference2ical(conf, user=None, abstract=False):
             if abstract:
                 e = dataaccess.event_data(eid)
                 if e['talk']:
-                    from conference.templatetags.conference import name_abbrv
-                    speakers = [ name_abbrv(s['name']) for s in e['talk']['speakers'] ]
+                    speakers = [s['name'] for s in e['talk']['speakers'] ]
                     speakers = ", ".join(speakers)
                     data['summary'] = (data['summary'][0] + ' by ' + speakers, data['summary'][1])
                 ab = e['talk']['abstract'] if e['talk'] else e['abstract']

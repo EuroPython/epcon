@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from collections import defaultdict
 from decimal import Decimal
 from django import forms

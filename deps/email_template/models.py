@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.template import Template, Context
 from django.utils.safestring import mark_safe

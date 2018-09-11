@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from assopy import models
 from assopy import settings
 
@@ -158,24 +158,6 @@ def field_widget(field, attrs):
 @register.filter
 def as_range(value):
     return range(value)
-
-@register.inclusion_tag('assopy/render_janrain_box.html', takes_context=True)
-def render_janrain_box(context, next=None, mode='embed'):
-    if settings.JANRAIN:
-        # mi salvo, nella sessione corrente, dove vuol essere rediretto
-        # l'utente una volta loggato
-        if next:
-            context['request'].session['jr_next'] = next
-        domain = settings.JANRAIN['domain']
-        if not domain.endswith('/'):
-            domain += '/'
-        u = '%sopenid/embed?token_url=%s' % (domain, urllib.quote_plus(dsettings.DEFAULT_URL_PREFIX + reverse('assopy-janrain-token')))
-    else:
-        u = None
-    return {
-        'url': u,
-        'mode': mode,
-    }
 
 class TNode(template.Node):
     def _set_var(self, v):
