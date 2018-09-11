@@ -550,3 +550,20 @@ class TestTicketManagementScenarios(TestCase):
             # if refund is refunded it deletes the ticket associated with this
             # refund.
             self.ticket.refresh_from_db()
+
+    def test_assigned_to_email_is_saved_as_lowercase(self):
+        """
+        The attribute assigned_to of the model TicketConference should
+        be always saved in lowercase regardless of input.
+        For example: if the input is JoeDoe@Example.com, the field
+        assigned_to should be saved as joedoe@example.com
+
+        Issue #740, https://github.com/EuroPython/epcon/issues/740
+        EuroPython 2018 Edinburgh, sprints
+        author: Cezar Pendarovski
+        """
+        self.user.email = 'JoeDoe@Example.com'
+        self.user.save()
+        self.tc.assigned_to = self.user.email
+        self.tc.save()
+        self.assertEqual(self.user.email.lower(), self.tc.assigned_to)
