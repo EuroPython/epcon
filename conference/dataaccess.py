@@ -94,7 +94,6 @@ def sponsor(conf):
     return output
 
 def _i_sponsor(sender, **kw):
-    income = []
     if sender is models.Sponsor:
         income = kw['instance'].sponsorincome_set.all()
     else:

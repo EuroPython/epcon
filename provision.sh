@@ -24,7 +24,6 @@ if [[ -x "$(command -v lsb_release)" && `lsb_release -i` =~ $ubuntu_regex ]]; th
     sudo apt-get install libxml2-dev libxslt1-dev python-dev
 fi
 
-
 title "PIP install dev requirements"
 pip install -r requirements/dev.txt
 
@@ -35,7 +34,6 @@ title "Generate data"
 mkdir -p data/site
 
 python manage.py migrate
-python manage.py createsuperuser
 python manage.py create_initial_data_for_dev
 
 
