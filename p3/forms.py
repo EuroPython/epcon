@@ -258,26 +258,10 @@ class FormTicketPartner(forms.ModelForm):
     name = forms.CharField(max_length=60, required=False,
                            help_text='Real name of the person that '
                                      'will attend this specific event.')
+
     class Meta:
         model = cmodels.Ticket
         fields = ('name',)
-
-
-if 0: # FIXME: remove hotels and sim
-    class FormTicketSIM(forms.ModelForm):
-        ticket_name = forms.CharField(max_length=60, help_text='The SIM owner')
-        class Meta:
-            model = models.TicketSIM
-            exclude = ('ticket',)
-            fields = ('ticket_name', 'sim_type', 'plan_type', 'document',)
-
-
-    class FormTicketRoom(forms.ModelForm):
-        ticket_name = forms.CharField(max_length=60, help_text='The person who will stay at the hotel')
-        class Meta:
-            model = models.TicketRoom
-            exclude = ('ticket',)
-            fields = ('ticket_name', 'document', 'unused')
 
 
 class FormSprint(forms.ModelForm):
@@ -543,163 +527,6 @@ class P3ProfileSpamControlForm(forms.ModelForm):
         fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
 
 
-if 0: # FIXME: remove hotels and sim
-    class HotelReservationsFieldWidget(forms.Widget):
-        def __init__(self, *args, **kw):
-            super(HotelReservationsFieldWidget, self).__init__(*args, **kw)
-            self.booking = models.HotelBooking.objects\
-                .get(conference=settings.CONFERENCE_CONFERENCE)
-
-        def value_from_datadict(self, data, files, name):
-            if name in data:
-                # data is initial_data, with content already in normalized form
-                return data[name]
-            # data is a QueryDict, or it's coming from a request anyway
-            fares = data.getlist(name + '_fare')
-            qtys = data.getlist(name + '_qty')
-            periods = data.getlist(name + '_period')
-
-            # Someone has been playing with input data, stopping here as
-            # it's pointless to attempt validation.
-            if len(fares) != len(qtys) or len(periods) != len(fares) * 2:
-                raise ValueError('')
-
-            from itertools import izip_longest
-            def grouper(n, iterable, fillvalue=None):
-                "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
-                args = [iter(iterable)] * n
-                return izip_longest(fillvalue=fillvalue, *args)
-
-            start = self.booking.booking_start
-            values = []
-            for row in zip(fares, qtys, grouper(2, periods)):
-                values.append({
-                    'fare': row[0],
-                    'qty': row[1],
-                    'period': map(lambda x: start+datetime.timedelta(days=int(x)), row[2]),
-                })
-
-            return values
-
-        def render(self, name, value, attrs=None):
-            start = self.booking.booking_start
-
-            from django.template.loader import render_to_string
-            from conference import dataaccess as cdataaccess
-
-            tpl = 'p3/fragments/form_field_hotel_reservation_widget.html'
-            fares = {
-                'HR': [],
-                'HB': [],
-            }
-            for f in cdataaccess.fares(settings.CONFERENCE_CONFERENCE):
-                if not f['valid']:
-                    continue
-                if f['code'][:2] == 'HR':
-                    fares['HR'].append(f)
-                elif f['code'][:2] == 'HB':
-                    fares['HB'].append(f)
-
-            if not fares['HR'] and not fares['HB']:
-                return ''
-
-            if not value:
-                value = []
-                if fares['HB']:
-                    value.append({
-                        'fare': fares['HB'][0]['code'],
-                        'qty': 0,
-                        'period': (self.booking.default_start, self.booking.default_end),
-                    })
-                if fares['HR']:
-                    value.append({
-                        'fare': fares['HR'][0]['code'],
-                        'qty': 0,
-                        'period': (self.booking.default_start, self.booking.default_end),
-                    })
-
-            types = getattr(self, 'types', ['HR', 'HB'])
-            rows = []
-            for entry in value:
-                k = entry['fare'][:2]
-                if k not in ('HR', 'HB'):
-                    raise TypeError('unsupported fare')
-                if k not in types:
-                    continue
-                ctx = {
-                    'label': '',
-                    'type': '',
-                    'qty': entry['qty'],
-                    'period': map(lambda x: (x-start).days, entry['period']),
-                    'fare': entry['fare'],
-                    'fares': [],
-                    'minimum_night': self.booking.minimum_night,
-                }
-                if k == 'HB':
-                    ctx['label'] = _('Room sharing')
-                    ctx['type'] = 'bed'
-                    ctx['fares'] = fares['HB']
-                else:
-                    ctx['label'] = _('Full room')
-                    ctx['type'] = 'room'
-                    ctx['fares'] = fares['HR']
-
-                rows.append(ctx)
-
-            # XXX crappy hack!
-            # given the way I've implemented widget rendering I need to
-            # know here and now if there are errors, to be able to show
-            # them in the correct position.
-            # Unfortunately the errors are a property of BoundField, not
-            # of Field or of the widget.
-            # This bad hack works just because in the templatetag I'm
-            # connecting to the widget the errors of the form.
-            # The clean way would be instead reimplementing the rendering
-            # of subwidget as it's done for RadioInput, passing from
-            # filter |field and inserting the error at that point.
-            errors = [None] * len(rows)
-            if hasattr(self, '_errors'):
-                print self._errors
-                for e in self._errors:
-                    try:
-                        ix, msg = e.split(':', 1)
-                    except ValueError:
-                        continue
-                    try:
-                        errors[int(ix)] = msg
-                    except:
-                        continue
-            for e in zip(rows, errors):
-                if e[1]:
-                    e[0]['error'] = e[1]
-
-            ctx = {
-                'start': start,
-                'days': (self.booking.booking_end-start).days,
-                'rows': rows,
-                'name': name,
-            }
-            return render_to_string(tpl, ctx)
-
-
-    class HotelReservationsField(forms.Field):
-        widget = HotelReservationsFieldWidget
-
-        def __init__(self, types=('HR', 'HB'), *args, **kwargs):
-            super(HotelReservationsField, self).__init__(*args, **kwargs)
-            self.widget.types = types
-
-        def clean(self, value):
-            for ix, entry in reversed(list(enumerate(value))):
-                try:
-                    entry['qty'] = int(entry['qty'].strip() or '0')
-                except (ValueError, TypeError):
-                    raise forms.ValidationError('invalid quantity')
-                if not entry['qty']:
-                    del value[ix]
-            return value
-
-
 class P3FormTickets(aforms.FormTickets):
     coupon = forms.CharField(
         label=_('Insert your discount code and save money!'),
@@ -725,10 +552,6 @@ class P3FormTickets(aforms.FormTickets):
             if k.startswith('H'):
                 del self.fields[k]
 
-        if 0: # FIXME: remove hotels and sim
-            self.fields['room_reservations'] = HotelReservationsField(types=('HR',), required=False)
-            self.fields['bed_reservations'] = HotelReservationsField(types=('HB',), required=False)
-
     def clean_coupon(self):
         data = self.cleaned_data.get('coupon', '').strip()
         if not data:
@@ -744,62 +567,6 @@ class P3FormTickets(aforms.FormTickets):
         if not coupon.valid(self.user):
             raise forms.ValidationError(_('invalid coupon'))
         return coupon
-
-    if 0: # FIXME: remove hotels and sim
-        def _check_hotel_reservation(self, field_name):
-            data = self.cleaned_data.get(field_name, [])
-            if not data:
-                return []
-
-            checks = []
-            for ix, row in enumerate(data):
-                f = cmodels.Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE,
-                                             code=row['fare'])
-                price = f.calculated_price(**row)
-                if not price:
-                    raise forms.ValidationError('%s:invalid period' % ix)
-
-                checks.append((
-                    't' + f.code[2],
-                    row['qty'] * (1 if f.code[1] == 'B' else int(f.code[2])),
-                    row['period'],
-                ))
-
-            # Only participants are allowed to buy
-            conference_tickets = 0
-            for k, v in self.cleaned_data.items():
-                if k[0] == 'T' and v:
-                    conference_tickets += v
-            if not conference_tickets:
-                from p3.dataaccess import user_tickets
-                tickets = user_tickets(self.user.user,
-                                       settings.CONFERENCE_CONFERENCE,
-                                       only_complete=True)
-                for t in tickets:
-                    if t.fare.code.startswith('T'):
-                        conference_tickets += 1
-            if not conference_tickets:
-                args = []
-                for ix, _ in enumerate(data):
-                    args.append('%s:You need a conference ticket' % ix)
-                self._errors[field_name] = self.error_class(args)
-                del self.cleaned_data[field_name]
-
-            try:
-                models.TicketRoom.objects.can_be_booked(checks)
-            except ValueError:
-                raise forms.ValidationError((
-                    '0:Not available in this period '
-                    '(<a href="/hotel-concession/rooms-not-available" class="trigger-overlay">'
-                    'info</a>)'))
-
-            return data
-
-        def clean_bed_reservations(self):
-            return self._check_hotel_reservation('bed_reservations')
-
-        def clean_room_reservations(self):
-            return self._check_hotel_reservation('room_reservations')
 
     def clean(self):
         data = super(P3FormTickets, self).clean()
