@@ -14,13 +14,18 @@ title "Make virtualenv"
 virtualenv -p python2.7 ../epcon-env
 source ../epcon-env/bin/activate
 
-title "PIP install dev requirements"
-pip install -r requirements/dev.txt
-
 title "install platform requirements"
 if [[ `uname` == "Darwin" ]]; then
     brew install cairo pango
 fi
+ubuntu_regex='^Distributor ID:[[:space:]]+Ubuntu$'
+if [[ -x "$(command -v lsb_release)" && `lsb_release -i` =~ $ubuntu_regex ]]; then
+    echo 'Installing missing Ubuntu packages'
+    sudo apt-get install libxml2-dev libxslt1-dev python-dev
+fi
+
+title "PIP install dev requirements"
+pip install -r requirements/dev.txt
 
 title "Copy settings"
 [[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
@@ -29,7 +34,6 @@ title "Generate data"
 mkdir -p data/site
 
 python manage.py migrate
-python manage.py createsuperuser
 python manage.py create_initial_data_for_dev
 
 

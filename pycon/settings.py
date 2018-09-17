@@ -340,7 +340,6 @@ INSTALLED_APPS = (
     # 'sslserver',
 )
 
-
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
     'theme': 'clean',

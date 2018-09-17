@@ -4,7 +4,6 @@ import logging
 import urllib
 from datetime import datetime
 
-from django import forms
 from django import http
 from django.conf import settings as dsettings
 from django.contrib import auth
@@ -17,7 +16,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from email_template import utils
 
 from assopy import forms as aforms
 from assopy import janrain

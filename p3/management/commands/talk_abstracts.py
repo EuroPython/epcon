@@ -6,7 +6,7 @@ from   django.core.management.base import BaseCommand, CommandError
 
 from   collections  import OrderedDict
 from   optparse     import make_option
-import simplejson   as json
+import json   as json
 
 from ...utils import(speaker_companies,
                      speaker_listing,

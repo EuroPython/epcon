@@ -6,7 +6,7 @@ import urllib2
 import textwrap
 import smtplib
 from datetime import datetime
-import simplejson
+import json
 from pytz import timezone
 
 try:
@@ -31,7 +31,7 @@ for key in 'SERVER', 'REPLYTO', 'FROM', 'BODY', 'SUBJECT', 'URL':
         print >> sys.stderr, 'setting %s is missing' % key
         sys.exit(3)
 
-data = simplejson.loads(urllib2.urlopen(URL).read())
+data = json.loads(urllib2.urlopen(URL).read())
 
 now = timezone('Europe/Rome').localize(datetime.now())
 

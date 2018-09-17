@@ -18,13 +18,15 @@ You are thus welcome to fork away and reuse/enhance this project, as long as you
 INSTALL & SETUP
 ---------------
 
-Run provision.sh. Read it for more details.
+Run `provision.sh`. Read it for more details.
 
 Edit `pycon/settings_locale.py` to your taste!
 
 ```bash
 python manage.py runserver
 ```
+
+You can access the admin pages using the `admin` username. You can login to the public pages using either `alice@europython.eu` or `bob@europython.eu`. All users' passwords are `europython`.
 
 RUN IN DEBUG MODE
 -----------------

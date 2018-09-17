@@ -1,10 +1,10 @@
 import datetime
 import functools
 
-import simplejson
+import json
 
 
-class MyEncode(simplejson.JSONEncoder):  # pragma: no cover
+class MyEncode(json.JSONEncoder):  # pragma: no cover
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%d/%m/%Y %H:%M:%S')
@@ -15,6 +15,6 @@ class MyEncode(simplejson.JSONEncoder):  # pragma: no cover
         elif isinstance(obj, set):
             return list(obj)
 
-        return simplejson.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, obj)
 
-json_dumps = functools.partial(simplejson.dumps, cls=MyEncode)
+json_dumps = functools.partial(json.dumps, cls=MyEncode)
