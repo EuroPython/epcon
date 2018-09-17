@@ -56,7 +56,6 @@ urlpatterns = [
     url(r'^profile/$', 'assopy.views.profile', name='assopy-profile'),
     url(r'^profile/identities$', 'assopy.views.profile_identities', name='assopy-profile-identities'),
     url(r'^billing/$', 'assopy.views.billing', name='assopy-billing'),
-    url(r'^otc/(?P<token>.{36})/$', 'assopy.views.otc_code', name='assopy-otc-token'),
     url(r'^checkout/$', 'assopy.views.checkout', name='assopy-checkout'),
     url(r'^tickets/$', 'assopy.views.tickets', name='assopy-tickets'),
 

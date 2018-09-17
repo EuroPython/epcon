@@ -29,6 +29,7 @@ from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
 
 log = logging.getLogger('assopy.views')
 
+
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
@@ -36,6 +37,7 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
         if not url.startswith('http'):
             url = dsettings.DEFAULT_URL_PREFIX + url
         super(HttpResponseRedirectSeeOther, self).__init__(url)
+
 
 @login_required
 @render_to_template('assopy/profile.html')
@@ -55,6 +57,7 @@ def profile(request):
         'VAT_NOT_AVAILABLE_PLACEHOLDER': VAT_NOT_AVAILABLE_PLACEHOLDER,
     }
 
+
 @login_required
 def profile_identities(request):
     if request.method == 'POST':
@@ -73,6 +76,7 @@ def profile_identities(request):
     else:
         return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
 
+
 @login_required
 @render_to_template('assopy/billing.html')
 def billing(request, order_id=None):
@@ -88,6 +92,7 @@ def billing(request, order_id=None):
         'user': user,
         'form': form,
     }
+
 
 @render_to_template('assopy/new_account.html')
 def new_account(request):
@@ -113,6 +118,7 @@ def new_account(request):
         'next': request.GET.get('next', '/'),
     }
 
+
 @render_to_template('assopy/new_account_feedback.html')
 def new_account_feedback(request):
     try:
@@ -125,67 +131,6 @@ def new_account_feedback(request):
         'u': user,
     }
 
-def OTCHandler_V(request, token):
-    auth.logout(request)
-    user = token.user
-    user.is_active = True
-    user.save()
-    user = auth.authenticate(uid=user.id)
-    auth.login(request, user)
-    return redirect('assopy-profile')
-
-def OTCHandler_J(request, token):
-    payload = json.loads(token.payload)
-    email = payload['email']
-    profile = payload['profile']
-    log.info('"%s" verified; link to "%s"', email, profile['identifier'])
-    identity = _linkProfileToEmail(email, profile)
-    duser = auth.authenticate(identifier=identity.identifier)
-    auth.login(request, duser)
-    return redirect('assopy-profile')
-
-def otc_code(request, token):
-    t = models.Token.objects.retrieve(token)
-    if t is None:
-        raise http.Http404()
-
-    from assopy.utils import dotted_import
-    try:
-        path = settings.OTC_CODE_HANDLERS[t.ctype]
-    except KeyError:
-        return http.HttpResponseBadRequest()
-
-    return dotted_import(path)(request, t)
-
-def _linkProfileToEmail(email, profile):
-    try:
-        current = autils.get_user_account_from_email(email)
-    except auth.models.User.DoesNotExist:
-        current = auth.models.User.objects.create_user(janrain.suggest_username(profile), email)
-        try:
-            current.first_name = profile['name']['givenName']
-        except KeyError:
-            pass
-        try:
-            current.last_name = profile['name']['familyName']
-        except KeyError:
-            pass
-        current.is_active = True
-        current.save()
-        log.debug('new (active) django user created "%s"', current)
-    else:
-        log.debug('django user found "%s"', current)
-    try:
-        # se current è stato trovato tra gli utenti locali forse esiste
-        # anche la controparte assopy
-        user = current.assopy_user
-    except models.User.DoesNotExist:
-        log.debug('the current user "%s" will become an assopy user', current)
-        user = models.User(user=current)
-        user.save()
-    log.debug('a new identity (for "%s") will be linked to "%s"', profile['identifier'], current)
-    identity = models.UserIdentity.objects.create_from_profile(user, profile)
-    return identity
 
 @render_to_template('assopy/checkout.html')
 def checkout(request):
@@ -207,12 +152,14 @@ def checkout(request):
         'form': form,
     }
 
+
 @login_required
 @render_to_template('assopy/tickets.html')
 def tickets(request):
     if settings.TICKET_PAGE:
         return redirect(settings.TICKET_PAGE)
     return {}
+
 
 @login_required
 @render_to_json
@@ -224,6 +171,7 @@ def geocode(request):
     from assopy.utils import geocode as g
     return g(address, region=region)
 
+
 def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
     log.debug('Paypal billing request (code %s): %s', code, request.environ)
@@ -233,6 +181,7 @@ def paypal_billing(request, code):
         return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
     form = aforms.PayPalForm(o)
     return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
+
 
 def paypal_cc_billing(request, code):
     # questa vista serve a eseguire il redirect su paypal e aggiungere le info
@@ -264,12 +213,14 @@ def paypal_cc_billing(request, code):
         )
     )
 
+
 @render_to_template('assopy/paypal_cancel.html')
 def paypal_cancel(request, code):
     log.debug('Paypal billing cancel request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     form = aforms.PayPalForm(o)
     return {'form': form }
+
 
 # looks like sometimes the redirect from paypal is ended with a POST request
 # from the browser (someone said HttpResponseRedirectSeeOther?), since we are not
@@ -287,6 +238,7 @@ def paypal_feedback_ok(request, code):
     return {
         'order': o,
     }
+
 
 @login_required
 @render_to_template('assopy/bank_feedback_ok.html')
@@ -321,34 +273,6 @@ def invoice(request, order_code, code, mode='html'):
     return PdfResponse(filename=invoice.get_invoice_filename(),
                        content=invoice.html)
 
-
-def _pdf(request, url):
-    import subprocess
-    command_args = [
-        settings.WKHTMLTOPDF_PATH,
-        '--cookie',
-        dsettings.SESSION_COOKIE_NAME,
-        request.COOKIES.get(dsettings.SESSION_COOKIE_NAME),
-        '--zoom',
-        '1.3',
-        "%s" % request.build_absolute_uri(url),
-        '-'
-    ]
-
-    #print command_args
-
-    popen = subprocess.Popen(
-        command_args,
-        bufsize=4096,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-
-    raw, _ = popen.communicate()
-
-    #print raw
-
-    return raw
 
 @login_required
 def credit_note(request, order_code, code, mode='html'):

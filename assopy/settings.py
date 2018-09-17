@@ -18,11 +18,6 @@ REFUND_EMAIL_ADDRESS = getattr(settings, 'ASSOPY_REFUND_EMAIL_ADDRESS', {
     'credit-note': SEND_EMAIL_TO,
 })
 
-OTC_CODE_HANDLERS = {
-    'v': 'assopy.views.OTCHandler_V',
-    'j': 'assopy.views.OTCHandler_J',
-}
-OTC_CODE_HANDLERS.update(getattr(settings, 'ASSOPY_OTC_CODE_HANDLERS', {}))
 
 
 def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
