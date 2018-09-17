@@ -33,9 +33,6 @@ from email_template import utils
 log = logging.getLogger('assopy.models')
 
 
-# if settings.CHECK_DB_SCHEMA:
-#     check_database_schema()
-
 
 def _cache(f):
     """
@@ -205,6 +202,7 @@ class UserManager(models.Manager):
         log.info('new admin user "%s" created (%s)', assopy_user.user.username, email)
 
         return assopy_user
+
 
 
 def _fs_upload_to(subdir, attr=None):
@@ -607,6 +605,7 @@ class VatFare(models.Model):
     class Meta:
         unique_together =('fare', 'vat')
 
+
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
 # in locale e sul backend. `raw_items` è la lista degli item utilizzata per
 # generare l'ordine; sebbene al momento dell'invio del segnale l'ordine sia già
@@ -823,6 +822,7 @@ class OrderItem(models.Model):
             return 'direct'
         return 'payment'
 
+
 def _order_feedback(sender, **kwargs):
     rows = [
         'Ordering person: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
@@ -841,6 +841,7 @@ def _order_feedback(sender, **kwargs):
         subject='New order: %s, from "%s"' % (sender.code, sender.user.name(),),
         message='\n'.join(rows),
     )
+
 
 order_created.connect(_order_feedback)
 
@@ -1156,6 +1157,8 @@ def on_credit_note_emitted(sender, **kw):
         'credit_note': sender,
     }
     utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
+
+
 credit_note_emitted.connect(on_credit_note_emitted)
 
 
@@ -1233,4 +1236,6 @@ Manage link: %s
         )
     elif sender.status == 'refunded':
         sender.emit_credit_note()
+
+
 refund_event.connect(on_refund_changed)
