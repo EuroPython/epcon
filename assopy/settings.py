@@ -6,8 +6,6 @@ try:
 except AttributeError:
     BACKEND = None
 
-CHECK_DB_SCHEMA = getattr(settings, 'ASSOPY_CHECK_DB_SCHEMA', True)
-
 SEARCH_MISSING_USERS_ON_BACKEND = getattr(settings, 'ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND', False)
 
 TICKET_PAGE = getattr(settings, 'ASSOPY_TICKET_PAGE', None)
