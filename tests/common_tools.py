@@ -60,8 +60,14 @@ def create_homepage_in_cms():
     Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
                                      name=settings.CONFERENCE_CONFERENCE)
     homepage = create_page(
-        title='HOME', template='django_cms/p5_homepage.html', language='en',
-        reverse_id='home', published=True, publication_date=timezone.now())
+        title='HOME',
+        template='django_cms/p5_homepage.html',
+        language='en',
+        reverse_id='home',
+        published=True,
+        publication_date=timezone.now(),
+        in_navigation=True,
+    )
     homepage.set_as_homepage()
 
     return homepage

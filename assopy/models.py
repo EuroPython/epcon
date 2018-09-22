@@ -32,8 +32,7 @@ from email_template import utils
 
 log = logging.getLogger('assopy.models')
 
-# if settings.CHECK_DB_SCHEMA:
-#     check_database_schema()
+
 
 def _cache(f):
     """
@@ -50,6 +49,7 @@ def _cache(f):
         return r
     return wrapper
 
+
 def _gravatar(email, size=80, default='identicon', rating='r'):
     # import code for encoding urls and generating md5 hashes
     import urllib, hashlib
@@ -63,10 +63,13 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
 
     return gravatar_url
 
+
 COUNTRY_VAT_COMPANY_VERIFY = (
     ('-', 'None'),
     ('v', 'VIES'),
 )
+
+
 class Country(models.Model):
     iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
     name = models.CharField(max_length=100)
@@ -83,6 +86,7 @@ class Country(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class TokenManager(models.Manager):
     def create(self, ctype='', user=None, payload=''):
@@ -105,6 +109,7 @@ class TokenManager(models.Manager):
             t.delete()
         return t
 
+
 class Token(models.Model, django_urls.UrlMixin):
     """
     modello che mantiene codici univoci, utilizzabili una sola volta, di
@@ -121,6 +126,7 @@ class Token(models.Model, django_urls.UrlMixin):
     def get_url_path(self):
         return reverse('assopy-otc-token', kwargs={'token': self.token})
 
+
 # Segnale emesso quando un nuovo utente viene creato. Il sender è il nuovo
 # utente mentre profile_complete indica se tutti i dati su l'utente sono già
 # stat forniti oppure ci si deve aspettare la creazione di una UserIdentity.
@@ -135,39 +141,69 @@ user_identity_created = dispatch.Signal(providing_args=['identity'])
 
 
 class UserManager(models.Manager):
+    def _create_user(
+            self, email, password, username=None, first_name='', last_name='',
+            token=False, active=False, assopy_id=None, is_admin=False):
+        if not username:
+            username = janrain.suggest_username_from_email(email)
 
-    def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, assopy_id=None, send_mail=True):
-        uname = janrain.suggest_username_from_email(email)
-        duser = auth.models.User.objects.create_user(uname, email, password=password)
+        if is_admin:
+            duser = auth.models.User.objects.create_superuser(username, email, password=password)
+        else:
+            duser = auth.models.User.objects.create_user(username, email, password=password)
+
         duser.first_name = first_name
         duser.last_name = last_name
         duser.is_active = active
         duser.save()
         user = User(user=duser)
+
         if token:
             user.token = str(uuid4())
         if assopy_id is not None:
             user.assopy_id = assopy_id
         user.save()
+
         user_created.send(
             sender=user,
             profile_complete=(password is not None) or (token is not None)
         )
+
+        return user
+
+    def create_user(self, email, password=None, first_name='', last_name='', token=False, active=False, assopy_id=None, send_mail=True):
+        assopy_user = self._create_user(
+            email=email, password=password, first_name=first_name, last_name=last_name,
+            token=token, active=active, assopy_id=assopy_id,
+        )
+
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
-            duser.username, first_name, last_name, email,
+            assopy_user.user.username, first_name, last_name, email,
         )
 
         if send_mail:
             utils.email(
                 'verify-account',
                 ctx={
-                    'user': duser,
-                    'token': Token.objects.create(ctype='v', user=duser),
+                    'user': assopy_user,
+                    'token': Token.objects.create(ctype='v', user=assopy_user.user),
                 },
                 to=[email]
             ).send()
-        return user
+        return assopy_user
+
+    def create_superuser(self, username, email, password):
+        assopy_user = self._create_user(
+            email=email, password=password, username=username,
+            token=False, active=True, assopy_id=None, is_admin=True,
+        )
+
+        log.info('new admin user "%s" created (%s)', assopy_user.user.username, email)
+
+        return assopy_user
+
+
 
 def _fs_upload_to(subdir, attr=None):
     if attr is None:
@@ -179,6 +215,7 @@ def _fs_upload_to(subdir, attr=None):
             os.unlink(ipath)
         return fpath
     return wrapper
+
 
 # segnale emesso quando assopy ha bisogno di conoscere i biglietti assegnati ad
 # un certo utente (il sender).  questo segnale permette ad altre applicazioni
@@ -245,6 +282,7 @@ class User(models.Model):
     def invoices(self):
         return Invoice.objects.filter(order__in=self.orders)
 
+
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
         """
@@ -284,6 +322,7 @@ class UserIdentityManager(models.Manager):
         user_identity_created.send(sender=user, identity=identifier)
         return identifier
 
+
 class UserIdentity(models.Model):
     identifier = models.CharField(max_length=255, primary_key=True)
     user = models.ForeignKey(User, related_name='identities')
@@ -299,6 +338,7 @@ class UserIdentity(models.Model):
 
     objects = UserIdentityManager()
 
+
 class UserOAuthInfo(models.Model):
     user = models.ForeignKey(User, related_name='oauth_infos')
     service = models.CharField(max_length=20)
@@ -307,6 +347,7 @@ class UserOAuthInfo(models.Model):
 
     def __unicode__(self):
         return u'{0} token for {1}'.format(self.service, self.user)
+
 
 class Coupon(models.Model):
     conference = models.ForeignKey('conference.Conference')
@@ -415,6 +456,7 @@ class Coupon(models.Model):
         if discount > guard:
             discount = guard
         return -1 * discount
+
 
 class OrderManager(models.Manager):
     def get_queryset(self):
@@ -563,6 +605,7 @@ class VatFare(models.Model):
     class Meta:
         unique_together =('fare', 'vat')
 
+
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
 # in locale e sul backend. `raw_items` è la lista degli item utilizzata per
 # generare l'ordine; sebbene al momento dell'invio del segnale l'ordine sia già
@@ -587,6 +630,7 @@ ORDER_PAYMENT = (
 ENABLED_ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
 )
+
 
 class Order(models.Model):
     code = models.CharField(max_length=20, null=True)
@@ -731,7 +775,6 @@ class Order(models.Model):
         super(Order, self).delete(**kwargs)
 
 
-
 class OrderItem(models.Model):
     order = models.ForeignKey(Order)
     ticket = models.OneToOneField('conference.ticket', null=True, blank=True)
@@ -779,6 +822,7 @@ class OrderItem(models.Model):
             return 'direct'
         return 'payment'
 
+
 def _order_feedback(sender, **kwargs):
     rows = [
         'Ordering person: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
@@ -797,6 +841,7 @@ def _order_feedback(sender, **kwargs):
         subject='New order: %s, from "%s"' % (sender.code, sender.user.name(),),
         message='\n'.join(rows),
     )
+
 
 order_created.connect(_order_feedback)
 
@@ -926,6 +971,7 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 
     paypal_payment_was_successful.connect(confirm_order)
 
+
 class CreditNote(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='credit_notes')
     code = models.CharField(max_length=20, unique=True)
@@ -948,6 +994,7 @@ class CreditNote(models.Model):
     def net_price(self):
         return self.price / (1 + self.invoice.vat.value / 100)
 
+
 class RefundOrderItem(models.Model):
     orderitem = models.ForeignKey('assopy.OrderItem')
     refund = models.ForeignKey('assopy.Refund')
@@ -967,6 +1014,7 @@ class RefundOrderItem(models.Model):
         self.orderitem.ticket.frozen = True
         self.orderitem.ticket.save()
         return out
+
 
 class RefundManager(models.Manager):
     def create_from_orderitem(self, orderitem, reason='', internal_note=''):
@@ -996,6 +1044,8 @@ REFUND_STATUS = (
     ('rejected', 'Rejected'),
     ('refunded', 'Refunded'),
 )
+
+
 class Refund(models.Model):
     invoice = models.ForeignKey(Invoice, null=True)
     items = models.ManyToManyField(OrderItem, through=RefundOrderItem)
@@ -1093,6 +1143,7 @@ class Refund(models.Model):
 refund_event = dispatch.Signal(providing_args=['old', 'tickets'])
 credit_note_emitted = dispatch.Signal(providing_args=['refund'])
 
+
 def on_credit_note_emitted(sender, **kw):
     refund = kw['refund']
     tpl = 'refund-credit-note'
@@ -1107,7 +1158,9 @@ def on_credit_note_emitted(sender, **kw):
     }
     utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
 
+
 credit_note_emitted.connect(on_credit_note_emitted)
+
 
 def on_refund_changed(sender, **kw):
     if sender.status == kw['old']:
@@ -1183,4 +1236,6 @@ Manage link: %s
         )
     elif sender.status == 'refunded':
         sender.emit_credit_note()
+
+
 refund_event.connect(on_refund_changed)

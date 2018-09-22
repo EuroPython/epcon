@@ -340,7 +340,6 @@ INSTALLED_APPS = (
     # 'sslserver',
 )
 
-
 # Google ReCaptcha settings
 RECAPTCHA_OPTIONS = {
     'theme': 'clean',
@@ -926,10 +925,6 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
         'bank': ['billing@europython.eu'],
     },
     'credit-note': ['billing@europython.eu'],
-}
-
-ASSOPY_OTC_CODE_HANDLERS = {
-    'e': 'p3.views.OTCHandler_E',
 }
 
 #
