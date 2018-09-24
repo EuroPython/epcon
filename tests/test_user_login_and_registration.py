@@ -14,6 +14,7 @@ from assopy.forms import (
     PRIVACY_POLICY_ERROR
 )
 from conference.models import CaptchaQuestion
+from conference.users import RANDOM_USERNAME_LENGTH
 
 from tests.common_tools import (
     create_homepage_in_cms,
@@ -106,6 +107,8 @@ def test_user_registration(client):
     assert user.name() == "Joe Doe"
 
     assert not user.user.is_active
+    # check if the random username was generated
+    assert len(user.user.username) == RANDOM_USERNAME_LENGTH
 
     is_logged_in = client.login(email="joedoe@example.com",
                                 password='password')

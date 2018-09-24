@@ -21,12 +21,12 @@ from django.db.models.query import QuerySet
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from assopy import janrain
 from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
 from conference.currencies import normalize_price
 from conference.models import Ticket
+from conference.users import generate_random_username
 from email_template import utils
 
 
@@ -145,7 +145,7 @@ class UserManager(models.Manager):
             self, email, password, username=None, first_name='', last_name='',
             token=False, active=False, assopy_id=None, is_admin=False):
         if not username:
-            username = janrain.suggest_username_from_email(email)
+            username = generate_random_username()
 
         if is_admin:
             duser = auth.models.User.objects.create_superuser(username, email, password=password)
