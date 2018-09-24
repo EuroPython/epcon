@@ -18,7 +18,6 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from assopy import forms as aforms
-from assopy import janrain
 from assopy import models
 from assopy import settings
 from assopy import utils as autils
