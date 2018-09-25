@@ -31,6 +31,7 @@ lxml==3.4.2
 markdown2==2.3.5
 oauthlib==0.7.2
 Pillow==5.2.0
+python-decouple==3.1
 python-oembed==0.2.1
 python-openid==2.2.5
 python-social-auth==0.2.9
