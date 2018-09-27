@@ -4,7 +4,7 @@ from mock import Mock
 from mock import patch
 from django_factory_boy import auth as auth_factories
 
-from assopy.models import User, Order
+from assopy.models import AssopyUser, Order
 from assopy.tests.factories.order import CreditCardOrderFactory
 
 
@@ -15,7 +15,7 @@ class StripeViewTestCase(TestCase):
                                       password='demo')
         self.assertTrue(is_logged)
 
-        self.user = User.objects.create(user=auth_user)
+        self.user = AssopyUser.objects.create(user=auth_user)
 
     @patch('assopy.stripe.views.StripeCheckoutView.get_object')
     @patch('stripe.Charge.create')

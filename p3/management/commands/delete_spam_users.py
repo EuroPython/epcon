@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         # Between June 1-4 2018, a Chinese spammer create 30k fake user
         # accounts
-        spam_users = amodels.User.objects.filter(
+        spam_users = amodels.AssopyUser.objects.filter(
             user__first_name = '金诚送38元',
         )
         print('Found %i (potential) spam users.' % len(spam_users))

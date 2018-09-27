@@ -29,7 +29,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 class AssopyUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'assopy.User'
+        model = 'assopy.AssopyUser'
 
     user = factory.SubFactory(UserFactory, assopy_user=factory.LazyAttribute(lambda assopy_user: assopy_user))
 

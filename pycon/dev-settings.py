@@ -26,11 +26,14 @@ PAYPAL_TEST = True
 
 TEMPLATES[0]['OPTIONS']['debug'] = True
 
-INSTALLED_APPS = INSTALLED_APPS + (
+# The cast to set to tuple is a workaround allowing to have `django_extensions`
+# included in main INSTALLED_APPS and be able to run tests without running into the
+# `ImproperlyConfigured: Application labels aren't unique, duplicates` exception.
+INSTALLED_APPS = tuple(set(INSTALLED_APPS + (
     'django_extensions',
     'django_pdb',
     # 'devserver',
-)
+)))
 
 #TEST_WITHOUT_MIGRATIONS_COMMAND = 'django_nose.management.commands.test.Command'
 
