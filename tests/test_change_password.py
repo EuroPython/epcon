@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django_factory_boy import auth as auth_factories
 
 # TODO: clean up this import path
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile
 
 from tests.common_tools import template_used

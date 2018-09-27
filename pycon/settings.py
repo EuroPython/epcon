@@ -337,7 +337,7 @@ INSTALLED_APPS = (
     'social_django',
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
-    # 'django_extensions',
+    'django_extensions',
     # 'sslserver',
 )
 

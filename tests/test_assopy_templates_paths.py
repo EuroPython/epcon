@@ -22,7 +22,7 @@ from django_factory_boy import auth as auth_factories
 from pytest import mark
 
 from assopy.models import Invoice, Order, Vat
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile
 
 from tests.common_tools import template_paths
