@@ -4,7 +4,7 @@ import os
 import os.path
 import sys
 
-from decouple import config
+from decouple import config, Csv
 
 from model_utils import Choices
 #from django.utils.translation import ugettext as _
@@ -330,9 +330,7 @@ INSTALLED_APPS = (
     # 'sslserver',
 )
 # Extend INSTALLED_APPS using env settings
-EXTRA_INSTALLED_APPS = config('EXTRA_INSTALLED_APPS', default='')
-if EXTRA_INSTALLED_APPS:
-    INSTALLED_APPS += tuple(s.strip() for s in EXTRA_INSTALLED_APPS.split(','))
+INSTALLED_APPS += config('EXTRA_INSTALLED_APPS', default='', cast=Csv(post_process=tuple))
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -1195,7 +1193,7 @@ GRAPH_MODELS = {
 DISABLE_CACHING = False
 
 
-### Override any settings with local settings
+# Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
 
