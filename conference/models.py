@@ -282,7 +282,7 @@ class _fs_upload_to(object):
         return fpath
 
 def postSaveResizeImageHandler(sender, **kwargs):
-    tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
+    tool = os.path.join(os.path.dirname(conference.__file__), 'tools', 'resize_image.py')
     null = open('/dev/null')
     p = subprocess.Popen(
         [tool, settings.STUFF_DIR],

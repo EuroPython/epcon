@@ -19,7 +19,7 @@ django-sekizai==0.10.0
 
 # we can probably remove one of these
 django-tagging==0.4.6
-django-taggit==0.14.0
+django-taggit==0.22.1
 
 django-xmlrpc==0.1.5
 easy-thumbnails==2.3
