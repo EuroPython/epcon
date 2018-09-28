@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings as dsettings
-from django.core.mail import send_mail as real_send_mail
-from django.core.urlresolvers import reverse
-
-from conference import settings
-from conference.models import VotoTalk, EventTrack
-
 import json
 import logging
 import os.path
@@ -13,6 +6,17 @@ import re
 import subprocess
 import tempfile
 from collections import defaultdict
+
+from django.conf import settings as dsettings
+from django.core.mail import send_mail as real_send_mail
+from django.core.urlresolvers import reverse
+
+from conference import settings
+from conference.models import VotoTalk, EventTrack
+# TODO: Cleanup conference.tools; the conference module had separate file and directory
+# both called utils which were causing issues resolving dependencies. The
+# directory has been renamed to conference.tools
+from conference.tools import *
 
 log = logging.getLogger('conference')
 

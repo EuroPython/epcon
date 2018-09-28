@@ -18,12 +18,12 @@ django-rosetta==0.7.13
 django-sekizai==0.10.0
 
 # we can probably remove one of these
-django-tagging==0.3.6
+django-tagging==0.4.6
 django-taggit==0.14.0
 
 django-xmlrpc==0.1.5
 easy-thumbnails==2.3
--e git+https://github.com/dcramer/django-paypal.git#egg=django_paypal-master
+django-paypal==0.3
 html2text==2015.2.18
 html5lib==0.95
 httplib2==0.9
