@@ -182,7 +182,7 @@ class NewAccountForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        if auth.models.AssopyUser.objects.filter(email__iexact=email).count() > 0:
+        if auth.models.User.objects.filter(email__iexact=email).count() > 0:
             raise forms.ValidationError('Email already in use')
 
         return email.lower()
