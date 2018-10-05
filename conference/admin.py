@@ -7,6 +7,7 @@ from django import template
 from django.contrib import admin
 from django.conf import settings as dsettings
 from django.conf.urls import url, patterns
+from django.contrib.contenttypes.fields import ReverseGenericManyToOneDescriptor
 from django.core import urlresolvers
 from django.shortcuts import redirect, render_to_response, get_object_or_404
 
@@ -334,8 +335,6 @@ class DeadlineAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Deadline, DeadlineAdmin)
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import ReverseGenericRelatedObjectsDescriptor
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
     def __new__(mcs, name, bases, attrs):
@@ -347,8 +346,8 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
             return new_class
 
         for name, f in model.__dict__.items():
-            if isinstance(f, ReverseGenericRelatedObjectsDescriptor):
-                if f.field.related.model is models.MultilingualContent:
+            if isinstance(f, ReverseGenericManyToOneDescriptor):
+                if f.field.rel.model is models.MultilingualContent:
                     multilingual_fields.append(name)
 
         widget = attrs.get('multilingual_widget', forms.Textarea)
