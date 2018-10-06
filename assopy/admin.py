@@ -68,7 +68,7 @@ class OrderAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(OrderAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = models.User.objects.all().select_related('user')
+        self.fields['user'].queryset = models.AssopyUser.objects.all().select_related('user')
         if self.initial:
             self.fields['method'].initial = self.instance.method
 
@@ -305,7 +305,7 @@ class CouponAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CouponAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = models.User.objects\
+        self.fields['user'].queryset = models.AssopyUser.objects\
             .all()\
             .select_related('user')\
             .order_by('user__first_name', 'user__last_name')
@@ -434,7 +434,7 @@ class AuthUserAdmin(aUserAdmin):
         from conference.models import Fare
         from conference.settings import CONFERENCE
 
-        user = get_object_or_404(models.User, user=uid)
+        user = get_object_or_404(models.AssopyUser, user=uid)
 
         class FormTickets(aforms.FormTickets):
             coupon = forms.CharField(label='Coupon(s)', required=False)

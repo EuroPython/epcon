@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 from email_template.models import Email
 
-from assopy.models import User as AssopyUser
+from assopy.models import AssopyUser
 from assopy.forms import (
     PRIVACY_POLICY_CHECKBOX,
     PRIVACY_POLICY_ERROR
