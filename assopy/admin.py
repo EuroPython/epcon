@@ -197,7 +197,7 @@ class OrderAdmin(admin.ModelAdmin):
                 .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
         }
         return render_to_response(
-            'admin/assopy/order/vouchers.html', ctx, context_instance=template.RequestContext(request))
+            'admin/assopy/order/vouchers.html', ctx)
 
     def vouchers_fare(self, request, conference, fare):
         items = models.OrderItem.objects\
@@ -208,7 +208,7 @@ class OrderAdmin(admin.ModelAdmin):
             'items': items,
         }
         return render_to_response(
-            'admin/assopy/order/vouchers_fare.html', ctx, context_instance=template.RequestContext(request))
+            'admin/assopy/order/vouchers_fare.html', ctx)
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset ]
@@ -248,7 +248,7 @@ class OrderAdmin(admin.ModelAdmin):
             'form': form,
             'ids': request.GET.get('id'),
         }
-        return render_to_response('assopy/admin/edit_invoices.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response('assopy/admin/edit_invoices.html', ctx)
 
     def stats_conference(self, conf):
         from assopy import stats
@@ -291,7 +291,7 @@ class OrderAdmin(admin.ModelAdmin):
         for c in Conference.objects.order_by('-conference_start')[:3]:
             ctx['conferences'].append((c, self.stats_conference(c)))
 
-        return render_to_response('assopy/admin/order_stats.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response('assopy/admin/order_stats.html', ctx)
 
 admin.site.register(models.Order, OrderAdmin)
 
@@ -495,7 +495,7 @@ class AuthUserAdmin(aUserAdmin):
             'user': user,
             'form': form,
         }
-        return render_to_response('admin/auth/user/new_order.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response('admin/auth/user/new_order.html', ctx)
 
     def _doppelganger(self, o):
         url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})

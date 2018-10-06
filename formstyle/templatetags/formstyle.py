@@ -3,7 +3,9 @@ from django import forms
 from django import template
 from django.utils.safestring import mark_safe
 
+
 register = template.Library()
+
 
 @register.filter
 def form_field(field, classes=None):
@@ -24,10 +26,10 @@ def form_field(field, classes=None):
         classes = ' '.join(classes)
     classes += " field {} {}".format(widget_name.lower(), field_name.lower())
 
-    ctx = template.Context({
+    ctx = {
         'field': field,
         'classes': classes
-    })
+    }
     return tpl.render(ctx)
 
 @register.filter
@@ -46,8 +48,8 @@ def form_errors(form, classes=None):
         classes = ' '.join(classes)
     classes += form_name
 
-    ctx = template.Context({
+    ctx = {
         'form': form,
         'classes': classes
-    })
+    }
     return tpl.render(ctx)

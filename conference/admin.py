@@ -107,7 +107,6 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'talks': self.schedule_view_talks(conf),
                 'event_form': EventForm(),
             },
-            context_instance=template.RequestContext(request)
         )
 
     def schedule_view_track(self, request, cid, sid, tid):
@@ -119,7 +118,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         return render_to_response(
             'admin/conference/conference/schedule_view_schedule.html',
             { 'timetable': tt, },
-            context_instance=template.RequestContext(request))
+        )
 
     def _stat_wrapper(self, func, conf):
         def wrapper(*args, **kwargs):
@@ -165,7 +164,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'conference': cid,
                 'stats': stats,
             },
-            context_instance=template.RequestContext(request))
+        )
 
     def stats_details(self, request, cid):
         sid, rowid = request.GET['code'].split('.')
@@ -204,7 +203,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'preview': preview,
                 'email_log': settings.ADMIN_TICKETS_STATS_EMAIL_LOG,
             },
-            context_instance=template.RequestContext(request))
+        )
 
     def stats_details_csv(self, request, cid):
         sid, rowid = request.GET['code'].split('.')
@@ -347,7 +346,7 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
 
         for name, f in model.__dict__.items():
             if isinstance(f, ReverseGenericManyToOneDescriptor):
-                if f.field.rel.model is models.MultilingualContent:
+                if f.field.remote_field.model is models.MultilingualContent:
                     multilingual_fields.append(name)
 
         widget = attrs.get('multilingual_widget', forms.Textarea)
@@ -503,7 +502,6 @@ class SpeakerAdmin(admin.ModelAdmin):
                 'speakers': speakers,
                 'groups': groups,
             },
-            context_instance=template.RequestContext(request)
         )
 
     def _user(self, o):
@@ -956,7 +954,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         ctx = {
             'schedules': sorted(data.items(), key=lambda x: x[0].date),
         }
-        return render_to_response('conference/admin/schedule_expected_attendance.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response('conference/admin/schedule_expected_attendance.html', ctx)
 
 admin.site.register(models.Schedule, ScheduleAdmin)
 
@@ -1250,7 +1248,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         ctx = {
             'tags': tags,
         }
-        return render_to_response('admin/conference/conferencetag/merge.html', ctx, context_instance=template.RequestContext(request))
+        return render_to_response('admin/conference/conferencetag/merge.html', ctx)
 
 
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)

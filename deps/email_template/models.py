@@ -3,6 +3,7 @@ from django.db import models
 from django.template import Template, Context
 from django.utils.safestring import mark_safe
 
+
 class Email(models.Model):
     code = models.CharField('Codice', max_length = 30,
         unique = True,
