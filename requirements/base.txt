@@ -21,9 +21,9 @@ django-sekizai==0.10.0
 django-tagging==0.4.6
 django-taggit==0.22.1
 
+django-paypal==0.3
 django-xmlrpc==0.1.5
 easy-thumbnails==2.3
-django-paypal==0.3
 html2text==2015.2.18
 html5lib==0.95
 httplib2==0.9
