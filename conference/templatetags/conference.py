@@ -1345,7 +1345,7 @@ def content_type(id):
 def field_label(value, fieldpath):
     mname, fname = fieldpath.split('.')
     model = getattr(models, mname)
-    field = model._meta.get_field_by_name(fname)[0]
+    field = model._meta.get_field(fname)
     for k, v in field.choices:
         if k == value:
             return v

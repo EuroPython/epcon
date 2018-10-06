@@ -3,7 +3,7 @@ from django import forms
 from django import http
 from django import template
 from django.conf import settings as dsettings
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db.models import Q
@@ -182,12 +182,12 @@ class OrderAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
         f = self.admin_site.admin_view
-        my_urls = patterns('',
+        my_urls = [
             url(r'^invoices/$', f(self.edit_invoices), name='assopy-edit-invoices'),
             url(r'^stats/$', f(self.stats), name='assopy-order-stats'),
             url(r'^vouchers/$', f(self.vouchers), name='assopy-order-vouchers'),
             url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', f(self.vouchers_fare), name='assopy-order-vouchers-fare'),
-        )
+        ]
         return my_urls + urls
 
     def vouchers(self, request):
@@ -394,11 +394,11 @@ class AuthUserAdmin(aUserAdmin):
 
     def get_urls(self):
         f = self.admin_site.admin_view
-        urls = patterns('',
+        urls = [
             url(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
             url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-order'),
             url(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
-        )
+        ]
         return urls + super(AuthUserAdmin, self).get_urls()
 
     def create_doppelganger(self, request, uid):

@@ -462,8 +462,8 @@ class OrderManager(models.Manager):
     def get_queryset(self):
         return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+    # def __getattr__(self, name):
+    #     return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
         def use_coupons(self, *coupons):

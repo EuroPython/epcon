@@ -371,7 +371,7 @@ class SpeakerForm(forms.Form):
         widget=forms.Textarea(),)
     ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
 
-_abstract = models.Talk._meta.get_field_by_name('abstracts')[0]
+_abstract = models.Talk._meta.get_field('abstracts')
 
 # This form is used in case the speaker has already proposed a talk
 # and for editing talks

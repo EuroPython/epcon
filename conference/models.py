@@ -6,6 +6,7 @@ import subprocess
 from collections import defaultdict
 
 from django.conf import settings as dsettings
+from django.contrib import auth
 from django.core import exceptions
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -45,8 +46,8 @@ class ConferenceTagManager(models.Manager):
     def get_queryset(self):
         return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+    # def __getattr__(self, name):
+    #     return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
         def annotate_with_usage(self):
@@ -517,8 +518,8 @@ class TalkManager(models.Manager):
     def get_queryset(self):
         return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+    # def __getattr__(self, name):
+    #     return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
 
@@ -771,8 +772,8 @@ class FareManager(models.Manager):
     def get_queryset(self):
         return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+    # def __getattr__(self, name):
+    #     return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
         def available(self, conference=None):
@@ -885,8 +886,8 @@ class TicketManager(models.Manager):
     def get_queryset(self):
         return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+    # def __getattr__(self, name):
+    #     return getattr(self.all(), name)
 
     class _QuerySet(QuerySet):
         def conference(self, conference):
@@ -899,7 +900,7 @@ TICKET_TYPE = (
 
 class Ticket(models.Model):
     user = models.ForeignKey(
-        'auth.User',
+        auth.models.User,
         help_text=_('Buyer of the ticket'))
     name = models.CharField(
         max_length=60,

@@ -6,7 +6,7 @@ from django import http
 from django import template
 from django.contrib import admin
 from django.conf import settings as dsettings
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib.contenttypes.fields import ReverseGenericManyToOneDescriptor
 from django.core import urlresolvers
 from django.shortcuts import redirect, render_to_response, get_object_or_404
@@ -49,7 +49,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         v = self.admin_site.admin_view
-        urls = patterns('',
+        urls = [
             url(r'^(?P<cid>[\w-]+)/schedule/$',
                 v(self.schedule_view),
                 name='conference-conference-schedule'),
@@ -66,7 +66,7 @@ class ConferenceAdmin(admin.ModelAdmin):
             url(r'^(?P<cid>[\w-]+)/stats/details.csv$',
                 v(self.stats_details_csv),
                 name='conference-ticket-stats-details-csv'),
-        )
+        ]
         return urls + super(ConferenceAdmin, self).get_urls()
 
     def schedule_view_talks(self, conf):
@@ -476,9 +476,9 @@ class SpeakerAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/list/$', self.admin_site.admin_view(self.stats_list), name='conference-speaker-stat-list'),
-        )
+        ]
         return my_urls + urls
 
     def stats_list(self, request):
@@ -689,7 +689,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ScheduleAdmin, self).get_urls()
         v = self.admin_site.admin_view
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/$',
                 v(self.expected_attendance),
                 name='conference-schedule-expected_attendance'),
@@ -702,7 +702,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
                 v(self.tracks),
                 name='conference-schedule-tracks'),
-        )
+        ]
         return my_urls + urls
 
     @common.decorators.render_to_json
@@ -1119,9 +1119,9 @@ class TicketAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(TicketAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data_view), name='conference-ticket-stats-data'),
-        )
+        ]
         return my_urls + urls
 
     def stats_data(self):
@@ -1187,9 +1187,9 @@ class ConferenceTagAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(ConferenceTagAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
-        )
+        ]
         return my_urls + urls
 
     def get_queryset(self, request):

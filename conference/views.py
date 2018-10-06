@@ -207,7 +207,7 @@ def talk_report(request):  # pragma: no cover
             'conference': conference,
             'tags': tags,
         },
-        context_instance = RequestContext(request))
+    )
 
 @render_to_template('conference/schedule.html')
 def schedule(request, conference, slug):
@@ -404,7 +404,7 @@ def paper_submission(request):
         'speaker': speaker,
         'form': form,
         'proposed_talks': proposed,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def cfp_thank_you_for_proposal(request):
