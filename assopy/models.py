@@ -458,37 +458,30 @@ class Coupon(models.Model):
         return -1 * discount
 
 
-class OrderManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
+class OrderQuerySet(models.QuerySet):
+    def use_coupons(self, *coupons):
+        return self.filter(orderitem__ticket=None, orderitem__code__in=(c.code for c in coupons))
 
-    # def __getattr__(self, name):
-    #     return getattr(self.all(), name)
+    def conference(self, conference):
+        return self.filter(orderitem__ticket__fare__conference=conference).distinct()
 
-    class _QuerySet(QuerySet):
-        def use_coupons(self, *coupons):
-            return self.filter(orderitem__ticket=None, orderitem__code__in=(c.code for c in coupons))
+    def usable(self, include_admin=False):
+        """
+        restituisce tutti gli ordini "usabili", cioè tutti gli ordini con
+        metodo bonifico (a prescindere se risultano pagati o meno) e tutti
+        gli ordini con metodo paypal (o cc) completati.
+        """
+        qs = self.filter(models.Q(method='bank')|models.Q(method__in=('cc', 'paypal'), _complete=True))
+        if include_admin:
+            qs = qs.filter(method='admin')
+        return qs
 
-        def conference(self, conference):
-            return self.filter(orderitem__ticket__fare__conference=conference).distinct()
-
-        def usable(self, include_admin=False):
-            """
-            restituisce tutti gli ordini "usabili", cioè tutti gli ordini con
-            metodo bonifico (a prescindere se risultano pagati o meno) e tutti
-            gli ordini con metodo paypal (o cc) completati.
-            """
-            qs = self.filter(models.Q(method='bank')|models.Q(method__in=('cc', 'paypal'), _complete=True))
-            if include_admin:
-                qs = qs.filter(method='admin')
-            return qs
-
-        def total(self, apply_discounts=True):
-            qs = OrderItem.objects.filter(order__in=self)
-            if not apply_discounts:
-                qs = qs.filter(price__gt=0)
-            t = qs.aggregate(t=models.Sum('price'))['t']
-            return t if t is not None else 0
+    def total(self, apply_discounts=True):
+        qs = OrderItem.objects.filter(order__in=self)
+        if not apply_discounts:
+            qs = qs.filter(price__gt=0)
+        t = qs.aggregate(t=models.Sum('price'))['t']
+        return t if t is not None else 0
 
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
 
@@ -668,7 +661,7 @@ class Order(models.Model):
         null=True,
     )
 
-    objects = OrderManager()
+    objects = OrderQuerySet.as_manager()
 
     def __unicode__(self):
         msg = 'Order %d' % self.id

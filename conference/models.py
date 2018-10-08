@@ -42,24 +42,19 @@ CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
 
 # ConferenceTag and ConferenceTaggedItem are used to create a "namesapce"
 # for the related tags to a conference.
-class ConferenceTagManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
+class ConferenceTagQuerySet(models.QuerySet):
+    def annotate_with_usage(self):
+        return self.annotate(
+            usage=models.Count('conference_conferencetaggeditem_items')
+        )
 
-    # def __getattr__(self, name):
-    #     return getattr(self.all(), name)
-
-    class _QuerySet(QuerySet):
-        def annotate_with_usage(self):
-            return self\
-                .annotate(usage=models.Count('conference_conferencetaggeditem_items'))
-        def order_by_usage(self, asc=False):
-            key = 'usage' if asc else '-usage'
-            return self.annotate_with_usage().order_by(key)
+    def order_by_usage(self, asc=False):
+        key = 'usage' if asc else '-usage'
+        return self.annotate_with_usage().order_by(key)
 
 
 class ConferenceTag(TagBase):
-    objects = ConferenceTagManager()
+    objects = ConferenceTagQuerySet.as_manager()
     category = models.CharField(max_length=50, default='', blank=True)
 
     def save(self, **kw):
@@ -513,34 +508,25 @@ TALK_LEVEL = Choices(
 )
 
 
-class TalkManager(models.Manager):
+class TalkQuerySet(models.QuerySet):
+    def _filter_by_status(self, status, conference=None):
+        assert status in TALK_STATUS._db_values
+        qs = self.filter(status=status)
+        if conference:
+            qs = qs.filter(conference=conference)
+        return qs
 
-    def get_queryset(self):
-        return self._QuerySet(self.model)
+    def proposed(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.proposed, conference=conference)
 
-    # def __getattr__(self, name):
-    #     return getattr(self.all(), name)
+    def accepted(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.accepted, conference=conference)
 
-    class _QuerySet(QuerySet):
+    def canceled(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.canceled, conference=conference)
 
-        def _filter_by_status(self, status, conference=None):
-            assert status in TALK_STATUS._db_values
-            qs = self.filter(status=status)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
-
-        def proposed(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.proposed, conference=conference)
-
-        def accepted(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.accepted, conference=conference)
-
-        def canceled(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.canceled, conference=conference)
-
-        def waitlist(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.waitlist, conference=conference)
+    def waitlist(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.waitlist, conference=conference)
 
     def createFromTitle(self, title, sub_title, conference, speaker,
                         prerequisites, abstract_short, abstract_extra,
@@ -709,7 +695,7 @@ class Talk(models.Model, UrlMixin):
     created = models.DateTimeField(auto_now_add=True)
 
     tags = TaggableManager(through=ConferenceTaggedItem)
-    objects = TalkManager()
+    objects = TalkQuerySet.as_manager()
 
     class Meta:
         ordering = ['title']
@@ -768,22 +754,16 @@ class TalkSpeaker(models.Model):
     class Meta:
         unique_together = (('talk', 'speaker'),)
 
-class FareManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
 
-    # def __getattr__(self, name):
-    #     return getattr(self.all(), name)
-
-    class _QuerySet(QuerySet):
-        def available(self, conference=None):
-            today = datetime.date.today()
-            q1 = models.Q(start_validity=None, end_validity=None)
-            q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
-            qs = self.filter(q1 | q2)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
+class FareQuerySet(models.QuerySet):
+    def available(self, conference=None):
+        today = datetime.date.today()
+        q1 = models.Q(start_validity=None, end_validity=None)
+        q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
+        qs = self.filter(q1 | q2)
+        if conference:
+            qs = qs.filter(conference=conference)
+        return qs
 
 # TODO(artcz) Convert those to Choices for easier enum-like interface
 
@@ -818,7 +798,7 @@ class Fare(models.Model):
     payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
     blob = models.TextField(blank=True)
 
-    objects = FareManager()
+    objects = FareQuerySet.as_manager()
 
     def __unicode__(self):
         return '%s - %s' % (self.code, self.conference)
@@ -882,16 +862,11 @@ class Fare(models.Model):
             params['tickets'].append(t)
         return params['tickets']
 
-class TicketManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
 
-    # def __getattr__(self, name):
-    #     return getattr(self.all(), name)
+class TicketQuerySet(models.QuerySet):
+    def conference(self, conference):
+        return self.filter(fare__conference=conference)
 
-    class _QuerySet(QuerySet):
-        def conference(self, conference):
-            return self.filter(fare__conference=conference)
 
 TICKET_TYPE = (
     ('standard', 'standard'),
@@ -915,7 +890,7 @@ class Ticket(models.Model):
         )
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
 
-    objects = TicketManager()
+    objects = TicketQuerySet.as_manager()
 
     def __unicode__(self):
         return 'Ticket "%s" (%s)' % (self.fare.name, self.fare.code)
