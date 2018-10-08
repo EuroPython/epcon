@@ -400,7 +400,7 @@ def paper_submission(request):
         else:
             form = fc()
 
-    return render_to_response('conference/paper_submission.html', {
+    return render(request, 'conference/paper_submission.html', {
         'speaker': speaker,
         'form': form,
         'proposed_talks': proposed,
