@@ -335,6 +335,7 @@ INSTALLED_APPS = (
 
     'markitup',
     'cms_utils',
+    'social_django',
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',
