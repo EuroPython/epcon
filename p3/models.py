@@ -121,28 +121,6 @@ class TicketConference(models.Model):
         return AttendeeProfile.objects.get(user=user)
 
 
-class Donation(models.Model):
-    user = models.ForeignKey('assopy.User')
-    date = models.DateField()
-    amount = models.DecimalField(max_digits=6, decimal_places=2)
-    message = models.TextField(blank=True)
-
-    def __unicode__(self):
-        return '%s donation of %s' % (self.user.name(), self.date)
-
-
-class Sprint(models.Model):
-    user = models.ForeignKey('assopy.User')
-    conference = models.ForeignKey('conference.Conference')
-    title = models.CharField(max_length=150)
-    abstract = models.TextField(blank=True)
-
-
-class SprintPresence(models.Model):
-    sprint = models.ForeignKey(Sprint)
-    user = models.ForeignKey('assopy.User')
-
-
 class P3ProfileManager(models.Manager):
     def by_tags(self, tags, ignore_case=True, conf=dsettings.CONFERENCE_CONFERENCE):
         if ignore_case:

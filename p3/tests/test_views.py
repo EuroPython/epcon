@@ -137,27 +137,6 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
     
     @unittest.skip("FIXME")
-    def test_p3_sprint_submission(self):
-        # p3-sprint-submission -> p3.views.sprint_submission
-        url = reverse('p3-sprint-submission')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_sprints(self):
-        # p3-sprints -> p3.views.sprints
-        url = reverse('p3-sprints')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_sprint(self):
-        # p3-sprint -> p3.views.sprint
-        url = reverse('p3-sprint')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
     def test_p3_tickets(self):
         # p3-tickets -> p3.views.tickets
         url = reverse('p3-tickets')

@@ -9,10 +9,6 @@ urlpatterns = patterns('p3.views',
     url(r'^tickets/(?P<tid>\d+)/$', 'ticket', name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', 'user', name='p3-user'),
 
-    url(r'^sprint-submission/$', 'sprint_submission', name='p3-sprint-submission'),
-    url(r'^sprints/$', 'sprints', name='p3-sprints'),
-    url(r'^sprints/(?P<sid>\d+)/$', 'sprint', name='p3-sprint'),
-
     url(r'^p/profile/(?P<slug>[\w-]+)/$', 'p3_profile', name='p3-profile'),
     url(r'^p/profile/(?P<slug>[\w-]+)/avatar$', 'p3_profile_avatar', name='p3-profile-avatar'),
     url(r'^p/profile/(?P<slug>[\w-]+).json$', 'p3_profile', name='p3-profile-json', kwargs={'format_': 'json'}),
