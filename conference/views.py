@@ -543,7 +543,7 @@ def voting(request):
         else:
             return HttpResponseRedirectSeeOther(reverse('conference-voting') + '?' + request.GET.urlencode())
     else:
-        from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioRenderer
+        from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioSelectWidget
         class OptionForm(forms.Form):
             abstracts = forms.ChoiceField(
                 choices=(('not-voted', 'Not yet voted'),
@@ -551,20 +551,20 @@ def voting(request):
                          ),
                 required=False,
                 initial='not-voted',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             talk_type = forms.ChoiceField(
                 label=u'Session type',
                 choices=(('all', 'All'),) + tuple(settings.TALK_TYPES_TO_BE_VOTED),
                 required=False,
                 initial='all',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             language = forms.ChoiceField(
                 choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
                 required=False,
                 initial='all',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             order = forms.ChoiceField(
                 choices=(('random', 'Random order'),
@@ -573,7 +573,7 @@ def voting(request):
                          ),
                 required=False,
                 initial='random',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             tags = TagField(
                 required=False,
