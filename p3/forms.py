@@ -263,12 +263,6 @@ class FormTicketPartner(forms.ModelForm):
         fields = ('name',)
 
 
-class FormSprint(forms.ModelForm):
-    class Meta:
-        model = models.Sprint
-        exclude = ('user', 'conference',)
-
-
 class P3ProfileForm(cforms.ProfileForm):
     bio = forms.CharField(
         label=_('Compact biography'),
