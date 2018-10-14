@@ -147,6 +147,22 @@ def next_invoice_code_for_year(prefix, year):
     return template % {'year_two_digits': year % 1000, 'sequential_id': '0001'}
 
 
+def extract_customer_info(order):
+    assert isinstance(order, Order)
+
+    customer = []
+    customer.append(order.card_name)
+    customer.append(order.address)
+    if order.cf_code:
+        customer.append(order.cf_code)
+    if order.vat_number:
+        customer.append(order.vat_number)
+    if order.billing_notes:
+        customer.append(order.billing_notes)
+
+    return '\n'.join(customer)
+
+
 def create_invoices_for_order(order, force_placeholder=False):
     assert isinstance(order, Order)
 
@@ -188,11 +204,14 @@ def create_invoices_for_order(order, force_placeholder=False):
                         'using_exrate_date': emit_date,
                     }
 
+                customer = extract_customer_info(order)
+
                 invoice, _ = Invoice.objects.update_or_create(
                     order=order,
                     code=code,
                     defaults={
                         'issuer':         ISSUER_BY_YEAR[emit_date.year],
+                        'customer':       customer,
                         'vat':            vat_item['vat'],
                         'price':          gross_price,
                         'payment_date':   payment_date,
@@ -253,6 +272,8 @@ def render_invoice_as_html(invoice):
         'title': unicode(invoice),
         'code': invoice.code,
         'emit_date': invoice.emit_date,
+        # TODO: possibly we need to stare it as separate date
+        'time_of_supply': invoice.payment_date,
         'order': {
             'card_name': order.card_name,
             'address': address,

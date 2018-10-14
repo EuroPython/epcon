@@ -16,6 +16,7 @@ from conference.debug_panel import (
     debug_panel_invoice_export_for_tax_report_2018,
     debug_panel_invoice_export_for_tax_report_2018_csv,
     debug_panel_invoice_export_for_payment_reconciliation_json,
+    reissue_invoice,
 )
 from conference import views as conference_views
 
@@ -62,6 +63,9 @@ urlpatterns = [
     url(r'^nothing-to-see-here/invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
         name='debug_panel_invoice_export_for_payment_reconciliation_json'),
+    url(r'^nothing-to-see-here/invoices/reissue/(?P<invoice_id>\d+)/$',
+        reissue_invoice,
+        name='debug_panel_reissue_invoice'),
 ]
 
 if settings.DEBUG:

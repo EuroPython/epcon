@@ -18,6 +18,7 @@ from django.template.loader import render_to_string
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from common.jsonify import json_dumps
 from conference import dataaccess
 from conference import models
 from conference import utils
@@ -1428,7 +1429,6 @@ def visible_talks(talks, filter_="all"):
 
 @register.filter
 def json_(val):
-    from common.jsonify import json_dumps
     return mark_safe(json_dumps(val))
 
 
@@ -1587,4 +1587,5 @@ def conference_js_data(tags=None):
         'taggeditems': items,
     }
 
-    return 'window.conference = %s;' % json_(data)
+    return mark_safe('window.conference = {};'.format(json_dumps(data)))
+
