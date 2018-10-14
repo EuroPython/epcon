@@ -870,6 +870,8 @@ class Invoice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     issuer = models.TextField()
+    # TODO: backfill that with customer data for previous invoices
+    customer = models.TextField()
     html = models.TextField()
 
     local_currency = models.CharField(max_length=3, default="EUR")
