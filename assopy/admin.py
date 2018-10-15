@@ -1,24 +1,29 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
+from datetime import datetime
+
 from django import forms
 from django import http
-from django import template
 from django.conf import settings as dsettings
 from django.conf.urls import url
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe
+from django.template.response import TemplateResponse
+
 from assopy import models
-from collections import defaultdict
-from datetime import datetime
+
 
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('printable_name', 'vat_company', 'vat_company_verify', 'vat_person')
     list_editable = ('vat_company', 'vat_company_verify', 'vat_person')
     search_fields = ('name', 'printable_name', 'iso', 'numcode')
 
+
 admin.site.register(models.Country, CountryAdmin)
+
 
 class ReadOnlyWidget(forms.widgets.HiddenInput):
 
@@ -181,12 +186,12 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
-        f = self.admin_site.admin_view
+        admin_view = self.admin_site.admin_view
         my_urls = [
-            url(r'^invoices/$', f(self.edit_invoices), name='assopy-edit-invoices'),
-            url(r'^stats/$', f(self.stats), name='assopy-order-stats'),
-            url(r'^vouchers/$', f(self.vouchers), name='assopy-order-vouchers'),
-            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', f(self.vouchers_fare), name='assopy-order-vouchers-fare'),
+            url(r'^invoices/$', admin_view(self.edit_invoices), name='assopy-edit-invoices'),
+            url(r'^stats/$', admin_view(self.stats), name='assopy-order-stats'),
+            url(r'^vouchers/$', admin_view(self.vouchers), name='assopy-order-vouchers'),
+            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', admin_view(self.vouchers_fare), name='assopy-order-vouchers-fare'),
         ]
         return my_urls + urls
 
@@ -196,8 +201,7 @@ class OrderAdmin(admin.ModelAdmin):
             'fares': Fare.objects\
                 .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
         }
-        return render_to_response(
-            'admin/assopy/order/vouchers.html', ctx)
+        return TemplateResponse('admin/assopy/order/vouchers.html', ctx)
 
     def vouchers_fare(self, request, conference, fare):
         items = models.OrderItem.objects\
@@ -207,8 +211,7 @@ class OrderAdmin(admin.ModelAdmin):
         ctx = {
             'items': items,
         }
-        return render_to_response(
-            'admin/assopy/order/vouchers_fare.html', ctx)
+        return TemplateResponse('admin/assopy/order/vouchers_fare.html', ctx)
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset ]
@@ -248,7 +251,7 @@ class OrderAdmin(admin.ModelAdmin):
             'form': form,
             'ids': request.GET.get('id'),
         }
-        return render_to_response('assopy/admin/edit_invoices.html', ctx)
+        return TemplateResponse('assopy/admin/edit_invoices.html', ctx)
 
     def stats_conference(self, conf):
         from assopy import stats
@@ -291,7 +294,7 @@ class OrderAdmin(admin.ModelAdmin):
         for c in Conference.objects.order_by('-conference_start')[:3]:
             ctx['conferences'].append((c, self.stats_conference(c)))
 
-        return render_to_response('assopy/admin/order_stats.html', ctx)
+        return TemplateResponse('assopy/admin/order_stats.html', ctx)
 
 admin.site.register(models.Order, OrderAdmin)
 
@@ -495,7 +498,7 @@ class AuthUserAdmin(aUserAdmin):
             'user': user,
             'form': form,
         }
-        return render_to_response('admin/auth/user/new_order.html', ctx)
+        return TemplateResponse('admin/auth/user/new_order.html', ctx)
 
     def _doppelganger(self, o):
         url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})

@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import csv
+import logging
+import re
+from collections import defaultdict
+from cStringIO import StringIO
+
 from django import forms
 from django import http
-from django import template
 from django.contrib import admin
 from django.conf import settings as dsettings
 from django.conf.urls import url
 from django.contrib.contenttypes.fields import ReverseGenericManyToOneDescriptor
 from django.core import urlresolvers
-from django.shortcuts import redirect, render_to_response, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
+from django.template.response import TemplateResponse
 
 import common.decorators
 from common.jsonify import json_dumps
@@ -26,13 +32,8 @@ from conference.fares import (
 )
 
 
-import csv
-import logging
-import re
-from collections import defaultdict
-from cStringIO import StringIO
-
 log = logging.getLogger('conference')
+
 
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', '_schedule_view', '_attendee_stats')
@@ -48,23 +49,23 @@ class ConferenceAdmin(admin.ModelAdmin):
     _attendee_stats.allow_tags = True
 
     def get_urls(self):
-        v = self.admin_site.admin_view
+        admin_view = self.admin_site.admin_view
         urls = [
             url(r'^(?P<cid>[\w-]+)/schedule/$',
-                v(self.schedule_view),
+                admin_view(self.schedule_view),
                 name='conference-conference-schedule'),
             url(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
-                v(self.schedule_view_track),
+                admin_view(self.schedule_view_track),
                 name='conference-conference-schedule-track'),
 
             url(r'^(?P<cid>[\w-]+)/stats/$',
-                v(self.stats_list),
+                admin_view(self.stats_list),
                 name='conference-ticket-stats'),
             url(r'^(?P<cid>[\w-]+)/stats/details$',
-                v(self.stats_details),
+                admin_view(self.stats_details),
                 name='conference-ticket-stats-details'),
             url(r'^(?P<cid>[\w-]+)/stats/details.csv$',
-                v(self.stats_details_csv),
+                admin_view(self.stats_details_csv),
                 name='conference-ticket-stats-details-csv'),
         ]
         return urls + super(ConferenceAdmin, self).get_urls()
@@ -99,7 +100,7 @@ class ConferenceAdmin(admin.ModelAdmin):
             tracks.append([ sch['id'], [ t for t in tks ] ])
 
         from conference.forms import EventForm
-        return render_to_response(
+        return TemplateResponse(
             'admin/conference/conference/schedule_view.html',
             {
                 'conference': conf,
@@ -115,7 +116,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         tt = utils.TimeTable2\
             .fromTracks([tid])\
             .adjustTimes(time(8, 00), time(18, 30))
-        return render_to_response(
+        return TemplateResponse(
             'admin/conference/conference/schedule_view_schedule.html',
             { 'timetable': tt, },
         )
@@ -158,7 +159,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         stats = []
         stats = self.available_stats(cid)
 
-        return render_to_response(
+        return TemplateResponse(
             'admin/conference/conference/attendee_stats.html',
             {
                 'conference': cid,
@@ -193,7 +194,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                         form = AdminSendMailForm()
         else:
             form = AdminSendMailForm()
-        return render_to_response(
+        return TemplateResponse(
             'admin/conference/conference/attendee_stats_details.html',
             {
                 'conference': cid,
@@ -496,7 +497,7 @@ class SpeakerAdmin(admin.ModelAdmin):
             data = [ x for x in speakers if x['user'] in sids ]
             if data:
                 groups[t] = data
-        return render_to_response(
+        return TemplateResponse(
             'admin/conference/speaker/stats_list.html',
             {
                 'speakers': speakers,
@@ -901,7 +902,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                 'sid': sid,
                 'eid': eid,
             }
-            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
+            return TemplateResponse(request, ctx)
 
     #@transaction.atomic
     def tracks(self, request, sid, tid):
@@ -932,7 +933,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                 'sid': sid,
                 'tid': tid,
             }
-            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
+            return TemplateResponse(request, ctx)
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
@@ -954,7 +955,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         ctx = {
             'schedules': sorted(data.items(), key=lambda x: x[0].date),
         }
-        return render_to_response('conference/admin/schedule_expected_attendance.html', ctx)
+        return TemplateResponse('conference/admin/schedule_expected_attendance.html', ctx)
 
 admin.site.register(models.Schedule, ScheduleAdmin)
 
@@ -1248,7 +1249,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         ctx = {
             'tags': tags,
         }
-        return render_to_response('admin/conference/conferencetag/merge.html', ctx)
+        return TemplateResponse('admin/conference/conferencetag/merge.html', ctx)
 
 
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)

@@ -17,7 +17,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.db import models
-from django.db.models.query import QuerySet
+from django.db.models import Q
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -471,7 +471,7 @@ class OrderQuerySet(models.QuerySet):
         metodo bonifico (a prescindere se risultano pagati o meno) e tutti
         gli ordini con metodo paypal (o cc) completati.
         """
-        qs = self.filter(models.Q(method='bank')|models.Q(method__in=('cc', 'paypal'), _complete=True))
+        qs = self.filter(Q(method='bank') | Q(method__in=('cc', 'paypal'), _complete=True))
         if include_admin:
             qs = qs.filter(method='admin')
         return qs
