@@ -75,7 +75,7 @@ def _prepare_invoice_for_basic_test(order_code, invoice_code):
     # create some random Vat instance to the invoice creation works
     vat_10 = Vat.objects.create(value=10)
 
-    Invoice.objects.create(
+    return Invoice.objects.create(
         code=invoice_code,
         order=order,
         emit_date=date.today(),
@@ -768,3 +768,25 @@ def test_export_invoice_accounting_json(client):
     assert decimal.Decimal(data[0]['gross']) == invoice1.price
     assert data[0]['order'] == invoice1.order.code
     assert data[0]['stripe'] == invoice1.order.stripe_charge_id
+
+
+def test_reissue_invoice(admin_client):
+    invoice_code, order_code = 'I123', 'asdf'
+    invoice = _prepare_invoice_for_basic_test(order_code, invoice_code)
+
+    NEW_CUSTOMER = 'NEW CUSTOMER'
+    assert Invoice.objects.all().count() == 1
+    assert NEW_CUSTOMER not in Invoice.objects.latest('id').html
+
+    url = reverse('debug_panel_reissue_invoice', args=[invoice.id])
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    response = admin_client.post(url, {
+        'emit_date': '2018-01-01',
+        'customer': NEW_CUSTOMER,
+    })
+    assert response.status_code == 302
+
+    assert Invoice.objects.all().count() == 2
+    assert NEW_CUSTOMER in Invoice.objects.latest('id').html
