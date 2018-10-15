@@ -1253,4 +1253,4 @@ class CaptchaQuestionAdmin(admin.ModelAdmin):
     list_filter = ('enabled',)
 
 
-admin.site.register(models.CaptchaQuestion)
+admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)

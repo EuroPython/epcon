@@ -138,12 +138,6 @@ class MarkEditWidget(forms.Textarea):
         attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
         return super(MarkEditWidget, self).render(name, value, attrs)
 
-class AdminMarkEdit(admin_widgets.AdminTextareaWidget, MarkEditWidget):
-    pass
-
-class PseudoRadioWidget(forms.TextInput):
-    def render(self, name, value, attrs=None):
-        pass
 
 
 class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
