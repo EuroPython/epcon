@@ -10,6 +10,9 @@ class ScheduleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'conference.Schedule'
 
+    # NOTE umgelurgel 22-10-2018
+    # This assumes the conference exists which can lead to failures during tests
+    # Should be replaced with a get_or_create
     conference = factory.Iterator(
         Conference.objects.all().values_list('code', flat=True)
     )

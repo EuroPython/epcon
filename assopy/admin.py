@@ -201,7 +201,7 @@ class OrderAdmin(admin.ModelAdmin):
             'fares': Fare.objects\
                 .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
         }
-        return TemplateResponse('admin/assopy/order/vouchers.html', ctx)
+        return TemplateResponse(request, 'admin/assopy/order/vouchers.html', ctx)
 
     def vouchers_fare(self, request, conference, fare):
         items = models.OrderItem.objects\
@@ -211,7 +211,7 @@ class OrderAdmin(admin.ModelAdmin):
         ctx = {
             'items': items,
         }
-        return TemplateResponse('admin/assopy/order/vouchers_fare.html', ctx)
+        return TemplateResponse(request, 'admin/assopy/order/vouchers_fare.html', ctx)
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset ]
@@ -230,7 +230,7 @@ class OrderAdmin(admin.ModelAdmin):
         except ValueError:
             return http.HttpResponseBadRequest('invalid id list')
         orders = models.Order.objects.filter(id__in=ids)
-        if not orders.count():
+        if not orders.exists():
             return redirect('admin:assopy_order_changelist')
 
         class FormPaymentDate(forms.Form):
@@ -251,7 +251,7 @@ class OrderAdmin(admin.ModelAdmin):
             'form': form,
             'ids': request.GET.get('id'),
         }
-        return TemplateResponse('assopy/admin/edit_invoices.html', ctx)
+        return TemplateResponse(request, 'assopy/admin/edit_invoices.html', ctx)
 
     def stats_conference(self, conf):
         from assopy import stats
@@ -294,7 +294,7 @@ class OrderAdmin(admin.ModelAdmin):
         for c in Conference.objects.order_by('-conference_start')[:3]:
             ctx['conferences'].append((c, self.stats_conference(c)))
 
-        return TemplateResponse('assopy/admin/order_stats.html', ctx)
+        return TemplateResponse(request, 'assopy/admin/order_stats.html', ctx)
 
 admin.site.register(models.Order, OrderAdmin)
 
@@ -498,7 +498,7 @@ class AuthUserAdmin(aUserAdmin):
             'user': user,
             'form': form,
         }
-        return TemplateResponse('admin/auth/user/new_order.html', ctx)
+        return TemplateResponse(request, 'admin/auth/user/new_order.html', ctx)
 
     def _doppelganger(self, o):
         url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
@@ -760,7 +760,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     do_csv_invoices.short_description = 'Download invoices as csv'
 
 
-admin.site.register(models.Invoice,InvoiceAdmin)
+admin.site.register(models.Invoice, InvoiceAdmin)
 
 admin.site.register(models.Vat)
 

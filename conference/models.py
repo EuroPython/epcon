@@ -895,6 +895,7 @@ class Ticket(models.Model):
     def __unicode__(self):
         return 'Ticket "%s" (%s)' % (self.fare.name, self.fare.code)
 
+
 class Sponsor(models.Model):
     """
     Through the list of SponsorIncome instance of Sponsor it is connected
@@ -918,7 +919,9 @@ class Sponsor(models.Model):
     def __unicode__(self):
         return self.sponsor
 
+
 post_save.connect(postSaveResizeImageHandler, sender=Sponsor)
+
 
 class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor)
@@ -928,6 +931,7 @@ class SponsorIncome(models.Model):
 
     class Meta:
         ordering = ['conference']
+
 
 class MediaPartner(models.Model):
     """
@@ -948,7 +952,9 @@ class MediaPartner(models.Model):
     def __unicode__(self):
         return self.partner
 
+
 post_save.connect(postSaveResizeImageHandler, sender=MediaPartner)
+
 
 class MediaPartnerConference(models.Model):
     partner = models.ForeignKey(MediaPartner)
@@ -957,6 +963,7 @@ class MediaPartnerConference(models.Model):
 
     class Meta:
         ordering = ['conference']
+
 
 class ScheduleManager(models.Manager):
     def attendees(self, conference, forecast=False):
@@ -1064,6 +1071,7 @@ class ScheduleManager(models.Manager):
 
         return output
 
+
 class Schedule(models.Model):
     """
     Directly into the schedule we have an indication of the conference,
@@ -1104,6 +1112,7 @@ class Track(models.Model):
     def __unicode__(self):
         return self.track
 
+
 class EventManager(models.Manager):
     def group_events_by_times(self, events, event=None):
         """
@@ -1137,6 +1146,7 @@ class EventManager(models.Manager):
                 evt0 = sorted_events.pop()
                 group = [evt0] + extract_group(evt0, sorted_events)
                 yield group
+
 
 class Event(models.Model):
     schedule = models.ForeignKey(Schedule)
@@ -1247,12 +1257,14 @@ class Event(models.Model):
         self.id = myid
         return count
 
+
 class EventTrack(models.Model):
     track = models.ForeignKey(Track)
     event = models.ForeignKey(Event)
 
     class Meta:
         unique_together = (('track', 'event',),)
+
 
 class EventInterest(models.Model):
     event = models.ForeignKey(Event)
@@ -1261,6 +1273,7 @@ class EventInterest(models.Model):
 
     class Meta:
         unique_together = (('user', 'event'),)
+
 
 class EventBookingManager(models.Manager):
     def booking_status(self, eid):
@@ -1299,6 +1312,7 @@ class EventBookingManager(models.Manager):
         e.delete()
         signals.event_booked.send(sender=Event, booked=False, event_id=eid, user_id=uid)
 
+
 class EventBooking(models.Model):
     event = models.ForeignKey(Event)
     user = models.ForeignKey('auth.User')
@@ -1307,6 +1321,7 @@ class EventBooking(models.Model):
 
     class Meta:
         unique_together = (('user', 'event'),)
+
 
 class Hotel(models.Model):
     """
@@ -1332,10 +1347,13 @@ class Hotel(models.Model):
     def __unicode__(self):
         return self.name
 
+
 SPECIAL_PLACE_TYPES = (
     ('conf-hq', 'Conference Site'),
     ('pyevents', 'PyEvents'),
 )
+
+
 class SpecialPlace(models.Model):
     name = models.CharField('Name', max_length = 100)
     address = models.CharField('Address', max_length = 200, default = '', blank = True)
@@ -1376,12 +1394,14 @@ else:
     post_save.connect(postSaveHotelHandler, sender=Hotel)
     post_save.connect(postSaveHotelHandler, sender=SpecialPlace)
 
+
 class DidYouKnow(models.Model):
     """
     Do you know that ?
     """
     visible = models.BooleanField('visible', default = True)
     messages = GenericRelation(MultilingualContent)
+
 
 class Quote(models.Model):
     who = models.CharField(max_length=100)
@@ -1392,6 +1412,7 @@ class Quote(models.Model):
 
     class Meta:
         ordering = ['conference', 'who']
+
 
 class VotoTalk(models.Model):
     user = models.ForeignKey('auth.User')

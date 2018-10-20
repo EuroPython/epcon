@@ -101,6 +101,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 
         from conference.forms import EventForm
         return TemplateResponse(
+            request,
             'admin/conference/conference/schedule_view.html',
             {
                 'conference': conf,
@@ -117,6 +118,7 @@ class ConferenceAdmin(admin.ModelAdmin):
             .fromTracks([tid])\
             .adjustTimes(time(8, 00), time(18, 30))
         return TemplateResponse(
+            request,
             'admin/conference/conference/schedule_view_schedule.html',
             { 'timetable': tt, },
         )
@@ -160,6 +162,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         stats = self.available_stats(cid)
 
         return TemplateResponse(
+            request,
             'admin/conference/conference/attendee_stats.html',
             {
                 'conference': cid,
@@ -195,6 +198,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         else:
             form = AdminSendMailForm()
         return TemplateResponse(
+            request,
             'admin/conference/conference/attendee_stats_details.html',
             {
                 'conference': cid,
@@ -498,6 +502,7 @@ class SpeakerAdmin(admin.ModelAdmin):
             if data:
                 groups[t] = data
         return TemplateResponse(
+            request,
             'admin/conference/speaker/stats_list.html',
             {
                 'speakers': speakers,
@@ -886,23 +891,12 @@ class ScheduleAdmin(admin.ModelAdmin):
                     'duration': ev.duration,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
-            tpl = Template('''
-            <form class="async" method="POST" action="{% url "admin:conference-schedule-event" sid eid %}">{% csrf_token %}
-                <table>{{ form }}</table>
-                <div class="submit-row">
-                    <input type="submit" name="save" value="save"/>
-                    <input type="submit" name="delete" value="delete"/>
-                    <input type="submit" name="copy" title="repeat in all schedules/days" value="save and repeat"/>
-                    <input type="submit" name="update" title="updates events with the same title in the tracks with the same name" value="save and update"/>
-                </div>
-            </form>
-            ''')
             ctx = {
                 'form': form,
                 'sid': sid,
                 'eid': eid,
             }
-            return TemplateResponse(request, ctx)
+            return TemplateResponse(request, 'conference/admin/schedule_event.html', ctx)
 
     #@transaction.atomic
     def tracks(self, request, sid, tid):
@@ -920,20 +914,12 @@ class ScheduleAdmin(admin.ModelAdmin):
             return http.HttpResponse(content=json_dumps(output), content_type="text/javascript")
         else:
             form = TrackForm(instance=track)
-            tpl = Template('''
-            <form class="async" method="POST" action="{% url "admin:conference-schedule-tracks" sid tid %}">{% csrf_token %}
-                <table>{{ form }}</table>
-                <div class="submit-row">
-                    <input type="submit" />
-                </div>
-            </form>
-            ''')
             ctx = {
                 'form': form,
                 'sid': sid,
                 'tid': tid,
             }
-            return TemplateResponse(request, ctx)
+            return TemplateResponse(request, 'conference/admin/schedule_tracks.html', ctx)
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
@@ -955,7 +941,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         ctx = {
             'schedules': sorted(data.items(), key=lambda x: x[0].date),
         }
-        return TemplateResponse('conference/admin/schedule_expected_attendance.html', ctx)
+        return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
 admin.site.register(models.Schedule, ScheduleAdmin)
 
@@ -1249,7 +1235,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         ctx = {
             'tags': tags,
         }
-        return TemplateResponse('admin/conference/conferencetag/merge.html', ctx)
+        return TemplateResponse(request, 'admin/conference/conferencetag/merge.html', ctx)
 
 
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)

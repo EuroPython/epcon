@@ -180,6 +180,11 @@ def _i_all_user_tickets(sender, **kw):
     So it's a signal(?) that invalidates the all_user_tickets caching.
 
     However this signal doesnt seem to be attached to anything.
+
+    NOTE(umgelurgel)(2018-10-20)
+    This is connected to using the p3.dataaccess.all_user_tickets call that
+    generates the post_save and pre_delete signals in
+    conference.cachef.CacheFunction._decorator
     """
     o = kw['instance']
     if sender is models.TicketConference:
