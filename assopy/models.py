@@ -846,10 +846,6 @@ class InvoiceLog(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
 
-class InvoiceManager(models.Manager):
-    pass
-
-
 class Invoice(models.Model):
 
     PLACEHOLDER_EXRATE_DATE = date(2000, 1, 1)
@@ -890,8 +886,6 @@ class Invoice(models.Model):
     note = models.TextField(
         blank=True,
         help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
-
-    objects = InvoiceManager()
 
     def save(self, *args, **kwargs):
         from conference.invoicing import is_real_invoice_code
