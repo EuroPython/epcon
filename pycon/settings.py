@@ -217,19 +217,19 @@ TEMPLATES = [{
         'context_processors': [
             "django.contrib.auth.context_processors.auth",
             'django.contrib.messages.context_processors.messages',
-            "django.core.context_processors.i18n",
-            "django.core.context_processors.debug",
-            "django.core.context_processors.request",
-            "django.core.context_processors.media",
-            'django.core.context_processors.csrf',
-            'django.core.context_processors.request',
-            "django.core.context_processors.tz",
+            "django.template.context_processors.i18n",
+            "django.template.context_processors.debug",
+            "django.template.context_processors.request",
+            "django.template.context_processors.media",
+            'django.template.context_processors.csrf',
+            'django.template.context_processors.request',
+            "django.template.context_processors.tz",
             'p3.context_processors.settings',
             'conference.context_processors.current_url',
             'conference.context_processors.stuff',
             "sekizai.context_processors.sekizai",
             "cms.context_processors.cms_settings",
-            "django.core.context_processors.static",
+            "django.template.context_processors.static",
 
             'social.apps.django_app.context_processors.backends',
             'social.apps.django_app.context_processors.login_redirect',
@@ -335,6 +335,7 @@ INSTALLED_APPS = (
 
     'markitup',
     'cms_utils',
+    'social_django',
 
     # FYI using setting_locale we can't extend list of INSTALLED_APPS via +=
     # 'django_extensions',

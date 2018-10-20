@@ -93,8 +93,6 @@ class Command(BaseCommand):
                 if options['raise']:
                     #raise AttributeError(msg)
                     log.error(msg)
-                    import ipdb
-                    ipdb.set_trace()
                 else:
                     log.error(msg)
 

@@ -1,5 +1,5 @@
 cmsplugin-filer==1.1.3
-Django==1.9.13
+Django==1.10.8
 # pytz can be removed after moving to django>=1.11 (it becomes django dependency)
 pytz
 django-authority==0.13.1
@@ -10,10 +10,10 @@ djangocms-grid==1.3
 djangocms-text-ckeditor==3.5.3
 django-crontab==0.4.2
 django-filebrowser-no-grappelli==3.6.2
-django-filer==1.2.5
-django-markitup==2.2.2
+django-filer==1.3.2
+django-markitup==3.0.0
 django-mptt==0.8.7
-django-polymorphic==0.8.1
+django-polymorphic==1.3
 django-rosetta==0.7.13
 django-sekizai==0.10.0
 
@@ -33,11 +33,13 @@ oauthlib==0.7.2
 Pillow==5.2.0
 python-oembed==0.2.1
 python-openid==2.2.5
-python-social-auth==0.2.9
+python-social-auth==0.3.6
+pyjwkest==1.4.0
 requests==2.5.3
 responses==0.8.1
 requests-oauthlib==0.4.2
 six
+social-auth-app-django==2.1.0
 stripe==1.19.1
 
 # artcz: as far as I can tell this is for hcomments only

@@ -4,7 +4,7 @@ from decimal import Decimal
 from django import forms
 from django import http
 from django.conf import settings
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
 from django.core import urlresolvers
 from django.db.models import Q
@@ -274,9 +274,9 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def get_urls(self):
         urls = super(TicketConferenceAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
-        )
+        ]
         return my_urls + urls
 
     def stats_data(self, request):

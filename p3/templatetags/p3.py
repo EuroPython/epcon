@@ -14,7 +14,6 @@ from itertools import groupby
 from django import template
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.template import Context
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -123,7 +122,7 @@ def box_talks_conference(context, talks):
 
 @register.inclusion_tag('p3/box_latest_tweets.html', takes_context=True)
 def box_latest_tweets(context):
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'screen_name': settings.P3_TWITTER_USER,
     })
@@ -196,7 +195,7 @@ def render_ticket(context, ticket):
     else:
         form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
         blocked = False
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'ticket': ticket,
         'form': form,
@@ -235,7 +234,7 @@ def fares_available(context, fare_type, sort=None):
 @register.simple_tag(takes_context=True)
 def render_cart_rows(context, fare_type, form):
     assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
-    ctx = Context(context)
+    ctx = context.flatten()
     request = ctx['request']
     try:
         company = request.user.assopy_user.account_type == 'c'
@@ -352,7 +351,7 @@ def render_partner_program(context, conference=None):
     from conference.templatetags.conference import fare_blob
     fares = [ x for x in dataaccess.fares(conference) if x['ticket_type'] == 'partner' and x['valid'] ]
     fares.sort(key=lambda x: (slugify(x['name']), fare_blob(x, 'date')))
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x['name'])) ],
     })
@@ -465,7 +464,7 @@ def box_next_events(context):
             'next': (n, n_time),
         }
     events = sorted(tracks.items(), key=lambda x: x[0].order)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'events': events,
     })
@@ -606,7 +605,7 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
         conference = settings.CONFERENCE_CONFERENCE
     if isinstance(profile, int):
         profile = dataaccess.profile_data(profile)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'profile': profile,
         'conference': conference,
@@ -616,7 +615,7 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
 
 @register.inclusion_tag('p3/fragments/archive.html', takes_context=True)
 def render_archive(context, conference):
-    ctx = Context(context)
+    ctx = context.flatten()
 
     def match(e, exclude_tags=set(('partner0', 'partner1', 'sprint1', 'sprint2', 'sprint3'))):
         if e['tags'] & exclude_tags:

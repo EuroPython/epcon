@@ -47,29 +47,22 @@ TICKET_CONFERENCE_DIETS = dsettings.CONFERENCE_TICKET_CONFERENCE_DIETS
 TICKET_CONFERENCE_EXPERIENCES = dsettings.CONFERENCE_TICKET_CONFERENCE_EXPERIENCES
 
 
-class TicketConferenceManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
+class TicketConferenceQuerySet(models.QuerySet):
+    def available(self, user, conference=None):
+        """
+        restituisce il qs con i biglietti disponibili per l'utente;
+        disponibili significa comprati dall'utente o assegnati a lui.
+        """
+        # TODO: drop in favor of dataaccess.user_tickets
+        q1 = user.ticket_set.all()
+        if conference:
+            q1 = q1.conference(conference)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+        q2 = Ticket.objects.filter(p3_conference__assigned_to=user.email)
+        if conference:
+            q2 = q2.filter(fare__conference=conference)
 
-    class _QuerySet(QuerySet):
-        def available(self, user, conference=None):
-            """
-            restituisce il qs con i biglietti disponibili per l'utente;
-            disponibili significa comprati dall'utente o assegnati a lui.
-            """
-            # TODO: drop in favor of dataaccess.user_tickets
-            q1 = user.ticket_set.all()
-            if conference:
-                q1 = q1.conference(conference)
-
-            q2 = Ticket.objects.filter(p3_conference__assigned_to=user.email)
-            if conference:
-                q2 = q2.filter(fare__conference=conference)
-
-            return q1 | q2
+        return q1 | q2
 
 
 class TicketConference(models.Model):
@@ -106,7 +99,7 @@ class TicketConference(models.Model):
         blank=True,
         help_text=_("EMail of the attendee for whom this ticket was bought."))
 
-    objects = TicketConferenceManager()
+    objects = TicketConferenceQuerySet.as_manager()
 
     def __str__(self):
         return "for ticket: %s" % self.ticket
