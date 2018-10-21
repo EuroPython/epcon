@@ -6,9 +6,7 @@ from django import forms
 from django import http
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.db import transaction
 from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
 from django.shortcuts import render
 
 from assopy import models as amodels
@@ -19,9 +17,10 @@ from conference.decorators import profile_access
 from email_template import utils
 from p3 import forms as p3forms
 from p3 import dataaccess
-from p3 import models
+
 
 log = logging.getLogger('p3.views')
+
 
 @profile_access
 def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
@@ -62,6 +61,7 @@ def p3_profile(request, slug, profile=None, full_access=False, format_='html'):
     }
     return render(request, tpl, ctx)
 
+
 def p3_profile_avatar(request, slug):
     p = get_object_or_404(cmodels.AttendeeProfile, slug=slug).p3_profile
     from urllib2 import urlopen
@@ -77,6 +77,7 @@ def p3_profile_avatar(request, slug):
         headers = img.info()
         ct = headers.get('content-type')
     return http.HttpResponse(img.read(), content_type=ct)
+
 
 @require_POST
 @login_required
@@ -96,6 +97,7 @@ def p3_profile_message(request, slug):
             return http.HttpResponseBadRequest(str(e))
         return "OK"
     return f.errors
+
 
 @login_required
 def p3_account_data(request):
@@ -119,16 +121,6 @@ def p3_account_data(request):
                     profile.save()
     return render(request, "assopy/profile_personal_data.html", ctx)
 
-@transaction.atomic
-def OTCHandler_E(request, token):
-    user = token.user
-    models.TicketConference.objects\
-        .filter(assigned_to=user.email)\
-        .update(assigned_to=token.payload)
-    user.email = token.payload
-    user.save()
-    log.info('"%s" has verified the new email "%s"', user.username, user.email)
-    return redirect('assopy-profile')
 
 @login_required
 def p3_account_email(request):
@@ -159,6 +151,7 @@ def p3_account_email(request):
         'pform': form,
     }
     return render(request, "assopy/profile_email_contact.html", ctx)
+
 
 @login_required
 def p3_account_spam_control(request):
