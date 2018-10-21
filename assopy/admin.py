@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-from datetime import datetime
 
 from django import forms
 from django import http
@@ -10,6 +9,7 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.template.response import TemplateResponse
 
@@ -638,7 +638,7 @@ class RefundAdmin(admin.ModelAdmin):
                     cn = models.CreditNote(assopy_id=item['assopy_id'])
                     total = sum(refund.items.all().values_list('price', flat=True))
                     cn.price = total
-                    cn.emit_date = datetime.now()
+                    cn.emit_date = timezone.now()
                     cn.code = item['code']
                     cn.invoice = item['invoice']
                     cn.save()
