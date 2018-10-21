@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 import csv
 import decimal
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 import random
 import json
@@ -14,6 +14,7 @@ from pytest import mark
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.conf import settings
+from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
@@ -22,7 +23,6 @@ import responses
 from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-# from common.http import PdfResponse
 from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings
 from conference import invoicing  # for monkey patching below
@@ -33,7 +33,6 @@ from conference.invoicing import (
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
     CSV_2018_REPORT_COLUMNS,
-    # render_invoice_as_html,
 )
 from conference.currencies import (
     DAILY_ECB_URL,
@@ -146,12 +145,12 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
 
     order2017 = Order(user=assopy_user, code=order_code_2017)
     order2017.save()
-    order2017.created = date(2017, 12, 31)
+    order2017.created = timezone.make_aware(datetime(2017, 12, 31))
     order2017.save()
 
     order2018 = Order(user=assopy_user, code=order_code_2018)
     order2018.save()
-    order2018.created = date(2018, 1, 1)
+    order2018.created = timezone.make_aware(datetime(2018, 1, 1))
     order2018.save()
 
     Invoice.objects.create(
@@ -312,7 +311,7 @@ def test_invoices_from_buying_tickets(client):
     # no invoices
     assert Invoice.objects.all().count() == 0
     # static date, because of #592 choosing something in 2018
-    SOME_RANDOM_DATE = date(2018, 1, 1)
+    SOME_RANDOM_DATE = timezone.make_aware(datetime(2018, 1, 1))
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
 
@@ -400,7 +399,6 @@ def test_invoices_from_buying_tickets(client):
 
 
 def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
-    today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
 
     with responses.RequestsMock() as rsps:
@@ -408,7 +406,7 @@ def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
         rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
         fetch_and_store_latest_ecb_exrates()
 
-    order.confirm_order(today)
+    order.confirm_order(timezone.now())
 
     # confirm_order by default creates placeholders, but for most of the tests
     # we can upgrade them to proper invoices anyway.
@@ -567,7 +565,7 @@ def test_create_invoice_with_many_items(client):
         rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
         fetch_and_store_latest_ecb_exrates()
 
-    order.confirm_order(date.today())
+    order.confirm_order(timezone.now())
     # invoice = Invoice.objects.get()
     # serve_response(PdfResponse(
     #     filename="some-invoice.pdf",
