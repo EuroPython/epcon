@@ -270,7 +270,7 @@ class User(models.Model):
 
         https://github.com/EuroPython/epcon/issues/592
         """
-        return self.orders.filter(created__gte=date(2018, 1, 1))
+        return self.orders.filter(created__gte=timezone.make_aware(datetime(2018, 1, 1)))
 
     def tickets(self):
         tickets = []
@@ -1085,7 +1085,7 @@ class Refund(models.Model):
             except Refund.DoesNotExist:
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
-            self.done = datetime.now()
+            self.done = now()
         if old and self.status != old:
             o = self.items.all()[0].order
             log.info(
