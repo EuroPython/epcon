@@ -111,9 +111,11 @@
 <![endif]-->
 {% block HEADER_BLOCK %}
     {% if messages %}
-    {% for m in messages %}
+    <div class="feedback-bar">
+        {% for m in messages %}
         <div class="feedback{% if m.tags %} {{ m.tags }}{% endif %}">{{ m }}</div>
-    {% endfor %}
+        {% endfor %}
+    </div>
     {% endif %}
     {% block TOP_NAV_BLOCK %}
         <a href="#navigation-toggle" class="navigation-toggle"><i title="Menu" class="fa fa-bars"></i></a>
