@@ -22,7 +22,6 @@ Thumbs.db
 build/
 *.bak
 *~
-Makefile
 env.csh
 logs/
 migrate-to-ep2017.sh

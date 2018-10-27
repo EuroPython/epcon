@@ -29,7 +29,6 @@ TEMPLATES[0]['OPTIONS']['debug'] = True
 INSTALLED_APPS = INSTALLED_APPS + (
     'django_extensions',
     'django_pdb',
-    'test_without_migrations',
     # 'devserver',
 )
 
