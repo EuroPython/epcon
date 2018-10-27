@@ -31,11 +31,7 @@ title "Copy settings"
 [[ -e pycon/settings_locale.py ]] || cp pycon/settings_locale.py.in pycon/settings_locale.py
 
 title "Generate data"
-mkdir -p data/site
-
-python manage.py migrate
-python manage.py create_initial_data_for_dev
-
+make migrate_and_load_initial_data
 
 title "Run tests"
 make test

@@ -1,12 +1,12 @@
 
-dev-requirements:
+dev-requirements: pip-tools
 	pip-compile requirements/base.in requirements/dev.in\
 		-o requirements/dev.txt
 
 install-dev: pip-tools
 	pip-sync requirements/dev.txt
 
-deployment-requirements:
+deployment-requirements: pip-tools
 	pip-compile requirements/base.in requirements/deployment.in\
 	   	-o requirements/deployment.txt
 
@@ -24,6 +24,11 @@ pip-requirements: dev-requirements deployment-requirements
 
 pip-tools:
 	pip install pip-tools
+
+migrate_and_load_initial_data:
+	mkdir -p data/site
+	python manage.py migrate
+	python manage.py create_initial_data_for_dev
 
 test:
 	pytest
