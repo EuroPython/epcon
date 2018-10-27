@@ -28,7 +28,7 @@ html2text==2015.2.18
 html5lib==0.95
 httplib2==0.9
 lxml==3.4.2
-markdown2==2.3.5
+markdown2==2.3.6
 oauthlib==0.7.2
 Pillow==5.2.0
 python-oembed==0.2.1
