@@ -348,7 +348,7 @@ class Coupon(models.Model):
     description = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=8, help_text='importo, eg: 10, 15%, 8.5')
 
-    user = models.ForeignKey(AssopyUser, null=True, blank=True, , on_delete=models.CASCADE)
+    user = models.ForeignKey(AssopyUser, null=True, blank=True, on_delete=models.CASCADE)
     fares = models.ManyToManyField(Fare, blank=True)
 
     def __str__(self):
