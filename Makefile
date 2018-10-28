@@ -29,6 +29,7 @@ install-system-dependencies-for-ubuntu:
 pip-requirements: dev-requirements deployment-requirements
 
 pip-tools:
+	pip install pip==18.1 --upgrade
 	pip install pip-tools
 
 migrate_and_load_initial_data:
