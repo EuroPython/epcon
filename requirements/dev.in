@@ -1,20 +1,2 @@
-pytest
-pytest-cov
-pytest-django
-pytest-mock
-pytest-sugar
-pytest-watch
-pytest-xdist
-
-freezegun
-responses
-factory_boy
-mock
-
-# Consider retiring this dependncy -- old package, looks unmantained
-django-factory-boy
-
 django-pdb
 pdbpp
-
-django-sslserver==0.20

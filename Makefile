@@ -1,13 +1,19 @@
 
 dev-requirements: pip-tools
-	pip-compile requirements/base.in requirements/dev.in\
+	pip-compile\
+		requirements/base.in\
+		requirements/test.in\
+		requirements/dev.in\
 		-o requirements/dev.txt
 
 install-dev: pip-tools
 	pip-sync requirements/dev.txt
 
 deployment-requirements: pip-tools
-	pip-compile requirements/base.in requirements/deployment.in\
+	pip-compile \
+		requirements/base.in\
+		requirements/test.in\
+		requirements/deployment.in\
 	   	-o requirements/deployment.txt
 
 install: pip-tools
