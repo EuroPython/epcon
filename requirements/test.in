@@ -11,5 +11,8 @@ responses
 factory_boy
 mock
 
+# consider retiring this dependency -- looks unmaintained
+django_factory_boy
+
 # This should go to dev.in as soon as we get a proper settings file split
 django-sslserver==0.20
