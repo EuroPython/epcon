@@ -329,7 +329,6 @@ INSTALLED_APPS = (
     'filer',
     'easy_thumbnails',
 
-    'captcha',
     'django_crontab',
     'formstyle',
 
