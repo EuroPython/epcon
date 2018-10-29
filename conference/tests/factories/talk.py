@@ -39,7 +39,7 @@ class TalkSpeakerFactory(factory.django.DjangoModelFactory):
 
 class CommentFactory(factory.DjangoModelFactory):
     class Meta:
-        model = 'hcomments.HComment'
+        model = 'django_comments.Comment'
 
     comment = factory.Faker('sentence', nb_words=12, variable_nb_words=True)
     site_id = settings.SITE_ID

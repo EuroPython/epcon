@@ -12,7 +12,6 @@ from django.shortcuts import render_to_response
 def post_comment(request):
     if request.method != 'POST':
         return http.HttpResponse(status=405)
-
     pk = request.POST['object_pk']
 
     content_type = request.POST['content_type']
@@ -22,10 +21,8 @@ def post_comment(request):
     obj = ct.get_object_for_this_type(pk=pk)
 
     data = request.POST.copy()
-    if not data.get('name', ''):
-        data["name"] = request.user.get_full_name() or request.user.get_username()
-    if not data.get('email', ''):
-        data["email"] = request.user.email
+    data["name"] = request.user.get_full_name() or request.user.get_username()
+    data["email"] = request.user.email
 
     form = CommentForm(obj, data)
 

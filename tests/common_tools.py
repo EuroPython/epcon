@@ -1,8 +1,8 @@
 # coding: utf-8
 
-
-
 import http.client
+from urllib.parse import urlparse
+
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
@@ -131,6 +131,19 @@ def sequence_equals(sequence1, sequence2):
         assert item_from_s1 == item_from_s2, (item_from_s1, item_from_s2)
 
     return True
+
+
+def redirects_to(response, url):
+    """
+    Inspired by django's self.assertRedirects
+
+    Useful for confirming the response redirects to the specified url.
+    """
+    is_redirect = response.status_code == 302
+    parsed_url = urlparse(response.get('Location'))
+    is_url = parsed_url.path == url
+
+    return is_redirect and is_url
 
 
 def make_user(email='joedoe@example.com', **kwargs):
