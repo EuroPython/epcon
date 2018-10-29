@@ -6,7 +6,7 @@ from django import template
 from django.contrib.contenttypes.models import ContentType
 from django.template import Context
 
-from hcomments import models
+from django_comments.models import Comment
 from hcomments.utils import moderator_requests, thread_owners
 
 
@@ -15,7 +15,7 @@ register = template.Library()
 
 def _get_comment_list(object):
     ctype = ContentType.objects.get_for_model(object)
-    comments = models.HComment.objects.filter(
+    comments = Comment.objects.filter(
         content_type=ctype,
         object_pk=object.id,
         is_public=True,

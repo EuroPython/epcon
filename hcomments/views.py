@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django import http
-from django_comments import signals
+from django_comments.forms import CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import escape
 from django.shortcuts import render_to_response
-
-from hcomments.forms import HCommentForm
 
 
 @login_required
@@ -29,7 +27,7 @@ def post_comment(request):
     if not data.get('email', ''):
         data["email"] = request.user.email
 
-    form = HCommentForm(obj, data)
+    form = CommentForm(obj, data)
 
     if not form.is_valid():
         return http.HttpResponse(content='TODO: errors', status=400)
@@ -41,23 +39,7 @@ def post_comment(request):
     comment.ip_address = request.META.get("REMOTE_ADDR", None)
     comment.user = request.user
 
-    responses = signals.comment_will_be_posted.send(
-        sender=comment.__class__,
-        comment=comment,
-        request=request
-    )
-
-    for (receiver, response) in responses:
-        if response is False:
-            return http.HttpResponse(content='comment_will_be_posted receiver %r killed the comment' % receiver.__name__, status=400)
-
-    # Save the comment and signal that it was saved
     comment.save()
-    signals.comment_was_posted.send(
-        sender=comment.__class__,
-        comment=comment,
-        request=request
-    )
 
     if not comment.is_public:
         return http.HttpResponse(content='moderated', status=403)
