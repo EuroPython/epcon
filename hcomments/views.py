@@ -2,13 +2,15 @@
 
 from django import http
 from django_comments import signals
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import escape
 from django.shortcuts import render_to_response
 
-from hcomments import get_form
+from hcomments.forms import HCommentForm
 
 
+@login_required
 def post_comment(request):
     if request.method != 'POST':
         return http.HttpResponse(status=405)
@@ -22,13 +24,12 @@ def post_comment(request):
     obj = ct.get_object_for_this_type(pk=pk)
 
     data = request.POST.copy()
-    if request.user.is_authenticated():
-        if not data.get('name', ''):
-            data["name"] = request.user.get_full_name() or request.user.get_username()
-        if not data.get('email', ''):
-            data["email"] = request.user.email
+    if not data.get('name', ''):
+        data["name"] = request.user.get_full_name() or request.user.get_username()
+    if not data.get('email', ''):
+        data["email"] = request.user.email
 
-    form = get_form(request)(obj, data)
+    form = HCommentForm(obj, data)
 
     if not form.is_valid():
         return http.HttpResponse(content='TODO: errors', status=400)
@@ -38,9 +39,7 @@ def post_comment(request):
 
     comment = form.get_comment_object()
     comment.ip_address = request.META.get("REMOTE_ADDR", None)
-
-    if request.user.is_authenticated():
-        comment.user = request.user
+    comment.user = request.user
 
     responses = signals.comment_will_be_posted.send(
         sender=comment.__class__,
