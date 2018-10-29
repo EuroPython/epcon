@@ -44,10 +44,7 @@ def get_model():
 
 def get_form(request=None):
     from hcomments import forms
-    if request and settings.RECAPTCHA(request):
-        return forms.HCommentFormWithCaptcha
-    else:
-        return forms.HCommentForm
+    return forms.HCommentForm
 
 
 def get_form_target():

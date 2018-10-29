@@ -6,7 +6,3 @@ MODERATOR_REQUEST = getattr(settings, 'HCOMMENTS_MODERATOR_REQUEST', lambda requ
 
 # callable invoked to identify the thread's owners, should return None or a list of users.
 THREAD_OWNERS = getattr(settings, 'HCOMMENTS_THREAD_OWNERS', lambda o: None)
-
-# callable invoked to determine if we should include a Captcha inside comment's form.
-# default behaviour is to never include it.
-RECAPTCHA = getattr(settings, 'HCOMMENTS_RECAPTCHA', lambda request: False)

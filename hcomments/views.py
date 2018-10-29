@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from django import http
-from django.contrib.admin.views.decorators import staff_member_required
 from django_comments import signals
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import escape
-from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import render_to_response, redirect
 
-from hcomments import get_form, models, settings
+from hcomments import get_form, models
 
 
 def post_comment(request):
@@ -79,30 +77,6 @@ def post_comment(request):
     )
 
 
-def delete_comment(request):
-    if request.method != 'POST':
-        return http.HttpResponseBadRequest()
-    try:
-        cid = int(request.POST['cid'])
-    except:
-        raise http.HttpResponseBadRequest()
-    try:
-        comment = models.HComment.objects.get(pk=cid)
-    except models.HComment.DoesNotExist:
-        return http.HttpResponse('')
-
-    s = request.session.get('user-comments', [])
-    if cid not in s:
-        if not settings.MODERATOR_REQUEST(request, comment):
-            raise http.HttpResponseBadRequest()
-    else:
-        s = set(s)
-        s.remove(cid)
-        request.session['user-comments'] = s
-    comment.delete()
-    return http.HttpResponse('')
-
-
 def subscribe(request):
     if request.method != 'POST':
         return http.HttpResponseNotAllowed(('POST',))
@@ -120,14 +94,3 @@ def subscribe(request):
         models.ThreadSubscription.objects.unsubscribe(object, request.user)
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
-@staff_member_required
-def moderate_comment(request, cid, public=False):
-    try:
-        comment = get_object_or_404(models.HComment, pk=int(cid))
-    except (TypeError, ValueError):
-        return http.HttpResponseBadRequest()
-    comment.is_public = public
-    comment.save()
-    return http.HttpResponse(content='done', status=200)

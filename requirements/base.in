@@ -48,9 +48,6 @@ django-crontab
 WeasyPrint==0.29
 unicodecsv==0.14.1
 
-# artcz: as far as I can tell this is for hcomments only
-django-recaptcha==1.0.5
-
 openpyxl==2.4.8
 ipython
 decorator

@@ -342,25 +342,6 @@ INSTALLED_APPS = (
     # 'sslserver',
 )
 
-# Google ReCaptcha settings
-RECAPTCHA_OPTIONS = {
-    'theme': 'clean',
-    'lang': 'en',
-    'tabindex': 0,
-    # 'custom_translations': {},
-    #'custom_theme_widget': None
-}
-RECAPTCHA_PRIVATE_KEY = os.environ.get(
-    'RECAPTCHA_PRIVATE_KEY',
-    # This needs to be passed in via the OS env:
-    'no-private-key-set')
-RECAPTCHA_PUBLIC_KEY = os.environ.get(
-    'RECAPTCHA_PUBLIC_KEY',
-    # Registered for EuroPython domains:
-    '6LdFmQcTAAAAAN1xx4M5UN6yg4TwFRXUwIrH5iGh')
-RECAPTCHA_USE_SSL = True
-NOCAPTCHA = True
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -953,10 +934,6 @@ Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
 https://ep2018.europython.eu/accounts/profile/
 '''
-
-def HCOMMENTS_RECAPTCHA(request):
-    return not request.user.is_authenticated()
-
 
 def HCOMMENTS_THREAD_OWNERS(o):
     from p3.models import P3Talk

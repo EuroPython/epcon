@@ -2,8 +2,6 @@
 from django import forms
 from django_comments.forms import CommentForm
 
-from captcha.fields import ReCaptchaField
-
 from hcomments import models
 
 
@@ -23,7 +21,3 @@ class HCommentForm(CommentForm):
         else:
             data['parent'] = models.HComment.objects.get(id=self.cleaned_data['parent'])
         return data
-
-
-class HCommentFormWithCaptcha(HCommentForm):
-    captcha = ReCaptchaField(attrs={'theme' : 'clean'})
