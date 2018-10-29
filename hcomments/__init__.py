@@ -3,8 +3,6 @@ from django.core.urlresolvers import reverse
 from django.apps import AppConfig
 from django.db.models.signals import post_save
 
-import mptt
-
 from hcomments import settings
 
 
@@ -22,8 +20,6 @@ class HCommentsConfig(AppConfig):
 
         post_save.connect(send_email_to_subscribers, sender=Comment)
         post_save.connect(send_email_to_subscribers, sender=models.HComment)
-
-        mptt.register(models.HComment)
 
         # Monkey patching the default Node of `{% get_comment_form %}` in order to pass request to `get_form`
         class CommentFormNode(cc.CommentFormNode):

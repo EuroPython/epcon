@@ -14,16 +14,13 @@ register = template.Library()
 
 def _get_comment_list(object):
     ctype = ContentType.objects.get_for_model(object)
-    tree = models.HComment.tree.root_nodes().filter(
+    comments = models.HComment.objects.filter(
         content_type=ctype,
         object_pk=object.id,
         is_public=True,
         is_removed=False,
     )
-    comments = []
-    for root in tree:
-        comments.extend(root.get_descendants(True))
-    return comments
+    return comments.all()
 
 
 @register.tag

@@ -19,7 +19,6 @@ hcomments = {
 
         this.form.append('<input type="hidden" name="async" value="1" />');
         this._prepareForm(o.form);
-        this.addReplyLink();
     },
     filterOut: function(c) {
         /*
@@ -28,35 +27,6 @@ hcomments = {
          * presente
          */
         return $('#' + c.attr('id')).length == 0 ? c : null
-    },
-    addReplyLink: function(target) {
-        if(!target)
-            target = this.comments;
-        $('<span><a href="#" class="reply-comment">Reply</a> | </span>')
-            .click(bind(this._onReplyComment, this))
-            .insertBefore($('strong', target));
-    },
-    _onReplyComment: function(e) {
-        e.preventDefault();
-        var p = $(e.target).parents('li');
-        if($('form', p).length)
-            return;
-        $('li.replying form').remove();
-        $('li.replying').removeClass('replying');
-        p.addClass('replying');
-        var id = p.attr('id').split('-')[1];
-        var form = this.form.clone();
-        $('input[name="parent"]', form).val(id);
-        $('<button>Cancel</button>')
-            .appendTo($('div.buttons', form))
-            .click(function(e) {
-                e.preventDefault();
-                form.remove();
-                p.removeClass('replying');
-            });
-        this
-            ._prepareForm(form, p)
-            .appendTo(p);
     },
     _prepareForm: function(form, comment) {
         var opts = {
@@ -120,7 +90,6 @@ hcomments = {
                             data.appendTo(this.wrapper);
                     }
                     data.fadeIn("slow");
-                    this.addReplyLink(data);
                 }
             }, this)
         };

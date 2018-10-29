@@ -6,7 +6,6 @@ requests
 requests-oauthlib
 six
 
-django-mptt
 django-classy-tags
 django-authority
 django-contrib-comments
