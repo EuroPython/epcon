@@ -935,23 +935,6 @@ from other users you can change your privacy settings from this page:
 https://ep2018.europython.eu/accounts/profile/
 '''
 
-def HCOMMENTS_THREAD_OWNERS(o):
-    from p3.models import P3Talk
-
-    if isinstance(o, P3Talk):
-        return [s.user for s in o.get_all_speakers()]
-    return None
-
-
-def HCOMMENTS_MODERATOR_REQUEST(request, comment):
-    if request.user.is_superuser:
-        return True
-    else:
-        owners = HCOMMENTS_THREAD_OWNERS(comment.content_object)
-        if owners:
-            return request.user in owners
-    return False
-
 
 P3_ANONYMOUS_AVATAR = 'p5/images/headshot-default.jpg'
 

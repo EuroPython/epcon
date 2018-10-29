@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+import hashlib
+import urllib.request, urllib.parse, urllib.error
+
 from django import template
 from django.contrib.contenttypes.models import ContentType
 from django.template import Context
 
 from hcomments import models
-from hcomments import settings
+from hcomments.utils import moderator_requests, thread_owners
 
-import hashlib
-import urllib.request, urllib.parse, urllib.error
 
 register = template.Library()
 
@@ -61,7 +62,7 @@ def show_single_comment(context, comment):
     request = context['request']
     comment_owner = comment.id in request.session.get('user-comments', [])
     if not comment_owner:
-        comment_owner = settings.MODERATOR_REQUEST(request, comment)
+        comment_owner = moderator_requests(request, comment)
     return {
         'c': comment,
         'comment_owner': comment_owner,
@@ -72,7 +73,7 @@ def show_single_comment(context, comment):
 def thread_owner(comment):
     if not comment.user:
         return False
-    owners = settings.THREAD_OWNERS(comment.content_object)
+    owners = thread_owners(comment.content_object)
     if owners:
         return comment.user in owners
     else:

@@ -2,8 +2,6 @@
 from django.core.urlresolvers import reverse
 from django.apps import AppConfig
 
-from hcomments import settings
-
 
 class HCommentsConfig(AppConfig):
     name = 'hcomments'
