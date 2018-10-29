@@ -6,5 +6,4 @@ from hcomments import views as hcomments_views
 
 urlpatterns = [
     url(r'post$', hcomments_views.post_comment, name='hcomments-post-comment',),
-    url(r'subscribe/$', hcomments_views.subscribe, name='hcomments-subscribe',),
 ]

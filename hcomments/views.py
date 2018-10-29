@@ -4,9 +4,9 @@ from django import http
 from django_comments import signals
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import escape
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response
 
-from hcomments import get_form, models
+from hcomments import get_form
 
 
 def post_comment(request):
@@ -75,22 +75,3 @@ def post_comment(request):
             'owner': True,
         },
     )
-
-
-def subscribe(request):
-    if request.method != 'POST':
-        return http.HttpResponseNotAllowed(('POST',))
-    if not request.user.is_authenticated():
-        return http.HttpResponseBadRequest()
-    content_type = request.POST['content_type']
-    object_pk = request.POST['object_pk']
-
-    app_label, model = content_type.split('.', 1)
-    ct = ContentType.objects.get(app_label=app_label, model=model)
-    object = ct.get_object_for_this_type(pk=object_pk)
-    if 'subscribe' in request.POST:
-        models.ThreadSubscription.objects.subscribe(object, request.user)
-    elif 'unsubscribe' in request.POST:
-        models.ThreadSubscription.objects.unsubscribe(object, request.user)
-
-    return redirect(request.META.get('HTTP_REFERER', '/'))

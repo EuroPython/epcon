@@ -88,20 +88,6 @@ def show_comment_form(context, object):
     return ctx
 
 
-@register.inclusion_tag('hcomments/show_subscribe_form.html', takes_context=True)
-def show_subscribe_form(context, object):
-    ctx = Context(context)
-    ctx.update({
-        'object': object,
-    })
-    return ctx
-
-
-@register.filter
-def subscribed(object, user):
-    return models.ThreadSubscription.objects.subscribed(object, user)
-
-
 @register.filter
 def gravatar(email, args=''):
     if args:
