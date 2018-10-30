@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.views import defaults
+from django.views import defaults, static
 
 from filebrowser.sites import site as fsite
 
@@ -16,7 +16,9 @@ from conference.debug_panel import (
     debug_panel_invoice_export_for_tax_report_2018,
     debug_panel_invoice_export_for_tax_report_2018_csv,
     debug_panel_invoice_export_for_payment_reconciliation_json,
+    reissue_invoice,
 )
+from conference import views as conference_views
 
 
 admin.autodiscover()
@@ -30,10 +32,10 @@ urlpatterns = [
     url(r'^comments/', include('django_comments.urls')),
     url(r'^p3/', include('p3.urls')),
     url(r'^conference/', include('conference.urls')),
-    url(r'^conference/talks/(?P<slug>[\w-]+)$', 'conference.views.talk',
+    url(r'^conference/talks/(?P<slug>[\w-]+)$', conference_views.talk,
         {'talk_form': pforms.P3TalkForm},
         name='conference-talk'),
-    url(r'^conference/speakers/(?P<slug>[\w-]+)', 'conference.views.speaker',
+    url(r'^conference/speakers/(?P<slug>[\w-]+)', conference_views.speaker,
         {'speaker_form': pforms.P3SpeakerForm},
         name='conference-speaker'),
     url(r'^hcomments/', include('hcomments.urls')),
@@ -61,11 +63,14 @@ urlpatterns = [
     url(r'^nothing-to-see-here/invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
         name='debug_panel_invoice_export_for_payment_reconciliation_json'),
+    url(r'^nothing-to-see-here/invoices/reissue/(?P<invoice_id>\d+)/$',
+        reissue_invoice,
+        name='debug_panel_reissue_invoice'),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+        url(r'^media/(?P<path>.*)$', static.serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
         url(r'^500/$', defaults.server_error),
@@ -75,7 +80,6 @@ if settings.DEBUG:
     ]
 
 urlpatterns += i18n_patterns(
-    '',
     url(r'^', include('cms.urls')),
 )
 

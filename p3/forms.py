@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,12 +11,9 @@ import assopy.models as amodels
 import assopy.forms as aforms
 import conference.forms as cforms
 import conference.models as cmodels
-import conference.settings as csettings
 
 from p3 import dataaccess
 from p3 import models
-
-import datetime
 
 ### Globals
 
@@ -262,12 +261,6 @@ class FormTicketPartner(forms.ModelForm):
     class Meta:
         model = cmodels.Ticket
         fields = ('name',)
-
-
-class FormSprint(forms.ModelForm):
-    class Meta:
-        model = models.Sprint
-        exclude = ('user', 'conference',)
 
 
 class P3ProfileForm(cforms.ProfileForm):

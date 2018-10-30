@@ -13,11 +13,12 @@ from django import template
 from django.conf import settings as dsettings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.template import defaultfilters, Context
+from django.template import defaultfilters
 from django.template.loader import render_to_string
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from common.jsonify import json_dumps
 from conference import dataaccess
 from conference import models
 from conference import utils
@@ -499,7 +500,7 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
         end = None
     if start or end:
         timetable = timetable.slice(start, end)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'schedule': schedule,
         'timetable': timetable,
@@ -521,7 +522,7 @@ def render_schedule_timetable_as_list(context, schedule, timetable, start=None, 
         end = None
     if start or end:
         timetable = timetable.slice(start, end)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'schedule': schedule,
         'timetable': timetable,
@@ -1144,7 +1145,7 @@ def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", 
         href = context['CURRENT_URL']
     data = dict(locals())
     data.pop('context')
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update(data)
     return render_to_string('conference/render_fb_like.html', ctx)
 
@@ -1250,7 +1251,7 @@ def conference_fares(conf=settings.CONFERENCE):
 
 @register.simple_tag(takes_context=True)
 def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
-    ctx = Context(context)
+    ctx = context.flatten()
 
     events = dataaccess.events(conf=conference)
     if exclude_tags:
@@ -1345,7 +1346,7 @@ def content_type(id):
 def field_label(value, fieldpath):
     mname, fname = fieldpath.split('.')
     model = getattr(models, mname)
-    field = model._meta.get_field_by_name(fname)[0]
+    field = model._meta.get_field(fname)
     for k, v in field.choices:
         if k == value:
             return v
@@ -1428,7 +1429,6 @@ def visible_talks(talks, filter_="all"):
 
 @register.filter
 def json_(val):
-    from common.jsonify import json_dumps
     return mark_safe(json_dumps(val))
 
 
@@ -1587,4 +1587,5 @@ def conference_js_data(tags=None):
         'taggeditems': items,
     }
 
-    return 'window.conference = %s;' % json_(data)
+    return mark_safe('window.conference = {};'.format(json_dumps(data)))
+

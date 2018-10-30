@@ -78,14 +78,3 @@ class EmailBackend(_AssopyBackend):
             # esserci un utente legacy nel backend di ASSOPY
             if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
                 return None
-
-
-class JanRainBackend(_AssopyBackend):
-    def authenticate(self, identifier=None):
-        try:
-            i = models.UserIdentity.objects.select_related('user__user').get(identifier=identifier, user__user__is_active=True)
-        except models.UserIdentity.DoesNotExist:
-            return None
-        else:
-            self.linkUser(i.user)
-            return i.user.user

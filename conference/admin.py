@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import csv
+import logging
+import re
+from collections import defaultdict
+from cStringIO import StringIO
+
 from django import forms
 from django import http
-from django import template
 from django.contrib import admin
 from django.conf import settings as dsettings
-from django.conf.urls import url, patterns
+from django.conf.urls import url
+from django.contrib.contenttypes.fields import ReverseGenericManyToOneDescriptor
 from django.core import urlresolvers
-from django.shortcuts import redirect, render_to_response, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
+from django.template.response import TemplateResponse
 
 import common.decorators
 from common.jsonify import json_dumps
@@ -25,13 +32,8 @@ from conference.fares import (
 )
 
 
-import csv
-import logging
-import re
-from collections import defaultdict
-from cStringIO import StringIO
-
 log = logging.getLogger('conference')
+
 
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', '_schedule_view', '_attendee_stats')
@@ -47,25 +49,25 @@ class ConferenceAdmin(admin.ModelAdmin):
     _attendee_stats.allow_tags = True
 
     def get_urls(self):
-        v = self.admin_site.admin_view
-        urls = patterns('',
+        admin_view = self.admin_site.admin_view
+        urls = [
             url(r'^(?P<cid>[\w-]+)/schedule/$',
-                v(self.schedule_view),
+                admin_view(self.schedule_view),
                 name='conference-conference-schedule'),
             url(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
-                v(self.schedule_view_track),
+                admin_view(self.schedule_view_track),
                 name='conference-conference-schedule-track'),
 
             url(r'^(?P<cid>[\w-]+)/stats/$',
-                v(self.stats_list),
+                admin_view(self.stats_list),
                 name='conference-ticket-stats'),
             url(r'^(?P<cid>[\w-]+)/stats/details$',
-                v(self.stats_details),
+                admin_view(self.stats_details),
                 name='conference-ticket-stats-details'),
             url(r'^(?P<cid>[\w-]+)/stats/details.csv$',
-                v(self.stats_details_csv),
+                admin_view(self.stats_details_csv),
                 name='conference-ticket-stats-details-csv'),
-        )
+        ]
         return urls + super(ConferenceAdmin, self).get_urls()
 
     def schedule_view_talks(self, conf):
@@ -98,7 +100,8 @@ class ConferenceAdmin(admin.ModelAdmin):
             tracks.append([ sch['id'], [ t for t in tks ] ])
 
         from conference.forms import EventForm
-        return render_to_response(
+        return TemplateResponse(
+            request,
             'admin/conference/conference/schedule_view.html',
             {
                 'conference': conf,
@@ -106,7 +109,6 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'talks': self.schedule_view_talks(conf),
                 'event_form': EventForm(),
             },
-            context_instance=template.RequestContext(request)
         )
 
     def schedule_view_track(self, request, cid, sid, tid):
@@ -115,10 +117,11 @@ class ConferenceAdmin(admin.ModelAdmin):
         tt = utils.TimeTable2\
             .fromTracks([tid])\
             .adjustTimes(time(8, 00), time(18, 30))
-        return render_to_response(
+        return TemplateResponse(
+            request,
             'admin/conference/conference/schedule_view_schedule.html',
             { 'timetable': tt, },
-            context_instance=template.RequestContext(request))
+        )
 
     def _stat_wrapper(self, func, conf):
         def wrapper(*args, **kwargs):
@@ -158,13 +161,14 @@ class ConferenceAdmin(admin.ModelAdmin):
         stats = []
         stats = self.available_stats(cid)
 
-        return render_to_response(
+        return TemplateResponse(
+            request,
             'admin/conference/conference/attendee_stats.html',
             {
                 'conference': cid,
                 'stats': stats,
             },
-            context_instance=template.RequestContext(request))
+        )
 
     def stats_details(self, request, cid):
         sid, rowid = request.GET['code'].split('.')
@@ -193,7 +197,8 @@ class ConferenceAdmin(admin.ModelAdmin):
                         form = AdminSendMailForm()
         else:
             form = AdminSendMailForm()
-        return render_to_response(
+        return TemplateResponse(
+            request,
             'admin/conference/conference/attendee_stats_details.html',
             {
                 'conference': cid,
@@ -203,7 +208,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'preview': preview,
                 'email_log': settings.ADMIN_TICKETS_STATS_EMAIL_LOG,
             },
-            context_instance=template.RequestContext(request))
+        )
 
     def stats_details_csv(self, request, cid):
         sid, rowid = request.GET['code'].split('.')
@@ -334,8 +339,6 @@ class DeadlineAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Deadline, DeadlineAdmin)
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import ReverseGenericRelatedObjectsDescriptor
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
     def __new__(mcs, name, bases, attrs):
@@ -347,8 +350,8 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
             return new_class
 
         for name, f in model.__dict__.items():
-            if isinstance(f, ReverseGenericRelatedObjectsDescriptor):
-                if f.field.related.model is models.MultilingualContent:
+            if isinstance(f, ReverseGenericManyToOneDescriptor):
+                if f.field.remote_field.model is models.MultilingualContent:
                     multilingual_fields.append(name)
 
         widget = attrs.get('multilingual_widget', forms.Textarea)
@@ -478,9 +481,9 @@ class SpeakerAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/list/$', self.admin_site.admin_view(self.stats_list), name='conference-speaker-stat-list'),
-        )
+        ]
         return my_urls + urls
 
     def stats_list(self, request):
@@ -498,13 +501,13 @@ class SpeakerAdmin(admin.ModelAdmin):
             data = [ x for x in speakers if x['user'] in sids ]
             if data:
                 groups[t] = data
-        return render_to_response(
+        return TemplateResponse(
+            request,
             'admin/conference/speaker/stats_list.html',
             {
                 'speakers': speakers,
                 'groups': groups,
             },
-            context_instance=template.RequestContext(request)
         )
 
     def _user(self, o):
@@ -692,7 +695,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ScheduleAdmin, self).get_urls()
         v = self.admin_site.admin_view
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/$',
                 v(self.expected_attendance),
                 name='conference-schedule-expected_attendance'),
@@ -705,7 +708,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
                 v(self.tracks),
                 name='conference-schedule-tracks'),
-        )
+        ]
         return my_urls + urls
 
     @common.decorators.render_to_json
@@ -888,23 +891,12 @@ class ScheduleAdmin(admin.ModelAdmin):
                     'duration': ev.duration,
                     'tracks': list(ev.tracks.all().values_list('id', flat=True)),
                 })
-            tpl = Template('''
-            <form class="async" method="POST" action="{% url "admin:conference-schedule-event" sid eid %}">{% csrf_token %}
-                <table>{{ form }}</table>
-                <div class="submit-row">
-                    <input type="submit" name="save" value="save"/>
-                    <input type="submit" name="delete" value="delete"/>
-                    <input type="submit" name="copy" title="repeat in all schedules/days" value="save and repeat"/>
-                    <input type="submit" name="update" title="updates events with the same title in the tracks with the same name" value="save and update"/>
-                </div>
-            </form>
-            ''')
             ctx = {
                 'form': form,
                 'sid': sid,
                 'eid': eid,
             }
-            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
+            return TemplateResponse(request, 'conference/admin/schedule_event.html', ctx)
 
     #@transaction.atomic
     def tracks(self, request, sid, tid):
@@ -922,20 +914,12 @@ class ScheduleAdmin(admin.ModelAdmin):
             return http.HttpResponse(content=json_dumps(output), content_type="text/javascript")
         else:
             form = TrackForm(instance=track)
-            tpl = Template('''
-            <form class="async" method="POST" action="{% url "admin:conference-schedule-tracks" sid tid %}">{% csrf_token %}
-                <table>{{ form }}</table>
-                <div class="submit-row">
-                    <input type="submit" />
-                </div>
-            </form>
-            ''')
             ctx = {
                 'form': form,
                 'sid': sid,
                 'tid': tid,
             }
-            return http.HttpResponse(tpl.render(template.RequestContext(request, ctx)))
+            return TemplateResponse(request, 'conference/admin/schedule_tracks.html', ctx)
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
@@ -957,7 +941,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         ctx = {
             'schedules': sorted(data.items(), key=lambda x: x[0].date),
         }
-        return render_to_response('conference/admin/schedule_expected_attendance.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
 admin.site.register(models.Schedule, ScheduleAdmin)
 
@@ -1122,9 +1106,9 @@ class TicketAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(TicketAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data_view), name='conference-ticket-stats-data'),
-        )
+        ]
         return my_urls + urls
 
     def stats_data(self):
@@ -1190,9 +1174,9 @@ class ConferenceTagAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(ConferenceTagAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
-        )
+        ]
         return my_urls + urls
 
     def get_queryset(self, request):
@@ -1251,7 +1235,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         ctx = {
             'tags': tags,
         }
-        return render_to_response('admin/conference/conferencetag/merge.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'admin/conference/conferencetag/merge.html', ctx)
 
 
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
@@ -1269,4 +1253,4 @@ class CaptchaQuestionAdmin(admin.ModelAdmin):
     list_filter = ('enabled',)
 
 
-admin.site.register(models.CaptchaQuestion)
+admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)

@@ -1,7 +1,6 @@
 import datetime
-import functools
-
 import json
+import functools
 
 
 class MyEncode(json.JSONEncoder):  # pragma: no cover
@@ -14,6 +13,9 @@ class MyEncode(json.JSONEncoder):  # pragma: no cover
             return obj.strftime('%H:%M')
         elif isinstance(obj, set):
             return list(obj)
+        elif callable(obj):
+            # required to support User.is_authenticated from Django 1.10 onwards
+            return obj()
 
         return json.JSONEncoder.default(self, obj)
 

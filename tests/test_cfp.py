@@ -275,8 +275,8 @@ class TestCFP(TestCase):
         assert Tag.objects.count() == 0
 
     def test_ignores_new_tags_keeping_predefined_ones(self):
-        ConferenceTag.objects.create(name='django')
-        ConferenceTag.objects.create(name='love')
+        ConferenceTag.objects.create(name=u'django')
+        ConferenceTag.objects.create(name=u'love')
 
         assert Talk.objects.all().count() == 0
         assert ConferenceTag.objects.count() == 2

@@ -76,7 +76,6 @@ def post_comment(request):
             'c': comment,
             'owner': True,
         },
-        context_instance=RequestContext(request)
     )
 
 

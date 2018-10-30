@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-import json
 import logging
 import urllib
-from datetime import datetime
 
 from django import http
 from django.conf import settings as dsettings
-from django.contrib import auth
 from django.contrib import messages
 from django.contrib.admin.utils import unquote
 from django.contrib.auth.decorators import login_required
@@ -15,13 +12,12 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from assopy import forms as aforms
-from assopy import janrain
 from assopy import models
 from assopy import settings
-from assopy import utils as autils
 from common.decorators import render_to_json, render_to_template
 from common.http import PdfResponse
 from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
@@ -177,7 +173,7 @@ def paypal_billing(request, code):
     log.debug('Paypal billing request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.total() == 0:
-        o.confirm_order(datetime.now())
+        o.confirm_order(timezone.now())
         return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
     form = aforms.PayPalForm(o)
     return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
@@ -189,7 +185,7 @@ def paypal_cc_billing(request, code):
     log.debug('Paypal CC billing request (code %s): %s', code, request.environ)
     o = get_object_or_404(models.Order, code=code.replace('-', '/'))
     if o.total() == 0:
-        o.confirm_order(datetime.now())
+        o.confirm_order(timezone.now())
         return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
     form = aforms.PayPalForm(o)
     cc_data = {

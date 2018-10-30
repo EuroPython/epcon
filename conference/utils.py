@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings as dsettings
-from django.core.mail import send_mail as real_send_mail
-from django.core.urlresolvers import reverse
-
-from conference import settings
-from conference.models import VotoTalk, EventTrack
-
 import json
 import logging
 import os.path
@@ -14,7 +7,16 @@ import subprocess
 import tempfile
 from collections import defaultdict
 
+from django.conf import settings as dsettings
+from django.core.mail import send_mail as real_send_mail
+from django.core.urlresolvers import reverse
+
+from conference import settings
+from conference.models import VotoTalk, EventTrack
+
+
 log = logging.getLogger('conference')
+
 
 def dotted_import(path):
     from importlib import import_module
@@ -90,7 +92,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 
 def ranking_of_talks(talks, missing_vote=5):
     import conference
-    vengine = os.path.join(os.path.dirname(conference.__file__), 'utils', 'voteengine-0.99', 'voteengine.py')
+    vengine = os.path.join(os.path.dirname(conference.__file__), 'tools', 'voteengine-0.99', 'voteengine.py')
 
     talks_map = dict((t.id, t) for t in talks)
     in_ = _input_for_ranking_of_talks(talks_map.values(), missing_vote=missing_vote)

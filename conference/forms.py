@@ -88,7 +88,7 @@ class TagWidget(widgets.TextInput):
                     else:
                         names.append(v.tag.name)
                 value = ','.join(names)
-        final_attrs = self.build_attrs(attrs, type='text', name=name)
+        final_attrs = self.build_attrs(attrs, extra_attrs=dict(type='text', name=name))
         final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
@@ -110,7 +110,7 @@ class ReadonlyTagWidget(widgets.TextInput):
                     else:
                         names.append(v.tag.name)
                 value = ','.join(names)
-        final_attrs = self.build_attrs(attrs, type='text', name=name)
+        final_attrs = self.build_attrs(attrs, extra_attrs=dict(type='text', name=name))
         final_attrs['class'] = (final_attrs.get('class', '') + ' readonly-tag-field').strip()
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
@@ -138,28 +138,16 @@ class MarkEditWidget(forms.Textarea):
         attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
         return super(MarkEditWidget, self).render(name, value, attrs)
 
-class AdminMarkEdit(admin_widgets.AdminTextareaWidget, MarkEditWidget):
-    pass
 
-class PseudoRadioWidget(forms.TextInput):
-    def render(self, name, value, attrs=None):
-        pass
 
-class PseudoRadioRenderer(forms.widgets.RadioFieldRenderer):
-    def render(self):
-        h = '<div class="%(class)s" data-value="%(value)s"><span>%(label)s</span></div>'
-        choiches = []
-        for w in self:
-            p = {
-                'class': 'pseudo-radio',
-                'value': w.choice_value,
-                'label': w.choice_label,
-            }
-            if w.is_checked():
-                p['class'] += ' checked'
-            choiches.append(h % p)
-        output = '<div class="pseudo-radio-field"><input type="hidden" name="%s" value="%s" />%s</div>'
-        return mark_safe(output % (self.name, self.value, ''.join(choiches)))
+class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
+    template_name = 'conference/widgets/radio_select.html'
+    option_template_name = 'conference/widgets/radio_select_option.html'
+
+    def get_context(self, name, value, attrs):
+        context = super(PseudoRadioSelect, self).get_context(name, value, attrs)
+        return context
+
 
 class TalkBaseForm(forms.Form):
 
@@ -371,7 +359,7 @@ class SpeakerForm(forms.Form):
         widget=forms.Textarea(),)
     ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
 
-_abstract = models.Talk._meta.get_field_by_name('abstracts')[0]
+_abstract = models.Talk._meta.get_field('abstracts')
 
 # This form is used in case the speaker has already proposed a talk
 # and for editing talks
@@ -632,25 +620,25 @@ class OptionForm(forms.Form):
         choices=(('not-voted', 'To be voted'), ('all', 'All'),),
         required=False,
         initial='not-voted',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     talk_type = forms.ChoiceField(
         choices=settings.TALK_TYPES_TO_BE_VOTED,
         required=False,
         initial='all',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     language = forms.ChoiceField(
         choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
         required=False,
         initial='all',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     order = forms.ChoiceField(
         choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
         required=False,
         initial='vote',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     tags = TagField(
         required=False,
