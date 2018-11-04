@@ -316,7 +316,7 @@ class AttendeeProfileManager(models.Manager):
     def randomUUID(self, length=6):
         import string
         import random
-        return ''.join(random.sample(string.letters + string.digits, length))
+        return ''.join(random.sample(string.ascii_letters + string.digits, length))
 
     # TODO: Use the savepoint.
     # Remember that, at least up to 1.4 django, SQLite backend does not support
