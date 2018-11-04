@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from httplib import OK as HTTP_OK_200
+from http.client import OK as HTTP_OK_200
 
 from django.conf import settings
 from django.core.urlresolvers import reverse

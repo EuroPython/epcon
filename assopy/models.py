@@ -52,10 +52,10 @@ def _cache(f):
 
 def _gravatar(email, size=80, default='identicon', rating='r'):
     # import code for encoding urls and generating md5 hashes
-    import urllib, hashlib
+    import urllib.request, urllib.parse, urllib.error, hashlib
 
     gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({
+    gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,
         'rating': rating,
@@ -84,7 +84,7 @@ class Country(models.Model):
         ordering = ['name']
         verbose_name_plural = 'Countries'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -252,7 +252,7 @@ class User(models.Model):
 
     objects = UserManager()
 
-    def __unicode__(self):
+    def __str__(self):
         name = self.card_name or self.name()
         return 'Assopy user: %s (%s)' % (name, self.id)
 
@@ -305,7 +305,7 @@ class UserIdentityManager(models.Manager):
             birthday = profile.get('birthday', '').split('-')
             if birthday[0] == '0000':
                 birthday[0] = '1900'
-            identifier.birthday = date(*map(int, birthday))
+            identifier.birthday = date(*list(map(int, birthday)))
         try:
             identifier.email = profile['verifiedEmail']
         except KeyError:
@@ -352,7 +352,7 @@ class Coupon(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     fares = models.ManyToManyField('conference.Fare', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.code, self.value)
 
     def clean(self):
@@ -418,7 +418,7 @@ class Coupon(models.Model):
         apply_to = rows
         fares = set(self.fares.all().values_list('code', flat=True))
         if fares:
-            apply_to = filter(lambda x: x[0].code in fares, apply_to)
+            apply_to = [x for x in apply_to if x[0].code in fares]
 
         if self.items_per_usage:
             # il coupon è valido solo per un numero massimo di item, lo applico
@@ -577,8 +577,8 @@ class Vat(models.Model):
     description = models.CharField(null=True, blank=True, max_length=125)
     invoice_notice = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
-        return u"%s%% - %s" % (self.value, self.description or "")
+    def __str__(self):
+        return "%s%% - %s" % (self.value, self.description or "")
 
 
 class VatFare(models.Model):
@@ -653,7 +653,7 @@ class Order(models.Model):
 
     objects = OrderQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         msg = 'Order %d' % self.id
         if self.code:
             msg += ' #%s' % self.code
@@ -669,7 +669,7 @@ class Order(models.Model):
             vat_list[i.vat]['vat'] = i.vat
             vat_list[i.vat]['orderItems'].append(i)
             vat_list[i.vat]['price'] += i.price
-        return vat_list.values()
+        return list(vat_list.values())
 
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
@@ -905,7 +905,7 @@ class Invoice(models.Model):
     def get_admin_url(self):
         return reverse('admin:assopy_invoice_change', args=[self.id])
 
-    def __unicode__(self):
+    def __str__(self):
         if self.code:
             return ' #%s' % self.code
         else:
@@ -958,7 +958,7 @@ class CreditNote(models.Model):
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    def __unicode__(self):
+    def __str__(self):
         return ' #%s' % self.code
 
     def note_items(self):
@@ -1163,7 +1163,7 @@ def on_refund_changed(sender, **kw):
         pass
     uid = items[0].order.user.user_id
     order = items[0].order
-    mail_items = '\n'.join([ u' * %s - € %s' % (x.description, x.price) for x in items ])
+    mail_items = '\n'.join([ ' * %s - € %s' % (x.description, x.price) for x in items ])
     if sender.status == 'pending':
         message = '''
 User: %s (%s)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import urllib
-import httplib
+import urllib.request, urllib.parse, urllib.error
+import http.client
 import json
 
 G = 'maps.google.com'
@@ -12,7 +12,7 @@ def geocode(address, key, country):  # pragma: no cover
     """
     # see http://code.google.com/intl/it/apis/maps/documentation/geocoding/#GeocodingRequests
     params = {
-        'q': address.encode('utf-8') if isinstance(address, unicode) else address,
+        'q': address.encode('utf-8') if isinstance(address, str) else address,
         'key': key,
         'sensor': 'false',
         'output': 'json',
@@ -21,8 +21,8 @@ def geocode(address, key, country):  # pragma: no cover
     if country:
         params['gl'] = country
 
-    url = '/maps/geo?' + urllib.urlencode(params.items())
-    conn = httplib.HTTPConnection(G)
+    url = '/maps/geo?' + urllib.parse.urlencode(list(params.items()))
+    conn = http.client.HTTPConnection(G)
     try:
         conn.request('GET', url)
         r = conn.getresponse()

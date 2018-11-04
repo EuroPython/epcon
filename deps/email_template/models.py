@@ -14,7 +14,7 @@ class Email(models.Model):
     cc = models.TextField('Cc address', blank = True)
     bcc = models.TextField('Bcc address', blank = True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'email_template: %s' % self.code
 
     def render(self, ctx, mark_safestring=True):
@@ -24,8 +24,8 @@ class Email(models.Model):
         """
         if mark_safestring:
             ctx = dict(ctx)
-            for key, value in ctx.items():
-                if isinstance(value, basestring):
+            for key, value in list(ctx.items()):
+                if isinstance(value, str):
                     ctx[key] = mark_safe(value)
         ctx = Context(ctx)
         return Template(self.subject).render(ctx), Template(self.text).render(ctx)

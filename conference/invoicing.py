@@ -11,7 +11,7 @@ This module handles all things related to creating a new invoice, including
 """
 
 
-from __future__ import unicode_literals, absolute_import
+
 
 from collections import OrderedDict
 from decimal import Decimal
@@ -259,7 +259,7 @@ def render_invoice_as_html(invoice):
     # base64 them.
 
     order = invoice.order
-    address = '%s, %s' % (order.address, unicode(order.country))
+    address = '%s, %s' % (order.address, str(order.country))
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
@@ -269,7 +269,7 @@ def render_invoice_as_html(invoice):
         "bank_info": "",
         "currency": invoice.local_currency,
         'document': ('Fattura N.', 'Invoice N.'),
-        'title': unicode(invoice),
+        'title': str(invoice),
         'code': invoice.code,
         'emit_date': invoice.emit_date,
         # TODO: possibly we need to stare it as separate date

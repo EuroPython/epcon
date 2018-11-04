@@ -60,8 +60,8 @@ def validate_tags(tags):
 
     tags_limited = valid_tags[:5]
 
-    tags = u', '.join(tags_limited)
-    log.debug(u'validated tags: {}'.format(tags))
+    tags = ', '.join(tags_limited)
+    log.debug('validated tags: {}'.format(tags))
 
     return tags_limited
 
@@ -78,10 +78,10 @@ class TagWidget(widgets.TextInput):
         if value is None:
             value = ''
         else:
-            if not isinstance(value, basestring):
+            if not isinstance(value, str):
                 names = []
                 for v in value:
-                    if isinstance(v, basestring):
+                    if isinstance(v, str):
                         names.append(v)
                     elif isinstance(v, models.ConferenceTag):
                         names.append(v.name)
@@ -93,17 +93,17 @@ class TagWidget(widgets.TextInput):
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = force_unicode(self._format_value(value))
-        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+        return mark_safe('<input%s />' % flatatt(final_attrs))
 
 class ReadonlyTagWidget(widgets.TextInput):
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''
         else:
-            if not isinstance(value, basestring):
+            if not isinstance(value, str):
                 names = []
                 for v in value:
-                    if isinstance(v, basestring):
+                    if isinstance(v, str):
                         names.append(v)
                     elif isinstance(v, models.ConferenceTag):
                         names.append(v.name)
@@ -115,7 +115,7 @@ class ReadonlyTagWidget(widgets.TextInput):
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = force_unicode(self._format_value(value))
-        return mark_safe(u'<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
+        return mark_safe('<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
 # MarkEditWidget we have adapted the code
 # http://tstone.github.com/jquery-markedit/

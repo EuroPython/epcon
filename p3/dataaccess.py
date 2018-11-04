@@ -90,7 +90,7 @@ talk_data = cache_me(
     key='talk:%(tid)s')(talk_data, _i_talk_data)
 
 def profiles_data(uids):
-    cached = zip(uids, profile_data.get_from_cache([ (x,) for x in uids ]))
+    cached = list(zip(uids, profile_data.get_from_cache([ (x,) for x in uids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -287,7 +287,7 @@ def tags():
         .values_list('profile_id', flat=True))
     hset = set([(cid, pid) for pid in hprofiles])
     data = ctags()
-    for tag, objects in data.items():
+    for tag, objects in list(data.items()):
         data[tag] = objects - hset
     return data
 

@@ -11,7 +11,7 @@ def email(code, ctx, mark_safestring=True, **kw):
     email.body = body
     if e.from_email and 'from_email' not in kw:
         kw['from_email'] = e.from_email
-    for key, value in kw.items():
+    for key, value in list(kw.items()):
         setattr(email, key, value)
     if e.bcc:
         email.bcc += [ x.strip() for x in e.bcc.split(',') ]

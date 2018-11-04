@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from django import http
 from django.conf import settings as dsettings
@@ -200,7 +200,7 @@ def paypal_cc_billing(request, code):
         "country": o.country,
         "address_name": o.card_name,
     }
-    qparms = urllib.urlencode([ (k,x.encode('utf-8') if isinstance(x, unicode) else x) for k,x in cc_data.items() ])
+    qparms = urllib.parse.urlencode([ (k,x.encode('utf-8') if isinstance(x, str) else x) for k,x in list(cc_data.items()) ])
     return HttpResponseRedirectSeeOther(
         "%s?%s&%s" % (
             form.paypal_url(),
@@ -285,7 +285,7 @@ def credit_note(request, order_code, code, mode='html'):
 
     order = cnote.invoice.order
     if mode == 'html':
-        address = '%s, %s' % (order.address, unicode(order.country))
+        address = '%s, %s' % (order.address, str(order.country))
         items = cnote.note_items()
         for x in items:
             x['price'] = x['price'] * -1
@@ -297,7 +297,7 @@ def credit_note(request, order_code, code, mode='html'):
         note = 'Nota di credito / Credit Note <b>Rif: %s</b>' % rif
         ctx = {
             'document': ('Nota di credito', 'Credit note'),
-            'title': unicode(cnote),
+            'title': str(cnote),
             'code': cnote.code,
             'emit_date': cnote.emit_date,
             'order': {
@@ -321,7 +321,7 @@ def credit_note(request, order_code, code, mode='html'):
     else:
         hurl = reverse('assopy-credit_note-html', args=(order_code, code))
         if not settings.WKHTMLTOPDF_PATH:
-            print "NO WKHTMLTOPDF_PATH SET"
+            print("NO WKHTMLTOPDF_PATH SET")
             return HttpResponseRedirectSeeOther(hurl)
         raw = _pdf(request, hurl)
 

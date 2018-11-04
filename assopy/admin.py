@@ -35,9 +35,9 @@ class ReadOnlyWidget(forms.widgets.HiddenInput):
 
     def render(self, name, value, attrs=None):
         output = []
-        output.append(u'<span>%s</span>' % (self.display or value))
+        output.append('<span>%s</span>' % (self.display or value))
         output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
-        return mark_safe(u''.join(output))
+        return mark_safe(''.join(output))
 
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
@@ -224,7 +224,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def edit_invoices(self, request):
         try:
-            ids = map(int, request.GET['id'].split(','))
+            ids = list(map(int, request.GET['id'].split(',')))
         except KeyError:
             return http.HttpResponseBadRequest('orders id missing')
         except ValueError:
@@ -362,7 +362,7 @@ class CouponAdmin(admin.ModelAdmin):
         return qs
 
     def changelist_view(self, request, extra_context=None):
-        if not request.GET.has_key('conference__code__exact'):
+        if 'conference__code__exact' not in request.GET:
             q = request.GET.copy()
             q['conference__code__exact'] = dsettings.CONFERENCE_CONFERENCE
             request.GET = q
@@ -673,7 +673,7 @@ class InvoiceAdminForm(forms.ModelForm):
 
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ('do_csv_invoices',)
-    list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
+    list_display = ('__str__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
     date_hierarchy = 'payment_date'
     search_fields = (
         'code', 'order__code', 'order__card_name',
@@ -716,7 +716,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     def do_csv_invoices(self, request, queryset):
         import csv
-        from cStringIO import StringIO
+        from io import StringIO
         columns = (
                 'numero', 'Card name',
                 'Customer:tipo IVA', 'Customer:Customer Type',
@@ -727,13 +727,13 @@ class InvoiceAdmin(admin.ModelAdmin):
                 'Billing notes')
 
         def e(d):
-            for k, v in d.items():
+            for k, v in list(d.items()):
                 d[k] = v.encode('utf-8')
             return d
 
         ofile = StringIO()
         writer = csv.DictWriter(ofile, fieldnames=columns)
-        writer.writerow(dict(zip(columns, columns)))
+        writer.writerow(dict(list(zip(columns, columns))))
         for i in queryset.select_related('order', 'vat'):
             writer.writerow(e({
                 'numero': i.code,

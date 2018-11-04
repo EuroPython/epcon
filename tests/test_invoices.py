@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import unicode_literals, absolute_import
+
 
 import csv
 import decimal
@@ -339,15 +339,15 @@ def test_invoices_from_buying_tickets(client):
     expected_invoice_items_vat_10 = [
         {'count': ticket_amount,
          'price': ticket_price * ticket_amount,
-         'code': u'TRSP',
-         'description': u'ep2018 - Regular Standard Personal'},
+         'code': 'TRSP',
+         'description': 'ep2018 - Regular Standard Personal'},
     ]
 
     expected_invoice_items_vat_20 = [
         {'count': social_event_amount,
          'price': social_event_price * social_event_amount,
          'code':  SOCIAL_EVENT_FARE_CODE,
-         'description': u'ep2018 - Social Event'},
+         'description': 'ep2018 - Social Event'},
     ]
 
     assert sequence_equals(invoice_vat_10.invoice_items(),

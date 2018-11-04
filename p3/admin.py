@@ -306,7 +306,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 offset = date - c.conference_start
                 data[tt][offset.days] += 1
 
-            for k, v in data.items():
+            for k, v in list(data.items()):
                 data[k] = sorted(v.items())
 
 
@@ -351,7 +351,7 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         sids = queryset.values_list('user', flat=True)
         profiles = dataaccess.profiles_data(sids)
-        self._profiles = dict(zip(sids, profiles))
+        self._profiles = dict(list(zip(sids, profiles)))
         return super(SpeakerAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def _avatar(self, o):
@@ -448,14 +448,14 @@ class TalkAdmin(cadmin.TalkAdmin):
     multilingual_widget = cforms.MarkEditWidget
 
     def _tags(self, obj):
-        return u', '.join(sorted(unicode(tag) for tag in obj.tags.all()))
+        return ', '.join(sorted(str(tag) for tag in obj.tags.all()))
 
     def _company(self, obj):
         companies = sorted(
             set(speaker.user.attendeeprofile.company
                 for speaker in obj.speakers.all()
                 if speaker.user.attendeeprofile))
-        return u', '.join(companies)
+        return ', '.join(companies)
     _company.admin_order_field = 'speakers__user__attendeeprofile__company'
 
 admin.site.unregister(cmodels.Talk)
@@ -610,14 +610,14 @@ def prezzo_biglietti_ricalcolato(**kw):
                     'name': fname,
                     'price': price,
                 })
-    for oid, items in grouped.items():
+    for oid, items in list(grouped.items()):
         _calc_prices(oid, items)
 
     # after using _calc_prices obtain the prices not found anymore
     # of the ordinary rates, regroup the resulting OrderItem
     # by rate code and new price
     tcp = {}
-    for rows in grouped.values():
+    for rows in list(grouped.values()):
         for item in rows:
             code = item['code']
             if code not in tcp:
@@ -630,7 +630,7 @@ def prezzo_biglietti_ricalcolato(**kw):
             if price not in tcp[code]['prices']:
                 tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
             tcp[code]['prices'][price]['count'] += 1
-    return tcp.values()
+    return list(tcp.values())
 
 prezzo_biglietti_ricalcolato.template = '''
 <table>

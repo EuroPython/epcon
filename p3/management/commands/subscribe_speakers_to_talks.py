@@ -15,5 +15,5 @@ class Command(BaseCommand):
         for row in qs:
             u = row.speaker.user
             t = row.talk
-            print '%s %s -> %s' % (u.first_name, u.last_name, t.title)
+            print('%s %s -> %s' % (u.first_name, u.last_name, t.title))
             hmodels.ThreadSubscription.objects.subscribe(t, u)

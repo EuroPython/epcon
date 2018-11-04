@@ -8,7 +8,7 @@ import os.path
 import re
 import sys
 from PIL import Image, ImageDraw
-from itertools import izip_longest
+from itertools import zip_longest
 
 parser = optparse.OptionParser(usage='%(prog)s [options] output_dir')
 parser.add_option("-i", "--input",
@@ -64,7 +64,7 @@ except IndexError:
 
 conf = {}
 os.chdir(os.path.dirname(opts.conf))
-execfile(os.path.basename(opts.conf), conf)
+exec(compile(open(os.path.basename(opts.conf)).read(), os.path.basename(opts.conf), 'exec'), conf)
 
 MM2INCH = 0.03937
 tickets = conf['tickets']
@@ -79,7 +79,7 @@ elif opts.page_size == 'A4':
     psize = "297x210"
 else:
     psize = opts.page_size
-PAGE_SIZE = map(lambda x: int(int(x) * MM2INCH * DPI), psize.split('x'))
+PAGE_SIZE = [int(int(x) * MM2INCH * DPI) for x in psize.split('x')]
 
 data = json.loads(sys.stdin.read())
 
@@ -88,7 +88,7 @@ groups = tickets(data)
 def grouper(n, iterable, fillvalue=None):
     "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
     args = [iter(iterable)] * n
-    return izip_longest(fillvalue=fillvalue, *args)
+    return zip_longest(fillvalue=fillvalue, *args)
 
 def wrap_text(font, text, width):
     words = re.split(' ', text)
@@ -209,7 +209,7 @@ for group_type, data in sorted(groups.items()):
             page = assemble_page(images)
 
             name = '[%s] pag %s-%s.tif' % (group_type, str(count).zfill(2), str(pages).zfill(2))
-            print >>sys.stderr, name
+            print(name, file=sys.stderr)
             add_page(name, page)
 
         count += 1

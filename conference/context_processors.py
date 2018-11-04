@@ -1,4 +1,4 @@
-import settings
+from . import settings
 
 from django.conf import settings as dsettings
 

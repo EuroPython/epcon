@@ -8,7 +8,7 @@ from hcomments import models
 
 def send_email_to_subscribers(sender, **kwargs):
     subscripted = models.ThreadSubscription.objects.subscriptions(kwargs['instance'].content_object)
-    for u in filter(lambda x: x.email, subscripted):
+    for u in [x for x in subscripted if x.email]:
         ctx = {
             'comment': kwargs['instance'],
             'object': kwargs['instance'].content_object,

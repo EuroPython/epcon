@@ -10,7 +10,7 @@ The main goal of this is to clean up the location and inheritance structure, so
 that it's easier to figure out which template is being used.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 
 from datetime import date
 from decimal import Decimal
