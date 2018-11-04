@@ -26,7 +26,7 @@ def test_reset_password(client):
     assert template_used(response, 'registration/password_reset_form.html')
     # make sure that we're not using default template from django admin
     assert 'Django Administration' not in response.content.decode('utf-8')
-    assert 'input type="email" name="email" required id="id_email"' in response.content.decode('utf-8')
+    assert 'input type="email" name="email" maxlength="254" required id="id_email"' in response.content.decode('utf-8')
 
     # --------
     response = client.post(url, {'email': 'joedoe@example.com'})
