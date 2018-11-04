@@ -10,7 +10,7 @@ git:
   depth: 1
 
 python:
-  - "2.7"
+  - "3.6"
 
 install:
   - make install
