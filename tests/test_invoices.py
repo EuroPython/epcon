@@ -98,7 +98,7 @@ def test_invoice_html(client):
     })
     response = client.get(invoice_url)
 
-    assert response.content == '<html>Here goes full html</html>'
+    assert response.content.decode('utf-8') == '<html>Here goes full html</html>'
 
 
 @mark.django_db
@@ -218,7 +218,7 @@ def test_invoices_from_buying_tickets(client):
     cart_url = reverse('p3-cart')
     response = client.get(cart_url)
     assert template_used(response, "p3/cart.html")
-    assert 'Sorry, no tickets are available' in response.content
+    assert 'Sorry, no tickets are available' in response.content.decode('utf-8')
 
     # 3. p3/cart.html is using {% fares_available %} assignment tag to display
     # fares.  For more details about fares check conference/fares.py
@@ -693,7 +693,7 @@ def test_export_invoice_csv_before_period(client):
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
 
-    invoice_reader = csv.reader(response.content.splitlines())
+    invoice_reader = csv.reader(response.content.decode('utf-8').splitlines())
     header = next(invoice_reader)
     assert header == CSV_2018_REPORT_COLUMNS
     assert next(invoice_reader, None) is None
@@ -727,7 +727,7 @@ def test_export_invoice(client):
     assert response.status_code == 200
     assert response['content-type'].startswith('text/html')
 
-    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content
+    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content.decode('utf-8')
 
 
 @mark.django_db

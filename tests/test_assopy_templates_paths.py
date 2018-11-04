@@ -84,7 +84,7 @@ def test_assopy_invoice(client):
     # the invoice we no longer use a template in this view.
     # TBD if we need that test here anymore, since it supposed to test
     # templates temporarily anyway.
-    assert response.content == 'Here goes full html'
+    assert response.content == b'Here goes full html'
 
 
 @mark.django_db
