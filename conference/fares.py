@@ -77,7 +77,8 @@ def create_fare_for_conference(code, conference, price,
     assert is_fare_code_valid(code)
     assert isinstance(conference, str), "conference should be a string"
     assert isinstance(vat_rate, Vat)
-    assert start_validity <= end_validity
+    if start_validity is not None and end_validity is not None:
+        assert start_validity <= end_validity
 
     if code == SOCIAL_EVENT_FARE_CODE:
         ticket_type = FARE_TICKET_TYPES.event

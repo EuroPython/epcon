@@ -301,7 +301,7 @@ class AttendeeProfileManager(models.Manager):
                     # The protection from slug like "str-str-str"
                     last = 0
                 continue
-            if counter > last:
+            if last is None or counter > last:
                 last = counter
 
         if last is not None:
