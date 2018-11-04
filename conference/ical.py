@@ -43,7 +43,7 @@ def content(name, value, params=None):
         name = name.decode('utf-8')
     if isinstance(value, bytes):
         value = value.decode('utf-8')
-    return encode('%s:%s' % (name, value))
+    return '%s:%s' % (name, value)
 
 def TEXT(value):
     if isinstance(value, bytes):

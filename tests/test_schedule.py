@@ -74,8 +74,8 @@ def test_names_are_not_abbreviated(client):
     response = client.get(schedule_url)
     assert response.status_code == HTTP_OK_200
     assert template_used(response, 'p3/schedule.html')
-    assert 'J. Doedoe' not in response.content
-    assert 'Joejoe Doedoe' in response.content
+    assert 'J. Doedoe' not in response.content.decode('utf-8')
+    assert 'Joejoe Doedoe' in response.content.decode('utf-8')
 
     list_url = reverse(
         'p3-schedule-list',
@@ -84,8 +84,8 @@ def test_names_are_not_abbreviated(client):
 
     response = client.get(list_url)
     assert response.status_code == HTTP_OK_200
-    assert 'J. Doedoe' not in response.content
-    assert 'Joejoe Doedoe' in response.content
+    assert 'J. Doedoe' not in response.content.decode('utf-8')
+    assert 'Joejoe Doedoe' in response.content.decode('utf-8')
     assert template_used(response, 'p3/schedule_list.html')
 
     # test name abbreviations in ical output
@@ -99,5 +99,5 @@ def test_names_are_not_abbreviated(client):
     response = client.get(ical_url)
     assert response.status_code == HTTP_OK_200
     assert response['Content-Type'] == 'text/calendar'
-    assert 'J. Doedoe' not in response.content
-    assert 'Joejoe Doedoe' not in response.content
+    assert 'J. Doedoe' not in response.content.decode('utf-8')
+    assert 'Joejoe Doedoe' not in response.content.decode('utf-8')

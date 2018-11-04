@@ -644,7 +644,7 @@ def test_export_invoice_csv(client):
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
 
-    invoice_reader = csv.reader(response.content.splitlines())
+    invoice_reader = csv.reader(response.content.decode('utf-8').splitlines())
     next(invoice_reader)  # skip header
     invoice = next(invoice_reader)
 
