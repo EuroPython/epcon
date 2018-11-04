@@ -555,7 +555,7 @@ def test_create_invoice_with_many_items(client):
     # Don't need to set dates for this test.
     # set_early_bird_fare_dates(CONFERENCE, yesterday, tomorrow)
     # set_regular_fare_dates(CONFERENCE, yesterday, tomorrow)
-    random_fares = random.sample(Fare.objects.all(), 3)
+    random_fares = random.sample(list(Fare.objects.all()), 3)
 
     order = OrderFactory(user=user.assopy_user, items=[
         (fare, {'qty': i}) for i, fare in enumerate(random_fares, 1)
