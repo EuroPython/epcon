@@ -5,7 +5,7 @@ from django.contrib.admin import widgets as admin_widgets
 from django.core import mail
 from django.forms import widgets
 from django.forms.utils import flatatt
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -92,7 +92,7 @@ class TagWidget(widgets.TextInput):
         final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = force_unicode(self._format_value(value))
+            final_attrs['value'] = force_text(self._format_value(value))
         return mark_safe('<input%s />' % flatatt(final_attrs))
 
 class ReadonlyTagWidget(widgets.TextInput):
@@ -114,7 +114,7 @@ class ReadonlyTagWidget(widgets.TextInput):
         final_attrs['class'] = (final_attrs.get('class', '') + ' readonly-tag-field').strip()
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = force_unicode(self._format_value(value))
+            final_attrs['value'] = force_text(self._format_value(value))
         return mark_safe('<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
 # MarkEditWidget we have adapted the code
