@@ -53,7 +53,7 @@ TALK_TYPE_DISCOUNTS = {
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
                         for ttype, (prefix, discount)
-                        in list(TALK_TYPE_DISCOUNTS.items()))
+                        in TALK_TYPE_DISCOUNTS.items())
 
 # Add special keynote coupon prefix
 COUPON_PREFIXES += ('KEY',)

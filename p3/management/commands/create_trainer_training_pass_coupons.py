@@ -43,7 +43,7 @@ TALK_TYPE_DISCOUNTS = {
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
                         for ttype, (prefix, discount)
-                        in list(TALK_TYPE_DISCOUNTS.items()))
+                        in TALK_TYPE_DISCOUNTS.items())
 
 # MAL 2018-06-07: Program WG decided against giving training passes to
 # keynote speakers.
