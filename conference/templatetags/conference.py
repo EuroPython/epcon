@@ -237,7 +237,7 @@ def schedule_context(schedule):
 
     TIME_STEP = 15
     dbtracks = dict((t.track, (ix, t)) for ix, t in enumerate(schedule.track_set.all()))
-    _itracks = dict(list(dbtracks.values()))
+    _itracks = dict(dbtracks.values())
     dbevents = defaultdict(list)
     for e in schedule.event_set.select_related('talk', 'sponsor__sponsorincome_set'):
         dbevents[e.start_time].append(e)

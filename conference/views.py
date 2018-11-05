@@ -434,7 +434,7 @@ def voting(request):
             return http.HttpResponseBadRequest('anonymous user not allowed')
 
         data = dict((x.id, x) for x in talks)
-        for k, v in [x for x in list(request.POST.items()) if x[0].startswith('vote-')]:
+        for k, v in [x for x in request.POST.items() if x[0].startswith('vote-')]:
             try:
                 talk = data[int(k[5:])]
             except KeyError:
