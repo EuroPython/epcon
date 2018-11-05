@@ -13,5 +13,4 @@ RANDOM_USERNAME_LENGTH = 10
 
 def generate_random_username():
     """Returns random username of length set by RANDOM_USERNAME_LENGTH"""
-    # TODO: this will break on python3.
     return os.urandom(100).hex()[:RANDOM_USERNAME_LENGTH]
