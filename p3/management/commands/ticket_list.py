@@ -132,7 +132,7 @@ class Command(BaseCommand):
                     ]
                     print('\t'.join(map(str, row)))
         else:
-            for fare, items in list(non_conference_tickets.items()):
+            for fare, items in non_conference_tickets.items():
                 print('\n\n')
                 print('\t\t\t', fare.code, fare.name.encode('utf-8'))
                 print('-' * 80)

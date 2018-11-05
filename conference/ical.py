@@ -34,7 +34,7 @@ def encode(line):
 def content(name, value, params=None):
     if params:
         t = []
-        for pname, pvalue in list(params.items()):
+        for pname, pvalue in params.items():
             if ',' in pvalue or ';' in pvalue or ':' in pvalue:
                 pvalue = '"%s"' % pvalue
             t.append('%s=%s' % (pname, pvalue))
@@ -98,7 +98,7 @@ class Component(dict):
 
     def encode(self):
         yield content('BEGIN', self.name)
-        for name, prop in list(self.items()):
+        for name, prop in self.items():
             if prop is None:
                 continue
             value, params = prop

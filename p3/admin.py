@@ -306,7 +306,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 offset = date - c.conference_start
                 data[tt][offset.days] += 1
 
-            for k, v in list(data.items()):
+            for k, v in data.items():
                 data[k] = sorted(v.items())
 
 
@@ -610,14 +610,14 @@ def prezzo_biglietti_ricalcolato(**kw):
                     'name': fname,
                     'price': price,
                 })
-    for oid, items in list(grouped.items()):
+    for oid, items in grouped.items():
         _calc_prices(oid, items)
 
     # after using _calc_prices obtain the prices not found anymore
     # of the ordinary rates, regroup the resulting OrderItem
     # by rate code and new price
     tcp = {}
-    for rows in list(grouped.values()):
+    for rows in grouped.values():
         for item in rows:
             code = item['code']
             if code not in tcp:

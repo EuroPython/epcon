@@ -318,7 +318,7 @@ def group_all_talks_by_admin_type(conference, talk_status='accepted'):
         with status `talk_status` separated by administrative type. """
         # Group by admin types
         talks = OrderedDict()
-        for adm_type, type_name in list(dict(cmodels.TALK_ADMIN_TYPE).items()):
+        for adm_type, type_name in dict(cmodels.TALK_ADMIN_TYPE).items():
             talks[type_name] = list(cmodels.Talk.objects
                                     .filter(conference=conference,
                                             status=talk_status,
@@ -332,7 +332,7 @@ def group_all_talks_by_admin_type(conference, talk_status='accepted'):
                        'helpdesk':    ['h_180'],
                       }
 
-        for grp_name, grp_types in list(type_groups.items()):
+        for grp_name, grp_types in type_groups.items():
             grp_talks = []
             for talk_type in grp_types:
                 bag = list(cmodels.Talk.objects

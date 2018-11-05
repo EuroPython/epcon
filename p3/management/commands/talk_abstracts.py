@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
         sessions = OrderedDict()
         # Print list of submissions
-        for type_name, session_talks in list(talks.items()):
+        for type_name, session_talks in talks.items():
             if not session_talks:
                 continue
 

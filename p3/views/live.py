@@ -111,7 +111,7 @@ def live_events(request):
             return None
 
     output = {}
-    for track, event in list(events.items()):
+    for track, event in events.items():
         if event is None:
             output[track] = {
                 'id': None,

@@ -185,7 +185,7 @@ class CacheFunction(object):
 
             results = cache.get_many(list(cache_keys.keys()))
             output = [ self.CACHE_MISS ] * len(fargs)
-            for k, v in list(cache_keys.items()):
+            for k, v in cache_keys.items():
                 ix = v[0]
                 try:
                     output[ix] = results[k]

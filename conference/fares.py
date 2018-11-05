@@ -117,7 +117,7 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
                                             print_output=False):
     fares = []
 
-    for fare_code in list(AVAILABLE_FARE_CODES.keys()):
+    for fare_code in AVAILABLE_FARE_CODES.keys():
         fare = create_fare_for_conference(
             code=fare_code,
             conference=conference,

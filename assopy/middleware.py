@@ -30,7 +30,7 @@ def dump_exc_plus(exclude=None):
             frame.f_code.co_filename,
             frame.f_lineno), file=s)
 
-        for key, value in list(frame.f_locals.items()):
+        for key, value in frame.f_locals.items():
             if exclude and key in exclude:
                 continue
 

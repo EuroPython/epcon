@@ -273,7 +273,7 @@ def schedule_event_booking(request, conference, slug, eid):
 def schedule_events_booking_status(request, conference):
     data = dataaccess.conference_booking_status(conference)
     uid = request.user.id if request.user.is_authenticated() else 0
-    for k, v in list(data.items()):
+    for k, v in data.items():
         if uid and uid in v['booked']:
             v['user'] = True
         else:
@@ -540,7 +540,7 @@ def voting(request):
             # as a filter to those associated with talk.
             allowed = set()
             ctt = ContentType.objects.get_for_model(models.Talk)
-            for t, usage in list(dataaccess.tags().items()):
+            for t, usage in dataaccess.tags().items():
                 for cid, oid in usage:
                     if cid == ctt.id:
                         allowed.add(t.name)
@@ -647,7 +647,7 @@ def covers(request, conference):
     from collections import defaultdict
     tracks = defaultdict(dict)
     for s in schedules:
-        for t in list(s['tracks'].values()):
+        for t in s['tracks'].values():
             tracks[s['id']][t.track] = t.title
 
     grouped = defaultdict(lambda: defaultdict(list))

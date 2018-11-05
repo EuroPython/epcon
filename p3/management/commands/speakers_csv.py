@@ -39,7 +39,7 @@ class Command(BaseCommand):
         writer.writerow(dict(list(zip(columns, columns))))
         def utf8(d):
             d = dict(d)
-            for k, v in list(d.items()):
+            for k, v in d.items():
                 try:
                     d[k] = v.encode('utf-8')
                 except:

@@ -287,7 +287,7 @@ def tags():
         .values_list('profile_id', flat=True))
     hset = set([(cid, pid) for pid in hprofiles])
     data = ctags()
-    for tag, objects in list(data.items()):
+    for tag, objects in data.items():
         data[tag] = objects - hset
     return data
 

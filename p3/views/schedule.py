@@ -70,7 +70,7 @@ def _build_timetables(schedules, events=None, partner=None):
             tts.append((row['id'], tt))
 
     if partner:
-        for date, evts in list(partner.items()):
+        for date, evts in partner.items():
             for ix, row in enumerate(schedules):
                 if row['date'] == date:
                     sid, tt = tts[ix]

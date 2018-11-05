@@ -541,7 +541,7 @@ class P3FormTickets(aforms.FormTickets):
         # Moreover each reservation must specify the "period".
 
         # These cases will be handled in custom code of clean
-        for k in list(self.fields.keys()):
+        for k in self.fields.keys():
             if k.startswith('H'):
                 del self.fields[k]
 

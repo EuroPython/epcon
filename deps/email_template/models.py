@@ -24,7 +24,7 @@ class Email(models.Model):
         """
         if mark_safestring:
             ctx = dict(ctx)
-            for key, value in list(ctx.items()):
+            for key, value in ctx.items():
                 if isinstance(value, str):
                     ctx[key] = mark_safe(value)
         ctx = Context(ctx)

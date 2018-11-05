@@ -378,7 +378,7 @@ def schedule_context(schedule):
     # (more work in less for the template)
     timetable = sorted(timetable.items())
     offset = 0
-    for ix, v in list(enumerate(timetable[:-1])):
+    for ix, v in enumerate(timetable[:-1]):
         t, row = v
         if 'end' in row['class']:
             # arbitrary padding
@@ -539,7 +539,7 @@ def overbooked_events(context, conference):
     c = _request_cache(context['request'], 'schedules_overbook')
     if not c:
         data = models.Schedule.objects.expected_attendance(conference)
-        for k, v in list(data.items()):
+        for k, v in data.items():
             if not v['overbook']:
                 del data[k]
         c['items'] = data
@@ -977,7 +977,7 @@ def voting_data(conference):
         for tid, type, language in results:
             groups[type][language].append(tid)
 
-    for k, v in list(groups.items()):
+    for k, v in groups.items():
         groups[k] = dict(v)
 
     return {
@@ -1568,7 +1568,7 @@ def conference_js_data(tags=None):
 
     cts = dict(ContentType.objects.all().values_list('id', 'model'))
     items = {}
-    for t, objects in list(tags.items()):
+    for t, objects in tags.items():
         key = t.name.encode('utf-8')
         if key not in items:
             items[key] = {}

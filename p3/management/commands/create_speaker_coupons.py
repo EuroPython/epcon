@@ -194,7 +194,7 @@ class Command(BaseCommand):
 
         # Create coupons
         data = []
-        for sid, entry in list(speakers.items()):
+        for sid, entry in speakers.items():
 
             # Get coupon data
             coupon_prefix = entry['prefix']

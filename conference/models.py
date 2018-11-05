@@ -1000,7 +1000,7 @@ class ScheduleManager(models.Manager):
         # Parallel obviously can not participate in both, so the
         # his vote should be scaled
         scores = defaultdict(lambda: 0.0)
-        for evt, users in list(events.items()):
+        for evt, users in events.items():
             group = list(Event.objects.group_events_by_times(events, event=evt))[0]
             while users:
                 u = users.pop()

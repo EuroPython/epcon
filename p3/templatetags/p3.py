@@ -423,7 +423,7 @@ def com_com_registration(user):
     if user.phone and user.phone.startswith('+39'):
         params['ita_mobile'] = user.phone
     params['username'] = name.lower().replace(' ', '').replace('.', '')[:12]
-    for k, v in list(params.items()):
+    for k, v in params.items():
         params[k] = v.encode('utf-8')
     return url + urllib.parse.urlencode(params)
 
@@ -531,7 +531,7 @@ def admin_ticketroom_overall_status():
     rooms = {}
     for day in days:
         dst = status[day]
-        for room_type, dst in list(status[day].items()):
+        for room_type, dst in status[day].items():
             try:
                 r = rooms[room_type]
             except KeyError:
@@ -625,7 +625,7 @@ def render_archive(context, conference):
         return True
     events = { x['id']:x for x in filter(match, cdataaccess.events(conf=conference)) }
     talks = {}
-    for e in list(events.values()):
+    for e in events.values():
         t = e['talk']
         if t['id'] in talks:
             continue
