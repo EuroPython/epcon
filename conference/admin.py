@@ -349,7 +349,7 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         if not model:
             return new_class
 
-        for name, f in list(model.__dict__.items()):
+        for name, f in model.__dict__.items():
             if isinstance(f, ReverseGenericManyToOneDescriptor):
                 if f.field.remote_field.model is models.MultilingualContent:
                     multilingual_fields.append(name)
@@ -828,7 +828,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                         etracks = set(models.EventTrack.objects\
                             .filter(event=ev)\
                             .values_list('track__track', flat=True))
-                        for sid, tracks in list(tmap.items()):
+                        for sid, tracks in tmap.items():
                             if models.Event.objects.filter(schedule=sid, start_time=ev.start_time).exists():
                                 continue
                             ev.id = None
@@ -921,15 +921,15 @@ class ScheduleAdmin(admin.ModelAdmin):
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
-        for e, info in list(models.Schedule.objects.expected_attendance(settings.CONFERENCE).items()):
+        for e, info in models.Schedule.objects.expected_attendance(settings.CONFERENCE).items():
             allevents[e.schedule][e] = info
         data = {}
-        for s, events in list(allevents.items()):
+        for s, events in allevents.items():
             data[s] = entry = {
                 'morning': [],
                 'afternoon': [],
             }
-            for e, info in list(events.items()):
+            for e, info in events.items():
                 item = dict(info)
                 item['event'] = e
                 if e.start_time.hour < 13 and e.start_time.minute < 30:
@@ -1135,7 +1135,7 @@ class TicketAdmin(admin.ModelAdmin):
                 offset = date - c.conference_start
                 data[tt][offset.days] += 1
 
-            for k, v in list(data.items()):
+            for k, v in data.items():
                 data[k] = sorted(v.items())
 
             dlimit = datetime.date(c.conference_start.year, 1, 1)

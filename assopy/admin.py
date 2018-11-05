@@ -224,7 +224,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def edit_invoices(self, request):
         try:
-            ids = list(map(int, request.GET['id'].split(',')))
+            ids = [int(el) for el in request.GET['id'].split(',')]
         except KeyError:
             return http.HttpResponseBadRequest('orders id missing')
         except ValueError:
@@ -727,13 +727,13 @@ class InvoiceAdmin(admin.ModelAdmin):
                 'Billing notes')
 
         def e(d):
-            for k, v in list(d.items()):
+            for k, v in d.items():
                 d[k] = v.encode('utf-8')
             return d
 
         ofile = StringIO()
         writer = csv.DictWriter(ofile, fieldnames=columns)
-        writer.writerow(dict(list(zip(columns, columns))))
+        writer.writerow(dict(zip(columns, columns)))
         for i in queryset.select_related('order', 'vat'):
             writer.writerow(e({
                 'numero': i.code,

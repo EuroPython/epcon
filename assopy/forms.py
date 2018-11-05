@@ -230,7 +230,7 @@ class FormTickets(forms.Form):
         data = self.cleaned_data
         o = []
         total = 0
-        for k, q in list(data.items()):
+        for k, q in data.items():
             if k not in fares:
                 continue
             if not q:
