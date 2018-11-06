@@ -96,9 +96,9 @@ class TestView(TestCase):
         response = self.client.post(url, data={
             'subject': message.subject,
             'message': message.message,
-        })
+            })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.content, 'This user does not want to receive a message')
+        self.assertEqual(response.content, b'This user does not want to receive a message')
 
     def test_p3_profile_message_accept_message(self):
         # p3-profile-message -> p3.views.profile.p3_profile_message

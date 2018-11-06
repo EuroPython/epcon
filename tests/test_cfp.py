@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from datetime import timedelta
-from httplib import (
+from http.client import (
     OK as HTTP_OK_200,
     # NOT_FOUND as HTTP_NOT_FOUND_404,
     FOUND as HTTP_REDIRECT_302
@@ -275,8 +275,8 @@ class TestCFP(TestCase):
         assert Tag.objects.count() == 0
 
     def test_ignores_new_tags_keeping_predefined_ones(self):
-        ConferenceTag.objects.create(name=u'django')
-        ConferenceTag.objects.create(name=u'love')
+        ConferenceTag.objects.create(name='django')
+        ConferenceTag.objects.create(name='love')
 
         assert Talk.objects.all().count() == 0
         assert ConferenceTag.objects.count() == 2

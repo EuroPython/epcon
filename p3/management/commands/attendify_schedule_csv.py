@@ -24,7 +24,7 @@ import markdown2
 ### Globals
 
 # These must match the talk .type or .admin_type
-from accepted_talks import TYPE_NAMES
+from .accepted_talks import TYPE_NAMES
 
 # Headers to use for the Attendify CSV file
 CSV_HEADERS = (
@@ -42,7 +42,7 @@ CSV_HEADERS = (
 # defaults
 POSTER_START = datetime.datetime(2016,7,19,15,15) # TBD
 POSTER_DURATION = datetime.timedelta(minutes=90)
-POSTER_ROOM = u'Exhibition Hall'
+POSTER_ROOM = 'Exhibition Hall'
 
 ### Helpers
 
@@ -53,8 +53,8 @@ def profile_url(user):
 
 def speaker_listing(talk):
 
-    return u', '.join(
-        u'<i>%s %s</i>' % (
+    return ', '.join(
+        '<i>%s %s</i>' % (
             speaker.user.first_name,
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
@@ -128,9 +128,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
-                   'associated with it; skipping' %
-                   (title, talk.type))
+            print('Talk %r (type %r) does not have an event '
+                  'associated with it; skipping' %
+                  (title, talk.type))
             return
     else:
         time_range = event.get_time_range()
@@ -138,7 +138,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         if tracks:
             room = tracks[0].title
         else:
-            room = u''
+            room = ''
         if talk_events is not None:
             talk_events[event.pk] = event
         
@@ -152,7 +152,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     stop_time = time_range[1].strftime('%H:%M')
     
     # UID
-    uid = u''
+    uid = ''
     
     data.append((
         title,
@@ -240,8 +240,8 @@ class Command(BaseCommand):
         data.insert(0, CSV_HEADERS)
         with open(csv_file, 'wb') as f:
             for row in data:
-                csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+                csv_data = ('"%s"' % (str(x).replace('"', '""'))
                             for x in row)
-                f.write(u','.join(csv_data).encode('utf-8'))
+                f.write(','.join(csv_data).encode('utf-8'))
                 f.write('\n')
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ## Ispirato a {{{ http://code.activestate.com/recipes/52215/ (r1)
 import sys, traceback
-from cStringIO import StringIO
+from io import StringIO
 
 from django.conf import settings
 
@@ -15,33 +15,33 @@ def dump_exc_plus(exclude=None):
 
     traceback.print_exc(file=s)
 
-    print >>s, "Locals by frame, innermost last"
+    print("Locals by frame, innermost last", file=s)
     if exclude:
-        print >>s, "  excluding '%s'" % "','".join(exclude)
+        print("  excluding '%s'" % "','".join(exclude), file=s)
 
     tb = sys.exc_info()[2]
     while tb:
         frame = tb.tb_frame
         tb = tb.tb_next
 
-        print >>s
-        print >>s, "Frame %s in %s at line %s" % (
+        print(file=s)
+        print("Frame %s in %s at line %s" % (
             frame.f_code.co_name,
             frame.f_code.co_filename,
-            frame.f_lineno)
+            frame.f_lineno), file=s)
 
         for key, value in frame.f_locals.items():
             if exclude and key in exclude:
                 continue
 
-            print >>s, "\t%20s = " % key,
+            print("\t%20s = " % key, end=' ', file=s)
             #We have to be careful not to cause a new error in our error
             #printer! Calling str() on an unknown object could cause an
             #error we don't want.
             try:
-                print >>s, repr(value)
+                print(repr(value), file=s)
             except:
-                print >>s,  "<ERROR WHILE PRINTING VALUE>"
+                print("<ERROR WHILE PRINTING VALUE>", file=s)
 
     return s.getvalue()
 

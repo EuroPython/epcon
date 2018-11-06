@@ -231,7 +231,7 @@ class FormTicket(forms.ModelForm):
         if self.single_day:
             raw = [ raw ]
         try:
-            data = map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'), filter(None, raw))
+            data = [datetime.datetime.strptime(x, '%Y-%m-%d') for x in [_f for _f in raw if _f]]
         except Exception:
             raise forms.ValidationError('data format not valid')
         conf = cmodels.Conference.objects.current()

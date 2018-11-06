@@ -104,7 +104,7 @@ class Conference(models.Model):
 
     objects = ConferenceManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
     def save(self, *args, **kwargs):
@@ -171,7 +171,7 @@ class Deadline(models.Model):
 
     objects = DeadlineManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "deadline: %s" % (self.date, )
 
     class Meta:
@@ -194,7 +194,7 @@ class Deadline(models.Model):
             if not fallback:
                 raise DeadlineContent.DoesNotExist()
 
-        return contents.values()[0]
+        return list(contents.values())[0]
 
 class DeadlineContent(models.Model):
     """
@@ -240,7 +240,7 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, records.values()[0])
+                return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType)
@@ -301,7 +301,7 @@ class AttendeeProfileManager(models.Manager):
                     # The protection from slug like "str-str-str"
                     last = 0
                 continue
-            if counter > last:
+            if last is None or counter > last:
                 last = counter
 
         if last is not None:
@@ -316,7 +316,7 @@ class AttendeeProfileManager(models.Manager):
     def randomUUID(self, length=6):
         import string
         import random
-        return ''.join(random.sample(string.letters + string.digits, length))
+        return ''.join(random.sample(string.ascii_letters + string.digits, length))
 
     # TODO: Use the savepoint.
     # Remember that, at least up to 1.4 django, SQLite backend does not support
@@ -392,7 +392,7 @@ class AttendeeProfile(models.Model):
 
     objects = AttendeeProfileManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.slug
 
     def clean(self):
@@ -467,7 +467,7 @@ class Speaker(models.Model, UrlMixin):
 
     objects = SpeakerManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s %s' % (self.user.first_name, self.user.last_name)
 
     def talks(self, conference=None, include_secondary=True, status=None):
@@ -704,7 +704,7 @@ class Talk(models.Model, UrlMixin):
         # The duration is taken directly from talk's type, unless it was
         # customized
         if (self.duration == 0 or
-            self.duration in TALK_DURATION.values()):
+            self.duration in list(TALK_DURATION.values())):
             # duration was previously set to a standard value, so update
             # the value to the talk length
             self.duration = TALK_DURATION[self.type]
@@ -714,7 +714,7 @@ class Talk(models.Model, UrlMixin):
             pass
         super(Talk, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
 
     def get_absolute_url(self):
@@ -800,7 +800,7 @@ class Fare(models.Model):
 
     objects = FareQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.code, self.conference)
 
     class Meta:
@@ -892,7 +892,7 @@ class Ticket(models.Model):
 
     objects = TicketQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Ticket "%s" (%s)' % (self.fare.name, self.fare.code)
 
 
@@ -916,7 +916,7 @@ class Sponsor(models.Model):
     class Meta:
         ordering = ['sponsor']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.sponsor
 
 
@@ -949,7 +949,7 @@ class MediaPartner(models.Model):
     class Meta:
         ordering = ['partner']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.partner
 
 
@@ -1090,7 +1090,7 @@ class Schedule(models.Model):
     class Meta:
         ordering = ['date']
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0}: {1}'.format(self.conference, self.date)
 
     def speakers(self):
@@ -1109,7 +1109,7 @@ class Track(models.Model):
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.track
 
 
@@ -1129,7 +1129,7 @@ class EventManager(models.Manager):
         def extract_group(event, events):
             group = []
             r0 = event.get_time_range()
-            for ix in reversed(range(len(events))):
+            for ix in reversed(list(range(len(events)))):
                 r1 = events[ix].get_time_range()
                 if r0[0].date() == r1[0].date() and overlap(r0, r1):
                     group.append(events.pop(ix))
@@ -1140,7 +1140,7 @@ class EventManager(models.Manager):
             yield group
         else:
             sorted_events = sorted(
-                filter(lambda x: x.get_duration() > 0, events),
+                [x for x in events if x.get_duration() > 0],
                 key=lambda x: x.get_duration())
             while sorted_events:
                 evt0 = sorted_events.pop()
@@ -1181,7 +1181,7 @@ class Event(models.Model):
     class Meta:
         ordering = ['start_time']
 
-    def __unicode__(self):
+    def __str__(self):
         if self.talk:
             return '%s - %smin' % (self.talk.title, self.talk.duration)
         else:
@@ -1344,7 +1344,7 @@ class Hotel(models.Model):
     class Meta:
         ordering = [ 'name' ]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -1369,7 +1369,7 @@ class SpecialPlace(models.Model):
     class Meta:
         ordering = [ 'name' ]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 try:

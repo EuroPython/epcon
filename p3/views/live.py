@@ -35,7 +35,7 @@ def live(request):
     conf, date = _live_conference()
 
     tracks = cmodels.Track.objects\
-        .filter(track__in=settings.P3_LIVE_TRACKS.keys(), schedule__date=date)\
+        .filter(track__in=list(settings.P3_LIVE_TRACKS.keys()), schedule__date=date)\
         .order_by('order')
 
     ctx = {
@@ -87,7 +87,7 @@ def live_events(request):
     tt.removeEventsByTag('special')
     t0 = datetime.datetime.now().time()
 
-    tracks = settings.P3_LIVE_TRACKS.keys()
+    tracks = list(settings.P3_LIVE_TRACKS.keys())
     events = {}
     for track, tevts in tt.iterOnTracks(start=('current', t0)):
         curr = None

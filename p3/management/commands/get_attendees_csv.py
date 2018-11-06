@@ -62,7 +62,7 @@ class Command(BaseCommand):
         )
 
         writer = csv.DictWriter(sys.stdout, columns)
-        writer.writerow(dict(zip(columns, columns)))
+        writer.writerow(dict(list(zip(columns, columns))))
 
         def utf8(d):
             d = dict(d)

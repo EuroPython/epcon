@@ -116,7 +116,7 @@ def presence_days(conf, code=None):
     }
     for key in qs:
         for x in qs[key]['c'].values_list('p3_conference__days', flat=True):
-            val = filter(None, map(lambda v: v.strip(), x.split(',')))
+            val = [_f for _f in [v.strip() for v in x.split(',')] if _f]
             if not val:
                 days[key]['x'] += 1
             else:
@@ -501,7 +501,7 @@ def conference_speakers_day(conf, code=None):
                     models.TicketSIM.objects\
                         .filter(ticket__in=tickets)\
                         .values_list('number', flat=True))
-            p['phones'] = filter(None, p['phones'])
+            p['phones'] = [_f for _f in p['phones'] if _f]
             for talk in talks_data(p['talks']):
                 for event_id in talk['events_id']:
                     if conf_events[event_id]['time'].date().strftime('%Y-%m-%d') == code[1:]:

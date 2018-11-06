@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import
+
 
 from pytest import mark
 
@@ -69,7 +69,7 @@ def test_user_registration(client):
     assert template_used(response, 'assopy/new_account.html')
     assert template_used(response, "assopy/base.html")
     assert template_used(response, "p3/base.html")
-    assert PRIVACY_POLICY_CHECKBOX in response.content
+    assert PRIVACY_POLICY_CHECKBOX in response.content.decode('utf-8')
 
     assert AssopyUser.objects.all().count() == 0
 
@@ -116,8 +116,8 @@ def test_user_registration(client):
 
     response = client.get('/', follow=True)  # will redirect to /en/
     assert template_used(response, 'django_cms/p5_homepage.html')
-    assert 'Joe Doe' not in response.content
-    assert 'Log out' not in response.content
+    assert 'Joe Doe' not in response.content.decode('utf-8')
+    assert 'Log out' not in response.content.decode('utf-8')
 
     # enable the user
     user.user.is_active = True
@@ -130,8 +130,8 @@ def test_user_registration(client):
     response = client.get('/', follow=True)  # will redirect to /en/
     assert template_used(response, 'django_cms/p5_homepage.html')
     # checking if user is logged in.
-    assert 'Joe Doe' in response.content
-    assert 'Log out' in response.content
+    assert 'Joe Doe' in response.content.decode('utf-8')
+    assert 'Log out' in response.content.decode('utf-8')
 
 
 @mark.django_db

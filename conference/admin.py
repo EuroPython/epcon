@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+
 
 import csv
 import logging
 import re
 from collections import defaultdict
-from cStringIO import StringIO
+from io import StringIO
 
 from django import forms
 from django import http
@@ -75,7 +75,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         if conf.code == settings.CONFERENCE:
             results = utils.voting_results()
             if results is not None:
-                tids = map(lambda x: x[0], results)
+                tids = [x[0] for x in results]
         complete = models.Talk.objects\
             .filter(conference=conf.code, status='accepted')\
             .order_by('title')\
@@ -96,7 +96,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         )
         tracks = []
         for sch in schedules:
-            tks = sorted(sch['tracks'].values(), key=lambda x: x.order)
+            tks = sorted(list(sch['tracks'].values()), key=lambda x: x.order)
             tracks.append([ sch['id'], [ t for t in tks ] ])
 
         from conference.forms import EventForm
@@ -359,16 +359,14 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         for field_name in multilingual_fields:
             for lang, _ in dsettings.LANGUAGES:
                 text = forms.CharField(widget=widget, required=False)
-                full_name = u'{name}_{lang}'.format(name=field_name, lang=lang)
+                full_name = '{name}_{lang}'.format(name=field_name, lang=lang)
                 form_fields[full_name] = text
 
         new_class.declared_fields.update(form_fields)
         new_class.base_fields.update(form_fields)
         return new_class
 
-class MultiLingualForm(forms.ModelForm):
-    __metaclass__ = MultiLingualFormMetaClass
-
+class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
     def __init__(self, *args, **kw):
         super(MultiLingualForm, self).__init__(*args, **kw)
 
@@ -579,7 +577,7 @@ class TalkAdmin(admin.ModelAdmin):
         return super(TalkAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def changelist_view(self, request, extra_context=None):
-        if not request.GET.has_key('conference') and not request.GET.has_key('conference__exact'):
+        if 'conference' not in request.GET and 'conference__exact' not in request.GET:
             q = request.GET.copy()
             q['conference'] = settings.CONFERENCE
             request.GET = q
@@ -939,7 +937,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                 else:
                     entry['afternoon'].append(item)
         ctx = {
-            'schedules': sorted(data.items(), key=lambda x: x[0].date),
+            'schedules': sorted(list(data.items()), key=lambda x: x[0].date),
         }
         return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
@@ -974,7 +972,7 @@ class DidYouKnowAdmin(admin.ModelAdmin):
             return messages[dsettings.LANGUAGES[0][0]].body
         except KeyError:
             if messages:
-                return messages.values()[0].body
+                return list(messages.values())[0].body
             else:
                 return 'no messages'
 
@@ -1039,7 +1037,7 @@ class FareAdmin(admin.ModelAdmin):
     ordering = ('conference', 'start_validity', 'code')
 
     def changelist_view(self, request, extra_context=None):
-        if not request.GET.has_key('conference') and not request.GET.has_key('conference__exact'):
+        if 'conference' not in request.GET and 'conference__exact' not in request.GET:
             q = request.GET.copy()
             q['conference'] = settings.CONFERENCE
             request.GET = q
@@ -1204,7 +1202,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             tags_id = request.session.get('conference_tag_merge_ids', [])
         else:
-            tags_id = map(int, request.GET.getlist('tags'))
+            tags_id = list(map(int, request.GET.getlist('tags')))
         if not tags_id:
             return http.HttpResponseBadRequest('no tags specified')
         if request.method == 'POST':

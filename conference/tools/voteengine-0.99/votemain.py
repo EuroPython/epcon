@@ -20,7 +20,7 @@ from string import *
 import re
 import numpy
 import sys
-from sys import maxint
+from sys import maxsize
 from votelib import *
 import votemethod
 
@@ -43,15 +43,15 @@ class Ballot:
 lineno=0 # current line being read (for error information)
 
 def failure(x):
-	raise RuntimeError, "Failure: %s\nLine %d" % (x,lineno)
+	raise RuntimeError("Failure: %s\nLine %d" % (x,lineno))
 
 def bug(x):
-	raise RuntimeError, "Internal Error: %s\nLine %d" % (x,lineno)
+	raise RuntimeError("Internal Error: %s\nLine %d" % (x,lineno))
 
 def input_line():
 	global lineno
 	while 1:
-		rawline = raw_input()
+		rawline = input()
 		lineno=lineno+1
 		comment=find(rawline, '#') # filter out comments
 		if comment!=-1: 
@@ -66,11 +66,11 @@ def input_line():
 def read_table(x): # reads a directly entered table
 	n=x.shape[0]
 	try:
-		for i in xrange(n):
+		for i in range(n):
 			rawline=input_line()
 
 			sline=split(rawline)[-n:]
-			for j in xrange(n):
+			for j in range(n):
 				if i!=j: x[i,j]=x[i,j]+int(sline[j])
 	except ValueError: failure('Bad Table Value')
 	except IndexError: failure('Malformed Table')
@@ -208,7 +208,7 @@ def get_options(list,o): # gets command line options
 				failure('zero-defeats only works on pairwise')
 			o.zero_def=1
 		else:
-			failure('Unable to process option:' + `opt`)
+			failure('Unable to process option:' + repr(opt))
 			
 			
 def vote_main():
@@ -273,8 +273,8 @@ def vote_main():
 				level=level-1
 				
 			if o.record_pw:
-				for i in xrange(n):
-					for j in xrange(n):
+				for i in range(n):
+					for j in range(n):
 						if working[i]>working[j]: 
 							o.pw_tbl[i,j]=o.pw_tbl[i,j]+ballots
 			if o.record_ballots:
@@ -285,20 +285,20 @@ def vote_main():
 	
 	except EOFError:
 		if o.cand_l==None:
-			print "Empty File.  Nothing to do."
+			print("Empty File.  Nothing to do.")
 			return
 	global lineno
 	lineno=-1
 	
-	print 'VOTES  ' , o.n_votes
+	print('VOTES  ' , o.n_votes)
 	if o.record_pw:
 		if o.zero_def: 
 			zero_defeats(o.pw_tbl)
-			print "Defeats Zero'd out"
+			print("Defeats Zero'd out")
 
 		else:
 			to_margins(o.pw_tbl)
-			print "Margins"
+			print("Margins")
 		print_scores(o.pw_tbl,o.cand_l)
 
 	if o.method_nm=="table":
@@ -317,8 +317,8 @@ def vote_engine(fin=None,fout=None,opts=None):
 	if opts: sys.argv=opts
 	try:
 		vote_main()
-	except RuntimeError,e:
-		print e.args[0]
+	except RuntimeError as e:
+		print(e.args[0])
 	sys.stdin=old_in
 	sys.stdout=old_out
 	sys.argv=old_argv

@@ -97,7 +97,7 @@ def conference_ticket_badge(tickets):
         else:
             tagline = p3c.tagline
             experience = p3c.python_experience
-            tdays = map(lambda x: datetime.date(*map(int, x.split('-'))), filter(None, p3c.days.split(',')))
+            tdays = [datetime.date(*list(map(int, x.split('-')))) for x in [_f for _f in p3c.days.split(',') if _f]]
             cdays = conferences[t.fare.conference]['days']
             days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
             badge_image = p3c.badge_image.path if p3c.badge_image else None
@@ -129,18 +129,18 @@ def conference_ticket_badge(tickets):
             'profile-link': settings.DEFAULT_URL_PREFIX + reverse(
                 'conference-profile-link', kwargs={'uuid': profile.uuid}),
         })
-    return groups.values()
+    return list(groups.values())
 
 
 def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
-    import urllib, hashlib
+    import urllib.request, urllib.parse, urllib.error, hashlib
 
     if protocol == 'https':
         host = 'https://secure.gravatar.com'
     else:
         host = 'http://www.gravatar.com'
     gravatar_url = host + "/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({
+    gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,
         'rating': rating,
@@ -173,11 +173,11 @@ from django.utils.http import urlquote
 from hashlib import md5 as md5_constructor
 
 def template_cache_name(fragment_name, *variables):
-    args = md5_constructor(u':'.join([urlquote(var) for var in variables]))
+    args = md5_constructor(':'.join([urlquote(var) for var in variables]))
     return 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
 
 def invalidate_template_cache(fragment_name, *variables):
-    args = md5_constructor(u':'.join([urlquote(var) for var in variables]))
+    args = md5_constructor(':'.join([urlquote(var) for var in variables]))
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
     return
@@ -349,18 +349,18 @@ def group_all_talks_by_admin_type(conference, talk_status='accepted'):
 
 def speaker_listing(talk):
     """ Return a list of the speakers' names of the talk."""
-    return [u'{} {}'.format(speaker.user.first_name, speaker.user.last_name)
+    return ['{} {}'.format(speaker.user.first_name, speaker.user.last_name)
             for speaker in talk.get_all_speakers()]
 
 
 def speaker_emails(talk):
     """ Return a list of the speakers' emails of the talk."""
-    return [u'{}'.format(speaker.user.email) for speaker in talk.get_all_speakers()]
+    return ['{}'.format(speaker.user.email) for speaker in talk.get_all_speakers()]
 
 
 def speaker_twitters(talk):
     """ Return a list of the speakers' twitter handles of the talk."""
-    return [u'@{}'.format(speaker.user.attendeeprofile.p3_profile.twitter)
+    return ['@{}'.format(speaker.user.attendeeprofile.p3_profile.twitter)
             for speaker in talk.get_all_speakers()]
 
 

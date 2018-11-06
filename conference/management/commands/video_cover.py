@@ -16,5 +16,5 @@ class Command(BaseCommand):
         events = settings.VIDEO_COVER_EVENTS(conference)
         for e in events:
             data = dataaccess.event_data(e)
-            print '*', data['name']
+            print('*', data['name'])
             render_event_video_cover(e)

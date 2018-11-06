@@ -116,7 +116,7 @@ class TestView(TestCase):
         })
         response = self.client.get(url)
 
-        values = response.context['sids'].values()
+        values = list(response.context['sids'].values())
 
         dict_of_schedule = {
             'conference': schedule.conference,

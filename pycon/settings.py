@@ -1231,16 +1231,14 @@ if check.startswith(MEDIA_ROOT):
     if not DEBUG:
         raise RuntimeError('SECURE_MEDIA_ROOT cannot be a subdir of MEDIA_ROOT')
     else:
-        print
-        'WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT'
+        print('WARN, SECURE_MEDIA_ROOT is a subdir of MEDIA_ROOT')
 
 
 if not SECRET_KEY:
     if not DEBUG:
         raise RuntimeError('SECRET_KEY not set')
     else:
-        print
-        'WARN, SECRET_KEY not set'
+        print('WARN, SECRET_KEY not set')
 
 GRAPH_MODELS = {
     'all_applications': True,
@@ -1257,7 +1255,7 @@ DISABLE_CACHING = False
 
 try:
     from pycon.settings_locale import *
-except ImportError, reason:
+except ImportError as reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass

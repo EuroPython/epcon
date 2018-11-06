@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import, print_function
 
-import httplib
+
+import http.client
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
@@ -107,11 +107,11 @@ def serve_response(response, host='0.0.0.0', port=9876):
     def render(env, start_response):
         status = b'%s %s' % (
             str(response.status_code),
-            httplib.responses[response.status_code]
+            http.client.responses[response.status_code]
         )
         # ._headers is a {'content-type': ('Content-Type', 'text/html')} type
         # of dict, that's why we need just .values
-        start_response(status, response._headers.values())
+        start_response(status, list(response._headers.values()))
         return [response.content]
 
     srv = make_server(host, port, render)

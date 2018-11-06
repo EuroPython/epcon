@@ -199,7 +199,7 @@ class Command(BaseCommand):
             # Get coupon data
             coupon_prefix = entry['prefix']
             user = entry['spk'].user
-            name = u'%s %s' % (user.first_name, user.last_name)
+            name = '%s %s' % (user.first_name, user.last_name)
             value = entry['discount']
             title = entry['title']
 
@@ -260,6 +260,6 @@ class Command(BaseCommand):
         # Output CSV data, UTF-8 encoded
         data.insert(0, csv_header)
         for row in data:
-            csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+            csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print (u','.join(csv_data).encode('utf-8'))
+            print(','.join(csv_data).encode('utf-8'))

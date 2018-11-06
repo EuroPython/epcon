@@ -106,45 +106,45 @@ class Command(BaseCommand):
                 ]
                 if row[0][0].upper() != letter:
                     letter = row[0][0].upper()
-                    print '\n\n'
-                    print '\t\t\t', letter
-                    print '-' * 80
-                    print '\n\n'
-                print '\t'.join(map(str, row))
+                    print('\n\n')
+                    print('\t\t\t', letter)
+                    print('-' * 80)
+                    print('\n\n')
+                print('\t'.join(map(str, row)))
                 for linked in t['additional']:
                     row = [
                         '%s%s' % ('(*) ' if linked['maybe'] else '', linked['ticket'].name.encode('utf-8')),
                         linked['ticket'].fare.code,
                         linked['ticket'].fare.name,
                     ]
-                    print '\t', '\t'.join(map(str, row))
+                    print('\t', '\t'.join(map(str, row)))
             
             if alien_tickets:
-                print '\n\n'
-                print '\t\t\t', 'ALIEN'
-                print '-' * 80
-                print '\n\n'
+                print('\n\n')
+                print('\t\t\t', 'ALIEN')
+                print('-' * 80)
+                print('\n\n')
                 for t in alien_tickets:
                     row = [
                         t['name'].encode('utf-8'),
                         'STAFF' if t['ticket'].ticket_type == 'staff' else t['ticket'].fare.name,
                         t['ticket'].p3_conference.days if t['ticket'].p3_conference and t['ticket'].fare.code[2] == 'D' else '',
                     ]
-                    print '\t'.join(map(str, row))
+                    print('\t'.join(map(str, row)))
         else:
             for fare, items in non_conference_tickets.items():
-                print '\n\n'
-                print '\t\t\t', fare.code, fare.name.encode('utf-8')
-                print '-' * 80
-                print '\n\n'
+                print('\n\n')
+                print('\t\t\t', fare.code, fare.name.encode('utf-8'))
+                print('-' * 80)
+                print('\n\n')
                 def k(x):
                     t = x['ticket']
                     return t.name or '%s %s' % (t.user.first_name, t.user.last_name)
                 for t in sorted(items, key=k):
                     if t['maybe']:
-                        print '(*)',
-                    print k(t).encode('utf-8'), '->', 
+                        print('(*)', end=' ')
+                    print(k(t).encode('utf-8'), '->', end=' ') 
                     if t['conference']:
-                        print t['conference']['name'].encode('utf-8')
+                        print(t['conference']['name'].encode('utf-8'))
                     else:
-                        print ''
+                        print('')

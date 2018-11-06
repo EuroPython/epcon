@@ -26,7 +26,7 @@ def dotted_import(path):
 
     try:
         mod = import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('Error importing %s: "%s"' % (path, e))
 
     try:
@@ -74,7 +74,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 
     for votes in users.values():
         # All the unrated talks by thte user get the standard 'missing_vote' vote.
-        missing = tids - set(sum(votes.values(), []))
+        missing = tids - set(sum(list(votes.values()), []))
         if missing:
             votes[missing_vote].extend(missing)
 
@@ -83,7 +83,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
         # cand1 > cand2 -> cand1 had more than cand2 preferences
         # cand1 = cand2 > cand3 -> cand1 equals cand2 both greater than cand3
         input_line = []
-        ballot = sorted(votes.items(), reverse=True)
+        ballot = sorted(list(votes.items()), reverse=True)
         for vote, tid in ballot:
             input_line.append('='.join(map(str, tid)))
         vinput.append('>'.join(input_line))
@@ -95,7 +95,7 @@ def ranking_of_talks(talks, missing_vote=5):
     vengine = os.path.join(os.path.dirname(conference.__file__), 'tools', 'voteengine-0.99', 'voteengine.py')
 
     talks_map = dict((t.id, t) for t in talks)
-    in_ = _input_for_ranking_of_talks(talks_map.values(), missing_vote=missing_vote)
+    in_ = _input_for_ranking_of_talks(list(talks_map.values()), missing_vote=missing_vote)
 
     pipe = subprocess.Popen(
         [vengine],
@@ -359,7 +359,7 @@ class TimeTable2(object):
             'id': None,
             'name': '',
             'custom': '',
-            'tracks': self.events.keys(),
+            'tracks': list(self.events.keys()),
             'tags': set(),
             'talk': None,
             'time': None,
@@ -452,7 +452,7 @@ class TimeTable(object):
         t2._data = dict(self._data)
         t2.errors = list(self.errors)
 
-        for key in list(t2._data):
+        for key in t2._data:
             if (start and key[0] < start) or (end and key[0] >= end):
                 del t2._data[key]
 
@@ -696,7 +696,7 @@ def render_badge(tickets, cmdargs=None, stderr=subprocess.PIPE):
     return output
 
 def archive_dir(directory):
-    from cStringIO import StringIO
+    from io import StringIO
     import tarfile
 
     archive = StringIO()
@@ -760,7 +760,7 @@ def conference2ical(conf, altf=lambda d, comp: d):
     sids = models.Schedule.objects\
         .filter(conference=conf)\
         .values_list('id', flat=True)
-    tts = map(TimeTable2.fromSchedule, sids)
+    tts = list(map(TimeTable2.fromSchedule, sids))
     return timetables2ical(tts, altf=altf)
 
 def oembed(url, **kw):
