@@ -114,23 +114,21 @@ def voting_results():
     The returned list is a list of tuples (talk__id, talk__type, talk__language).
     If TALKS_RANKING_FILE is not set or does not exist the return value is None.
     """
-    # FIXME: Rewrite this part with 'with open(settings.TALKS_RANKING_FILE)'
     if settings.TALKS_RANKING_FILE:
         try:
-            f = file(settings.TALKS_RANKING_FILE)
-        except IOError:
-            pass
-        else:
-            results = []
-            for line in f:
-                pieces = line.split('-', 4)
-                if len(pieces) != 5:
-                    continue
-                type = pieces[2].strip()
-                language = pieces[3].strip()
-                tid = int(pieces[1].strip())
-                results.append((tid, type, language))
+            with open(settings.TALKS_RANKING_FILE) as ranking_file:
+                results = []
+                for line in ranking_file:
+                    pieces = line.split('-', 4)
+                    if len(pieces) != 5:
+                        continue
+                    type = pieces[2].strip()
+                    language = pieces[3].strip()
+                    tid = int(pieces[1].strip())
+                    results.append((tid, type, language))
             return results
+        except OSError:
+            pass
     return None
 
 from datetime import datetime, date, timedelta, time

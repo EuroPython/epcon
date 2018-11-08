@@ -91,6 +91,7 @@ def show_comment_form(context, object):
 
 @register.filter
 def gravatar(email, args=''):
+    # TODO Merge with p3.utils.gravatar
     if args:
         args = dict(a.split('=') for a in args.split(','))
     else:
@@ -102,7 +103,7 @@ def gravatar(email, args=''):
     rating = args.get('rating', 'r')
 
     # construct the url
-    gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(email.lower()).hexdigest()
+    gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(email.lower().encode()).hexdigest()
     gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': str(size),

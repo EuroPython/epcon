@@ -22,16 +22,16 @@ def test_view_comments_anonymous(client):
     resp = client.get(talk.get_absolute_url())
 
     # No comments for the talk, so the comment list is not displayed.
-    assert 'id="comments"' not in resp.content
+    assert 'id="comments"' not in resp.content.decode()
     # Anonymous user should not be able to post comments.
-    assert 'id="add-comment"' not in resp.content
+    assert 'id="add-comment"' not in resp.content.decode()
 
     CommentFactory(content_object=talk)
 
     resp = client.get(talk.get_absolute_url())
 
     # A comment exists for the talk, so the comment list is visible.
-    assert 'id="comments"' in resp.content
+    assert 'id="comments"' in resp.content.decode()
 
 
 @mark.django_db
@@ -62,9 +62,9 @@ def test_view_comment_authenticated(client):
     resp = client.get(talk.get_absolute_url())
 
     # A comment exsists for the talk, so the comment list is visible.
-    assert 'id="comments"' in resp.content
+    assert 'id="comments"' in resp.content.decode()
     # Authenticated user should be able to post comments.
-    assert 'id="add-comment"' in resp.content
+    assert 'id="add-comment"' in resp.content.decode()
 
 
 @mark.django_db
@@ -87,5 +87,5 @@ def test_add_comments_authenticated(client, mocker):
     })
 
     assert resp.status_code == 200
-    assert 'id="comment-1"' in resp.content
-    assert comment_body in resp.content
+    assert 'id="comment-1"' in resp.content.decode()
+    assert comment_body in resp.content.decode()
