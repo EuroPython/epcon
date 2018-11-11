@@ -45,7 +45,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=lambda v: [s.strip() for s in v.split(',')])
-APPEND_SLASH = config('APPEND_SLASH', default=False, cast=bool)
+APPEND_SLASH = config('APPEND_SLASH', default=True, cast=bool)
 
 PROJECT_DIR = config('PROJECT_DIR', default=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')))
 DATA_DIR = config('DATA_DIR', default=os.path.join(PROJECT_DIR, 'data'))
@@ -55,22 +55,7 @@ LOGS_DIR = os.path.join(PROJECT_DIR, 'logs/')
 
 SITE_DATA_ROOT = DATA_DIR + '/site'
 
-DATABASE_TYPE = config('DATABASE', default='')
-
-if DATABASE_TYPE == "postgres":
-    user = config('DATABASE_USER', default='')
-    password = config('DATABASE_PASSWORD', default='')
-    dbname = config('DATABASE_NAME', default='')
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': dbname,
-        'USER': user,
-        'PASSWORD': password,
-    }
-}
-else:
-    DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': SITE_DATA_ROOT + '/p3.db',

@@ -98,7 +98,6 @@ python-decouple==3.1
 python-oembed==0.2.4
 python-social-auth==0.3.6
 python3-openid==3.1.0
->>>>>>> Update requirements.
 pytz==2018.6              # via django, django-paypal
 pyyaml==3.13              # via watchdog
 requests-oauthlib==1.0.0
