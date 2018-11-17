@@ -73,10 +73,13 @@ if settings.DEBUG:
         url(r'^media/(?P<path>.*)$', static.serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
-        url(r'^500/$', defaults.server_error),
-        url(r'^404/$', defaults.page_not_found),
-        url(r'^403/$', defaults.permission_denied),
-        url(r'^400/$', defaults.bad_request),
+        url(r'^500/$', defaults.server_error), 
+        url(r'^404/$', defaults.page_not_found,
+            kwargs={'exception': Exception("Page not Found!")}),
+        url(r'^403/$', defaults.permission_denied, 
+            kwargs={'exception': Exception("Permission Denied")}),
+        url(r'^400/$', defaults.bad_request, 
+            kwargs={'exception': Exception("Bad Request!")}),
     ]
 
 urlpatterns += i18n_patterns(
