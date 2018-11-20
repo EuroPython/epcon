@@ -188,7 +188,7 @@ def talk_data(tid, preload=None):
             'slug': profile['slug'],
             'helper': r['helper'],
         })
-    speakers.sort()
+    speakers.sort(key=lambda speaker: speaker['id'])
 
     try:
         tags = preload['tags']
