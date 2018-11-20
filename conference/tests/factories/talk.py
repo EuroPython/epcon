@@ -16,16 +16,26 @@ class TalkFactory(factory.django.DjangoModelFactory):
         model = 'conference.Talk'
 
     title = factory.LazyAttribute(
-        lambda talk: factory.Faker('sentence', nb_words=6, variable_nb_words=True).generate({})[:80]
+        lambda talk: factory.Faker(
+            'sentence', nb_words=6, variable_nb_words=True
+        ).generate({})[:80]
     )
     sub_title = factory.Faker('sentence', nb_words=12, variable_nb_words=True)
 
     duration = 30
 
     slug = factory.LazyAttribute(lambda talk: slugify(talk.title))
-    level = factory.Iterator(conference.models.TALK_LEVEL, getter=lambda x: x[0])
-    status = factory.Iterator(conference.models.TALK_STATUS, getter=lambda x: x[0])
-    conference = factory.Iterator(conference.models.Conference.objects.all().values_list('code', flat=True))
+    level = factory.Iterator(
+        conference.models.TALK_LEVEL, getter=lambda x: x[0]
+    )
+    status = factory.Iterator(
+        conference.models.TALK_STATUS, getter=lambda x: x[0]
+    )
+    conference = factory.Iterator(
+        conference.models.Conference.objects.all().values_list(
+            'code', flat=True
+        )
+    )
     language = factory.Iterator(TALK_LANGUAGES, getter=lambda x: x[0])
 
 
