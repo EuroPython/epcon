@@ -1569,7 +1569,7 @@ def conference_js_data(tags=None):
     cts = dict(ContentType.objects.all().values_list('id', 'model'))
     items = {}
     for t, objects in tags.items():
-        key = t.name.encode('utf-8')
+        key = t.name
         if key not in items:
             items[key] = {}
         for ctid, oid in objects:
@@ -1580,7 +1580,7 @@ def conference_js_data(tags=None):
 
     tdata = defaultdict(list)
     for x in tags:
-        tdata[x.category.encode('utf-8')].append(x.name.encode('utf-8'))
+        tdata[x.category].append(x.name)
 
     data = {
         'tags': dict(tdata),
