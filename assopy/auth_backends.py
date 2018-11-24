@@ -40,7 +40,7 @@ class IdBackend(_AssopyBackend):
     backend utilizzato solo internamente per autenticare utenti dato il loro id
     (senza bisogno di password).
     """
-    def authenticate(self, uid=None):
+    def authenticate(self, request, uid=None):
         try:
             user = User.objects.select_related('assopy_user').get(pk=uid, is_active=True)
             auser = user.assopy_user
@@ -57,8 +57,9 @@ class IdBackend(_AssopyBackend):
             return None
 
 class EmailBackend(_AssopyBackend):
-    def authenticate(self, email=None, password=None):
+    def authenticate(self, request, email=None, password=None, username=None):
         try:
+            email = email or username
             user = User.objects.select_related('assopy_user').get(email__iexact=email, is_active=True)
             if user.check_password(password):
                 auser = user.assopy_user
