@@ -25,7 +25,7 @@ from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
 from conference.currencies import normalize_price
-from conference.models import Ticket
+from conference.models import Ticket, Fare
 from conference.users import generate_random_username
 from email_template import utils
 
@@ -350,7 +350,7 @@ class Coupon(models.Model):
     value = models.CharField(max_length=8, help_text='importo, eg: 10, 15%, 8.5')
 
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    fares = models.ManyToManyField('conference.Fare', blank=True)
+    fares = models.ManyToManyField(Fare, blank=True)
 
     def __str__(self):
         return '%s (%s)' % (self.code, self.value)
@@ -570,7 +570,7 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Vat(models.Model):
-    fares = models.ManyToManyField('conference.fare',
+    fares = models.ManyToManyField(Fare,
                                    through='VatFare',
                                    null=True, blank=True)
     value = models.DecimalField(max_digits=2, decimal_places=0)
@@ -582,7 +582,7 @@ class Vat(models.Model):
 
 
 class VatFare(models.Model):
-    fare = models.ForeignKey('conference.fare', on_delete=models.CASCADE)
+    fare = models.ForeignKey(Fare, on_delete=models.CASCADE)
     vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
     class Meta:
@@ -976,7 +976,7 @@ class CreditNote(models.Model):
 
 
 class RefundOrderItem(models.Model):
-    orderitem = models.ForeignKey('assopy.OrderItem', on_delete=models.CASCADE)
+    orderitem = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
     refund = models.ForeignKey('assopy.Refund', on_delete=models.CASCADE)
 
     class Meta:
