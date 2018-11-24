@@ -329,7 +329,6 @@ INSTALLED_APPS = (
     'filer',
     'easy_thumbnails',
 
-    'captcha',
     'django_crontab',
     'formstyle',
 
@@ -341,25 +340,6 @@ INSTALLED_APPS = (
     # 'django_extensions',
     # 'sslserver',
 )
-
-# Google ReCaptcha settings
-RECAPTCHA_OPTIONS = {
-    'theme': 'clean',
-    'lang': 'en',
-    'tabindex': 0,
-    # 'custom_translations': {},
-    #'custom_theme_widget': None
-}
-RECAPTCHA_PRIVATE_KEY = os.environ.get(
-    'RECAPTCHA_PRIVATE_KEY',
-    # This needs to be passed in via the OS env:
-    'no-private-key-set')
-RECAPTCHA_PUBLIC_KEY = os.environ.get(
-    'RECAPTCHA_PUBLIC_KEY',
-    # Registered for EuroPython domains:
-    '6LdFmQcTAAAAAN1xx4M5UN6yg4TwFRXUwIrH5iGh')
-RECAPTCHA_USE_SSL = True
-NOCAPTCHA = True
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -953,27 +933,6 @@ Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
 https://ep2018.europython.eu/accounts/profile/
 '''
-
-def HCOMMENTS_RECAPTCHA(request):
-    return not request.user.is_authenticated()
-
-
-def HCOMMENTS_THREAD_OWNERS(o):
-    from p3.models import P3Talk
-
-    if isinstance(o, P3Talk):
-        return [s.user for s in o.get_all_speakers()]
-    return None
-
-
-def HCOMMENTS_MODERATOR_REQUEST(request, comment):
-    if request.user.is_superuser:
-        return True
-    else:
-        owners = HCOMMENTS_THREAD_OWNERS(comment.content_object)
-        if owners:
-            return request.user in owners
-    return False
 
 
 P3_ANONYMOUS_AVATAR = 'p5/images/headshot-default.jpg'

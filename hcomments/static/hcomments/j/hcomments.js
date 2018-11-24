@@ -19,8 +19,6 @@ hcomments = {
 
         this.form.append('<input type="hidden" name="async" value="1" />');
         this._prepareForm(o.form);
-        this.addRemoveLink();
-        this.addReplyLink();
     },
     filterOut: function(c) {
         /*
@@ -30,75 +28,19 @@ hcomments = {
          */
         return $('#' + c.attr('id')).length == 0 ? c : null
     },
-    addRemoveLink: function(target) {
-        if(!this.remove)
-            return;
-        if(!target)
-            target = $('li.user-comment');
-        $('<span><a href="#" class="remove-comment">Remove</a> | </span>')
-            .click(bind(this._onRemoveComment, this))
-            .insertBefore($('strong', target));
-    },
-    _onRemoveComment: function(e) {
-        e.preventDefault();
-        if(confirm('Are you sure?')) {
-            var p = $(e.target).parents('li');
-            var id = p.attr('id').split('-')[1];
-            $.post(this.remove, { cid: id })
-            p.hide("slow", function() { $(this).remove(); });
-        }
-    },
-    addReplyLink: function(target) {
-        if(!target)
-            target = this.comments;
-        $('<span><a href="#" class="reply-comment">Reply</a> | </span>')
-            .click(bind(this._onReplyComment, this))
-            .insertBefore($('strong', target));
-    },
-    _onReplyComment: function(e) {
-        e.preventDefault();
-        var p = $(e.target).parents('li');
-        if($('form', p).length)
-            return;
-        $('li.replying form').remove();
-        $('li.replying').removeClass('replying');
-        p.addClass('replying');
-        var id = p.attr('id').split('-')[1];
-        var form = this.form.clone();
-        $('input[name="parent"]', form).val(id);
-        $('<button>Cancel</button>')
-            .appendTo($('div.buttons', form))
-            .click(function(e) {
-                e.preventDefault();
-                form.remove();
-                p.removeClass('replying');
-            });
-        this
-            ._prepareForm(form, p)
-            .appendTo(p);
-    },
     _prepareForm: function(form, comment) {
         var opts = {
             beforeSubmit: function(formData, jqForm, options) {
                 var $comment = jqForm.find('[name=comment]');
                 var $name = jqForm.find('[name=name]');
                 var $email = jqForm.find('[name=email]');
-                var $captcha = jqForm.find('[name=recaptcha_response_field]');
 
                 var comment = $.trim($comment.val());
                 var name = $.trim($name.val());
                 var email = $.trim($email.val());
-                var captcha = $.trim($captcha.val());
 
                 var error = false;
                 var $toFocus;
-
-                if ($captcha.length > 0 && captcha === '') {
-                    error = true;
-
-                    $toFocus = $captcha.addClass('error');
-                    $('#recaptcha_widget_div').addClass('error');
-                }
 
                 if ($email.length > 0 && (email === '' || !isEmail(email))) {
                     error = true;
@@ -125,14 +67,7 @@ hcomments = {
                 return !error;
             },
             error: bind(function(request, textStatus, errorThrown) {
-                if(request.status == 403) {
-                    if(request.responseText == 'captcha')
-                        this.onCaptchaFailed(null);
-                    else
-                        this.onCommentModerated(null);
-                }
-                else
-                    this.onCommentPostFailed(null, request.responseText);
+                this.onCommentPostFailed(null, request.responseText);
             }, this),
             success: bind(function(data, textStatus) {
                 var data = this.filterOut($(data));
@@ -155,8 +90,6 @@ hcomments = {
                             data.appendTo(this.wrapper);
                     }
                     data.fadeIn("slow");
-                    this.addRemoveLink(data);
-                    this.addReplyLink(data);
                 }
             }, this)
         };
@@ -164,12 +97,6 @@ hcomments = {
             opts.complete = function() { $(form).remove(); };
         }
         return form.ajaxForm(opts);
-    },
-    onCaptchaFailed: function(comment) {
-        alert('You are not human');
-    },
-    onCommentModerated: function(comment) {
-        alert('Your comment has been moderated');
     },
     onCommentPostFailed: function(comment, message) {
         var lbl = 'Cannot post your comment';

@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
+import hashlib
+import urllib.request, urllib.parse, urllib.error
+
 from django import template
 from django.contrib.contenttypes.models import ContentType
 from django.template import Context
 
-from hcomments import models
-from hcomments import settings
+from django_comments.models import Comment
+from hcomments.utils import moderator_requests, thread_owners
 
-import hashlib
-import urllib.request, urllib.parse, urllib.error
 
 register = template.Library()
 
 
 def _get_comment_list(object):
     ctype = ContentType.objects.get_for_model(object)
-    tree = models.HComment.tree.root_nodes().filter(
+    comments = Comment.objects.filter(
         content_type=ctype,
         object_pk=object.id,
         is_public=True,
         is_removed=False,
     )
-    comments = []
-    for root in tree:
-        comments.extend(root.get_descendants(True))
-    return comments
+    return comments.all()
 
 
 @register.tag
@@ -64,7 +62,7 @@ def show_single_comment(context, comment):
     request = context['request']
     comment_owner = comment.id in request.session.get('user-comments', [])
     if not comment_owner:
-        comment_owner = settings.MODERATOR_REQUEST(request, comment)
+        comment_owner = moderator_requests(request, comment)
     return {
         'c': comment,
         'comment_owner': comment_owner,
@@ -75,7 +73,7 @@ def show_single_comment(context, comment):
 def thread_owner(comment):
     if not comment.user:
         return False
-    owners = settings.THREAD_OWNERS(comment.content_object)
+    owners = thread_owners(comment.content_object)
     if owners:
         return comment.user in owners
     else:
@@ -91,22 +89,9 @@ def show_comment_form(context, object):
     return ctx
 
 
-@register.inclusion_tag('hcomments/show_subscribe_form.html', takes_context=True)
-def show_subscribe_form(context, object):
-    ctx = Context(context)
-    ctx.update({
-        'object': object,
-    })
-    return ctx
-
-
-@register.filter
-def subscribed(object, user):
-    return models.ThreadSubscription.objects.subscribed(object, user)
-
-
 @register.filter
 def gravatar(email, args=''):
+    # TODO Merge with p3.utils.gravatar
     if args:
         args = dict(a.split('=') for a in args.split(','))
     else:
@@ -118,7 +103,7 @@ def gravatar(email, args=''):
     rating = args.get('rating', 'r')
 
     # construct the url
-    gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(email.lower()).hexdigest()
+    gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(email.lower().encode()).hexdigest()
     gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': str(size),
