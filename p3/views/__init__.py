@@ -275,7 +275,7 @@ def whos_coming(request, conference=None):
     # profiles can be public or only visible for participants, in the second
     # case only who has a ticket can see them
     access = ('p',)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         t = dataaccess.all_user_tickets(request.user.id, conference)
         if any(tid for tid, _, _, complete in t if complete):
             access = ('m', 'p')

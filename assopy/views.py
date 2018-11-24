@@ -92,7 +92,7 @@ def billing(request, order_id=None):
 
 @render_to_template('assopy/new_account.html')
 def new_account(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('assopy-profile')
 
     if request.method == 'GET':
@@ -131,7 +131,7 @@ def new_account_feedback(request):
 @render_to_template('assopy/checkout.html')
 def checkout(request):
     if request.method == 'POST':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return http.HttpResponseBadRequest('unauthorized')
         form = aforms.FormTickets(data=request.POST)
         if form.is_valid():

@@ -6,13 +6,12 @@ import subprocess
 from collections import defaultdict
 
 from django.conf import settings as dsettings
-from django.contrib import auth
+from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
-from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.deconstruct import deconstructible
@@ -69,7 +68,9 @@ class ConferenceTag(TagBase):
         return super(ConferenceTag, self).save(**kw)
 
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
-    tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
+    tag = models.ForeignKey(
+        ConferenceTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE
+    )
 
     class Meta:
         verbose_name = _("Tagged Item")
@@ -200,7 +201,7 @@ class DeadlineContent(models.Model):
     """
     Content of a deadline.
     """
-    deadline = models.ForeignKey(Deadline)
+    deadline = models.ForeignKey(Deadline, on_delete=models.CASCADE)
     language = models.CharField(max_length=3)
     headline = models.CharField(max_length=200)
     body = models.TextField()
@@ -243,7 +244,7 @@ class MultilingualContentManager(models.Manager):
                 return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
 
 class MultilingualContent(models.Model):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
     language = models.CharField(max_length = 3)
@@ -368,7 +369,7 @@ class AttendeeProfile(models.Model):
     It's the profile of a participant (including the speaker) at the conference, there is a connection
     to the auth.User via a ForeignKey.
     """
-    user = models.OneToOneField('auth.User', primary_key=True)
+    user = models.OneToOneField(get_user_model(), primary_key=True, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
     uuid = models.CharField(max_length=6, unique=True)
 
@@ -415,7 +416,7 @@ class Presence(models.Model):
     """
     Presence of a participant in a conference.
     """
-    profile = models.ForeignKey(AttendeeProfile, related_name='presences')
+    profile = models.ForeignKey(AttendeeProfile, related_name='presences', on_delete=models.CASCADE)
     conference = models.CharField(max_length=10)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -437,8 +438,8 @@ class AttendeeLink(models.Model):
     """
     Connection between two participants
     """
-    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1')
-    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2')
+    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1', on_delete=models.CASCADE)
+    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2', on_delete=models.CASCADE)
     message = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -463,7 +464,7 @@ class SpeakerManager(models.Manager):
 
 
 class Speaker(models.Model, UrlMixin):
-    user = models.OneToOneField('auth.User', primary_key=True)
+    user = models.OneToOneField(get_user_model(), primary_key=True, on_delete=models.CASCADE)
 
     objects = SpeakerManager()
 
@@ -747,8 +748,8 @@ class Talk(models.Model, UrlMixin):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
 class TalkSpeaker(models.Model):
-    talk = models.ForeignKey(Talk)
-    speaker = models.ForeignKey(Speaker)
+    talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
+    speaker = models.ForeignKey(Speaker, on_delete=models.CASCADE)
     helper = models.BooleanField(default=False)
 
     class Meta:
@@ -875,13 +876,15 @@ TICKET_TYPE = (
 
 class Ticket(models.Model):
     user = models.ForeignKey(
-        auth.models.User,
-        help_text=_('Buyer of the ticket'))
+        get_user_model(),
+        help_text=_('Buyer of the ticket'),
+        on_delete=models.CASCADE
+    )
     name = models.CharField(
         max_length=60,
         blank=True,
         help_text=_('Attendee name, i.e. the person who will attend the conference.'))
-    fare = models.ForeignKey(Fare)
+    fare = models.ForeignKey(Fare, on_delete=models.CASCADE)
     frozen = models.BooleanField(
         default=False,
         verbose_name=_('ticket canceled / invalid / frozen'),
@@ -924,7 +927,7 @@ post_save.connect(postSaveResizeImageHandler, sender=Sponsor)
 
 
 class SponsorIncome(models.Model):
-    sponsor = models.ForeignKey(Sponsor)
+    sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
     tags = TagField()
@@ -957,7 +960,7 @@ post_save.connect(postSaveResizeImageHandler, sender=MediaPartner)
 
 
 class MediaPartnerConference(models.Model):
-    partner = models.ForeignKey(MediaPartner)
+    partner = models.ForeignKey(MediaPartner, on_delete=models.CASCADE)
     conference = models.CharField(max_length = 20)
     tags = TagField()
 
@@ -1101,7 +1104,7 @@ class Schedule(models.Model):
 
 
 class Track(models.Model):
-    schedule = models.ForeignKey(Schedule)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     track = models.CharField('nome track', max_length=20)
     title = models.TextField('titolo della track', help_text='HTML supportato')
     seats = models.PositiveIntegerField(default=0)
@@ -1149,10 +1152,10 @@ class EventManager(models.Manager):
 
 
 class Event(models.Model):
-    schedule = models.ForeignKey(Schedule)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     start_time = models.TimeField()
 
-    talk = models.ForeignKey(Talk, blank=True, null=True)
+    talk = models.ForeignKey(Talk, blank=True, null=True, on_delete=models.CASCADE)
     custom = models.TextField(
         blank=True,
         help_text="title for a custom event (an event without a talk)")
@@ -1168,7 +1171,7 @@ class Event(models.Model):
         max_length=200, blank=True,
         help_text='comma separated list of tags. Something like: special, break, keynote')
     tracks = models.ManyToManyField(Track, through='EventTrack')
-    sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
+    sponsor = models.ForeignKey(Sponsor, blank=True, null=True, on_delete=models.CASCADE)
     video = models.CharField(max_length=1000, blank=True)
 
     bookable = models.BooleanField(default=False)
@@ -1259,16 +1262,16 @@ class Event(models.Model):
 
 
 class EventTrack(models.Model):
-    track = models.ForeignKey(Track)
-    event = models.ForeignKey(Event)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('track', 'event',),)
 
 
 class EventInterest(models.Model):
-    event = models.ForeignKey(Event)
-    user = models.ForeignKey('auth.User')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     interest = models.IntegerField()
 
     class Meta:
@@ -1314,8 +1317,8 @@ class EventBookingManager(models.Manager):
 
 
 class EventBooking(models.Model):
-    event = models.ForeignKey(Event)
-    user = models.ForeignKey('auth.User')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     objects = EventBookingManager()
 
@@ -1415,8 +1418,8 @@ class Quote(models.Model):
 
 
 class VotoTalk(models.Model):
-    user = models.ForeignKey('auth.User')
-    talk = models.ForeignKey(Talk)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
     vote = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:

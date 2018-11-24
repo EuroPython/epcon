@@ -74,7 +74,7 @@ class TagWidget(widgets.TextInput):
         )
     media = property(_media)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         else:
@@ -96,7 +96,7 @@ class TagWidget(widgets.TextInput):
         return mark_safe('<input%s />' % flatatt(final_attrs))
 
 class ReadonlyTagWidget(widgets.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         else:
@@ -145,7 +145,7 @@ class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
     option_template_name = 'conference/widgets/radio_select_option.html'
 
     def get_context(self, name, value, attrs):
-        context = super(PseudoRadioSelect, self).get_context(name, value, attrs)
+        context = super(PseudoRadioSelectWidget, self).get_context(name, value, attrs)
         return context
 
 

@@ -96,7 +96,7 @@ EXAMPLE_ACCEPTEDSESSIONS = """
 {% endfor %}
 """
 
-@register.assignment_tag
+@register.simple_tag
 def acceptedsessions(conference, filter_types=None, filter_community=None):
 
     talks = models.Talk.objects.filter(
@@ -180,7 +180,7 @@ EXAMPLE_SPEAKERS = """
 <p>{{ speakerdata.count }} speakers in total.</p>
 """
 
-@register.assignment_tag
+@register.simple_tag
 def speakers(conference, filter_types=None):
 
     talks = models.Talk.objects.filter(

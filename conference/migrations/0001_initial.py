@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
 
+import django.db.models.deletion
 from django.db import migrations, models
-import conference.models
 from django.conf import settings
+
 import taggit.managers
 import tagging.fields
 import common.django_urls
+
+import conference.models
 
 
 class Migration(migrations.Migration):
@@ -29,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AttendeeProfile',
             fields=[
-                ('user', models.OneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('slug', models.SlugField(unique=True)),
                 ('uuid', models.CharField(unique=True, max_length=6)),
                 ('image', models.ImageField(upload_to=conference.models._fs_upload_to(b'profile'), blank=True)),
@@ -74,7 +77,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.IntegerField(verbose_name='Object id', db_index=True)),
                 ('content_type', models.ForeignKey(related_name='conference_conferencetaggeditem_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
-                ('tag', models.ForeignKey(related_name='conference_conferencetaggeditem_items', to='conference.ConferenceTag')),
+                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='conference_conferencetaggeditem_items', to='conference.ConferenceTag')),
             ],
             options={
                 'verbose_name': 'Tagged Item',
@@ -98,7 +101,7 @@ class Migration(migrations.Migration):
                 ('language', models.CharField(max_length=3)),
                 ('headline', models.CharField(max_length=200)),
                 ('body', models.TextField()),
-                ('deadline', models.ForeignKey(to='conference.Deadline')),
+                ('deadline', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='conference.Deadline')),
             ],
         ),
         migrations.CreateModel(
@@ -129,7 +132,7 @@ class Migration(migrations.Migration):
             name='EventBooking',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('event', models.ForeignKey(to='conference.Event')),
+                ('event', models.ForeignKey(to='conference.Event', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -137,14 +140,14 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('interest', models.IntegerField()),
-                ('event', models.ForeignKey(to='conference.Event')),
+                ('event', models.ForeignKey(to='conference.Event', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='EventTrack',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('event', models.ForeignKey(to='conference.Event')),
+                ('event', models.ForeignKey(to='conference.Event', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -205,7 +208,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('conference', models.CharField(max_length=20)),
                 ('tags', tagging.fields.TagField(max_length=255, blank=True)),
-                ('partner', models.ForeignKey(to='conference.MediaPartner')),
+                ('partner', models.ForeignKey(to='conference.MediaPartner', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['conference'],
@@ -219,7 +222,7 @@ class Migration(migrations.Migration):
                 ('language', models.CharField(max_length=3)),
                 ('content', models.CharField(max_length=20)),
                 ('body', models.TextField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -228,7 +231,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('conference', models.CharField(max_length=10)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('profile', models.ForeignKey(related_name='presences', to='conference.AttendeeProfile')),
+                ('profile', models.ForeignKey(related_name='presences', to='conference.AttendeeProfile', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -261,7 +264,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Speaker',
             fields=[
-                ('user', models.OneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             bases=(models.Model, common.django_urls.UrlMixin),
         ),
@@ -306,7 +309,7 @@ class Migration(migrations.Migration):
                 ('conference', models.CharField(max_length=20)),
                 ('income', models.PositiveIntegerField()),
                 ('tags', tagging.fields.TagField(max_length=255, blank=True)),
-                ('sponsor', models.ForeignKey(to='conference.Sponsor')),
+                ('sponsor', models.ForeignKey(to='conference.Sponsor', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['conference'],
@@ -348,8 +351,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('helper', models.BooleanField(default=False)),
-                ('speaker', models.ForeignKey(to='conference.Speaker')),
-                ('talk', models.ForeignKey(to='conference.Talk')),
+                ('speaker', models.ForeignKey(to='conference.Speaker', on_delete=django.db.models.deletion.CASCADE)),
+                ('talk', models.ForeignKey(to='conference.Talk', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -359,8 +362,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(help_text='Attendee name, i.e. the person who will attend the conference.', max_length=60, blank=True)),
                 ('frozen', models.BooleanField(default=False, help_text='If a ticket was canceled or otherwise needs to be marked as invalid, please check this checkbox to indicate this.', verbose_name='ticket canceled / invalid / frozen')),
                 ('ticket_type', models.CharField(default=b'standard', max_length=8, choices=[(b'standard', b'standard'), (b'staff', b'staff')])),
-                ('fare', models.ForeignKey(to='conference.Fare')),
-                ('user', models.ForeignKey(help_text='Buyer of the ticket', to=settings.AUTH_USER_MODEL)),
+                ('fare', models.ForeignKey(to='conference.Fare', on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(help_text='Buyer of the ticket', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -373,7 +376,7 @@ class Migration(migrations.Migration):
                 ('order', models.PositiveIntegerField(default=0, verbose_name=b'ordine')),
                 ('translate', models.BooleanField(default=False)),
                 ('outdoor', models.BooleanField(default=False)),
-                ('schedule', models.ForeignKey(to='conference.Schedule')),
+                ('schedule', models.ForeignKey(to='conference.Schedule', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -381,8 +384,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('vote', models.DecimalField(max_digits=5, decimal_places=2)),
-                ('talk', models.ForeignKey(to='conference.Talk')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('talk', models.ForeignKey(to='conference.Talk', on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Talk voting',
@@ -406,32 +409,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='eventtrack',
             name='track',
-            field=models.ForeignKey(to='conference.Track'),
+            field=models.ForeignKey(to='conference.Track', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='eventinterest',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='eventbooking',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='schedule',
-            field=models.ForeignKey(to='conference.Schedule'),
+            field=models.ForeignKey(to='conference.Schedule', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='sponsor',
-            field=models.ForeignKey(blank=True, to='conference.Sponsor', null=True),
+            field=models.ForeignKey(blank=True, to='conference.Sponsor', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='talk',
-            field=models.ForeignKey(blank=True, to='conference.Talk', null=True),
+            field=models.ForeignKey(blank=True, to='conference.Talk', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
@@ -441,12 +444,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attendeelink',
             name='attendee1',
-            field=models.ForeignKey(related_name='link1', to='conference.AttendeeProfile'),
+            field=models.ForeignKey(related_name='link1', to='conference.AttendeeProfile', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='attendeelink',
             name='attendee2',
-            field=models.ForeignKey(related_name='link2', to='conference.AttendeeProfile'),
+            field=models.ForeignKey(related_name='link2', to='conference.AttendeeProfile', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='vototalk',

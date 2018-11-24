@@ -4,6 +4,8 @@ import sys, traceback
 from io import StringIO
 
 from django.conf import settings
+from django.utils.deprecation import MiddlewareMixin
+
 
 def dump_exc_plus(exclude=None):
     """
@@ -45,7 +47,8 @@ def dump_exc_plus(exclude=None):
 
     return s.getvalue()
 
-class DebugInfo(object):
+
+class DebugInfo(MiddlewareMixin):
     """
     Adds user details to request context on receiving an exception, so that
     they show up in the error emails.
