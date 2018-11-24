@@ -16,7 +16,7 @@ django-model-utils==3.1.1
 django-tagging==0.4.6
 django-taggit==0.22.1
 
-python-openid==2.2.5
+python3-openid
 python-social-auth==0.3.6
 social-auth-app-django
 
