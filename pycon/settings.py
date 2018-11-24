@@ -241,7 +241,7 @@ TEMPLATES = [{
     },
 }]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -650,7 +650,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
     """ Determine whether user is allowed to participate in talk voting.
 
     """
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return False
     if user.is_superuser:
         return True
@@ -866,7 +866,7 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
     if talk.conference != CONFERENCE_CONFERENCE:
         return True
     u = request.user
-    if u.is_anonymous():
+    if u.is_anonymous:
         return False
     from p3.models import Ticket
 

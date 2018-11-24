@@ -24,7 +24,7 @@ def group_required(*group_names):
         user has to be member of all listed groups.
     """
     def group_membership_check(user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user.is_superuser:
             return True

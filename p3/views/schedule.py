@@ -136,7 +136,7 @@ def schedule(request, conference):
 
 def schedule_ics(request, conference, mode='conference'):
     if mode == 'my-schedule':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise http.Http404()
         uid = request.user.id
     else:

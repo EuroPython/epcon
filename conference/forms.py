@@ -74,7 +74,7 @@ class TagWidget(widgets.TextInput):
         )
     media = property(_media)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         else:
@@ -96,7 +96,7 @@ class TagWidget(widgets.TextInput):
         return mark_safe('<input%s />' % flatatt(final_attrs))
 
 class ReadonlyTagWidget(widgets.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         else:
@@ -136,7 +136,7 @@ class MarkEditWidget(forms.Textarea):
         else:
             attrs = dict(attrs)
         attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
-        return super(MarkEditWidget, self).render(name, value, attrs)
+        return super().render(name, value, attrs)
 
 
 
@@ -145,7 +145,7 @@ class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
     option_template_name = 'conference/widgets/radio_select_option.html'
 
     def get_context(self, name, value, attrs):
-        context = super(PseudoRadioSelect, self).get_context(name, value, attrs)
+        context = super().get_context(name, value, attrs)
         return context
 
 
@@ -288,7 +288,7 @@ class SubmissionForm(forms.Form):
             })
         data.update(kwargs.get('initial', {}))
         kwargs['initial'] = data
-        super(SubmissionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = user
 
     #@transaction.atomic
@@ -394,7 +394,7 @@ class TalkForm(forms.ModelForm):
                 data['abstract'] = abstract.body
             data.update(initial)
             kw['initial'] = data
-        super(TalkForm, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
     def save(self, commit=True, speaker=None):
         assert commit, "commit==False not supported yet"
@@ -424,7 +424,7 @@ class TalkForm(forms.ModelForm):
                 level=data['level'],
                 type=data['type']
             )
-        talk = super(TalkForm, self).save(commit=commit)
+        talk = super().save(commit=commit)
         talk.setAbstract(data['abstract'])
 
         if tags:
@@ -455,7 +455,7 @@ class EventForm(forms.ModelForm):
         exclude = ('schedule', 'tracks')
 
     def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['talk'].queryset = models.Talk.objects\
                 .filter(conference=self.instance.schedule.conference)
@@ -463,7 +463,7 @@ class EventForm(forms.ModelForm):
                 .filter(schedule__conference=self.instance.schedule.conference)
 
     def clean(self):
-        data = super(EventForm, self).clean()
+        data = super().clean()
         if not data['talk'] and not data['custom']:
             raise forms.ValidationError('set the talk or the custom text')
         return data
@@ -485,10 +485,10 @@ class ProfileForm(forms.ModelForm):
            initial = kwargs.get('initial', {})
            initial['bio'] = getattr(i.getBio(), 'body', '')
            kwargs['initial'] = initial
-        super(ProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        profile = super(ProfileForm, self).save(commit)
+        profile = super().save(commit)
         profile.setBio(self.cleaned_data.get('bio', ''))
         return profile
 
@@ -496,7 +496,7 @@ class EventBookingForm(forms.Form):
     value = forms.BooleanField(required=False)
 
     def __init__(self, event, user, *args, **kwargs):
-        super(EventBookingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.event = event
         self.user = user
 
@@ -519,7 +519,7 @@ class AdminSendMailForm(forms.Form):
 
     def __init__(self, *args, **kw):
         real = kw.pop('real_usage', True)
-        super(AdminSendMailForm, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
         if real:
             self.fields['send_email'].required = True
 

@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
-import os
-import os.path
-from collections import defaultdict
 
 from django.conf import settings as dsettings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.utils.translation import ugettext as _
 from assopy import utils as autils
 
@@ -31,14 +26,15 @@ class P3Talk(models.Model):
     """
     talk = models.OneToOneField('conference.Talk',
                                 related_name='p3_talk',
-                                primary_key=True)
+                                primary_key=True,
+                                on_delete=models.CASCADE)
     sub_community = models.CharField(max_length=20,
                                      choices=TALK_SUBCOMMUNITY,
                                      default='')
 
 
 class SpeakerConference(models.Model):
-    speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker')
+    speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker', on_delete=models.CASCADE)
     first_time = models.BooleanField(default=False)
 
 # Configurable t-shirt sizes, diets, experience
@@ -68,7 +64,8 @@ class TicketConferenceQuerySet(models.QuerySet):
 class TicketConference(models.Model):
     ticket = models.OneToOneField(
         Ticket,
-        related_name='p3_conference')
+        related_name='p3_conference',
+        on_delete=models.CASCADE)
     shirt_size = models.CharField(
         max_length=5,
         choices=TICKET_CONFERENCE_SHIRT_SIZES,
@@ -132,7 +129,8 @@ class P3ProfileManager(models.Manager):
 
 
 class P3Profile(models.Model):
-    profile = models.OneToOneField('conference.AttendeeProfile', related_name='p3_profile', primary_key=True)
+    profile = models.OneToOneField(
+        'conference.AttendeeProfile', related_name='p3_profile', primary_key=True, on_delete=models.CASCADE)
     tagline = models.CharField(
         max_length=60, blank=True, help_text=_('describe yourself in one line!'))
     interests = TaggableManager(through=ConferenceTaggedItem)

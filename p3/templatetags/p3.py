@@ -204,7 +204,7 @@ def render_ticket(context, ticket):
     })
     return ctx
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def fares_available(context, fare_type, sort=None):
     """
     Restituisce l'elenco delle tariffe attive in questo momento per la
@@ -470,19 +470,19 @@ def box_next_events(context):
     })
     return ctx
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_profile_data(uid):
     return dataaccess.profile_data(uid)
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_profiles_data(uids):
     return dataaccess.profiles_data(uids)
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_talk_data(tid):
     return dataaccess.talk_data(tid)
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_form(context, name, bound="auto", bound_field=None):
     if '.' in name:
         from conference.utils import dotted_import
@@ -514,7 +514,7 @@ def get_form(context, name, bound="auto", bound_field=None):
         form.is_valid()
     return form
 
-@register.assignment_tag()
+@register.simple_tag()
 def pending_email_change(user):
     try:
         t = amodels.Token.objects.get(ctype='e', user=user)
@@ -522,7 +522,7 @@ def pending_email_change(user):
         return None
     return t.payload
 
-@register.assignment_tag()
+@register.simple_tag()
 def admin_ticketroom_overall_status():
     status = models.TicketRoom.objects.overall_status()
 
@@ -546,7 +546,7 @@ def admin_ticketroom_overall_status():
         'rooms': list(rooms.values()),
     }
 
-@register.assignment_tag()
+@register.simple_tag()
 def warmup_conference_cache(conference=None):
     """
     """
@@ -577,7 +577,7 @@ def frozen_reason(ticket):
         return ''
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def all_user_tickets(context, uid=None, conference=None,
                      status="complete", fare_type="conference"):
     if uid is None:
@@ -595,7 +595,7 @@ def all_user_tickets(context, uid=None, conference=None,
     return tickets
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_tags():
     return dataaccess.tags()
 

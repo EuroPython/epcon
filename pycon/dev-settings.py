@@ -34,7 +34,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
 
 #TEST_WITHOUT_MIGRATIONS_COMMAND = 'django_nose.management.commands.test.Command'
 
-MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+MIDDLEWARE = MIDDLEWARE + (
     'django_pdb.middleware.PdbMiddleware',
     # 'devserver.middleware.DevServerMiddleware',
 )

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-class RisingResponse(object):
+from django.utils.deprecation import MiddlewareMixin
+
+
+class RisingResponse(MiddlewareMixin):
     """
     Questo middleware permette ad una vista di chiamare `RisingResponse.stop()`
     per interrompere l'esecuzione corrente.

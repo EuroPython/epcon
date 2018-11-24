@@ -201,7 +201,7 @@ class TNode(template.Node):
             return v
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def conference_talks(conference=None, status="accepted", tag=None, type=None):
     if conference is None:
         conference = [settings.CONFERENCE]
@@ -663,7 +663,7 @@ def splitbysize(value, arg):
     return grouper(arg, value)
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
     if conference is None:
         conference = settings.CONFERENCE
@@ -830,7 +830,7 @@ def video_cover_url(event, type='front', thumb=False):
     return url
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def embed_video(context, value, args=""):
     """
     {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
@@ -1239,7 +1239,7 @@ def next_events(context, time=None):
     return output
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def current_conference():
     return models.Conference.objects.current()
 
@@ -1307,7 +1307,7 @@ def group_tags(tags):
     return sorted(groups.items())
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def talk_data(tid):
     return dataaccess.talk_data(tid)
 
@@ -1319,7 +1319,7 @@ def event_data(eid):
     return event
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def talks_data(tids, conference=None):
     data = dataaccess.talks_data(tids)
     if conference:
@@ -1327,12 +1327,12 @@ def talks_data(tids, conference=None):
     return data
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def schedule_data(sid):
     return dataaccess.schedule_data(sid)
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def schedules_data(sids):
     return dataaccess.schedules_data(sids)
 
@@ -1519,7 +1519,7 @@ def as_datetime(value, format="%Y/%m/%d"):
     return datetime.strptime(value, format)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def user_votes(context, uid=None, conference=None, talk_id=None):
     if uid is None:
         uid = context['request'].user.id
@@ -1532,7 +1532,7 @@ def user_votes(context, uid=None, conference=None, talk_id=None):
         return votes
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def user_events_interest(context, uid=None, conference=None, event_id=None):
     if uid is None:
         uid = context['request'].user.id

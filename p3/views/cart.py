@@ -61,7 +61,7 @@ class P3BillingDataCompany(P3BillingData):
 
 def cart(request):
     u = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             u = request.user.assopy_user
         except AttributeError:
@@ -73,7 +73,7 @@ def cart(request):
     # a valid POST request
     request.session.pop('user-cart', None)
     if request.method == 'POST':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponseRedirectSeeOther(reverse('p3-cart'))
         form = p3forms.P3FormTickets(data=request.POST, user=u)
         if form.is_valid():

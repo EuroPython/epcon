@@ -236,7 +236,7 @@ def user_coupons(user):
             output['invalid'].append(c)
     return output
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def paginate(context, qs, count=20):
     pages = paginator.Paginator(qs, int(count))
     try:
@@ -264,7 +264,7 @@ def render_voucher(context, item):
         'item': item,
     }
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def orderitem_can_be_refunded(context, item):
     req = context['request']
     try:
