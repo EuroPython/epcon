@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction
@@ -11,7 +9,7 @@ from django.core.exceptions import FieldError
 from cms.api import create_page, add_plugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from assopy import models as assopy_models
+from assopy.models import AssopyUser, Vat
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.models import Conference
 from conference.tests.factories.fare import SponsorIncomeFactory
@@ -46,7 +44,12 @@ class Command(BaseCommand):
             body='This is the home teaser text')
         # The main_text placeholder does not seem to be used, skipping.
 
-        print("Created page: ", homepage.reverse_id, homepage.title_set.first().title, homepage.template)
+        print(
+            "Created page: ",
+            homepage.reverse_id,
+            homepage.title_set.first().title,
+            homepage.template
+        )
 
         pages = [
             ('contacts', 'CONTACTS', 'content.html'),
@@ -76,16 +79,28 @@ class Command(BaseCommand):
                 print("Warning: ", e)
 
         print("Creating an admin user")
-        assopy_models.User.objects.create_superuser(
+        AssopyUser.objects.create_superuser(
             username='admin', email='admin@admin.com', password='europython')
 
         print("Creating regular users")
-        assopy_models.User.objects.create_user(
-            email='alice@europython.eu', password='europython', active=True, send_mail=False)
-        assopy_models.User.objects.create_user(
-            email='bob@europython.eu', password='europython', active=True, send_mail=False)
-        assopy_models.User.objects.create_user(
-            email='cesar@europython.eu', password='europython', active=True, send_mail=False)
+        AssopyUser.objects.create_user(
+            email='alice@europython.eu',
+            password='europython',
+            active=True,
+            send_mail=False
+        )
+        AssopyUser.objects.create_user(
+            email='bob@europython.eu',
+            password='europython',
+            active=True,
+            send_mail=False
+        )
+        AssopyUser.objects.create_user(
+            email='cesar@europython.eu',
+            password='europython',
+            active=True,
+            send_mail=False
+        )
 
         print("Creating sponsors")
         SponsorIncomeFactory(
@@ -94,14 +109,16 @@ class Command(BaseCommand):
             sponsor__url='https://www.europython-society.org',
             sponsor__logo__color='yellow',
         )
-        SponsorIncomeFactory(conference=conference, sponsor__logo__color='blue')
-        SponsorIncomeFactory(conference=conference, sponsor__logo__color='orange')
-        SponsorIncomeFactory(conference=conference, sponsor__logo__color='teal')
-        SponsorIncomeFactory(conference=conference, sponsor__logo__color='purple')
-        SponsorIncomeFactory(conference=conference, sponsor__logo__color='red')
+
+        for color in 'blue', 'orange', 'teal', 'purple', 'red':
+            SponsorIncomeFactory(
+                conference=conference, sponsor__logo__color=color
+            )
 
         print("Pre creating fares")
-        default_vat_rate, _ = assopy_models.Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+        default_vat_rate, _ = Vat.objects.get_or_create(
+            value=DEFAULT_VAT_RATE
+        )
         pre_create_typical_fares_for_conference(
             settings.CONFERENCE_CONFERENCE,
             default_vat_rate,

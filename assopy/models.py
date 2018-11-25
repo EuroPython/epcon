@@ -140,7 +140,7 @@ user_created = dispatch.Signal(providing_args=['profile_complete'])
 user_identity_created = dispatch.Signal(providing_args=['identity'])
 
 
-class UserManager(models.Manager):
+class AssopyUserManager(models.Manager):
     def _create_user(
             self, email, password, username=None, first_name='', last_name='',
             token=False, active=False, assopy_id=None, is_admin=False):
@@ -249,7 +249,7 @@ class AssopyUser(models.Model):
         blank=True,
         help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
 
-    objects = UserManager()
+    objects = AssopyUserManager()
 
     def __str__(self):
         name = self.card_name or self.name()

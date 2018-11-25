@@ -150,8 +150,6 @@ def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
 def spam_recruiter_by_conf(conf):
     """ Return a queryset with the User who have agreed to be
     contacted via email for the purpose of recruiting."""
-    from django.contrib.auth.models import User
-
     tickets = settings.CONFERENCE_TICKETS(conf, ticket_type='conference')
     owned = tickets.filter(p3_conference__assigned_to='')
     assigned = tickets.exclude(p3_conference__assigned_to='')

@@ -40,4 +40,10 @@ migrate_and_load_initial_data:
 test:
 	pytest
 
+test-no-warnings:
+	pytest --disable-warnings
+
+test-no-django-20-warnings:
+	pytest -c pytest_no_django_20_warnings.ini
+
 -include Makefile.local
