@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from cms.api import create_page
 from conference.models import AttendeeProfile
 from conference.models import Conference

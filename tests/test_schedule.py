@@ -20,7 +20,7 @@ from conference.models import (
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
 from conference.tests.factories.speaker import SpeakerFactory
 from p3.tests.factories.talk import P3TalkFactory

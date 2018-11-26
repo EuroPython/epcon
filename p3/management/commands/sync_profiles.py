@@ -11,7 +11,7 @@ class Command(BaseCommand):
     """
     @transaction.atomic
     def handle(self, *args, **options):
-        for u in amodels.User.objects.all().select_related('user'):
+        for u in amodels.AssopyUser.objects.all().select_related('user'):
             print(u.name())
             try:
                 profile = cmodels.AttendeeProfile.objects.get(user=u.user)

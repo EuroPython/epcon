@@ -76,7 +76,7 @@ def _assign_ticket(ticket, email):
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
         just_created = True
-        u = amodels.User.objects.create_user(email=email, token=True, send_mail=False)
+        u = amodels.AssopyUser.objects.create_user(email=email, token=True, send_mail=False)
         recipient = u.user
         name = email
     else:
@@ -84,10 +84,10 @@ def _assign_ticket(ticket, email):
         just_created = False
         try:
             auser = recipient.assopy_user
-        except amodels.User.DoesNotExist:
+        except amodels.AssopyUser.DoesNotExist:
             # doh... this django user is not an assopy user, surely something
             # coming from before the introduction of assopy app.
-            auser = amodels.User(user=recipient)
+            auser = amodels.AssopyUser(user=recipient)
             auser.save()
         if not auser.token:
             recipient.assopy_user.token = str(uuid.uuid4())
@@ -258,7 +258,7 @@ def user(request, token):
     view che logga automaticamente un utente (se il token è valido) e lo
     ridirige alla pagine dei tickets
     """
-    u = get_object_or_404(amodels.User, token=token)
+    u = get_object_or_404(amodels.AssopyUser, token=token)
     log.info('autologin (via token url) for "%s"', u.user)
     if not u.user.is_active:
         u.user.is_active = True

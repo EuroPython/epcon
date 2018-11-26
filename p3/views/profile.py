@@ -186,10 +186,10 @@ def connect_profile_to_assopy(backend, user, response, *args, **kwargs):
     try:
         # check if assopy user have already been created for this user
         asso_user = user.assopy_user
-    except amodels.User.DoesNotExist:
+    except amodels.AssopyUser.DoesNotExist:
         # create it if not...s
         log.debug('the current user "%s" will become an assopy user', user)
-        asso_user = amodels.User(user=user)
+        asso_user = amodels.AssopyUser(user=user)
         asso_user.save()
 
     # same for conference profile...

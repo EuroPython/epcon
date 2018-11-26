@@ -140,7 +140,7 @@ user_created = dispatch.Signal(providing_args=['profile_complete'])
 user_identity_created = dispatch.Signal(providing_args=['identity'])
 
 
-class UserManager(models.Manager):
+class AssopyUserManager(models.Manager):
     def _create_user(
             self, email, password, username=None, first_name='', last_name='',
             token=False, active=False, assopy_id=None, is_admin=False):
@@ -156,7 +156,7 @@ class UserManager(models.Manager):
         duser.last_name = last_name
         duser.is_active = active
         duser.save()
-        user = User(user=duser)
+        user = AssopyUser(user=duser)
 
         if token:
             user.token = str(uuid4())
@@ -224,11 +224,10 @@ def _fs_upload_to(subdir, attr=None):
 ticket_for_user = dispatch.Signal(providing_args=['tickets'])
 
 
-class User(models.Model):
+class AssopyUser(models.Model):
     """
-    aka. AssopyUser; There are multiple models called 'User', this one, and the
-    bultin django one from django.contrib.auth.models; This model is often
-    referred to in other places as 'AssopyUser' for clarity.
+    The name is meant to differentiate it from the bultin django User model
+     from django.contrib.auth.models; they have a one-to-one relation to each other.
     """
     user = models.OneToOneField(get_user_model(), related_name='assopy_user', on_delete=models.CASCADE)
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
@@ -250,7 +249,7 @@ class User(models.Model):
         blank=True,
         help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
 
-    objects = UserManager()
+    objects = AssopyUserManager()
 
     def __str__(self):
         name = self.card_name or self.name()
@@ -325,7 +324,7 @@ class UserIdentityManager(models.Manager):
 
 class UserIdentity(models.Model):
     identifier = models.CharField(max_length=255, primary_key=True)
-    user = models.ForeignKey(User, related_name='identities', on_delete=models.CASCADE)
+    user = models.ForeignKey(AssopyUser, related_name='identities', on_delete=models.CASCADE)
     provider = models.CharField(max_length=255)
     display_name = models.TextField(blank=True)
     gender = models.CharField(max_length=10, blank=True)
@@ -349,7 +348,7 @@ class Coupon(models.Model):
     description = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=8, help_text='importo, eg: 10, 15%, 8.5')
 
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(AssopyUser, null=True, blank=True, on_delete=models.CASCADE)
     fares = models.ManyToManyField(Fare, blank=True)
 
     def __str__(self):
@@ -618,7 +617,7 @@ ENABLED_ORDER_PAYMENT = (
 class Order(models.Model):
     code = models.CharField(max_length=20, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
-    user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
+    user = models.ForeignKey(AssopyUser, related_name='orders', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
     payment_url = models.TextField(blank=True)

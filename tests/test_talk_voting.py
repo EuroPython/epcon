@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
 from conference.tests.factories.speaker import SpeakerFactory
 from conference.models import Conference

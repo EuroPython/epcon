@@ -21,7 +21,7 @@ from freezegun import freeze_time
 import responses
 
 from assopy.models import Country, Invoice, Order, Vat
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
 from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings

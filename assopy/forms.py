@@ -84,7 +84,7 @@ class Profile(forms.ModelForm):
         label=_('Last Name'),
         max_length=32,)
     class Meta:
-        model = models.User
+        model = models.AssopyUser
         fields = ('first_name', 'last_name')
 
     def __init__(self, *args, **kwargs):
@@ -111,7 +111,7 @@ Profile = autostrip(Profile)
 
 class BillingData(forms.ModelForm):
     class Meta:
-        model = models.User
+        model = models.AssopyUser
         exclude = ('user', 'token', 'assopy_id')
 
     def _required(self, name):

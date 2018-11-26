@@ -101,7 +101,7 @@ def new_account(request):
         form = aforms.NewAccountForm(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            user = models.User.objects.create_user(
+            user = models.AssopyUser.objects.create_user(
                 email=data['email'],
                 first_name=data['first_name'],
                 last_name=data['last_name'],
@@ -118,10 +118,10 @@ def new_account(request):
 @render_to_template('assopy/new_account_feedback.html')
 def new_account_feedback(request):
     try:
-        user = models.User.objects.get(pk=request.session['new-account-user'])
+        user = models.AssopyUser.objects.get(pk=request.session['new-account-user'])
     except KeyError:
         return redirect('/')
-    except models.User.DoesNotExist:
+    except models.AssopyUser.DoesNotExist:
         user = None
     return {
         'u': user,
