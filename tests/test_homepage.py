@@ -4,7 +4,7 @@ from tests.common_tools import template_used
 
 
 @mark.django_db
-def test_invoice_html(client):
+def test_get_homepage(client):
     url = '/'
     response = client.get(url)
 
