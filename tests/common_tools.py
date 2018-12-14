@@ -29,7 +29,10 @@ def template_used(response, template_name, http_status=HTTP_OK):
     """
     assert response.status_code == http_status, response.status_code
     templates = [t.name for t in response.templates if t.name]
-    assert template_name in templates, templates
+    if templates:
+        assert template_name in templates, templates
+    else:
+        assert response.template_name == template_name, response.template_name
     return True
 
 

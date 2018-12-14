@@ -182,38 +182,51 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details'
 )
 
-TEMPLATES = [{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': [
-        os.path.join(PROJECT_DIR, 'templates'),
-    ],
-    'OPTIONS': {
-        'debug': DEBUG,
-        'context_processors': [
-            "django.contrib.auth.context_processors.auth",
-            'django.contrib.messages.context_processors.messages',
-            "django.template.context_processors.i18n",
-            "django.template.context_processors.debug",
-            "django.template.context_processors.request",
-            "django.template.context_processors.media",
-            'django.template.context_processors.csrf',
-            'django.template.context_processors.request',
-            "django.template.context_processors.tz",
-            'p3.context_processors.settings',
-            'conference.context_processors.current_url',
-            'conference.context_processors.stuff',
-            "sekizai.context_processors.sekizai",
-            "cms.context_processors.cms_settings",
-            "django.template.context_processors.static",
-
-            'social.apps.django_app.context_processors.backends',
-            'social.apps.django_app.context_processors.login_redirect',
+TEMPLATES = [
+    # Jinja templates from ep2019+
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [
+            os.path.join(PROJECT_DIR, 'templates_jinja')
         ],
-        'loaders': [
-            'django.template.loaders.filesystem.Loader',
-            'django.template.loaders.app_directories.Loader',
-        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'pycon.jinja2.environment'
+        },
     },
+
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(PROJECT_DIR, 'templates'),
+        ],
+        'OPTIONS': {
+            'debug': DEBUG,
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                'django.contrib.messages.context_processors.messages',
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.template.context_processors.media",
+                'django.template.context_processors.csrf',
+                'django.template.context_processors.request',
+                "django.template.context_processors.tz",
+                'p3.context_processors.settings',
+                'conference.context_processors.current_url',
+                'conference.context_processors.stuff',
+                "sekizai.context_processors.sekizai",
+                "cms.context_processors.cms_settings",
+                "django.template.context_processors.static",
+
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
+        },
 }]
 
 MIDDLEWARE = (
