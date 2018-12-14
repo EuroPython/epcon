@@ -161,3 +161,9 @@ def make_user(email='joedoe@example.com', **kwargs):
 
 def clear_all_the_caches():
     cache.clear()
+
+
+def is_using_jinja2_template(response):
+    res = response.resolve_template(response.template_name)
+    assert res.backend.name == "jinja2", res.backed.name
+    return True

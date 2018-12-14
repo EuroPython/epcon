@@ -191,7 +191,10 @@ TEMPLATES = [
         ],
         'APP_DIRS': True,
         'OPTIONS': {
-            'environment': 'pycon.jinja2.environment'
+            'environment': 'pycon.jinja2.environment',
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+            ]
         },
     },
 

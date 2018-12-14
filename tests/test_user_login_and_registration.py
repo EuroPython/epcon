@@ -126,9 +126,8 @@ def test_user_registration(client):
     response = client.get('/')
     assert template_used(response, 'ep19/homepage.html')
     # checking if user is logged in.
-    # TODO(artcz) enable those tests back when we reimplement homepage
-    # assert 'Joe Doe' in response.content.decode('utf-8')
-    # assert 'Log out' in response.content.decode('utf-8')
+    assert 'Joe Doe' in response.content.decode('utf-8')
+    assert 'Log out' in response.content.decode('utf-8')
 
 
 @mark.django_db

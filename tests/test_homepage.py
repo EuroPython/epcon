@@ -1,6 +1,6 @@
 
 from pytest import mark
-from tests.common_tools import template_used
+from tests.common_tools import template_used, is_using_jinja2_template
 
 
 @mark.django_db
@@ -11,4 +11,4 @@ def test_get_homepage(client):
     assert response.status_code == 200
     assert template_used(response, 'ep19/homepage.html')
     assert b'EuroPython 2019' in response.content
-    # TODO: check if we can check if it's a jinja template
+    assert is_using_jinja2_template(response)
