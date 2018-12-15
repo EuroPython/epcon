@@ -53,3 +53,4 @@ ipython
 decorator
 
 Jinja2
+django_compressor
