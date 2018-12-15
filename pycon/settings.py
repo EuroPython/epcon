@@ -153,6 +153,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -182,6 +183,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details'
 )
 
+COMPRESS_ROOT = os.path.join(PROJECT_DIR, 'templates_jinja')
+
 TEMPLATES = [
     # Jinja templates from ep2019+
     {
@@ -194,7 +197,8 @@ TEMPLATES = [
             'environment': 'pycon.jinja2.environment',
             'context_processors': [
                 "django.contrib.auth.context_processors.auth",
-            ]
+            ],
+            "extensions": ["compressor.contrib.jinja2ext.CompressorExtension"],
         },
     },
 
@@ -301,6 +305,8 @@ INSTALLED_APPS = (
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
     'djangocms_grid',
+
+    'compressor',
 
     'treebeard',
     'cms',

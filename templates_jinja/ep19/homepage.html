@@ -1,6 +1,11 @@
-{% import 'headers.html' as headers %}
+{% compress css %}
+<link rel="stylesheet" href="/static/css/reset.css" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="/static/components/typography.css" type="text/css" charset="utf-8">
+{% endcompress %}
 
-{{ headers.h1("EuroPython 2019") }}
+{% import 'components/typography.html' as typography %}
+
+{{ typography.title("EuroPython 2019") }}
 
 {% if user.is_authenticated %}
 	Logged in as {{ user.first_name }} {{ user.last_name }}

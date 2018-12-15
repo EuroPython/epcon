@@ -54,3 +54,4 @@ decorator
 
 lxml   # for currencies
 Jinja2
+django_compressor
