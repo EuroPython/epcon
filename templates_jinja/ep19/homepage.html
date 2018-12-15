@@ -1,11 +1,16 @@
-{% compress css %}
-<link rel="stylesheet" href="/static/css/reset.css" type="text/css" charset="utf-8">
-<link rel="stylesheet" href="/static/components/typography.css" type="text/css" charset="utf-8">
-{% endcompress %}
-
+{% extends 'base.html' %}
 {% import 'components/typography.html' as typography %}
 
-{{ typography.title("EuroPython 2019") }}
+{% block content %}
+
+{{ typography.caption("standard caption") }}
+{{ typography.heading("Title standard") }}
+{{ typography.caption("large caption", size="l") }}
+{{ typography.heading("Title large", size="l") }}
+{{ typography.caption("medium caption", size="m") }}
+{{ typography.heading("Title medium", size="m") }}
+{{ typography.caption("small caption", size="s") }}
+{{ typography.heading("Title small", size="s") }}
 
 {% if user.is_authenticated %}
 	Logged in as {{ user.first_name }} {{ user.last_name }}
@@ -13,3 +18,5 @@
 {% else %}
 	<a href='{{ url("login") }}'>Log in</a>
 {% endif %}
+
+{% endblock %}
