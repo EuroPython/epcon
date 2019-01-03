@@ -1345,57 +1345,10 @@ class Hotel(models.Model):
     modified = models.DateField(auto_now = True)
 
     class Meta:
-        ordering = [ 'name' ]
+        ordering = ['name']
 
     def __str__(self):
         return self.name
-
-
-SPECIAL_PLACE_TYPES = (
-    ('conf-hq', 'Conference Site'),
-    ('pyevents', 'PyEvents'),
-)
-
-
-class SpecialPlace(models.Model):
-    name = models.CharField('Name', max_length = 100)
-    address = models.CharField('Address', max_length = 200, default = '', blank = True)
-    type = models.CharField(max_length = 10, choices=SPECIAL_PLACE_TYPES)
-    url = models.URLField(blank = True)
-    email = models.EmailField('Email', blank = True)
-    telephone = models.CharField('Phone', max_length = 50, blank = True)
-    note = models.TextField('note', blank = True)
-    visible = models.BooleanField('visibile', default = True)
-    lng = models.FloatField('longitude', default = 0.0, blank = True)
-    lat = models.FloatField('latitude', default = 0.0, blank = True)
-
-    class Meta:
-        ordering = [ 'name' ]
-
-    def __str__(self):
-        return self.name
-
-try:
-    assert settings.GOOGLE_MAPS['key']
-except (KeyError, TypeError, AssertionError):
-    pass
-else:
-    def postSaveHotelHandler(sender, **kwargs):
-        query = sender.objects.exclude(address = '').filter(lng = 0.0).filter(lat = 0.0)
-        for obj in query:
-            data = conference.gmap.geocode(
-                obj.address,
-                settings.GOOGLE_MAPS['key'],
-                settings.GOOGLE_MAPS.get('country')
-            )
-            if data['Status']['code'] == 200:
-                point = data['Placemark'][0]['Point']['coordinates']
-                lng, lat = point[0:2]
-                obj.lng = lng
-                obj.lat = lat
-                obj.save()
-    post_save.connect(postSaveHotelHandler, sender=Hotel)
-    post_save.connect(postSaveHotelHandler, sender=SpecialPlace)
 
 
 class DidYouKnow(models.Model):

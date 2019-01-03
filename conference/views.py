@@ -292,47 +292,6 @@ def schedule_xml(request, conference, slug):
 
 
 @render_to_json
-def places(request):
-    """
-    Returns a json special places and hotels.
-    """
-    places = []
-    for h in models.SpecialPlace.objects.filter(visible = True):
-        places.append({
-            'id': h.id,
-            'name': h.name,
-            'address': h.address,
-            'type': h.type,
-            'url': h.url,
-            'email': h.email,
-            'telephone': h.telephone,
-            'note': h.note,
-            'lng': h.lng,
-            'lat': h.lat,
-            'html': render_to_string('conference/render_place.html', {'p': h}),
-        })
-    for h in models.Hotel.objects.filter(visible = True):
-        places.append({
-            'id': h.id,
-            'name': h.name,
-            'type': 'hotel',
-            'telephone': h.telephone,
-            'url': h.url,
-            'email': h.email,
-            'availability': h.availability,
-            'price': h.price,
-            'note': h.note,
-            'affiliated': h.affiliated,
-            'lng': h.lng,
-            'lat': h.lat,
-            'modified': h.modified.isoformat(),
-            'html': render_to_string('conference/render_place.html', {'p': h}),
-        })
-
-    return places
-
-
-@render_to_json
 def sponsor_json(request, sponsor):
     """
     Returns the data of the requested sponsor
