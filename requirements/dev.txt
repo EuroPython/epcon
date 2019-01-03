@@ -62,8 +62,10 @@ idna==2.7                 # via requests
 ipython-genutils==0.2.0   # via traitlets
 ipython==5.8.0
 jdcal==1.4                # via openpyxl
+jinja2==2.10
 lxml==4.2.5               # via weasyprint
 markdown2==2.3.6
+markupsafe==1.1.0         # via jinja2
 mock==2.0.0
 more-itertools==4.3.0     # via pytest
 oauthlib==2.1.0           # via requests-oauthlib, social-auth-core

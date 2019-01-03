@@ -1,0 +1,10 @@
+{% import 'headers.html' as headers %}
+
+{{ headers.h1("EuroPython 2019") }}
+
+{% if user.is_authenticated %}
+	Logged in as {{ user.first_name }} {{ user.last_name }}
+	<a href='{{ url("logout") }}'>Log out</a>
+{% else %}
+	<a href='{{ url("login") }}'>Log in</a>
+{% endif %}

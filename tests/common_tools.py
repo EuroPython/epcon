@@ -29,7 +29,10 @@ def template_used(response, template_name, http_status=HTTP_OK):
     """
     assert response.status_code == http_status, response.status_code
     templates = [t.name for t in response.templates if t.name]
-    assert template_name in templates, templates
+    if templates:
+        assert template_name in templates, templates
+    else:
+        assert response.template_name == template_name, response.template_name
     return True
 
 
@@ -158,3 +161,9 @@ def make_user(email='joedoe@example.com', **kwargs):
 
 def clear_all_the_caches():
     cache.clear()
+
+
+def is_using_jinja2_template(response):
+    res = response.resolve_template(response.template_name)
+    assert res.backend.name == "jinja2", res.backed.name
+    return True
