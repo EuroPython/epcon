@@ -186,13 +186,7 @@ def conference2ical(conf, user=None, abstract=False):
     from datetime import timedelta
 
     curr = cmodels.Conference.objects.current()
-    try:
-        hotel = cmodels.SpecialPlace.objects.get(type='conf-hq')
-    except cmodels.SpecialPlace.DoesNotExist:
-        hotel = None
-    else:
-        if not hotel.lat or not hotel.lng:
-            hotel = None
+    hotel = None
 
     def altf(data, component):
         if component == 'calendar':
