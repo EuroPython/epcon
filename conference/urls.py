@@ -55,18 +55,18 @@ urlpatterns = [
         conf_views.talk_preview,
         name='conference-talk-preview'),
 
-    url(r'^places/',
-        conf_views.places,
-        name='conference-places'),
     url(r'^sponsors/(?P<sponsor>.*)',
         conf_views.sponsor_json,
         name='conference-sponsor-json'),
+
     url(r'^paper-submission/$',
         conf_views.paper_submission,
         name='conference-paper-submission'),
+
     url(r'^cfp/thank-you/$',
         conf_views.cfp_thank_you_for_proposal,
         name='cfp-thank-you-for-proposal'),
+
     url(r'^voting/$',
         conf_views.voting,
         name='conference-voting'),

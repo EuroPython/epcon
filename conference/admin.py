@@ -978,6 +978,7 @@ class DidYouKnowAdmin(admin.ModelAdmin):
 
 admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 
+
 class QuoteAdmin(admin.ModelAdmin):
     list_display = ('who', 'conference', '_text')
 
@@ -985,11 +986,6 @@ class QuoteAdmin(admin.ModelAdmin):
         return o.text[:80]
 
 admin.site.register(models.Quote, QuoteAdmin)
-
-class SpecialPlaceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'email')
-
-admin.site.register(models.SpecialPlace, SpecialPlaceAdmin)
 
 
 class FilterFareByTicketCode(admin.SimpleListFilter):
