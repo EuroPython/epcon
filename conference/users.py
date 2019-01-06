@@ -1,4 +1,4 @@
-# coding: utf-8
+
 
 """
 This module takes care of a lot of user related things.

@@ -1,4 +1,4 @@
-# coding: utf-8
+
 from pytest import mark
 
 from django.core.urlresolvers import reverse

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import urllib.request, urllib.parse, urllib.error
 import http.client
 import json

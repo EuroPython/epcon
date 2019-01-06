@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 Print out a JSON of accepted talks with the abstracts, schedule and speaker tickets status.
 """

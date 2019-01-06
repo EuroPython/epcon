@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Print a json file with the participants information for their badges."""
 
 import json

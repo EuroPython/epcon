@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Print accepted talks not scheduled and not accepted talks which have been
 scheduled.
 """

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Export a Attendify schedule CSV file with the currently accepted
     talks.
 

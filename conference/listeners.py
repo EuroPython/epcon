@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from conference.models import Talk, Event, TalkSpeaker
 
 from django.dispatch import Signal

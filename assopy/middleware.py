@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 ## Ispirato a {{{ http://code.activestate.com/recipes/52215/ (r1)
 import sys, traceback
 from io import StringIO

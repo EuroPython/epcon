@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Create training pass coupons for trainers:
 
     Training    - 100%

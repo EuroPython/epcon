@@ -1,4 +1,4 @@
-# coding: utf-8
+
 from pytest import mark
 
 from django.conf import settings
