@@ -109,35 +109,6 @@
         set_label();
     };
 
-    function setup_reservation_rows(rows) {
-        $(rows).each(function() {
-            var reservation = $(this);
-            $('.room-type select', reservation).change(function(e) {
-                $('td[data-fare]', reservation).attr('data-fare', $('option:selected', this).val());
-                $('input[type=text]', reservation).change();
-            }).change();
-
-            setup_period_range($('.period', reservation));
-        });
-    }
-
-    setup_reservation_rows($('.hotel-reservation-type', form));
-
-    $('.cart-hotel-another-reservation', form).click(function(e) {
-        e.preventDefault();
-        var type = $(this).attr('data-type');
-        var rows = $('tr[data-reservation-type=' + type + ']', form);
-
-        var orig = rows.eq(rows.length-1);
-        var main = orig.clone();
-
-        orig.parents('tbody')
-            .append(main)
-
-        setup_reservation_rows(main);
-        setup_cart_input($('input', main));
-    });
-
     function calcTotal() {
 
         function _clearTotals() {
@@ -166,9 +137,6 @@
                     feedback.css('display', 'none');
                 }
                 $('.grand.total b', form).html('€ ' + (data.total || 0));
-                $('.hotel-reservations td[data-fare]', form).next().html('');
-                $('.hotel-reservations tr').removeClass('error');
-                $('.hotel-reservations tr .errors').html('');
 
                 /*
                  * ...il problema con i costi dei singoli biglietti è quello di
@@ -204,10 +172,6 @@
                      */
                     var group = '';
                     switch(code.substr(0, 1)) {
-                        case 'H':
-                            if(code.length == 3)
-                                group = 'H';
-                            break;
                         case 'T':
                             if(code.length == 4)
                                 group = 'T';
@@ -217,29 +181,6 @@
                             break;
                     }
                     switch(group) {
-                        case 'H':
-                            /*
-                             * ...ma per le tariffe alberghiere devo anche
-                             * mostrare il valore del biglietto nella riga
-                             * corrispondente. E non basta usare il codice
-                             * tariffa, devo fare anche il match con il periodo
-                             */
-                            $('.hotel-reservations td[data-fare=' + code + ']', form).each(function() {
-                                var qty = $(this);
-                                if($('input[type=text]', qty).val() == params.qty) {
-                                    // ho trovato un input con la stessa quantità e
-                                    // lo stesso codice tariffa, ora devo
-                                    // controllare il periodo
-                                    var period = $('.period', qty.prev()).slider('values');
-                                    if(params.period[0] == period[0] && params.period[1] == period[1]) {
-                                        // trovato!
-                                        var price = qty.next();
-                                        price.html('€ ' + total);
-                                        update_total(price.parents('.hotel-reservations'), total);
-                                    }
-                                }
-                            });
-                            break;
                         case 'T':
                             update_total($('.conference-tickets', form), total);
                             break;
@@ -277,31 +218,8 @@
                  * alle prenotazioni alberghiere.
                  */
 
-                function hotel_row_error(type, ix, msg) {
-                    var row = $('tr[data-reservation-type=' + type + ']', form)
-                        .eq(ix)
-                        .addClass('error');
-                    var fare_cell = $('td[data-fare]', row);
-                    var feedback = $('.errors', fare_cell);
-                    if(feedback.length) {
-                        feedback.html(msg);
-                    }
-                    else {
-                        $('<div class="errors"></div>')
-                            .appendTo(fare_cell)
-                            .html(msg);
-                    }
-                }
                 for(var fname in err) {
                     switch(fname) {
-                        case 'bed_reservations':
-                        case 'room_reservations':
-                            var type = fname.split('_')[0];
-                            for(var ix=0; ix<err[fname].length; ix++) {
-                                var p = err[fname][ix].split(':');
-                                hotel_row_error(type, p[0], p[1]);
-                            }
-                            break;
                         case '__all__':
                             break;
                         default:

@@ -5,13 +5,11 @@
 
 {% block ASSOPY_MAIN_CONTENT %}
 {% fares_available "conference" as conference_fares %}
-{% fares_available "hotel-room-sharing" as room_sharing_fares %}
-{% fares_available "hotel-room" as room_fares %}
 {% fares_available "other" as other_fares %}
 {% fares_available "partner" as partner_fares %}
 
 
-{% if conference_fares or room_sharing_fares or room_fares or other_fares or partner_fares %}
+{% if conference_fares or other_fares or partner_fares %}
 
 <form id="form-cart" action="{% url "p3-cart" %}" method="post"  class="{% if not user.is_authenticated %}disabled{% endif%}">
 

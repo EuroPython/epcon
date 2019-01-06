@@ -1326,31 +1326,6 @@ class EventBooking(models.Model):
         unique_together = (('user', 'event'),)
 
 
-class Hotel(models.Model):
-    """
-    Hotels allow you to track affiliated places and not where finding accommodations during the conference.
-    """
-    name = models.CharField('Name', max_length = 100)
-    telephone = models.CharField('Phone', max_length = 50, blank = True)
-    url = models.URLField(blank = True)
-    email = models.EmailField('email', blank = True)
-    availability = models.CharField('Availability', max_length = 50, blank = True)
-    price = models.CharField('Price', max_length = 50, blank = True)
-    note = models.TextField('note', blank = True)
-    affiliated = models.BooleanField('Affiliated', default = False)
-    visible = models.BooleanField('visibile', default = True)
-    address = models.CharField('Address', max_length = 200, default = '', blank = True)
-    lng = models.FloatField('longitude', default = 0.0, blank = True)
-    lat = models.FloatField('latitude', default = 0.0, blank = True)
-    modified = models.DateField(auto_now = True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
 class DidYouKnow(models.Model):
     """
     Do you know that ?

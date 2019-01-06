@@ -32,21 +32,26 @@ mimetypes.init()
 
 register = template.Library()
 
+
 @register.inclusion_tag('p3/box_pycon_italia.html')
 def box_pycon_italia():
     return {}
+
 
 @register.inclusion_tag('p3/box_toc.html', takes_context=True)
 def box_toc(context):
     return context
 
+
 @register.inclusion_tag('p3/box_sponsor.html', takes_context=True)
 def box_sponsor(context):
     return context
 
+
 @register.inclusion_tag('p3/box_newsletter.html', takes_context=True)
 def box_newsletter(context):
     return context
+
 
 @register.inclusion_tag('p3/box_cal.html', takes_context = True)
 def box_cal(context, limit=None):
@@ -57,9 +62,11 @@ def box_cal(context, limit=None):
         'deadlines': [ (d, d.content(context['LANGUAGE_CODE'])) for d in deadlines ]
     }
 
+
 @register.inclusion_tag('p3/render_cal.html', takes_context=True)
 def render_cal(context):
     return context
+
 
 @register.inclusion_tag('p3/box_download.html', takes_context = True)
 def box_download(context, fname, label=None):
@@ -85,6 +92,7 @@ def box_download(context, fname, label=None):
         'ftype': ftype,
     }
 
+
 @register.inclusion_tag('p3/box_didyouknow.html', takes_context = True)
 def box_didyouknow(context):
     try:
@@ -96,6 +104,7 @@ def box_didyouknow(context):
         'LANGUAGE_CODE': context.get('LANGUAGE_CODE'),
     }
 
+
 @register.inclusion_tag('p3/box_googlemaps.html', takes_context = True)
 def box_googlemaps(context, what='', zoom=13):
     what = ','.join([ "'%s'" % w for w in what.split(',') ])
@@ -104,6 +113,7 @@ def box_googlemaps(context, what='', zoom=13):
         'what': what,
         'zoom': zoom
     }
+
 
 @register.inclusion_tag('p3/box_talks_conference.html', takes_context = True)
 def box_talks_conference(context, talks):
@@ -120,6 +130,7 @@ def box_talks_conference(context, talks):
 
     return { 'talks': talks }
 
+
 @register.inclusion_tag('p3/box_latest_tweets.html', takes_context=True)
 def box_latest_tweets(context):
     ctx = context.flatten()
@@ -128,11 +139,13 @@ def box_latest_tweets(context):
     })
     return ctx
 
+
 @register.filter
 def render_time(tweet, args=None):
     time = tweet["timestamp"]
     time = datetime.datetime.fromtimestamp(time)
     return time.strftime("%d-%m-%y @ %H:%M")
+
 
 @register.filter
 def check_map(page):
@@ -143,9 +156,6 @@ def check_map(page):
         return '{% render_map' in page.expose_content()
     return False
 
-@register.inclusion_tag('p3/render_map.html', takes_context=True)
-def render_map(context):
-    return {}
 
 @register.inclusion_tag('p3/fragments/render_ticket.html', takes_context=True)
 def render_ticket(context, ticket):
@@ -168,30 +178,6 @@ def render_ticket(context, ticket):
             blocked = inst.assigned_to.lower() != user.email.lower()
         else:
             blocked = False
-    elif ticket.fare.code in ('SIM01',):
-        try:
-            inst = ticket.p3_conference_sim
-        except:
-            inst = None
-        form = forms.FormTicketSIM(
-            instance=inst,
-            initial={
-                'ticket_name': ticket.name,
-            },
-            prefix='t%d' % (ticket.id,),
-        )
-        blocked = False
-    elif ticket.fare.code.startswith('H'):
-        # TicketRoom instances must exist, they're created by a listener
-        inst = ticket.p3_conference_room
-        form = forms.FormTicketRoom(
-            instance=inst,
-            initial={
-                'ticket_name': ticket.name,
-            },
-            prefix='t%d' % (ticket.id,),
-        )
-        blocked = False
     else:
         form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
         blocked = False
@@ -204,25 +190,22 @@ def render_ticket(context, ticket):
     })
     return ctx
 
+
 @register.simple_tag(takes_context=True)
 def fares_available(context, fare_type, sort=None):
     """
     Restituisce l'elenco delle tariffe attive in questo momento per la
     tipologia specificata.
     """
-    assert fare_type in ('all', 'conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
+    assert fare_type in ('all', 'conference', 'goodies', 'partner', 'other')
     if not settings.P3_FARES_ENABLED(context['user']):
         return []
 
     fares_list = [f for f in cdataaccess.fares(settings.CONFERENCE_CONFERENCE) if f['valid']]
     if fare_type == 'conference':
         fares = [ f for f in fares_list if f['code'][0] == 'T' and f['ticket_type'] == 'conference' ]
-    elif fare_type == 'hotel-room-sharing':
-        fares = [ f for f in fares_list if f['code'].startswith('HB') ]
-    elif fare_type == 'hotel-room':
-        fares = [ f for f in fares_list if f['code'].startswith('HR') ]
     elif fare_type == 'other':
-        fares = [ f for f in fares_list if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H' ]
+        fares = [ f for f in fares_list if f['ticket_type'] in ('other', 'event')]
     elif fare_type == 'partner':
         fares = [ f for f in fares_list if f['ticket_type'] in 'partner' ]
     elif fare_type == 'all':
@@ -231,9 +214,10 @@ def fares_available(context, fare_type, sort=None):
         fares.sort(key=lambda x: x['price'])
     return fares
 
+
 @register.simple_tag(takes_context=True)
 def render_cart_rows(context, fare_type, form):
-    assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
+    assert fare_type in ('conference', 'goodies', 'partner', 'other')
     ctx = context.flatten()
     request = ctx['request']
     try:
@@ -306,14 +290,6 @@ def render_cart_rows(context, fare_type, form):
                     row.append((f, form.__getitem__(f['code']), valid))
             rows.append(row)
         ctx['rows'] = rows
-    elif fare_type == 'hotel-room-sharing':
-        tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
-        ctx['field'] = form['bed_reservations']
-        ctx['field'].field.widget._errors = ctx['field'].errors
-    elif fare_type == 'hotel-room':
-        tpl = 'p3/fragments/render_cart_hotel_ticket_row.html'
-        ctx['field'] = form['room_reservations']
-        ctx['field'].field.widget._errors = ctx['field'].errors
     elif fare_type == 'other':
         tpl = 'p3/fragments/render_cart_og_ticket_row.html'
         fares = defaultdict(dict)
@@ -514,6 +490,7 @@ def get_form(context, name, bound="auto", bound_field=None):
         form.is_valid()
     return form
 
+
 @register.simple_tag()
 def pending_email_change(user):
     try:
@@ -522,29 +499,6 @@ def pending_email_change(user):
         return None
     return t.payload
 
-@register.simple_tag()
-def admin_ticketroom_overall_status():
-    status = models.TicketRoom.objects.overall_status()
-
-    labels = dict(models.HOTELROOM_ROOM_TYPE)
-    days = sorted(status.keys())
-    rooms = {}
-    for day in days:
-        dst = status[day]
-        for room_type, dst in status[day].items():
-            try:
-                r = rooms[room_type]
-            except KeyError:
-                r = rooms[room_type] = {
-                    'type': room_type,
-                    'label': labels.get(room_type, room_type),
-                    'days': [],
-                }
-            r['days'].append(dst)
-    return {
-        'days': days,
-        'rooms': list(rooms.values()),
-    }
 
 @register.simple_tag()
 def warmup_conference_cache(conference=None):
@@ -566,6 +520,7 @@ def warmup_conference_cache(conference=None):
         'speakers': dict([ (x['id'], x) for x in dataaccess.profiles_data(speakers) ]),
         'talks': dict([ (x['id'], x) for x in cdataaccess.talks_data(talks) ]),
     }
+
 
 @register.filter
 def frozen_reason(ticket):
@@ -599,6 +554,7 @@ def all_user_tickets(context, uid=None, conference=None,
 def p3_tags():
     return dataaccess.tags()
 
+
 @register.simple_tag(takes_context=True)
 def render_profile_box(context, profile, conference=None, user_message="auto"):
     if conference is None:
@@ -612,6 +568,7 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
         'user_message': user_message if user_message in ('auto', 'always', 'none') else 'auto',
     })
     return render_to_string('p3/fragments/render_profile_box.html', ctx)
+
 
 @register.inclusion_tag('p3/fragments/archive.html', takes_context=True)
 def render_archive(context, conference):
@@ -637,6 +594,7 @@ def render_archive(context, conference):
         'talks': sorted(list(talks.values()), key=lambda x: x['title']),
     })
     return ctx
+
 
 @register.filter
 def timetable_remove_first(timetable, tag):

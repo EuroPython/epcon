@@ -29,6 +29,7 @@ import uuid
 
 log = logging.getLogger('p3.views')
 
+
 @login_required
 @render_to_template('p3/tickets.html')
 def tickets(request):
@@ -37,6 +38,7 @@ def tickets(request):
         'tickets': tickets,
         'refund_form': RefundItemForm(None),
     }
+
 
 def _reset_ticket(ticket):
     # deleting the name so the ticket will be in the "unfilled tickets" until
@@ -54,6 +56,7 @@ def _reset_ticket(ticket):
     p3c.tagline = ''
     p3c.days = ''
     p3c.save()
+
 
 def _assign_ticket(ticket, email):
     email = email.strip()
@@ -111,6 +114,7 @@ def _assign_ticket(ticket, email):
         to=[email]
     ).send()
     return email
+
 
 @login_required
 @transaction.atomic
@@ -215,33 +219,6 @@ def ticket(request, tid):
 
             #print ('ticket name 3: %r' % t.name)
 
-        elif t.fare.code in ('SIM01',):
-            try:
-                sim_ticket = t.p3_conference_sim
-            except models.TicketSIM.DoesNotExist:
-                sim_ticket = None
-            form = p3forms.FormTicketSIM(instance=sim_ticket, data=request.POST, files=request.FILES, prefix='t%d' % (t.id,))
-            if not form.is_valid():
-                return http.HttpResponseBadRequest(str(form.errors))
-            else:
-                data = form.cleaned_data
-                t.name = data['ticket_name']
-                t.save()
-                x = form.save(commit=False)
-                x.ticket = t
-                x.save()
-        elif t.fare.code.startswith('H'):
-            room_ticket = t.p3_conference_room
-            form = p3forms.FormTicketRoom(instance=room_ticket, data=request.POST, files=request.FILES, prefix='t%d' % (t.id,))
-            if not form.is_valid():
-                return http.HttpResponseBadRequest(str(form.errors))
-            else:
-                data = form.cleaned_data
-                t.name = data['ticket_name']
-                t.save()
-                x = form.save(commit=False)
-                x.ticket = t
-                x.save()
         else:
             form = p3forms.FormTicketPartner(instance=t, data=request.POST, prefix='t%d' % (t.id,))
             if not form.is_valid():

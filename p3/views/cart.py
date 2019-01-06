@@ -122,11 +122,6 @@ def calculator(request):
             totals = amodels.Order\
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
 
-            # NOTE(artcz)(2018-09-05) this was related to hotel bookings. left
-            # here for compatibility below. probably not needed and can be
-            # removed
-            booking = None
-
             def _fmt(x):
                 if x == 0:
                     # x is a Decimal and 0 and -0 are different
@@ -142,9 +137,6 @@ def calculator(request):
                 fcode = row[0].code
                 total = row[2]
                 params = row[1]
-                if 'period' in params:
-                    start = booking.booking_start
-                    params['period'] = [(x-start).days for x in params['period']]
                 tickets.append((fcode, params, _fmt(total)))
                 grand_total += total
             output['tickets'] = tickets

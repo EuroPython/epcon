@@ -79,28 +79,8 @@
         {% endif %}
     {% else %}
         <h2>{{ ticket.fare.name }}</h2>
-        {% if ticket.fare.code == 'SIM01' %}
-            <div class="ticket-name">{{ form.ticket_name.value|default:t_edit_ticket}}</div>
-            <div class="tagline">{{ form.sim_type|field_display_value }} / {{ form.plan_type|field_display_value }}</div>
-            {% if not form.document.value %}
-            <div class="alert alert-block">
-                <h4>{% trans "Warning, incomplete ticket" %}</h4>
-                <p>{% trans "Add a document." %}</p>
-            </div>
-            {% endif %}
-        {% else %}
-            {% if ticket.fare.code|slice:":1" == 'H' %}
-                {% if not ticket.p3_conference_room.unused %}
-                    <div class="ticket-name">{{ form.ticket_name.value|default:t_edit_ticket}}</div>
-                    <div class="ticket-footer">{{ ticket.p3_conference_room.checkin|date:"d M" }}–{{ ticket.p3_conference_room.checkout|date:"d M" }}</div>
-                {% else %}
-                <div class="ticket-name">{% trans "This is an unused ticket" %}</div>
-                {% endif %}
-            {% else %}
-                <div class="ticket-name">{{ form.name.value|default:t_edit_ticket}}</div>
-                <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
-            {% endif %}
-        {% endif %}
+        <div class="ticket-name">{{ form.name.value|default:t_edit_ticket}}</div>
+        <div class="ticket-footer">{{ ticket.fare|fare_blob:"data" }}</div>
         {% if not ticket.frozen %}
         <div class="ticket-commands">
             <p>

@@ -936,22 +936,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
 
-class HotelAdmin(admin.ModelAdmin):
-    list_display = ('name', '_contacts', 'address', 'affiliated', 'visible')
-    list_filter = ('visible', 'affiliated' )
-    search_fields = [ 'name', 'address' ]
-
-    def _contacts(self, obj):
-        h = ""
-        if obj.email:
-            h += '<a href="mailto:%s">%s</a> ' % (obj.email, obj.email)
-        if obj.telephone:
-            h+= obj.telephone
-        return h
-    _contacts.allow_tags = True
-    _contacts.short_description = 'Contatti'
-
-
 class DidYouKnowAdmin(admin.ModelAdmin):
     list_display = ('_message', 'visible')
 
@@ -1236,7 +1220,6 @@ admin.site.register(models.Deadline, DeadlineAdmin)
 admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
 admin.site.register(models.Fare, FareAdmin)
-admin.site.register(models.Hotel, HotelAdmin)
 admin.site.register(models.MediaPartner, MediaPartnerAdmin)
 admin.site.register(models.Quote, QuoteAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)

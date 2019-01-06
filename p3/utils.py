@@ -186,7 +186,6 @@ def conference2ical(conf, user=None, abstract=False):
     from datetime import timedelta
 
     curr = cmodels.Conference.objects.current()
-    hotel = None
 
     def altf(data, component):
         if component == 'calendar':
@@ -203,8 +202,7 @@ def conference2ical(conf, user=None, abstract=False):
             eid = data['uid']
             data['uid'] = settings.DEFAULT_URL_PREFIX + '/p3/event/' + str(data['uid'])
             data['organizer'] = ('mailto:info@europython.eu', {'CN': 'EuroPython'})
-            if hotel:
-                data['coordinates'] = [hotel.lat, hotel.lng]
+
             if not isinstance(data['summary'], tuple):
                 # this is a custom event, if it starts with an anchor I can
                 # extract the reference
@@ -223,6 +221,7 @@ def conference2ical(conf, user=None, abstract=False):
                     data['summary'] = (data['summary'][0] + ' by ' + speakers, data['summary'][1])
                 ab = e['talk']['abstract'] if e['talk'] else e['abstract']
                 data['description'] = ab
+
         return data
     if user is None:
         from conference.utils import conference2ical as f
