@@ -325,9 +325,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
-admin.site.unregister(cmodels.Ticket)
-admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
-
 
 class SpeakerAdmin(cadmin.SpeakerAdmin):
 
@@ -359,9 +356,6 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
     _avatar.allow_tags = True
 
 
-admin.site.unregister(cmodels.Speaker)
-admin.site.register(cmodels.Speaker, SpeakerAdmin)
-
 
 class VotoTalkAdmin(admin.ModelAdmin):
     list_display = ('user', '_name', 'talk', 'vote')
@@ -380,7 +374,6 @@ class VotoTalkAdmin(admin.ModelAdmin):
     _name.admin_order_field = 'user__first_name'
 
 
-admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 
 
 class AttendeeProfileAdmin(admin.ModelAdmin):
@@ -410,7 +403,6 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     _user.admin_order_field = 'user__username'
 
 
-admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
 
 # MAL: Commented out, since we don't really have a need for this:
 #
@@ -652,3 +644,11 @@ prezzo_biglietti_ricalcolato.template = '''
     {% endfor %}
 </table>
 '''
+
+admin.site.unregister(cmodels.Ticket)
+admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
+admin.site.unregister(cmodels.Speaker)
+admin.site.register(cmodels.Speaker, SpeakerAdmin)
+
+admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
+admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
