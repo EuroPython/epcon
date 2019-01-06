@@ -19,6 +19,8 @@ django-taggit==0.22.1
 python3-openid
 python-social-auth==0.3.6
 social-auth-app-django
+# Fixes https://github.com/python-social-auth/social-app-django/issues/178
+social-auth-core[openidconnect]
 
 python-oembed
 markdown2
@@ -43,13 +45,12 @@ django-xmlrpc
 django-rosetta
 django-crontab
 
-# Going with older version because the newer one conflicts with the html5lib
-# version we need in other dependency
-WeasyPrint==0.29
+WeasyPrint
 unicodecsv==0.14.1
 
 openpyxl==2.4.8
 ipython
 decorator
 
+lxml   # for currencies
 Jinja2

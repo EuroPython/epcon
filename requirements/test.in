@@ -3,7 +3,6 @@ pytest-cov
 pytest-django
 pytest-mock
 pytest-sugar
-pytest-watch
 pytest-xdist
 
 freezegun
