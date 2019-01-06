@@ -1,6 +1,6 @@
 
 dev-requirements: pip-tools
-	pip-compile\
+	pip-compile --upgrade \
 		requirements/base.in\
 		requirements/test.in\
 		requirements/dev.in\
@@ -10,7 +10,7 @@ install-dev: pip-tools
 	pip-sync requirements/dev.txt
 
 deployment-requirements: pip-tools
-	pip-compile \
+	pip-compile --upgrade \
 		requirements/base.in\
 		requirements/test.in\
 		requirements/deployment.in\
