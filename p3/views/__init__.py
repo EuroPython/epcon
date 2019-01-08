@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django import forms
 from django import http
 from django.conf import settings

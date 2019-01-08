@@ -1,4 +1,4 @@
-# coding: utf-8
+
 
 """
 Things in this file are related to a special debug panel that helps us debug

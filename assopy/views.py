@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import logging
 import urllib.request, urllib.parse, urllib.error
 

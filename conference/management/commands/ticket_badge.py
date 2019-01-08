@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import sys
 from optparse import make_option
 

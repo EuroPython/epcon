@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Print a json file with the users in the database."""
 
 import json

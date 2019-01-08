@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Create coupons for speakers:
 
     Talk        - 25%

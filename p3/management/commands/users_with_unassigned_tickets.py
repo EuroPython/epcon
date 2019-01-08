@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Print information of the users who got unassigned tickets."""
 
 from django.core.management.base import BaseCommand, CommandError

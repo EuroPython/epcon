@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from assopy import models
 from conference import models as cmodels
 from collections import defaultdict
