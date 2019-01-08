@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Print out a listing of accepted talks.
 
 """

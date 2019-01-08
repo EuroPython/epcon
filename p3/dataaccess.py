@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels

@@ -1,4 +1,4 @@
-# coding: utf-8
+
 
 """
 This module handles all things related to creating a new invoice, including

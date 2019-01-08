@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Create a batch of single use discount coupons.
 
     Parameters: <conference> <ticket-code> <count> <amount> [<coupon-code>]

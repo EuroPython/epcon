@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Update a video schedule XLSX file with the currently accepted
     talks.
 

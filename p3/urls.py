@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.conf.urls import url
 
 from p3 import views as p3_views
