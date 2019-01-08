@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Update an Attendify speakers XLSX file with the current list of
     speakers.
 

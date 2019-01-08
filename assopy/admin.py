@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from collections import defaultdict
 import csv
 from io import StringIO

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Export a Guidebook schedule CSV file with the currently accepted
     talks.
 

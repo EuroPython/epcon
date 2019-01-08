@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Delete users creating by spambots.
 
 """
