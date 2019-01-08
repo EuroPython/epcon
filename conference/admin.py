@@ -233,7 +233,6 @@ class ConferenceAdmin(admin.ModelAdmin):
         r['content-disposition'] = 'attachment; filename="%s"' % fname
         return r
 
-admin.site.register(models.Conference, ConferenceAdmin)
 
 class DeadlineAdmin(admin.ModelAdmin):
     list_display = ('date', '_headline', '_text', '_expired')
@@ -337,7 +336,6 @@ class DeadlineAdmin(admin.ModelAdmin):
             instance.body = data.get('body_' + l, '')
             instance.save()
 
-admin.site.register(models.Deadline, DeadlineAdmin)
 
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
@@ -536,7 +534,6 @@ class SpeakerAdmin(admin.ModelAdmin):
         return '<img src="%s" height="32" />' % (img.url,)
     _avatar.allow_tags = True
 
-admin.site.register(models.Speaker, SpeakerAdmin)
 
 class TalkAdminForm(MultiLingualForm):
     class Meta:
@@ -641,7 +638,6 @@ class TalkAdmin(admin.ModelAdmin):
         return response
     do_speakers_data.short_description = 'Speakers data'
 
-admin.site.register(models.Talk, TalkAdmin)
 
 class SponsorIncomeInlineAdmin(admin.TabularInline):
     model = models.SponsorIncome
@@ -656,7 +652,6 @@ class SponsorAdmin(admin.ModelAdmin):
         """List the sponsorised talks by the sponsor"""
         return ', '.join(s.conference for s in obj.sponsorincome_set.all())
 
-admin.site.register(models.Sponsor, SponsorAdmin)
 
 class MediaPartnerConferenceInlineAdmin(admin.TabularInline):
     model = models.MediaPartnerConference
@@ -671,7 +666,6 @@ class MediaPartnerAdmin(admin.ModelAdmin):
         """Will give the conferences which the partner has participated"""
         return ', '.join(s.conference for s in obj.mediapartnerconference_set.all())
 
-admin.site.register(models.MediaPartner, MediaPartnerAdmin)
 
 class TrackInlineAdmin(admin.TabularInline):
     model = models.Track
@@ -941,7 +935,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         }
         return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
-admin.site.register(models.Schedule, ScheduleAdmin)
 
 class HotelAdmin(admin.ModelAdmin):
     list_display = ('name', '_contacts', 'address', 'affiliated', 'visible')
@@ -958,7 +951,6 @@ class HotelAdmin(admin.ModelAdmin):
     _contacts.allow_tags = True
     _contacts.short_description = 'Contatti'
 
-admin.site.register(models.Hotel, HotelAdmin)
 
 class DidYouKnowAdmin(admin.ModelAdmin):
     list_display = ('_message', 'visible')
@@ -976,7 +968,6 @@ class DidYouKnowAdmin(admin.ModelAdmin):
             else:
                 return 'no messages'
 
-admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 
 
 class QuoteAdmin(admin.ModelAdmin):
@@ -985,7 +976,6 @@ class QuoteAdmin(admin.ModelAdmin):
     def _text(self, o):
         return o.text[:80]
 
-admin.site.register(models.Quote, QuoteAdmin)
 
 
 class FilterFareByTicketCode(admin.SimpleListFilter):
@@ -1040,7 +1030,6 @@ class FareAdmin(admin.ModelAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(FareAdmin,self).changelist_view(request, extra_context=extra_context)
 
-admin.site.register(models.Fare, FareAdmin)
 
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('_name', '_buyer', '_conference', '_ticket', 'ticket_type',)
@@ -1155,7 +1144,6 @@ class TicketAdmin(admin.ModelAdmin):
         output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
-admin.site.register(models.Ticket, TicketAdmin)
 
 class ConferenceTagAdmin(admin.ModelAdmin):
     actions = ('do_merge_tags',)
@@ -1232,14 +1220,8 @@ class ConferenceTagAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'admin/conference/conferencetag/merge.html', ctx)
 
 
-admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
-
-
 class ExchangeRateAdmin(admin.ModelAdmin):
     list_display = ('datestamp', 'currency', 'rate')
-
-
-admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
 
 
 class CaptchaQuestionAdmin(admin.ModelAdmin):
@@ -1248,3 +1230,17 @@ class CaptchaQuestionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)
+admin.site.register(models.Conference, ConferenceAdmin)
+admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
+admin.site.register(models.Deadline, DeadlineAdmin)
+admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
+admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
+admin.site.register(models.Fare, FareAdmin)
+admin.site.register(models.Hotel, HotelAdmin)
+admin.site.register(models.MediaPartner, MediaPartnerAdmin)
+admin.site.register(models.Quote, QuoteAdmin)
+admin.site.register(models.Schedule, ScheduleAdmin)
+admin.site.register(models.Speaker, SpeakerAdmin)
+admin.site.register(models.Sponsor, SponsorAdmin)
+admin.site.register(models.Talk, TalkAdmin)
+admin.site.register(models.Ticket, TicketAdmin)

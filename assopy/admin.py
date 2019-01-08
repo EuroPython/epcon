@@ -35,9 +35,6 @@ class CountryAdmin(admin.ModelAdmin):
     search_fields = ('name', 'printable_name', 'iso', 'numcode')
 
 
-admin.site.register(models.Country, CountryAdmin)
-
-
 class ReadOnlyWidget(forms.widgets.HiddenInput):
 
     # MAL: This widget doesn't render well in Django 1.8. See #539
@@ -306,7 +303,6 @@ class OrderAdmin(admin.ModelAdmin):
 
         return TemplateResponse(request, 'assopy/admin/order_stats.html', ctx)
 
-admin.site.register(models.Order, OrderAdmin)
 
 class CouponAdminForm(forms.ModelForm):
     class Meta:
@@ -328,6 +324,7 @@ class CouponAdminForm(forms.ModelForm):
 
     def clean_code(self):
         return self.cleaned_data['code'].upper()
+
 
 class CouponValidListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -355,6 +352,7 @@ class CouponValidListFilter(admin.SimpleListFilter):
                for coupon in queryset
                if bool(coupon.valid(coupon.user)) is result]
         return queryset.filter(id__in=ids)
+
 
 class CouponAdmin(admin.ModelAdmin):
     list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_valid', '_usage')
@@ -394,9 +392,6 @@ class CouponAdmin(admin.ModelAdmin):
         return o.valid(o.user)
     _valid.short_description = 'valid'
     _valid.boolean = True
-
-
-admin.site.register(models.Coupon, CouponAdmin)
 
 
 class AuthUserAdmin(UserAdmin):
@@ -511,10 +506,6 @@ class AuthUserAdmin(UserAdmin):
         ctx = extra_context or {}
         ctx['user_data'] = assopy_dataaccess.all_user_data(object_id)
         return super().change_view(request, object_id, form_url, ctx)
-
-
-admin.site.unregister(User)
-admin.site.register(User, AuthUserAdmin)
 
 
 class RefundAdminForm(forms.ModelForm):
@@ -663,9 +654,6 @@ class RefundAdmin(admin.ModelAdmin):
         models.refund_event.send(sender=refund, old=refund.old_status, tickets=refund.old_tickets)
 
 
-admin.site.register(models.Refund, RefundAdmin)
-
-
 class InvoiceAdminForm(forms.ModelForm):
     class Meta:
         model = models.Invoice
@@ -764,19 +752,10 @@ class InvoiceAdmin(admin.ModelAdmin):
     do_csv_invoices.short_description = 'Download invoices as csv'
 
 
-admin.site.register(models.Invoice, InvoiceAdmin)
-
-admin.site.register(models.Vat)
-
-
 class InvoiceLogAdmin(admin.ModelAdmin):
     list_display = (
         'code', 'order', 'invoice','date'
     )
-
-
-admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
-
 
 
 class AssopyFareForm(forms.ModelForm):
@@ -797,6 +776,7 @@ class AssopyFareForm(forms.ModelForm):
             except  IndexError:
                 pass
         super(AssopyFareForm, self).__init__(*args, **kwargs)
+
 
 class AssopyFareAdmin(cadmin.FareAdmin):
     form = AssopyFareForm
@@ -820,5 +800,17 @@ class AssopyFareAdmin(cadmin.FareAdmin):
                 vat_fare.vat = form.cleaned_data['vat']
                 vat_fare.save()
 
+
 admin.site.unregister(cadmin.models.Fare)
 admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
+
+admin.site.unregister(User)
+admin.site.register(User, AuthUserAdmin)
+
+admin.site.register(models.Country, CountryAdmin)
+admin.site.register(models.Coupon, CouponAdmin)
+admin.site.register(models.Invoice, InvoiceAdmin)
+admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
+admin.site.register(models.Order, OrderAdmin)
+admin.site.register(models.Refund, RefundAdmin)
+admin.site.register(models.Vat)
