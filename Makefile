@@ -46,4 +46,10 @@ test-no-warnings:
 test-no-django-20-warnings:
 	pytest -c pytest_no_django_20_warnings.ini
 
+server:
+	DEBUG=True ./manage.py runserver 0:37266
+
+shell:
+	DEBUG=True ./manage.py shell_plus
+
 -include Makefile.local
