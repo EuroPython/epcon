@@ -11,6 +11,9 @@ from tests.common_tools import make_user
 
 
 def test_865_attendee_profile_editable_in_django_admin(admin_client):
+    """
+    https://github.com/EuroPython/epcon/issues/865
+    """
     LONG_RANDOM_SLUG = 'very-long-and-complicated-slug'
 
     ap_admin_list_url = reverse('admin:conference_attendeeprofile_changelist')
