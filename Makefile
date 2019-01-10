@@ -38,10 +38,10 @@ migrate_and_load_initial_data:
 	python manage.py create_initial_data_for_dev
 
 test:
-	pytest
+	pytest -n auto
 
 test-no-warnings:
-	pytest --disable-warnings
+	pytest --disable-warnings -n auto
 
 test-no-django-20-warnings:
 	pytest -c pytest_no_django_20_warnings.ini
