@@ -359,11 +359,14 @@ class AttendeeProfileManager(models.Manager):
                 break
         return p
 
-ATTENDEEPROFILE_VISIBILITY = (
-    ('x', 'Private (disabled)'),
-    ('m', 'Participants only'),
-    ('p', 'Public'),
+
+ATTENDEEPROFILE_VISIBILITY = Choices(
+    ('x', "PRIVATE", 'Private (disabled)'),
+    ('m', "PARTICIPANTS_ONLY", 'Participants only'),
+    ('p', "PUBLIC", 'Public'),
 )
+
+
 class AttendeeProfile(models.Model):
     """
     It's the profile of a participant (including the speaker) at the conference, there is a connection
