@@ -38,12 +38,18 @@ migrate_and_load_initial_data:
 	python manage.py create_initial_data_for_dev
 
 test:
-	pytest
+	pytest -n auto
 
 test-no-warnings:
-	pytest --disable-warnings
+	pytest --disable-warnings -n auto
 
 test-no-django-20-warnings:
 	pytest -c pytest_no_django_20_warnings.ini
+
+server:
+	DEBUG=True ./manage.py runserver 0:37266
+
+shell:
+	DEBUG=True ./manage.py shell_plus
 
 -include Makefile.local
