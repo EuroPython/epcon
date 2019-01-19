@@ -2,6 +2,7 @@
 {% import 'components/typography.html' as typography %}
 {% import 'components/hero.html' as hero %}
 {% import 'components/eps-logo.html' as eps %}
+{% import 'components/card.html' as card %}
 
 {% block content %}
 
@@ -12,6 +13,29 @@
 	{{ typography.heading("8 - 14 July 📍 Basel, Switzerland", 6, 'p') }}
 </div>
 {% endcall %}
+
+<div class="mdc-layout-grid" style="max-width: 1024px;">
+  <div class="mdc-layout-grid__inner">
+    <div class="mdc-layout-grid__cell--span-4">
+		{{ card.card(
+			title="8 - 9 July",
+			text="training"
+		) }}
+	</div>
+    <div class="mdc-layout-grid__cell--span-4">
+		{{ card.card(
+			title="10 - 12 July",
+			text="conference"
+		) }}
+	</div>
+    <div class="mdc-layout-grid__cell--span-4">
+		{{ card.card(
+			title="12 - 14 July",
+			text="sprint"
+		) }}
+	</div>
+</div>
+
 
 {% if user.is_authenticated %}
 	Logged in as {{ user.first_name }} {{ user.last_name }}
