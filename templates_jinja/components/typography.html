@@ -1,10 +1,13 @@
-{% macro heading(text, size='xl') -%}
-{# TODO: document sizes #}
-{# TODO: change tag #}
-<h1 class="typography__heading typography__heading--{{ size }}">{{ text }}</h1>
+{% macro heading(text, level=1, tag=None, class="") -%}
+
+{% if not tag %}
+{% set tag = "h" + level|string %}
+{% endif %}
+
+<{{ tag }} class="mdc-typography--headline{{ level }} {{ class }}">{{ text }}</{{ tag }}>
 {%- endmacro %}
 
-{% macro caption(text, size='xl') -%}
-{# TODO: document sizes #}
-<h1 class="typography__caption typography__caption--{{ size }}">{{ text }}</h1>
+
+{% macro subtitle(text, level=1, tag='p', class="") -%}
+<{{ tag }} class="mdc-typography--subtitle{{ level }} {{ class }}">{{ text }}</{{ tag }}>
 {%- endmacro %}

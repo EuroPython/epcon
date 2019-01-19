@@ -1,0 +1,39 @@
+.ep-hero {
+    position: relative;
+}
+
+.ep-hero::before {
+    content: '';
+    padding-top: calc(9/16 * 100%);
+    display: inline-block;
+    width: 100%;
+}
+
+.ep-hero__background,
+.ep-hero__wrapper,
+.ep-hero::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    object-fit: cover;
+}
+
+.ep-hero::after {
+    content: '';
+    display: block;
+    background: black;
+    opacity: 0.4;
+}
+
+.ep-hero__wrapper {
+    z-index: 2;
+    /* TODO: use css variable */
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

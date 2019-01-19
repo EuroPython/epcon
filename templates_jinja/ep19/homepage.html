@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% import 'components/typography.html' as typography %}
+{% import 'components/hero.html' as hero %}
+{% import 'components/eps-logo.html' as eps %}
 
 {% block content %}
 
-{{ typography.caption("standard caption") }}
-{{ typography.heading("Title standard") }}
-{{ typography.caption("large caption", size="l") }}
-{{ typography.heading("Title large", size="l") }}
-{{ typography.caption("medium caption", size="m") }}
-{{ typography.heading("Title medium", size="m") }}
-{{ typography.caption("small caption", size="s") }}
-{{ typography.heading("Title small", size="s") }}
+{% call hero.hero("https://source.unsplash.com/nzyBPhGJEcg/1600x900") %}
+<div style="text-align: center;">
+	{{ eps.logo(class="mb4") }}
+	{{ typography.heading("EuroPython 2019", 2, class="mb2") }}
+	{{ typography.heading("8 - 14 July 📍 Basel, Switzerland", 6, 'p') }}
+</div>
+{% endcall %}
 
 {% if user.is_authenticated %}
 	Logged in as {{ user.first_name }} {{ user.last_name }}
