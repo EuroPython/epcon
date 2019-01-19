@@ -1,0 +1,11 @@
+{% macro hero(image) -%}
+
+<div class="ep-hero">
+    <img class="ep-hero__background" src="{{ image }}" alt="">
+
+    <div class="ep-hero__wrapper">
+        {{ caller() }}
+    </div>
+</div>
+
+{%- endmacro %}
