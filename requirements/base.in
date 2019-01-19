@@ -1,0 +1,56 @@
+
+Django~=1.11
+
+pyjwkest==1.4.0
+requests
+requests-oauthlib
+six
+
+django-classy-tags
+django-authority
+django-contrib-comments
+django_extensions
+django-model-utils==3.1.1
+
+# we can probably remove one of these
+django-tagging==0.4.6
+django-taggit==0.22.1
+
+python3-openid
+python-social-auth==0.3.6
+social-auth-app-django
+# Fixes https://github.com/python-social-auth/social-app-django/issues/178
+social-auth-core[openidconnect]
+
+python-oembed
+markdown2
+
+django-cms~=3.5
+djangocms-admin-style
+djangocms-text-ckeditor
+djangocms-grid
+django-filer
+cmsplugin-filer
+django-filebrowser-no-grappelli~=3.6
+
+django-markitup~=3.0
+python-decouple
+
+# payments
+stripe
+django-paypal
+
+# I don't think we use this anywhere anymore...
+django-xmlrpc
+django-rosetta
+django-crontab
+
+WeasyPrint
+unicodecsv==0.14.1
+
+openpyxl==2.4.8
+ipython
+decorator
+
+lxml   # for currencies
+Jinja2

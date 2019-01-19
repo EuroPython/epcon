@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import functools
 import os.path
@@ -7,10 +7,9 @@ from decorator import decorator
 from django import http
 from django.conf import settings as dsettings
 from django.forms.utils import ErrorDict
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
-from .jsonify import json_dumps
+from common.jsonify import json_dumps
 
 
 def render_to_json(f): # pragma: no cover
@@ -28,7 +27,7 @@ def render_to_json(f): # pragma: no cover
 
         try:
             result = func(*args, **kw)
-        except Exception, e:
+        except Exception as e:
             result = j(str(e))
             status = 500
         else:
@@ -70,10 +69,8 @@ def render_to_template(template):  # pragma: no cover
             if isinstance(output, dict):
                 if request.is_ajax():
                     tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)
-                return render_to_response(tpl,
-                                          output,
-                                          RequestContext(request),
-                                          content_type=ct)
+
+                return render(request, tpl, output, content_type=ct)
             else:
                 return output
         return wrapper

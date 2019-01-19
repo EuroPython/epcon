@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from assopy import models
 from conference import cachef
 from conference.models import Ticket

@@ -1,19 +1,16 @@
-# coding: utf-8
-
-from __future__ import unicode_literals, absolute_import
-
 from pytest import mark
 
 from django.core.urlresolvers import reverse
 
 from email_template.models import Email
 
-from assopy.models import User as AssopyUser
+from assopy.models import AssopyUser
 from assopy.forms import (
     PRIVACY_POLICY_CHECKBOX,
     PRIVACY_POLICY_ERROR
 )
 from conference.models import CaptchaQuestion
+from conference.users import RANDOM_USERNAME_LENGTH
 
 from tests.common_tools import (
     create_homepage_in_cms,
@@ -68,7 +65,7 @@ def test_user_registration(client):
     assert template_used(response, 'assopy/new_account.html')
     assert template_used(response, "assopy/base.html")
     assert template_used(response, "p3/base.html")
-    assert PRIVACY_POLICY_CHECKBOX in response.content
+    assert PRIVACY_POLICY_CHECKBOX in response.content.decode('utf-8')
 
     assert AssopyUser.objects.all().count() == 0
 
@@ -106,15 +103,17 @@ def test_user_registration(client):
     assert user.name() == "Joe Doe"
 
     assert not user.user.is_active
+    # check if the random username was generated
+    assert len(user.user.username) == RANDOM_USERNAME_LENGTH
 
     is_logged_in = client.login(email="joedoe@example.com",
                                 password='password')
     assert not is_logged_in  # user is inactive
 
-    response = client.get('/', follow=True)  # will redirect to /en/
-    assert template_used(response, 'django_cms/p5_homepage.html')
-    assert 'Joe Doe' not in response.content
-    assert 'Log out' not in response.content
+    response = client.get('/')
+    assert template_used(response, 'ep19/homepage.html')
+    assert 'Joe Doe' not in response.content.decode('utf-8')
+    assert 'Log out' not in response.content.decode('utf-8')
 
     # enable the user
     user.user.is_active = True
@@ -124,11 +123,11 @@ def test_user_registration(client):
                                 password='password')
     assert is_logged_in
 
-    response = client.get('/', follow=True)  # will redirect to /en/
-    assert template_used(response, 'django_cms/p5_homepage.html')
+    response = client.get('/')
+    assert template_used(response, 'ep19/homepage.html')
     # checking if user is logged in.
-    assert 'Joe Doe' in response.content
-    assert 'Log out' in response.content
+    assert 'Joe Doe' in response.content.decode('utf-8')
+    assert 'Log out' in response.content.decode('utf-8')
 
 
 @mark.django_db

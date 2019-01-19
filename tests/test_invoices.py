@@ -1,9 +1,9 @@
 # coding: utf-8
-from __future__ import unicode_literals, absolute_import
+
 
 import csv
 import decimal
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 import random
 import json
@@ -14,15 +14,15 @@ from pytest import mark
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.conf import settings
+from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
 import responses
 
 from assopy.models import Country, Invoice, Order, Vat
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-# from common.http import PdfResponse
 from conference.models import AttendeeProfile, Ticket, Fare
 from conference import settings as conference_settings
 from conference import invoicing  # for monkey patching below
@@ -33,7 +33,6 @@ from conference.invoicing import (
     VAT_NOT_AVAILABLE_PLACEHOLDER,
     upgrade_invoice_placeholder_to_real_invoice,
     CSV_2018_REPORT_COLUMNS,
-    # render_invoice_as_html,
 )
 from conference.currencies import (
     DAILY_ECB_URL,
@@ -75,7 +74,7 @@ def _prepare_invoice_for_basic_test(order_code, invoice_code):
     # create some random Vat instance to the invoice creation works
     vat_10 = Vat.objects.create(value=10)
 
-    Invoice.objects.create(
+    return Invoice.objects.create(
         code=invoice_code,
         order=order,
         emit_date=date.today(),
@@ -99,7 +98,7 @@ def test_invoice_html(client):
     })
     response = client.get(invoice_url)
 
-    assert response.content == '<html>Here goes full html</html>'
+    assert response.content.decode('utf-8') == '<html>Here goes full html</html>'
 
 
 @mark.django_db
@@ -146,12 +145,12 @@ def test_592_dont_display_invoices_for_years_before_2018(client):
 
     order2017 = Order(user=assopy_user, code=order_code_2017)
     order2017.save()
-    order2017.created = date(2017, 12, 31)
+    order2017.created = timezone.make_aware(datetime(2017, 12, 31))
     order2017.save()
 
     order2018 = Order(user=assopy_user, code=order_code_2018)
     order2018.save()
-    order2018.created = date(2018, 1, 1)
+    order2018.created = timezone.make_aware(datetime(2018, 1, 1))
     order2018.save()
 
     Invoice.objects.create(
@@ -219,7 +218,7 @@ def test_invoices_from_buying_tickets(client):
     cart_url = reverse('p3-cart')
     response = client.get(cart_url)
     assert template_used(response, "p3/cart.html")
-    assert 'Sorry, no tickets are available' in response.content
+    assert 'Sorry, no tickets are available' in response.content.decode('utf-8')
 
     # 3. p3/cart.html is using {% fares_available %} assignment tag to display
     # fares.  For more details about fares check conference/fares.py
@@ -312,7 +311,7 @@ def test_invoices_from_buying_tickets(client):
     # no invoices
     assert Invoice.objects.all().count() == 0
     # static date, because of #592 choosing something in 2018
-    SOME_RANDOM_DATE = date(2018, 1, 1)
+    SOME_RANDOM_DATE = timezone.make_aware(datetime(2018, 1, 1))
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
 
@@ -340,15 +339,15 @@ def test_invoices_from_buying_tickets(client):
     expected_invoice_items_vat_10 = [
         {'count': ticket_amount,
          'price': ticket_price * ticket_amount,
-         'code': u'TRSP',
-         'description': u'ep2018 - Regular Standard Personal'},
+         'code': 'TRSP',
+         'description': 'ep2018 - Regular Standard Personal'},
     ]
 
     expected_invoice_items_vat_20 = [
         {'count': social_event_amount,
          'price': social_event_price * social_event_amount,
          'code':  SOCIAL_EVENT_FARE_CODE,
-         'description': u'ep2018 - Social Event'},
+         'description': 'ep2018 - Social Event'},
     ]
 
     assert sequence_equals(invoice_vat_10.invoice_items(),
@@ -400,7 +399,6 @@ def test_invoices_from_buying_tickets(client):
 
 
 def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
-    today = date.today()
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
 
     with responses.RequestsMock() as rsps:
@@ -408,7 +406,7 @@ def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
         rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
         fetch_and_store_latest_ecb_exrates()
 
-    order.confirm_order(today)
+    order.confirm_order(timezone.now())
 
     # confirm_order by default creates placeholders, but for most of the tests
     # we can upgrade them to proper invoices anyway.
@@ -557,7 +555,7 @@ def test_create_invoice_with_many_items(client):
     # Don't need to set dates for this test.
     # set_early_bird_fare_dates(CONFERENCE, yesterday, tomorrow)
     # set_regular_fare_dates(CONFERENCE, yesterday, tomorrow)
-    random_fares = random.sample(Fare.objects.all(), 3)
+    random_fares = random.sample(list(Fare.objects.all()), 3)
 
     order = OrderFactory(user=user.assopy_user, items=[
         (fare, {'qty': i}) for i, fare in enumerate(random_fares, 1)
@@ -567,7 +565,7 @@ def test_create_invoice_with_many_items(client):
         rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
         fetch_and_store_latest_ecb_exrates()
 
-    order.confirm_order(date.today())
+    order.confirm_order(timezone.now())
     # invoice = Invoice.objects.get()
     # serve_response(PdfResponse(
     #     filename="some-invoice.pdf",
@@ -646,7 +644,7 @@ def test_export_invoice_csv(client):
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
 
-    invoice_reader = csv.reader(response.content.splitlines())
+    invoice_reader = csv.reader(response.content.decode('utf-8').splitlines())
     next(invoice_reader)  # skip header
     invoice = next(invoice_reader)
 
@@ -695,7 +693,7 @@ def test_export_invoice_csv_before_period(client):
     assert response.status_code == 200
     assert response['content-type'] == 'text/csv'
 
-    invoice_reader = csv.reader(response.content.splitlines())
+    invoice_reader = csv.reader(response.content.decode('utf-8').splitlines())
     header = next(invoice_reader)
     assert header == CSV_2018_REPORT_COLUMNS
     assert next(invoice_reader, None) is None
@@ -729,7 +727,7 @@ def test_export_invoice(client):
     assert response.status_code == 200
     assert response['content-type'].startswith('text/html')
 
-    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content
+    assert '<tr id="invoice_{0}">'.format(invoice1.id) in response.content.decode('utf-8')
 
 
 @mark.django_db
@@ -768,3 +766,25 @@ def test_export_invoice_accounting_json(client):
     assert decimal.Decimal(data[0]['gross']) == invoice1.price
     assert data[0]['order'] == invoice1.order.code
     assert data[0]['stripe'] == invoice1.order.stripe_charge_id
+
+
+def test_reissue_invoice(admin_client):
+    invoice_code, order_code = 'I123', 'asdf'
+    invoice = _prepare_invoice_for_basic_test(order_code, invoice_code)
+
+    NEW_CUSTOMER = 'NEW CUSTOMER'
+    assert Invoice.objects.all().count() == 1
+    assert NEW_CUSTOMER not in Invoice.objects.latest('id').html
+
+    url = reverse('debug_panel_reissue_invoice', args=[invoice.id])
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    response = admin_client.post(url, {
+        'emit_date': '2018-01-01',
+        'customer': NEW_CUSTOMER,
+    })
+    assert response.status_code == 302
+
+    assert Invoice.objects.all().count() == 2
+    assert NEW_CUSTOMER in Invoice.objects.latest('id').html

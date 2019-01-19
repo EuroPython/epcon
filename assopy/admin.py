@@ -1,24 +1,39 @@
-# -*- coding: utf-8 -*-
+
+from collections import defaultdict
+import csv
+from io import StringIO
+
 from django import forms
 from django import http
-from django import template
 from django.conf import settings as dsettings
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
+from django.contrib import auth
+from django.contrib.admin.utils import quote
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 from django.core import urlresolvers
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect
+from django.template import Template, Context
+from django.template.response import TemplateResponse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
+
+from assopy import dataaccess as assopy_dataaccess
+from assopy import forms as assopy_forms
 from assopy import models
-from collections import defaultdict
-from datetime import datetime
+from assopy import stats
+from conference import admin as cadmin
+from conference.models import Conference, Fare
+from conference.settings import CONFERENCE
+
 
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('printable_name', 'vat_company', 'vat_company_verify', 'vat_person')
     list_editable = ('vat_company', 'vat_company_verify', 'vat_person')
     search_fields = ('name', 'printable_name', 'iso', 'numcode')
 
-admin.site.register(models.Country, CountryAdmin)
 
 class ReadOnlyWidget(forms.widgets.HiddenInput):
 
@@ -30,9 +45,10 @@ class ReadOnlyWidget(forms.widgets.HiddenInput):
 
     def render(self, name, value, attrs=None):
         output = []
-        output.append(u'<span>%s</span>' % (self.display or value))
+        output.append('<span>%s</span>' % (self.display or value))
         output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
-        return mark_safe(u''.join(output))
+        return mark_safe(''.join(output))
+
 
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
@@ -49,6 +65,7 @@ class OrderItemInlineAdmin(admin.TabularInline):
             self.max_num = None
         return super(OrderItemInlineAdmin, self).get_formset(request, obj, **kwargs)
 
+
 class OrderAdminForm(forms.ModelForm):
     method = forms.ChoiceField(choices=(
         ('admin', 'Admin'),
@@ -63,7 +80,7 @@ class OrderAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(OrderAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = models.User.objects.all().select_related('user')
+        self.fields['user'].queryset = models.AssopyUser.objects.all().select_related('user')
         if self.initial:
             self.fields['method'].initial = self.instance.method
 
@@ -157,7 +174,6 @@ class OrderAdmin(admin.ModelAdmin):
     _total_payed.short_description = 'Payed'
 
     def _invoice(self, o):
-        from django.contrib.admin.utils import quote
         output = []
         # MAL: PDF generation is slower, so default to HTML
         if 1 or dsettings.DEBUG:
@@ -181,23 +197,21 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(OrderAdmin, self).get_urls()
-        f = self.admin_site.admin_view
-        my_urls = patterns('',
-            url(r'^invoices/$', f(self.edit_invoices), name='assopy-edit-invoices'),
-            url(r'^stats/$', f(self.stats), name='assopy-order-stats'),
-            url(r'^vouchers/$', f(self.vouchers), name='assopy-order-vouchers'),
-            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', f(self.vouchers_fare), name='assopy-order-vouchers-fare'),
-        )
+        admin_view = self.admin_site.admin_view
+        my_urls = [
+            url(r'^invoices/$', admin_view(self.edit_invoices), name='assopy-edit-invoices'),
+            url(r'^stats/$', admin_view(self.stats), name='assopy-order-stats'),
+            url(r'^vouchers/$', admin_view(self.vouchers), name='assopy-order-vouchers'),
+            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', admin_view(self.vouchers_fare), name='assopy-order-vouchers-fare'),
+        ]
         return my_urls + urls
 
     def vouchers(self, request):
-        from conference.models import Fare
         ctx = {
             'fares': Fare.objects\
                 .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
         }
-        return render_to_response(
-            'admin/assopy/order/vouchers.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'admin/assopy/order/vouchers.html', ctx)
 
     def vouchers_fare(self, request, conference, fare):
         items = models.OrderItem.objects\
@@ -207,8 +221,7 @@ class OrderAdmin(admin.ModelAdmin):
         ctx = {
             'items': items,
         }
-        return render_to_response(
-            'admin/assopy/order/vouchers_fare.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'admin/assopy/order/vouchers_fare.html', ctx)
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset ]
@@ -221,13 +234,13 @@ class OrderAdmin(admin.ModelAdmin):
 
     def edit_invoices(self, request):
         try:
-            ids = map(int, request.GET['id'].split(','))
+            ids = [int(el) for el in request.GET['id'].split(',')]
         except KeyError:
             return http.HttpResponseBadRequest('orders id missing')
         except ValueError:
             return http.HttpResponseBadRequest('invalid id list')
         orders = models.Order.objects.filter(id__in=ids)
-        if not orders.count():
+        if not orders.exists():
             return redirect('admin:assopy_order_changelist')
 
         class FormPaymentDate(forms.Form):
@@ -248,11 +261,9 @@ class OrderAdmin(admin.ModelAdmin):
             'form': form,
             'ids': request.GET.get('id'),
         }
-        return render_to_response('assopy/admin/edit_invoices.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'assopy/admin/edit_invoices.html', ctx)
 
     def stats_conference(self, conf):
-        from assopy import stats
-        from django.template import Template, Context
 
         l = (
             stats.movimento_cassa,
@@ -283,7 +294,6 @@ class OrderAdmin(admin.ModelAdmin):
         return output
 
     def stats(self, request):
-        from conference.models import Conference
 
         ctx = {
             'conferences': [],
@@ -291,9 +301,8 @@ class OrderAdmin(admin.ModelAdmin):
         for c in Conference.objects.order_by('-conference_start')[:3]:
             ctx['conferences'].append((c, self.stats_conference(c)))
 
-        return render_to_response('assopy/admin/order_stats.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'assopy/admin/order_stats.html', ctx)
 
-admin.site.register(models.Order, OrderAdmin)
 
 class CouponAdminForm(forms.ModelForm):
     class Meta:
@@ -302,13 +311,12 @@ class CouponAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CouponAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = models.User.objects\
+        self.fields['user'].queryset = models.AssopyUser.objects\
             .all()\
             .select_related('user')\
             .order_by('user__first_name', 'user__last_name')
 
         if self.instance:
-            from conference.models import Fare
             if self.instance.pk:
                 self.fields['fares'].queryset = Fare.objects.filter(conference=self.instance.conference_id)
             else:
@@ -316,6 +324,7 @@ class CouponAdminForm(forms.ModelForm):
 
     def clean_code(self):
         return self.cleaned_data['code'].upper()
+
 
 class CouponValidListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -344,6 +353,7 @@ class CouponValidListFilter(admin.SimpleListFilter):
                if bool(coupon.valid(coupon.user)) is result]
         return queryset.filter(id__in=ids)
 
+
 class CouponAdmin(admin.ModelAdmin):
     list_display = ('code', 'value', 'start_validity', 'end_validity', 'max_usage', 'items_per_usage', '_user', '_valid', '_usage')
     search_fields = ('code', 'user__user__first_name', 'user__user__last_name', 'user__user__email',)
@@ -359,7 +369,7 @@ class CouponAdmin(admin.ModelAdmin):
         return qs
 
     def changelist_view(self, request, extra_context=None):
-        if not request.GET.has_key('conference__code__exact'):
+        if 'conference__code__exact' not in request.GET:
             q = request.GET.copy()
             q['conference__code__exact'] = dsettings.CONFERENCE_CONFERENCE
             request.GET = q
@@ -383,22 +393,17 @@ class CouponAdmin(admin.ModelAdmin):
     _valid.short_description = 'valid'
     _valid.boolean = True
 
-admin.site.register(models.Coupon, CouponAdmin)
 
-from django.contrib.auth.models import User as aUser
-from django.contrib.auth.admin import UserAdmin as aUserAdmin
-
-admin.site.unregister(aUser)
-class AuthUserAdmin(aUserAdmin):
-    list_display = aUserAdmin.list_display + ('_doppelganger',)
+class AuthUserAdmin(UserAdmin):
+    list_display = UserAdmin.list_display + ('_doppelganger',)
 
     def get_urls(self):
         f = self.admin_site.admin_view
-        urls = patterns('',
+        urls = [
             url(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
             url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-order'),
             url(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
-        )
+        ]
         return urls + super(AuthUserAdmin, self).get_urls()
 
     def create_doppelganger(self, request, uid):
@@ -408,7 +413,6 @@ class AuthUserAdmin(aUserAdmin):
         user = request.user
         udata = (user.id, '%s %s' % (user.first_name, user.last_name),)
 
-        from django.contrib import auth
         auth.logout(request)
         user = auth.authenticate(uid=uid)
         auth.login(request, user)
@@ -419,7 +423,6 @@ class AuthUserAdmin(aUserAdmin):
     def kill_doppelganger(self, request):
         uid = request.session.pop('doppelganger')[0]
 
-        from django.contrib import auth
         auth.logout(request)
         user = auth.authenticate(uid=uid)
         if user.is_superuser:
@@ -427,13 +430,9 @@ class AuthUserAdmin(aUserAdmin):
         return http.HttpResponseRedirect('/')
 
     def new_order(self, request, uid):
-        from assopy import forms as aforms
-        from conference.models import Fare
-        from conference.settings import CONFERENCE
+        user = get_object_or_404(models.AssopyUser, user=uid)
 
-        user = get_object_or_404(models.User, user=uid)
-
-        class FormTickets(aforms.FormTickets):
+        class FormTickets(assopy_forms.FormTickets):
             coupon = forms.CharField(label='Coupon(s)', required=False)
             country = forms.CharField(max_length=2, required=False)
             address = forms.CharField(max_length=150, required=False)
@@ -495,7 +494,7 @@ class AuthUserAdmin(aUserAdmin):
             'user': user,
             'form': form,
         }
-        return render_to_response('admin/auth/user/new_order.html', ctx, context_instance=template.RequestContext(request))
+        return TemplateResponse(request, 'admin/auth/user/new_order.html', ctx)
 
     def _doppelganger(self, o):
         url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
@@ -504,17 +503,16 @@ class AuthUserAdmin(aUserAdmin):
     _doppelganger.short_description = 'Doppelganger'
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        from assopy import dataaccess
         ctx = extra_context or {}
-        ctx['user_data'] = dataaccess.all_user_data(object_id)
-        return super(AuthUserAdmin, self).change_view(request, object_id, form_url, ctx)
+        ctx['user_data'] = assopy_dataaccess.all_user_data(object_id)
+        return super().change_view(request, object_id, form_url, ctx)
 
-admin.site.register(aUser, AuthUserAdmin)
 
 class RefundAdminForm(forms.ModelForm):
     class Meta:
         model = models.Refund
         exclude = ('done', 'invoice', 'credit_note')
+
 
 class RefundAdmin(admin.ModelAdmin):
     list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_cnote', '_items', '_total', 'created', 'done')
@@ -635,7 +633,7 @@ class RefundAdmin(admin.ModelAdmin):
                     cn = models.CreditNote(assopy_id=item['assopy_id'])
                     total = sum(refund.items.all().values_list('price', flat=True))
                     cn.price = total
-                    cn.emit_date = datetime.now()
+                    cn.emit_date = timezone.now()
                     cn.code = item['code']
                     cn.invoice = item['invoice']
                     cn.save()
@@ -655,8 +653,6 @@ class RefundAdmin(admin.ModelAdmin):
         # in maniera speaciale
         models.refund_event.send(sender=refund, old=refund.old_status, tickets=refund.old_tickets)
 
-admin.site.register(models.Refund, RefundAdmin)
-
 
 class InvoiceAdminForm(forms.ModelForm):
     class Meta:
@@ -668,9 +664,10 @@ class InvoiceAdminForm(forms.ModelForm):
             'order' : ReadOnlyWidget
         }
 
+
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ('do_csv_invoices',)
-    list_display = ('__unicode__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
+    list_display = ('__str__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
     date_hierarchy = 'payment_date'
     search_fields = (
         'code', 'order__code', 'order__card_name',
@@ -712,8 +709,6 @@ class InvoiceAdmin(admin.ModelAdmin):
             return super(InvoiceAdmin, self).has_delete_permission(request, obj)
 
     def do_csv_invoices(self, request, queryset):
-        import csv
-        from cStringIO import StringIO
         columns = (
                 'numero', 'Card name',
                 'Customer:tipo IVA', 'Customer:Customer Type',
@@ -757,18 +752,11 @@ class InvoiceAdmin(admin.ModelAdmin):
     do_csv_invoices.short_description = 'Download invoices as csv'
 
 
-admin.site.register(models.Invoice,InvoiceAdmin)
-
-admin.site.register(models.Vat)
-
 class InvoiceLogAdmin(admin.ModelAdmin):
     list_display = (
         'code', 'order', 'invoice','date'
     )
 
-admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
-
-from conference import admin as cadmin
 
 class AssopyFareForm(forms.ModelForm):
     vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
@@ -788,6 +776,7 @@ class AssopyFareForm(forms.ModelForm):
             except  IndexError:
                 pass
         super(AssopyFareForm, self).__init__(*args, **kwargs)
+
 
 class AssopyFareAdmin(cadmin.FareAdmin):
     form = AssopyFareForm
@@ -811,5 +800,17 @@ class AssopyFareAdmin(cadmin.FareAdmin):
                 vat_fare.vat = form.cleaned_data['vat']
                 vat_fare.save()
 
+
 admin.site.unregister(cadmin.models.Fare)
 admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
+
+admin.site.unregister(User)
+admin.site.register(User, AuthUserAdmin)
+
+admin.site.register(models.Country, CountryAdmin)
+admin.site.register(models.Coupon, CouponAdmin)
+admin.site.register(models.Invoice, InvoiceAdmin)
+admin.site.register(models.InvoiceLog, InvoiceLogAdmin)
+admin.site.register(models.Order, OrderAdmin)
+admin.site.register(models.Refund, RefundAdmin)
+admin.site.register(models.Vat)

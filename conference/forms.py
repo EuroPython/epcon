@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+
 from django import forms
 from django.conf import settings as dsettings
 from django.contrib.admin import widgets as admin_widgets
 from django.core import mail
 from django.forms import widgets
 from django.forms.utils import flatatt
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -60,8 +60,8 @@ def validate_tags(tags):
 
     tags_limited = valid_tags[:5]
 
-    tags = u', '.join(tags_limited)
-    log.debug(u'validated tags: {}'.format(tags))
+    tags = ', '.join(tags_limited)
+    log.debug('validated tags: {}'.format(tags))
 
     return tags_limited
 
@@ -74,48 +74,48 @@ class TagWidget(widgets.TextInput):
         )
     media = property(_media)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         else:
-            if not isinstance(value, basestring):
+            if not isinstance(value, str):
                 names = []
                 for v in value:
-                    if isinstance(v, basestring):
+                    if isinstance(v, str):
                         names.append(v)
                     elif isinstance(v, models.ConferenceTag):
                         names.append(v.name)
                     else:
                         names.append(v.tag.name)
                 value = ','.join(names)
-        final_attrs = self.build_attrs(attrs, type='text', name=name)
+        final_attrs = self.build_attrs(attrs, extra_attrs=dict(type='text', name=name))
         final_attrs['class'] = (final_attrs.get('class', '') + ' tag-field').strip()
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = force_unicode(self._format_value(value))
-        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+            final_attrs['value'] = force_text(self._format_value(value))
+        return mark_safe('<input%s />' % flatatt(final_attrs))
 
 class ReadonlyTagWidget(widgets.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         else:
-            if not isinstance(value, basestring):
+            if not isinstance(value, str):
                 names = []
                 for v in value:
-                    if isinstance(v, basestring):
+                    if isinstance(v, str):
                         names.append(v)
                     elif isinstance(v, models.ConferenceTag):
                         names.append(v.name)
                     else:
                         names.append(v.tag.name)
                 value = ','.join(names)
-        final_attrs = self.build_attrs(attrs, type='text', name=name)
+        final_attrs = self.build_attrs(attrs, extra_attrs=dict(type='text', name=name))
         final_attrs['class'] = (final_attrs.get('class', '') + ' readonly-tag-field').strip()
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = force_unicode(self._format_value(value))
-        return mark_safe(u'<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
+            final_attrs['value'] = force_text(self._format_value(value))
+        return mark_safe('<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
 
 # MarkEditWidget we have adapted the code
 # http://tstone.github.com/jquery-markedit/
@@ -136,30 +136,18 @@ class MarkEditWidget(forms.Textarea):
         else:
             attrs = dict(attrs)
         attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
-        return super(MarkEditWidget, self).render(name, value, attrs)
+        return super().render(name, value, attrs)
 
-class AdminMarkEdit(admin_widgets.AdminTextareaWidget, MarkEditWidget):
-    pass
 
-class PseudoRadioWidget(forms.TextInput):
-    def render(self, name, value, attrs=None):
-        pass
 
-class PseudoRadioRenderer(forms.widgets.RadioFieldRenderer):
-    def render(self):
-        h = '<div class="%(class)s" data-value="%(value)s"><span>%(label)s</span></div>'
-        choiches = []
-        for w in self:
-            p = {
-                'class': 'pseudo-radio',
-                'value': w.choice_value,
-                'label': w.choice_label,
-            }
-            if w.is_checked():
-                p['class'] += ' checked'
-            choiches.append(h % p)
-        output = '<div class="pseudo-radio-field"><input type="hidden" name="%s" value="%s" />%s</div>'
-        return mark_safe(output % (self.name, self.value, ''.join(choiches)))
+class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
+    template_name = 'conference/widgets/radio_select.html'
+    option_template_name = 'conference/widgets/radio_select_option.html'
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        return context
+
 
 class TalkBaseForm(forms.Form):
 
@@ -300,7 +288,7 @@ class SubmissionForm(forms.Form):
             })
         data.update(kwargs.get('initial', {}))
         kwargs['initial'] = data
-        super(SubmissionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = user
 
     #@transaction.atomic
@@ -371,7 +359,7 @@ class SpeakerForm(forms.Form):
         widget=forms.Textarea(),)
     ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
 
-_abstract = models.Talk._meta.get_field_by_name('abstracts')[0]
+_abstract = models.Talk._meta.get_field('abstracts')
 
 # This form is used in case the speaker has already proposed a talk
 # and for editing talks
@@ -406,7 +394,7 @@ class TalkForm(forms.ModelForm):
                 data['abstract'] = abstract.body
             data.update(initial)
             kw['initial'] = data
-        super(TalkForm, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
     def save(self, commit=True, speaker=None):
         assert commit, "commit==False not supported yet"
@@ -436,7 +424,7 @@ class TalkForm(forms.ModelForm):
                 level=data['level'],
                 type=data['type']
             )
-        talk = super(TalkForm, self).save(commit=commit)
+        talk = super().save(commit=commit)
         talk.setAbstract(data['abstract'])
 
         if tags:
@@ -467,7 +455,7 @@ class EventForm(forms.ModelForm):
         exclude = ('schedule', 'tracks')
 
     def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['talk'].queryset = models.Talk.objects\
                 .filter(conference=self.instance.schedule.conference)
@@ -475,7 +463,7 @@ class EventForm(forms.ModelForm):
                 .filter(schedule__conference=self.instance.schedule.conference)
 
     def clean(self):
-        data = super(EventForm, self).clean()
+        data = super().clean()
         if not data['talk'] and not data['custom']:
             raise forms.ValidationError('set the talk or the custom text')
         return data
@@ -497,10 +485,10 @@ class ProfileForm(forms.ModelForm):
            initial = kwargs.get('initial', {})
            initial['bio'] = getattr(i.getBio(), 'body', '')
            kwargs['initial'] = initial
-        super(ProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        profile = super(ProfileForm, self).save(commit)
+        profile = super().save(commit)
         profile.setBio(self.cleaned_data.get('bio', ''))
         return profile
 
@@ -508,7 +496,7 @@ class EventBookingForm(forms.Form):
     value = forms.BooleanField(required=False)
 
     def __init__(self, event, user, *args, **kwargs):
-        super(EventBookingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.event = event
         self.user = user
 
@@ -531,7 +519,7 @@ class AdminSendMailForm(forms.Form):
 
     def __init__(self, *args, **kw):
         real = kw.pop('real_usage', True)
-        super(AdminSendMailForm, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
         if real:
             self.fields['send_email'].required = True
 
@@ -632,25 +620,25 @@ class OptionForm(forms.Form):
         choices=(('not-voted', 'To be voted'), ('all', 'All'),),
         required=False,
         initial='not-voted',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     talk_type = forms.ChoiceField(
         choices=settings.TALK_TYPES_TO_BE_VOTED,
         required=False,
         initial='all',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     language = forms.ChoiceField(
         choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
         required=False,
         initial='all',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     order = forms.ChoiceField(
         choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
         required=False,
         initial='vote',
-        widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+        widget=PseudoRadioSelectWidget(),
     )
     tags = TagField(
         required=False,

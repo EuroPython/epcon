@@ -10,9 +10,9 @@ git:
   depth: 1
 
 python:
-  - "2.7"
+  - "3.6"
 
 install:
-  - pip install -r requirements/dev.txt
+  - make install
 
 script: "py.test -c pytest_ci.ini"

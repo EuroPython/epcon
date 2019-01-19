@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 
 import re
 import os
@@ -11,29 +11,28 @@ from collections import defaultdict
 
 from django import dispatch
 from django.conf import settings as dsettings
-from django.contrib import auth
+from django.contrib.auth import get_user_model
 from django.contrib.admin.utils import quote
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.db import models
-from django.db.models.query import QuerySet
+from django.db.models import Q
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from assopy import janrain
 from assopy import settings
 from assopy.utils import send_email
 from common import django_urls
 from conference.currencies import normalize_price
-from conference.models import Ticket
+from conference.models import Ticket, Fare
+from conference.users import generate_random_username
 from email_template import utils
 
 
 log = logging.getLogger('assopy.models')
 
-# if settings.CHECK_DB_SCHEMA:
-#     check_database_schema()
+
 
 def _cache(f):
     """
@@ -50,12 +49,13 @@ def _cache(f):
         return r
     return wrapper
 
+
 def _gravatar(email, size=80, default='identicon', rating='r'):
     # import code for encoding urls and generating md5 hashes
-    import urllib, hashlib
+    import urllib.request, urllib.parse, urllib.error, hashlib
 
     gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({
+    gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,
         'rating': rating,
@@ -63,10 +63,13 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
 
     return gravatar_url
 
+
 COUNTRY_VAT_COMPANY_VERIFY = (
     ('-', 'None'),
     ('v', 'VIES'),
 )
+
+
 class Country(models.Model):
     iso = models.CharField(_('ISO alpha-2'), max_length=2, primary_key=True)
     name = models.CharField(max_length=100)
@@ -81,8 +84,9 @@ class Country(models.Model):
         ordering = ['name']
         verbose_name_plural = 'Countries'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
+
 
 class TokenManager(models.Manager):
     def create(self, ctype='', user=None, payload=''):
@@ -105,6 +109,7 @@ class TokenManager(models.Manager):
             t.delete()
         return t
 
+
 class Token(models.Model, django_urls.UrlMixin):
     """
     modello che mantiene codici univoci, utilizzabili una sola volta, di
@@ -112,7 +117,7 @@ class Token(models.Model, django_urls.UrlMixin):
     """
     token = models.CharField(max_length=36, primary_key=True)
     ctype = models.CharField(max_length=1)
-    user = models.ForeignKey(auth.models.User, null=True)
+    user = models.ForeignKey(get_user_model(), null=True, on_delete=models.CASCADE)
     payload = models.TextField(blank='')
     created = models.DateTimeField(auto_now_add=True)
 
@@ -120,6 +125,7 @@ class Token(models.Model, django_urls.UrlMixin):
 
     def get_url_path(self):
         return reverse('assopy-otc-token', kwargs={'token': self.token})
+
 
 # Segnale emesso quando un nuovo utente viene creato. Il sender è il nuovo
 # utente mentre profile_complete indica se tutti i dati su l'utente sono già
@@ -134,40 +140,70 @@ user_created = dispatch.Signal(providing_args=['profile_complete'])
 user_identity_created = dispatch.Signal(providing_args=['identity'])
 
 
-class UserManager(models.Manager):
+class AssopyUserManager(models.Manager):
+    def _create_user(
+            self, email, password, username=None, first_name='', last_name='',
+            token=False, active=False, assopy_id=None, is_admin=False):
+        if not username:
+            username = generate_random_username()
 
-    def create_user(self, email, first_name='', last_name='', password=None, token=False, active=False, assopy_id=None, send_mail=True):
-        uname = janrain.suggest_username_from_email(email)
-        duser = auth.models.User.objects.create_user(uname, email, password=password)
+        if is_admin:
+            duser = get_user_model().objects.create_superuser(username, email, password=password)
+        else:
+            duser = get_user_model().objects.create_user(username, email, password=password)
+
         duser.first_name = first_name
         duser.last_name = last_name
         duser.is_active = active
         duser.save()
-        user = User(user=duser)
+        user = AssopyUser(user=duser)
+
         if token:
             user.token = str(uuid4())
         if assopy_id is not None:
             user.assopy_id = assopy_id
         user.save()
+
         user_created.send(
             sender=user,
             profile_complete=(password is not None) or (token is not None)
         )
+
+        return user
+
+    def create_user(self, email, password=None, first_name='', last_name='', token=False, active=False, assopy_id=None, send_mail=True):
+        assopy_user = self._create_user(
+            email=email, password=password, first_name=first_name, last_name=last_name,
+            token=token, active=active, assopy_id=assopy_id,
+        )
+
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
-            duser.username, first_name, last_name, email,
+            assopy_user.user.username, first_name, last_name, email,
         )
 
         if send_mail:
             utils.email(
                 'verify-account',
                 ctx={
-                    'user': duser,
-                    'token': Token.objects.create(ctype='v', user=duser),
+                    'user': assopy_user,
+                    'token': Token.objects.create(ctype='v', user=assopy_user.user),
                 },
                 to=[email]
             ).send()
-        return user
+        return assopy_user
+
+    def create_superuser(self, username, email, password):
+        assopy_user = self._create_user(
+            email=email, password=password, username=username,
+            token=False, active=True, assopy_id=None, is_admin=True,
+        )
+
+        log.info('new admin user "%s" created (%s)', assopy_user.user.username, email)
+
+        return assopy_user
+
+
 
 def _fs_upload_to(subdir, attr=None):
     if attr is None:
@@ -180,6 +216,7 @@ def _fs_upload_to(subdir, attr=None):
         return fpath
     return wrapper
 
+
 # segnale emesso quando assopy ha bisogno di conoscere i biglietti assegnati ad
 # un certo utente (il sender).  questo segnale permette ad altre applicazioni
 # di intervenire su questa scelta, se nessuno è in ascolto viene fatta una
@@ -187,13 +224,12 @@ def _fs_upload_to(subdir, attr=None):
 ticket_for_user = dispatch.Signal(providing_args=['tickets'])
 
 
-class User(models.Model):
+class AssopyUser(models.Model):
     """
-    aka. AssopyUser; There are multiple models called 'User', this one, and the
-    bultin django one from django.contrib.auth.models; This model is often
-    referred to in other places as 'AssopyUser' for clarity.
+    The name is meant to differentiate it from the bultin django User model
+     from django.contrib.auth.models; they have a one-to-one relation to each other.
     """
-    user = models.OneToOneField("auth.User", related_name='assopy_user')
+    user = models.OneToOneField(get_user_model(), related_name='assopy_user', on_delete=models.CASCADE)
     token = models.CharField(max_length=36, unique=True, null=True, blank=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True)
 
@@ -206,16 +242,16 @@ class User(models.Model):
     cf_code = models.CharField(
         _('Fiscal Code'), max_length=16, blank=True,
         help_text=_('Needed only for Italian customers'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True, on_delete=models.CASCADE)
     address = models.CharField(
         _('Address and City'),
         max_length=150,
         blank=True,
         help_text=_('Insert the full address, including city and zip code. We will help you through google.'),)
 
-    objects = UserManager()
+    objects = AssopyUserManager()
 
-    def __unicode__(self):
+    def __str__(self):
         name = self.card_name or self.name()
         return 'Assopy user: %s (%s)' % (name, self.id)
 
@@ -233,7 +269,7 @@ class User(models.Model):
 
         https://github.com/EuroPython/epcon/issues/592
         """
-        return self.orders.filter(created__gte=date(2018, 1, 1))
+        return self.orders.filter(created__gte=timezone.make_aware(datetime(2018, 1, 1)))
 
     def tickets(self):
         tickets = []
@@ -244,6 +280,7 @@ class User(models.Model):
 
     def invoices(self):
         return Invoice.objects.filter(order__in=self.orders)
+
 
 class UserIdentityManager(models.Manager):
     def create_from_profile(self, user, profile):
@@ -267,7 +304,7 @@ class UserIdentityManager(models.Manager):
             birthday = profile.get('birthday', '').split('-')
             if birthday[0] == '0000':
                 birthday[0] = '1900'
-            identifier.birthday = date(*map(int, birthday))
+            identifier.birthday = date(*list(map(int, birthday)))
         try:
             identifier.email = profile['verifiedEmail']
         except KeyError:
@@ -284,9 +321,10 @@ class UserIdentityManager(models.Manager):
         user_identity_created.send(sender=user, identity=identifier)
         return identifier
 
+
 class UserIdentity(models.Model):
     identifier = models.CharField(max_length=255, primary_key=True)
-    user = models.ForeignKey(User, related_name='identities')
+    user = models.ForeignKey(AssopyUser, related_name='identities', on_delete=models.CASCADE)
     provider = models.CharField(max_length=255)
     display_name = models.TextField(blank=True)
     gender = models.CharField(max_length=10, blank=True)
@@ -299,17 +337,9 @@ class UserIdentity(models.Model):
 
     objects = UserIdentityManager()
 
-class UserOAuthInfo(models.Model):
-    user = models.ForeignKey(User, related_name='oauth_infos')
-    service = models.CharField(max_length=20)
-    token = models.CharField(max_length=200)
-    secret = models.CharField(max_length=200)
-
-    def __unicode__(self):
-        return u'{0} token for {1}'.format(self.service, self.user)
 
 class Coupon(models.Model):
-    conference = models.ForeignKey('conference.Conference')
+    conference = models.ForeignKey('conference.Conference', on_delete=models.CASCADE)
     code = models.CharField(max_length=10)
     start_validity = models.DateField(null=True, blank=True)
     end_validity = models.DateField(null=True, blank=True)
@@ -318,10 +348,10 @@ class Coupon(models.Model):
     description = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=8, help_text='importo, eg: 10, 15%, 8.5')
 
-    user = models.ForeignKey(User, null=True, blank=True)
-    fares = models.ManyToManyField('conference.Fare', blank=True)
+    user = models.ForeignKey(AssopyUser, null=True, blank=True, on_delete=models.CASCADE)
+    fares = models.ManyToManyField(Fare, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.code, self.value)
 
     def clean(self):
@@ -387,7 +417,7 @@ class Coupon(models.Model):
         apply_to = rows
         fares = set(self.fares.all().values_list('code', flat=True))
         if fares:
-            apply_to = filter(lambda x: x[0].code in fares, apply_to)
+            apply_to = [x for x in apply_to if x[0].code in fares]
 
         if self.items_per_usage:
             # il coupon è valido solo per un numero massimo di item, lo applico
@@ -416,37 +446,31 @@ class Coupon(models.Model):
             discount = guard
         return -1 * discount
 
-class OrderManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+class OrderQuerySet(models.QuerySet):
+    def use_coupons(self, *coupons):
+        return self.filter(orderitem__ticket=None, orderitem__code__in=(c.code for c in coupons))
 
-    class _QuerySet(QuerySet):
-        def use_coupons(self, *coupons):
-            return self.filter(orderitem__ticket=None, orderitem__code__in=(c.code for c in coupons))
+    def conference(self, conference):
+        return self.filter(orderitem__ticket__fare__conference=conference).distinct()
 
-        def conference(self, conference):
-            return self.filter(orderitem__ticket__fare__conference=conference).distinct()
+    def usable(self, include_admin=False):
+        """
+        restituisce tutti gli ordini "usabili", cioè tutti gli ordini con
+        metodo bonifico (a prescindere se risultano pagati o meno) e tutti
+        gli ordini con metodo paypal (o cc) completati.
+        """
+        qs = self.filter(Q(method='bank') | Q(method__in=('cc', 'paypal'), _complete=True))
+        if include_admin:
+            qs = qs.filter(method='admin')
+        return qs
 
-        def usable(self, include_admin=False):
-            """
-            restituisce tutti gli ordini "usabili", cioè tutti gli ordini con
-            metodo bonifico (a prescindere se risultano pagati o meno) e tutti
-            gli ordini con metodo paypal (o cc) completati.
-            """
-            qs = self.filter(models.Q(method='bank')|models.Q(method__in=('cc', 'paypal'), _complete=True))
-            if include_admin:
-                qs = qs.filter(method='admin')
-            return qs
-
-        def total(self, apply_discounts=True):
-            qs = OrderItem.objects.filter(order__in=self)
-            if not apply_discounts:
-                qs = qs.filter(price__gt=0)
-            t = qs.aggregate(t=models.Sum('price'))['t']
-            return t if t is not None else 0
+    def total(self, apply_discounts=True):
+        qs = OrderItem.objects.filter(order__in=self)
+        if not apply_discounts:
+            qs = qs.filter(price__gt=0)
+        t = qs.aggregate(t=models.Sum('price'))['t']
+        return t if t is not None else 0
 
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
 
@@ -545,23 +569,24 @@ class OrderManager(models.Manager):
 
 
 class Vat(models.Model):
-    fares = models.ManyToManyField('conference.fare',
+    fares = models.ManyToManyField(Fare,
                                    through='VatFare',
                                    null=True, blank=True)
     value = models.DecimalField(max_digits=2, decimal_places=0)
     description = models.CharField(null=True, blank=True, max_length=125)
     invoice_notice = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
-        return u"%s%% - %s" % (self.value, self.description or "")
+    def __str__(self):
+        return "%s%% - %s" % (self.value, self.description or "")
 
 
 class VatFare(models.Model):
-    fare = models.ForeignKey('conference.fare')
-    vat = models.ForeignKey(Vat)
+    fare = models.ForeignKey(Fare, on_delete=models.CASCADE)
+    vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
     class Meta:
         unique_together =('fare', 'vat')
+
 
 # segnale emesso quando un ordine, il sender, è stato correttamente registrato
 # in locale e sul backend. `raw_items` è la lista degli item utilizzata per
@@ -588,10 +613,11 @@ ENABLED_ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
 )
 
+
 class Order(models.Model):
     code = models.CharField(max_length=20, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
-    user = models.ForeignKey(User, related_name='orders')
+    user = models.ForeignKey(AssopyUser, related_name='orders', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     method = models.CharField(max_length=6, choices=ORDER_PAYMENT)
     payment_url = models.TextField(blank=True)
@@ -613,7 +639,7 @@ class Order(models.Model):
     cf_code = models.CharField(_('Fiscal Code'), max_length=16, blank=True)
     # la country deve essere null perché un ordine può essere creato via admin
     # e in quel caso non è detto che si conosca
-    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, on_delete=models.CASCADE)
     address = models.CharField(_('Address'), max_length=150, blank=True)
 
     stripe_charge_id = models.CharField(_('Charge Stripe ID'), max_length=64, unique=True, null=True)
@@ -624,9 +650,9 @@ class Order(models.Model):
         null=True,
     )
 
-    objects = OrderManager()
+    objects = OrderQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         msg = 'Order %d' % self.id
         if self.code:
             msg += ' #%s' % self.code
@@ -642,7 +668,7 @@ class Order(models.Model):
             vat_list[i.vat]['vat'] = i.vat
             vat_list[i.vat]['orderItems'].append(i)
             vat_list[i.vat]['price'] += i.price
-        return vat_list.values()
+        return list(vat_list.values())
 
     def complete(self, update_cache=True, ignore_cache=False):
         if self._complete and not ignore_cache:
@@ -731,16 +757,15 @@ class Order(models.Model):
         super(Order, self).delete(**kwargs)
 
 
-
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order)
-    ticket = models.OneToOneField('conference.ticket', null=True, blank=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    ticket = models.OneToOneField('conference.ticket', null=True, blank=True, on_delete=models.CASCADE)
     code = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.CharField(max_length=100, blank=True)
     # aggiungo un campo per iva... poi potra essere un fk ad un altra tabella
     # o venire copiato da conference
-    vat = models.ForeignKey(Vat)
+    vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
     def invoice(self):
         """
@@ -779,6 +804,7 @@ class OrderItem(models.Model):
             return 'direct'
         return 'payment'
 
+
 def _order_feedback(sender, **kwargs):
     rows = [
         'Ordering person: "%s" (%s)' % (sender.user.name(), sender.user.user.email),
@@ -798,25 +824,22 @@ def _order_feedback(sender, **kwargs):
         message='\n'.join(rows),
     )
 
+
 order_created.connect(_order_feedback)
 
 
 class InvoiceLog(models.Model):
     code =  models.CharField(max_length=20, unique=True)
-    order = models.ForeignKey(Order, null=True)
-    invoice = models.ForeignKey('Invoice', null=True)
+    order = models.ForeignKey(Order, null=True, on_delete=models.CASCADE)
+    invoice = models.ForeignKey('Invoice', null=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-
-
-class InvoiceManager(models.Manager):
-    pass
 
 
 class Invoice(models.Model):
 
     PLACEHOLDER_EXRATE_DATE = date(2000, 1, 1)
 
-    order = models.ForeignKey(Order, related_name='invoices')
+    order = models.ForeignKey(Order, related_name='invoices', on_delete=models.CASCADE)
     code = models.CharField(max_length=20, null=True, unique=True)
     assopy_id = models.CharField(max_length=22, unique=True,
                                  null=True, blank=True)
@@ -825,6 +848,8 @@ class Invoice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     issuer = models.TextField()
+    # TODO: backfill that with customer data for previous invoices
+    customer = models.TextField()
     html = models.TextField()
 
     local_currency = models.CharField(max_length=3, default="EUR")
@@ -845,13 +870,11 @@ class Invoice(models.Model):
     # indica il tipo di regime iva associato alla fattura perche vengono
     # generate più fatture per ogni ordine contente orderitems con diverso
     # regime fiscale
-    vat = models.ForeignKey(Vat)
+    vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
     note = models.TextField(
         blank=True,
         help_text='''Testo libero da riportare in fattura; posto al termine delle righe d'ordine riporta di solito gli estremi di legge''')
-
-    objects = InvoiceManager()
 
     def save(self, *args, **kwargs):
         from conference.invoicing import is_real_invoice_code
@@ -881,7 +904,7 @@ class Invoice(models.Model):
     def get_admin_url(self):
         return reverse('admin:assopy_invoice_change', args=[self.id])
 
-    def __unicode__(self):
+    def __str__(self):
         if self.code:
             return ' #%s' % self.code
         else:
@@ -893,7 +916,8 @@ class Invoice(models.Model):
     def invoice_items(self):
         return self.order.orderitem_set.filter(vat=self.vat) \
                                   .values('code','description') \
-                                  .annotate(price=models.Sum('price'), count=models.Count('price')) \
+                                  .annotate(count=models.Count('price'),
+                                            price=models.Sum('price')) \
                                   .order_by('-price')
 
     def vat_value(self):
@@ -926,14 +950,15 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
 
     paypal_payment_was_successful.connect(confirm_order)
 
+
 class CreditNote(models.Model):
-    invoice = models.ForeignKey(Invoice, related_name='credit_notes')
+    invoice = models.ForeignKey(Invoice, related_name='credit_notes', on_delete=models.CASCADE)
     code = models.CharField(max_length=20, unique=True)
     assopy_id =  models.CharField(max_length=22, null=True)
     emit_date = models.DateField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    def __unicode__(self):
+    def __str__(self):
         return ' #%s' % self.code
 
     def note_items(self):
@@ -948,9 +973,10 @@ class CreditNote(models.Model):
     def net_price(self):
         return self.price / (1 + self.invoice.vat.value / 100)
 
+
 class RefundOrderItem(models.Model):
-    orderitem = models.ForeignKey('assopy.OrderItem')
-    refund = models.ForeignKey('assopy.Refund')
+    orderitem = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    refund = models.ForeignKey('assopy.Refund', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('orderitem', 'refund'),)
@@ -967,6 +993,7 @@ class RefundOrderItem(models.Model):
         self.orderitem.ticket.frozen = True
         self.orderitem.ticket.save()
         return out
+
 
 class RefundManager(models.Manager):
     def create_from_orderitem(self, orderitem, reason='', internal_note=''):
@@ -996,12 +1023,14 @@ REFUND_STATUS = (
     ('rejected', 'Rejected'),
     ('refunded', 'Refunded'),
 )
+
+
 class Refund(models.Model):
-    invoice = models.ForeignKey(Invoice, null=True)
+    invoice = models.ForeignKey(Invoice, null=True, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem, through=RefundOrderItem)
     created = models.DateTimeField(auto_now_add=True)
     done = models.DateTimeField(null=True)
-    credit_note = models.OneToOneField(CreditNote, null=True, blank=True)
+    credit_note = models.OneToOneField(CreditNote, null=True, blank=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=8, choices=REFUND_STATUS, default='pending')
     reason = models.CharField(max_length=200, blank=True)
     internal_note = models.TextField(
@@ -1056,7 +1085,7 @@ class Refund(models.Model):
             except Refund.DoesNotExist:
                 pass
         if self.status in ('rejected', 'refunded') and self.status != old:
-            self.done = datetime.now()
+            self.done = now()
         if old and self.status != old:
             o = self.items.all()[0].order
             log.info(
@@ -1093,6 +1122,7 @@ class Refund(models.Model):
 refund_event = dispatch.Signal(providing_args=['old', 'tickets'])
 credit_note_emitted = dispatch.Signal(providing_args=['refund'])
 
+
 def on_credit_note_emitted(sender, **kw):
     refund = kw['refund']
     tpl = 'refund-credit-note'
@@ -1107,7 +1137,9 @@ def on_credit_note_emitted(sender, **kw):
     }
     utils.email(tpl, ctx, to=[items[0].order.user.user.email]).send()
 
+
 credit_note_emitted.connect(on_credit_note_emitted)
+
 
 def on_refund_changed(sender, **kw):
     if sender.status == kw['old']:
@@ -1131,7 +1163,7 @@ def on_refund_changed(sender, **kw):
         pass
     uid = items[0].order.user.user_id
     order = items[0].order
-    mail_items = '\n'.join([ u' * %s - € %s' % (x.description, x.price) for x in items ])
+    mail_items = '\n'.join([ ' * %s - € %s' % (x.description, x.price) for x in items ])
     if sender.status == 'pending':
         message = '''
 User: %s (%s)
@@ -1183,4 +1215,6 @@ Manage link: %s
         )
     elif sender.status == 'refunded':
         sender.emit_credit_note()
+
+
 refund_event.connect(on_refund_changed)

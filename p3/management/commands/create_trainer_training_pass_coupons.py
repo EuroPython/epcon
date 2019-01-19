@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Create training pass coupons for trainers:
 
     Training    - 100%
@@ -87,7 +87,8 @@ class Command(BaseCommand):
                     talk__status='accepted',
                     helper=False)\
             .select_related('talk', 'speaker__user')
-        if _debug: print ('Found %i speakers' % len(qs))
+        if _debug: 
+            print('Found %i speakers' % len(qs))
         for row in qs:
             talk_code = row.talk.type[0]
             if talk_code not in TALK_TYPE_DISCOUNTS:
@@ -134,7 +135,8 @@ class Command(BaseCommand):
                 }
             speakers[row.speaker_id] = entry
 
-        if _debug: print ('%i speakers are eligible' % len(speakers))
+        if _debug: 
+            print('%i speakers are eligible' % len(speakers))
 
         # Valid fares (training pass fares only)
         fares = cmodels.Fare.objects\
@@ -142,9 +144,8 @@ class Command(BaseCommand):
                     ticket_type='conference',
                     code__startswith='TRT')
         if _debug:
-            print ('Found %i fares: %r' % (
-                      len(fares), 
-                      [unicode(f) for f in fares]))
+            print('Found %i fares: %r' % 
+                  (len(fares), [str(f) for f in fares]))
 
         # Get set of existing codes
         codes = set(c['code'] for c in Coupon.objects\
@@ -169,7 +170,7 @@ class Command(BaseCommand):
             # Get coupon data
             coupon_prefix = entry['prefix']
             user = entry['spk'].user
-            name = u'%s %s' % (user.first_name, user.last_name)
+            name = '%s %s' % (user.first_name, user.last_name)
             value = entry['discount']
             title = entry['title']
 
@@ -224,7 +225,8 @@ class Command(BaseCommand):
             if not self.dry_run:
                 c.save()
                 c.fares = fares
-                if _debug: print ('Added fares %r to %r' % (fares, c))
+                if _debug: 
+                    print('Added fares %r to %r' % (fares, c))
             data.append(data_row)
 
         # Output CSV data, UTF-8 encoded
@@ -233,6 +235,6 @@ class Command(BaseCommand):
             'email', 'name', 'prefix', 'code', 'discount', 'donated', 'amount',
             'title', 'duration', 'type', 'admin_type', 'talk_id', 'speaker_id'))
         for row in data:
-            csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+            csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print (u','.join(csv_data).encode('utf-8'))
+            print(','.join(csv_data).encode('utf-8'))

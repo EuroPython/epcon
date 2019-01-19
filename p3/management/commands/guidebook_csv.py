@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Export a Guidebook schedule CSV file with the currently accepted
     talks.
 
@@ -53,7 +53,7 @@ GB_HEADERS = (
 # defaults
 POSTER_START = datetime.datetime(2015,7,21,17,30)
 POSTER_DURATION = datetime.timedelta(minutes=90)
-POSTER_ROOM = u'Exhibition Hall'
+POSTER_ROOM = 'Exhibition Hall'
 
 ### Helpers
 
@@ -64,8 +64,8 @@ def profile_url(user):
 
 def speaker_listing(talk):
 
-    return u', '.join(
-        u'<i>%s %s</i>' % (
+    return ', '.join(
+        '<i>%s %s</i>' % (
             speaker.user.first_name,
             speaker.user.last_name)
         for speaker in talk.get_all_speakers())
@@ -135,9 +135,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
-                   'associated with it; skipping' %
-                   (title, type))
+            print('Talk %r (type %r) does not have an event '
+                  'associated with it; skipping' %
+                  (title, type))
             return
     else:
         time_range = event.get_time_range()
@@ -145,7 +145,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         if tracks:
             room = tracks[0].title
         else:
-            room = u''
+            room = ''
         if talk_events is not None:
             talk_events[event.pk] = event
         
@@ -237,8 +237,8 @@ class Command(BaseCommand):
         data.insert(0, GB_HEADERS)
         with open(csv_file, 'wb') as f:
             for row in data:
-                csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+                csv_data = ('"%s"' % (str(x).replace('"', '""'))
                             for x in row)
-                f.write(u','.join(csv_data).encode('utf-8'))
+                f.write(','.join(csv_data).encode('utf-8'))
                 f.write('\n')
 

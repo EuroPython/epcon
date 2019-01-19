@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Delete users creating by spambots.
 
 """
@@ -33,10 +33,10 @@ class Command(BaseCommand):
 
         # Between June 1-4 2018, a Chinese spammer create 30k fake user
         # accounts
-        spam_users = amodels.User.objects.filter(
+        spam_users = amodels.AssopyUser.objects.filter(
             user__first_name = '金诚送38元',
         )
-        print ('Found %i (potential) spam users.' % len(spam_users))
+        print('Found %i (potential) spam users.' % len(spam_users))
         
         count = 0
         for user in spam_users:
@@ -44,8 +44,8 @@ class Command(BaseCommand):
             # Filter out users with tickets
             tickets = user.tickets()
             if tickets:
-                print ('Spam user %r has %i tickets: skipping.' % (
-                    user.user.get_username(), len(tickets)))
+                print('Spam user %r has %i tickets: skipping.' % 
+                      (user.user.get_username(), len(tickets)))
                 continue
                 
             # Delete user and all related objects
@@ -55,9 +55,9 @@ class Command(BaseCommand):
                 user.user.delete()
             count += 1
             if count % 1000 == 0:
-                print ('Deleted %i spam users.' % count)
+                print('Deleted %i spam users.' % count)
         
         if self.dry_run:
-            print ('Would have deleted %i spam users.' % count)
+            print('Would have deleted %i spam users.' % count)
         else:
-            print ('Deleted %i spam users.' % count)
+            print('Deleted %i spam users.' % count)

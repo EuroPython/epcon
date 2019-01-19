@@ -116,7 +116,7 @@ class TestView(TestCase):
         })
         response = self.client.get(url)
 
-        values = response.context['sids'].values()
+        values = list(response.context['sids'].values())
 
         dict_of_schedule = {
             'conference': schedule.conference,
@@ -133,27 +133,6 @@ class TestView(TestCase):
     def test_p3_schedule_my_schedule(self):
         # p3-schedule-my-schedule -> p3.views.schedule.my_schedule
         url = reverse('p3-schedule-my-schedule')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_sprint_submission(self):
-        # p3-sprint-submission -> p3.views.sprint_submission
-        url = reverse('p3-sprint-submission')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_sprints(self):
-        # p3-sprints -> p3.views.sprints
-        url = reverse('p3-sprints')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_sprint(self):
-        # p3-sprint -> p3.views.sprint
-        url = reverse('p3-sprint')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     

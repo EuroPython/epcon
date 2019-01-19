@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import, print_function
+import http.client
+from urllib.parse import urlparse
 
-import httplib
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from cms.api import create_page
 from conference.models import AttendeeProfile
 from conference.models import Conference
@@ -29,7 +29,10 @@ def template_used(response, template_name, http_status=HTTP_OK):
     """
     assert response.status_code == http_status, response.status_code
     templates = [t.name for t in response.templates if t.name]
-    assert template_name in templates, templates
+    if templates:
+        assert template_name in templates, templates
+    else:
+        assert response.template_name == template_name, response.template_name
     return True
 
 
@@ -60,8 +63,14 @@ def create_homepage_in_cms():
     Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
                                      name=settings.CONFERENCE_CONFERENCE)
     homepage = create_page(
-        title='HOME', template='django_cms/p5_homepage.html', language='en',
-        reverse_id='home', published=True, publication_date=timezone.now())
+        title='HOME',
+        template='django_cms/p5_homepage.html',
+        language='en',
+        reverse_id='home',
+        published=True,
+        publication_date=timezone.now(),
+        in_navigation=True,
+    )
     homepage.set_as_homepage()
 
     return homepage
@@ -101,11 +110,11 @@ def serve_response(response, host='0.0.0.0', port=9876):
     def render(env, start_response):
         status = b'%s %s' % (
             str(response.status_code),
-            httplib.responses[response.status_code]
+            http.client.responses[response.status_code]
         )
         # ._headers is a {'content-type': ('Content-Type', 'text/html')} type
         # of dict, that's why we need just .values
-        start_response(status, response._headers.values())
+        start_response(status, list(response._headers.values()))
         return [response.content]
 
     srv = make_server(host, port, render)
@@ -127,6 +136,19 @@ def sequence_equals(sequence1, sequence2):
     return True
 
 
+def redirects_to(response, url):
+    """
+    Inspired by django's self.assertRedirects
+
+    Useful for confirming the response redirects to the specified url.
+    """
+    is_redirect = response.status_code == 302
+    parsed_url = urlparse(response.get('Location'))
+    is_url = parsed_url.path == url
+
+    return is_redirect and is_url
+
+
 def make_user(email='joedoe@example.com', **kwargs):
     user = auth_factories.UserFactory(
         email=email, is_active=True,
@@ -139,3 +161,9 @@ def make_user(email='joedoe@example.com', **kwargs):
 
 def clear_all_the_caches():
     cache.clear()
+
+
+def is_using_jinja2_template(response):
+    res = response.resolve_template(response.template_name)
+    assert res.backend.name == "jinja2", res.backed.name
+    return True

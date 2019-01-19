@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
+
 from django.conf import settings
 
 try:
     BACKEND = settings.ASSOPY_BACKEND
 except AttributeError:
     BACKEND = None
-
-CHECK_DB_SCHEMA = getattr(settings, 'ASSOPY_CHECK_DB_SCHEMA', True)
 
 SEARCH_MISSING_USERS_ON_BACKEND = getattr(settings, 'ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND', False)
 
@@ -20,11 +18,6 @@ REFUND_EMAIL_ADDRESS = getattr(settings, 'ASSOPY_REFUND_EMAIL_ADDRESS', {
     'credit-note': SEND_EMAIL_TO,
 })
 
-OTC_CODE_HANDLERS = {
-    'v': 'assopy.views.OTCHandler_V',
-    'j': 'assopy.views.OTCHandler_J',
-}
-OTC_CODE_HANDLERS.update(getattr(settings, 'ASSOPY_OTC_CODE_HANDLERS', {}))
 
 
 def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
@@ -32,7 +25,7 @@ def _ASSOPY_NEXT_CREDIT_CODE(credit_note):
     Ritorna Il prossimo codice per una nota di credito
     """
     import datetime
-    import models
+    from . import models
     try:
         last_code = models.CreditNote.objects \
                       .filter(code__startswith='C/%s.' % str(datetime.date.today().year)[2:]) \

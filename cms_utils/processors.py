@@ -11,6 +11,6 @@ def process_templatetags(instance, placeholder, rendered_content, original_conte
 
     try:
         template = Template(rendered_content)
-    except Exception, e:
-        return u'<p><strong>Template Error: {}</strong></p>{}'.format(str(e), rendered_content)
+    except Exception as e:
+        return '<p><strong>Template Error: {}</strong></p>{}'.format(str(e), rendered_content)
     return template.render(context)

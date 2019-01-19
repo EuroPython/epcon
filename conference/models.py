@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import datetime
 import os
 import os.path
@@ -6,12 +6,12 @@ import subprocess
 from collections import defaultdict
 
 from django.conf import settings as dsettings
+from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
-from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.deconstruct import deconstructible
@@ -41,24 +41,19 @@ CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
 
 # ConferenceTag and ConferenceTaggedItem are used to create a "namesapce"
 # for the related tags to a conference.
-class ConferenceTagManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
+class ConferenceTagQuerySet(models.QuerySet):
+    def annotate_with_usage(self):
+        return self.annotate(
+            usage=models.Count('conference_conferencetaggeditem_items')
+        )
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
-
-    class _QuerySet(QuerySet):
-        def annotate_with_usage(self):
-            return self\
-                .annotate(usage=models.Count('conference_conferencetaggeditem_items'))
-        def order_by_usage(self, asc=False):
-            key = 'usage' if asc else '-usage'
-            return self.annotate_with_usage().order_by(key)
+    def order_by_usage(self, asc=False):
+        key = 'usage' if asc else '-usage'
+        return self.annotate_with_usage().order_by(key)
 
 
 class ConferenceTag(TagBase):
-    objects = ConferenceTagManager()
+    objects = ConferenceTagQuerySet.as_manager()
     category = models.CharField(max_length=50, default='', blank=True)
 
     def save(self, **kw):
@@ -73,7 +68,9 @@ class ConferenceTag(TagBase):
         return super(ConferenceTag, self).save(**kw)
 
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
-    tag = models.ForeignKey(ConferenceTag, related_name="%(app_label)s_%(class)s_items")
+    tag = models.ForeignKey(
+        ConferenceTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE
+    )
 
     class Meta:
         verbose_name = _("Tagged Item")
@@ -108,7 +105,7 @@ class Conference(models.Model):
 
     objects = ConferenceManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
     def save(self, *args, **kwargs):
@@ -175,7 +172,7 @@ class Deadline(models.Model):
 
     objects = DeadlineManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "deadline: %s" % (self.date, )
 
     class Meta:
@@ -198,13 +195,13 @@ class Deadline(models.Model):
             if not fallback:
                 raise DeadlineContent.DoesNotExist()
 
-        return contents.values()[0]
+        return list(contents.values())[0]
 
 class DeadlineContent(models.Model):
     """
     Content of a deadline.
     """
-    deadline = models.ForeignKey(Deadline)
+    deadline = models.ForeignKey(Deadline, on_delete=models.CASCADE)
     language = models.CharField(max_length=3)
     headline = models.CharField(max_length=200)
     body = models.TextField()
@@ -244,10 +241,10 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, records.values()[0])
+                return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
 
 class MultilingualContent(models.Model):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
     language = models.CharField(max_length = 3)
@@ -282,7 +279,7 @@ class _fs_upload_to(object):
         return fpath
 
 def postSaveResizeImageHandler(sender, **kwargs):
-    tool = os.path.join(os.path.dirname(conference.__file__), 'utils', 'resize_image.py')
+    tool = os.path.join(os.path.dirname(conference.__file__), 'tools', 'resize_image.py')
     null = open('/dev/null')
     p = subprocess.Popen(
         [tool, settings.STUFF_DIR],
@@ -305,7 +302,7 @@ class AttendeeProfileManager(models.Manager):
                     # The protection from slug like "str-str-str"
                     last = 0
                 continue
-            if counter > last:
+            if last is None or counter > last:
                 last = counter
 
         if last is not None:
@@ -320,7 +317,7 @@ class AttendeeProfileManager(models.Manager):
     def randomUUID(self, length=6):
         import string
         import random
-        return ''.join(random.sample(string.letters + string.digits, length))
+        return ''.join(random.sample(string.ascii_letters + string.digits, length))
 
     # TODO: Use the savepoint.
     # Remember that, at least up to 1.4 django, SQLite backend does not support
@@ -362,17 +359,20 @@ class AttendeeProfileManager(models.Manager):
                 break
         return p
 
-ATTENDEEPROFILE_VISIBILITY = (
-    ('x', 'Private (disabled)'),
-    ('m', 'Participants only'),
-    ('p', 'Public'),
+
+ATTENDEEPROFILE_VISIBILITY = Choices(
+    ('x', "PRIVATE", 'Private (disabled)'),
+    ('m', "PARTICIPANTS_ONLY", 'Participants only'),
+    ('p', "PUBLIC", 'Public'),
 )
+
+
 class AttendeeProfile(models.Model):
     """
     It's the profile of a participant (including the speaker) at the conference, there is a connection
     to the auth.User via a ForeignKey.
     """
-    user = models.OneToOneField('auth.User', primary_key=True)
+    user = models.OneToOneField(get_user_model(), primary_key=True, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
     uuid = models.CharField(max_length=6, unique=True)
 
@@ -396,7 +396,7 @@ class AttendeeProfile(models.Model):
 
     objects = AttendeeProfileManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.slug
 
     def clean(self):
@@ -419,7 +419,7 @@ class Presence(models.Model):
     """
     Presence of a participant in a conference.
     """
-    profile = models.ForeignKey(AttendeeProfile, related_name='presences')
+    profile = models.ForeignKey(AttendeeProfile, related_name='presences', on_delete=models.CASCADE)
     conference = models.CharField(max_length=10)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -441,8 +441,8 @@ class AttendeeLink(models.Model):
     """
     Connection between two participants
     """
-    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1')
-    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2')
+    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1', on_delete=models.CASCADE)
+    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2', on_delete=models.CASCADE)
     message = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -467,11 +467,11 @@ class SpeakerManager(models.Manager):
 
 
 class Speaker(models.Model, UrlMixin):
-    user = models.OneToOneField('auth.User', primary_key=True)
+    user = models.OneToOneField(get_user_model(), primary_key=True, on_delete=models.CASCADE)
 
     objects = SpeakerManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s %s' % (self.user.first_name, self.user.last_name)
 
     def talks(self, conference=None, include_secondary=True, status=None):
@@ -512,34 +512,25 @@ TALK_LEVEL = Choices(
 )
 
 
-class TalkManager(models.Manager):
+class TalkQuerySet(models.QuerySet):
+    def _filter_by_status(self, status, conference=None):
+        assert status in TALK_STATUS._db_values
+        qs = self.filter(status=status)
+        if conference:
+            qs = qs.filter(conference=conference)
+        return qs
 
-    def get_queryset(self):
-        return self._QuerySet(self.model)
+    def proposed(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.proposed, conference=conference)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+    def accepted(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.accepted, conference=conference)
 
-    class _QuerySet(QuerySet):
+    def canceled(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.canceled, conference=conference)
 
-        def _filter_by_status(self, status, conference=None):
-            assert status in TALK_STATUS._db_values
-            qs = self.filter(status=status)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
-
-        def proposed(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.proposed, conference=conference)
-
-        def accepted(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.accepted, conference=conference)
-
-        def canceled(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.canceled, conference=conference)
-
-        def waitlist(self, conference=None):
-            return self._filter_by_status(TALK_STATUS.waitlist, conference=conference)
+    def waitlist(self, conference=None):
+        return self._filter_by_status(TALK_STATUS.waitlist, conference=conference)
 
     def createFromTitle(self, title, sub_title, conference, speaker,
                         prerequisites, abstract_short, abstract_extra,
@@ -708,7 +699,7 @@ class Talk(models.Model, UrlMixin):
     created = models.DateTimeField(auto_now_add=True)
 
     tags = TaggableManager(through=ConferenceTaggedItem)
-    objects = TalkManager()
+    objects = TalkQuerySet.as_manager()
 
     class Meta:
         ordering = ['title']
@@ -717,7 +708,7 @@ class Talk(models.Model, UrlMixin):
         # The duration is taken directly from talk's type, unless it was
         # customized
         if (self.duration == 0 or
-            self.duration in TALK_DURATION.values()):
+            self.duration in list(TALK_DURATION.values())):
             # duration was previously set to a standard value, so update
             # the value to the talk length
             self.duration = TALK_DURATION[self.type]
@@ -727,7 +718,7 @@ class Talk(models.Model, UrlMixin):
             pass
         super(Talk, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
 
     def get_absolute_url(self):
@@ -760,29 +751,23 @@ class Talk(models.Model, UrlMixin):
         return MultilingualContent.objects.getContent(self, 'abstracts', language)
 
 class TalkSpeaker(models.Model):
-    talk = models.ForeignKey(Talk)
-    speaker = models.ForeignKey(Speaker)
+    talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
+    speaker = models.ForeignKey(Speaker, on_delete=models.CASCADE)
     helper = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('talk', 'speaker'),)
 
-class FareManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
-
-    class _QuerySet(QuerySet):
-        def available(self, conference=None):
-            today = datetime.date.today()
-            q1 = models.Q(start_validity=None, end_validity=None)
-            q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
-            qs = self.filter(q1 | q2)
-            if conference:
-                qs = qs.filter(conference=conference)
-            return qs
+class FareQuerySet(models.QuerySet):
+    def available(self, conference=None):
+        today = datetime.date.today()
+        q1 = models.Q(start_validity=None, end_validity=None)
+        q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
+        qs = self.filter(q1 | q2)
+        if conference:
+            qs = qs.filter(conference=conference)
+        return qs
 
 # TODO(artcz) Convert those to Choices for easier enum-like interface
 
@@ -817,9 +802,9 @@ class Fare(models.Model):
     payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
     blob = models.TextField(blank=True)
 
-    objects = FareManager()
+    objects = FareQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.code, self.conference)
 
     class Meta:
@@ -881,16 +866,11 @@ class Fare(models.Model):
             params['tickets'].append(t)
         return params['tickets']
 
-class TicketManager(models.Manager):
-    def get_queryset(self):
-        return self._QuerySet(self.model)
 
-    def __getattr__(self, name):
-        return getattr(self.all(), name)
+class TicketQuerySet(models.QuerySet):
+    def conference(self, conference):
+        return self.filter(fare__conference=conference)
 
-    class _QuerySet(QuerySet):
-        def conference(self, conference):
-            return self.filter(fare__conference=conference)
 
 TICKET_TYPE = (
     ('standard', 'standard'),
@@ -899,13 +879,15 @@ TICKET_TYPE = (
 
 class Ticket(models.Model):
     user = models.ForeignKey(
-        'auth.User',
-        help_text=_('Buyer of the ticket'))
+        get_user_model(),
+        help_text=_('Buyer of the ticket'),
+        on_delete=models.CASCADE
+    )
     name = models.CharField(
         max_length=60,
         blank=True,
         help_text=_('Attendee name, i.e. the person who will attend the conference.'))
-    fare = models.ForeignKey(Fare)
+    fare = models.ForeignKey(Fare, on_delete=models.CASCADE)
     frozen = models.BooleanField(
         default=False,
         verbose_name=_('ticket canceled / invalid / frozen'),
@@ -914,10 +896,11 @@ class Ticket(models.Model):
         )
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
 
-    objects = TicketManager()
+    objects = TicketQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Ticket "%s" (%s)' % (self.fare.name, self.fare.code)
+
 
 class Sponsor(models.Model):
     """
@@ -939,19 +922,22 @@ class Sponsor(models.Model):
     class Meta:
         ordering = ['sponsor']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.sponsor
+
 
 post_save.connect(postSaveResizeImageHandler, sender=Sponsor)
 
+
 class SponsorIncome(models.Model):
-    sponsor = models.ForeignKey(Sponsor)
+    sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
     tags = TagField()
 
     class Meta:
         ordering = ['conference']
+
 
 class MediaPartner(models.Model):
     """
@@ -969,18 +955,21 @@ class MediaPartner(models.Model):
     class Meta:
         ordering = ['partner']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.partner
+
 
 post_save.connect(postSaveResizeImageHandler, sender=MediaPartner)
 
+
 class MediaPartnerConference(models.Model):
-    partner = models.ForeignKey(MediaPartner)
+    partner = models.ForeignKey(MediaPartner, on_delete=models.CASCADE)
     conference = models.CharField(max_length = 20)
     tags = TagField()
 
     class Meta:
         ordering = ['conference']
+
 
 class ScheduleManager(models.Manager):
     def attendees(self, conference, forecast=False):
@@ -1088,6 +1077,7 @@ class ScheduleManager(models.Manager):
 
         return output
 
+
 class Schedule(models.Model):
     """
     Directly into the schedule we have an indication of the conference,
@@ -1106,7 +1096,7 @@ class Schedule(models.Model):
     class Meta:
         ordering = ['date']
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0}: {1}'.format(self.conference, self.date)
 
     def speakers(self):
@@ -1117,7 +1107,7 @@ class Schedule(models.Model):
 
 
 class Track(models.Model):
-    schedule = models.ForeignKey(Schedule)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     track = models.CharField('nome track', max_length=20)
     title = models.TextField('titolo della track', help_text='HTML supportato')
     seats = models.PositiveIntegerField(default=0)
@@ -1125,8 +1115,9 @@ class Track(models.Model):
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.track
+
 
 class EventManager(models.Manager):
     def group_events_by_times(self, events, event=None):
@@ -1144,7 +1135,7 @@ class EventManager(models.Manager):
         def extract_group(event, events):
             group = []
             r0 = event.get_time_range()
-            for ix in reversed(range(len(events))):
+            for ix in reversed(list(range(len(events)))):
                 r1 = events[ix].get_time_range()
                 if r0[0].date() == r1[0].date() and overlap(r0, r1):
                     group.append(events.pop(ix))
@@ -1155,18 +1146,19 @@ class EventManager(models.Manager):
             yield group
         else:
             sorted_events = sorted(
-                filter(lambda x: x.get_duration() > 0, events),
+                [x for x in events if x.get_duration() > 0],
                 key=lambda x: x.get_duration())
             while sorted_events:
                 evt0 = sorted_events.pop()
                 group = [evt0] + extract_group(evt0, sorted_events)
                 yield group
 
+
 class Event(models.Model):
-    schedule = models.ForeignKey(Schedule)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     start_time = models.TimeField()
 
-    talk = models.ForeignKey(Talk, blank=True, null=True)
+    talk = models.ForeignKey(Talk, blank=True, null=True, on_delete=models.CASCADE)
     custom = models.TextField(
         blank=True,
         help_text="title for a custom event (an event without a talk)")
@@ -1182,7 +1174,7 @@ class Event(models.Model):
         max_length=200, blank=True,
         help_text='comma separated list of tags. Something like: special, break, keynote')
     tracks = models.ManyToManyField(Track, through='EventTrack')
-    sponsor = models.ForeignKey(Sponsor, blank=True, null=True)
+    sponsor = models.ForeignKey(Sponsor, blank=True, null=True, on_delete=models.CASCADE)
     video = models.CharField(max_length=1000, blank=True)
 
     bookable = models.BooleanField(default=False)
@@ -1195,7 +1187,7 @@ class Event(models.Model):
     class Meta:
         ordering = ['start_time']
 
-    def __unicode__(self):
+    def __str__(self):
         if self.talk:
             return '%s - %smin' % (self.talk.title, self.talk.duration)
         else:
@@ -1271,20 +1263,23 @@ class Event(models.Model):
         self.id = myid
         return count
 
+
 class EventTrack(models.Model):
-    track = models.ForeignKey(Track)
-    event = models.ForeignKey(Event)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('track', 'event',),)
 
+
 class EventInterest(models.Model):
-    event = models.ForeignKey(Event)
-    user = models.ForeignKey('auth.User')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     interest = models.IntegerField()
 
     class Meta:
         unique_together = (('user', 'event'),)
+
 
 class EventBookingManager(models.Manager):
     def booking_status(self, eid):
@@ -1323,14 +1318,16 @@ class EventBookingManager(models.Manager):
         e.delete()
         signals.event_booked.send(sender=Event, booked=False, event_id=eid, user_id=uid)
 
+
 class EventBooking(models.Model):
-    event = models.ForeignKey(Event)
-    user = models.ForeignKey('auth.User')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     objects = EventBookingManager()
 
     class Meta:
         unique_together = (('user', 'event'),)
+
 
 class Hotel(models.Model):
     """
@@ -1351,54 +1348,11 @@ class Hotel(models.Model):
     modified = models.DateField(auto_now = True)
 
     class Meta:
-        ordering = [ 'name' ]
+        ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
-SPECIAL_PLACE_TYPES = (
-    ('conf-hq', 'Conference Site'),
-    ('pyevents', 'PyEvents'),
-)
-class SpecialPlace(models.Model):
-    name = models.CharField('Name', max_length = 100)
-    address = models.CharField('Address', max_length = 200, default = '', blank = True)
-    type = models.CharField(max_length = 10, choices=SPECIAL_PLACE_TYPES)
-    url = models.URLField(blank = True)
-    email = models.EmailField('Email', blank = True)
-    telephone = models.CharField('Phone', max_length = 50, blank = True)
-    note = models.TextField('note', blank = True)
-    visible = models.BooleanField('visibile', default = True)
-    lng = models.FloatField('longitude', default = 0.0, blank = True)
-    lat = models.FloatField('latitude', default = 0.0, blank = True)
-
-    class Meta:
-        ordering = [ 'name' ]
-
-    def __unicode__(self):
-        return self.name
-
-try:
-    assert settings.GOOGLE_MAPS['key']
-except (KeyError, TypeError, AssertionError):
-    pass
-else:
-    def postSaveHotelHandler(sender, **kwargs):
-        query = sender.objects.exclude(address = '').filter(lng = 0.0).filter(lat = 0.0)
-        for obj in query:
-            data = conference.gmap.geocode(
-                obj.address,
-                settings.GOOGLE_MAPS['key'],
-                settings.GOOGLE_MAPS.get('country')
-            )
-            if data['Status']['code'] == 200:
-                point = data['Placemark'][0]['Point']['coordinates']
-                lng, lat = point[0:2]
-                obj.lng = lng
-                obj.lat = lat
-                obj.save()
-    post_save.connect(postSaveHotelHandler, sender=Hotel)
-    post_save.connect(postSaveHotelHandler, sender=SpecialPlace)
 
 class DidYouKnow(models.Model):
     """
@@ -1406,6 +1360,7 @@ class DidYouKnow(models.Model):
     """
     visible = models.BooleanField('visible', default = True)
     messages = GenericRelation(MultilingualContent)
+
 
 class Quote(models.Model):
     who = models.CharField(max_length=100)
@@ -1417,9 +1372,10 @@ class Quote(models.Model):
     class Meta:
         ordering = ['conference', 'who']
 
+
 class VotoTalk(models.Model):
-    user = models.ForeignKey('auth.User')
-    talk = models.ForeignKey(Talk)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
     vote = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:

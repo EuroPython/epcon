@@ -1,6 +1,8 @@
 import factory
 import factory.django
 
+from django.utils import timezone
+
 from .talk import TalkFactory
 from p3.tests.factories.schedule import ScheduleFactory
 from p3.tests.factories.track import TrackFactory
@@ -12,6 +14,7 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     schedule = factory.SubFactory(ScheduleFactory)
     talk = factory.SubFactory(TalkFactory)
+    start_time = factory.LazyFunction(timezone.now)
 
 
 class EventTrackFactory(factory.django.DjangoModelFactory):

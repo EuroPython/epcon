@@ -6,7 +6,7 @@ from .models import MarkitUpPluginModel
 
 
 class MarkItUpPlugin(CMSPluginBase):
-    name = _(u'MarkItUp')
+    name = _('MarkItUp')
     model = MarkitUpPluginModel
     render_template = 'djangocms_markitup/markitup.html'
 

@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+
 from datetime import datetime
 
 # FIXME: We can use an external library.
 
 def encode(line):
-    if isinstance(line, unicode):
-        line = line.encode('utf-8')
+    if isinstance(line, bytes):
+        line = line.decode('utf-8')
     if not line.endswith('\r\n'):
         line += '\r\n'
     if len(line) > 75:
@@ -39,15 +39,15 @@ def content(name, value, params=None):
                 pvalue = '"%s"' % pvalue
             t.append('%s=%s' % (pname, pvalue))
         name += ';' + ';'.join(t)
-    if isinstance(name, unicode):
-        name = name.encode('utf-8')
-    if isinstance(value, unicode):
-        value = value.encode('utf-8')
-    return encode('%s:%s' % (name, value))
+    if isinstance(name, bytes):
+        name = name.decode('utf-8')
+    if isinstance(value, bytes):
+        value = value.decode('utf-8')
+    return '%s:%s' % (name, value)
 
 def TEXT(value):
-    if isinstance(value, unicode):
-        value = value.encode('utf-8')
+    if isinstance(value, bytes):
+        value = value.decode('utf-8')
     elif not isinstance(value, str):
         value = str(value)
     return value\

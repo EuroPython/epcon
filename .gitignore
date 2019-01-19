@@ -22,7 +22,7 @@ Thumbs.db
 build/
 *.bak
 *~
-Makefile
+Makefile.local
 env.csh
 logs/
 migrate-to-ep2017.sh
@@ -35,3 +35,6 @@ htmlcov/
 coverage.xml
 prof/
 .vagrant
+
+# py.test cache
+.pytest_cache/

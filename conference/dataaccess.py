@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -94,7 +94,6 @@ def sponsor(conf):
     return output
 
 def _i_sponsor(sender, **kw):
-    income = []
     if sender is models.Sponsor:
         income = kw['instance'].sponsorincome_set.all()
     else:
@@ -139,7 +138,7 @@ schedule_data = cache_me(
     key='schedule:%(sid)s')(schedule_data, _i_schedule_data)
 
 def schedules_data(sids):
-    cached = zip(sids, schedule_data.get_from_cache([ (x,) for x in sids ]))
+    cached = list(zip(sids, schedule_data.get_from_cache([ (x,) for x in sids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -189,7 +188,7 @@ def talk_data(tid, preload=None):
             'slug': profile['slug'],
             'helper': r['helper'],
         })
-    speakers.sort()
+    speakers.sort(key=lambda speaker: speaker['id'])
 
     try:
         tags = preload['tags']
@@ -244,7 +243,7 @@ talk_data = cache_me(
     key='talk_data:%(tid)s')(talk_data, _i_talk_data)
 
 def talks_data(tids):
-    cached = zip(tids, talk_data.get_from_cache([ (x,) for x in tids ]))
+    cached = list(zip(tids, talk_data.get_from_cache([ (x,) for x in tids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -364,7 +363,7 @@ speaker_data = cache_me(
     key='speaker_data:%(sid)s')(speaker_data, _i_speaker_data)
 
 def speakers_data(sids):
-    cached = zip(sids, speaker_data.get_from_cache([ (x,) for x in sids ]))
+    cached = list(zip(sids, speaker_data.get_from_cache([ (x,) for x in sids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -520,7 +519,7 @@ def events(eids=None, conf=None):
             .values_list('id', flat=True)\
             .order_by('start_time')
 
-    cached = zip(eids, event_data.get_from_cache([ (x,) for x in eids ]))
+    cached = list(zip(eids, event_data.get_from_cache([ (x,) for x in eids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -643,7 +642,7 @@ profile_data = cache_me(
     key='profile:%(uid)s')(profile_data, _i_profile_data)
 
 def profiles_data(pids):
-    cached = zip(pids, profile_data.get_from_cache([ (x,) for x in pids ]))
+    cached = list(zip(pids, profile_data.get_from_cache([ (x,) for x in pids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -753,7 +752,7 @@ conference_booking_status = cache_me(
 
 def expected_attendance(conference):
     data = models.Schedule.objects.expected_attendance(conference)
-    vals = data.values()
+    vals = list(data.values())
     max_score = max([ x['score'] for x in vals ])
     for x in vals:
         x['score_normalized'] = x['score'] / (max_score or 1)

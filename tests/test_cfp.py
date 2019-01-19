@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from datetime import timedelta
-from httplib import (
+from http.client import (
     OK as HTTP_OK_200,
     # NOT_FOUND as HTTP_NOT_FOUND_404,
     FOUND as HTTP_REDIRECT_302
@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import (
     Conference,
     Talk,

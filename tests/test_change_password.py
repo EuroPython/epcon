@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, absolute_import
+
 
 from pytest import mark
 
@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django_factory_boy import auth as auth_factories
 
 # TODO: clean up this import path
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile
 
 from tests.common_tools import template_used
@@ -46,7 +46,7 @@ def test_change_password(client):
 
     response = client.get(change_password_url)
     assert template_used(response, "registration/password_change_form.html")
-    assert 'Django Administration' not in response.content
+    assert 'Django Administration' not in response.content.decode('utf-8')
 
     response = client.post(change_password_url, {
         'old_password': 'password123',
@@ -55,9 +55,9 @@ def test_change_password(client):
     }, follow=True)
 
     assert template_used(response, "registration/password_change_done.html")
-    assert user_profile_url in response.content
-    assert 'Password change successful' in response.content
-    assert 'Go back to your profile' in response.content
+    assert user_profile_url in response.content.decode('utf-8')
+    assert 'Password change successful' in response.content.decode('utf-8')
+    assert 'Go back to your profile' in response.content.decode('utf-8')
 
     client.logout()
 

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.core.management.base import BaseCommand, CommandError
 from p3 import models
 from assopy import utils
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         
         for p in qs:
             c = utils.geocode_country(p.profile.location)
-            print p.profile.user.email, '-', p.profile.location, '->', c
+            print(p.profile.user.email, '-', p.profile.location, '->', c)
             p.country = c
             p.save()
             time.sleep(1)

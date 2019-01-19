@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 
 from django import forms
 from django.contrib import auth
@@ -17,7 +17,7 @@ log = logging.getLogger('assopy.forms')
 # il motivo per questo abominio?
 # http://code.djangoproject.com/ticket/6362
 def autostrip(cls):
-    fields = [(key, value) for key, value in cls.base_fields.iteritems() if isinstance(value, forms.CharField)]
+    fields = [(key, value) for key, value in cls.base_fields.items() if isinstance(value, forms.CharField)]
     for field_name, field_object in fields:
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
@@ -84,7 +84,7 @@ class Profile(forms.ModelForm):
         label=_('Last Name'),
         max_length=32,)
     class Meta:
-        model = models.User
+        model = models.AssopyUser
         fields = ('first_name', 'last_name')
 
     def __init__(self, *args, **kwargs):
@@ -111,7 +111,7 @@ Profile = autostrip(Profile)
 
 class BillingData(forms.ModelForm):
     class Meta:
-        model = models.User
+        model = models.AssopyUser
         exclude = ('user', 'token', 'assopy_id')
 
     def _required(self, name):
@@ -330,9 +330,9 @@ if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
             return SANDBOX_POSTBACK_ENDPOINT if getattr(dsettings, 'PAYPAL_TEST') else POSTBACK_ENDPOINT
 
         def as_url_args(self):
-            import urllib
+            import urllib.request, urllib.parse, urllib.error
             data = dict(
                         [(f.field.widget.attrs.get('name', f.html_name), f.value())
                          for f in self if f.value()]
                         )
-            return urllib.urlencode(data)
+            return urllib.parse.urlencode(data)

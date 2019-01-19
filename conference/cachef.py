@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.core.cache import cache
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import Signal
@@ -47,9 +47,9 @@ except ImportError:
             if isinstance(arg,str):
                 return arg in arg2value
             return arg in assigned_tuple_params
-        if ismethod(func) and func.im_self is not None:
+        if ismethod(func) and func.__self__ is not None:
             # implicit 'self' (or 'cls' for classmethods) argument
-            positional = (func.im_self,) + positional
+            positional = (func.__self__,) + positional
         num_pos = len(positional)
         num_total = num_pos + len(named)
         num_args = len(args)
@@ -89,7 +89,7 @@ except ImportError:
             assign(varkw, named)
         elif named:
             unexpected = next(iter(named))
-            if isinstance(unexpected, unicode):
+            if isinstance(unexpected, str):
                 unexpected = unexpected.encode(sys.getdefaultencoding(), 'replace')
             raise TypeError("%s() got an unexpected keyword argument '%s'" %
                             (f_name, unexpected))
@@ -153,10 +153,10 @@ class CacheFunction(object):
                     else:
                         keys = invalidate
                 if keys:
-                    if isinstance(keys, basestring):
+                    if isinstance(keys, str):
                         keys = (keys,)
                     prefixed = [ self.prefix + k for k in keys ]
-                    cache.delete_many(map(self.fhash, prefixed))
+                    cache.delete_many(list(map(self.fhash, prefixed)))
                     wrapper.invalidated.send(wrapper, cache_keys=keys)
 
             for s in signals:
@@ -183,7 +183,7 @@ class CacheFunction(object):
                 k = self.fhash(self.fkey(key, func, args, kwargs))
                 cache_keys[k] = (ix, farg)
 
-            results = cache.get_many(cache_keys.keys())
+            results = cache.get_many(list(cache_keys.keys()))
             output = [ self.CACHE_MISS ] * len(fargs)
             for k, v in cache_keys.items():
                 ix = v[0]
@@ -197,7 +197,7 @@ class CacheFunction(object):
         return wrapper
 
     def hash_key(self, key):
-        if isinstance(key, unicode):
+        if isinstance(key, str):
             key = key.encode('utf-8')
         return hashlib.md5(key).hexdigest()
 

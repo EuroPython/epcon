@@ -43,7 +43,7 @@ def talk_access(f): # pragma: no cover
     @functools.wraps(f)
     def wrapper(request, slug, **kwargs):
         tlk = get_object_or_404(models.Talk, slug=slug)
-        if request.user.is_anonymous():
+        if request.user.is_anonymous:
             full_access = False
         elif request.user.is_staff:
             full_access = True
@@ -103,7 +103,7 @@ def profile_access(f): # pragma: no cover
                 if not (settings.VOTING_OPENED(conf, request.user) and settings.VOTING_ALLOWED(request.user)):
                     if profile.visibility == 'x':
                         return http.HttpResponseForbidden()
-                    elif profile.visibility == 'm' and request.user.is_anonymous():
+                    elif profile.visibility == 'm' and request.user.is_anonymous:
                         return http.HttpResponseForbidden()
         return f(request, slug, profile=profile, full_access=full_access, **kwargs)
     return wrapper
