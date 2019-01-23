@@ -294,6 +294,7 @@ INSTALLED_APPS = (
     'assopy.stripe',
     'conference',
     'hcomments',
+    'conversations',
 
     'social.apps.django_app.default',
 
