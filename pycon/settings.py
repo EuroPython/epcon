@@ -253,6 +253,7 @@ INSTALLED_APPS = (
     'assopy.stripe',
     'conference',
     'hcomments',
+    'conversations',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
