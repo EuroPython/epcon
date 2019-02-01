@@ -308,6 +308,7 @@ INSTALLED_APPS = (
     'djangocms_grid',
 
     'compressor',
+    'django_extensions',
 
     'treebeard',
     'cms',
