@@ -1,0 +1,29 @@
+.ep-day-card {
+    font-family: Roboto, sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+
+    display: flex;
+}
+
+.ep-day-card__date {
+    border: 2px solid var(--mdc-theme-primary);
+    font-weight: bold;
+    text-align: center;
+    width: 150px;
+}
+
+.ep-day-card__month {
+    background-color: var(--mdc-theme-primary);
+    color: white;
+    padding: 0.5em 1em;
+}
+
+.ep-day-card__day {
+    padding: 0.5em 1em;
+    font-size: 2em;
+}
+
+.ep-day-card__info {
+    padding: 0.5em 1em;
+}

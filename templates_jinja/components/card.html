@@ -1,10 +1,28 @@
 {% macro card(title, text) -%}
-<div class="mdc-card demo-card">
+<div class="mdc-card">
     <div class="mdc-card__primary-action pv1 ph3" tabindex="0">
-        <div class="demo-card__primary">
-            <h2 class="demo-card__title mdc-typography--headline6">{{ title }}</h2>
-            <h3 class="demo-card__subtitle mdc-typography--subtitle2">{{ text }}</h3>
+        <div>
+            <h2 class="mdc-typography--headline6">{{ title }}</h2>
+            <h3 class="mdc-typography--subtitle2">{{ text }}</h3>
         </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro day_card(day, month, title, text) -%}
+<div class="ep-day-card">
+    <div class="ep-day-card__date">
+        <div class="ep-day-card__month">
+            {{ month }}
+        </div>
+        <div class="ep-day-card__day">
+            {{ day }}
+        </div>
+    </div>
+
+    <div class="ep-day-card__info">
+        <h2 class="mdc-typography--headline6">{{ title }}</h2>
+        <p>{{ text }}</p>
     </div>
 </div>
 {%- endmacro %}
