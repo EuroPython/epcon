@@ -1,0 +1,25 @@
+{%- set sponsors_by_type = {
+    'platinum': [{'name': 'Twitter', 'svg': 'sponsor_1.svg'}],
+    'gold': [{'name': 'Twitter', 'svg': 'sponsor_2.svg'}, {'name': 'Twitter', 'svg': 'sponsor_3.svg'}],
+    'media': [{'name': 'Twitter', 'svg': 'sponsor_4.svg'}],
+} -%}
+
+{% import 'components/typography.html' as typography %}
+
+{% macro list() -%}
+<div class="pv4">
+    {% for type, sponsors in sponsors_by_type.items() %}
+    {{ typography.heading(type, level=3) }}
+
+    <div class="mdc-layout-grid" style="max-width: 1024px;">
+        <div class="mdc-layout-grid__inner">
+        {% for sponsor in sponsors %}
+            <div class="mdc-layout-grid__cell--span-4">
+                {% include 'temp/logos/' + sponsor.svg  %}
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{%- endmacro %}

@@ -3,6 +3,7 @@
 {% import 'components/hero.html' as hero %}
 {% import 'components/eps-logo.html' as eps %}
 {% import 'components/card.html' as card %}
+{% import 'components/sponsors_list.html' as sponsors_list %}
 
 {% block content %}
 
@@ -42,6 +43,7 @@
 	</div>
 </div>
 
+{{ sponsors_list.list() }}
 
 {% if user.is_authenticated %}
 	Logged in as {{ user.first_name }} {{ user.last_name }}
