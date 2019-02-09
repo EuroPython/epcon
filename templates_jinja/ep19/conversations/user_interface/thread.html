@@ -43,6 +43,10 @@ started
     {{ timesince(thread.last_message_date) }} ago
 </em>
 
+{% if thread.metadata %}
+    {% include "ep19/conversations/_thread_metadata_as_table.html" %}
+{% endif %}
+
 <hr>
 
 {% for message in thread.user_visible_messages() %}
@@ -55,13 +59,7 @@ started
 '>
 
 
-{% if render_first_message_as_table and loop.index == 1%}
-    {# Yes, this is super ugly #}
-    {% include "ep19/conversations/_thread_message_as_table.html" %}
-{% else %}
-    {{ message.content }}
-{% endif %}{# render_first_message_as_table #}
-
+{{ message.content }}
 
 
 {% if message.attachments.all() %}
