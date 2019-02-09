@@ -25,7 +25,8 @@ def create_new_finaid_request(
     timestamp = timezone.now()
 
     title = 'Finaid request -- %s' % finaid_data['full_name']
-    content = json_dumps(finaid_data)
+    content = finaid_data.pop('supplements')
+    metadata = json_dumps(finaid_data)
 
     with transaction.atomic():
         thread = Thread.objects.create(
@@ -36,6 +37,7 @@ def create_new_finaid_request(
             status=Thread.STATUS.NEW,
             category=Thread.CATEGORIES.FINAID,
             last_message_date=timestamp,
+            metadata=metadata,
         )
         message = Message.objects.create(
             uuid=uuid.uuid4(),
