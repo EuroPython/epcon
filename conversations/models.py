@@ -1,4 +1,5 @@
 import uuid
+import json
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -96,6 +97,12 @@ class Message(TimeStampedModel):
             not self.is_internal_note,
             not self.is_public_note,
         )
+
+    def json_metadata(self):
+        if self.thread.category == self.thread.CATEGORIES.FINAID:
+            return json.loads(self.content)
+
+        return {}
 
 
 class Attachment(TimeStampedModel):
