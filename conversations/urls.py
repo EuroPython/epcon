@@ -4,6 +4,9 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     url(
-        r"^helpdesk/", include("conversations.helpdesk", namespace="helpdesk")
+        r"^staff/helpdesk/",
+        include(
+            "conversations.helpdesk.staff_panel", namespace="staff_helpdesk"
+        ),
     )
 ]

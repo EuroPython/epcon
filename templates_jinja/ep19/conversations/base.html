@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% import 'components/typography.html' as typography %}
+
+{% block content %}
+<style type="text/css">
+/* temporary style for readability */
+table { margin: 2em 0; width: 100%}
+td { padding: .5em; border: 1px solid #eee; }
+th { padding: .5em; text-align: center; background: #eee }
+
+/* TODO - better names? color blind versions? */
+.status-bg-0 { background-color: green; color: #fff; }
+.status-bg-1 { background-color: green; color: yellow; }
+.status-bg-2 { background-color: pink; }
+.status-bg-3 { background-color: orange; }
+.status-bg-4 { background-color: red; }
+.status-bg-5 { background-color: grey; }
+</style>
+
+<div style='padding-top: 100px; max-width: 1024px; margin: 0 auto'>
+
+    <div id='breadcrumbs' class='mb4'>
+        {# TODO: maybe this should be a macro? #}
+        <a href='#'>Conversations</a>
+        {% block breadcrumbs %}
+        {% endblock %}
+    </div>
+
+    {% block conversations_content %}
+    {% endblock conversations_content %}
+
+
+</div>
+{% endblock content %}

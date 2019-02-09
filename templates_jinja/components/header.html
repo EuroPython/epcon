@@ -3,6 +3,9 @@
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
             <a href="#" class="material-icons mdc-top-app-bar__navigation-icon">menu</a>
             <span class="mdc-top-app-bar__title">EuroPython 2019</span>
+            {% if user.is_authenticated %}
+            <span class="">Logged in as {{ user }}</span>
+            {% endif %}
         </section>
     </div>
 </header>

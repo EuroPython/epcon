@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
 from model_utils import Choices
@@ -47,18 +48,48 @@ class Thread(TimeStampedModel):
     def __str__(self):
         return f'Thread(uuid={self.uuid}, title={self.title})'
 
+    def get_staff_url(self):
+        return reverse("staff_helpdesk:thread", args=[str(self.uuid)])
+
+    def people_involved(self):
+        """
+        Returns list of users involved in this thread
+        """
+        # TODO(artcz) this is probably not an optimla query we might look into
+        # some optimisations here
+        unique_ids = set(
+            self.messages.filter(
+                is_internal_note=False,
+                is_public_note=False,
+            ).values_list('created_by_id', flat=True)
+        )
+
+        involved = User.objects.filter(id__in=unique_ids).order_by('is_staff')
+        return involved
+
 
 class Message(TimeStampedModel):
 
     uuid = models.UUIDField(unique=True)
     created_by = models.ForeignKey(User)
     is_staff_reply = models.BooleanField(default=False)
+    is_internal_note = models.BooleanField(default=False)
+    # this is mostly for logging staus changes, etc.
+    is_public_note = models.BooleanField(default=False)
 
-    thread = models.ForeignKey(Thread)
+    thread = models.ForeignKey(Thread, related_name='messages')
     content = models.TextField()
 
     def __str__(self):
         return 'Message(uuid={self.uuid})'
+
+    def is_user_question(self):
+        """This is an ugly wrapper around other types of booleans"""
+        return all(
+            not self.is_staff_reply,
+            not self.is_internal_note,
+            not self.is_public_note,
+        )
 
 
 class Attachment(TimeStampedModel):
@@ -71,6 +102,7 @@ class Attachment(TimeStampedModel):
         to_field='uuid',
         blank=True,
         null=True,
+        related_name='attachments',
     )
 
     # TODO: upload_to with uuid4 filename to a SR uuid directory
