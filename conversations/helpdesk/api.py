@@ -1,24 +1,11 @@
-
 import uuid
 
 from django.db import transaction
 from django.utils import timezone
-from django.template.response import TemplateResponse
-from django.conf.urls import url
 
-from conversations.models import Conference
+from conference.models import Conference
 
-from .models import Thread, Message
-from .common_actions import get_actionable_threads
-
-
-def get_actionable_helpdesk_threads(conference):
-    """
-    Returns threads that require reply or further work/update from the staff.
-    """
-    return get_actionable_threads(conference).filter(
-        category=Thread.CATEGORIES.HELPDESK
-    )
+from conversations.models import Thread, Message
 
 
 def create_new_support_request(conference, requested_by, title, content,
@@ -75,6 +62,29 @@ def staff_reply_to_thread(thread, replied_by, content):
         thread.last_message_date = timestamp
         thread.save()
 
+        # TODO: attachments(?)
+
+    return msg
+
+
+def staff_add_internal_note(thread, added_by, content):
+    # TODO(artcz) notification?
+    with transaction.atomic():
+        timestamp = timezone.now()
+
+        msg = Message.objects.create(
+            thread=thread,
+            uuid=uuid.uuid4(),
+            created_by=added_by,
+            is_internal_note=True,
+            content=content,
+            created=timestamp,
+            modified=timestamp,
+        )
+        # Don't update the Thread.status, just save the message
+
+        # TODO: attachments(?)
+
     return msg
 
 
@@ -98,21 +108,6 @@ def user_reply_to_thread(thread, content):
         thread.last_message_date = timestamp
         thread.save()
 
+        # TODO: attachments?
+
     return msg
-
-
-def helpdesk_dashboard(request):
-
-    conference = Conference.objects.current()
-    actionable = get_actionable_helpdesk_threads(conference)
-
-    return TemplateResponse(
-        request, "ep19/bs/conversations/helpdesk/dashboard.html", {
-            'actionable': actionable,
-        }
-    )
-
-
-urlpatterns = [
-    url(r'^$', helpdesk_dashboard, name="dashboard"),
-]
