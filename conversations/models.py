@@ -1,5 +1,6 @@
 import uuid
 import json
+from collections import OrderedDict
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -43,6 +44,9 @@ class Thread(TimeStampedModel):
     # This is denormalisation to speed up ordering by last activity
     last_message_date = models.DateTimeField()
 
+    # for json-serialised other data (useful with custom forms)
+    metadata = models.TextField()
+
     class Meta:
         ordering = ['-last_message_date', 'created']
 
@@ -74,6 +78,9 @@ class Thread(TimeStampedModel):
     def user_visible_messages(self):
         return self.messages.filter(is_internal_note=False)
 
+    def json_metadata(self):
+        return json.loads(self.metadata, object_pairs_hook=OrderedDict)
+
 
 class Message(TimeStampedModel):
 
@@ -97,12 +104,6 @@ class Message(TimeStampedModel):
             not self.is_internal_note,
             not self.is_public_note,
         )
-
-    def json_metadata(self):
-        if self.thread.category == self.thread.CATEGORIES.FINAID:
-            return json.loads(self.content)
-
-        return {}
 
 
 class Attachment(TimeStampedModel):

@@ -44,6 +44,11 @@ started
     {{ timesince(thread.last_message_date) }} ago
 </em>
 
+{% if thread.metadata %}
+    {% include "ep19/conversations/_thread_metadata_as_table.html" %}
+{% endif %}
+
+
 <hr>
 
 {% for message in thread.messages.all() %}
@@ -54,7 +59,10 @@ started
 {% if message.is_internal_note %}internal_note{% endif %}
 {% if message.is_public_note %}public_note{% endif %}
 '>
+
 {{ message.content }}
+
+
 {% if message.attachments.all() %}
 <p>
 <strong>Attachments!</strong>

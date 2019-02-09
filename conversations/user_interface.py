@@ -115,9 +115,6 @@ def user_thread(request, thread_uuid):
             "thread": thread,
             "ThreadActions": ThreadActions,
             "user_reply_form": user_reply_form,
-            "render_first_message_as_table": (
-                thread.category == thread.CATEGORIES.FINAID
-            ),
         },
     )
 
@@ -162,8 +159,9 @@ SPEAKER_OR_COACH_CHOICES = Choices(
 
 VOLUNTEER_CHOICES = Choices(
     ('YES', "Yes"),
+    # ('YES_SESSION', "Yes - as session chair"),
+    # ('YES_WG', "Yes - as as work group member"),
     ('NO', "No"),
-    ('OTHER', "Other"),
 )
 
 
