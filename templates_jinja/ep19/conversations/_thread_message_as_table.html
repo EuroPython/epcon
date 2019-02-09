@@ -1,0 +1,8 @@
+<table>
+{% for k, v in message.json_metadata().items() %}
+<tr>
+    <td>{{ k }}</td>
+    <td>{{ v }}</td>
+</tr>
+{% endfor %}
+</table>

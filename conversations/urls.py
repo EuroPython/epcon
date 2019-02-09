@@ -23,10 +23,18 @@ urlpatterns = [
         conversations_staff_homepage,
         name="conversations_staff_homepage"
     ),
+
     url(
         r"^staff/helpdesk/",
         include(
             "conversations.helpdesk.staff_panel", namespace="staff_helpdesk"
         ),
-    )
+    ),
+
+    url(
+        r"^staff/finaid/",
+        include(
+            "conversations.finaid.staff_panel", namespace="staff_finaid"
+        ),
+    ),
 ]

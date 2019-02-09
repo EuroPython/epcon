@@ -131,3 +131,48 @@ class ThreadActions:
 class ThreadFilters:
     order_by_last_message = 'order_by_last_message'
     order_by_status = 'order_by_status'
+
+
+def staff_reply_to_thread(thread, replied_by, content):
+    # TODO(artcz) notification?
+    with transaction.atomic():
+        timestamp = timezone.now()
+
+        msg = Message.objects.create(
+            thread=thread,
+            uuid=uuid.uuid4(),
+            created_by=replied_by,
+            is_staff_reply=True,
+            content=content,
+            created=timestamp,
+            modified=timestamp,
+        )
+
+        thread.status = Thread.STATUS.STAFF_REPLIED
+        thread.last_message_date = timestamp
+        thread.save()
+
+        # TODO: attachments(?)
+
+    return msg
+
+
+def staff_add_internal_note(thread, added_by, content):
+    # TODO(artcz) notification?
+    with transaction.atomic():
+        timestamp = timezone.now()
+
+        msg = Message.objects.create(
+            thread=thread,
+            uuid=uuid.uuid4(),
+            created_by=added_by,
+            is_internal_note=True,
+            content=content,
+            created=timestamp,
+            modified=timestamp,
+        )
+        # Don't update the Thread.status, just save the message
+
+        # TODO: attachments(?)
+
+    return msg
