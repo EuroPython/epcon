@@ -1,4 +1,4 @@
-{% extends "staff_base.html" %}
+{% extends "base.html" %}
 
 {% import 'components/typography.html' as typography %}
 
@@ -22,7 +22,7 @@ th { padding: .5em; text-align: center; background: #eee }
 
     <div id='breadcrumbs' class='mb4'>
         {# TODO: maybe this should be a macro? #}
-        <a href='{{ url("conversations_staff_homepage") }}'>Conversations</a>
+        <a href='{{ url("user_conversations:threads") }}'>Conversations</a>
         {% block breadcrumbs %}
         {% endblock %}
     </div>
