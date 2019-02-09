@@ -1,4 +1,4 @@
-{% extends "ep19/conversations/base.html" %}
+{% extends "ep19/conversations/user_base.html" %}
 {# TODO: different inheritance #}
 
 {% block breadcrumbs %}
@@ -27,6 +27,18 @@
         {% endfor %}{# thread in actionble #}
     </table>
 
+    <p class='mt2'>
     <a href='#'>Start new thread +</a>
+    </p>
+
+    <p class='mt2'>
+    <a href='#'>Ask for finaid $$</a>
+    (note: this should be probably somewhere else, but could be here)
+    </p>
+
+    <p class='mt2'>
+    <a href='#'>Questions about program</a>
+    (this should probably be visible only for people who submited a proposal)
+    </p>
 
 {% endblock conversations_content %}
