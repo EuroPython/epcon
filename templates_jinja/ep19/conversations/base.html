@@ -22,7 +22,7 @@ th { padding: .5em; text-align: center; background: #eee }
 
     <div id='breadcrumbs' class='mb4'>
         {# TODO: maybe this should be a macro? #}
-        <a href='#'>Conversations</a>
+        <a href='{{ url("conversations_staff_homepage") }}'>Conversations</a>
         {% block breadcrumbs %}
         {% endblock %}
     </div>
