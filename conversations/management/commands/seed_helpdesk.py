@@ -8,7 +8,7 @@ from faker import Faker
 
 from conference.models import Conference
 from conversations.models import Thread, Attachment
-from conversations.helpdesk import (
+from conversations.helpdesk.api import (
     create_new_support_request,
     staff_reply_to_thread,
 )
@@ -76,7 +76,9 @@ class Command(BaseCommand):
         thread, _  = create_new_support_request(
             conference,
             users[0],
-            title=fake.sentence(nb_words=6, variable_nb_words=True),
+            title='Attached! ' + fake.sentence(
+                nb_words=6, variable_nb_words=True
+            ),
             content=fake.sentence(nb_words=6, variable_nb_words=True),
             attachments=[attachment1]
         )
