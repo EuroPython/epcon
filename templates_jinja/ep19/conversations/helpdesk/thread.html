@@ -38,6 +38,15 @@ div.message.public_note {
 {{ typography.heading(thread.title, 3, class="mb2") }}
 
 <p>Status: <span class="status-bg-{{ thread.status }}">{{ thread.get_status_display() }}</span></p>
+
+<form method='POST' action='.'>
+    {{ csrf_input }}
+    <input type='hidden' name='{{ ThreadActions.change_priority }}'>
+    {{ change_priority_form }}
+    <input type='submit' value='update priority'>
+</form>
+
+
 started
 <strong title="{{ thread.created }}">{{ timesince(thread.created) }} ago</strong>, last activity
 <em title="{{ thread.last_message_date }}">
@@ -92,7 +101,9 @@ by <strong>@{{ message.created_by }}</strong> <span title="{{ message.created }}
 <form method='POST' action=".">
     <input type='hidden' name='{{ ThreadActions.submit_reply_to_thread }}'>
     {{ csrf_input }}
-    {{ reply_form }}
+    <table>
+    {{ reply_form.as_table() }}
+    </table>
     <input class="text" type="submit" name="" value="Submit reply">
 </form>
 {% else %}

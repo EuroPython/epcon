@@ -9,7 +9,9 @@
 <form method='POST' action='.'>
     {{ csrf_input }}
 
-    {{ new_support_request_form.as_p() }}
+    <table>
+    {{ new_support_request_form.as_table() }}
+    </table>
     <input class="text" type="submit" name="" value="Create new thread">
 
 </form>
