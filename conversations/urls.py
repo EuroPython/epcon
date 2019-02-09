@@ -13,6 +13,12 @@ def conversations_staff_homepage(request):
 
 urlpatterns = [
     url(
+        r"^user/",
+        include(
+            "conversations.user_interface", namespace="user_conversations"
+        ),
+    ),
+    url(
         r"^staff/$",
         conversations_staff_homepage,
         name="conversations_staff_homepage"

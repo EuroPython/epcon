@@ -67,6 +67,9 @@ class Thread(TimeStampedModel):
         involved = User.objects.filter(id__in=unique_ids).order_by('is_staff')
         return involved
 
+    def user_visible_messages(self):
+        return self.messages.filter(is_internal_note=False)
+
 
 class Message(TimeStampedModel):
 
