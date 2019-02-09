@@ -21,7 +21,7 @@ def threads(request):
     threads = Thread.objects.filter(
         conference=Conference.objects.current(),
         created_by=request.user
-    ).order_by()
+    ).order_by('-last_message_date')
 
     return TemplateResponse(
         request, "ep19/conversations/user_interface/threads.html", {
@@ -46,7 +46,8 @@ def user_thread(request, thread_uuid):
     if thread.created_by != request.user:
         raise Http404()
 
-    user_reply_form = UserReplyForm(data=request.POST, files=request.FILES)
+    user_reply_form = UserReplyForm()
+
     if request.method == "POST":
         if ThreadActions.submit_reply_to_thread in request.POST:
             user_reply_form = UserReplyForm(
