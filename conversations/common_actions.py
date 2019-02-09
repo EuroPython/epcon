@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import transaction
+from django.utils import timezone
 
 from .models import Thread, Message
 
@@ -93,7 +94,33 @@ def get_stalled_threads(conference):
     )
 
 
+def user_reply_to_thread(thread, content):
+    # TODO(artcz) notification?
+    with transaction.atomic():
+        timestamp = timezone.now()
+
+        msg = Message.objects.create(
+            thread=thread,
+            uuid=uuid.uuid4(),
+            # NOTE(artcz) not sure if this is always safe assumption
+            created_by=thread.created_by,
+            is_staff_reply=False,
+            content=content,
+            created=timestamp,
+            modified=timestamp,
+        )
+
+        thread.status = Thread.STATUS.USER_REPLIED
+        thread.last_message_date = timestamp
+        thread.save()
+
+        # TODO: attachments?
+
+    return msg
+
+
 class ThreadActions:
+    # TODO: implement separat ThreadStaffActions and ThreadUserActions
     complete_thread = "complete_thread"
     reopen_thread = "reopen_thread"
     submit_reply_to_thread = "submit_reply_to_thread"

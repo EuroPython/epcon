@@ -86,28 +86,3 @@ def staff_add_internal_note(thread, added_by, content):
         # TODO: attachments(?)
 
     return msg
-
-
-def user_reply_to_thread(thread, content):
-    # TODO(artcz) notification?
-    with transaction.atomic():
-        timestamp = timezone.now()
-
-        msg = Message.objects.create(
-            thread=thread,
-            uuid=uuid.uuid4(),
-            # NOTE(artcz) not sure if this is always safe assumption
-            created_by=thread.created_by,
-            is_staff_reply=True,
-            content=content,
-            created=timestamp,
-            modified=timestamp,
-        )
-
-        thread.status = Thread.STATUS.USER_REPLIED
-        thread.last_message_date = timestamp
-        thread.save()
-
-        # TODO: attachments?
-
-    return msg
