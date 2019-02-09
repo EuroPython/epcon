@@ -13,6 +13,7 @@ from conversations.common_actions import (
     ThreadActions,
     user_reply_to_thread,
 )
+from conversations.helpdesk.api import create_new_support_request
 
 
 @login_required
@@ -33,8 +34,28 @@ def threads(request):
 
 @login_required
 def start_new_thread(request):
+
+    form = UserCreateHelpdeskRequestForm()
+
+    if request.method == 'POST':
+        form = UserCreateHelpdeskRequestForm(
+            data=request.POST, files=request.FILES
+        )
+
+        if form.is_valid():
+            thread, _ = create_new_support_request(
+                conference=Conference.objects.current(),
+                requested_by=request.user,
+                title=form.cleaned_data['title'],
+                content=form.cleaned_data['content'],
+                # TODO: attachments
+            )
+            # TODO: messages.succeess
+            return redirect(thread.get_user_url())
+
     return TemplateResponse(
         request, "ep19/conversations/user_interface/start_new_thread.html", {
+            'new_support_request_form': form,
         }
     )
 
@@ -83,4 +104,9 @@ urlpatterns = [
 
 
 class UserReplyForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea)
+
+
+class UserCreateHelpdeskRequestForm(forms.Form):
+    title = forms.CharField()
     content = forms.CharField(widget=forms.Textarea)
