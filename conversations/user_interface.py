@@ -96,10 +96,12 @@ def user_thread(request, thread_uuid):
     user_reply_form = UserReplyForm()
 
     if request.method == "POST":
+
         if ThreadActions.submit_reply_to_thread in request.POST:
             user_reply_form = UserReplyForm(
                 data=request.POST, files=request.FILES
             )
+
             if user_reply_form.is_valid():
                 user_reply_to_thread(
                     thread=thread,

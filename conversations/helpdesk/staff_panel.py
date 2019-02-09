@@ -15,6 +15,7 @@ from conversations.common_actions import (
     reopen_thread,
     staff_reply_to_thread,
     staff_add_internal_note,
+    change_priority,
 )
 
 # TODO: write a proper decorator here
@@ -32,6 +33,9 @@ def inbox(request):
 
     if ThreadFilters.order_by_status in request.GET:
         actionable = actionable.order_by('status')
+
+    if ThreadFilters.order_by_priority in request.GET:
+        actionable = actionable.order_by('priority')
 
     return TemplateResponse(
         request, "ep19/conversations/helpdesk/inbox.html", {
@@ -52,6 +56,9 @@ def all_threads(request):
 
     if ThreadFilters.order_by_status in request.GET:
         all_threads = all_threads.order_by('status')
+
+    if ThreadFilters.order_by_priority in request.GET:
+        all_threads = all_threads.order_by('priority')
 
     return TemplateResponse(
         request, "ep19/conversations/helpdesk/all_threads.html", {
@@ -104,12 +111,19 @@ def thread(request, thread_uuid):
 
             return redirect('.')
 
+        if ThreadActions.change_priority in request.POST:
+            new_priority = int(request.POST['priority'])
+            change_priority(thread, new_priority, request.user)
+
+            return redirect('.')
+
     return TemplateResponse(
         request, "ep19/conversations/helpdesk/thread.html", {
             'ThreadActions': ThreadActions,
             'thread': thread,
             'reply_form': reply_form,
             'internal_note_form': internal_note_form,
+            'change_priority_form': ChangePriorityForm(instance=thread),
         }
     )
 
@@ -147,3 +161,10 @@ class InternalNoteForm(forms.Form):
 
 class ReplyForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea)
+
+
+class ChangePriorityForm(forms.ModelForm):
+
+    class Meta:
+        model = Thread
+        fields = ['priority']

@@ -126,11 +126,13 @@ class ThreadActions:
     submit_reply_to_thread = "submit_reply_to_thread"
     submit_internal_note = "submit_internal_note"
     submit_thread_management = "submit_thread_management"
+    change_priority = "change_priority"
 
 
 class ThreadFilters:
     order_by_last_message = 'order_by_last_message'
     order_by_status = 'order_by_status'
+    order_by_priority = 'order_by_priority'
 
 
 def staff_reply_to_thread(thread, replied_by, content):
@@ -174,5 +176,32 @@ def staff_add_internal_note(thread, added_by, content):
         # Don't update the Thread.status, just save the message
 
         # TODO: attachments(?)
+
+    return msg
+
+
+def change_priority(thread, new_priority, changed_by):
+    assert thread.priority != new_priority
+    assert isinstance(new_priority, int)
+
+    with transaction.atomic():
+        old_priority = thread.priority
+        thread.priority = new_priority
+
+        priority_name = Thread.PRIORITIES[new_priority]
+        if old_priority < thread.priority:
+            content = f"Upgraded priority to {priority_name}"
+        else:
+            content = f"Downgraded priority to {priority_name}"
+
+        msg = Message.objects.create(
+            thread=thread,
+            uuid=uuid.uuid4(),
+            created_by=changed_by,
+            is_internal_note=True,
+            content=content
+        )
+
+        thread.save()
 
     return msg

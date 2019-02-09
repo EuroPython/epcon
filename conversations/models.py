@@ -29,17 +29,25 @@ class Thread(TimeStampedModel):
         (5, 'COMPLETED',     'Completed'),
     )
 
+    PRIORITIES = Choices(
+        (0,   'LOW', 'Low'),
+        (10,  'MEDIUM', 'Medium'),
+        (100, 'HIGH', 'High'),
+    )
+
     # TODO(artcz): Maybe this needs str field, especially if we want shortuuid?
     # + limitations of sqlite, dunno if binary uuid field exists there.
     # + maybe we could use ordered uuid?
-
     uuid = models.UUIDField()
     created_by = models.ForeignKey(User)
     conference = models.ForeignKey(Conference)
+    priority = models.IntegerField(
+        choices=PRIORITIES, default=PRIORITIES.MEDIUM
+    )
 
     title = models.CharField(max_length=255)
     category = models.CharField(max_length=20, choices=CATEGORIES)
-    status = models.IntegerField(choices=STATUS)
+    status = models.IntegerField(choices=STATUS, default=STATUS.NEW)
 
     # This is denormalisation to speed up ordering by last activity
     last_message_date = models.DateTimeField()
