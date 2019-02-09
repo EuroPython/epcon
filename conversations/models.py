@@ -51,6 +51,9 @@ class Thread(TimeStampedModel):
     def get_staff_url(self):
         return reverse("staff_helpdesk:thread", args=[str(self.uuid)])
 
+    def get_user_url(self):
+        return reverse("user_conversations:user_thread", args=[str(self.uuid)])
+
     def people_involved(self):
         """
         Returns list of users involved in this thread

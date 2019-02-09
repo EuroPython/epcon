@@ -1,0 +1,16 @@
+{% extends "ep19/conversations/user_base.html" %}
+{# TODO: different inheritance #}
+
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block conversations_content %}
+
+<form method='POST' action='.'>
+    {{ csrf_input }}
+
+    {{ new_support_request_form.as_p() }}
+    <input class="text" type="submit" name="" value="Create new thread">
+
+</form>
+{% endblock conversations_content %}
