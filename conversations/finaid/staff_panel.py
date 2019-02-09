@@ -1,4 +1,3 @@
-
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf.urls import url
 from django.template.response import TemplateResponse
@@ -18,14 +17,14 @@ from conversations.common_actions import (
 )
 
 # TODO: write a proper decorator here
-helpdesk_staff_access = staff_member_required
+finaid_staff_access = staff_member_required
 
 
-@helpdesk_staff_access
+@finaid_staff_access
 def inbox(request):
 
     conference = Conference.objects.current()
-    actionable = get_actionable_helpdesk_threads(conference)
+    actionable = get_actionable_finaid_threads(conference)
 
     if ThreadFilters.order_by_last_message in request.GET:
         actionable = actionable.order_by('-last_message_date')
@@ -34,18 +33,18 @@ def inbox(request):
         actionable = actionable.order_by('status')
 
     return TemplateResponse(
-        request, "ep19/conversations/helpdesk/inbox.html", {
+        request, "ep19/conversations/finaid/inbox.html", {
             'ThreadFilters': ThreadFilters,
             'actionable': actionable,
         }
     )
 
 
-@helpdesk_staff_access
-def all_threads(request):
+@finaid_staff_access
+def all_finaid_requests(request):
 
     conference = Conference.objects.current()
-    all_threads = get_all_helpdesk_threads(conference)
+    all_threads = get_all_finaid_threads(conference)
 
     if ThreadFilters.order_by_last_message in request.GET:
         all_threads = all_threads.order_by('-last_message_date')
@@ -54,15 +53,15 @@ def all_threads(request):
         all_threads = all_threads.order_by('status')
 
     return TemplateResponse(
-        request, "ep19/conversations/helpdesk/all_threads.html", {
+        request, "ep19/conversations/finaid/all_threads.html", {
             'ThreadFilters': ThreadFilters,
             'all_threads': all_threads,
         }
     )
 
 
-@helpdesk_staff_access
-def thread(request, thread_uuid):
+@finaid_staff_access
+def finaid_request(request, thread_uuid):
 
     thread = Thread.objects.get(uuid=thread_uuid)
     reply_form = ReplyForm()
@@ -105,7 +104,7 @@ def thread(request, thread_uuid):
             return redirect('.')
 
     return TemplateResponse(
-        request, "ep19/conversations/helpdesk/thread.html", {
+        request, "ep19/conversations/finaid/thread.html", {
             'ThreadActions': ThreadActions,
             'thread': thread,
             'reply_form': reply_form,
@@ -116,28 +115,28 @@ def thread(request, thread_uuid):
 
 urlpatterns = [
     url(r"^inbox/$", inbox, name="inbox"),
-    url(r"^all-threads/$", all_threads, name="all_threads"),
+    url(r"^all-requests/$", all_finaid_requests, name="all_finaid_requests"),
 
     url(
-        r"^thread/(?P<thread_uuid>[\w-]+)/$",
-        thread, name="thread",
+        r"^request/(?P<thread_uuid>[\w-]+)/$",
+        finaid_request, name="finaid_request",
     ),
 ]
 
 
-def get_actionable_helpdesk_threads(conference):
+def get_actionable_finaid_threads(conference):
     """
     Returns threads that require reply or further work/update from the staff.
     """
     return get_actionable_threads(conference).filter(
-        category=Thread.CATEGORIES.HELPDESK
+        category=Thread.CATEGORIES.FINAID,
     )
 
 
-def get_all_helpdesk_threads(conference):
+def get_all_finaid_threads(conference):
     return Thread.objects.filter(
         conference=conference,
-        category=Thread.CATEGORIES.HELPDESK,
+        category=Thread.CATEGORIES.FINAID,
     ).order_by('status')
 
 

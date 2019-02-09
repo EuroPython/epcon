@@ -53,7 +53,17 @@ started
 {% if message.is_internal_note %}internal_note{% endif %}
 {% if message.is_public_note %}public_note{% endif %}
 '>
-{{ message.content }}
+
+
+{% if render_first_message_as_table and loop.index == 1%}
+    {# Yes, this is super ugly #}
+    {% include "ep19/conversations/_thread_message_as_table.html" %}
+{% else %}
+    {{ message.content }}
+{% endif %}{# render_first_message_as_table #}
+
+
+
 {% if message.attachments.all() %}
 <p>
 <strong>Attachments!</strong>
