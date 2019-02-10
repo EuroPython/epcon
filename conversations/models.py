@@ -124,11 +124,11 @@ class Message(TimeStampedModel):
 
     def is_user_question(self):
         """This is an ugly wrapper around other types of booleans"""
-        return all(
+        return all([
             not self.is_staff_reply,
             not self.is_internal_note,
             not self.is_public_note,
-        )
+        ])
 
 
 class Attachment(TimeStampedModel):

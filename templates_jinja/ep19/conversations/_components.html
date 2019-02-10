@@ -1,4 +1,12 @@
-{% macro threads_table(ThreadFilters, threads) -%}
+{% macro message_css_classes(message) -%}
+    {% if message.is_user_question() %}user_question{% endif %}
+    {% if message.is_staff_reply %}staff_reply{% endif %}
+    {% if message.is_internal_note %}internal_note{% endif %}
+    {% if message.is_public_note %}public_note{% endif %}
+{%- endmacro %}
+
+
+{% macro staff_threads_table(ThreadFilters, threads) -%}
 {# TODO: make this table nice with material design #}
     <table>
         <tr>
@@ -24,5 +32,17 @@
             </td>
         </tr>
         {% endfor %}{# thread in threads #}
+    </table>
+{%- endmacro %}
+
+
+{% macro thread_metadata_as_table(thread) -%}
+    <table>
+    {% for k, v in thread.json_metadata().items() %}
+    <tr>
+        <td>{{ k }}</td>
+        <td>{{ v }}</td>
+    </tr>
+    {% endfor %}
     </table>
 {%- endmacro %}
