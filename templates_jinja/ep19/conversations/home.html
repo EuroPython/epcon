@@ -14,24 +14,28 @@
 {{ typography.heading("Finaid", 5, class="mt3 mb2") }}
 <p class='mt1 mb4'>
     <a href='{{ url("staff_finaid:inbox") }}'>Inbox</a>
-    <a href='{{ url("staff_finaid:all_finaid_requests") }}'>All Requests</a>
+    <a href='{{ url("staff_finaid:all_finaid_threads") }}'>All Requests</a>
 </p>
 
-{{ typography.heading("Program", 5, class="mt3 mb2") }}
-<p class='mt1 mb4'>
-    <a href='{{ url("staff_helpdesk:inbox") }}'>Inbox</a>
-    <a href='{{ url("staff_helpdesk:all_threads") }}'>All Threads</a>
-</p>
+{% if 0 %}
+    {# TODO - we can add those later #}
 
-{{ typography.heading("Sponsors", 5, class="mt3 mb2") }}
-<p class='mt1 mb4'>
-    <a href='{{ url("staff_helpdesk:inbox") }}'>Inbox</a>
-    <a href='{{ url("staff_helpdesk:all_threads") }}'>All Threads</a>
-</p>
+    {{ typography.heading("Program", 5, class="mt3 mb2") }}
+    <p class='mt1 mb4'>
+        <a href='{{ url("staff_helpdesk:inbox") }}'>Inbox</a>
+        <a href='{{ url("staff_helpdesk:all_threads") }}'>All Threads</a>
+    </p>
 
-{{ typography.heading("Internal", 5, class="mt3 mb2") }}
-<p class='mt1 mb4'>
-    <a href='{{ url("staff_helpdesk:inbox") }}'>Inbox</a>
-    <a href='{{ url("staff_helpdesk:all_threads") }}'>All Threads</a>
-</p>
+    {{ typography.heading("Sponsors", 5, class="mt3 mb2") }}
+    <p class='mt1 mb4'>
+        <a href='{{ url("staff_helpdesk:inbox") }}'>Inbox</a>
+        <a href='{{ url("staff_helpdesk:all_threads") }}'>All Threads</a>
+    </p>
+
+    {{ typography.heading("Internal", 5, class="mt3 mb2") }}
+    <p class='mt1 mb4'>
+        <a href='{{ url("staff_helpdesk:inbox") }}'>Inbox</a>
+        <a href='{{ url("staff_helpdesk:all_threads") }}'>All Threads</a>
+    </p>
+{% endif %}
 {% endblock conversations_content %}
