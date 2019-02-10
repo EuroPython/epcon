@@ -29,6 +29,13 @@ class Thread(TimeStampedModel):
         (5, 'COMPLETED',     'Completed'),
     )
 
+    ACTIONABLE_STATUSES = [
+        STATUS.NEW,
+        STATUS.WAITING,
+        STATUS.REOPENED,
+        STATUS.USER_REPLIED,
+    ]
+
     PRIORITIES = Choices(
         (0,   'LOW', 'Low'),
         (10,  'MEDIUM', 'Medium'),
@@ -62,7 +69,14 @@ class Thread(TimeStampedModel):
         return f'Thread(uuid={self.uuid}, title={self.title})'
 
     def get_staff_url(self):
-        return reverse("staff_helpdesk:thread", args=[str(self.uuid)])
+        if self.category == self.CATEGORIES.HELPDESK:
+            urlname = "staff_helpdesk:thread"
+        elif self.category == self.CATEGORIES.FINAID:
+            urlname = "staff_finaid:single_thread"
+        else:
+            raise NotImplementedError
+
+        return reverse(urlname, args=[str(self.uuid)])
 
     def get_user_url(self):
         return reverse("user_conversations:user_thread", args=[str(self.uuid)])
@@ -88,6 +102,9 @@ class Thread(TimeStampedModel):
 
     def json_metadata(self):
         return json.loads(self.metadata, object_pairs_hook=OrderedDict)
+
+    def is_actionable(self):
+        return self.status in self.ACTIONABLE_STATUSES
 
 
 class Message(TimeStampedModel):

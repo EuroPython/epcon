@@ -4,14 +4,13 @@
 
 {% block breadcrumbs %}
 {{ super() }}
-&raquo; <a href='{{ url("staff_helpdesk:all_threads") }}'>Helpdesk</a>
-&raquo; <span>All threads</span>
-{% endblock %}
+&raquo; <a href='{{ url("staff_finaid:all_finaid_threads") }}'>Finaid</a>
+{% endblock breadcrumbs %}
 
 {% block conversations_content %}
-    <a href="{{ url("staff_helpdesk:inbox") }}">Go to inbox</a>
+    <a href='{{ url("staff_finaid:inbox") }}'>Go to inbox</a>
 
-    {{ typography.heading("All Helpdesk threads", 4, class="mb2") }}
+    {{ typography.heading("All Finaid threads", 4, class="mb2") }}
 
     {{ table.threads_table(ThreadFilters, all_threads) }}
 

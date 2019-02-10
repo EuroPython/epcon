@@ -7,6 +7,7 @@ from conference.models import Conference
 from common.jsonify import json_dumps
 
 from conversations.models import Thread, Message
+from conversations.common_actions import get_actionable_threads
 
 
 def create_new_finaid_request(
@@ -24,7 +25,7 @@ def create_new_finaid_request(
 
     timestamp = timezone.now()
 
-    title = 'Finaid request -- %s' % finaid_data['full_name']
+    title = finaid_data['full_name']
     content = finaid_data.pop('supplements')
     metadata = json_dumps(finaid_data)
 
@@ -54,3 +55,19 @@ def create_new_finaid_request(
             attachment.save()
 
     return thread, message
+
+
+def get_actionable_finaid_threads(conference):
+    """
+    Returns threads that require reply or further work/update from the staff.
+    """
+    return get_actionable_threads(conference).filter(
+        category=Thread.CATEGORIES.FINAID,
+    )
+
+
+def get_all_finaid_threads(conference):
+    return Thread.objects.filter(
+        conference=conference,
+        category=Thread.CATEGORIES.FINAID,
+    ).order_by('status')

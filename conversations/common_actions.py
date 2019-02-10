@@ -70,12 +70,7 @@ def get_actionable_threads(conference):
 
     return Thread.objects.filter(
         conference=conference,
-        status__in=[
-            Thread.STATUS.NEW,
-            Thread.STATUS.WAITING,
-            Thread.STATUS.REOPENED,
-            Thread.STATUS.USER_REPLIED,
-        ]
+        status__in=Thread.ACTIONABLE_STATUSES,
     )
 
 
