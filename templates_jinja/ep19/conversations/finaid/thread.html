@@ -2,7 +2,10 @@
 
 {% block breadcrumbs %}
 {{ super() }}
-&raquo; <a href='{{ url("staff_helpdesk:all_threads") }}'>Helpdesk</a>
+&raquo; <a href='{{ url("staff_finaid:all_finaid_threads") }}'>Finaid</a>
+{% if thread.is_actionable %}
+&raquo; <a href='{{ url("staff_finaid:inbox") }}'>Inbox</a>
+{% endif %}
 &raquo; <a href='#'>{{ thread.title }}</a>
 {% endblock breadcrumbs %}
 
