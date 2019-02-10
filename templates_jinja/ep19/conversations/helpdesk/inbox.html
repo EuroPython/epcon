@@ -1,6 +1,6 @@
 {% extends "ep19/conversations/base.html" %}
 
-{% import "ep19/conversations/_staff_threads_table.html" as table %}
+{% import "ep19/conversations/_components.html" as conversations %}
 
 {% block breadcrumbs %}
 {{ super() }}
@@ -12,7 +12,7 @@
     {{ typography.heading("Helpdesk Inbox", 4, class="mb2") }}
     <p>These are actionable threads – it means either new or replied by the user and waiting for our response/action</p>
 
-    {{ table.threads_table(ThreadFilters, actionable) }}
+    {{ conversations.staff_threads_table(ThreadFilters, actionable) }}
 
     <p>
     Can't see the thread you're looking for?

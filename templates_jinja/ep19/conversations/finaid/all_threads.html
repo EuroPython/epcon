@@ -1,6 +1,6 @@
 {% extends "ep19/conversations/base.html" %}
 
-{% import "ep19/conversations/_staff_threads_table.html" as table %}
+{% import "ep19/conversations/_components.html" as conversations %}
 
 {% block breadcrumbs %}
 {{ super() }}
@@ -12,6 +12,6 @@
 
     {{ typography.heading("All Finaid threads", 4, class="mb2") }}
 
-    {{ table.threads_table(ThreadFilters, all_threads) }}
+    {{ conversations.staff_threads_table(ThreadFilters, all_threads) }}
 
 {% endblock conversations_content %}
