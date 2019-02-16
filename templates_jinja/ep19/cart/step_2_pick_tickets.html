@@ -1,0 +1,19 @@
+{% extends "ep19/cart/base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+&raquo; <a href='#'>Step 2: Pick which tickets you want</a>
+{% endblock %}
+
+{% block content %}
+
+<div>
+    Which tickets do you want?
+</div>
+
+{% for fare in available_fares %}
+{{ fare }}<br>
+{% endfor %}
+
+
+{% endblock %}

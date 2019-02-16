@@ -1,0 +1,17 @@
+{% extends "ep19/cart/base.html" %}
+
+{% block content %}
+
+<div>
+Choose which type of ticket do you want to buy
+</div>
+
+<p>
+<a href='{{ url("cart:step2_pick_tickets", args=["company"]) }}'>Company tickets</a>
+<br>
+<a href='{{ url("cart:step2_pick_tickets", args=["personal"]) }}'>Personal tickets</a>
+<br>
+<a href='{{ url("cart:step2_pick_tickets", args=["student"]) }}'>Student &amp; Academia tickets</a>
+</p>
+
+{% endblock %}
