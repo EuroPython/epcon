@@ -57,6 +57,8 @@ started
     {{ conversations.thread_metadata_as_table(thread) }}
 {% endif %}
 
+{% block additional_metadata %}{% endblock %}
+
 
 {% for message in thread.messages.all() %}
 {# TODO: include proper module here #}

@@ -102,6 +102,6 @@ def apply_ordering(threads, request):
         threads = threads.order_by('status')
 
     if ThreadFilters.order_by_priority in request.GET:
-        threads = threads.order_by('priority')
+        threads = threads.order_by('-priority')
 
     return threads
