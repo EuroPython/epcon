@@ -19,6 +19,7 @@ from conference.homepage import (
     homepage,
 )
 from conference.user_panel import urlpatterns as user_panel_urls
+from conference.cart import urlpatterns_ep19 as cart19_urls
 
 
 admin.autodiscover()
@@ -37,6 +38,7 @@ urlpatterns = [
     url(r'^admin/rosetta/', include('rosetta.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^comments/', include('django_comments.urls')),
+    url(r'^cart/', include(cart19_urls, namespace="cart")),
     url(r'^p3/', include('p3.urls')),
     url(r'^conference/', include('conference.urls')),
     url(r'^conference/talks/(?P<slug>[\w-]+)$', conference_views.talk,

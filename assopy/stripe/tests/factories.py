@@ -10,7 +10,7 @@ import factory
 from factory import fuzzy
 from faker import Faker
 
-from conference.fares import AVAILABLE_FARE_CODES
+from conference.fares import ALL_POSSIBLE_FARE_CODES
 
 
 fake = Faker()
@@ -59,11 +59,11 @@ class FareFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def code(self):
-        return random.choice(list(AVAILABLE_FARE_CODES.keys()))
+        return random.choice(list(ALL_POSSIBLE_FARE_CODES.keys()))
 
     @factory.lazy_attribute
     def name(self):
-        return "EuroPython2019 – %s" % AVAILABLE_FARE_CODES[self.code]
+        return "EuroPython2019 – %s" % ALL_POSSIBLE_FARE_CODES[self.code]
 
     @factory.lazy_attribute
     def start_validity(self):
