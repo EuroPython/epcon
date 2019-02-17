@@ -1,0 +1,68 @@
+{% extends "ep19/cart/base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+&raquo; Step 4: Confirmation and Payment
+{% endblock %}
+
+{% block content %}
+
+<div>
+    Payment
+</div>
+
+<div>
+    <h4>Order summary</h4>
+    <table>
+        {% for item in order.orderitem_set.all() %}
+        <tr>
+            <td>{{ item.description }}</td>
+            <td>{{ item.price }}</td>
+        </tr>
+        {% endfor %}{# item in items.all #}
+    </table>
+
+    <p>Total to pay: {{ order.total() }} EUR</p>
+
+    {% if payments %}
+    <h4>Payment history</h4>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>status</th>
+            <th>created</th>
+        </tr>
+
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.uuid }}</td>
+            <td>{{ payment.status }}
+                {% if payment.status == payment.STATUS_CHOICES.FAILED %}
+                    {{ payment.message }}
+                {% endif %}
+            </td>
+            <td title="{{ payment.created }}">{{ timesince(payment.created) }} ago</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    
+</div>
+
+
+<form action="." method="POST">
+    {{ csrf_input }}
+  <script
+    src="https://checkout.stripe.com/checkout.js"
+    class="stripe-button"
+    data-key="pk_test_TYooMQauvdEDq54NiTphI7jx"
+    data-amount="{{ total_for_stripe }}"
+    data-name="Stripe.com"
+    data-description="EuroPython Order {{ order.code }}"
+    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+    data-locale="auto"
+    data-zip-code="false">
+  </script>
+</form>
+
+{% endblock %}

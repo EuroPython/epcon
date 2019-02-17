@@ -66,20 +66,20 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
     fares = get_available_fares_as_dict(for_date)  # caching
     with transaction.atomic():
         order = Order.objects.create(
-            # TODO uuid=str(uuid.uuid4()),
+            uuid=str(uuid.uuid4()),
             user=for_user.assopy_user,
             code=next_order_code_for_year(timezone.now().year)
             # create a shell of an order without details
         )
 
         for fare_code, amount in fares_info.items():
-            # This is a relict of the past we should at some point reverse the
-            # relationship and create tickets from orderitems, not the other
-            # way around.
             fare = fares[fare_code]
             vat = fare.vat_set.all()[0]
 
             for i in range(amount):
+                # This is a relict of the past we should at some point reverse
+                # the relationship and create tickets from orderitems, not the
+                # other way around.
                 ticket = Ticket.objects.create(
                     user=for_user,
                     fare=fare,
@@ -89,8 +89,8 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
                     order=order,
                     code=fare_code,
                     ticket=ticket,
-                    description=f'{fare.description} {i}/{amount}',
-                    # full price here, apply discount as another OrderItem
+                    description=f'{fare.description} {i+1}/{amount}',
+                    # full price here, apply full discount as another OrderItem
                     price=fare.price,
                     vat=vat,
                 )
@@ -100,7 +100,7 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
                 order=order,
                 # coupon=coupon,  # TODO
                 ticket=None,
-                # code=coupon.code,
+                code=coupon.code,
                 description=f'Discount according to {coupon.code}',
                 price=Decimal(-1) * calculation.total_discount,
                 # TODO/FIXME for now assuming all tickets are VAT-ed the same
@@ -171,3 +171,9 @@ def calculate_order_price_including_discount(
     return OrderCalculation(
         discounted_total, full_total, full_total - discounted_total
     ), coupon
+
+
+def is_business_order(order):
+    assert isinstance(order, Order)
+    # FIXME check order type here, or maybe put it in the Order obj itself
+    return True

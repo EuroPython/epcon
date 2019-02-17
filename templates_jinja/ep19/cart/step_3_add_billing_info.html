@@ -2,7 +2,7 @@
 
 {% block breadcrumbs %}
 {{ super() }}
-Step 3: Set billing info
+&raquo; Step 3: Set billing info
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,13 @@ Step 3: Set billing info
     Add billing info
 </div>
 
-<p>
-</p>
+<form method='POST' action='.'>
+    {{ csrf_input }}
+    <table>
+        {{ form.as_table() }}
+    </table>
+    <input type=submit value='Go to payment'>
+</form>
+
 
 {% endblock %}

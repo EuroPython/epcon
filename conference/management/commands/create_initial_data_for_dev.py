@@ -143,27 +143,26 @@ class Command(BaseCommand):
 
         print("Creating an admin user")
         AssopyUser.objects.create_superuser(
-            username="admin", email="admin@admin.com", password="europython"
-        )
+            username='admin', email='admin@admin.com', password='europython')
 
         print("Creating regular users")
         AssopyUser.objects.create_user(
-            email="alice@europython.eu",
-            password="europython",
+            email='alice@europython.eu',
+            password='europython',
             active=True,
-            send_mail=False,
+            send_mail=False
         )
         AssopyUser.objects.create_user(
-            email="bob@europython.eu",
-            password="europython",
+            email='bob@europython.eu',
+            password='europython',
             active=True,
-            send_mail=False,
+            send_mail=False
         )
         AssopyUser.objects.create_user(
-            email="cesar@europython.eu",
-            password="europython",
+            email='cesar@europython.eu',
+            password='europython',
             active=True,
-            send_mail=False,
+            send_mail=False
         )
 
         print("Creating sponsors")
@@ -180,7 +179,11 @@ class Command(BaseCommand):
             )
 
         print("Pre creating fares")
-        default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+        default_vat_rate, _ = Vat.objects.get_or_create(
+            value=DEFAULT_VAT_RATE
+        )
         pre_create_typical_fares_for_conference(
-            settings.CONFERENCE_CONFERENCE, default_vat_rate, print_output=True
+            settings.CONFERENCE_CONFERENCE,
+            default_vat_rate,
+            print_output=True
         )

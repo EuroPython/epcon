@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        line-height: 1.5em;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      td, th {
+        padding: .5em;
+      }
+
+      tr:hover td {
+        background: yellow;
+      }
+
+      .text-right {
+        text-align: right;
+      }
+
+      .btn { padding: 1em; border: 1px solid #aaa; background: #efe }
+      .valid { background: green; color: yellow; padding: .5em; }
+      .invalid { color: red; font-weight: bold; }
+    </style>
+
+  </head>
+  <body>
+      <a href='{% url "debug_panel_index" %}'>Debug panel index</a>
+
+      <table>
+          {% for fare in fares %}
+          <tr>
+              <td>{{ fare.code }}</td>
+              <td>{{ fare.start_validity }}</td>
+              <td>{{ fare.end_validity }}</td>
+              <td>
+              {% if fare.is_valid %}
+              <span class='valid'>VALID</span>
+              {% else %}
+              <span class='invalid'>NOPE</span>
+              {% endif %}
+              </td>
+          </tr>
+          {% endfor %}{# fare in fares #}
+      </table>
+
+  </body>
+</html>

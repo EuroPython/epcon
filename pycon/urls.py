@@ -18,6 +18,8 @@ from conference.homepage import (
     generic_content_page_with_sidebar,
     homepage,
 )
+from conference import views as conference_views
+from conference.homepage import homepage
 from conference.user_panel import urlpatterns as user_panel_urls
 from conference.cart import urlpatterns_ep19 as cart19_urls
 
