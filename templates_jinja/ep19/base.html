@@ -2,6 +2,7 @@
 
 
     <body>
+        <strong>Logged in as {{ request.user }}</strong>
         <div id="breadcrumbs">
             {% block breadcrumbs %}
             {% endblock breadcrumbs %}
@@ -11,5 +12,8 @@
             {% block content %}
             {% endblock content %}
         </div>
+
+        {% block javascript %}
+        {% endblock javascript %}
     </body>
 </html>

@@ -364,7 +364,16 @@ class Coupon(models.Model):
         else:
             return 'val'
 
+    def price_multiplier(self):
+        """
+        Converts 20% to 0.8
+        """
+        assert self.value.endswith('%')
+        discount = Decimal(self.value[:-1]) / Decimal(100)
+        return Decimal(1) - discount
+
     def valid(self, user=None):
+        # import pdb; pdb.set_trace()
         if self.start_validity and self.end_validity:
             today = date.today()
             if today < self.start_validity or today > self.end_validity:
@@ -472,7 +481,7 @@ class OrderQuerySet(models.QuerySet):
         t = qs.aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
-    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
+    def _old_create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
 
         # FIXME/TODO(artcz)(2018-08-20)
         # Temporary import to avoid ciruclar. To get a smaller PR I want to
