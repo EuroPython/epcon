@@ -149,6 +149,8 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
 
 
 def set_early_bird_fare_dates(conference, start_date, end_date):
+    assert start_date <= end_date
+
     early_birds = Fare.objects.filter(
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.EARLY_BIRD]
@@ -158,6 +160,8 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
 
 
 def set_regular_fare_dates(conference, start_date, end_date):
+    assert start_date <= end_date
+
     fares = Fare.objects.filter(
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.REGULAR]
