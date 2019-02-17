@@ -1,5 +1,7 @@
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import reverse
+from django.utils.timesince import timesince
+
 
 from jinja2 import Environment
 
@@ -15,6 +17,7 @@ def environment(**options):
     env.globals.update({
         'static': staticfiles_storage.url,
         'url': reverse,
+        'timesince': timesince,
     })
 
     return env

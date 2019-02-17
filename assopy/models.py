@@ -624,6 +624,9 @@ ENABLED_ORDER_PAYMENT = (
 
 
 class Order(models.Model):
+    # TODO(artcz) This should have unique=True as well once we backfill data
+    # for previous orders.
+    uuid = models.CharField(max_length=100, blank=True, default='')
     code = models.CharField(max_length=20, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
     user = models.ForeignKey(AssopyUser, related_name='orders', on_delete=models.CASCADE)
