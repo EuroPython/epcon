@@ -23,7 +23,13 @@ def charge_for_payment(stripe_payment):
             amount=stripe_payment.amount_for_stripe(),
             currency=STRIPE_PAYMENTS_CURRENCY,
             card=stripe_payment.token,
-            description=stripe_payment.description
+            description=stripe_payment.description,
+            idempotency_key=stripe_payment.uuid,
+            metadata={
+                'order_code': stripe_payment.order.code,
+                'order_uuid': stripe_payment.order.uuid,
+                'stripe_payment_uuid': stripe_payment.uuid
+            }
         )
 
         stripe_payment.status = stripe_payment.STATUS_CHOICES.SUCCESSFUL
