@@ -1,24 +1,224 @@
-<!doctype html>
+<!-- <link rel="stylesheet" href="/static/css/ep19.css">  -->
+
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title or "EuroPython" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:300,400,500">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700">
-    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <title>Euro Python 2019</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/jumbotron/">
 
-    {% include 'includes/styles.html' %}
-</head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/ep19.css">
+  </head>
 
-<body>
-    {% include 'components/header.html' %}
+  <body>
 
-    {% block content %}{% endblock %}
-</body>
+    <style type="text/css">
+/* primary: 007d8a; */
+/* primary-light: 76bdc4 */
+/* secondary: d87a00 */
+/* secondary-light: f8c48f */
+#swissbg { background: url('/static/img/ep19-basel-dark.jpg'); background-size: cover; color: white; min-height: 90px}
+.jumbotron { height: 800px; background: transparent; color: white; display: none}
+#footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
+#footer a { color: white; border-bottom: 1px solid #eee; }
+#venue { background: #d87a00; padding: 1em 0; margin: 1em 0}
+#broad_schedule_overview { margin: 2em 0; }
+#tickets-link-header { color: #fff; border-bottom: 2px solid #fff; margin-right: 2px }
+#cfp-link-header { color: #fff; border-bottom: 2px solid #d87a00; margin-right: 2px }
+.navbar-toggler-icon { content: "Menu"; }
 
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+                        .navbar-nav .nav-link:hover {
+                            color: white;
+                        }
+    </style>
+    
+
+    <div id='swissbg'>
+        <nav class="navbar navbar-expand-lg">
+            <div class='container'>
+                <a class="navbar-brand" href="#" style='font-family: Quicksand;'>EuroPython 2019</a>
+                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse" id="navbarsExample05" style="">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">News</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Speakers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Program</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Location</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Sponsors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">FAQ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tickets-link-header" href="#">Tickets</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="cfp-link-header" href="#">Proposals</a>
+                        </li>
+                    </ul>
+                    <div class="my-2 my-md-0">
+                        {% if 1 %}
+                        <span style='font-size: .8em'>Logged in as <strong>Firstname Middlename Lastname</strong></span>
+                        <a class='nav-link btn btn-outline-light' href='#'>My Account</a>
+                        {% else %}
+                        <a class='nav-link btn btn-outline-light' href='{{ url("login") }}'>Log in or sign up</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <div class="container text-center">
+                <img src="/static/img/tmplogo.png">
+                <h1 class="display-3"><span class='text-secondary'>euro</span> <strong class='text-primary'>python</strong></h1>
+                <h2>July 8-14th 2019, Basel, Switzerland</h2>
+                <p>EuroPython is community organized event about Python</p>
+                <p><a href='#' class='btn btn-outline-light btn-lg'>Get the tickets</a></p>
+                <p><a href='#' class='btn btn-outline-light btn-lg'>Submit Proposal</a></p>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="broad_schedule_overview">
+        <div class="container text-center">
+            <!-- Example row of columns -->
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>Trainings</h2>
+                    <p>Monday and Tuesday</p>
+                    <p>July 8th and 9th</p>
+                    <p>Sold separately <a href='#'>more info</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h2>Talks & Other Events</h2>
+                    <p>Wednesday, Thursday, Friday</p>
+                    <p>July 10th, 11th, 12th</p>
+                    <p><a class="btn btn-outline-primary btn-lg" href="#" role="button">View details</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h2>Sprints</h2>
+                    <p>Saturday &amp; Sunday</p>
+                    <p>July 13th &amp; 14th</p>
+                </div>
+            </div>
+
+        </div> <!-- /container -->
+    </div>
+
+
+    <div id="venue">
+        <div class="container">
+            <!-- Example row of columns -->
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Conference Venue</h2>
+                    <p>ASDF</p>
+                </div>
+                <div class="col-md-6 text-right">
+                    <h2>Trainings &amp; Sprints Venue</h2>
+                    <p>ASDF</p>
+                </div>
+            </div>
+
+        </div> <!-- /container -->
+    </div>
+
+
+    <div class="container text-center">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Sponsors</h2>
+          <p>ASDF</p>
+
+          <h4>Diamond</h4>
+          <p>July 8th and 9th</p>
+
+          <h4>Gold</h4>
+          <p>July 8th and 9th</p>
+
+          <h4>Silver</h4>
+          <p>July 8th and 9th</p>
+          <p><a class="btn btn-secondary btn-lg" href="#" role="button">Become a sponsor</a></p>
+        </div>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <div id="footer">
+        <div class='container'>
+            <div class='row'>
+                <div class='col-md-3'>
+                </div>
+                <div class='col-md-3'>
+                </div>
+                <div class='col-md-3'>
+                </div>
+                <div class='col-md-3'>
+                    <img src="/static/img/epslogo.png">
+                    <p>
+                    EuroPython Society<br>
+                    C/O Open End AB<br>
+                    Norra Ågatan 10<br>
+                    416 64  Göteborg<br>
+                    Sweden
+                    </p>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-12'>
+                    Previous editions:
+                    <a href='#'>2018</a>
+                    <a href='#'>2017</a>
+                    <a href='#'>2016</a>
+                    <a href='#'>2015</a>
+                    <a href='#'>2014</a>
+                    <a href='#'>2013</a>
+                    <a href='#'>more...</a>
+                </div>
+            </div>
+            <footer>
+                <p>&copy; EuroPythonSociety 2019</p>
+            </footer>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
 </html>

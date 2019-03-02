@@ -1,8 +1,19 @@
-<header class="mdc-top-app-bar">
-    <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-            <a href="#" class="material-icons mdc-top-app-bar__navigation-icon">menu</a>
-            <span class="mdc-top-app-bar__title">EuroPython 2019</span>
-        </section>
-    </div>
+<header class="mdc-toolbar">
+  <div class="mdc-toolbar__row">
+    <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+        <a href="#" class="material-icons mdc-toolbar__menu-icon">menu</a>
+
+    <span class="mdc-toolbar__title">EuroPython 2019</span>
+    </section>
+    <!-- <section class="mdc-toolbar__section">.</section> -->
+    <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
+        {% if user.is_authenticated %}
+        <span>Logged in as {{ user }}</span>
+        &nbsp;|&nbsp; <a href='#'>Panel</a>
+        &nbsp;|&nbsp; <a href='{{ url("logout") }}'>Log out</a>
+        {% else %}
+        <a href='{{ url("login") }}'>Log in</a>
+        {% endif %}
+    </section>
+  </div>
 </header>
