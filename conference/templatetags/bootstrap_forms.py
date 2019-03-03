@@ -66,7 +66,7 @@ def render_field(field):
     if isinstance(field.field.widget, forms.widgets.Textarea):
         return render_textarea_field(field)
 
-    import pdb; pdb.set_trace()
+    # TODO(artcz): select and multi select widgets
 
     return f'{field.name} -- widget not supported'
 
@@ -195,7 +195,6 @@ def render_textarea_field(field, css_classes=""):
         'css_classes': css_classes,
         **default_values_for_field(field)
     }))
-
 
 
 def default_values_for_field(field):
