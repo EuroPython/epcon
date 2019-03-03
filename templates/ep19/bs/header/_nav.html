@@ -1,3 +1,4 @@
+{% load cms_tags %}
 <nav class="navbar navbar-expand-lg">
     <div class='container'>
         <a class="navbar-brand" href="/" >EuroPython 2019</a>
@@ -11,22 +12,22 @@
                     <a class="nav-link" href="#">News</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Speakers</a>
+                    <a class="nav-link" href="{% page_url 'program' %}">Program</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Program</a>
+                    <a class="nav-link" href="{% page_url "speakers" %}">Speakers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Location</a>
+                    <a class="nav-link" href="{% page_url 'location' %}">Location</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Sponsors</a>
+                    <a class="nav-link" href="{% page_url 'sponsors' %}">Sponsors</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="{% page_url 'about' %}">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">FAQ</a>
+                    <a class="nav-link" href="{% page_url 'faq' %}">FAQ</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="tickets-link-header" href="#">Tickets</a>

@@ -78,16 +78,17 @@ class Command(BaseCommand):
             except FieldError as e:
                 print("Warning: ", e)
 
-        events_page = new_page('events', 'Events')
+        program_page = new_page('program', "Program")
 
         for rev_id, title in [
+            ("speakers", "Speakers"),
             ("tranings", "Tranings"),
             ("workshops", "Workshops"),
             ("talks_and_conference_days", "Talks and Conference Days"),
             ("social-event", "Social Event"),
             ("sprints", "Sprint"),
         ]:
-            new_page(rev_id, title, parent=events_page)
+            new_page(rev_id, title, parent=program_page)
 
         location_page = new_page('location', "Location")
         for rev_id, title in [
@@ -98,7 +99,7 @@ class Command(BaseCommand):
         ]:
             new_page(rev_id, title, parent=location_page)
 
-        europython_page = new_page("europython", "EuroPython")
+        about_europython_page = new_page("about", "About EuroPython")
         for rev_id, title in [
             ('volnuteers', 'Volunteers'),
             ('workgroups', 'Workgroups'),
@@ -109,7 +110,7 @@ class Command(BaseCommand):
             ('previous-editions', 'Previous Editions'),
             ('help-organize', 'Help Organize next EuroPython'),
         ]:
-            new_page(rev_id, title, parent=europython_page)
+            new_page(rev_id, title, parent=about_europython_page)
 
         sponsors_page = new_page('sponsors', "Sponsors")
         for rev_id, title in [
