@@ -9,6 +9,7 @@ import platform
 import subprocess
 
 import django
+from django.conf.urls import url
 from django import forms
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -27,6 +28,11 @@ from conference.invoicing import (
     export_invoices_to_2018_tax_report_csv,
     export_invoices_for_payment_reconciliation,
     extract_customer_info,
+)
+from conference.models import Fare, Conference
+from conference.fares import (
+    set_early_bird_fare_dates,
+    set_regular_fare_dates,
 )
 
 
@@ -219,3 +225,79 @@ def reissue_invoice(request, invoice_id):
         'conference/debugpanel/reissue_invoice.html',
         {'form': form, 'old_invoice': old_invoice}
     )
+
+
+@staff_member_required
+def debugpanel_fares_setup(request):
+    fares = Fare.objects.all()
+    conference = Conference.objects.current()
+
+    eb_setup_form = SetDatesForm()
+    regular_setup_form = SetDatesForm()
+
+    if request.method == 'POST':
+        if FareSetup.set_eb_dates in request.POST:
+            eb_setup_form = SetDatesForm(data=request.POST)
+            if eb_setup_form.is_valid():
+                set_early_bird_fare_dates(
+                    conference=conference,
+                    start_date=eb_setup_form.cleaned_data['start_date'],
+                    end_date=eb_setup_form.cleaned_data['end_date'],
+                )
+                return redirect('.')
+
+        if FareSetup.set_regular_dates in request.POST:
+            regular_setup_form = SetDatesForm(data=request.POST)
+            if regular_setup_form.is_valid():
+                set_regular_fare_dates(
+                    conference=conference,
+                    start_date=regular_setup_form.cleaned_data['start_date'],
+                    end_date=regular_setup_form.cleaned_data['end_date'],
+                )
+                return redirect('.')
+
+    return TemplateResponse(
+        request, 'conference/debugpanel/fares_setup.html', {
+            'fares': fares,
+            'FareSetup': FareSetup,
+            'eb_setup_form': eb_setup_form,
+            'regular_setup_form': regular_setup_form,
+        }
+    )
+
+
+class SetDatesForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+
+
+class FareSetup:
+    set_eb_dates = 'set_eb_dates'
+    set_regular_dates = 'set_regular_dates'
+
+
+urlpatterns = [
+    url(r'^$', debug_panel_index, name='debug_panel_index'),
+    url(r'^invoices/$',
+        debug_panel_invoice_placeholders,
+        name='debug_panel_invoice_placeholders'),
+    url(r'^invoices/(?P<invoice_id>\d+)/$',
+        debug_panel_invoice_force_preview,
+        name="debug_panel_invoice_forcepreview"),
+    url(r'^invoices_export/$',
+        debug_panel_invoice_export_for_tax_report_2018,
+        name='debug_panel_invoice_export_for_tax_report_2018'),
+    url(r'^invoices_export.csv$',
+        debug_panel_invoice_export_for_tax_report_2018_csv,
+        name='debug_panel_invoice_export_for_tax_report_2018_csv'),
+    url(r'^invoices_export_for_accounting.json$',
+        debug_panel_invoice_export_for_payment_reconciliation_json,
+        name='debug_panel_invoice_export_for_payment_reconciliation_json'),
+    url(r'^invoices/reissue/(?P<invoice_id>\d+)/$',
+        reissue_invoice,
+        name='debug_panel_reissue_invoice'),
+
+    url(r'^fares/setup/$',
+        debugpanel_fares_setup,
+        name='debug_panel_fares_setup'),
+]
