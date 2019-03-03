@@ -17,6 +17,8 @@ from conference.homepage import (
     generic_content_page_with_sidebar,
 )
 from conference.cart import urlpatterns_ep19 as cart19_urls
+from conference.user_panel import urlpatterns as user_panel_urls
+from conference.accounts import urlpatterns as accounts_urls
 
 
 admin.autodiscover()
@@ -27,6 +29,8 @@ urlpatterns = [
     url(r'^generic-content-page/$', generic_content_page),
     url(r'^generic-content-page/with-sidebar/$',
         generic_content_page_with_sidebar),
+    url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
+    url(r'^accounts/', include(accounts_urls, namespace="accounts")),
     url(r'^accounts/', include('assopy.urls')),
     url(r'^admin/filebrowser/', include(fsite.urls)),
     url(r'^admin/rosetta/', include('rosetta.urls')),
