@@ -1,0 +1,48 @@
+<nav class="navbar navbar-expand-lg">
+    <div class='container'>
+        <a class="navbar-brand" href="/" >EuroPython 2019</a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse collapse" id="navbarsExample05" style="">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Speakers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Program</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Location</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Sponsors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">FAQ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tickets-link-header" href="#">Tickets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="cfp-link-header" href="#">Proposals</a>
+                </li>
+            </ul>
+            <div class="my-2 my-md-0">
+                {% if 0 %}
+                <span style='font-size: .8em'>Logged in as <strong>Firstname Middlename Lastname</strong></span>
+                <a class='nav-link btn btn-outline-light' href='#'>My Account</a>
+                {% else %}
+                <a class='nav-link btn btn-outline-light' href='{% url "login" %}'>Log in or sign up</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

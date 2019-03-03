@@ -1,0 +1,17 @@
+{% load menu_tags %}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {% if custom_breadcrumb %}
+        {% for breadcrumb in custom_breadcrumb %}
+        <li>{% if not forloop.last %}<a href="{{ breadcrumb.url }}">{% endif %}{{ breadcrumb.title }}{% if not forloop.last %}</a><span class="divider">/</span>{% endif %}</li>
+        {% endfor %}
+        {% elif single_breadcrumb %}
+            {% show_breadcrumb 0 "ep19/content/_breadcrumbs_no_active.html" %}
+            {% include "ep19/content/_breadcrumb.html" with active=True nochevron=False title=single_breadcrumb %}
+        {% else %}
+            {% show_breadcrumb 0 "ep19/bs/content/_breadcrumbs.html" %}
+        {% endif %}
+
+    </ol>
+</nav>

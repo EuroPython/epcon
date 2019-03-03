@@ -6,8 +6,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import FieldError
 
-from cms.api import create_page, add_plugin
-from djangocms_text_ckeditor.cms_plugins import TextPlugin
+from cms.api import create_page  # , add_plugin
+# from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from assopy.models import AssopyUser, Vat, Country
 from conference.fares import pre_create_typical_fares_for_conference
@@ -34,18 +34,18 @@ class Command(BaseCommand):
 
         # Create homepage with some sample data.
         homepage = create_homepage_in_cms()
-        add_plugin(
-            placeholder=homepage.placeholders.get(slot="lead_text"),
-            plugin_type=TextPlugin,
-            language="en",
-            body="This is the lead text",
-        )
-        add_plugin(
-            placeholder=homepage.placeholders.get(slot="home_teaser_text"),
-            plugin_type=TextPlugin,
-            language="en",
-            body="This is the home teaser text",
-        )
+        # add_plugin(
+        #     placeholder=homepage.placeholders.get(slot="lead_text"),
+        #     plugin_type=TextPlugin,
+        #     language="en",
+        #     body="This is the lead text",
+        # )
+        # add_plugin(
+        #     placeholder=homepage.placeholders.get(slot="home_teaser_text"),
+        #     plugin_type=TextPlugin,
+        #     language="en",
+        #     body="This is the home teaser text",
+        # )
         # The main_text placeholder does not seem to be used, skipping.
 
         print(
@@ -55,32 +55,79 @@ class Command(BaseCommand):
             homepage.template,
         )
 
-        pages = [
-            ("contacts", "CONTACTS", "content.html"),
-            ("privacy", "PRIVACY", "content-1col.html"),
-            ("conduct-code", "CONDUCT-CODE", "content.html"),
-            ("staff", "STAFF", "content.html"),
-            ("sponsor", "SPONSOR", "content.html"),
-        ]
-
-        for id, title, template in pages:
-
+        def new_page(rev_id, title, **kwargs):
             try:
                 page = create_page(
+                    reverse_id=rev_id,
                     title=title,
-                    template="django_cms/" + template,
-                    language="en",
-                    reverse_id=id,
+                    language='en',
+                    template=(
+                        'ep19/bs/content/'
+                        'generic_content_page_with_sidebar.html'
+                    ),
                     published=True,
                     publication_date=timezone.now(),
                     in_navigation=True,
+                    **kwargs
                 )
                 print("Created page: ", page.reverse_id, title, page.template)
+                return page
 
             # FieldError happens to be what django cms is using when we want to
             # create another page with the same reverse_id
             except FieldError as e:
                 print("Warning: ", e)
+
+        events_page = new_page('events', 'Events')
+
+        for rev_id, title in [
+            ("tranings", "Tranings"),
+            ("workshops", "Workshops"),
+            ("talks_and_conference_days", "Talks and Conference Days"),
+            ("social-event", "Social Event"),
+            ("sprints", "Sprint"),
+        ]:
+            new_page(rev_id, title, parent=events_page)
+
+        location_page = new_page('location', "Location")
+        for rev_id, title in [
+            ("explore-basel", "Explore City of Basel"),
+            ('visa', "Visa"),
+            ('conference-venue', "Conference Venue"),
+            ('sprints-venue', "Workshops & Sprints Venue"),
+        ]:
+            new_page(rev_id, title, parent=location_page)
+
+        europython_page = new_page("europython", "EuroPython")
+        for rev_id, title in [
+            ('volnuteers', 'Volunteers'),
+            ('workgroups', 'Workgroups'),
+            ('photos', 'Photos'),
+            ('videos', 'Videos'),
+            ('social-media', 'Social Media'),
+            ('eps', 'EuroPythoon Society'),
+            ('previous-editions', 'Previous Editions'),
+            ('help-organize', 'Help Organize next EuroPython'),
+        ]:
+            new_page(rev_id, title, parent=europython_page)
+
+        sponsors_page = new_page('sponsors', "Sponsors")
+        for rev_id, title in [
+            ('become-a-sponsor', 'How to become a Sponsor'),
+            ('sponsor-packages', 'Sponsorship packages'),
+            ('additional-information', 'Additional Information'),
+        ]:
+            new_page(rev_id, title, parent=sponsors_page)
+
+        faq_page = new_page('faq', 'FAQ')
+        for rev_id, title in [
+            ('tips-for-attendees', 'Tips for Attendees'),
+            ('tips-for-speakers', 'Tips for Speakers'),
+            ('tips-for-speakers', 'Tips for Speakers'),
+        ]:
+            new_page(rev_id, title, parent=faq_page)
+
+        new_page("code-of-conduct", "Code of Conduct")
 
         print("Creating some countries")
         for iso, name in [

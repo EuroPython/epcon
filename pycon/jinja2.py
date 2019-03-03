@@ -19,5 +19,4 @@ def environment(**options):
         'url': reverse,
         'timesince': timesince,
     })
-
     return env
