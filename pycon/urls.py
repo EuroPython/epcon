@@ -9,15 +9,17 @@ from django.views import defaults, static
 from filebrowser.sites import site as fsite
 
 import p3.forms as pforms
-from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference import views as conference_views
+from conference.accounts import urlpatterns as accounts_urls
+from conference.cart import urlpatterns_ep19 as cart19_urls
+from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference.homepage import (
-    homepage,
+    form_testing,
     generic_content_page,
     generic_content_page_with_sidebar,
+    homepage,
 )
 from conference.user_panel import urlpatterns as user_panel_urls
-from conference.accounts import urlpatterns as accounts_urls
 
 
 admin.autodiscover()
@@ -28,6 +30,7 @@ urlpatterns = [
     url(r'^generic-content-page/$', generic_content_page),
     url(r'^generic-content-page/with-sidebar/$',
         generic_content_page_with_sidebar),
+    url(r'^form-testing/$', form_testing),
     url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
     url(r'^accounts/', include(accounts_urls, namespace="accounts")),
     url(r'^accounts/', include('assopy.urls')),

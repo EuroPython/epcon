@@ -15,7 +15,7 @@ def render_form(form):
     for field in form:
         fields.append(render_field(field))
 
-    return mark_safe(''.join(fields))
+    return mark_safe('\n'.join(fields))
 
 
 FORM_ERRORS_TEMPLATE = (
@@ -29,7 +29,7 @@ FORM_ERRORS_TEMPLATE = (
 
 def render_form_errors(form):
     return Template(FORM_ERRORS_TEMPLATE).render(Context({
-        'all_errors': form.errors.get('__all__', ''),
+        'all_errors': '; '.join(form.errors.get('__all__', '')),
         'field_errors': render_summary_field_errors(form.errors)
     }))
 
@@ -60,23 +60,76 @@ def render_field(field):
     if isinstance(field.field.widget, forms.widgets.CheckboxInput):
         return render_checkbox_field(field)
 
-    return "Nope not supported yet"
+    if isinstance(field.field.widget, forms.widgets.TextInput):
+        return render_text_input_field(field)
+
+    if isinstance(field.field.widget, forms.widgets.Textarea):
+        return render_textarea_field(field)
+
+    import pdb; pdb.set_trace()
+
+    return f'{field.name} -- widget not supported'
 
 
 GENERIC_CHAR_FIELD_TEMPLATE = (
     '<div class="form-group">'
-        '<label for="{{ label_for_id }}">{{ label }}</label>'
-        '<input type="{{ type }}"'
-               'class="form-control {{ css_classes }}" '
+        '<label for="{{ label_for_id }}"'
+            '{% if errors %} class="text-danger"{% endif %}>'
+            '{{ label }}'
+        '</label>'
+        '<input type="{{ type }}" '
+               'class="form-control {{ css_classes }}'
+                    '{% if errors %} is-invalid{% endif %}" '
                'id="{{ html_id }}" '
                'name="{{ name }}" '
                'value="{{ value }}" '
-               'placeholder="{{ placeholder }}">'
+               'placeholder="{{ placeholder }}" />'
+
+        '{% if errors %}'
+            '<p class="text-danger">'
+                '{{ errors|join:", " }}'
+            '</p>'
+        '{% endif %}'  # errors
+
         '{% if help_text %}'
             '<small id="emailHelp" class="form-text text-muted">'
                 '{{ help_text }}'
             '</small>'
-        '{% endif %}'
+        '{% endif %}'  # help_text
+
+    '</div>'
+)
+
+
+TEXTAREA_FIELD_TEMPLATE = (
+    '<div class="form-group">'
+        '<label for="{{ label_for_id }}"'
+            '{% if errors %} class="text-danger"{% endif %}>'
+            '{{ label }}'
+        '</label>'
+
+        '<textarea '
+               'class="form-control {{ css_classes }}'
+                    '{% if errors %} is-invalid{% endif %}" '
+               'id="{{ html_id }}" '
+               'name="{{ name }}" '
+               'rows="5" '
+               'placeholder="{{ placeholder }}">'
+               '{{ value }}'
+        '</textarea>'
+
+        '{% if errors %}'
+            '<p class="text-danger">'
+                '{{ errors|join:", " }}'
+            '</p>'
+        '{% endif %}'  # errors
+
+        '{% if help_text %}'
+            '<small id="emailHelp" class="form-text text-muted">'
+                '{{ help_text }}'
+            '</small>'
+        '{% endif %}'  # help_text
+
     '</div>'
 )
 
@@ -88,27 +141,43 @@ CHECKBOX_FIELD_TEMPLATE = (
                 'name="{{ name }}" '
                 'id="{{ html_id }}"'
                 '{% if value %} checked{% endif %}>'
-        '<label for="{{ label_for_id }}">{{ label|safe }}</label>'
+
+        '<label for="{{ label_for_id }}"'
+            '{% if errors %} class="text-danger"{% endif %}>'
+            '{{ label|safe }}'
+        '</label>'
+
+        '{% if errors %}'
+            '<p class="text-danger">'
+                '{{ errors|join:", " }}'
+            '</p>'
+        '{% endif %}'  # errors
+
         '{% if help_text %}'
             '<small id="emailHelp" class="form-text text-muted">'
             '{{ help_text }}'
             '</small>'
-        '{% endif %}'
+        '{% endif %}'  # help_text
+
     '</div>'
 )
 
 
 def render_password_field(field, css_classes=""):
-    return Template(GENERIC_CHAR_FIELD_TEMPLATE).render(Context({
-        'type': 'password',
-        'css_classes': css_classes,
-        **default_values_for_field(field),
-    }))
+    return render_generic_char_field(field, type="password")
 
 
 def render_email_field(field, css_classes=""):
+    return render_generic_char_field(field, type="email")
+
+
+def render_text_input_field(field, css_classes=""):
+    return render_generic_char_field(field, type="text")
+
+
+def render_generic_char_field(field, type, css_classes=""):
     return Template(GENERIC_CHAR_FIELD_TEMPLATE).render(Context({
-        'type': 'email',
+        'type': type,
         'css_classes': css_classes,
         **default_values_for_field(field),
     }))
@@ -121,13 +190,23 @@ def render_checkbox_field(field, css_classes=""):
     }))
 
 
+def render_textarea_field(field, css_classes=""):
+    return Template(TEXTAREA_FIELD_TEMPLATE).render(Context({
+        'css_classes': css_classes,
+        **default_values_for_field(field)
+    }))
+
+
+
 def default_values_for_field(field):
     return {
         "label": field.label,
         "label_for_id": field.id_for_label,
         "html_id": field.id_for_label,
         'name': field.name,
-        'value': field.value or "",
+        'value': field.value() or "",
         "help_text": field.help_text,
-        # 'placeholder': field.placeholder,
+        "errors": field.errors,
+        # FIXME(artcz): this is just a placeholder for a placeholder...
+        'placeholder': field.label,
     }
