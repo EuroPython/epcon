@@ -36,11 +36,11 @@
                 </li>
             </ul>
             <div class="my-2 my-md-0">
-                {% if 0 %}
-                <span style='font-size: .8em'>Logged in as <strong>Firstname Middlename Lastname</strong></span>
-                <a class='nav-link btn btn-outline-light' href='#'>My Account</a>
+                {% if user.is_authenticated %}
+                <span style='font-size: .8em'>Logged in as <strong>{{ user }}</strong></span>
+                <a class='nav-link btn btn-outline-light' href='{% url "user_panel:dashboard" %}'>My Account</a>
                 {% else %}
-                <a class='nav-link btn btn-outline-light' href='{% url "login" %}'>Log in or sign up</a>
+                <a class='nav-link btn btn-outline-light' href='{% url "accounts:login" %}'>Log in or sign up</a>
                 {% endif %}
             </div>
         </div>

@@ -1,0 +1,23 @@
+{% extends "ep19/bs/user_panel/base.html" %}
+
+{% block breadcrumbs %}
+<!--<li class='breadcrumb-item active'><a href=''>Dashboard</a></li>-->
+{% endblock breadcrumbs %}
+
+{% block user_content %}
+<div class="row">
+    <div class="col-md-12">
+        <a href='{% url "logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
+    </div>
+</div>
+
+<div class='row'>
+    
+    <div class="col-md-8">
+        Main 
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+User panel
+{% endblock %}

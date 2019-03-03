@@ -1,0 +1,21 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+<div id="user_panel">
+    <div class='container'>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class='breadcrumb-item'><a href="/">Home</a></li>
+                <li class='breadcrumb-item'>
+                    <a href="{% url "user_panel:dashboard" %}">My Account</a>
+                </li>
+                {% block breadcrumbs %}{% endblock breadcrumbs %}
+            </ol>
+        </nav>
+
+        {% block user_content %}
+        {% endblock %}
+
+    </div>
+</div>
+{% endblock content %}

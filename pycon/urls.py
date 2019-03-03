@@ -9,22 +9,15 @@ from django.views import defaults, static
 from filebrowser.sites import site as fsite
 
 import p3.forms as pforms
-from conference.debug_panel import (
-    debug_panel_index,
-    debug_panel_invoice_placeholders,
-    debug_panel_invoice_force_preview,
-    debug_panel_invoice_export_for_tax_report_2018,
-    debug_panel_invoice_export_for_tax_report_2018_csv,
-    debug_panel_invoice_export_for_payment_reconciliation_json,
-    reissue_invoice,
-)
+from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference import views as conference_views
 from conference.homepage import (
     homepage,
     generic_content_page,
     generic_content_page_with_sidebar,
 )
-
+from conference.user_panel import urlpatterns as user_panel_urls
+from conference.accounts import urlpatterns as accounts_urls
 
 
 admin.autodiscover()
@@ -35,6 +28,8 @@ urlpatterns = [
     url(r'^generic-content-page/$', generic_content_page),
     url(r'^generic-content-page/with-sidebar/$',
         generic_content_page_with_sidebar),
+    url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
+    url(r'^accounts/', include(accounts_urls, namespace="accounts")),
     url(r'^accounts/', include('assopy.urls')),
     url(r'^admin/filebrowser/', include(fsite.urls)),
     url(r'^admin/rosetta/', include('rosetta.urls')),
@@ -57,25 +52,7 @@ urlpatterns = [
     url('', include('django.contrib.auth.urls', namespace='auth')),
 
     # production debug panel, doesn't even have a name=
-    url(r'^nothing-to-see-here/$', debug_panel_index),
-    url(r'^nothing-to-see-here/invoices/$',
-        debug_panel_invoice_placeholders,
-        name='debug_panel_invoice_placeholders'),
-    url(r'^nothing-to-see-here/invoices/(?P<invoice_id>\d+)/$',
-        debug_panel_invoice_force_preview,
-        name="debug_panel_invoice_forcepreview"),
-    url(r'^nothing-to-see-here/invoices_export/$',
-        debug_panel_invoice_export_for_tax_report_2018,
-        name='debug_panel_invoice_export_for_tax_report_2018'),
-    url(r'^nothing-to-see-here/invoices_export.csv$',
-        debug_panel_invoice_export_for_tax_report_2018_csv,
-        name='debug_panel_invoice_export_for_tax_report_2018_csv'),
-    url(r'^nothing-to-see-here/invoices_export_for_accounting.json$',
-        debug_panel_invoice_export_for_payment_reconciliation_json,
-        name='debug_panel_invoice_export_for_payment_reconciliation_json'),
-    url(r'^nothing-to-see-here/invoices/reissue/(?P<invoice_id>\d+)/$',
-        reissue_invoice,
-        name='debug_panel_reissue_invoice'),
+    url(r'^nothing-to-see-here/', include(debugpanel_urls)),
 ]
 
 if settings.DEBUG:
