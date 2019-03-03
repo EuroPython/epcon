@@ -63,8 +63,8 @@ def create_homepage_in_cms():
     Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
                                      name=settings.CONFERENCE_CONFERENCE)
     homepage = create_page(
-        title='HOME',
-        template='django_cms/p5_homepage.html',
+        title='EuroPython2019 - Homepage',
+        template='ep19/bs/homepage/home.html',
         language='en',
         reverse_id='home',
         published=True,

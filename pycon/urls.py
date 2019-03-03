@@ -19,7 +19,12 @@ from conference.debug_panel import (
     reissue_invoice,
 )
 from conference import views as conference_views
-from conference.homepage import homepage
+from conference.homepage import (
+    homepage,
+    generic_content_page,
+    generic_content_page_with_sidebar,
+)
+
 
 
 admin.autodiscover()
@@ -27,6 +32,9 @@ admin.site.index_template = 'p3/admin/index.html'
 
 urlpatterns = [
     url(r'^$', homepage, name='homepage'),
+    url(r'^generic-content-page/$', generic_content_page),
+    url(r'^generic-content-page/with-sidebar/$',
+        generic_content_page_with_sidebar),
     url(r'^accounts/', include('assopy.urls')),
     url(r'^admin/filebrowser/', include(fsite.urls)),
     url(r'^admin/rosetta/', include('rosetta.urls')),

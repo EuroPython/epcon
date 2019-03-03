@@ -17,5 +17,4 @@ def environment(**options):
         'static': staticfiles_storage.url,
         'url': reverse,
     })
-
     return env
