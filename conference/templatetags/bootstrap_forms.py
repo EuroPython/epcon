@@ -101,39 +101,33 @@ CHECKBOX_FIELD_TEMPLATE = (
 def render_password_field(field, css_classes=""):
     return Template(GENERIC_CHAR_FIELD_TEMPLATE).render(Context({
         'type': 'password',
-        "label": field.label,
-        "label_for_id": field.id_for_label,
-        "html_id": field.id_for_label,
-        'name': field.name,
-        'value': field.value or "",
         'css_classes': css_classes,
-        'placeholder': "placeholder",
-        "help_text": field.help_text,
+        **default_values_for_field(field),
     }))
 
 
 def render_email_field(field, css_classes=""):
     return Template(GENERIC_CHAR_FIELD_TEMPLATE).render(Context({
         'type': 'email',
-        "label": field.label,
-        "label_for_id": field.id_for_label,
-        "html_id": field.id_for_label,
-        'name': field.name,
-        'value': field.value or "",
         'css_classes': css_classes,
-        'placeholder': "placeholder",
-        "help_text": field.help_text,
+        **default_values_for_field(field),
     }))
 
 
 def render_checkbox_field(field, css_classes=""):
     return Template(CHECKBOX_FIELD_TEMPLATE).render(Context({
+        'css_classes': css_classes,
+        **default_values_for_field(field)
+    }))
+
+
+def default_values_for_field(field):
+    return {
         "label": field.label,
         "label_for_id": field.id_for_label,
         "html_id": field.id_for_label,
         'name': field.name,
         'value': field.value or "",
-        'css_classes': css_classes,
-        'placeholder': "placeholder",
         "help_text": field.help_text,
-    }))
+        # 'placeholder': field.placeholder,
+    }
