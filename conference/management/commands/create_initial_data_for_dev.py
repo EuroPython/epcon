@@ -206,6 +206,12 @@ class Command(BaseCommand):
             settings.CONFERENCE_CONFERENCE, default_vat_rate, print_output=True
         )
 
+        set_early_bird_fare_dates(
+            conference,
+            date.today(),
+            date.today() + timedelta(days=7)
+        )
+
         # News
 
         print("Creating news...")
