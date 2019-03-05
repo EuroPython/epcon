@@ -1,4 +1,4 @@
-
+from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -10,7 +10,10 @@ from cms.api import create_page  # , add_plugin
 # from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from assopy.models import AssopyUser, Vat, Country
-from conference.fares import pre_create_typical_fares_for_conference
+from conference.fares import (
+    pre_create_typical_fares_for_conference,
+    set_early_bird_fare_dates,
+)
 from conference.models import Conference
 from conference.tests.factories.fare import SponsorIncomeFactory
 from tests.common_tools import create_homepage_in_cms
@@ -112,18 +115,17 @@ class Command(BaseCommand):
         ]:
             new_page(rev_id, title, parent=about_europython_page)
 
-        sponsors_page = new_page('sponsors', "Sponsors")
+        sponsor_page = new_page('sponsor', "Sponsor")
         for rev_id, title in [
             ('become-a-sponsor', 'How to become a Sponsor'),
             ('sponsor-packages', 'Sponsorship packages'),
             ('additional-information', 'Additional Information'),
         ]:
-            new_page(rev_id, title, parent=sponsors_page)
+            new_page(rev_id, title, parent=sponsor_page)
 
         faq_page = new_page('faq', 'FAQ')
         for rev_id, title in [
             ('tips-for-attendees', 'Tips for Attendees'),
-            ('tips-for-speakers', 'Tips for Speakers'),
             ('tips-for-speakers', 'Tips for Speakers'),
         ]:
             new_page(rev_id, title, parent=faq_page)
@@ -186,4 +188,10 @@ class Command(BaseCommand):
             settings.CONFERENCE_CONFERENCE,
             default_vat_rate,
             print_output=True
+        )
+
+        set_early_bird_fare_dates(
+            conference,
+            date.today(),
+            date.today() + timedelta(days=7)
         )

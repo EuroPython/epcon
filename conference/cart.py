@@ -37,7 +37,7 @@ def cart_step1_choose_type_of_order(request):
     """
 
     return TemplateResponse(
-        request, "ep19/cart/step_1_choose_type_of_order.html", {},
+        request, "ep19/bs/cart/step_1_choose_type_of_order.html", {},
     )
 
 

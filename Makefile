@@ -37,6 +37,12 @@ db:
 	python manage.py migrate
 	python manage.py create_initial_data_for_dev
 
+
+remove-dev-db:
+	rm data/site/p3.db
+
+redo_db: remove-dev-db db
+
 test:
 	pytest -n auto
 

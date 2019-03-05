@@ -34,6 +34,10 @@
     margin: 40px 0;
 }
 
+.page {
+    min-height: 500px;
+}
+
 ul.cms_menu { margin-left: 0px; padding-left: 15px; margin-bottom: 30px}
 li.cms_menu { margin-top: .7em; list-style-type: none}
 li.cms_menu.ancestor { background: #eee; padding: .5em; border-radius: 5px}
