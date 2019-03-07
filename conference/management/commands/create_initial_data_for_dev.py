@@ -101,7 +101,7 @@ class Command(BaseCommand):
 
         about_europython_page = new_page("about", "About EuroPython")
         for rev_id, title in [
-            ('volnuteers', 'Volunteers'),
+            ('volunteers', 'Volunteers'),
             ('workgroups', 'Workgroups'),
             ('photos', 'Photos'),
             ('videos', 'Videos'),
@@ -112,13 +112,13 @@ class Command(BaseCommand):
         ]:
             new_page(rev_id, title, parent=about_europython_page)
 
-        sponsors_page = new_page('sponsors', "Sponsors")
+        sponsor_page = new_page('sponsor', "Sponsors")
         for rev_id, title in [
             ('become-a-sponsor', 'How to become a Sponsor'),
             ('sponsor-packages', 'Sponsorship packages'),
             ('additional-information', 'Additional Information'),
         ]:
-            new_page(rev_id, title, parent=sponsors_page)
+            new_page(rev_id, title, parent=sponsor_page)
 
         faq_page = new_page('faq', 'FAQ')
         for rev_id, title in [
