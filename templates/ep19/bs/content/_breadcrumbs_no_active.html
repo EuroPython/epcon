@@ -1,0 +1,3 @@
+{% for ance in ancestors %}
+    {% include "ep19/bs/content/_breadcrumb.html" with active=False nochevron=False url=ance.get_absolute_url title=ance.get_menu_title %}
+{% endfor %}

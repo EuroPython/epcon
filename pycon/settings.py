@@ -141,11 +141,9 @@ STATIC_ROOT = DATA_DIR + '/static/'
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_DIR, 'assets'),
+]
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -409,15 +407,6 @@ FILEBROWSER_URL_FILEBROWSER_MEDIA = '/static/filebrowser/'
 
 PAGE_USE_SITE_ID = False
 DEFAULT_PAGE_TEMPLATE = 'cms/content.html'
-PAGE_TEMPLATES = (
-    # ('cms/index.html', 'homepage'),
-    #('cms/index-simple.html', 'homepage (semplificata)'),
-    ('cms/p5_homepage.html', 'Homepage'),
-    ('cms/content.html', 'Content page'),
-    ('cms/content-1col.html', 'Content page, single column'),
-    ('cms/p5_home_splash.html', 'Homepage, splash'),
-    #('cms/content-assopy.html', 'assopy page (una colonna)'),
-)
 PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_LANGUAGES = (
@@ -454,10 +443,18 @@ CMS_LANGUAGES = {
     }
 }
 CMS_TEMPLATES = (
-    ('django_cms/p5_homepage.html', 'Homepage'),
-    ('django_cms/content.html', 'Content page'),
-    ('django_cms/content-1col.html', 'Content page, single column'),
-    ('django_cms/p5_home_splash.html', 'Homepage, splash'),
+    # ('django_cms/p5_homepage.html', 'Homepage'),
+    # ('django_cms/content.html', 'Content page'),
+    # ('django_cms/content-1col.html', 'Content page, single column'),
+    # ('django_cms/p5_home_splash.html', 'Homepage, splash'),
+    # ('ep19/bs/content/generic_content_page.html', 'Generic Content Page'),
+    ('ep19/bs/homepage/home.html', 'Homepage'),
+    ('ep19/bs/content/generic_content_page_with_sidebar.html',
+     'Generic Content Page (with sidebar)'),
+)
+PAGE_TEMPLATES = (
+    ('ep19/bs/content/generic_content_page_with_sidebar.html',
+     'Generic Content Page (with sidebar)'),
 )
 CMS_PLUGIN_PROCESSORS = (
     'cms_utils.processors.process_templatetags',
