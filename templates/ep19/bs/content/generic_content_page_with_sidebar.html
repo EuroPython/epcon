@@ -1,6 +1,6 @@
 {% extends "ep19/bs/base.html" %}
 
-{% load menu_tags %}
+{% load menu_tags cms_tags %}
 
 {% block content %}
 <div id="content_page">
@@ -12,9 +12,10 @@
 
             <div class='col-md-8'>
                 <h1>{{ request.current_page }}</h1>
-                <p>{% lorem 30 w %}</p>
-                <p>{% lorem 100 w %}</p>
-                <p>{% lorem 70 w %}</p>
+
+                <div id="content">
+                    {% placeholder "page_content" %}
+                </div>
             </div>
 
             <div class='col-md-4'>

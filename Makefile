@@ -37,6 +37,12 @@ db:
 	python manage.py migrate
 	python manage.py create_initial_data_for_dev
 
+
+drop_db:
+	rm -f data/site/p3.db
+
+redo_db: drop_db db
+
 test:
 	pytest -n auto
 
