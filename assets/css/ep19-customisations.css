@@ -15,6 +15,7 @@
 #footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
 #footer a { color: white; border-bottom: 1px solid #eee; }
 #footer ul { list-style-type: none; padding-left: 0}
+#footer ul li { margin: .5em 0; }
 #homepage_news { background: #007d8a; padding: 2em 0; margin 0:}
 .news-card { height: 300px; }
 
@@ -53,4 +54,10 @@ li.cms_menu.selected { font-weight: bold; }
     padding-top: 5em;
     padding-bottom: 10em;
     min-height: 500px;
+}
+
+.news {
+    margin: 2em 0;
+    padding: 1em 0;
+    border-bottom: 1px dashed #eee;
 }

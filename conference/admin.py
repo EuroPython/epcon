@@ -1,6 +1,3 @@
-
-
-
 import csv
 import logging
 import re
@@ -12,7 +9,9 @@ from django import http
 from django.contrib import admin
 from django.conf import settings as dsettings
 from django.conf.urls import url
-from django.contrib.contenttypes.fields import ReverseGenericManyToOneDescriptor
+from django.contrib.contenttypes.fields import (
+    ReverseGenericManyToOneDescriptor,
+)
 from django.core import urlresolvers
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
@@ -1220,6 +1219,23 @@ class CaptchaQuestionAdmin(admin.ModelAdmin):
     list_filter = ('enabled',)
 
 
+class NewsAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "conference",
+        "get_status_display",
+        "created",
+        "published_date",
+    )
+    list_filter = (
+        'created',
+        'status',
+        'published_date',
+    )
+    prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ('uuid',)
+
+
 admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)
 admin.site.register(models.Conference, ConferenceAdmin)
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
@@ -1235,3 +1251,4 @@ admin.site.register(models.Speaker, SpeakerAdmin)
 admin.site.register(models.Sponsor, SponsorAdmin)
 admin.site.register(models.Talk, TalkAdmin)
 admin.site.register(models.Ticket, TicketAdmin)
+admin.site.register(models.News, NewsAdmin)

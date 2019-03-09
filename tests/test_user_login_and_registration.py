@@ -5,17 +5,11 @@ from django.core.urlresolvers import reverse
 from email_template.models import Email
 
 from assopy.models import AssopyUser
-from assopy.forms import (
-    PRIVACY_POLICY_CHECKBOX,
-    PRIVACY_POLICY_ERROR
-)
+from assopy.forms import PRIVACY_POLICY_CHECKBOX, PRIVACY_POLICY_ERROR
 from conference.models import CaptchaQuestion
 from conference.users import RANDOM_USERNAME_LENGTH
 
-from tests.common_tools import (
-    create_homepage_in_cms,
-    template_used,
-)
+from tests.common_tools import template_used
 
 
 SIGNUP_SUCCESFUL_303 = 303
@@ -52,7 +46,6 @@ def test_user_registration(client):
     (to buy tickets, etc).
     """
     # required for redirects to /
-    create_homepage_in_cms()
 
     # 1. test if user can create new account
     sign_up_url = "/accounts/new-account/"
@@ -139,7 +132,6 @@ def test_393_emails_are_lowercased_and_login_is_case_insensitive(client):
     different case.
     """
 
-    create_homepage_in_cms()
     Email.objects.create(code='verify-account')
 
     sign_up_url = "/accounts/new-account/"
@@ -192,7 +184,6 @@ def test_703_test_captcha_questions(client):
     https://github.com/EuroPython/epcon/issues/703
     """
 
-    create_homepage_in_cms()
     QUESTION = "Can you foo in Python?"
     ANSWER   = "Yes you can"
     CaptchaQuestion.objects.create(question=QUESTION, answer=ANSWER)

@@ -449,7 +449,7 @@ CMS_TEMPLATES = (
     # ('django_cms/content-1col.html', 'Content page, single column'),
     # ('django_cms/p5_home_splash.html', 'Homepage, splash'),
     # ('ep19/bs/content/generic_content_page.html', 'Generic Content Page'),
-    ('ep19/bs/homepage/home.html', 'Homepage'),
+    # ('ep19/bs/homepage/home.html', 'Homepage'),
     ('ep19/bs/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
 )

@@ -10,32 +10,19 @@
         </div>
         
         <div class="row" style='margin-top: 2em;'>
+            {% for news in latest_3_news %}
             <div class="col-md-4">
-                <h3>Schedule update</h3>
-                <p>30 minutes ago</p>
-                <p style='margin-bottom: 3em'>{% lorem 30 w random %}
-                <a href='#' class='text-light text-underline'>Read more</a>
+                <h3>{{ news.title }}</h3>
+                <small title="{{ news.published_date }}">{{ news.published_date|timesince }} ago</small>
+                <p style='margin-bottom: 3em'>{{ news.content }}</p>
             </div>
-            <div class="col-md-4">
-                <h3>Launch of the new website</h3>
-                <p>March 28th</p>
-                <p style='margin-bottom: 3em'>{% lorem 30 w random %}
-                <a href='#' class='text-light text-underline'>Read more</a>
-                </p>
-            </div>
-            <div class="col-md-4">
-                <h3>Good bye EP18</h3>
-                <p>April 3rd</p>
-                <p style='margin-bottom: 3em'>{% lorem 30 w random %}
-                <a href='#' class='text-light text-underline'>Read more</a>
-                </p>
-            </div>
+            {% endfor %}
 
         </div>
         <div class="row text-right">
             <div class="col-md-12">
                 <p style='margin-top: 2em;'>
-                <a href='#' class='btn btn-outline-light'>Check older news &raquo;</a>
+                <a href='{% url "news" %}' class='btn btn-outline-light'>Check older news &raquo;</a>
                 </p>
             </div>
         </div>
