@@ -468,7 +468,6 @@ CKEDITOR_SETTINGS = {
     'contentsCss': ['/static/css/base.css'],
     'language': '{{ language }}',
     'toolbar': 'CMS',
-    'skin': 'moono',
     'extraPlugins': 'cmsplugins',
     'basicEntities': False,
     'entities': False,
