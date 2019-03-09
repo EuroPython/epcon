@@ -3,6 +3,9 @@
 /* secondary: d87a00 */
 /* secondary-light: f8c48f */
 
+.text-primary-light { color: #76bdc4; }
+.text-secondary-light { color: #f8c48f; }
+
 #background_image {
     background: url('/static/img/ep19-basel-dark.jpg');
     background-size: cover;
