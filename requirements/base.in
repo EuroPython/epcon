@@ -11,6 +11,7 @@ django-authority
 django-contrib-comments
 django_extensions
 django-model-utils==3.1.1
+django-crispy-forms
 
 # we can probably remove one of these
 django-tagging==0.4.6

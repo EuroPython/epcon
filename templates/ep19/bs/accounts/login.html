@@ -1,6 +1,6 @@
 {% extends "ep19/bs/base.html" %}
 
-{% load bootstrap_forms %}
+{% load crispy_forms_tags %}
 
 
 {% block content %}
@@ -17,7 +17,7 @@
             <div class="col-md-6">
                 <form method='POST' action='.' class='form'>
                     {% csrf_token %}
-                    {% render_form form %}
+                    {{ form|crispy }}
 
                     <button class="btn btn-success btn-lg btn-block">Login</button>
                 </form>

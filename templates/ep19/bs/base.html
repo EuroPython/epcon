@@ -18,6 +18,11 @@
 
   <body>
       {% cms_toolbar %}
+      {% if user.is_staff %}
+      {# HACK(artcz)... #}
+      {# assume we have a django cms toolbar here, so add additional margin #}
+      <div style="margin-top:45px"></div>
+      {% endif %}
       {% block body %}
           {% include "ep19/bs/header/_regular.html" %}
 

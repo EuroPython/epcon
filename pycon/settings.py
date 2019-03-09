@@ -309,6 +309,7 @@ INSTALLED_APPS = (
     'authority',
     #'pages',
     'mptt',
+    'crispy_forms',
 
     'django_xmlrpc',
     'rosetta',
@@ -494,6 +495,9 @@ DJANGOCMS_GRID_CONFIG = {
     'TOTAL_WIDTH': 960,
     'GUTTER': 20,
 }
+
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 #
