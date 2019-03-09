@@ -10,10 +10,15 @@
     min-height: 90px
 }
 .jumbotron { height: 800px; background: transparent; color: white; }
+.text-underline { text-decoration: underline; }
 
 #footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
 #footer a { color: white; border-bottom: 1px solid #eee; }
-#homepage_venue { background: #d87a00; padding: 1em 0; margin: 1em 0}
+#footer ul { list-style-type: none; padding-left: 0}
+#homepage_news { background: #007d8a; padding: 2em 0; margin 0:}
+.news-card { height: 300px; }
+
+#homepage_venue { background: #d87a00; padding: 1em 0; margin: 0}
 #homepage_schedule_overview { margin: 2em 0; }
 
 #tickets-link-header { color: #fff; border-bottom: 2px solid #fff; margin-right: 2px }

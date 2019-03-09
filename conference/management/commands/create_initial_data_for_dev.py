@@ -99,12 +99,13 @@ class Command(BaseCommand):
 
         for rev_id, title in [
             ("speakers", "Speakers"),
-            ("tranings", "Tranings"),
+            ("trainings", "Tranings"),
             ("workshops", "Workshops"),
             ("talks_and_conference_days", "Talks and Conference Days"),
             ("social-event", "Social Event"),
             ("sprints", "Sprint"),
             ("tickets", "Tickets"),
+            ("submit-proposal", "Submit Proposal"),
         ]:
             new_page(rev_id, title, parent=program_page)
 
