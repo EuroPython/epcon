@@ -1,5 +1,7 @@
 {% extends "ep19/bs/base.html" %}
 
+{% block title %}{{ request.current_page }} - {{ block.super }}{% endblock title %}
+
 {% load menu_tags cms_tags %}
 
 {% block content %}
@@ -10,7 +12,7 @@
                 {% show_breadcrumb 0 "ep19/bs/content/_breadcrumbs_bar.html" 0 %}
             </div>
 
-            <div class='col-md-8'>
+            <div class='col-md-9'>
                 <h1>{{ request.current_page }}</h1>
 
                 <div id="content">
@@ -18,7 +20,7 @@
                 </div>
             </div>
 
-            <div class='col-md-4'>
+            <div class='col-md-3' id="sidebar">
 
                 <ul>
                     {% show_menu 0 100 100 100 "ep19/bs/content/_menu.html" %}

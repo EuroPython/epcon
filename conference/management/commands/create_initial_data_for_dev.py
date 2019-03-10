@@ -120,10 +120,12 @@ class Command(BaseCommand):
             ("eps", "EuroPythoon Society"),
             ("previous-editions", "Previous Editions"),
             ("help-organize", "Help Organize next EuroPython"),
+            ("code-of-conduct", "Code of Conduct"),
+            ("privacy", "Privacy policy"),
         ]:
             new_page(rev_id, title, parent=about_europython_page)
 
-        sponsor_page = new_page("sponsor", "Sponsors")
+        sponsor_page = new_page("sponsor", "Sponsor")
         for rev_id, title in [
             ("become-a-sponsor", "How to become a Sponsor"),
             ("sponsor-packages", "Sponsorship packages"),
@@ -138,8 +140,6 @@ class Command(BaseCommand):
             ("tips-for-speakers", "Tips for Speakers"),
         ]:
             new_page(rev_id, title, parent=faq_page)
-
-        new_page("code-of-conduct", "Code of Conduct")
 
         print("Creating some countries")
         for iso, name in [
