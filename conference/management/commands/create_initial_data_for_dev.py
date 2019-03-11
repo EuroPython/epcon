@@ -73,7 +73,7 @@ class Command(BaseCommand):
                     **kwargs,
                 )
                 add_plugin(
-                    placeholder=page.placeholders.get(slot="page_content"),
+                    placeholder=page.placeholders.get(slot="text"),
                     plugin_type=TextPlugin,
                     language="en",
                     body=f"This is the page content for {title}",
