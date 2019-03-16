@@ -456,7 +456,7 @@ class SpeakerAdmin(admin.ModelAdmin):
     list_display = ('_avatar', '_user', '_email', '_company')
     search_fields = ('user__first_name', 'user__last_name', 'user__email',
                      'user__attendeeprofile__company')
-    list_filter = ('talk__conference', 'talk__status', 
+    list_filter = ('talk__conference', 'talk__status',
                    'user__attendeeprofile__company')
     list_select_related = True
     form = SpeakerAdminForm
@@ -519,7 +519,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         if o.user.attendeeprofile:
             return o.user.attendeeprofile.company
     _company.admin_order_field = 'user__attendeeprofile__company'
-    
+
     def _email(self, o):
         return o.user.email
     _user.admin_order_field = 'user__email'
@@ -1037,7 +1037,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_filter = ('fare__conference', 'fare__ticket_type', 'ticket_type',)
 
     if settings.TICKET_BADGE_ENABLED:
-        actions = ('do_ticket_badge',)
+        actions = ('',)
 
     class Media:
         js = (
@@ -1077,15 +1077,6 @@ class TicketAdmin(admin.ModelAdmin):
         qs = super(TicketAdmin, self).get_queryset(request)
         qs = qs.select_related('user', 'fare',)
         return qs
-
-    def do_ticket_badge(self, request, qs):
-        output = utils.render_badge(qs, cmdargs=settings.TICKET_BADGE_PROG_ARGS_ADMIN)
-        name, output_dir, _ = output[0]
-        tar = utils.archive_dir(output_dir)
-        response = http.HttpResponse(tar, content_type="application/x-gzip")
-        response['Content-Disposition'] = 'attachment; filename=badge-%s.tar.gz' % name
-        return response
-    do_ticket_badge.short_description = 'Ticket Badge'
 
     def get_urls(self):
         urls = super(TicketAdmin, self).get_urls()

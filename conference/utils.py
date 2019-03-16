@@ -390,7 +390,7 @@ def collapse_events(tt, threshold):
     """
     if isinstance(threshold, int):
         threshold = { None: threshold }
-    
+
     output = []
     for time, events in tt.iterOnTimes():
         limits = []
@@ -483,7 +483,7 @@ class TimeTable(object):
         for r in rows[1:]:
             ref = TimeTable.Reference(time, r, evt, flex)
             self._setEvent(ref, flex)
-            
+
         step = self.sumTime(time, self.slot)
         while count > 1:
             for r in rows:
@@ -660,38 +660,6 @@ def render_event_video_cover(eid, thumb=(256, 256)):
     image.save(os.path.join(base, fname + '.jpg.thumb'), 'JPEG')
 
     return True
-
-def render_badge(tickets, cmdargs=None, stderr=subprocess.PIPE):
-    """
-    Prepare the badges of the past tickets.
-
-    The tickets are processed by the function settings.TICKET_BADGE_PREPARE_FUNCTION that can group them as they wish;
-    each group is stored in a different directory.
-
-    The output contains a tuple of three elements for each group returned from preparation function:
-    * Name of the group (v. settings.TICKET_BADGE_PREPARE_FUNCTION)
-    * Directory containing the badge
-    * JSON document passed as input to the rendering function.
-    """
-    cmdargs = cmdargs or []
-    output = []
-    for group in settings.TICKET_BADGE_PREPARE_FUNCTION(tickets):
-        temp_dir = tempfile.mkdtemp(prefix='%s-' % group['name'])
-        args = [settings.TICKED_BADGE_PROG ] + cmdargs + [ '-c', group['plugin'], temp_dir]
-        p = subprocess.Popen(
-            args,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=stderr,
-            close_fds=True,
-        )
-        data = json.dumps(group['tickets'])
-        sout, serr = p.communicate(data)
-        if p.returncode:
-            log.warn('badge maker exit with "%s"', p.returncode)
-            log.warn('badge maker stderr: %s', serr)
-        output.append((group['name'], temp_dir, data))
-    return output
 
 def archive_dir(directory):
     from io import StringIO
