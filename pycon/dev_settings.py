@@ -1,7 +1,16 @@
+import os
+
 from pycon.settings import *  # NOQA
 
-DEFAULT_URL_PREFIX='http://localhost:8000'
-DEBUG=True
+DEFAULT_URL_PREFIX = 'http://localhost:37266'
+
+DEBUG = True
+LOGGING['loggers']['django.request']['handlers'].append('console')     # NOQA
+
+# Turn off HTTPS
+if 'HTTPS' in os.environ:
+    del os.environ['HTTPS']
+HTTPS = False
 
 # Disable all the caching
 DISABLE_CACHING = {
@@ -9,7 +18,6 @@ DISABLE_CACHING = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
-
 
 # however for some tests we *do* want to test caches, hence we're going to use
 # @override_settings(CACHES=settings.ENABLE_LOCMEM_CACHE)
@@ -24,15 +32,15 @@ CACHES = DISABLE_CACHING
 
 PAYPAL_TEST = True
 
-TEMPLATES[0]['OPTIONS']['debug'] = True
+TEMPLATES[0]['OPTIONS']['debug'] = True  # NOQA
 
-INSTALLED_APPS = INSTALLED_APPS + (
+INSTALLED_APPS = INSTALLED_APPS + (  # NOQA
     'django_extensions',
     'django_pdb',
     # 'devserver',
 )
 
-MIDDLEWARE = MIDDLEWARE + (
+MIDDLEWARE = MIDDLEWARE + (  # NOQA
     'django_pdb.middleware.PdbMiddleware',
     # 'devserver.middleware.DevServerMiddleware',
 )
@@ -50,3 +58,8 @@ DEVSERVER_AUTO_PROFILE = True
 
 # Show emails on console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+GRAPH_MODELS = {
+    'all_applications': True,
+    'group_models': True,
+}

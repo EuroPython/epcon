@@ -273,7 +273,7 @@ urlpatterns = [
     ),
     url(
         # 22 not 36 because we use short uuid
-        r"^verify-email/(?P<token>\w{22})/$",
+        r"^signup/verify-email/(?P<token>\w{22})/$",
         handle_verification_token,
         name="handle_verification_token",
     ),

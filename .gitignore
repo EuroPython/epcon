@@ -1,3 +1,5 @@
+.vimrc
+tags
 *.pyc
 *.swp
 settings_locale.py

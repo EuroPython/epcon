@@ -4,13 +4,14 @@ import os
 import os.path
 import sys
 
-from decouple import config, Csv
+from decouple import config
 
 from model_utils import Choices
-#from django.utils.translation import ugettext as _
 
 
-_ = lambda x:x
+# override ugettext
+def _(x):
+    return x
 
 
 # Configure DEBUG settings
@@ -19,8 +20,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # We want to use HTTPS for everything and not fiddle with docker or gunicorn
 # setups.
 #
-# See http://security.stackexchange.com/questions/8964/trying-to-make-a-django-based-s
-# for details.
+# See http://security.stackexchange.com/questions/8964/ for details.
 #
 # Note: This doesn't really help all that much. In order to Django behave, you
 # have to configure your proxy to send proper X-Forward-* headers and enable
@@ -33,35 +33,44 @@ if not DEBUG:
     # HTTPS configuration
     HTTPS = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-else:
-    # Turn off HTTPS
-    if 'HTTPS' in os.environ:
-        del os.environ['HTTPS']
-    HTTPS = False
 
-ADMINS = (
-    ('web-wg', 'web-wg@europython.eu'),
-)
+
+ADMINS = (("web-wg", "web-wg@europython.eu"),)
 MANAGERS = ADMINS
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=lambda v: [s.strip() for s in v.split(',')])
-APPEND_SLASH = config('APPEND_SLASH', default=True, cast=bool)
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="*",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+)
+APPEND_SLASH = config("APPEND_SLASH", default=True, cast=bool)
 
-PROJECT_DIR = config('PROJECT_DIR', default=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')))
-DATA_DIR = config('DATA_DIR', default=os.path.join(PROJECT_DIR, 'data'))
-OTHER_STUFF = config('OTHER_STUFF', default=os.path.join(PROJECT_DIR, 'documents'))
+PROJECT_DIR = config(
+    "PROJECT_DIR",
+    default=os.path.normpath(os.path.join(os.path.dirname(__file__), "..")),
+)
+DATA_DIR = config("DATA_DIR", default=os.path.join(PROJECT_DIR, "data"))
+OTHER_STUFF = config(
+    "OTHER_STUFF", default=os.path.join(PROJECT_DIR, "documents")
+)
 
-LOGS_DIR = os.path.join(PROJECT_DIR, 'logs/')
+LOGS_DIR = os.path.join(PROJECT_DIR, "logs/")
 
-SITE_DATA_ROOT = DATA_DIR + '/site'
+SITE_DATA_ROOT = DATA_DIR + "/site"
 
+# DATABASE
+# --------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DATA_ROOT + '/p3.db',
+        'NAME': SITE_DATA_ROOT + '/epcon.db',
     }
 }
 
+
+# Email
+# -----
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EuroPython outgoing mail server
 EMAIL_HOST = "mail.europython.io"
 
@@ -71,43 +80,9 @@ SERVER_EMAIL = config('SERVER_EMAIL', default='noreply@europython.eu')
 # Email sender address used per default for emails to e.g. attendees
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='info@europython.eu')
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/Rome'
 
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en'
-
-# Languages supported by the system, mapping ISO code
-# to language. 'en' must always be supported
-#
-# Note that the system will have to support languages from previous
-# conferences as well, so changes have to be applied with care !
-#
-# TBD: There's another setting called CMS_LANGUAGES. Not sure why we
-# need this.
-LANGUAGES = (
-    ('en', _('English')),
-    #('es', _('Spanish')),
-    #('eu', _('Basque')),
-    #('it', _('Italian')),
-)
-
-# These languages are shown in the talk submission forms. The
-# tuple must be a subset of LANGUAGES.
-CONFERENCE_TALK_SUBMISSION_LANGUAGES = (
-    ('en', _('English')),
-    #('es', _('Spanish')),
-    #('eu', _('Basque')),
-    #('it', _('Italian')),
-)
-
-# Site ID
-SITE_ID = 1
-
+# Timezone and languages
+# -----------------------
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -118,6 +93,20 @@ USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
+
+TIME_ZONE = 'Europe/Zurich'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = (
+    ('en', _('English')),
+)
+
+CONFERENCE_TALK_SUBMISSION_LANGUAGES = (
+    ('en', _('English')),
+)
+
+# Site ID
+SITE_ID = 1
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -156,10 +145,6 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
 
-#
-# XXX THESE SHOULD GO INTO THE OS.ENVIRON !
-#
-LOGIN_REDIRECT_URL = "/"
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config(
     "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default=""
 )
@@ -185,54 +170,37 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 TEMPLATES = [
-    # Jinja templates from ep2019+
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [
-            os.path.join(PROJECT_DIR, 'templates_jinja')
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'environment': 'pycon.jinja2.environment',
-            'context_processors': [
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(PROJECT_DIR, "templates")],
+        "OPTIONS": {
+            "debug": DEBUG,
+            "context_processors": [
                 "django.contrib.auth.context_processors.auth",
-            ]
-        },
-    },
-
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(PROJECT_DIR, 'templates'),
-        ],
-        'OPTIONS': {
-            'debug': DEBUG,
-            'context_processors': [
-                "django.contrib.auth.context_processors.auth",
-                'django.contrib.messages.context_processors.messages',
+                "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.template.context_processors.media",
-                'django.template.context_processors.csrf',
-                'django.template.context_processors.request',
+                "django.template.context_processors.csrf",
+                "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                'p3.context_processors.settings',
-                'conference.context_processors.current_url',
-                'conference.context_processors.stuff',
+                "p3.context_processors.settings",
+                "conference.context_processors.current_url",
+                "conference.context_processors.stuff",
                 "sekizai.context_processors.sekizai",
                 "cms.context_processors.cms_settings",
                 "django.template.context_processors.static",
-
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
+                "social.apps.django_app.context_processors.backends",
+                "social.apps.django_app.context_processors.login_redirect",
             ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
-}]
+    }
+]
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -245,10 +213,8 @@ MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-
     'assopy.middleware.DebugInfo',
-    'pycon.middleware.RisingResponse',
+
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
@@ -266,15 +232,7 @@ LOCALE_PATHS = (
 )
 
 INSTALLED_APPS = (
-    # 'test_without_migrations',
     'filebrowser',
-    # Warning: the sequence p3/assopy/admin is important to be able to
-    # resolve correctly templates
-    # FIXME(artcz) ↑ this Warning is there because templates within apps are
-    # overlapping and inherit in a non-obvious way. This is currently being
-    # fixed, with the goal to move to a centralised templates/ location; once
-    # that's done this warning could be removed (and the order of the apps
-    # should be no longer relevant)
 
     'djangocms_admin_style',
     'django_comments',
@@ -311,7 +269,7 @@ INSTALLED_APPS = (
     'tagging',
     'taggit',
     'authority',
-    #'pages',
+    # 'pages',
     'mptt',
     'crispy_forms',
 
@@ -329,12 +287,7 @@ INSTALLED_APPS = (
     'markitup',
     'cms_utils',
     'social_django',
-
-    # 'django_extensions',
-    # 'sslserver',
 )
-# Extend INSTALLED_APPS using env settings
-INSTALLED_APPS += config('EXTRA_INSTALLED_APPS', default='', cast=Csv(post_process=tuple))
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -346,10 +299,17 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s [%(process)d] %(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
+            'format': (
+                '%(asctime)s [%(process)d] '
+                '%(levelname)s - %(name)s - %(module)s -'
+                '%(funcName)s: %(message)s'
+            )
         },
         'simple': {
-            'format': '%(levelname)s - %(name)s - %(module)s - %(funcName)s: %(message)s'
+            'format': (
+                '%(levelname)s - %(name)s - %(module)s -'
+                '%(funcName)s: %(message)s'
+            )
         },
     },
     'filters': {
@@ -416,10 +376,9 @@ PAGE_UNIQUE_SLUG_REQUIRED = False
 PAGE_TAGGING = True
 PAGE_LANGUAGES = (
     ('en-us', _('English')),
-    #('it-it', _('Italian')),
 )
 PAGE_DEFAULT_LANGUAGE = PAGE_LANGUAGES[0][0]
-PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]
+PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]  # NOQA
 
 PAGE_REAL_TIME_SEARCH = False
 
@@ -479,8 +438,14 @@ CKEDITOR_SETTINGS = {
 
 # html5lib sanitizer settings
 TEXT_ADDITIONAL_TAGS = ('iframe',)
-TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder',
-     'src', 'height', 'width')
+TEXT_ADDITIONAL_ATTRIBUTES = (
+    "scrolling",
+    "allowfullscreen",
+    "frameborder",
+    "src",
+    "height",
+    "width",
+)
 
 #
 # We're not going to use this feature for EuroPython 2015+:
@@ -509,14 +474,17 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-#
-# XXX THESE NEED TO GO INTO OS.ENVIRON !!!
-#
-CONFERENCE_CONFERENCE = 'ep2018'
-CONFERENCE_SEND_EMAIL_TO = [ 'helpdesk@europython.eu', ]
+CONFERENCE_CONFERENCE = 'ep2019'
+CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2018.europython.eu/en/talk-voting/'
-CONFERENCE_TALK_VOTING_ELIGIBLE = ('ep2015', 'ep2016', 'ep2017', 'ep2018')
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2019.europython.eu/en/talk-voting/'
+CONFERENCE_TALK_VOTING_ELIGIBLE = (
+    "ep2015",
+    "ep2016",
+    "ep2017",
+    "ep2018",
+    "ep2019",
+)
 
 CONFERENCE_FORMS = {
     'PaperSubmission': 'p3.forms.P3SubmissionForm',
@@ -526,7 +494,9 @@ CONFERENCE_FORMS = {
 }
 
 CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
-CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = SITE_DATA_ROOT + '/admin_ticket_emails.txt'
+CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = (
+    SITE_DATA_ROOT + "/admin_ticket_emails.txt"
+)
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
 
 # Conference sub-communities
@@ -549,8 +519,6 @@ CONFERENCE_TALK_DOMAIN = Choices(
 )
 
 
-### Ticket information
-
 # T-shirt sizes
 # TODO: Make that into Choices
 CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
@@ -571,12 +539,12 @@ CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
 
 # Available diets
 CONFERENCE_TICKET_CONFERENCE_DIETS = (
-    ('omnivorous', _('Omnivorous')),
-    ('vegetarian', _('Vegetarian')),
-    #('vegan', _('Vegan')),
-    #('kosher', _('Kosher')),
-    #('halal', _('Halal')),
-    ('other', _('Other')),
+    ("omnivorous", _("Omnivorous")),
+    ("vegetarian", _("Vegetarian")),
+    # ('vegan', _('Vegan')),
+    # ('kosher', _('Kosher')),
+    # ('halal', _('Halal')),
+    ("other", _("Other")),
 )
 
 # Python experience
@@ -640,6 +608,7 @@ def CONFERENCE_VOTING_OPENED(conf, user):
 
     return False
 
+
 def CONFERENCE_VOTING_ALLOWED(user):
 
     """ Determine whether user is allowed to participate in talk voting.
@@ -668,27 +637,41 @@ def CONFERENCE_VOTING_ALLOWED(user):
 
     # Starting with EP2017, we allow people who have bought tickets in the
     # past, to also participate in talk voting.
-    tickets = models.TicketConference.objects \
-              .filter(ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
-                      assigned_to=user.email)
+    tickets = (
+        models.TicketConference
+        .objects
+        .filter(
+            ticket__fare__conference__in=CONFERENCE_TALK_VOTING_ELIGIBLE,
+            assigned_to=user.email
+        )
+    )
     if tickets.count() > 0:
         return True
 
     # Starting with EP2017, we know that all assigned tickets have
     # .assigned_to set correctly
-    #tickets = models.TicketConference.objects \
+    # tickets = models.TicketConference.objects \
     #          .filter(ticket__fare__conference=CONFERENCE_CONFERENCE,
     #                  assigned_to=user.email)
 
     # Old query (for tickets bought before 2017)
     from django.db.models import Q
     for conf in CONFERENCE_TALK_VOTING_ELIGIBLE:
-        tickets = models.TicketConference.objects \
-             .available(user, conf) \
-             .filter(Q(orderitem__order___complete=True) | Q(
-             orderitem__order__method='admin')) \
-             .filter(Q(p3_conference=None) | Q(p3_conference__assigned_to='') | Q(
-             p3_conference__assigned_to=user.email))
+        tickets = (
+            models.TicketConference
+            .objects
+            .available(user, conf)
+            .filter(
+                Q(orderitem__order___complete=True)
+                | Q(orderitem__order__method='admin')
+            )
+            .filter(
+                Q(p3_conference=None)
+                | Q(p3_conference__assigned_to='')
+                | Q(p3_conference__assigned_to=user.email)
+            )
+        )
+
         if tickets.count() > 0:
             return True
     return False
@@ -724,126 +707,6 @@ CONFERENCE_ADMIN_ATTENDEE_STATS = (
     'p3.stats.diet_types',
     'p3.stats.pp_tickets',
 )
-
-
-def CONFERENCE_VIDEO_COVER_EVENTS(conference):
-    from conference import dataaccess
-    from conference import models
-    from datetime import timedelta
-
-    conf = models.Conference.objects.get(code=conference)
-
-    def valid(e):
-        if e['tags'] & set(['special', 'break']):
-            return False
-        # sprints are in the last two days
-        if e['time'].date() >= conf.conference_end - timedelta(days=1):
-            return False
-        # evening events are not recorded
-        if e['time'].hour >= 20:
-            return False
-        if len(e['tracks']) == 1 and (
-            e['tracks'][0] in ('helpdesk1', 'helpdesk2')):
-            return False
-        return True
-
-    return [x['id'] for x in filter(valid, dataaccess.events(conf=conference))]
-
-
-def CONFERENCE_VIDEO_COVER_IMAGE(eid, type='front', thumb=False):
-    import re
-    import os.path
-    from PIL import Image, ImageDraw, ImageFont
-    from p3 import dataaccess
-
-    event = dataaccess.event_data(eid)
-    conference = event['conference']
-
-    stuff = os.path.normpath(
-        os.path.join(os.path.dirname(__file__), '..', 'documents', 'cover',
-                     conference))
-    if not os.path.isdir(stuff):
-        return None
-
-    def wrap_text(font, text, width):
-        words = re.split(' ', text)
-        lines = []
-        while words:
-            word = words.pop(0).strip()
-            if not word:
-                continue
-            if not lines:
-                lines.append(word)
-            else:
-                line = lines[-1]
-                w, h = font.getsize(line + ' ' + word)
-                if w <= width:
-                    lines[-1] += ' ' + word
-                else:
-                    lines.append(word)
-
-        for ix, line in enumerate(lines):
-            line = line.strip()
-            while True:
-                w, h = font.getsize(line)
-                if w <= width:
-                    break
-                line = line[:-1]
-            lines[ix] = line
-        return lines
-
-    if conference in ('ep2012', 'ep2013', 'ep2015', 'ep2016', 'ep2017', 'ep2018'):
-        master = Image.open(os.path.join(stuff, 'cover-start-end.png')).convert(
-            'RGBA')
-
-        if type == 'back':
-            return master
-
-        if conference == 'ep2012':
-            ftitle = ImageFont.truetype(
-                os.path.join(stuff, 'League Gothic.otf'),
-                36, encoding="unic")
-            fauthor = ImageFont.truetype(
-                os.path.join(stuff, 'Arial_Unicode.ttf'),
-                21, encoding="unic")
-            y = 175
-        elif conference in ('ep2013', 'ep2015', 'ep2016', 'ep2017', 'ep2018'):
-            ftitle = ImageFont.truetype(
-                os.path.join(stuff, 'League_Gothic.otf'),
-                36, encoding="unic")
-            fauthor = ImageFont.truetype(
-                os.path.join(stuff, 'League_Gothic.otf'),
-                28, encoding="unic")
-            y = 190
-
-        width = master.size[0] - 40
-        d = ImageDraw.Draw(master)
-
-        title = event['name']
-        if event.get('custom'):
-            # this is a custom event, if starts with an anchor we can
-            # extract the reference
-            m = re.match(r'<a href="(.*)">(.*)</a>', title)
-            if m:
-                title = m.group(2)
-        lines = wrap_text(ftitle, title, width)
-        for l in lines:
-            d.text((20, y), l, font=ftitle, fill=(0x2f, 0x1c, 0x1c, 0xff))
-            y += ftitle.getsize(l)[1] + 8
-
-        if event.get('talk'):
-            spks = [x['name'] for x in event['talk']['speakers']]
-            text = 'by ' + ','.join(spks)
-            lines = wrap_text(fauthor, text, width)
-            for l in lines:
-                d.text((20, y), l, font=fauthor, fill=(0x3d, 0x7e, 0x8a, 0xff))
-                y += fauthor.getsize(l)[1] + 8
-
-        if thumb:
-            master.thumbnail(thumb, Image.ANTIALIAS)
-        return master
-    else:
-        return None
 
 
 CONFERENCE_TICKET_BADGE_ENABLED = True
@@ -910,7 +773,7 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2018.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2019.europython.eu'
 
 COMMENTS_APP = 'hcomments'
 
@@ -926,7 +789,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2018.europython.eu/accounts/profile/
+https://ep2019.europython.eu/accounts/profile/
 '''
 
 
@@ -1128,19 +991,8 @@ CRONJOBS = [
 ]
 
 
-#
-# Google maps key
-#
-CONFERENCE_GOOGLE_MAPS = {
-    # Valid for europython.eu domain
-    # XXX This should go into os.environ
-    'key': 'ABQIAAAAaqki7uO3Z2gFXuaDbZ-9BBT8rJViP5Kd0PVV0lwN5R_47a678xQFxoY_vNcqiT-2xRPjGe6Ua3A5oQ',
-    'country': 'it',
-}
-
-#
 # Stripe payment integration
-#
+# --------------------------
 STRIPE_ENABLED = True
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default='')
 STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY", default='')
@@ -1149,28 +1001,12 @@ STRIPE_COMPANY_LOGO = config("STRIPE_COMPANY_LOGO", default='')
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
 
-#
-# Paypay payment integration
-#
-
+# Paypl integration
 # Paypal merchant email
 PAYPAL_RECEIVER_EMAIL = config("PAYPAL_RECEIVER_EMAIL", default='')
 
 # If the merchant account is a debug one set this flag to True
 PAYPAL_TEST = config('PAYPAL_TEST', default=False, cast=bool)
-
-#
-# EMail setup
-#
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# MAL 2015-03-03: We need the emails going out rather than to the
-# console, so commenting this out for now.
-#if DEBUG:
-#    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-if DEBUG:
-    LOGGING['loggers']['django.request']['handlers'].append('console')
 
 # files under SECURE_MEDIA_BOOT must be served by django, this if
 # is needed to avoid they end up in a subdir of MEDIA_ROOT that is
@@ -1189,14 +1025,8 @@ if not SECRET_KEY:
     else:
         print('WARN, SECRET_KEY not set')
 
-GRAPH_MODELS = {
-    'all_applications': True,
-    'group_models': True,
-}
-
 # This is used just for tests
 DISABLE_CACHING = False
-
 
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
@@ -1206,15 +1036,9 @@ if not os.path.exists(LOGS_DIR):
 sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
 
 
-### Override any settings with local settings
-#
-# IMPORTANT: This needs to be last in this module.
-#
-
 try:
     from pycon.settings_locale import *
 except ImportError as reason:
     #import sys
     #sys.stderr.write('Could not import local settings: %s\n' % reason)
     pass
-
