@@ -159,9 +159,13 @@ SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
 #
 # XXX THESE SHOULD GO INTO THE OS.ENVIRON !
 #
-LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default='')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", default='')
+LOGIN_REDIRECT_URL = "/"
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config(
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default=""
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config(
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", default=""
+)
 
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',
@@ -174,7 +178,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.create_user',
     # THIS IS IMPORTANT!!!! Connect new authenticated users to profiles
     # of the important project apps!!
-    'p3.views.profile.connect_profile_to_assopy',
+    'conference.accounts.social_connect_profile',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details'

@@ -9,7 +9,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1>Log in to EuroPython</h1>
+                <h1>Signup</h1>
             </div>
         </div>
 
@@ -22,7 +22,7 @@
                     {{ form|crispy }}
 
                     <button class="btn btn-success btn-lg btn-block">
-                        Login
+                        Create Account
                     </button>
                 </form>
             </div>
@@ -35,8 +35,7 @@
 
         <div class="row" style='margin-top: 5em;'>
             <div class='col-md-6'>
-                <a class="btn btn-block btn-outline-primary" href="{% url "accounts:signup_step_1_create_account" %}?next={{ next }}" class="btn">Don't have an account? Click here to register</a>
-                <a class="btn btn-block btn-outline-danger" href="{% url "password_reset" %}" class="btn">Forgot your password? Click here to reset it</a>
+                <a class="btn btn-block btn-outline-primary" href="{% url "accounts:login" %}?next={{ next }}" class="btn">Already have an account? Click here to login</a>
             </div>
 
         </div>

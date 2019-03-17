@@ -76,7 +76,7 @@ def _assign_ticket(ticket, email):
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
         just_created = True
-        u = amodels.AssopyUser.objects.create_user(email=email, token=True, send_mail=False)
+        u = amodels.AssopyUser.objects.create_user(email=email, token=True)
         recipient = u.user
         name = email
     else:

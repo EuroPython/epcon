@@ -4,7 +4,7 @@ Django~=1.11
 pyjwkest==1.4.0
 requests
 requests-oauthlib
-six
+shortuuid
 
 django-classy-tags
 django-authority

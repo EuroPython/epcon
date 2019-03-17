@@ -42,19 +42,16 @@ class Command(BaseCommand):
             email="alice@europython.eu",
             password="europython",
             active=True,
-            send_mail=False,
         )
         AssopyUser.objects.create_user(
             email="bob@europython.eu",
             password="europython",
             active=True,
-            send_mail=False,
         )
         AssopyUser.objects.create_user(
             email="cesar@europython.eu",
             password="europython",
             active=True,
-            send_mail=False,
         )
 
         def new_page(rev_id, title, **kwargs):

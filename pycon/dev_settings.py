@@ -1,4 +1,4 @@
-from pycon.settings import *
+from pycon.settings import *  # NOQA
 
 DEFAULT_URL_PREFIX='http://localhost:8000'
 DEBUG=True
@@ -32,8 +32,6 @@ INSTALLED_APPS = INSTALLED_APPS + (
     # 'devserver',
 )
 
-#TEST_WITHOUT_MIGRATIONS_COMMAND = 'django_nose.management.commands.test.Command'
-
 MIDDLEWARE = MIDDLEWARE + (
     'django_pdb.middleware.PdbMiddleware',
     # 'devserver.middleware.DevServerMiddleware',
@@ -50,22 +48,5 @@ DEVSERVER_MODULES = (
 
 DEVSERVER_AUTO_PROFILE = True
 
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': '/tmp/p3.db',
-   }
-}
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get("DATABASE_NAME", 'epcon'),
-#         'USER': os.environ.get("POSTGRES_USER", 'epcon'),
-#         'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'epcon'),
-#         'HOST': os.environ.get("POSTGRES_HOST", '172.15.201.10'),
-#         'PORT': os.environ.get("POSTGRES_PORT", '5432'),
-#     },
-# }
-
+# Show emails on console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
