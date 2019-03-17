@@ -270,7 +270,7 @@ class AssopyUser(models.Model):
         if not name.strip():
             return self.user.email
         else:
-            return name
+            return name.strip()
 
     def get_orders(self):
         """

@@ -10,8 +10,8 @@
         {% if user.is_staff %}
         <a href='{% url "admin:index" %}' class='btn btn-outline-warning'>Admin panel</a>
         {% endif %}
-        <a href='{% url "user_panel:password_change" %}' class='btn btn-outline-info'>Change password</a>
-        <a href='{% url "logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
+        <a href='{% url "user_panel:password_change" %}' class='btn btn-outline-info'>Change your password</a>
+        <a href='{% url "accounts:logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
     </div>
 </div>
 

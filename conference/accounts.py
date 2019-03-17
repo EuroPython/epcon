@@ -111,7 +111,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
 def signup_step_2_please_verify_email(request):
     return TemplateResponse(
-        request, "ep19/bs/accounts/signup_please_verify_email.txt", {}
+        request, "ep19/bs/accounts/signup_please_verify_email.html", {}
     )
 
 
@@ -123,7 +123,7 @@ def send_verification_email(assopy_user, current_site) -> None:
     )
     full_url = f'https://{current_site.domain}{verification_path}'
 
-    content = render_to_string("ep19/emails/signup_verification_email.html", {
+    content = render_to_string("ep19/emails/signup_verification_email.txt", {
         'new_token': new_token,
         'verification_email_url': full_url,
     })
@@ -260,6 +260,7 @@ urlpatterns = [
         ),
         name="login",
     ),
+    url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
     url(
         r"^signup/$",
         signup_step_1_create_account,
@@ -276,7 +277,6 @@ urlpatterns = [
         handle_verification_token,
         name="handle_verification_token",
     ),
-
     # Password reset, using default django views.
     url(
         r"^password-reset/$",
@@ -303,6 +303,9 @@ urlpatterns = [
         kwargs={
             "set_password_form": auth_forms.SetPasswordForm,
             "template_name": "ep19/bs/accounts/password_reset_confirm.html",
+            "post_reset_redirect": reverse_lazy(
+                "accounts:password_reset_complete"
+            ),
         },
         name="password_reset_confirm",
     ),

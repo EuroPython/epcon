@@ -1,7 +1,3 @@
-# coding: utf-8
-
-
-
 from pytest import mark
 
 from django.core.urlresolvers import reverse
@@ -27,40 +23,49 @@ def test_change_password(client):
     """
 
     # default password is 'password123' per django_factory_boy
-    user = auth_factories.UserFactory(email='joedoe@example.com',
-                                      is_active=True)
+    user = auth_factories.UserFactory(
+        email="joedoe@example.com", is_active=True
+    )
 
     # both are required to access user profile page.
     AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug='foobar')
+    AttendeeProfile.objects.create(user=user, slug="foobar")
 
-    client.login(email='joedoe@example.com', password='password123')
+    client.login(email="joedoe@example.com", password="password123")
 
-    user_profile_url = reverse("assopy-profile")
-    change_password_url = reverse("password_change")
+    user_dashboard_url = reverse("user_panel:dashboard")
+    change_password_url = reverse("user_panel:password_change")
 
-    response = client.get(user_profile_url)
-    assert "Change your password" in response.content.decode('utf-8')
-    assert change_password_url in response.content.decode('utf-8')
-    assert template_used(response, 'assopy/profile.html')
+    response = client.get(user_dashboard_url)
+    assert "Change your password" in response.content.decode("utf-8")
+    assert change_password_url in response.content.decode("utf-8")
+    assert template_used(response, "ep19/bs/user_panel/dashboard.html")
 
     response = client.get(change_password_url)
-    assert template_used(response, "registration/password_change_form.html")
-    assert 'Django Administration' not in response.content.decode('utf-8')
+    assert template_used(
+        response, "ep19/bs/user_panel/password_change.html"
+    )
+    assert "Django Administration" not in response.content.decode("utf-8")
 
-    response = client.post(change_password_url, {
-        'old_password': 'password123',
-        'new_password1': 'pwd345',
-        'new_password2': 'pwd345',
-    }, follow=True)
+    response = client.post(
+        change_password_url,
+        {
+            "old_password": "password123",
+            "new_password1": "pwd345",
+            "new_password2": "pwd345",
+        },
+        follow=True,
+    )
 
-    assert template_used(response, "registration/password_change_done.html")
-    assert user_profile_url in response.content.decode('utf-8')
-    assert 'Password change successful' in response.content.decode('utf-8')
-    assert 'Go back to your profile' in response.content.decode('utf-8')
+    assert template_used(
+        response, "ep19/bs/user_panel/password_change_done.html"
+    )
+    assert user_dashboard_url in response.content.decode("utf-8")
+    assert "Password updated" in response.content.decode("utf-8")
 
     client.logout()
 
-    can_log_in_with_new_password = client.login(email='joedoe@example.com',
-                                                password='pwd345')
+    can_log_in_with_new_password = client.login(
+        email="joedoe@example.com", password="pwd345"
+    )
     assert can_log_in_with_new_password

@@ -59,6 +59,7 @@ def test_reset_password(client):
     assert 'name="new_password1"' in response.content.decode("utf-8")
     assert 'name="new_password2"' in response.content.decode("utf-8")
 
+    print(email.body)
     # --------
     response = client.post(
         url_from_email,

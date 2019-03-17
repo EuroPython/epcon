@@ -137,7 +137,7 @@
                 {% else %}
 
                     <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
-                    <a href="{% url "assopy-new-account" %}?next={{ next }}">Sign up</a>
+                    <a href="{% url "accounts:signup_step_1_create_account" %}?next={{ next }}">Sign up</a>
                 {% endif %}
                 </li>
             </ul>
