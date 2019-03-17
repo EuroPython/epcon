@@ -276,6 +276,7 @@ urlpatterns = [
         handle_verification_token,
         name="handle_verification_token",
     ),
+
     # Password reset, using default django views.
     url(
         r"^password-reset/$",
