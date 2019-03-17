@@ -84,59 +84,68 @@ class Command(BaseCommand):
             except FieldError as e:
                 print("Warning: ", e)
 
-        program_page = new_page("program", "Program")
-
+        program_page = new_page("faq", "FAQ")
         for rev_id, title in [
-            ("speakers", "Speakers"),
-            ("trainings", "Tranings"),
-            ("workshops", "Workshops"),
-            ("talks_and_conference_days", "Talks and Conference Days"),
-            ("social-event", "Social Event"),
-            ("sprints", "Sprint"),
-            ("tickets", "Tickets"),
+            ("tickets", "Buy Tickets"),
             ("submit-proposal", "Submit Proposal"),
+            ("tips-for-attendees", "Tips for Attendees"),
+            ("volunteers", "Volunteers"),
+            ("sign-up-as-session-chair", "Sign up as Session Chair"),
+            ("financial-aid", "Financial Aid"),
+            ("visa", "Visa"),
+        ]:
+            new_page(rev_id, title, parent=program_page)
+
+        program_page = new_page("program", "Program")
+        for rev_id, title in [
+            ("workshops", "Workshops"),
+            ("trainings", "Trainings"),
+            ("schedule", "Schedule"),
+            ("talks", "Talks"),
+            ("speakers", "Speakers"),
+            ("tips-for-speakers", "Tips for Speakers"),
+            ("speaker-release-agreement", "Speaker Release Agreement"),
+            ("open-spaces", "Open Spaces"),
+            ("social-event", "Social Event"),
+            ("sprints", "Sprints"),
         ]:
             new_page(rev_id, title, parent=program_page)
 
         location_page = new_page("location", "Location")
         for rev_id, title in [
-            ("explore-basel", "Explore City of Basel"),
-            ("visa", "Visa"),
             ("conference-venue", "Conference Venue"),
-            ("sprints-venue", "Workshops & Sprints Venue"),
+            ("workshops-and-sprints-venue", "Workshops & Sprints Venue"),
+            ("basel", "Basel"),
+            ("travel", "Travel"),
+            ("accommodation", "Accommodation"),
+            ("where-to-eat", "Where to Eat and Drink"),
         ]:
             new_page(rev_id, title, parent=location_page)
 
-        about_europython_page = new_page("about", "About EuroPython")
-        for rev_id, title in [
-            ("volunteers", "Volunteers"),
-            ("workgroups", "Workgroups"),
-            ("photos", "Photos"),
-            ("videos", "Videos"),
-            ("social-media", "Social Media"),
-            ("eps", "EuroPythoon Society"),
-            ("previous-editions", "Previous Editions"),
-            ("help-organize", "Help Organize next EuroPython"),
-            ("code-of-conduct", "Code of Conduct"),
-            ("privacy", "Privacy policy"),
-        ]:
-            new_page(rev_id, title, parent=about_europython_page)
-
         sponsor_page = new_page("sponsor", "Sponsor")
         for rev_id, title in [
-            ("become-a-sponsor", "How to become a Sponsor"),
-            ("sponsor-packages", "Sponsorship packages"),
-            ("additional-information", "Additional Information"),
+            ("become-a-sponsor", "Become a Sponsor"),
+            ("sponsor-packages", "Packages"),
+            ("sponsor-options", "Additional Options"),
+            ("sponsor-information", "Additional Information"),
+            ("sponsor-jobboard", "Job Board"),
         ]:
             new_page(rev_id, title, parent=sponsor_page)
 
-        faq_page = new_page("faq", "FAQ")
+        about_europython_page = new_page("about", "About")
         for rev_id, title in [
-            ("tips-for-attendees", "Tips for Attendees"),
-            ("tips-for-speakers", "Tips for Speakers"),
-            ("tips-for-speakers", "Tips for Speakers"),
+            ("social-media", "Social Media"),
+            ("code-of-conduct", "Code of Conduct"),
+            ("privacy", "Privacy policy"),
+            ("workgroups", "2019 Team"),
+            ("photos", "Photos"),
+            ("videos", "Videos"),
+            ("eps", "EuroPython Society"),
+            ("previous-editions", "Previous Editions"),
+            ("help-organize", "Help Organize next EuroPython"),
+            ("faq", "FAQ"),
         ]:
-            new_page(rev_id, title, parent=faq_page)
+            new_page(rev_id, title, parent=about_europython_page)
 
         print("Creating some countries")
         for iso, name in [

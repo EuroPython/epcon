@@ -39,7 +39,7 @@ db:
 
 
 drop_db:
-	rm -f data/site/p3.db
+	rm -f data/site/epcon.db
 
 redo_db: drop_db db
 
