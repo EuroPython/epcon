@@ -111,7 +111,7 @@ def test_user_registration(client):
     assert not is_logged_in  # user is inactive
 
     response = client.get('/')
-    assert template_used(response, 'ep19/homepage.html')
+    assert template_used(response, 'ep19/bs/homepage/home.html')
     assert 'Joe Doe' not in response.content.decode('utf-8')
     assert 'Log out' not in response.content.decode('utf-8')
 
@@ -124,10 +124,10 @@ def test_user_registration(client):
     assert is_logged_in
 
     response = client.get('/')
-    assert template_used(response, 'ep19/homepage.html')
+    assert template_used(response, 'ep19/bs/homepage/home.html')
     # checking if user is logged in.
     assert 'Joe Doe' in response.content.decode('utf-8')
-    assert 'Log out' in response.content.decode('utf-8')
+    assert 'My Account' in response.content.decode('utf-8')
 
 
 @mark.django_db

@@ -32,7 +32,7 @@ pip-tools:
 	pip install pip==18.1 --upgrade
 	pip install pip-tools
 
-migrate_and_load_initial_data:
+db:
 	mkdir -p data/site
 	python manage.py migrate
 	python manage.py create_initial_data_for_dev
