@@ -1,6 +1,7 @@
-
 import logging
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from django import http
 from django.conf import settings as dsettings
@@ -8,16 +9,13 @@ from django.contrib import messages
 from django.contrib.admin.utils import unquote
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
-from django.shortcuts import render_to_response
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from assopy import forms as aforms
-from assopy import models
-from assopy import settings
+from assopy import models, settings
 from common.decorators import render_to_json, render_to_template
 from common.http import PdfResponse
 from conference.invoicing import VAT_NOT_AVAILABLE_PLACEHOLDER
@@ -87,44 +85,6 @@ def billing(request, order_id=None):
     return {
         'user': user,
         'form': form,
-    }
-
-
-@render_to_template('assopy/new_account.html')
-def new_account(request):
-    if request.user.is_authenticated:
-        return redirect('assopy-profile')
-
-    if request.method == 'GET':
-        form = aforms.NewAccountForm()
-    else:
-        form = aforms.NewAccountForm(data=request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            user = models.AssopyUser.objects.create_user(
-                email=data['email'],
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                password=data['password1'],
-            )
-            request.session['new-account-user'] = user.pk
-            return HttpResponseRedirectSeeOther(reverse('assopy-new-account-feedback'))
-    return {
-        'form': form,
-        'next': request.GET.get('next', '/'),
-    }
-
-
-@render_to_template('assopy/new_account_feedback.html')
-def new_account_feedback(request):
-    try:
-        user = models.AssopyUser.objects.get(pk=request.session['new-account-user'])
-    except KeyError:
-        return redirect('/')
-    except models.AssopyUser.DoesNotExist:
-        user = None
-    return {
-        'u': user,
     }
 
 

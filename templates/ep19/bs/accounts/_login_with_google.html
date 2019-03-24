@@ -1,0 +1,10 @@
+<h3>... or use your existing Google account</h3>
+<p class="">
+You will be able to specify billing and personal info later; e.g.: you can use
+your personal Google account to buy tickets for your company and your Google
+name will not appear anywhere.
+</p>
+<a class='btn btn-outline-dark btn-lg btn-block' href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
+    <i class='fab fa-google'></i>
+    Login with Google
+</a>

@@ -4,13 +4,14 @@ Django~=1.11
 pyjwkest==1.4.0
 requests
 requests-oauthlib
-six
+shortuuid
 
 django-classy-tags
 django-authority
 django-contrib-comments
 django_extensions
 django-model-utils==3.1.1
+django-crispy-forms
 
 # we can probably remove one of these
 django-tagging==0.4.6

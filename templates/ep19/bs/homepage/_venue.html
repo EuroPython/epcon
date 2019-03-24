@@ -1,14 +1,37 @@
-<div id="homepage_venue">
+<div id="homepage_venue" class='text-light'>
     <div class="container">
         <!-- Example row of columns -->
         <div class="row">
-            <div class="col-md-6 text-right">
-                <h2>Conference Venue</h2>
-                <p>ASDF</p>
-            </div>
             <div class="col-md-6 text-left">
+                <h2>Conference Venue</h2>
+                <h3>Congress Center Basel (BCC)</h3>
+                <p>
+                Congress Center Basel<br>
+                Messeplatz 21 | Reception 2nd Floor<br>
+                4058 Basel | Switzerland<br>
+                </p>
+                <p style='margin-top: 2.5em;'> {# temporary hack #}
+                <img width="100%" src="/static/img/conference_venue.png">
+                </p>
+                <p>
+                <a href='{{ BCC_GOOGLEMAPS_URL }}' target="_blank" class='btn btn-outline-light'>BCC on Google Maps</a>
+                <a href='{{ BCC_OSM_URL }}' target="_blank" class='btn btn-outline-light'>BCC on OSM</a>
+                </p>
+            </div>
+            <div class="col-md-6 text-right">
                 <h2>Trainings &amp; Sprints Venue</h2>
-                <p>ASDF</p>
+                <h3>FHNW Muttenz</h3>
+                <p>FHNW University of Applied Scieneces and Arts<br>
+                Northwestern Switzerland<br>
+                Hofackerstrasse 30<br>
+                4132 Muttenz</p>
+                <p>
+                <img width="100%" src="/static/img/sprints_venue.png">
+                </p>
+                <p>
+                <a href='{{ FHNW_OSM_URL }}' target="_blank" class='btn btn-outline-light' target="_blank">FHNW on OSM</a>
+                <a href='{{ FHNW_GOOGLEMAPS_URL }}' target="_blank" class='btn btn-outline-light' target="_blank">FHNW on GoogleMaps</a>
+                </p>
             </div>
         </div>
 

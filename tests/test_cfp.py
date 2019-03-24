@@ -59,7 +59,7 @@ class TestCFP(TestCase):
         self.form_url = reverse("conference-paper-submission")
 
     def test_login_required(self):
-        login_url = reverse('login') + '?next=' + self.form_url
+        login_url = reverse('accounts:login') + '?next=' + self.form_url
         response = self.client.get(self.form_url)
         assert response.status_code == HTTP_REDIRECT_302
         self.assertRedirects(response, login_url)

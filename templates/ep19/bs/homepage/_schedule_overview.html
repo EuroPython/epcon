@@ -1,25 +1,50 @@
+{% load cms_tags %}
 <div id="homepage_schedule_overview">
     <div class="container text-center">
         <!-- Example row of columns -->
         <div class="row">
             <div class="col-md-4">
-                <h2>Trainings</h2>
-                <p>Monday and Tuesday</p>
-                <p>July 8th and 9th</p>
-                <p>Sold separately <a href='#'>more info</a></p>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>July 8th &amp; 9th</h3>
+                        <h5>Monday &amp; Tuesday</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><a href='{% page_url 'trainings' %}'>Trainings</a></h5>
+                        <p class="card-text">Two days of trainings. Multiple 3 hour long sessions with experts. <a href='{% page_url 'tickets' %}'>Sold separately.</a></p>
+                    </div>
+                </div>
+
             </div>
             <div class="col-md-4">
-                <h2>Talks & Other Events</h2>
-                <p>Wednesday, Thursday, Friday</p>
-                <p>July 10th, 11th, 12th</p>
-                <p><a class="btn btn-outline-primary btn-lg" href="#" role="button">View details</a></p>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>July 10th – 12th</h3>
+                        <h5>Wednesday, Thursday &amp; Friday</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><a href='{% page_url 'talks' %}'>Talks &amp; Other Events</a></h5>
+                        <p class="card-text">
+                        Over 120 sessions in 6 parallel tracks.<br>
+                        Talks, Poster Sessions, Open Spaces, Helpdesks, Recruitment sessions, Social Events and more.
+                        </p>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
-                <h2>Sprints</h2>
-                <p>Saturday &amp; Sunday</p>
-                <p>July 13th &amp; 14th</p>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>July 13th &amp; 14th</h3>
+                        <h5>Saturday &amp; Sunday</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><a href='{% page_url 'sprints' %}'>Sprints</a></h5>
+                        <p class="card-text">Unique opportunity to contribute to your favourite python projects</p>
+                    </div>
+                </div>
             </div>
         </div>
+        <p style='margin-top: 2em'><a class="btn btn-success btn-lg" href="{% page_url 'about' %}" role="button">Learn more about EuroPython</a></p>
 
     </div> <!-- /container -->
 </div>

@@ -1,11 +1,26 @@
-# for some reason just doing from django.contrib.auth doesn't cut it for views
-from django.contrib.auth import (
-    forms as auth_forms,
-    views as auth_views,
-    authenticate,
-)
-from django.conf.urls import url
+import random
+
 from django import forms
+from django.conf import settings
+from django.conf.urls import url
+from django.contrib import messages
+from django.contrib.auth import forms as auth_forms
+from django.contrib.auth import views as auth_views
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect
+from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
+
+import shortuuid
+
+from assopy.models import AssopyUser, Token
+from conference.models import CaptchaQuestion, AttendeeProfile
 
 
 LOGIN_TEMPLATE = "ep19/bs/accounts/login.html"
@@ -18,6 +33,8 @@ PRIVACY_POLICY_CHECKBOX = (
 PRIVACY_POLICY_ERROR = (
     "You need to consent to use of your data before we can continue"
 )
+
+EMAIL_VERIFICATION_SUBJECT = "EuroPython2019: Please verify your email"
 
 
 class LoginForm(auth_forms.AuthenticationForm):
@@ -51,6 +68,190 @@ class LoginForm(auth_forms.AuthenticationForm):
         return data
 
 
+def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
+    """
+    Creates new account in the system, populating both auth.User and
+    assopy.AssopyUser
+    """
+
+    if request.user.is_authenticated:
+        return redirect('user_panel:dashboard')
+
+    form = NewAccountForm()
+
+    if request.method == 'POST':
+        form = NewAccountForm(data=request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            with transaction.atomic():
+                assopy_user = AssopyUser.objects.create_user(
+                    email=data['email'],
+
+                    # Python conferences are on the first name basis, and since
+                    # we want to populate only one field (we don't want to
+                    # replace the builtin User model yet) we populate the first
+                    # name only.
+                    first_name=data['name'],
+
+                    password=data['password1'],
+                )
+                current_site = get_current_site(request)
+                send_verification_email(assopy_user, current_site)
+
+                messages.success(request, "Email verification sent")
+
+            return redirect('accounts:signup_step_2_please_verify_email')
+
+    return TemplateResponse(request, "ep19/bs/accounts/signup.html", {
+        'form': form,
+        'next': request.GET.get('next', '/'),
+    })
+
+
+def signup_step_2_please_verify_email(request):
+    return TemplateResponse(
+        request, "ep19/bs/accounts/signup_please_verify_email.html", {}
+    )
+
+
+def send_verification_email(assopy_user, current_site) -> None:
+
+    new_token = create_new_email_verification_token(assopy_user.user)
+    verification_path = reverse(
+        "accounts:handle_verification_token", args=[new_token.token]
+    )
+    full_url = f'https://{current_site.domain}{verification_path}'
+
+    content = render_to_string("ep19/emails/signup_verification_email.txt", {
+        'new_token': new_token,
+        'verification_email_url': full_url,
+    })
+
+    send_mail(
+        subject=EMAIL_VERIFICATION_SUBJECT,
+        message=content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[assopy_user.user.email],
+    )
+
+
+def social_connect_profile(backend, user, response, *args, **kwargs) -> None:
+    """
+    This is used by python social auth to connect and/or pre-create all user
+    profiles (AssopyUser, AttendeeProfile, etc.
+    """
+
+    AssopyUser.objects.get_or_create(user=user)
+    attendee, _ = AttendeeProfile.objects.get_or_create(user=user)
+    attendee.slug = slug_for_user(user)
+    attendee.uuid = shortuuid.ShortUUID().random(length=6)
+    attendee.save()
+
+
+def slug_for_user(user) -> str:
+    name = f'{user.first_name} {user.last_name}'
+    slug = slugify(name)
+
+    if AttendeeProfile.objects.filter(slug=slug).exists():
+        # add random 4 digit number
+        noise = random.randint(1e3, 1e4)
+        return f'{slug}-{noise}'
+    return slug
+
+
+def create_new_email_verification_token(user) -> Token:
+    return Token.objects.create(
+        token=shortuuid.uuid(),
+        ctype=Token.TYPES.EMAIL_VERIFICATION,
+        user=user,
+        payload='',
+    )
+
+
+def handle_verification_token(request, token) -> [404, redirect]:
+    """
+    This is just a reimplementation of what was used previously with OTC
+
+    https://github.com/EuroPython/epcon/pull/809/files
+    """
+    token = get_object_or_404(Token, token=token)
+
+    logout(request)
+    user = token.user
+    user.is_active = True
+    user.save()
+    user = authenticate(uid=user.id)
+    login(request, user)
+
+    token.delete()
+
+    messages.success(request, 'Email verfication complete')
+    return redirect('user_panel:dashboard')
+
+
+class NewAccountForm(forms.Form):
+
+    name = forms.CharField(max_length=255)
+    email = forms.EmailField()
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Confirm password", widget=forms.PasswordInput
+    )
+
+    # Additional captcha field with simple python questions
+    # https://github.com/EuroPython/epcon/issues/703
+    captcha_question = forms.CharField(widget=forms.HiddenInput)
+    captcha_answer = forms.CharField()
+
+    # Keep this in sync with LoginForm.i_accept_privacy_policy
+    i_accept_privacy_policy = forms.BooleanField(
+        label=PRIVACY_POLICY_CHECKBOX
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        random_question = self.get_random_captcha_question()
+        if random_question:
+            self.fields['captcha_question'].initial = random_question.question
+            self.fields['captcha_answer'].label     = random_question.question
+        else:
+            del self.fields['captcha_question']
+            del self.fields['captcha_answer']
+
+    def get_random_captcha_question(self):
+        try:
+            return CaptchaQuestion.objects.get_random_question()
+        except CaptchaQuestion.NoQuestionsAvailable:
+            return None
+
+    def clean_captcha_answer(self):
+        question = self.cleaned_data['captcha_question']
+        cq = CaptchaQuestion.objects.get(question=question)
+        if cq.answer.strip() != self.cleaned_data['captcha_answer'].strip():
+            raise forms.ValidationError("Sorry, that's a wrong answer")
+        return self.cleaned_data['captcha_question']
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email__iexact=email).count() > 0:
+            raise forms.ValidationError('Email already in use')
+
+        return email.lower()
+
+    def clean(self):
+        if not self.cleaned_data.get('i_accept_privacy_policy'):
+            raise forms.ValidationError(PRIVACY_POLICY_ERROR)
+
+        if not self.is_valid():
+            return super().clean()
+
+        data = self.cleaned_data
+        if data['password1'] != data['password2']:
+            raise forms.ValidationError('password mismatch')
+        return data
+
+
 urlpatterns = [
     url(
         r"^login/$",
@@ -58,5 +259,62 @@ urlpatterns = [
             authentication_form=LoginForm, template_name=LOGIN_TEMPLATE
         ),
         name="login",
-    )
+    ),
+    url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    url(
+        r"^signup/$",
+        signup_step_1_create_account,
+        name="signup_step_1_create_account",
+    ),
+    url(
+        r"^signup/thanks/$",
+        signup_step_2_please_verify_email,
+        name="signup_step_2_please_verify_email",
+    ),
+    url(
+        # 22 not 36 because we use short uuid
+        r"^signup/verify-email/(?P<token>\w{22})/$",
+        handle_verification_token,
+        name="handle_verification_token",
+    ),
+    # Password reset, using default django views.
+    url(
+        r"^password-reset/$",
+        auth_views.password_reset,
+        kwargs={
+            "template_name": "ep19/bs/accounts/password_reset.html",
+            "post_reset_redirect": reverse_lazy(
+                "accounts:password_reset_done"
+            ),
+            "email_template_name": "ep19/emails/password_reset_email.txt",
+            "subject_template_name": "ep19/emails/password_reset_subject.txt",
+        },
+        name="password_reset",
+    ),
+    url(
+        r"^password-reset/done/$",
+        auth_views.password_reset_done,
+        kwargs={"template_name": "ep19/bs/accounts/password_reset_done.html"},
+        name="password_reset_done",
+    ),
+    url(
+        r"^reset/(?P<uidb64>[\w-]+)/(?P<token>[\w]{1,13}-[\w]{1,20})/$",
+        auth_views.password_reset_confirm,
+        kwargs={
+            "set_password_form": auth_forms.SetPasswordForm,
+            "template_name": "ep19/bs/accounts/password_reset_confirm.html",
+            "post_reset_redirect": reverse_lazy(
+                "accounts:password_reset_complete"
+            ),
+        },
+        name="password_reset_confirm",
+    ),
+    url(
+        r"^reset/done/$",
+        auth_views.password_reset_complete,
+        kwargs={
+            "template_name": "ep19/bs/accounts/password_reset_complete.html"
+        },
+        name="password_reset_complete",
+    ),
 ]

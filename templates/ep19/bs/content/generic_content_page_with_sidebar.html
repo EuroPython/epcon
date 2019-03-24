@@ -1,6 +1,8 @@
 {% extends "ep19/bs/base.html" %}
 
-{% load menu_tags %}
+{% block title %}{{ request.current_page }} - {{ block.super }}{% endblock title %}
+
+{% load menu_tags cms_tags %}
 
 {% block content %}
 <div id="content_page">
@@ -10,14 +12,15 @@
                 {% show_breadcrumb 0 "ep19/bs/content/_breadcrumbs_bar.html" 0 %}
             </div>
 
-            <div class='col-md-8'>
-                <h1>{{ request.current_page }}</h1>
-                <p>{% lorem 30 w %}</p>
-                <p>{% lorem 100 w %}</p>
-                <p>{% lorem 70 w %}</p>
+            <div class='col-md-9'>
+                <h1>{% page_attribute "title" %}</h1>
+
+                <div id="content">
+                    {% placeholder "text" %}
+                </div>
             </div>
 
-            <div class='col-md-4'>
+            <div class='col-md-3' id="sidebar">
 
                 <ul>
                     {% show_menu 0 100 100 100 "ep19/bs/content/_menu.html" %}

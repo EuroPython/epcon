@@ -37,6 +37,12 @@ db:
 	python manage.py migrate
 	python manage.py create_initial_data_for_dev
 
+
+drop_db:
+	rm -f data/site/epcon.db
+
+redo_db: drop_db db
+
 test:
 	pytest -n auto
 
@@ -46,8 +52,8 @@ test-no-warnings:
 test-no-django-20-warnings:
 	pytest -c pytest_no_django_20_warnings.ini
 
-server:
-	DEBUG=True ./manage.py runserver 0:37266
+server-dev:
+	DJANGO_SETTINGS_MODULE="pycon.dev_settings" DEBUG=True ./manage.py runserver 0:37266
 
 shell:
 	DEBUG=True ./manage.py shell_plus

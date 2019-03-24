@@ -7,14 +7,11 @@ from wsgiref.simple_server import make_server
 
 from django.conf import settings
 from django.core.cache import cache
-from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
 from assopy.tests.factories.user import AssopyUserFactory
-from cms.api import create_page
 from conference.models import AttendeeProfile
-from conference.models import Conference
 
 
 HTTP_OK = 200
@@ -56,24 +53,6 @@ def template_paths(response):
             paths.append(path)
 
     return paths
-
-
-def create_homepage_in_cms():
-    # Need to create conference before creating pages
-    Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
-                                     name=settings.CONFERENCE_CONFERENCE)
-    homepage = create_page(
-        title='EuroPython2019 - Homepage',
-        template='ep19/bs/homepage/home.html',
-        language='en',
-        reverse_id='home',
-        published=True,
-        publication_date=timezone.now(),
-        in_navigation=True,
-    )
-    homepage.set_as_homepage()
-
-    return homepage
 
 
 def serve_text(text, host='0.0.0.0', port=9876):

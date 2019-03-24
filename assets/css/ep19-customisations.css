@@ -3,6 +3,9 @@
 /* secondary: d87a00 */
 /* secondary-light: f8c48f */
 
+.text-primary-light { color: #76bdc4; }
+.text-secondary-light { color: #f8c48f; }
+
 #background_image {
     background: url('/static/img/ep19-basel-dark.jpg');
     background-size: cover;
@@ -10,10 +13,17 @@
     min-height: 90px
 }
 .jumbotron { height: 800px; background: transparent; color: white; }
+.text-underline { text-decoration: underline; }
 
+.page { min-height: 500px; padding-bottom: 10em; }
 #footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
-#footer a { color: white; border-bottom: 1px solid #eee; }
-#homepage_venue { background: #d87a00; padding: 1em 0; margin: 1em 0}
+#footer a { color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+#footer ul { list-style-type: none; padding-left: 0}
+#footer ul li { margin: .5em 0; }
+#homepage_news { background: #007d8a; padding: 2em 0; margin 0:}
+.news-card { height: 300px; }
+
+#homepage_venue { background: #d87a00; padding: 1em 0; margin: 0}
 #homepage_schedule_overview { margin: 2em 0; }
 
 #tickets-link-header { color: #fff; border-bottom: 2px solid #fff; margin-right: 2px }
@@ -28,16 +38,26 @@
     color: white;
     border-bottom: 2px solid white;
 }
+a.navbar-brand:hover{
+    color: white;
+}
 
 #content_page {
     min-height: 500px;
     margin: 40px 0;
 }
+#sidebar ul {
+    padding-left: 0;
+}
 
-ul.cms_menu { margin-left: 0px; padding-left: 15px; margin-bottom: 30px}
-li.cms_menu { margin-top: .7em; list-style-type: none}
-li.cms_menu.ancestor { background: #eee; padding: .5em; border-radius: 5px}
-li.cms_menu.selected { font-weight: bold; }
+#sidebar li ul {
+    padding-left: 20px;
+}
+
+#sidebar ul.cms_menu { margin-left: 0px; padding-left: 15px; margin-bottom: 30px}
+#sidebar li.cms_menu { margin-top: .7em; list-style-type: none}
+#sidebar li.cms_menu.ancestor { background: #f6f6f6; padding: .5em; }
+#sidebar li.cms_menu.selected { font-weight: bold; }
 
 
 #user_panel {
@@ -48,4 +68,10 @@ li.cms_menu.selected { font-weight: bold; }
     padding-top: 5em;
     padding-bottom: 10em;
     min-height: 500px;
+}
+
+.news {
+    margin: 2em 0;
+    padding: 1em 0;
+    border-bottom: 1px dashed #eee;
 }

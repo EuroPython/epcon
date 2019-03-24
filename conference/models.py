@@ -3,6 +3,7 @@ import datetime
 import os
 import os.path
 import subprocess
+import uuid
 from collections import defaultdict
 
 from django.conf import settings as dsettings
@@ -1458,3 +1459,37 @@ class CaptchaQuestion(TimeStampedModel):
 
     def __str__(self):
         return self.question
+
+
+# ========================================
+# NEWS
+# TODO: split conference/models.py to multiple files and put it this model in a
+# separate file.
+# ========================================
+
+
+class News(TimeStampedModel):
+
+    STATUS = Choices(
+        (0, 'DRAFT', 'Draft'),
+        (10, 'PUBLISHED', 'Published'),
+        (20, 'DELETED', 'Deleted'),
+    )
+
+    # CharField because sqlite
+    uuid = models.CharField(unique=True, max_length=40, default=uuid.uuid4)
+
+    conference = models.ForeignKey(Conference)
+    title = models.CharField(max_length=255)
+    slug = models.SlugField()
+    content = models.TextField()
+
+    status = models.PositiveIntegerField(choices=STATUS, default=STATUS.DRAFT)
+    published_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'News'
+        ordering = ['-published_date']
+
+    def __str__(self):
+        return self.title

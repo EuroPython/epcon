@@ -20,10 +20,10 @@ from django.db import models
 from django.db.models import Q
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+from model_utils import Choices
 
 from assopy import settings
 from assopy.utils import send_email
-from common import django_urls
 from conference.currencies import normalize_price
 from conference.models import Ticket, Fare
 from conference.users import generate_random_username
@@ -88,43 +88,24 @@ class Country(models.Model):
         return self.name
 
 
-class TokenManager(models.Manager):
-    def create(self, ctype='', user=None, payload=''):
-        if user is not None:
-            Token.objects.filter(user=user, ctype=ctype).delete()
-        t = Token()
-        t.token = str(uuid4())
-        t.ctype = ctype
-        t.user = user
-        t.payload = payload
-        t.save()
-        return t
-
-    def retrieve(self, token, delete=True):
-        try:
-            t = Token.objects.get(token=token)
-        except Token.DoesNotExist:
-            return None
-        if delete:
-            t.delete()
-        return t
-
-
-class Token(models.Model, django_urls.UrlMixin):
+class Token(models.Model):
     """
-    modello che mantiene codici univoci, utilizzabili una sola volta, di
-    diverso tipo per ogni utente.
+    Model used to hold temporary Tokens. In the past it used to handle more
+    token types, currently it's only used for email verification when creating
+    new account
     """
+
+    TYPES = Choices(
+        ("v", "EMAIL_VERIFICATION", "New signup email verification"),
+        ("j", "j", "UNKOWN - probably related to Janrain"),
+    )
     token = models.CharField(max_length=36, primary_key=True)
-    ctype = models.CharField(max_length=1)
-    user = models.ForeignKey(get_user_model(), null=True, on_delete=models.CASCADE)
-    payload = models.TextField(blank='')
+    ctype = models.CharField(max_length=1, choices=TYPES)
+    user = models.ForeignKey(
+        get_user_model(), null=True, on_delete=models.CASCADE
+    )
+    payload = models.TextField(blank="")
     created = models.DateTimeField(auto_now_add=True)
-
-    objects = TokenManager()
-
-    def get_url_path(self):
-        return reverse('assopy-otc-token', kwargs={'token': self.token})
 
 
 # Segnale emesso quando un nuovo utente viene creato. Il sender è il nuovo
@@ -142,15 +123,28 @@ user_identity_created = dispatch.Signal(providing_args=['identity'])
 
 class AssopyUserManager(models.Manager):
     def _create_user(
-            self, email, password, username=None, first_name='', last_name='',
-            token=False, active=False, assopy_id=None, is_admin=False):
+        self,
+        email,
+        password,
+        username=None,
+        first_name="",
+        last_name="",
+        token=False,
+        active=False,
+        assopy_id=None,
+        is_admin=False,
+    ):
         if not username:
             username = generate_random_username()
 
         if is_admin:
-            duser = get_user_model().objects.create_superuser(username, email, password=password)
+            duser = get_user_model().objects.create_superuser(
+                username, email, password=password
+            )
         else:
-            duser = get_user_model().objects.create_user(username, email, password=password)
+            duser = get_user_model().objects.create_user(
+                username, email, password=password
+            )
 
         duser.first_name = first_name
         duser.last_name = last_name
@@ -166,40 +160,56 @@ class AssopyUserManager(models.Manager):
 
         user_created.send(
             sender=user,
-            profile_complete=(password is not None) or (token is not None)
+            profile_complete=(password is not None) or (token is not None),
         )
 
         return user
 
-    def create_user(self, email, password=None, first_name='', last_name='', token=False, active=False, assopy_id=None, send_mail=True):
+    def create_user(
+        self,
+        email,
+        password=None,
+        first_name="",
+        last_name="",
+        token=False,
+        active=False,
+        assopy_id=None,
+    ):
         assopy_user = self._create_user(
-            email=email, password=password, first_name=first_name, last_name=last_name,
-            token=token, active=active, assopy_id=assopy_id,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            token=token,
+            active=active,
+            assopy_id=assopy_id,
         )
 
         log.info(
             'new local user "%s" created; for "%s %s" (%s)',
-            assopy_user.user.username, first_name, last_name, email,
+            assopy_user.user.username,
+            first_name,
+            last_name,
+            email,
         )
-
-        if send_mail:
-            utils.email(
-                'verify-account',
-                ctx={
-                    'user': assopy_user,
-                    'token': Token.objects.create(ctype='v', user=assopy_user.user),
-                },
-                to=[email]
-            ).send()
         return assopy_user
 
     def create_superuser(self, username, email, password):
         assopy_user = self._create_user(
-            email=email, password=password, username=username,
-            token=False, active=True, assopy_id=None, is_admin=True,
+            email=email,
+            password=password,
+            username=username,
+            token=False,
+            active=True,
+            assopy_id=None,
+            is_admin=True,
         )
 
-        log.info('new admin user "%s" created (%s)', assopy_user.user.username, email)
+        log.info(
+            'new admin user "%s" created (%s)',
+            assopy_user.user.username,
+            email,
+        )
 
         return assopy_user
 
@@ -260,7 +270,7 @@ class AssopyUser(models.Model):
         if not name.strip():
             return self.user.email
         else:
-            return name
+            return name.strip()
 
     def get_orders(self):
         """

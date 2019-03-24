@@ -1,19 +1,19 @@
-
+from datetime import timedelta
+import random
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction
-from django.utils import timezone
+from django.utils import timezone, lorem_ipsum
 from django.core.exceptions import FieldError
 
-from cms.api import create_page  # , add_plugin
-# from djangocms_text_ckeditor.cms_plugins import TextPlugin
+from cms.api import create_page, add_plugin, publish_page
+from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from assopy.models import AssopyUser, Vat, Country
 from conference.fares import pre_create_typical_fares_for_conference
-from conference.models import Conference
+from conference.models import Conference, News
 from conference.tests.factories.fare import SponsorIncomeFactory
-from tests.common_tools import create_homepage_in_cms
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -32,117 +32,8 @@ class Command(BaseCommand):
             name=settings.CONFERENCE_CONFERENCE,
         )
 
-        # Create homepage with some sample data.
-        homepage = create_homepage_in_cms()
-        # add_plugin(
-        #     placeholder=homepage.placeholders.get(slot="lead_text"),
-        #     plugin_type=TextPlugin,
-        #     language="en",
-        #     body="This is the lead text",
-        # )
-        # add_plugin(
-        #     placeholder=homepage.placeholders.get(slot="home_teaser_text"),
-        #     plugin_type=TextPlugin,
-        #     language="en",
-        #     body="This is the home teaser text",
-        # )
-        # The main_text placeholder does not seem to be used, skipping.
-
-        print(
-            "Created page: ",
-            homepage.reverse_id,
-            homepage.title_set.first().title,
-            homepage.template,
-        )
-
-        def new_page(rev_id, title, **kwargs):
-            try:
-                page = create_page(
-                    reverse_id=rev_id,
-                    title=title,
-                    language='en',
-                    template=(
-                        'ep19/bs/content/'
-                        'generic_content_page_with_sidebar.html'
-                    ),
-                    published=True,
-                    publication_date=timezone.now(),
-                    in_navigation=True,
-                    **kwargs
-                )
-                print("Created page: ", page.reverse_id, title, page.template)
-                return page
-
-            # FieldError happens to be what django cms is using when we want to
-            # create another page with the same reverse_id
-            except FieldError as e:
-                print("Warning: ", e)
-
-        program_page = new_page('program', "Program")
-
-        for rev_id, title in [
-            ("speakers", "Speakers"),
-            ("tranings", "Tranings"),
-            ("workshops", "Workshops"),
-            ("talks_and_conference_days", "Talks and Conference Days"),
-            ("social-event", "Social Event"),
-            ("sprints", "Sprint"),
-        ]:
-            new_page(rev_id, title, parent=program_page)
-
-        location_page = new_page('location', "Location")
-        for rev_id, title in [
-            ("explore-basel", "Explore City of Basel"),
-            ('visa', "Visa"),
-            ('conference-venue', "Conference Venue"),
-            ('sprints-venue', "Workshops & Sprints Venue"),
-        ]:
-            new_page(rev_id, title, parent=location_page)
-
-        about_europython_page = new_page("about", "About EuroPython")
-        for rev_id, title in [
-            ('volunteers', 'Volunteers'),
-            ('workgroups', 'Workgroups'),
-            ('photos', 'Photos'),
-            ('videos', 'Videos'),
-            ('social-media', 'Social Media'),
-            ('eps', 'EuroPythoon Society'),
-            ('previous-editions', 'Previous Editions'),
-            ('help-organize', 'Help Organize next EuroPython'),
-        ]:
-            new_page(rev_id, title, parent=about_europython_page)
-
-        sponsor_page = new_page('sponsor', "Sponsors")
-        for rev_id, title in [
-            ('become-a-sponsor', 'How to become a Sponsor'),
-            ('sponsor-packages', 'Sponsorship packages'),
-            ('additional-information', 'Additional Information'),
-        ]:
-            new_page(rev_id, title, parent=sponsor_page)
-
-        faq_page = new_page('faq', 'FAQ')
-        for rev_id, title in [
-            ('tips-for-attendees', 'Tips for Attendees'),
-            ('tips-for-speakers', 'Tips for Speakers'),
-            ('tips-for-speakers', 'Tips for Speakers'),
-        ]:
-            new_page(rev_id, title, parent=faq_page)
-
-        new_page("code-of-conduct", "Code of Conduct")
-
-        print("Creating some countries")
-        for iso, name in [
-            ('PL', "Poland"),
-            ('DE', 'Germany'),
-            ('FR', 'France'),
-            ('SE', 'Sweden'),
-            ('IT', 'Italy'),
-            ('CH', 'Switzerland'),
-        ]:
-            Country.objects.get_or_create(iso=iso, name=name)
-
         print("Creating an admin user")
-        AssopyUser.objects.create_superuser(
+        admin = AssopyUser.objects.create_superuser(
             username="admin", email="admin@admin.com", password="europython"
         )
 
@@ -151,20 +42,121 @@ class Command(BaseCommand):
             email="alice@europython.eu",
             password="europython",
             active=True,
-            send_mail=False,
         )
         AssopyUser.objects.create_user(
             email="bob@europython.eu",
             password="europython",
             active=True,
-            send_mail=False,
         )
         AssopyUser.objects.create_user(
             email="cesar@europython.eu",
             password="europython",
             active=True,
-            send_mail=False,
         )
+
+        def new_page(rev_id, title, **kwargs):
+            try:
+                page = create_page(
+                    reverse_id=rev_id,
+                    title=title,
+                    language="en",
+                    template=(
+                        "ep19/bs/content/"
+                        "generic_content_page_with_sidebar.html"
+                    ),
+                    published=True,
+                    publication_date=timezone.now(),
+                    in_navigation=True,
+                    **kwargs,
+                )
+                add_plugin(
+                    placeholder=page.placeholders.get(slot="text"),
+                    plugin_type=TextPlugin,
+                    language="en",
+                    body=f"This is the page content for {title}",
+                )
+                publish_page(page, user=admin.user, language="en")
+                print("Created page: ", page.reverse_id, title, page.template)
+                return page
+
+            # FieldError happens to be what django cms is using when we want to
+            # create another page with the same reverse_id
+            except FieldError as e:
+                print("Warning: ", e)
+
+        program_page = new_page("faq", "FAQ")
+        for rev_id, title in [
+            ("tickets", "Buy Tickets"),
+            ("submit-proposal", "Submit Proposal"),
+            ("tips-for-attendees", "Tips for Attendees"),
+            ("volunteers", "Volunteers"),
+            ("sign-up-as-session-chair", "Sign up as Session Chair"),
+            ("financial-aid", "Financial Aid"),
+            ("visa", "Visa"),
+        ]:
+            new_page(rev_id, title, parent=program_page)
+
+        program_page = new_page("program", "Program")
+        for rev_id, title in [
+            ("workshops", "Workshops"),
+            ("trainings", "Trainings"),
+            ("schedule", "Schedule"),
+            ("talks", "Talks"),
+            ("speakers", "Speakers"),
+            ("tips-for-speakers", "Tips for Speakers"),
+            ("speaker-release-agreement", "Speaker Release Agreement"),
+            ("open-spaces", "Open Spaces"),
+            ("social-event", "Social Event"),
+            ("sprints", "Sprints"),
+        ]:
+            new_page(rev_id, title, parent=program_page)
+
+        location_page = new_page("location", "Location")
+        for rev_id, title in [
+            ("conference-venue", "Conference Venue"),
+            ("workshops-and-sprints-venue", "Workshops & Sprints Venue"),
+            ("basel", "Basel"),
+            ("travel", "Travel"),
+            ("accommodation", "Accommodation"),
+            ("where-to-eat", "Where to Eat and Drink"),
+        ]:
+            new_page(rev_id, title, parent=location_page)
+
+        sponsor_page = new_page("sponsor", "Sponsor")
+        for rev_id, title in [
+            ("become-a-sponsor", "Become a Sponsor"),
+            ("sponsor-packages", "Packages"),
+            ("sponsor-options", "Additional Options"),
+            ("sponsor-information", "Additional Information"),
+            ("sponsor-jobboard", "Job Board"),
+        ]:
+            new_page(rev_id, title, parent=sponsor_page)
+
+        about_europython_page = new_page("about", "About")
+        for rev_id, title in [
+            ("social-media", "Social Media"),
+            ("code-of-conduct", "Code of Conduct"),
+            ("privacy", "Privacy policy"),
+            ("workgroups", "2019 Team"),
+            ("photos", "Photos"),
+            ("videos", "Videos"),
+            ("eps", "EuroPython Society"),
+            ("previous-editions", "Previous Editions"),
+            ("help-organize", "Help Organize next EuroPython"),
+            ("faq", "FAQ"),
+        ]:
+            new_page(rev_id, title, parent=about_europython_page)
+
+        print("Creating some countries")
+        for iso, name in [
+            ("PL", "Poland"),
+            ("DE", "Germany"),
+            ("FR", "France"),
+            ("SE", "Sweden"),
+            ("IT", "Italy"),
+            ("CH", "Switzerland"),
+        ]:
+            Country.objects.get_or_create(iso=iso, name=name)
 
         print("Creating sponsors")
         SponsorIncomeFactory(
@@ -183,4 +175,50 @@ class Command(BaseCommand):
         default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
         pre_create_typical_fares_for_conference(
             settings.CONFERENCE_CONFERENCE, default_vat_rate, print_output=True
+        )
+
+        # News
+
+        print("Creating news...")
+        for _ in range(20):
+            News.objects.create(
+                conference=conference,
+                title=lorem_ipsum.sentence(),
+                content=lorem_ipsum.paragraph(),
+                status=News.STATUS.PUBLISHED,
+                published_date=(
+                    timezone.now() - timedelta(days=random.randint(10, 20))
+                ),
+            )
+
+        News.objects.create(
+            conference=conference,
+            title="Launch of new website",
+            content=lorem_ipsum.paragraph(),
+            status=News.STATUS.PUBLISHED,
+            published_date=timezone.now() - timedelta(days=3),
+        )
+
+        News.objects.create(
+            conference=conference,
+            title="Call For Proposal is now Open",
+            content=lorem_ipsum.paragraph(),
+            status=News.STATUS.PUBLISHED,
+            published_date=timezone.now() - timedelta(hours=5),
+        )
+
+        News.objects.create(
+            conference=conference,
+            title="Rescheduled a talk",
+            content="We had to reschedule talk #1237 to slot #ABC on Friday",
+            status=News.STATUS.PUBLISHED,
+            published_date=timezone.now(),
+        )
+
+        News.objects.create(
+            conference=conference,
+            title="This is just a draft",
+            content="With draft content",
+            status=News.STATUS.DRAFT,
+            published_date=None,
         )

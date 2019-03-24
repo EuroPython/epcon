@@ -7,7 +7,11 @@
 {% block user_content %}
 <div class="row">
     <div class="col-md-12">
-        <a href='{% url "logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
+        {% if user.is_staff %}
+        <a href='{% url "admin:index" %}' class='btn btn-outline-warning'>Admin panel</a>
+        {% endif %}
+        <a href='{% url "user_panel:password_change" %}' class='btn btn-outline-info'>Change your password</a>
+        <a href='{% url "accounts:logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
     </div>
 </div>
 
@@ -19,5 +23,4 @@
     <div class="col-md-4">
     </div>
 </div>
-User panel
 {% endblock %}

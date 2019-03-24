@@ -1,5 +1,3 @@
-
-
 """
 This module handles all things related to creating a new invoice, including
 
@@ -9,9 +7,6 @@ This module handles all things related to creating a new invoice, including
 * stroing full copy in the Invoice model to be viewed later.
 * rendering PDFs of the invoice.
 """
-
-
-
 
 from collections import OrderedDict
 from decimal import Decimal
@@ -60,11 +55,13 @@ Contact Email: billing@europython.eu
 https://www.europython-society.org
 """.strip()
 
+EPS_19 = EPS_18
 
 ISSUER_BY_YEAR = {
     2016: ACPYSS_16,
     2017: PYTHON_ITALIA_17,
     2018: EPS_18,
+    2019: EPS_19,
 }
 
 LOCAL_CURRENCY_BY_YEAR = {
@@ -72,18 +69,21 @@ LOCAL_CURRENCY_BY_YEAR = {
     2016: "EUR",
     2017: "EUR",
     2018: "GBP",
+    2019: "CHF",
 }
 
 EP_CITY_FOR_YEAR = {
     2016: "Bilbao",
     2017: "Rimini",
     2018: "Edinburgh",
+    2019: "Basel",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {
     2016: "",
     2017: "",
     2018: "assopy/invoices/_additional_text_for_2018.html",
+    2019: "assopy/invoices/_additional_text_for_2019.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"

@@ -1,15 +1,18 @@
 {% load cms_tags %}
 <nav class="navbar navbar-expand-lg">
     <div class='container'>
-        <a class="navbar-brand" href="/" >EuroPython 2019</a>
+        <a class="navbar-brand" href="/" >
+            <img src="/static/img/tmplogo-small.png" width=30 height=30>
+            EuroPython 2019
+        </a>
         <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="navbar-collapse collapse" id="navbarsExample05" style="">
+        <div class="navbar-collapse collapse" style="">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">News</a>
+                    <a class="nav-link" href="{% url "news" %}">News</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% page_url 'program' %}">Program</a>
@@ -30,7 +33,7 @@
                     <a class="nav-link" href="{% page_url 'faq' %}">FAQ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="tickets-link-header" href="#">Tickets</a>
+                    <a class="nav-link" id="tickets-link-header" href="{% page_url "tickets" %}">Tickets</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="cfp-link-header" href="#">Proposals</a>
@@ -47,7 +50,10 @@
                 </span>
                 <a class='nav-link btn btn-outline-light' href='{% url "user_panel:dashboard" %}'>My Account</a>
                 {% else %}
-                <a class='nav-link btn btn-outline-light' href='{% url "accounts:login" %}'>Log in or sign up</a>
+                <a class='nav-link btn btn-outline-light' href='{% url "accounts:login" %}'>
+                    <i class='fas fa-sign-in-alt'></i>
+                    Log in or sign up
+                </a>
                 {% endif %}
             </div>
         </div>
