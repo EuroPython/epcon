@@ -54,7 +54,12 @@ def _gravatar(email, size=80, default='identicon', rating='r'):
     # import code for encoding urls and generating md5 hashes
     import urllib.request, urllib.parse, urllib.error, hashlib
 
-    gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    lowercase_email = email.lower()
+    if not isinstance(lowercase_email, bytes):
+        # Encode it!
+        lowercase_email = lowercase_email.encode('utf-8')
+
+    gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(lowercase_email).hexdigest() + "?"
     gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,

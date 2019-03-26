@@ -102,8 +102,14 @@ def gravatar(email, args=''):
     size = args.get('size', '80')
     rating = args.get('rating', 'r')
 
+    # Remember: hash funcions expect bytes objects, not strings.
+    lowercase_email = email.lower()
+    if not isinstance(lowercase_email, bytes):
+        # Encode it!
+        lowercase_email = lowercase_email.encode('utf-8')
+
     # construct the url
-    gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(email.lower().encode()).hexdigest()
+    gravatar_url = 'http://www.gravatar.com/avatar/%s?' % hashlib.md5(lowercase_email).hexdigest()
     gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': str(size),
