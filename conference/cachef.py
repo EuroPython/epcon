@@ -197,7 +197,7 @@ class CacheFunction(object):
         return wrapper
 
     def hash_key(self, key):
-        if isinstance(key, str):
+        if not isinstance(key, bytes):
             key = key.encode('utf-8')
         return hashlib.md5(key).hexdigest()
 

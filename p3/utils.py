@@ -139,7 +139,14 @@ def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
         host = 'https://secure.gravatar.com'
     else:
         host = 'http://www.gravatar.com'
-    gravatar_url = host + "/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+
+    # Remember: hash funcions expect bytes objects, not strings.
+    lowercase_email = email.lower()
+    if not isinstance(lowercase_email, bytes):
+        # Encode it!
+        lowercase_email = lowercase_email.encode('utf-8')
+
+    gravatar_url = host + "/avatar/" + hashlib.md5(lowercase_email).hexdigest() + "?"
     gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,
@@ -171,11 +178,11 @@ from django.utils.http import urlquote
 from hashlib import md5 as md5_constructor
 
 def template_cache_name(fragment_name, *variables):
-    args = md5_constructor(':'.join([urlquote(var) for var in variables]))
+    args = md5_constructor(b':'.join([urlquote(var) for var in variables]))
     return 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
 
 def invalidate_template_cache(fragment_name, *variables):
-    args = md5_constructor(':'.join([urlquote(var) for var in variables]))
+    args = md5_constructor(b':'.join([urlquote(var) for var in variables]))
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
     return
