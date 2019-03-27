@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from assopy import utils as autils
 
+from conference.gravatar import gravatar
 from conference.models import (Ticket,
                                ConferenceTaggedItem,
                                AttendeeProfile)
@@ -149,7 +150,7 @@ class P3Profile(models.Model):
         """Return the url of the image that the user has associated with his profile."""
         from p3 import utils
         if self.image_gravatar:
-            return utils.gravatar(self.profile.user.email)
+            return gravatar(self.profile.user.email)
         elif self.image_url:
             return self.image_url
         elif self.profile.image:

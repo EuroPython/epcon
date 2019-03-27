@@ -25,6 +25,7 @@ from model_utils import Choices
 from assopy import settings
 from assopy.utils import send_email
 from conference.currencies import normalize_price
+from conference.gravatar import gravatar
 from conference.models import Ticket, Fare
 from conference.users import generate_random_username
 from email_template import utils
@@ -50,23 +51,8 @@ def _cache(f):
     return wrapper
 
 
-def _gravatar(email, size=80, default='identicon', rating='r'):
-    # import code for encoding urls and generating md5 hashes
-    import urllib.request, urllib.parse, urllib.error, hashlib
-
-    lowercase_email = email.lower()
-    if not isinstance(lowercase_email, bytes):
-        # Encode it!
-        lowercase_email = lowercase_email.encode('utf-8')
-
-    gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(lowercase_email).hexdigest() + "?"
-    gravatar_url += urllib.parse.urlencode({
-        'default': default,
-        'size': size,
-        'rating': rating,
-    })
-
-    return gravatar_url
+# Do we need this? It is here just for compatibility reasons
+_gravatar = gravatar
 
 
 COUNTRY_VAT_COMPANY_VERIFY = (
