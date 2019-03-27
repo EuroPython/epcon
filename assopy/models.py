@@ -51,10 +51,6 @@ def _cache(f):
     return wrapper
 
 
-# Do we need this? It is here just for compatibility reasons
-_gravatar = gravatar
-
-
 COUNTRY_VAT_COMPANY_VERIFY = (
     ('-', 'None'),
     ('v', 'VIES'),
