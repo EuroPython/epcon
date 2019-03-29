@@ -90,6 +90,7 @@ def debug_panel_index(request):
         'PROJECT_DIR',
         'DEFAULT_FROM_EMAIL',
         'SERVER_EMAIL',
+        'CONFERENCE_CONFERENCE',
     ]
 
     for setting_name in allowed_settings:
