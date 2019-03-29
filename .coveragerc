@@ -24,7 +24,7 @@ omit =
 
 
 [report]
-fail_under = 40
+fail_under = 50
 precision = 2
 sort = Name
 skip_covered = True
