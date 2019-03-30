@@ -620,6 +620,10 @@ TALK_ADMIN_TYPE = (
 
 
 class Talk(models.Model, UrlMixin):
+    # CharField because sqlite
+    uuid = models.CharField(unique=True, max_length=40, default=uuid.uuid4)
+    created_by = models.ForeignKey(get_user_model(), blank=True, null=True)
+
     title = models.CharField(_('Talk title'), max_length=80)
     sub_title = models.CharField(_('Sub title'), max_length=1000, default="", blank=True)
     slug = models.SlugField(max_length=100, unique=True)
@@ -687,6 +691,7 @@ class Talk(models.Model, UrlMixin):
     # Suggested Tags, normally, should use a submission model.
     suggested_tags = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
 
     tags = TaggableManager(through=ConferenceTaggedItem)
     objects = TalkQuerySet.as_manager()
@@ -747,6 +752,10 @@ class TalkSpeaker(models.Model):
 
     class Meta:
         unique_together = (('talk', 'speaker'),)
+
+
+    def __str__(self):
+        return f'[{self.speaker.user}] for {self.talk.title}'
 
 
 class FareQuerySet(models.QuerySet):

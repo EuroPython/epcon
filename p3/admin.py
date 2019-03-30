@@ -448,6 +448,7 @@ class TalkAdmin(cadmin.TalkAdmin):
 
     ordering = ('-conference', 'title')
     multilingual_widget = cforms.MarkEditWidget
+    filter_horizontal = ['tags']
 
     def _tags(self, obj):
         return ', '.join(sorted(str(tag) for tag in obj.tags.all()))

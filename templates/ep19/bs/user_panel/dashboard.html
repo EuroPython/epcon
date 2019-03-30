@@ -15,10 +15,15 @@
     </div>
 </div>
 
-<div class='row'>
+<div class='row' style='margin-top: 3em'>
     
     <div class="col-md-8">
-        Main 
+        <h1>Welcome {{ user.name }}</h1>
+
+        {% if proposals %}
+        {% include "ep19/bs/user_panel/_proposals.html" %}
+        {% endif %}
+
     </div>
     <div class="col-md-4">
     </div>

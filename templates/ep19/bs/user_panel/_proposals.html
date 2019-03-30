@@ -1,0 +1,11 @@
+<h3>Proposals you submitted for this year</h3>
+
+<table class='table'>
+    {% for prop in proposals %}
+    <tr>
+        <td><a href='{% url "cfp:preview" prop.slug %}'>{{ prop.title }}</a></td>
+        <td>{{ prop.created }}</td>
+        <td>{{ prop.status }}</td>
+    </tr>
+    {% endfor %}{# prop in proposals #}
+</table>

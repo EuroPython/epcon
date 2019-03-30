@@ -1,0 +1,50 @@
+{% extends "ep19/bs/base.html" %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+<div class="container page" id="cfp_page">
+    <div class="row">
+        <div class="col-md-12">
+            {% if user.is_staff %}
+            <a href='{% url "admin:conference_talk_change" talk.id %}' class='btn btn-outline-danger'>See in Admin</a>
+            {% endif %}
+            <h1>{{ talk.title }}</h1>
+            <h3>{{ talk.sub_title }}</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <hr>
+            <div>
+                {{ talk.abstract_short }}
+            </div>
+            <hr>
+            <div>
+                {{ talk.abstract_extra}}
+            </div>
+        </div>
+
+        <div class='col-md-4'>
+            <h4>Speaker information:</h4>
+            {% for speaker in talk.get_all_speakers %}
+            <ul>
+                <li><b>Name:</b> {{ speaker.user.assopy_user.name }}</li>
+                <li><b>Company</b> 
+                    {{ speaker.user.attendeeprofile.company }}
+                    <br>
+                    {{ speaker.user.attendeeprofile.company_homepage }}
+                </li>
+                <li>
+                    <b>Bio</b><br>
+                    {{ speaker.user.attendeeprofile.getBio.body }}
+                </li>
+            </ul>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
