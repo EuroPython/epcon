@@ -405,17 +405,20 @@ def test_update_proposal_updates_proposal(user_client):
 
     edit_url = reverse("cfp:update", args=[talk.uuid])
 
-    response = user_client.post(edit_url, {
-        "type": TALK_TYPE_CHOICES.t_45,
-        "abstract": "New abstract",
-        "abstract_short": "New short abstract",
-        "abstract_extra": "New extra abstract",
-        "level": TALK_LEVEL.intermediate,
-        "domain_level": TALK_LEVEL.advanced,
-        "title": "New title",
-        "sub_title": "New sub title",
-        "tags": "Some, tags",
-    })
+    response = user_client.post(
+        edit_url,
+        {
+            "type": TALK_TYPE_CHOICES.t_45,
+            "abstract": "New abstract",
+            "abstract_short": "New short abstract",
+            "abstract_extra": "New extra abstract",
+            "level": TALK_LEVEL.intermediate,
+            "domain_level": TALK_LEVEL.advanced,
+            "title": "New title",
+            "sub_title": "New sub title",
+            "tags": "Some, tags",
+        },
+    )
 
     assert response.status_code == 302
     talk.refresh_from_db()

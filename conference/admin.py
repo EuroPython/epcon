@@ -1,6 +1,5 @@
 import csv
 import logging
-import re
 from collections import defaultdict
 from io import StringIO
 
@@ -13,7 +12,7 @@ from django.contrib.contenttypes.fields import (
     ReverseGenericManyToOneDescriptor,
 )
 from django.core import urlresolvers
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
 import common.decorators
@@ -532,110 +531,6 @@ class SpeakerAdmin(admin.ModelAdmin):
             return '<div style="height: 32px; width: 32px"> </div>'
         return '<img src="%s" height="32" />' % (img.url,)
     _avatar.allow_tags = True
-
-
-class TalkAdminForm(MultiLingualForm):
-    class Meta:
-        model = models.Talk
-        fields = '__all__'
-
-    # Try to check if the url will match the pattern of Viddler
-    video_check = re.compile(r'http://www\.viddler\.com/player/[^/]+/?')
-
-    def clean_video(self):
-        match = self.video_check.search(self.cleaned_data['video'])
-        if match:
-            self.cleaned_data['video'] = match.group(0)
-        else:
-            self.cleaned_data['video'] = ''
-        return self.cleaned_data['video']
-
-class TalkAdmin(admin.ModelAdmin):
-    actions = ('do_accept_talks_in_schedule', 'do_speakers_data',)
-    list_display = ('title', 'conference', '_speakers', 'duration', 'status', '_slides', '_video')
-    list_editable = ('status',)
-    list_filter = ('conference', 'status',)
-    ordering = ('-conference', 'title')
-    prepopulated_fields = {"slug": ("title",)}
-    search_fields = ('title',)
-    inlines = (TalkSpeakerInlineAdmin,)
-
-    form = TalkAdminForm
-
-    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        # Use dataaccess to do only one query to the database, and try to fetch
-        # all the information of the speaker and the talks.
-        talks = dataaccess.talks_data(queryset.values_list('id', flat=True))
-        self.cached_talks = dict([(x['id'], x) for x in talks])
-        sids = [ s['id'] for t in talks for s in t['speakers'] ]
-        profiles = dataaccess.profiles_data(sids)
-        self.cached_profiles = dict([(x['id'], x) for x in profiles])
-        return super(TalkAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
-
-    def changelist_view(self, request, extra_context=None):
-        if 'conference' not in request.GET and 'conference__exact' not in request.GET:
-            q = request.GET.copy()
-            q['conference'] = settings.CONFERENCE
-            request.GET = q
-            request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(TalkAdmin,self).changelist_view(request, extra_context=extra_context)
-
-    def _speakers(self, obj):
-        data = self.cached_talks.get(obj.id)
-        output = []
-        for x in data['speakers']:
-            args = {
-                'url': urlresolvers.reverse('admin:conference_speaker_change', args=(x['id'],)),
-                'name': x['name'],
-                'mail': self.cached_profiles[x['id']]['email'],
-            }
-            output.append('<a href="%(url)s">%(name)s</a> (<a href="mailto:%(mail)s">mail</a>)' % args)
-        return '<br />'.join(output)
-    _speakers.allow_tags = True
-
-    def _slides(self, obj):
-        return bool(obj.slides)
-    _slides.boolean = True
-    _slides.admin_order_field = 'slides'
-
-    def _video(self, obj):
-        return bool(obj.video_type) and (bool(obj.video_url) or bool(obj.video_file))
-    _video.boolean = True
-    _video.admin_order_field = 'video_type'
-
-    #@transaction.atomic
-    def do_accept_talks_in_schedule(self, request, queryset):
-        conf = set(t.conference for t in queryset)
-        next = urlresolvers.reverse('admin:conference_talk_changelist')
-        if len(conf) > 1:
-            self.message_user(request, 'Selected talks spans multiple conferences')
-            return redirect(next)
-        conference_talks = set(x['id'] for x in models.Talk.objects\
-                                                    .filter(id__in=models.Event.objects\
-                                                            .filter(schedule__conference=conf.pop())\
-                                                            .exclude(talk=None)\
-                                                            .values('talk'))\
-                                                    .values('id'))
-        for t in queryset:
-            if t.id in conference_talks:
-                t.status = 'accepted'
-            else:
-                t.status = 'proposed'
-            t.save()
-        return redirect(next)
-    do_accept_talks_in_schedule.short_description = 'Accept talks that takes place in conference schedule'
-
-    def do_speakers_data(self, request, queryset):
-        buff = StringIO()
-        writer = csv.writer(buff)
-        for t in queryset:
-            for s in t.get_all_speakers():
-                name = '{} {}'.format(s.user.first_name, s.user.last_name)
-                writer.writerow((t.status, t.title.encode('utf-8'), name.encode('utf-8'), s.user.email.encode('utf-8')))
-        response = http.HttpResponse(buff.getvalue(), content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename=speakers.csv'
-        return response
-    do_speakers_data.short_description = 'Speakers data'
 
 
 class SponsorIncomeInlineAdmin(admin.TabularInline):
@@ -1249,6 +1144,5 @@ admin.site.register(models.Quote, QuoteAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)
 admin.site.register(models.Speaker, SpeakerAdmin)
 admin.site.register(models.Sponsor, SponsorAdmin)
-admin.site.register(models.Talk, TalkAdmin)
 admin.site.register(models.Ticket, TicketAdmin)
 admin.site.register(models.News, NewsAdmin)

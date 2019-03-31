@@ -1,6 +1,8 @@
 from django import forms
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import RedirectView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
 from django.http import JsonResponse, HttpResponseForbidden
@@ -9,9 +11,13 @@ from django.template.response import TemplateResponse
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 
+from taggit.forms import TagField
+from taggit_labels.widgets import LabelWidget
+
 from conference.forms import TalkBaseForm
 from conference.models import (
     Conference,
+    ConferenceTag,
     AttendeeProfile,
     Speaker,
     Talk,
@@ -201,6 +207,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         ap = speaker.user.attendeeprofile
         output['speakers'].append({
             'name': speaker.user.assopy_user.name(),
+            'email': speaker.user.email,
             'company': ap.company,
             'company_homepage': ap.company_homepage,
             'bio': ap.getBio().body,
@@ -297,6 +304,9 @@ class ProposalForm(forms.ModelForm):
         choices=TALK_TYPE,
     )
 
+    # Talk tags
+    tags = TagField(required=True, widget=LabelWidget(model=ConferenceTag))
+
     title = TalkBaseForm.base_fields["title"]
     sub_title = TalkBaseForm.base_fields["sub_title"]
     abstract = TalkBaseForm.base_fields["abstract"]
@@ -304,7 +314,6 @@ class ProposalForm(forms.ModelForm):
     prerequisites = TalkBaseForm.base_fields["prerequisites"]
     level = TalkBaseForm.base_fields["level"]
     domain_level = TalkBaseForm.base_fields["domain_level"]
-    tags = TalkBaseForm.base_fields["tags"]
     abstract_extra = TalkBaseForm.base_fields["abstract_extra"]
 
     class Meta:
@@ -342,10 +351,33 @@ class ProposalForm(forms.ModelForm):
         talk.conference = Conference.objects.current().code
         talk.save()
         talk.setAbstract(self.cleaned_data['abstract'])
+
+        if 'tags' in self.cleaned_data:
+            talk.tags.set(*validate_tags(self.cleaned_data['tags']))
+
         return talk
 
 
+def validate_tags(tags):
+    """
+    Returns only tags that are already present in the database
+    and limits the results to 5
+    """
+    valid_tags = ConferenceTag.objects.filter(
+        name__in=tags
+    ).values_list("name", flat=True)
+
+    tags_limited = valid_tags[:5]
+    tags = ", ".join(tags_limited)
+
+    return tags_limited
+
+
 urlpatterns = [
+    url(
+        r'^$',
+        RedirectView.as_view(url=reverse_lazy("cfp:step1_submit_proposal"))
+    ),
     url(
         r"^submit-proposal/$",
         submit_proposal_step1_talk_info,

@@ -12,8 +12,11 @@ from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from assopy.models import AssopyUser, Vat, Country
 from conference.fares import pre_create_typical_fares_for_conference
-from conference.models import Conference, News
+from conference.models import Conference, News, ConferenceTag
 from conference.tests.factories.fare import SponsorIncomeFactory
+
+import csv
+from io import StringIO
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -222,3 +225,200 @@ class Command(BaseCommand):
             status=News.STATUS.DRAFT,
             published_date=None,
         )
+
+        create_tags()
+
+
+def create_tags():
+    """
+    Uses dump for pre-2019 data to populate ConferenceTag instances for CFP
+    """
+
+    INPUT = """
+    "Python general",Python
+    R,"Other Programming Languages"
+    Java,"Other Programming Languages"
+    C-Languages,"Other Programming Languages"
+    Analytics,"Data Science"
+    Visualization,"Data Science"
+    "Big Data","Data Science"
+    Predictions,"Data Science"
+    MongoDB,Databases
+    "Web Servers and MicroFWs (Flask/Tornado/Nginx/...)",Web
+    Ipython,Python
+    "Web General",Web
+    Socket,DevOps
+    Django,"Application Frameworks"
+    Docker,DevOps
+    Security,Security
+    Privacy,Security
+    Odoo,"Application Frameworks"
+    "Scientific Libraries (Numpy/Pandas/SciKit/...)","Data Science"
+    Pyramid,"Application Frameworks"
+    Plone,"Application Frameworks"
+    "Data Science","Data Science"
+    Machine-Learning,"Data Science"
+    PostgreSQL,Databases
+    Django-Girls,Community
+    Agile,"Development Methods"
+    Documentation,Programming
+    "DevOps general",DevOps
+    Community,Community
+    "Natural Language Processing","Data Science"
+    PyPy,Python
+    Open-Source,"Open Source"
+    Linux,"Operating Systems"
+    "SQL Alchemy",Databases
+    Communication,Community
+    Tooling,Programming
+    "Test Libraries (pyTest/node/...)",Testing
+    MySQL,Databases
+    Packaging,Python
+    "JavaScript Web Frameworks (AngularJS/ReactJS/...)",Web
+    "Internet of Things (IoT)",Hardware
+    Performance,Programming
+    Saltstack,DevOps
+    Management,"Development Methods"
+    Scrum,"Development Methods"
+    Kanban,"Development Methods"
+    Internationalization,Programming
+    "Behavior Driven Development (BDD)","Development Methods"
+    HTML5,Web
+    NoSQL,Databases
+    OpenGL,Web
+    "Test Driven Development (TDD)",Testing
+    Education,Educational
+    CPython,Python
+    APIs,Web
+    "Python 3",Python
+    "Best Practice","Best Practice and Use Cases"
+    Development,Programming
+    Testing,Testing
+    Beginners,Educational
+    Programming,Programming
+    Cython,Python
+    "Deep Learning","Data Science"
+    Unix,"Operating Systems"
+    "Case Study","Case Study"
+    E-Commerce,Web
+    "Distributed Systems",DevOps
+    "Functional Programming",Programming
+    Architecture,Programming
+    OpenStack,DevOps
+    "Raspberry PI",Hardware
+    Teaching,"Everything Else"
+    "Meta Classes",Programming
+    "Public Cloud (AWS/Google/...)",DevOps
+    "Augmented Reality","Everything Else"
+    Engineering,"Everything Else"
+    Physics,Sciences
+    "Clean Code",Educational
+    "System Administration",DevOps
+    Mix-Ins,Programming
+    "Static Analysis","Everything Else"
+    "Compiler and Interpreters",Python
+    Type-Hinting,Programming
+    "Web Crawling",Web
+    JavaScript,"Other Programming Languages"
+    NodeJS,Web
+    "Conferences and Meet-Ups",Community
+    Databases,Databases
+    Infrastructure,DevOps
+    "Elastic Search",Databases
+    Go-Lang,"Other Programming Languages"
+    HTTP,Web
+    Operations,DevOps
+    "Configuration Management (Ansible/Fabric/Chef/...)",DevOps
+    "Deployment/Continuous Integration and Delivery",DevOps
+    Jenkins,Testing
+    Science,Sciences
+    Authentication,Security
+    3D,"Everything Else"
+    Blender,"Everything Else"
+    Diversity,Community
+    Robotics,Hardware
+    Human-Machine-Interaction,Hardware
+    Debugging,Testing
+    "Euro Python and EPS",Community
+    LaTeX,"Other Programming Languages"
+    Game-Development,"Everything Else"
+    Kivy,Python
+    Cross-Platform-Development,Python
+    Git,DevOps
+    PyQt,Programming
+    Virtualization,DevOps
+    "Software Design",Programming
+    Multi-Processing,Programming
+    Multi-Threading,Programming
+    Windows,"Operating Systems"
+    "Messaging and Job Queues (RabbitMQ/Redis/...)",DevOps
+    "Fun and Humor","Everything Else"
+    Command-Line,Programming
+    CMS,Web
+    "GEO and GIS","Everything Else"
+    "Graph Databases",Databases
+    Abstractions,"Everything Else"
+    "Code Analysis",Programming
+    Wearables,Hardware
+    Mobile,Web
+    "Jupyter/iPython Notebook",Python
+    RESTful,Web
+    Cryptography,Security
+    OpenCV,Hardware
+    "ASYNC / Concurreny",Programming
+    "Virtual Env",Programming
+    PyPi,Python
+    Micro-Computers,Hardware
+    Microservices,Programming
+    Scaling,DevOps
+    "Python Software Foundation (PSF)",Community
+    workforce,Business
+    DIY,"Everything Else"
+    "Image Processing","Everything Else"
+    "Mac OS X","Operating Systems"
+    "Data Structures",Programming
+    "System Architecture",DevOps
+    Algorithms,"Data Science"
+    PyLadies,Community
+    "The Answer to Life the Universe and Everything Else","Everything Else"
+    Gadgets,Hardware
+    "All Other Programming Languages","Other Programming Languages"
+    "Use Case","Best Practice and Use Cases"
+    Sensors,Hardware
+    "Other Hardware",Hardware
+    failures/mistakes,"Best Practice and Use Cases"
+    clients,Business
+    freelancing,Business
+    "Mind Bending","Everything Else"
+    Templating,Web
+    legacy-code,Programming
+    MicroPython,Python
+    "Python 2",Python
+    python,Python
+    Data,"Data Science"
+    Structures,"Data Science"
+    Web,Web
+    Business,Business
+    Notebook,"Data Science"
+    Jupyter/iPython,"Data Science"
+    Life,Community
+    Universe,Sciences
+    Deep,"Data Science"
+    Learning,"Data Science"
+    Internet,Web
+    "Internet of Things",DevOps
+    EPS,Community
+    EuroPython,Community
+    "Open Stack",DevOps
+    finance,""
+    Trading,""
+    """.strip()
+
+    buffer = StringIO(INPUT)
+
+    reader = csv.reader(buffer)
+    for line in reader:
+        ConferenceTag.objects.create(
+            name=line[0].strip(), category=line[1].strip()
+        )
+        print("Created tag", line[0].strip())

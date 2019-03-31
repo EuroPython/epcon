@@ -270,6 +270,7 @@ INSTALLED_APPS = (
     'sekizai',
     'tagging',
     'taggit',
+    'taggit_labels',
     'authority',
     # 'pages',
     'mptt',
