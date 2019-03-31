@@ -3,7 +3,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, HttpResponseForbidden
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
 from django.contrib import messages
@@ -18,11 +18,6 @@ from conference.models import (
     TALK_TYPE,
     TalkSpeaker,
 )
-
-
-def is_cfp_available():
-    conf = Conference.objects.current()
-    return conf.cfp(), conf
 
 
 @login_required
@@ -109,7 +104,11 @@ def update_proposal(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
     if not talk.created_by == request.user:
-        raise Http404
+        return HttpResponseForbidden()
+
+    conf = Conference.objects.current()
+    if not conf.cfp():
+        return HttpResponseForbidden()
 
     proposal_edit_form = ProposalForm(instance=talk)
 

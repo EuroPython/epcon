@@ -87,6 +87,25 @@ def test_if_cfp_pages_are_available_if_cfp_is_active(user_client):
 
 
 @mark.django_db
+def test_validation_errors_are_handled_on_step1(user_client):
+    """
+    NOTE(artcz)
+    This test is basically a placholder to get a proper branch coverage.
+    We should also (separately?) test if the validation itslef is correct.
+    """
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        cfp_start=timezone.now() - timedelta(days=2),
+        cfp_end=timezone.now() + timedelta(days=1),
+    )
+    step1_url = reverse("cfp:step1_submit_proposal")
+    response = user_client.post(step1_url, {})
+    # POST rerenders the same template
+    assert template_used(response, "ep19/bs/cfp/step1_talk_info.html")
+
+
+@mark.django_db
 def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     STEP1_CORRECT_REDIRECT_302 = 302
 
@@ -130,6 +149,26 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     assert redirects_to(
         response, reverse("cfp:step2_add_speakers", args=[talk.uuid])
     )
+
+
+@mark.django_db
+def test_validation_errors_are_handled_on_step2(user_client):
+    """
+    NOTE(artcz)
+    This test is basically a placholder to get a proper branch coverage.
+    We should also (separately?) test if the validation itslef is correct.
+    """
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        cfp_start=timezone.now() - timedelta(days=2),
+        cfp_end=timezone.now() + timedelta(days=1),
+    )
+    talk = TalkFactory()
+    step2_url = reverse("cfp:step2_add_speakers", args=[talk.uuid])
+    response = user_client.post(step2_url, {})
+    # POST rerenders the same template
+    assert template_used(response, "ep19/bs/cfp/step2_add_speaker.html")
 
 
 @mark.django_db
@@ -282,6 +321,117 @@ def test_admin_user_can_access_program_wg_download(admin_client):
     response = admin_client.get(url)
     assert response.status_code == 200
     assert response.json() == {"talks": []}
+
+
+@mark.django_db
+def test_update_page_works_if_cfp_is_open_and_user_is_author(user_client):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+    edit_url = reverse("cfp:update", args=[talk.uuid])
+
+    response = user_client.get(edit_url)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/cfp/update_proposal.html")
+
+
+@mark.django_db
+def test_update_page_doesnt_work_if_cfp_is_open_but_user_is_not_author(
+    user_client
+):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    edit_url = reverse("cfp:update", args=[talk.uuid])
+
+    response = user_client.get(edit_url)
+    assert response.status_code == 403
+
+
+@mark.django_db
+def test_preview_page_doesnt_work_if_cfp_is_closed_and_user_is_author(
+    user_client
+):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        cfp_start=timezone.now() - timedelta(days=2),
+        cfp_end=timezone.now() - timedelta(days=1),
+    )
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+    edit_url = reverse("cfp:update", args=[talk.uuid])
+
+    response = user_client.get(edit_url)
+    assert response.status_code == 403
+
+
+@mark.django_db
+def test_validation_errors_are_handled_on_update_proposal(user_client):
+    """
+    NOTE(artcz)
+    This test is basically a placholder to get a proper branch coverage.
+    We should also (separately?) test if the validation itslef is correct.
+    """
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        cfp_start=timezone.now() - timedelta(days=2),
+        cfp_end=timezone.now() + timedelta(days=1),
+    )
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+    update_url = reverse("cfp:update", args=[talk.uuid])
+    response = user_client.post(update_url, {})
+
+    # POST rerenders the same template
+    assert template_used(response, "ep19/bs/cfp/update_proposal.html")
+
+
+@mark.django_db
+def test_update_proposal_updates_proposal(user_client):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+
+    edit_url = reverse("cfp:update", args=[talk.uuid])
+
+    response = user_client.post(edit_url, {
+        "type": TALK_TYPE_CHOICES.t_45,
+        "abstract": "New abstract",
+        "abstract_short": "New short abstract",
+        "abstract_extra": "New extra abstract",
+        "level": TALK_LEVEL.intermediate,
+        "domain_level": TALK_LEVEL.advanced,
+        "title": "New title",
+        "sub_title": "New sub title",
+        "tags": "Some, tags",
+    })
+
+    assert response.status_code == 302
+    talk.refresh_from_db()
+
+    assert redirects_to(response, reverse("cfp:preview", args=[talk.slug]))
+
+    talk_dict = dump_relevant_talk_information_to_dict(talk)
+    assert talk_dict["type"] == TALK_TYPE_CHOICES.t_45
+    assert talk_dict["type_display"] == "Talk (45 mins)"
+    assert talk_dict["subtitle"] == "New sub title"
+    assert talk_dict["abstract"] == "New abstract"
+    assert talk_dict["abstract_short"] == "New short abstract"
+    assert talk_dict["abstract_extra"] == "New extra abstract"
+    assert talk_dict["python_level"] == "Intermediate"
+    assert talk_dict["domain_level"] == "Advanced"
+    assert talk_dict["speakers"] == []
 
 
 def create_conference_with_open_cfp():
