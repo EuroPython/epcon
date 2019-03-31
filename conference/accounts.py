@@ -151,7 +151,7 @@ def social_connect_profile(backend, user, response, *args, **kwargs) -> None:
 def get_or_create_attendee_profile_for_new_user(user):
     attendee, _ = AttendeeProfile.objects.get_or_create(user=user)
     attendee.slug = slug_for_user(user)
-    attendee.uuid = shortuuid.ShortUUID().random(length=6)
+    attendee.uuid = shortuuid.ShortUUID().random(length=7)
     attendee.save()
     return attendee
 

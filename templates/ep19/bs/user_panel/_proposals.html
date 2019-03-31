@@ -5,7 +5,7 @@
     <tr>
         <td><a href='{% url "cfp:preview" prop.slug %}'>{{ prop.title }}</a></td>
         <td>{{ prop.created }}</td>
-        <td>{{ prop.status }}</td>
+        <td>{{ prop.get_status_display }}</td>
     </tr>
     {% endfor %}{# prop in proposals #}
 </table>

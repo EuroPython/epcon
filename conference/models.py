@@ -1,4 +1,3 @@
-
 import datetime
 import os
 import os.path
@@ -22,6 +21,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
 import tagging
+import shortuuid
 from tagging.fields import TagField
 
 import conference
@@ -574,7 +574,7 @@ class TalkQuerySet(models.QuerySet):
 # Talk types combined with duration. Note that the system uses the
 # first character to identify the generic talk type, so these should
 # not be changed from the ones listed above.
-TALK_TYPE = (
+TALK_TYPE = [
     ('t_30', 'Talk (30 mins)'),
     ('t_45', 'Talk (45 mins)'),
     ('t_60', 'Talk (60 mins)'),
@@ -584,7 +584,9 @@ TALK_TYPE = (
     ('n_60', 'Panel (60 mins)'),
     ('n_90', 'Panel (90 mins)'),
     ('h_180', 'Help desk (180 mins)'),
-)
+]
+
+TALK_TYPE_CHOICES = Choices(*TALK_TYPE)
 
 # Mapping of TALK_TYPE to duration in minutes
 TALK_DURATION = {
@@ -619,9 +621,15 @@ TALK_ADMIN_TYPE = (
 )
 
 
+def random_shortuuid():
+    return shortuuid.ShortUUID().random(length=7)
+
+
 class Talk(models.Model, UrlMixin):
     # CharField because sqlite
-    uuid = models.CharField(unique=True, max_length=40, default=uuid.uuid4)
+    uuid = models.CharField(
+        unique=True, max_length=40, default=random_shortuuid, editable=False
+    )
     created_by = models.ForeignKey(get_user_model(), blank=True, null=True)
 
     title = models.CharField(_('Talk title'), max_length=80)
@@ -656,7 +664,12 @@ class Talk(models.Model, UrlMixin):
         _('Teaser video'),
         blank=True,
         help_text=_('Insert the url for your teaser video'))
-    status = models.CharField(max_length=8, choices=TALK_STATUS)
+
+    status = models.CharField(
+        max_length=8,
+        choices=TALK_STATUS,
+        default=TALK_STATUS.proposed
+    )
 
     # TODO: should be renamed to python_level,
     # because we added also domain_level
@@ -667,7 +680,8 @@ class Talk(models.Model, UrlMixin):
         choices=TALK_LEVEL)
 
     training_available = models.BooleanField(default=False)
-    type = models.CharField(max_length=5, choices=TALK_TYPE, default='t_30')
+    type = models.CharField(max_length=5, choices=TALK_TYPE_CHOICES,
+                            default=TALK_TYPE_CHOICES.t_30)
 
     domain = models.CharField(
         max_length=20,

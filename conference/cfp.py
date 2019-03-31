@@ -1,17 +1,15 @@
-import shortuuid
-
 from django import forms
-from django.conf import settings
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 
-from conference.forms import TalkBaseForm, validate_tags
+from conference.forms import TalkBaseForm
 from conference.models import (
     Conference,
     AttendeeProfile,
@@ -22,35 +20,38 @@ from conference.models import (
 )
 
 
+def is_cfp_available():
+    conf = Conference.objects.current()
+    return conf.cfp(), conf
+
+
 @login_required
 def submit_proposal_step1_talk_info(request):
     """
     Main submit_proposal view for ep2019+
     """
 
-    proposal_form = SubmitTalkProposalForm()
+    conf = Conference.objects.current()
+    if not conf.cfp():
+        return TemplateResponse(request, "ep19/bs/cfp/cfp_is_closed.html", {
+            'conf': conf
+        })
+
+    proposal_form = ProposalForm()
 
     if request.method == "POST":
-        proposal_form = SubmitTalkProposalForm(request.POST)
+        proposal_form = ProposalForm(request.POST)
 
         if proposal_form.is_valid():
             with transaction.atomic():
-                talk = proposal_form.save(commit=False)
-                talk.created_by = request.user
-                talk.slug = (
-                    slugify(talk.title)
-                    + "-"
-                    + shortuuid.ShortUUID().random(length=6)
-                )
-                talk.conference = Conference.objects.current().code
-                talk.save()
+                talk = proposal_form.save(request.user)
                 messages.success(
                     request,
                     "Proposal added, now add information about speaker",
                 )
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
 
-    return TemplateResponse(request, "ep19/bs/cfp/submit_proposal.html", {
+    return TemplateResponse(request, "ep19/bs/cfp/step1_talk_info.html", {
         "proposal_form": proposal_form,
     })
 
@@ -101,17 +102,51 @@ def submit_proposal_step3_thanks(request, talk_uuid):
 
 
 @login_required
+def update_proposal(request, talk_uuid):
+    """
+    Update/Edit proposal view
+    """
+    talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    if not talk.created_by == request.user:
+        raise Http404
+
+    proposal_edit_form = ProposalForm(instance=talk)
+
+    if request.method == 'POST':
+        proposal_edit_form = ProposalForm(request.POST, instance=talk)
+
+        if proposal_edit_form.is_valid():
+            proposal_edit_form.save(request.user)
+            messages.success(
+                request,
+                "Proposal updated"
+            )
+            return redirect('cfp:preview', talk_slug=talk.slug)
+
+    return TemplateResponse(request, "ep19/bs/cfp/update_proposal.html", {
+        "talk": talk,
+        "proposal_edit_form": proposal_edit_form,
+    })
+
+
+@login_required
 def preview_proposal(request, talk_slug):
     """
     Preview proposal
     """
     talk = get_object_or_404(Talk, slug=talk_slug)
+    talk_as_dict = dump_relevant_talk_information_to_dict(talk)
+    conf = Conference.objects.current()
     return TemplateResponse(request, "ep19/bs/cfp/preview.html", {
         "talk": talk,
+        "talk_as_dict": talk_as_dict,
+        "cfp_is_open": conf.cfp(),
     })
 
 
 @login_required
+@staff_member_required
 def program_wg_download_all_talks_for_current_conference(request):
     """
     TODO: add some permission checks here
@@ -151,9 +186,14 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         'title': talk.title,
         'uuid': talk.uuid,
         'slug': talk.slug,
+        'type': talk.type,
+        'type_display': talk.get_type_display(),
         'subtitle': talk.sub_title,
         'abstract_short': talk.abstract_short,
+        'abstract': talk.getAbstract().body,
         'abstract_extra': talk.abstract_extra,
+        'python_level': talk.get_level_display(),
+        'domain_level': talk.get_domain_level_display(),
         # TODO: tags
         'speakers': [],
     }
@@ -240,7 +280,6 @@ class AddSpeakerToTalkForm(forms.ModelForm):
     )
 
     class Meta:
-        # TODO: this whole thing needs an update...
         model = AttendeeProfile
         fields = [
             'users_given_name',
@@ -252,7 +291,7 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         ]
 
 
-class SubmitTalkProposalForm(forms.ModelForm):
+class ProposalForm(forms.ModelForm):
 
     type = forms.ChoiceField(
         label='Type', required=True,
@@ -284,147 +323,42 @@ class SubmitTalkProposalForm(forms.ModelForm):
             'abstract_extra',
         ]
 
+    def __init__(self, *args, **kwargs):
 
-class ProposalSubmissionForm(forms.Form):
-    """
-    Submission Form for the first paper, it will contain the fields
-    which populates the user profile and the data of the talk,
-    only essential data is required.
-    """
+        super().__init__(*args, **kwargs)
 
-    # # Speaker details
-    # first_name = forms.CharField(label="First name", max_length=30)
-    # last_name = forms.CharField(label="Last name", max_length=30)
-
-    type = forms.ChoiceField(
-        label='Type', required=True,
-        choices=TALK_TYPE,
-    )
-
-    # Talk details
-    title = TalkBaseForm.base_fields["title"]
-    sub_title = TalkBaseForm.base_fields["sub_title"]
-    abstract = TalkBaseForm.base_fields["abstract"]
-    abstract_short = TalkBaseForm.base_fields["abstract_short"]
-    prerequisites = TalkBaseForm.base_fields["prerequisites"]
-    level = TalkBaseForm.base_fields["level"]
-    domain_level = TalkBaseForm.base_fields["domain_level"]
-    tags = TalkBaseForm.base_fields["tags"]
-    abstract_extra = TalkBaseForm.base_fields["abstract_extra"]
-
-    field_order = [
-        'type',
-        'title',
-        'sub_title',
-        'abstract',
-        'abstract_short',
-        'prerequisites',
-        'level',
-        'domain_level',
-        'tags',
-        'abstract_extra',
-    ]
-
-    def __init__(self, user, *args, **kwargs):
-
-        try:
-            profile = user.attendeeprofile
-
-        except AttendeeProfile.DoesNotExist:
-            profile = None
-
-        data = {"first_name": user.first_name, "last_name": user.last_name}
-
-        if profile:
-
-            if profile.birthday is None:
-                birthday_value = None
-
-            else:
-                birthday_value = profile.birthday.strftime("%Y-%m-%d")
-
-            data.update(
-                {
-                    "phone": profile.phone,
-                    "birthday": birthday_value,
-                    "job_title": profile.job_title,
-                    "company": profile.company,
-                    "company_homepage": profile.company_homepage,
-                    "bio": getattr(profile.getBio(), "body", ""),
-                }
+        if kwargs.get('instance'):
+            self.fields['abstract'].initial = (
+                kwargs['instance'].getAbstract().body
             )
 
-        data.update(kwargs.get("initial", {}))
-        kwargs["initial"] = data
-        super().__init__(*args, **kwargs)
-        self.user = user
-
-    @transaction.atomic
-    def save(self):
-        data = self.cleaned_data
-
-        user = self.user
-        user.first_name = data["first_name"].strip()
-        user.last_name = data["last_name"].strip()
-        user.save()
-
-        profile = AttendeeProfile.objects.getOrCreateForUser(user)
-        profile.phone = data["phone"]
-        profile.birthday = data["birthday"]
-        profile.job_title = data["job_title"]
-        profile.company = data["company"]
-        profile.company_homepage = data["company_homepage"]
-        profile.save()
-        profile.setBio(data["bio"])
-
-        try:
-            speaker = user.speaker
-
-        except Speaker.DoesNotExist:
-            speaker = Speaker.objects.create(user=user)
-
-        conference = settings.CONFERNCE_CONFERENCE
-
-        talk = Talk.objects.createFromTitle(
-            title=data["title"],
-            sub_title=data["sub_title"],
-            prerequisites=data["prerequisites"],
-            abstract_short=data["abstract_short"],
-            abstract_extra=data["abstract_extra"],
-            # TODO/FIXME(artcz): this should be a foreignkey to conference
-            conference=conference,
-            speaker=speaker,
-            status="proposed",
-            language=data["language"],
-            domain=data["domain"],
-            domain_level=data["domain_level"],
-            level=data["level"],
-            type=data["type"],
-        )
-
+    def save(self, user):
+        """
+        We don't support commit=False on this form, because .setAbstract
+        requires an object saved in db.
+        """
+        talk = super().save(commit=False)
+        talk.created_by = user
+        talk.slug = f'{talk.uuid}-{slugify(talk.title)}'
+        talk.conference = Conference.objects.current().code
         talk.save()
-        talk.setAbstract(data["abstract"])
-
-        if "tags" in data:
-            valid_tags = validate_tags(data["tags"])
-            talk.tags.set(*(valid_tags))
-
+        talk.setAbstract(self.cleaned_data['abstract'])
         return talk
 
 
 urlpatterns = [
     url(
-        r"^submit-proposal/step-1/$",
+        r"^submit-proposal/$",
         submit_proposal_step1_talk_info,
-        name="submit_proposal",
+        name="step1_submit_proposal",
     ),
     url(
-        r"^submit-proposal/step-2/(?P<talk_uuid>[\w-]+)/$",
+        r"^submit-proposal/(?P<talk_uuid>[\w-]+)/add-speakers/$",
         submit_proposal_step2_add_speakers,
         name="step2_add_speakers",
     ),
     url(
-        r"^submit-proposal/step-3/(?P<talk_uuid>[\w-]+)/$",
+        r"^submit-proposal/(?P<talk_uuid>[\w-]+)/thanks/$",
         submit_proposal_step3_thanks,
         name="step3_thanks",
     ),
@@ -432,6 +366,11 @@ urlpatterns = [
         r"^preview/(?P<talk_slug>[\w-]+)/$",
         preview_proposal,
         name="preview",
+    ),
+    url(
+        r"^update/(?P<talk_uuid>[\w-]+)/$",
+        update_proposal,
+        name="update",
     ),
     url(
         r"^program-wg/download-all-talks/$",

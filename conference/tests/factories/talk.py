@@ -13,7 +13,7 @@ from conference.tests.factories.speaker import SpeakerFactory
 
 class TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Talk'
+        model = conference.models.Talk
 
     title = factory.LazyAttribute(
         lambda talk: factory.Faker(
@@ -24,7 +24,12 @@ class TalkFactory(factory.django.DjangoModelFactory):
 
     duration = 30
 
-    slug = factory.LazyAttribute(lambda talk: slugify(talk.title))
+    uuid = factory.LazyAttribute(
+        lambda t: conference.models.random_shortuuid()
+    )
+    slug = factory.LazyAttribute((
+        lambda talk: f'{talk.uuid}-{slugify(talk.title)}'
+    ))
     level = factory.Iterator(
         conference.models.TALK_LEVEL, getter=lambda x: x[0]
     )
