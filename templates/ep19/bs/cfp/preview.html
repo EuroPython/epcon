@@ -17,7 +17,11 @@
             <div>
                 Type: {{ talk_as_dict.type_display }}<br>
                 Python level: {{ talk_as_dict.python_level }}<br>
-                Domain level: {{ talk_as_dict.domain_level }}
+                Domain level: {{ talk_as_dict.domain_level }}<br>
+                Tags: 
+                {% for tag in talk_as_dict.tags %}
+                <span class='btn btn-outline-info'>{{ tag }}</span>
+                {% endfor %}
             </div>
             <hr>
             <div>
@@ -32,9 +36,6 @@
                 {{ talk_as_dict.abstract_extra|linebreaks }}
             </div>
             <hr>
-            <div>
-                {{ talk_as_dict.tags }}
-            </div>
 
             <div style='margin-top:5em'>
                 {# TODO: this should be possible only if CFP is still open #}

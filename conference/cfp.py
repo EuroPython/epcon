@@ -199,7 +199,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         'abstract_extra': talk.abstract_extra,
         'python_level': talk.get_level_display(),
         'domain_level': talk.get_domain_level_display(),
-        # TODO: tags
+        "tags": [t.name for t in talk.tags.all()],
         'speakers': [],
     }
 
