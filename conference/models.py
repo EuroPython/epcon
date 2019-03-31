@@ -628,7 +628,10 @@ def random_shortuuid():
 class Talk(models.Model, UrlMixin):
     # CharField because sqlite
     uuid = models.CharField(
-        unique=True, max_length=40, default=random_shortuuid, editable=False
+        # FIXME(artcz)
+        # unique-False because we have al ot of old talks without uuid
+        # will update this later once we add some uuids on production
+        unique=False, max_length=40, default=random_shortuuid, editable=False
     )
     created_by = models.ForeignKey(get_user_model(), blank=True, null=True)
 

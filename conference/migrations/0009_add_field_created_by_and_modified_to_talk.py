@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             model_name="talk",
             name="uuid",
             field=models.CharField(
-                default=uuid.uuid4, max_length=40, unique=True
+                default=uuid.uuid4, max_length=40, unique=False,
             ),
         ),
     ]
