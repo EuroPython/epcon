@@ -177,7 +177,7 @@ def test_validation_errors_are_handled_on_step2(user_client):
 @mark.django_db
 def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     create_conference_with_open_cfp()
-    # STEP2_CORRECT_REDIRECT_302 = 302
+    STEP2_CORRECT_REDIRECT_302 = 302
 
     talk = TalkFactory()
     talk.setAbstract(
@@ -193,10 +193,11 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
         {
             "users_given_name": "Joe Doe",
             "phone": "+48523456789",
-            "birthday": "2010-02-03",
+            "gender": "M",
             "bio": "ASdf bio",
         },
     )
+    assert response.status_code == STEP2_CORRECT_REDIRECT_302
 
     talk.refresh_from_db()
     talk_dict = dump_relevant_talk_information_to_dict(talk)
@@ -450,7 +451,7 @@ def test_speaker_form_accepts_valid_international_mobile_numbers(valid_phone):
         {
             "users_given_name": "Joe Doe",
             "phone": valid_phone,
-            "birthday": "2010-02-03",
+            "gender": "",
             "bio": "ASdf bio",
         }
     )
@@ -470,7 +471,7 @@ def test_speaker_form_doesnt_accept_invalid_international_mobile_numbers(
         {
             "users_given_name": "Joe Doe",
             "phone": invalid_phone,
-            "birthday": "2010-02-03",
+            "gender": "",
             "bio": "ASdf bio",
         }
     )

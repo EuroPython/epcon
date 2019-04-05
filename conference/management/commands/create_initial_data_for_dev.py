@@ -33,6 +33,9 @@ class Command(BaseCommand):
         conference, _ = Conference.objects.get_or_create(
             code=settings.CONFERENCE_CONFERENCE,
             name=settings.CONFERENCE_CONFERENCE,
+            # For easier testing open CFP
+            cfp_start=timezone.now() - timedelta(days=3),
+            cfp_end=timezone.now() + timedelta(days=3),
         )
 
         print("Creating an admin user")

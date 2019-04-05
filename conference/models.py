@@ -368,12 +368,20 @@ class AttendeeProfile(models.Model):
     uuid = models.CharField(max_length=6, unique=True)
 
     image = models.ImageField(upload_to=_fs_upload_to('profile'), blank=True)
+
+    # NOTE(artcz): This is currently deprecated field, replaced with is_minor
+    # because that's what we basically used it for.
     birthday = models.DateField(_('Birthday'), null=True, blank=True)
+
+    # minor == <18 years old.
+    is_minor = models.BooleanField(default=False)
+
     phone = models.CharField(
         _('Phone'),
         max_length=30, blank=True,
         help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
     )
+    gender = models.CharField(max_length=32, blank=True)
 
     personal_homepage = models.URLField(_('Personal homepage'), blank=True)
     company = models.CharField(_('Company'), max_length=50, blank=True)

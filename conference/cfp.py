@@ -167,7 +167,8 @@ def extract_initial_speaker_data_from_user(user):
 
     return {
         'users_given_name': user.assopy_user.name(),
-        'birthday': attendee.birthday,
+        'is_minor': attendee.is_minor,
+        'gender': attendee.gender,
         'job_title': attendee.job_title,
         'bio': getattr(attendee.getBio(), "body", ""),
         'company': attendee.company,
@@ -224,7 +225,8 @@ def save_information_from_speaker_form(user, cleaned_data):
 
     ap = user.attendeeprofile
     ap.phone = cleaned_data['phone']
-    ap.birthday = cleaned_data['birthday']
+    ap.is_minor = cleaned_data['is_minor']
+    ap.gender = cleaned_data['gender']
     ap.job_title = cleaned_data['job_title']
     ap.company = cleaned_data['company']
     ap.company_homepage = cleaned_data['company_homepage']
@@ -243,16 +245,15 @@ def add_speaker_to_talk(speaker, talk):
 class AddSpeakerToTalkForm(forms.ModelForm):
 
     users_given_name = forms.CharField(label="Name of the speaker")
-    birthday = forms.DateField(
-        label="Date of birth",
+    is_minor = forms.BooleanField(
+        label="Are you a minor?",
         help_text=(
-            "Format: YYYY-MM-DD<br />This date will <strong>never</strong>"
-            "be published."
-            "We require date of birth for speakers to accomodate for"
-            " laws regarding minors."
+            "Please select this checkbox if you're going to be under 18"
+            "years old on July 8th 2019"
         ),
-        input_formats=("%Y-%m-%d",),
-        widget=forms.DateInput(attrs={"size": 10, "maxlength": 10}),
+        # required=False, because django forms... it means that unless someone
+        # is a minor we don't provide a value.
+        required=False,
     )
     job_title = forms.CharField(
         label="Job title",
@@ -269,6 +270,11 @@ class AddSpeakerToTalkForm(forms.ModelForm):
             "This number will <strong>never</strong> be published."
         ),
         max_length=30,
+    )
+    gender = forms.CharField(
+        label="Type your gender",
+        max_length=32,
+        required=False,
     )
     company = forms.CharField(
         label="Your company", max_length=50, required=False
@@ -292,6 +298,8 @@ class AddSpeakerToTalkForm(forms.ModelForm):
             'job_title',
             'phone',
             'bio',
+            'gender',
+            'is_minor',
             'company',
             'company_homepage',
         ]
