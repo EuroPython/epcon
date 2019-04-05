@@ -7,7 +7,10 @@ from django.utils import timezone
 
 from conference.models import Conference, Talk, TALK_TYPE_CHOICES, TALK_LEVEL
 from conference.tests.factories.talk import TalkFactory
-from conference.cfp import dump_relevant_talk_information_to_dict
+from conference.cfp import (
+    dump_relevant_talk_information_to_dict,
+    AddSpeakerToTalkForm,
+)
 
 from tests.common_tools import redirects_to, template_used
 
@@ -189,7 +192,7 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
         step2_url,
         {
             "users_given_name": "Joe Doe",
-            "phone": "+4812345678",
+            "phone": "+48523456789",
             "birthday": "2010-02-03",
             "bio": "ASdf bio",
         },
@@ -202,7 +205,7 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     assert speaker["company"] == ""
     assert speaker["company_homepage"] == ""
     assert speaker["bio"] == "ASdf bio"
-    assert speaker["phone"] == "+4812345678"
+    assert speaker["phone"] == "+48523456789"
 
     assert redirects_to(
         response, reverse("cfp:step3_thanks", args=[talk.uuid])
@@ -435,6 +438,44 @@ def test_update_proposal_updates_proposal(user_client):
     assert talk_dict["python_level"] == "Intermediate"
     assert talk_dict["domain_level"] == "Advanced"
     assert talk_dict["speakers"] == []
+
+
+# Mark with django db only because AddSpeakerToTalkForm is a ModelForm
+@mark.django_db
+@mark.parametrize(
+    "valid_phone", ["+48123456789", "+44 7 123 456 789", "+1 858 712 8966"]
+)
+def test_speaker_form_accepts_valid_international_mobile_numbers(valid_phone):
+    form = AddSpeakerToTalkForm(
+        {
+            "users_given_name": "Joe Doe",
+            "phone": valid_phone,
+            "birthday": "2010-02-03",
+            "bio": "ASdf bio",
+        }
+    )
+    assert form.is_valid()
+
+
+# Mark with django db only because AddSpeakerToTalkForm is a ModelForm
+@mark.django_db
+@mark.parametrize(
+    "invalid_phone",
+    ["SOME RANODM TEXT", "+4471343956789", "+4412445367"],
+)
+def test_speaker_form_doesnt_accept_invalid_international_mobile_numbers(
+    invalid_phone
+):
+    form = AddSpeakerToTalkForm(
+        {
+            "users_given_name": "Joe Doe",
+            "phone": invalid_phone,
+            "birthday": "2010-02-03",
+            "bio": "ASdf bio",
+        }
+    )
+    assert not form.is_valid()
+    assert form.errors["phone"] == ["Enter a valid phone number."]
 
 
 def create_conference_with_open_cfp():

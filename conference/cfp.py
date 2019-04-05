@@ -13,6 +13,7 @@ from django.shortcuts import redirect, get_object_or_404
 
 from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
+from phonenumber_field.formfields import PhoneNumberField
 
 from conference.forms import TalkBaseForm
 from conference.models import (
@@ -259,8 +260,7 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         max_length=50,
         required=False,
     )
-    # TODO: add phonenumbers validation here
-    phone = forms.CharField(
+    phone = PhoneNumberField(
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "

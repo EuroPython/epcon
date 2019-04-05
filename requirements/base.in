@@ -38,6 +38,10 @@ django-filebrowser-no-grappelli~=3.6
 django-markitup~=3.0
 python-decouple
 
+# phone numbers
+django-phonenumber-field
+phonenumbers
+
 # payments
 stripe
 django-paypal
