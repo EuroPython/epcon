@@ -2,7 +2,6 @@
 import datetime
 import os
 import os.path
-import subprocess
 import uuid
 from collections import defaultdict
 
@@ -278,14 +277,6 @@ class _fs_upload_to(object):
 
         return fpath
 
-def postSaveResizeImageHandler(sender, **kwargs):
-    tool = os.path.join(os.path.dirname(conference.__file__), 'tools', 'resize_image.py')
-    null = open('/dev/null')
-    p = subprocess.Popen(
-        [tool, settings.STUFF_DIR],
-        close_fds=True, stdin=null, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    p.communicate()
-
 class AttendeeProfileManager(models.Manager):
     def findSlugForUser(self, user):
         name = '%s %s' % (user.first_name, user.last_name)
@@ -413,7 +404,6 @@ class AttendeeProfile(models.Model):
     def getBio(self, language=None):
         return MultilingualContent.objects.getContent(self, 'bios', language)
 
-post_save.connect(postSaveResizeImageHandler, sender=AttendeeProfile)
 
 class Presence(models.Model):
     """
@@ -926,9 +916,6 @@ class Sponsor(models.Model):
         return self.sponsor
 
 
-post_save.connect(postSaveResizeImageHandler, sender=Sponsor)
-
-
 class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
@@ -957,9 +944,6 @@ class MediaPartner(models.Model):
 
     def __str__(self):
         return self.partner
-
-
-post_save.connect(postSaveResizeImageHandler, sender=MediaPartner)
 
 
 class MediaPartnerConference(models.Model):
