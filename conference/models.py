@@ -26,7 +26,6 @@ import tagging
 from tagging.fields import TagField
 
 import conference
-import conference.gmap
 from . import settings, signals
 
 from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
