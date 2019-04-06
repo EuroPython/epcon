@@ -1,36 +1,31 @@
 import datetime
+import logging
 import os
 import os.path
 import uuid
 from collections import defaultdict
 
+import shortuuid
+import tagging
 from django.conf import settings as dsettings
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db import models
-from django.db import transaction
+from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
-
-from common.django_urls import UrlMixin
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
-
-import tagging
-import shortuuid
 from tagging.fields import TagField
-
-import conference
-from . import settings, signals
-
-from taggit.models import TagBase, GenericTaggedItemBase, ItemBase
 from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
 
-import logging
+from common.django_urls import UrlMixin
+
+from . import settings, signals
 
 log = logging.getLogger('conference.tags')
 
@@ -66,9 +61,12 @@ class ConferenceTag(TagBase):
                 return
         return super(ConferenceTag, self).save(**kw)
 
+
 class ConferenceTaggedItem(GenericTaggedItemBase, ItemBase):
     tag = models.ForeignKey(
-        ConferenceTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE
+        ConferenceTag,
+        related_name="%(app_label)s_%(class)s_items",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
@@ -639,79 +637,113 @@ class Talk(models.Model, UrlMixin):
         # FIXME(artcz)
         # unique-False because we have al ot of old talks without uuid
         # will update this later once we add some uuids on production
-        unique=False, max_length=40, default=random_shortuuid, editable=False
+        unique=False,
+        max_length=40,
+        default=random_shortuuid,
+        editable=False,
     )
     created_by = models.ForeignKey(get_user_model(), blank=True, null=True)
 
-    title = models.CharField(_('Talk title'), max_length=80)
-    sub_title = models.CharField(_('Sub title'), max_length=1000, default="", blank=True)
+    title = models.CharField("Talk title", max_length=80)
+    sub_title = models.CharField(
+        "Sub title", max_length=1000, default="", blank=True
+    )
     slug = models.SlugField(max_length=100, unique=True)
-    prerequisites = models.CharField(_('prerequisites'), help_text="What should attendees know already",default="", blank=True, max_length=150)
-    conference = models.CharField(help_text='name of the conference', max_length=20)
-    admin_type = models.CharField(max_length=1, choices=TALK_ADMIN_TYPE, blank=True)
-    speakers = models.ManyToManyField(Speaker, through='TalkSpeaker')
-    language = models.CharField(_('Language'), max_length=3, choices=TALK_LANGUAGES, default="en")
+    prerequisites = models.CharField(
+        "Prerequisites",
+        help_text="What should attendees know already",
+        default="",
+        blank=True,
+        max_length=150,
+    )
+    conference = models.CharField(
+        help_text="name of the conference", max_length=20
+    )
+    admin_type = models.CharField(
+        max_length=1, choices=TALK_ADMIN_TYPE, blank=True
+    )
+    speakers = models.ManyToManyField(Speaker, through="TalkSpeaker")
+    language = models.CharField(
+        "Language", max_length=3, choices=TALK_LANGUAGES, default="en"
+    )
     abstracts = GenericRelation(
         MultilingualContent,
-        verbose_name=_('Talk abstract'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting. Be sure to includes the goals of your talk and any prerequisite required to fully understand it.</p><p>Suggested size: two or three paragraphs.</p>'))
+        verbose_name=_("Talk abstract"),
+        help_text=_(
+            "Please enter a short description of the talk you are submitting. "
+            "Be sure to includes the goals of your talk and any prerequisite "
+            "required to fully understand it.\n"
+            "Suggested size: two or three paragraphs."
+        ),
+    )
     abstract_short = models.TextField(
-        verbose_name=_('Talk abstract short'),
-        help_text=_('<p>Please enter a short description of the talk you are submitting.</p>'), default="")
+        verbose_name="Talk abstract short",
+        help_text=(
+            "Please enter a short description of the talk you are submitting."
+        ),
+        default="",
+    )
 
     abstract_extra = models.TextField(
-        verbose_name=_('Talk abstract extra'),
-        help_text=_('<p>Please enter instructions for attendees.</p>'),
+        verbose_name=_("Talk abstract extra"),
+        help_text=_("<p>Please enter instructions for attendees.</p>"),
         blank=True,
-        default="")
+        default="",
+    )
 
-    slides = models.FileField(upload_to=_fs_upload_to('slides'), blank=True)
-    video_type = models.CharField(max_length=30, choices=VIDEO_TYPE,
-                                  blank=True)
+    slides = models.FileField(upload_to=_fs_upload_to("slides"), blank=True)
+    video_type = models.CharField(
+        max_length=30, choices=VIDEO_TYPE, blank=True
+    )
     video_url = models.TextField(blank=True)
-    video_file = models.FileField(upload_to=_fs_upload_to('videos'),
-                                  blank=True)
+    video_file = models.FileField(
+        upload_to=_fs_upload_to("videos"), blank=True
+    )
     teaser_video = models.URLField(
-        _('Teaser video'),
+        _("Teaser video"),
         blank=True,
-        help_text=_('Insert the url for your teaser video'))
+        help_text=_("Insert the url for your teaser video"),
+    )
 
     status = models.CharField(
-        max_length=8,
-        choices=TALK_STATUS,
-        default=TALK_STATUS.proposed
+        max_length=8, choices=TALK_STATUS, default=TALK_STATUS.proposed
     )
 
     # TODO: should be renamed to python_level,
     # because we added also domain_level
     level = models.CharField(
-        _('Audience Python level'),
-        default='beginner',
+        _("Audience Python level"),
+        default="beginner",
         max_length=12,
-        choices=TALK_LEVEL)
+        choices=TALK_LEVEL,
+    )
 
     training_available = models.BooleanField(default=False)
-    type = models.CharField(max_length=5, choices=TALK_TYPE_CHOICES,
-                            default=TALK_TYPE_CHOICES.t_30)
+    type = models.CharField(
+        max_length=5, choices=TALK_TYPE_CHOICES, default=TALK_TYPE_CHOICES.t_30
+    )
 
     domain = models.CharField(
         max_length=20,
         choices=dsettings.CONFERENCE_TALK_DOMAIN,
         default=dsettings.CONFERENCE_TALK_DOMAIN.other,
-        blank=True
+        blank=True,
     )
     domain_level = models.CharField(
         _("Audience Domain Level"),
         default=TALK_LEVEL.beginner,
         max_length=12,
-        choices=TALK_LEVEL  # using the same Choices as regular talk level
+        choices=TALK_LEVEL,  # using the same Choices as regular talk level
     )
 
     duration = models.IntegerField(
-        _('Duration'),
+        _("Duration"),
         default=0,
-        help_text=_('This is the duration of the talk. '
-                    'Set to 0 to use the default talk duration.'))
+        help_text=_(
+            "This is the duration of the talk. "
+            "Set to 0 to use the default talk duration."
+        ),
+    )
 
     # Suggested Tags, normally, should use a submission model.
     suggested_tags = models.CharField(max_length=100, blank=True)
@@ -722,13 +754,12 @@ class Talk(models.Model, UrlMixin):
     objects = TalkQuerySet.as_manager()
 
     class Meta:
-        ordering = ['title']
+        ordering = ["title"]
 
     def save(self, *args, **kwargs):
         # The duration is taken directly from talk's type, unless it was
         # customized
-        if (self.duration == 0 or
-            self.duration in list(TALK_DURATION.values())):
+        if self.duration == 0 or self.duration in list(TALK_DURATION.values()):
             # duration was previously set to a standard value, so update
             # the value to the talk length
             self.duration = TALK_DURATION[self.type]
@@ -739,13 +770,18 @@ class Talk(models.Model, UrlMixin):
         super(Talk, self).save(*args, **kwargs)
 
     def __str__(self):
-        return '%s [%s][%s][%s]' % (self.title, self.conference, self.language, self.duration)
+        return "%s [%s][%s][%s]" % (
+            self.title,
+            self.conference,
+            self.language,
+            self.duration,
+        )
 
     def get_absolute_url(self):
-        return reverse('conference-talk', args=[self.slug])
+        return reverse("conference-talk", args=[self.slug])
 
     def get_admin_url(self):
-        return reverse('admin:conference_talk_change', args=[self.id])
+        return reverse("admin:conference_talk_change", args=[self.id])
 
     get_url_path = get_absolute_url
 
@@ -765,10 +801,15 @@ class Talk(models.Model, UrlMixin):
         return self.speakers.all()
 
     def setAbstract(self, body, language=None):
-        MultilingualContent.objects.setContent(self, 'abstracts', language, body)
+        MultilingualContent.objects.setContent(
+            self, "abstracts", language, body
+        )
 
     def getAbstract(self, language=None):
-        return MultilingualContent.objects.getContent(self, 'abstracts', language)
+        return MultilingualContent.objects.getContent(
+            self, "abstracts", language
+        )
+
 
 class TalkSpeaker(models.Model):
     talk = models.ForeignKey(Talk, on_delete=models.CASCADE)

@@ -238,7 +238,7 @@ def save_information_from_speaker_form(user, cleaned_data):
 
 
 def add_speaker_to_talk(speaker, talk):
-    _, ts = TalkSpeaker.objects.get_or_create(talk=talk, speaker=speaker)
+    ts, _ = TalkSpeaker.objects.get_or_create(talk=talk, speaker=speaker)
     return None
 
 

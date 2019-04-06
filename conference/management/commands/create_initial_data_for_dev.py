@@ -1,22 +1,29 @@
-from datetime import timedelta
+import csv
 import random
+from datetime import timedelta
+from io import StringIO
 
-from django.core.management.base import BaseCommand
+from cms.api import add_plugin, create_page, publish_page
 from django.conf import settings
-from django.db import transaction
-from django.utils import timezone, lorem_ipsum
 from django.core.exceptions import FieldError
-
-from cms.api import create_page, add_plugin, publish_page
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import lorem_ipsum, timezone
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from assopy.models import AssopyUser, Vat, Country
+from assopy.models import AssopyUser, Country, Vat
 from conference.fares import pre_create_typical_fares_for_conference
-from conference.models import Conference, News, ConferenceTag
+from conference.models import (
+    Conference,
+    ConferenceTag,
+    News,
+    TALK_STATUS,
+    Speaker,
+)
 from conference.tests.factories.fare import SponsorIncomeFactory
-
-import csv
-from io import StringIO
+from conference.tests.factories.talk import TalkFactory
+from conference.cfp import add_speaker_to_talk
+from conference.accounts import get_or_create_attendee_profile_for_new_user
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -44,21 +51,31 @@ class Command(BaseCommand):
         )
 
         print("Creating regular users")
-        AssopyUser.objects.create_user(
+        alice = AssopyUser.objects.create_user(
             email="alice@europython.eu",
             password="europython",
             active=True,
         )
-        AssopyUser.objects.create_user(
+        bob = AssopyUser.objects.create_user(
             email="bob@europython.eu",
             password="europython",
             active=True,
         )
-        AssopyUser.objects.create_user(
+        cesar = AssopyUser.objects.create_user(
             email="cesar@europython.eu",
             password="europython",
             active=True,
         )
+
+        print("Making some talk proposals")
+        for user in alice, bob, cesar:
+            speaker, _ = Speaker.objects.get_or_create(user=user.user)
+            talk = TalkFactory(status=TALK_STATUS.proposed)
+            talk.setAbstract("some abstract")
+            talk.created_by = user.user
+            talk.save()
+            add_speaker_to_talk(speaker, talk)
+            get_or_create_attendee_profile_for_new_user(user.user)
 
         def new_page(rev_id, title, **kwargs):
             try:

@@ -153,6 +153,7 @@ def get_or_create_attendee_profile_for_new_user(user):
     attendee.slug = slug_for_user(user)
     attendee.uuid = shortuuid.ShortUUID().random(length=7)
     attendee.save()
+    attendee.setBio('bio')
     return attendee
 
 
