@@ -350,19 +350,6 @@ class P3ProfilePublicDataForm(P3ProfileForm):
         p3p.twitter = data.get('twitter', '')
 
         loc = data.get('location')
-        if loc:
-            if loc != oldl:
-                from assopy.utils import geocode_country
-                country = geocode_country(loc)
-                if country:
-                    p3p.country = country
-                else:
-                    # geocode_country() can return None, but the model
-                    # does not accept None as input; see #289
-                    p3p.country = ''
-        else:
-            p3p.country = ''
-
         p3p.save()
 
         if 'interests' in data:

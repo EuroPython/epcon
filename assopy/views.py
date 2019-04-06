@@ -117,17 +117,6 @@ def tickets(request):
     return {}
 
 
-@login_required
-@render_to_json
-def geocode(request):
-    address = request.GET.get('address', '').strip()
-    region = request.GET.get('region')
-    if not address:
-        return ''
-    from assopy.utils import geocode as g
-    return g(address, region=region)
-
-
 def paypal_billing(request, code):
     # questa vista serve a eseguire il redirect su paypol
     log.debug('Paypal billing request (code %s): %s', code, request.environ)
