@@ -15,7 +15,6 @@ urlpatterns = [
     url(r"^billing/$", views.billing, name="assopy-billing"),
     url(r"^checkout/$", views.checkout, name="assopy-checkout"),
     url(r"^tickets/$", views.tickets, name="assopy-tickets"),
-    url(r"^geocode/$", views.geocode, name="assopy-geocode"),
     url(
         r"orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$",
         views.voucher,
