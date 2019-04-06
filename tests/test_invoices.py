@@ -207,8 +207,6 @@ def test_invoices_from_buying_tickets(client):
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     fetch_and_store_latest_ecb_exrates()
 
-    assert settings.P3_FARES_ENABLED
-
     # 1. First create a user with complete profile.
     # default password is 'password123' per django_factory_boy
     user = auth_factories.UserFactory(email='joedoe@example.com',

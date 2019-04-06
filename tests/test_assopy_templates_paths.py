@@ -88,6 +88,7 @@ def test_assopy_invoice(client):
 
 
 @mark.django_db
+@mark.skip
 def test_assopy_paypal(client):
     """
     This tests two views – paypal_feedback_ok and paypal_cancel.

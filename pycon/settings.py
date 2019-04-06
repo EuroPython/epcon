@@ -6,6 +6,8 @@ import sys
 
 from decouple import config
 
+from django.core.urlresolvers import reverse_lazy
+
 from model_utils import Choices
 
 
@@ -277,7 +279,7 @@ INSTALLED_APPS = (
     'rosetta',
 
     'email_template',
-    'paypal.standard.ipn',
+    # 'paypal.standard.ipn',
     'filer',
     'easy_thumbnails',
 
@@ -774,10 +776,9 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
 # in quite a few places.
 #
 DEFAULT_URL_PREFIX = 'https://ep2019.europython.eu'
+LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
 
 COMMENTS_APP = 'hcomments'
-
-P3_FARES_ENABLED = lambda u: True
 
 # Disabled until we find out how to use europython-announce for this:
 #P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
@@ -974,21 +975,6 @@ def P3_LIVE_EMBED(request, track=None, event=None):
             return None
         cache.set('p3_live_embed_%s' % track, data['html'], 3600)
         return data['html']
-
-
-# cronjob
-
-def cron_cleanup():
-    from django.core.management.commands import cleanup
-
-    cmd = cleanup.Command()
-    cmd.handle()
-
-
-CRONTAB_COMMAND_PREFIX = 'DATA_DIR=%s OTHER_STUFF=%s' % (DATA_DIR, OTHER_STUFF)
-CRONJOBS = [
-    ('@weekly', 'pycon.settings.cron_cleanup')
-]
 
 
 # Stripe payment integration

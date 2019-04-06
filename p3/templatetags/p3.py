@@ -211,8 +211,6 @@ def fares_available(context, fare_type, sort=None):
     tipologia specificata.
     """
     assert fare_type in ('all', 'conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
-    if not settings.P3_FARES_ENABLED(context['user']):
-        return []
 
     fares_list = [f for f in cdataaccess.fares(settings.CONFERENCE_CONFERENCE) if f['valid']]
     if fare_type == 'conference':

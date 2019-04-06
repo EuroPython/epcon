@@ -9,7 +9,7 @@ from conference.accounts import PRIVACY_POLICY_CHECKBOX, PRIVACY_POLICY_ERROR
 from conference.models import CaptchaQuestion
 from conference.users import RANDOM_USERNAME_LENGTH
 
-from tests.common_tools import template_used
+from tests.common_tools import make_user, redirects_to, template_used
 
 
 SIGNUP_SUCCESFUL_302 = 302
@@ -253,3 +253,18 @@ def test_703_test_captcha_questions(client):
     assert "captcha_question" not in response.content.decode("utf-8")
     assert "captcha_answer" not in response.content.decode("utf-8")
     assert response.content.decode("utf-8").count(QUESTION) == 0
+
+
+@mark.django_db
+def test_872_login_redirects_to_user_dashboard(client):
+    u = make_user(email='joe@example.com', password='foobar')
+    response = client.post(
+        login_url,
+        {
+            "email": u.email,
+            "password": 'foobar',
+            "i_accept_privacy_policy": True,
+        },
+    )
+    assert response.status_code == 302
+    assert redirects_to(response, "/user-panel/")
