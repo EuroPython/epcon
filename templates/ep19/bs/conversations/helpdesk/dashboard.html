@@ -1,0 +1,29 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+
+<div class="container page">
+    <h2>Helpdesk</h2>
+
+    <h4>Actionable threads</h4>
+    <p>This means either new or replied by the user and waiting for our response/action</p>
+
+    <table class='table'>
+        <tr>
+            <th>id</th>
+            <th>title</th>
+            <th>last activity</th>
+            <th>people</th>
+        </tr>
+
+        {% for thread in actionable %}
+        <td>
+            <td>{{ thread.id }}</td>
+            <td><a href='#'>{{ thread.title }}</a></td>
+            <td title="{{ thread.last_message_date|timesince }} ago">{{ thread.last_message_date }}</td>
+            <td></td>
+        </td>
+        {% endfor %}{# thread in actionble #}
+    </table>
+</div>
+{% endblock content %}
