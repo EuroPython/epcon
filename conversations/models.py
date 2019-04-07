@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -60,12 +62,16 @@ class Message(TimeStampedModel):
 
 
 class Attachment(TimeStampedModel):
-
-    uuid = models.UUIDField()
+    uuid = models.UUIDField(default=uuid.uuid4())
 
     # we use uuid here so we can upload attachments independently of when we
-    # save the message
-    message = models.ForeignKey(Message, to_field='uuid')
+    # save the message, backfilled after upload through internal API.
+    message = models.ForeignKey(
+        Message,
+        to_field='uuid',
+        blank=True,
+        null=True,
+    )
 
     # TODO: upload_to with uuid4 filename to a SR uuid directory
     file = models.FileField()
