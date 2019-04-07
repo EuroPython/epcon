@@ -1,8 +1,8 @@
-
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 
 from django.conf.urls import url
+from django.db import transaction
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -11,6 +11,8 @@ from django import forms
 
 from conference.models import StripePayment
 
+from .invoicing import create_invoices_for_order
+
 from .orders import (
     create_order,
     calculate_order_price_including_discount,
@@ -18,11 +20,7 @@ from .orders import (
     Order,
     OrderCalculation,
 )
-from .fares import (
-    FARE_CODE_GROUPS,
-    FARE_CODE_REGEXES,
-    get_available_fares,
-)
+from .fares import FARE_CODE_GROUPS, FARE_CODE_REGEXES, get_available_fares
 
 from .payments import charge_for_payment, PaymentError
 
@@ -92,7 +90,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             )
 
     return TemplateResponse(
-        request, "ep19/cart/step_2_pick_tickets.html", context
+        request, "ep19/bs/cart/step_2_pick_tickets.html", context
     )
 
 
@@ -120,7 +118,7 @@ def cart_step3_add_billing_info(request, order_uuid):
             return redirect("cart:step4_payment", order_uuid=order.uuid)
 
     return TemplateResponse(
-        request, "ep19/cart/step_3_add_billing_info.html", {
+        request, "ep19/bs/cart/step_3_add_billing_info.html", {
             'form': form,
         }
     )
@@ -131,6 +129,8 @@ def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
     payments = order.stripepayment_set.all().order_by('created')
+    # TODO: pay attention if order is paid or not, and if paid don't render the
+    # payment button in the template
 
     if request.method == 'POST':
         stripe_payment = StripePayment.objects.create(
@@ -143,33 +143,42 @@ def cart_step4_payment(request, order_uuid):
             email=request.POST.get('stripeEmail'),
         )
         try:
-            charge_for_payment(stripe_payment)
-            return redirect(
-                'cart:step5_congrats_order_complete',
-                order_uuid=order.uuid
-            )
+            with transaction.atomic():
+                charge_for_payment(stripe_payment)
+                order.payment_date = date.today()
+                order.save()
+                create_invoices_for_order(order)
+                # TODO send_confirmation_email()
+
+                return redirect(
+                    'cart:step5_congrats_order_complete',
+                    order_uuid=order.uuid
+                )
         except PaymentError:
             # Redirect to the same page, show information about failed
             # payment(s) and reshow the same Pay with Card button
             return redirect('.')
 
     return TemplateResponse(
-        request, "ep19/cart/step_4_payment.html", {
+        request, "ep19/bs/cart/step_4_payment.html", {
             'order': order,
-            'total_for_stripe': total_for_stripe,
             'payments': payments,
+            'total_for_stripe': total_for_stripe,
         }
     )
 
 
 @login_required
 def cart_step5_congrats_order_complete(request, order_uuid):
-    # TODO is order id actually needed her?
-    pass
+    order = get_object_or_404(Order, uuid=order_uuid)
+    return TemplateResponse(
+        request, "ep19/bs/cart/step_5_congrats_order_complete.html", {
+            'order': order,
+        }
+    )
 
 
 def extract_order_parameters_from_request(post_data):
-
     discount_code = None
     fares_info = {}
 
@@ -183,6 +192,7 @@ def extract_order_parameters_from_request(post_data):
             except ValueError:
                 pass
 
+    print(fares_info)
     return discount_code, fares_info
 
 
@@ -261,4 +271,8 @@ urlpatterns_ep19 = [
     url(r'^payment/(?P<order_uuid>[\w-]+)/$',
         cart_step4_payment,
         name="step4_payment"),
+
+    url(r'^thanks/(?P<order_uuid>[\w-]+)/$',
+        cart_step5_congrats_order_complete,
+        name="step5_congrats_order_complete"),
 ]

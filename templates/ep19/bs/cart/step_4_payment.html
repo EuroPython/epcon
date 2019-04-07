@@ -1,0 +1,76 @@
+{% extends "ep19/bs/cart/base.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+&raquo; Step 4: Confirmation and Payment
+{% endblock %}
+
+{% block content %}
+
+<div class='container page'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <h1>Payment</h1>
+            <div>
+                <h4>Order summary</h4>
+                <table class='table'>
+                    {% for item in order.orderitem_set.all %}
+                    <tr>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.price }}</td>
+                    </tr>
+                    {% endfor %}{# item in items.all #}
+                </table>
+
+                <p>Total to pay: {{ order.total }} EUR</p>
+
+                {% if payments %}
+                <h4 style='margin-top: 2em'>Payment history</h4>
+                <table class='table'>
+                    <tr>
+                        <th>id</th>
+                        <th>status</th>
+                        <th>created</th>
+                    </tr>
+
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.uuid }}</td>
+                        <td>{{ payment.get_status_display }}
+                            {% if payment.get_status_display == payment.STATUS_CHOICES.FAILED %}
+                            <p class='text-danger'>
+                            {{ payment.message }}
+                            </p>
+                            {% endif %}
+                        </td>
+                        <td title="{{ payment.created }}">{{ payment.created|timesince }} ago</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+
+            </div>
+
+            <form action="." method="POST" class='form'>
+                {% csrf_token %}
+                <script
+                             src="https://checkout.stripe.com/checkout.js"
+                             class="stripe-button"
+                             data-key="pk_test_TYooMQauvdEDq54NiTphI7jx"
+                             data-amount="{{ total_for_stripe }}"
+                             data-currency='eur'
+                             data-name="Stripe.com"
+                             data-description="EuroPython Order {{ order.code }}"
+                             data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                             data-locale="auto"
+                             data-zip-code="false">
+                </script>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

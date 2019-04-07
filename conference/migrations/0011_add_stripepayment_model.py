@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("assopy", "0010_add_uuid_to_Order"),
-        ("conference", "0007_remove_special_place"),
+        ("conference", "0010_add_gender_and_is_minor_fields"),
     ]
 
     operations = [

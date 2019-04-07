@@ -1,5 +1,6 @@
 import csv
 import random
+from datetime import date
 from datetime import timedelta
 from io import StringIO
 
@@ -20,11 +21,13 @@ from conference.models import (
     News,
     TALK_STATUS,
     Speaker,
+    ExchangeRate,
 )
 from conference.tests.factories.fare import SponsorIncomeFactory
 from conference.tests.factories.talk import TalkFactory
 from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
+from conference.fares import set_early_bird_fare_dates
 
 
 DEFAULT_VAT_RATE = "0.2"  # 20%
@@ -44,6 +47,11 @@ class Command(BaseCommand):
             # For easier testing open CFP
             cfp_start=timezone.now() - timedelta(days=3),
             cfp_end=timezone.now() + timedelta(days=3),
+            conference_start=date(2019, 7, 8),
+            conference_end=date(2019, 7, 14),
+        )
+        ExchangeRate.objects.create(
+            datestamp=date.today(), currency="CHF", rate="1.0"
         )
 
         print("Creating an admin user")

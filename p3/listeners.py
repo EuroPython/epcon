@@ -53,14 +53,6 @@ order_created.connect(on_order_created)
 def on_purchase_completed(sender, **kwargs):
     if sender.method == 'admin':
         return
-    utils.email(
-        'purchase-complete',
-        ctx={
-            'order': sender,
-            'student': sender.orderitem_set.filter(ticket__fare__recipient_type='s').count() > 0,
-        },
-        to=[sender.user.user.email],
-    ).send()
 
 purchase_completed.connect(on_purchase_completed)
 

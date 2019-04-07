@@ -1593,3 +1593,7 @@ class StripePayment(models.Model):
     def __str__(self):
         return f'StripePayment(uuid={self.uuid}, status={self.status})'
 
+    def amount_for_stripe(self):
+        # 9.99 becomes 999
+        return int(self.amount * 100)
+

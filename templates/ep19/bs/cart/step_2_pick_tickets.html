@@ -1,0 +1,98 @@
+{% extends "ep19/bs/cart/base.html" %}
+
+{% load template_tools %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+&raquo; <a href='#'>Step 2: Pick which tickets you want</a>
+{% endblock %}
+
+{% block content %}
+<div id="cart_step2_page" class="container page">
+    <div class="row">
+        <div class='col-md-12'>
+
+            <h1>Step 2: Which tickets do you want?</h1>
+
+            <form method='POST' action='.' style='margin-top: 5em'>
+                {% csrf_token %}
+                <table cellspacing=0 class='table'>
+                    {% for fare in available_fares %}
+                    <tr>
+                        <td>
+                            <h4>{{ fare.name }}</h4>
+                            <p>{{ fare.description }}</p>
+                        </td>
+                        <td width='20%' class='text-right'>
+                            {{ fare.price }} EUR<br>
+                            <input type=number min=0 max="{{ global_max_per_fare_type }}" class='fare form-control text-right' data-price="{{ fare.price }}" name="{{ fare.code }}" value="{{ fares_info|get_item:fare.code }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <h3 class='text-right'>TOTAL: <span id="total">{{ calculation.full_price }}</span> EUR</h3>
+
+                <div class='form-row'>
+                    <div class='form-group col-md-3'>
+                        <label for='discount_code'>Discount code</label>
+                        <input class='form-control' type=text name="discount_code" id="discount_code" value="{{ discount_code|default:''}}">
+                    </div>
+                    <div class='form-group col-md-2' style='margin-top: 2em'>
+                        <button name="{{ CartActions.apply_discount_code }}" class='btn btn-outline-success'>Apply Discount</button>
+                    </div>
+                </div>
+
+                {% if discount_code %}
+                Discount for `{{ discount_code }}`: <span class='deducted'>- {{ calculation.total_discount }}</span> EUR
+                <p id="total_with_discount_paragraph">
+                NEW TOTAL amount with <code>{{ discount_code }}</code>: <span id="total_with_discount">{{ calculation.final_price }}</span> EUR
+                </p>
+                {% endif %}
+
+                <div class='text-right'>
+                <input type=submit name="{{ CartActions.buy_tickets }}" class='btn btn-outline-primary' value="Confirm order">
+                </div>
+
+                {% if request.user.is_staff %}
+                <pre>
+    Debug:
+    Full price (w/o discount): {{ calculation.full_price }} {{ currency }}
+    Discount: {{ discount_code }} - {{ calculation.total_discount }} {{ currency }}
+    Final price: {{ calculation.final_price }} {{ currency }}
+                </pre>
+                {% endif %}
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block morejs %}
+<script type="text/javascript">
+
+document.querySelectorAll("form input.fare").forEach((inp) => {
+    inp.addEventListener("change", calc)
+    inp.addEventListener("keyup", calc)
+});
+
+    function calc() {
+    total = 0
+
+    document.querySelectorAll("form input.fare").forEach((inp) => {
+    total += inp.dataset.price * +inp.value
+});
+
+    document.querySelector("#total").textContent = total
+
+    // if we have a discount remove discount calculation (happens serverside)
+    // when we recalculate base
+    if(document.querySelector("#total_with_discount").textContent) {
+    document.querySelector("#total_with_discount_paragraph").style.display = 'none'
+}
+}
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "ep19/bs/cart/base.html" %}
+
+{% load crispy_forms_tags static %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+&raquo; Step 3: Set billing info
+{% endblock %}
+
+{% block content %}
+<div id="cart_step3_page" class="container page">
+    <div class="row">
+        <div class='col-md-12'>
+            <h1>Add billing info</h1>
+
+            <form method='POST' action='.' class='form'>
+                {% csrf_token %}
+
+                {{ form|crispy }}
+                <input type=submit class='btn btn-outline-primary' value='Go to payment'>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
