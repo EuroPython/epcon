@@ -488,7 +488,8 @@ class OrderQuerySet(models.QuerySet):
         t = qs.aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
-    def _old_create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
+    # TODO: deprecate this .create in favor of conference/orders:create_order
+    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
 
         # FIXME/TODO(artcz)(2018-08-20)
         # Temporary import to avoid ciruclar. To get a smaller PR I want to

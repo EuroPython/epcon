@@ -65,12 +65,17 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
 
     fares = get_available_fares_as_dict(for_date)  # caching
     with transaction.atomic():
-        order = Order.objects.create(
+        # NOTE(artcz): Using Order().save() instead of Order.objects.create
+        # because .create provides/used to privde a different API.
+        # If we get rid of that dependency in other parts of the system we
+        # should be able to use .create just fine.
+        order = Order(
             uuid=str(uuid.uuid4()),
             user=for_user.assopy_user,
             code=next_order_code_for_year(timezone.now().year)
             # create a shell of an order without details
         )
+        order.save()
 
         for fare_code, amount in fares_info.items():
             fare = fares[fare_code]
