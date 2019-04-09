@@ -1,8 +1,5 @@
 {% extends "ep19/bs/base.html" %}
 
-{% load crispy_forms_tags %}
-
-
 {% block content %}
 
 <div class="container page" id="cfp_page">
@@ -38,10 +35,10 @@
             <hr>
 
             <div style='margin-top:5em'>
-                {# TODO: this should be possible only if CFP is still open #}
                 {% if cfp_is_open and talk.created_by == request.user %}
                 <a href='{% url "cfp:update" talk.uuid %}' class='btn btn-outline-success'>Update proposal</a>
                 {% endif %}
+
                 {% if user.is_staff %}
                 <a href='{% url "admin:conference_talk_change" talk.id %}' class='btn btn-outline-danger'>See in Admin</a>
                 {% endif %}
