@@ -15,7 +15,7 @@
 .jumbotron { height: 800px; background: transparent; color: white; }
 .text-underline { text-decoration: underline; }
 
-.page { min-height: 500px; padding-bottom: 10em; }
+.page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}
 #footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
 #footer a { color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
 #footer ul { list-style-type: none; padding-left: 0}

@@ -19,6 +19,7 @@ from conference.homepage import (
     homepage,
 )
 from conference.user_panel import urlpatterns as user_panel_urls
+from conference.cfp import urlpatterns as cfp_urls
 from conference.news import news_list
 
 
@@ -33,6 +34,7 @@ urlpatterns = [
     url(r'^form-testing/$', form_testing),
     url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
     url(r'^accounts/', include(accounts_urls, namespace="accounts")),
+    url(r'^cfp/', include(cfp_urls, namespace="cfp")),
     url(r'^news/', news_list, name="news"),
     url(r'^accounts/', include('assopy.urls')),
     url(r'^admin/filebrowser/', include(fsite.urls)),

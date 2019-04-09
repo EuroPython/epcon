@@ -96,6 +96,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
                     password=data['password1'],
                 )
+                get_or_create_attendee_profile_for_new_user(assopy_user.user)
                 current_site = get_current_site(request)
                 send_verification_email(assopy_user, current_site)
 
@@ -143,10 +144,18 @@ def social_connect_profile(backend, user, response, *args, **kwargs) -> None:
     """
 
     AssopyUser.objects.get_or_create(user=user)
-    attendee, _ = AttendeeProfile.objects.get_or_create(user=user)
-    attendee.slug = slug_for_user(user)
-    attendee.uuid = shortuuid.ShortUUID().random(length=6)
-    attendee.save()
+    attendee = get_or_create_attendee_profile_for_new_user(user=user)
+    return attendee
+
+
+def get_or_create_attendee_profile_for_new_user(user):
+    attendee, created = AttendeeProfile.objects.get_or_create(user=user)
+    if created:
+        attendee.slug = slug_for_user(user)
+        attendee.uuid = shortuuid.ShortUUID().random(length=7)
+        attendee.save()
+        attendee.setBio('bio')
+    return attendee
 
 
 def slug_for_user(user) -> str:

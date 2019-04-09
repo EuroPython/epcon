@@ -13,9 +13,10 @@ django_extensions
 django-model-utils==3.1.1
 django-crispy-forms
 
-# we can probably remove one of these
+# we can probably remove tagging - taggit is used with custom models for cfp
 django-tagging==0.4.6
 django-taggit==0.22.1
+django-taggit-labels==0.6.0
 
 python3-openid
 python-social-auth==0.3.6
@@ -36,6 +37,10 @@ django-filebrowser-no-grappelli~=3.6
 
 django-markitup~=3.0
 python-decouple
+
+# phone numbers
+django-phonenumber-field
+phonenumbers
 
 # payments
 stripe

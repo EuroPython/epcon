@@ -27,7 +27,7 @@ omit =
 fail_under = 50
 precision = 2
 sort = Name
-skip_covered = True
+skip_covered = False
 exclude_lines =
     if 0:
     def __repr__

@@ -4,9 +4,9 @@ from decimal import Decimal
 from django import forms
 from django import http
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django.contrib import admin
-from django.core import urlresolvers
 from django.db.models import Q
 from django.contrib.auth.models import User
 from assopy import admin as aadmin
@@ -19,6 +19,10 @@ from conference import forms as cforms
 from p3 import models
 from p3 import dataaccess
 from p3 import utils
+
+from taggit.forms import TagField
+from taggit_labels.widgets import LabelWidget
+
 
 ### Customg list filters
 
@@ -117,8 +121,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         js = ('p5/j/jquery-flot/jquery.flot.js',)
 
     def _order(self, obj):
-        url = urlresolvers.reverse('admin:assopy_order_change',
-                                   args=(obj.orderitem.order.id,))
+        url = reverse('admin:assopy_order_change',
+                      args=(obj.orderitem.order.id,))
         return '<a href="%s">%s</a>' % (url, obj.orderitem.order.code)
     _order.allow_tags = True
 
@@ -145,8 +149,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                     else:
                         comment = ' (user inactive)'
                 if user is not None:
-                    url = urlresolvers.reverse('admin:auth_user_change',
-                                               args=(user.id,))
+                    url = reverse('admin:auth_user_change', args=(user.id,))
                     user_name = ('%s %s' %
                                  (user.first_name, user.last_name)).strip()
                     if not user_name:
@@ -367,8 +370,8 @@ class VotoTalkAdmin(admin.ModelAdmin):
     ordering = ('-talk__conference', 'talk')
 
     def _name(self, o):
-        url = urlresolvers.reverse('conference-profile',
-                                   kwargs={'slug': o.user.attendeeprofile.slug})
+        url = reverse('conference-profile',
+                      kwargs={'slug': o.user.attendeeprofile.slug})
         return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
     _name.allow_tags = True
     _name.admin_order_field = 'user__first_name'
@@ -394,7 +397,7 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     ]
 
     def _name(self, o):
-        url = urlresolvers.reverse(
+        url = reverse(
             "conference-profile", kwargs={"slug": o.slug}
         )
         return '<a href="%s">%s %s</a>' % (
@@ -407,7 +410,7 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     _name.admin_order_field = "user__first_name"
 
     def _user(self, o):
-        url = urlresolvers.reverse("admin:auth_user_change", args=(o.user.id,))
+        url = reverse("admin:auth_user_change", args=(o.user.id,))
         return '<a href="%s">%s</a>' % (url, o.user.username)
 
     _user.allow_tags = True
@@ -428,40 +431,120 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
 # admin.site.unregister(cmodels.Talk)
 # admin.site.register(cmodels.Talk, TalkConferenceAdmin)
 
-class TalkAdmin(cadmin.TalkAdmin):
-    list_filter = ('conference', 'status', 'duration', 'type',
-                   'level', 'tags__name', 'language',
-                   )
-    search_fields = [ 'title',
-                      'talkspeaker__speaker__user__last_name',
-                      'talkspeaker__speaker__user__first_name',
-                      'speakers__user__attendeeprofile__company',
-                      ]
 
-    list_display = ('title', 'conference', '_speakers',
-                    '_company',
-                    'duration', 'status', 'created',
-                    'level', '_tags',
-                    '_slides', '_video',
-                    'language',
-                    )
+class CustomTalkAdminForm(cadmin.MultiLingualForm):
 
-    ordering = ('-conference', 'title')
+    tags = TagField(
+        required=True, widget=LabelWidget(model=cmodels.ConferenceTag)
+    )
+
+    class Meta:
+        model = cmodels.Talk
+        fields = "__all__"
+
+
+class TalkAdmin(admin.ModelAdmin):
+    list_filter = (
+        "conference",
+        "status",
+        "duration",
+        "type",
+        "level",
+        "tags__name",
+    )
+    list_editable = ("status",)
+    search_fields = [
+        "title",
+        "talkspeaker__speaker__user__last_name",
+        "talkspeaker__speaker__user__first_name",
+        "speakers__user__attendeeprofile__company",
+    ]
+
+    list_display = (
+        "title",
+        "conference",
+        "_speakers",
+        "_company",
+        "duration",
+        "status",
+        "created",
+        "level",
+        "domain_level",
+        "_tags",
+        "_slides",
+        "_video",
+    )
+
+    prepopulated_fields = {"slug": ("title",)}
+    ordering = ("-conference", "title")
     multilingual_widget = cforms.MarkEditWidget
+    filter_horizontal = ["tags"]
+    inlines = [cadmin.TalkSpeakerInlineAdmin]
+
+    form = CustomTalkAdminForm
 
     def _tags(self, obj):
-        return ', '.join(sorted(str(tag) for tag in obj.tags.all()))
+        return ", ".join(sorted(str(tag) for tag in obj.tags.all()))
+
+    def _speakers(self, obj):
+        """Warnings – this is de-optimised version of previous cached query,
+        however much easier to work with and much easier to debug"""
+
+        speakers = sorted(
+            set(
+                (
+                    speaker.user.id,
+                    speaker.user.assopy_user.name(),
+                    speaker.user.email,
+                )
+                for speaker in obj.speakers.all()
+            )
+        )
+
+        output = []
+        for speaker in speakers:
+            args = {
+                "url": reverse(
+                    "admin:conference_speaker_change", args=[speaker[0]]
+                ),
+                "name": speaker[1],
+                "mail": speaker[2],
+            }
+
+            output.append(
+                '<a href="%(url)s">%(name)s</a> '
+                '(<a href="mailto:%(mail)s">mail</a>)' % args
+            )
+
+        return "<br />".join(output)
+    _speakers.allow_tags = True
 
     def _company(self, obj):
         companies = sorted(
-            set(speaker.user.attendeeprofile.company
+            set(
+                speaker.user.attendeeprofile.company
                 for speaker in obj.speakers.all()
-                if speaker.user.attendeeprofile))
-        return ', '.join(companies)
-    _company.admin_order_field = 'speakers__user__attendeeprofile__company'
+                if speaker.user.attendeeprofile
+            )
+        )
+        return ", ".join(companies)
+    _company.admin_order_field = "speakers__user__attendeeprofile__company"
 
-admin.site.unregister(cmodels.Talk)
+    def _slides(self, obj):
+        return bool(obj.slides)
+    _slides.boolean = True
+    _slides.admin_order_field = "slides"
+
+    def _video(self, obj):
+        return bool(obj.video_type) and (
+            bool(obj.video_url) or bool(obj.video_file)
+        )
+    _video.boolean = True
+    _video.admin_order_field = "video_type"
+
+
 admin.site.register(cmodels.Talk, TalkAdmin)
+
 
 class OrderAdmin(aadmin.OrderAdmin):
     list_display = aadmin.OrderAdmin.list_display + (

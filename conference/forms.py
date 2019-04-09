@@ -338,9 +338,6 @@ class SubmissionForm(forms.Form):
 
             talk.tags.set(*(valid_tags))
 
-        from conference.listeners import new_paper_submission
-        new_paper_submission.send(sender=speaker, talk=talk)
-
         return talk
 
 class SpeakerForm(forms.Form):
@@ -432,9 +429,6 @@ class TalkForm(forms.ModelForm):
 
             talk.tags.set(*(valid_tags))
 
-        if not pk:
-            from conference.listeners import new_paper_submission
-            new_paper_submission.send(sender=speaker, talk=self.instance)
         return talk
 
 del _abstract
