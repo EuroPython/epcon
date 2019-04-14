@@ -82,6 +82,7 @@ def debug_panel_index(request):
         ('Commit_Hash_in_current_process', commit_hash_in_current_process),
         ('Django_Version',      django.VERSION),
         ('Python_Version',      platform.python_version()),
+        ('Conference_current',  Conference.objects.current()),
     ]
 
     allowed_settings = [
