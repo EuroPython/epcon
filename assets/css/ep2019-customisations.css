@@ -46,6 +46,15 @@ a.navbar-brand:hover{
     min-height: 500px;
     margin: 40px 0;
 }
+
+/* add more spacing, especially useful for cms pages */
+#content h2 {
+    margin-top: 1.5em;
+}
+#content h3 {
+    margin-top: 1em;
+}
+
 #sidebar ul {
     padding-left: 0;
 }
