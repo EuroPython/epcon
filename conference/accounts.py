@@ -144,8 +144,7 @@ def social_connect_profile(backend, user, response, *args, **kwargs) -> None:
     """
 
     AssopyUser.objects.get_or_create(user=user)
-    attendee = get_or_create_attendee_profile_for_new_user(user=user)
-    return attendee
+    get_or_create_attendee_profile_for_new_user(user=user)
 
 
 def get_or_create_attendee_profile_for_new_user(user):
