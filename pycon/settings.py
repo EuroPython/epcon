@@ -254,8 +254,6 @@ INSTALLED_APPS = (
     'conference',
     'hcomments',
 
-    'social_django.default',
-
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
