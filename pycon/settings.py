@@ -155,20 +155,21 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config(
 )
 
 SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.get_username',
-    'social.pipeline.mail.mail_validation',
-    'social.pipeline.social_auth.associate_by_email',
-    'social.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.mail.mail_validation',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
     # THIS IS IMPORTANT!!!! Connect new authenticated users to profiles
     # of the important project apps!!
     'conference.accounts.social_connect_profile',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details'
+
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details'
 )
 
 TEMPLATES = [
@@ -193,8 +194,8 @@ TEMPLATES = [
                 "sekizai.context_processors.sekizai",
                 "cms.context_processors.cms_settings",
                 "django.template.context_processors.static",
-                "social.apps.django_app.context_processors.backends",
-                "social.apps.django_app.context_processors.login_redirect",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
@@ -252,8 +253,6 @@ INSTALLED_APPS = (
     'assopy.stripe',
     'conference',
     'hcomments',
-
-    'social.apps.django_app.default',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
@@ -363,7 +362,7 @@ AUTHENTICATION_BACKENDS = (
     'assopy.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 
-    'social.backends.google.GoogleOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
 )
 
 
