@@ -7,12 +7,13 @@ from .models import News
 FHNW_OSM_URL = (
     "https://www.openstreetmap.org/way/608859213#map=19/47.53473/7.64166"
 )
-FHNW_GOOGLEMAPS_URL = "https://goo.gl/maps/F6tYGeZKrzn"
+FHNW_GOOGLEMAPS_URL = "https://goo.gl/maps/VwN5Ysnp2fMPh5ZZA"
 
 BCC_GOOGLEMAPS_URL = "https://goo.gl/maps/ysbv2mjqQQS2"
 BCC_OSM_URL = (
     "https://www.openstreetmap.org/node/3092896596#map=18/47.56256/7.59903"
 )
+
 
 def homepage(request):
     latest_3_news = News.objects.filter(status=News.STATUS.PUBLISHED)[:3]
