@@ -2,7 +2,7 @@
 
 {% block title %}{{ request.current_page }} - {{ block.super }}{% endblock title %}
 
-{% load menu_tags cms_tags %}
+{% load menu_tags cms_tags p3 %}
 
 {% block content %}
 <div id="content_page">
@@ -22,11 +22,21 @@
 
             <div class='col-md-3' id="sidebar">
 
+                <div id="toc">
+                    <h3>Table of contents</h3>
+                </div>
+
+                {% comment %}
                 <ul>
                     {% show_menu 0 100 100 100 "ep19/bs/content/_menu.html" %}
                 </ul>
+                {% endcomment %}
             </div>
         </div><!-- .row -->
     </div>
 </div>
 {% endblock %}
+
+{% block morejs %}
+<script src="{% static "/js/generate_toc_for_cms.js" %}"></script>
+{% endblock morejs %}
