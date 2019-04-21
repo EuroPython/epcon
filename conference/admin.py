@@ -537,28 +537,49 @@ class SponsorIncomeInlineAdmin(admin.TabularInline):
     model = models.SponsorIncome
     extra = 1
 
+
+class FilterByConference(admin.SimpleListFilter):
+    title = 'Conference'
+    parameter_name = 'conference'
+
+    def filter_by(self):
+        return models.Conference.objects.all().values_list('code', 'name')
+
+    def lookups(self, request, model_admin):
+        return self.filter_by()
+
+    def queryset(self, request, qs):
+        if self.value() in dict(self.filter_by()):
+            return qs.filter(sponsorincome__conference=self.value())
+
+
 class SponsorAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("sponsor",)}
-    list_display = ('sponsor', 'url', 'conferences')
-    inlines = [ SponsorIncomeInlineAdmin ]
+    list_display = ("sponsor", "url", "conferences")
+    search_fields = ["sponsor", "url"]
+    inlines = [SponsorIncomeInlineAdmin]
+    list_filter = [FilterByConference]
 
     def conferences(self, obj):
         """List the sponsorised talks by the sponsor"""
-        return ', '.join(s.conference for s in obj.sponsorincome_set.all())
+        return ", ".join(s.conference for s in obj.sponsorincome_set.all())
 
 
 class MediaPartnerConferenceInlineAdmin(admin.TabularInline):
     model = models.MediaPartnerConference
     extra = 1
 
+
 class MediaPartnerAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("partner",)}
-    list_display = ('partner', 'url', 'conferences')
-    inlines = [ MediaPartnerConferenceInlineAdmin ]
+    list_display = ("partner", "url", "conferences")
+    inlines = [MediaPartnerConferenceInlineAdmin]
 
     def conferences(self, obj):
         """Will give the conferences which the partner has participated"""
-        return ', '.join(s.conference for s in obj.mediapartnerconference_set.all())
+        return ", ".join(
+            s.conference for s in obj.mediapartnerconference_set.all()
+        )
 
 
 class TrackInlineAdmin(admin.TabularInline):
