@@ -1,7 +1,8 @@
 from django.template.response import TemplateResponse
 from django.utils.lorem_ipsum import words, paragraphs
+from django.conf import settings
 from django import forms
-from .models import News
+from .models import News, Sponsor
 
 
 FHNW_OSM_URL = (
@@ -17,15 +18,21 @@ BCC_OSM_URL = (
 
 def homepage(request):
     latest_3_news = News.objects.filter(status=News.STATUS.PUBLISHED)[:3]
+    sponsors = Sponsor.objects.filter(
+        sponsorincome__conference=settings.CONFERENCE_CONFERENCE
+    )
 
     return TemplateResponse(
-        request, 'ep19/bs/homepage/home.html', {
-            'latest_3_news': latest_3_news,
-            'FHNW_OSM_URL': FHNW_OSM_URL,
-            'FHNW_GOOGLEMAPS_URL': FHNW_GOOGLEMAPS_URL,
-            'BCC_GOOGLEMAPS_URL': BCC_GOOGLEMAPS_URL,
-            'BCC_OSM_URL': BCC_OSM_URL,
-        }
+        request,
+        "ep19/bs/homepage/home.html",
+        {
+            "latest_3_news": latest_3_news,
+            "sponsors": sponsors,
+            "FHNW_OSM_URL": FHNW_OSM_URL,
+            "FHNW_GOOGLEMAPS_URL": FHNW_GOOGLEMAPS_URL,
+            "BCC_GOOGLEMAPS_URL": BCC_GOOGLEMAPS_URL,
+            "BCC_OSM_URL": BCC_OSM_URL,
+        },
     )
 
 
