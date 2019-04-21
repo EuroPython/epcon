@@ -9,6 +9,7 @@ function addTOC() {
     "<h3>Table of contents</h3>" +
     "<ul>";
   var newLine, el, title, link;
+
   $("div.epcms_content")
     .find("h1, h2, h3, h4")
     .each(function() {
@@ -20,7 +21,7 @@ function addTOC() {
         .replace(/[\?!,.\'\"]/g, "");
       header.attr("id", header_id);
       toc +=
-        '<li class="table-of-contents-' +
+        '<li class="toc-li table-of-contents-' +
         header.prop("tagName") +
         '"><a href="#' +
         encodeURIComponent(header_id) +
