@@ -9,7 +9,7 @@ function addTOC() {
     "<h3>Table of contents</h3>" +
     "<ul>";
   var newLine, el, title, link;
-  $("div.ep-cms")
+  $("div.epcms_content")
     .find("h1, h2, h3, h4")
     .each(function() {
       var header = $(this);
