@@ -3,16 +3,20 @@
     <div class="container text-center">
         {% comment %}
         <img src="/static/img/logo-wide-640px.png"
-             alt="EuroPython 2019; July 8-14th 2019; Basel"
-           title="EuroPython 2019; July 8-14th 2019; Basel">
+        alt="EuroPython 2019; July 8-14th 2019; Basel"
+        title="EuroPython 2019; July 8-14th 2019; Basel">
         {% endcomment %}
 
         <img src="/static/img/tmplogo-small.png" width=200 height=200>
         <h1 class="display-3"><span class='text-secondary'>euro</span> <strong class='text-primary-light'>python</strong></h1>
         <h2>July 8-14th 2019, Basel, Switzerland</h2>
-        <p>EuroPython is community organized event about Python. <a href='{% page_url 'about' %}' class='text-light text-underline'>Learn more.</a></p>
-        <p><a href='{% page_url 'tickets' %}' class='btn btn-outline-light btn-lg'>Get the tickets</a></p>
-        <p><a href='{% page_url 'submit-proposal' %}' class='btn btn-outline-light btn-lg'>Submit Proposal</a></p>
-        </p>
+
+        <div style='margin-top: 3em'>
+            {% if 0 %}
+            NOTE(artcz): Disabled because we will open ticket sales a bit later after launch
+            <p><a href='{% page_url 'tickets' %}' class='btn btn-outline-light btn-lg'>Get the tickets</a></p>
+            {% endif %}
+            <p><a href='{% page_url 'submit-proposal' %}' class='btn btn-outline-light btn-lg'>Submit Proposal</a></p>
+        </div>
     </div>
 </div>
