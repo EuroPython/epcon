@@ -9,7 +9,7 @@
 #background_image {
     background: url('/static/img/ep19-basel-dark.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: 0 10px
     color: white;
     min-height: 90px
 }
