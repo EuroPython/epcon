@@ -1,5 +1,7 @@
 {% extends "ep19/bs/user_panel/base.html" %}
 
+{% load cms_tags %}
+
 {% block breadcrumbs %}
 <!--<li class='breadcrumb-item active'><a href=''>Dashboard</a></li>-->
 {% endblock breadcrumbs %}
@@ -16,9 +18,36 @@
 </div>
 
 <div class='row' style='margin-top: 3em'>
-    
+
     <div class="col-md-8">
-        <h1>Welcome {{ user.name }}</h1>
+        <h1>Hello!</h1>
+        <p>
+        This is the place with all the things related to your account. You can think of it as some sort of dashboard. Every proposal, ticket, and invoice would be listed on this page. If you want to change your password you can use the buttons above.</p>
+
+        <h2 style='margin-top: 2em'>Proposals</h2>
+            {% if proposals %}
+            {% include "ep19/bs/user_panel/_proposals.html" %}
+            {% else %}
+            Sorry, you didn't add any proposals for this year yet.
+            <a href="{% page_url 'submit-proposal' %}">If you'd like to do this, here's more information</a>
+            {% endif %}
+
+        <h2 style='margin-top: 2em'>Tickets</h2>
+            {% if tickets %}
+            {% include "ep19/bs/user_panel/_tickets.html" %}
+            {% else %}
+            Sorry, you didn't buy any tickets yet.
+            <a href="{% page_url 'tickets' %}">Click here to see what tickets we have available right now.</a>
+            {% endif %}
+
+
+        <h2 style='margin-top: 2em'>Invoices</h2>
+            {% if invoices %}
+            {% include "ep19/bs/user_panel/_invoices.html" %}
+            {% else %}
+            Sorry, you don't have any invoices yet.
+            {% endif %}
+
 
         {% if proposals %}
         {% include "ep19/bs/user_panel/_proposals.html" %}
