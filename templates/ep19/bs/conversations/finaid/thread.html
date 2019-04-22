@@ -1,0 +1,25 @@
+{% extends "ep19/bs/conversations/staff_thread_view.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='{% url "staff_finaid:all_finaid_threads" %}'>Staff Finaid</a></li>
+{% if thread.is_actionable %}
+<li class='breadcrumb-item active'><a href='{% url "staff_finaid:inbox" %}'>Inbox</a></li>
+{% endif %}
+<li class='breadcrumb-item active'><a href='#'>{{ thread.title }}</a></li>
+{% endblock breadcrumbs %}
+
+{% block additional_metadata %}
+<h3 style='margin-top: 2em'>Additional info (at the moment of rendering this page):</h3>
+<table class='table'>
+    <tr>
+        <td>User joined</td>
+        <td title='{{ thread.created_by.date_joined }}'>{{ thread.created_by.date_joined|timesince }} ago</td>
+    </tr>
+
+    {# TODO: things like a link to this year's ticket, etc #}
+    {# Any contextual information that might be useful when processing the request #}
+</table>
+
+<h3 style='margin-top: 2em'>Conversation</h3> {# note: this should be put somewhere else... #}
+{% endblock %}

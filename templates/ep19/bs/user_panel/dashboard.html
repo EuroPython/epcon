@@ -58,7 +58,29 @@
 
         <a href='{% url "user_conversations:threads" %}' class='btn btn-outline-primary btn-block'>Helpdesk</a>
 
-        <a href='{% url "staff_helpdesk:inbox" %}' class='btn btn-outline-primary btn-block'>Staff Helpdesk Inbox</a>
+
+        <p style='margin-top: 2em'>
+        {# TEMPORARY LOCATION #}
+        <a href='{% url 'user_conversations:new_finaid_request' %}'
+           class='btn btn-outline-primary btn-block'>
+            Make a Finaid Request
+        </a>
+        </p>
+
+        {% if user.is_staff %}
+        <div style='margin-top: 5em'>
+        <h3>Special staff links:</h3>
+        <a href='{% url "staff_helpdesk:inbox" %}' class='btn btn-outline-danger btn-block'>Helpdesk Inbox</a>
+        <a href='{% url "staff_finaid:inbox" %}' class='btn btn-outline-danger btn-block'>Finaid Inbox</a>
+        </div>
+        {% endif %}
+
+        {% comment %}
+        <p>
+        <a href='#' class='btn btn-outline-primary'>Questions about program</a>
+        (this should probably be visible only for people who submited a proposal)
+        </p>
+        {% endcomment %}
 
     </div>
 </div>
