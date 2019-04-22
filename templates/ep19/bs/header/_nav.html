@@ -14,20 +14,20 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "news" %}">News</a>
                 </li>
+                <!--<li class="nav-item">                                              -->
+                <!--    <a class="nav-link" href="{% page_url 'program' %}">Program</a>-->
+                <!--</li>                                                              -->
+                <!--<li class="nav-item">                                                -->
+                <!--    <a class="nav-link" href="{% page_url "speakers" %}">Speakers</a>-->
+                <!--</li>                                                                -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{% page_url 'program' %}">Program</a>
+                    <a class="nav-link" href="{% page_url "venue" %}">Location</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% page_url "speakers" %}">Speakers</a>
+                    <a class="nav-link" href="{% page_url 'sponsor-europython' %}">Sponsor</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% page_url 'location' %}">Location</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% page_url 'sponsor' %}">Sponsor</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% page_url 'about' %}">About</a>
+                    <a class="nav-link" href="https://www.europython-society.org/europython" target="_blank">About</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% page_url 'faq' %}">FAQ</a>
@@ -39,7 +39,7 @@
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" id="cfp-link-header" href="{% page_url "submit-proposal" %}">Proposals</a>
+                    <a class="nav-link" id="cfp-link-header" href="{% page_url "submit-proposal" %}">CFP is OPEN: Submit Proposal</a>
                 </li>
             </ul>
             <div class="my-2 my-md-0">
