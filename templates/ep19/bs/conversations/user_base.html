@@ -1,0 +1,21 @@
+{% extends "ep19/bs/user_panel/base.html" %}
+
+{% block breadcrumbs %}
+<li class='breadcrumb-item active'><a href='{% url "user_conversations:threads" %}'>Helpdesk</a></li>
+{% endblock breadcrumbs %}
+
+{% block user_content %}
+<style type="text/css">
+/* TODO - better names? color blind versions? */
+.status-bg-0 { background-color: green; color: #fff; }
+.status-bg-1 { background-color: green; color: yellow; }
+.status-bg-2 { background-color: pink; }
+.status-bg-3 { background-color: orange; }
+.status-bg-4 { background-color: red; }
+.status-bg-5 { background-color: grey; }
+
+.errors { background: red; color: #fff; padding: 2em; }
+</style>
+{% block conversations_content %}
+{% endblock conversations_content %}
+{% endblock %}

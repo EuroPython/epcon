@@ -24,7 +24,7 @@ def staff_helpdesk_inbox(request):
     actionable = apply_ordering(actionable, request)
 
     return TemplateResponse(
-        request, "ep19/conversations/helpdesk/inbox.html", {
+        request, "ep19/bs/conversations/helpdesk/inbox.html", {
             'ThreadFilters': ThreadFilters,
             'actionable': actionable,
         }
@@ -39,7 +39,7 @@ def staff_helpdesk_all_threads(request):
     threads = apply_ordering(threads, request)
 
     return TemplateResponse(
-        request, "ep19/conversations/helpdesk/all_threads.html", {
+        request, "ep19/bs/conversations/helpdesk/all_threads.html", {
             'ThreadFilters': ThreadFilters,
             'all_threads': threads,
         }
@@ -52,7 +52,7 @@ def staff_helpdesk_thread(request, thread_uuid):
     return staff_thread(
         request,
         thread_uuid,
-        template_name='ep19/conversations/helpdesk/thread.html'
+        template_name='ep19/bs/conversations/helpdesk/thread.html'
     )
 
 

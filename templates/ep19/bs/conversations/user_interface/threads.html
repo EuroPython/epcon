@@ -1,0 +1,54 @@
+{% extends "ep19/bs/conversations/user_base.html" %}
+{# TODO: different inheritance #}
+
+{% block breadcrumbs %}
+{{ block.super }}
+{% endblock breadcrumbs %}
+
+{% block conversations_content %}
+
+<h1>EuroPython2019 Helpdesk</h1>
+
+{% if not threads %}
+<p style='margin: 5em 0;'>
+Yay, no questions so far
+</p>
+{% else %}
+<table class='table' style='margin-top: 2em'>
+    <tr>
+        <th>id</th>
+        <th>category</th>
+        <th>title</th>
+        <th><a href='?{{ ThreadFilters.order_by_status }}'>status</a></th>
+        <th><a href='?{{ ThreadFilters.order_by_last_message }}'>last message</a></th>
+    </tr>
+
+    {% for thread in threads %}
+    <tr>
+        <td>{{ thread.id }}</td>
+        <td>{{ thread.category }}</td>
+        <td><a href='{% url "user_conversations:user_thread" thread.uuid %}'>{{ thread.title }}</a></td>
+        <td class='status-bg-{{ thread.status }}'>{{ thread.get_status_display }}</td>
+        <td title="{{ thread.last_message_date }}">{{ thread.last_message_date|timesince }} ago</td>
+    </tr>
+    {% endfor %}{# thread in actionble #}
+</table>
+{% endif %}
+
+<p>
+<a href='{% url 'user_conversations:start_new_thread' %}' class='btn btn-outline-primary'>Start new thread +</a>
+</p>
+
+{% comment %}
+<p class='mt2'>
+<a href='{% url 'user_conversations:new_finaid_request' %}' class='btn btn-outline-primary'>Ask for finaid $$</a>
+(note: this should be probably somewhere else, but could be here)
+</p>
+
+<p class='mt2'>
+<a href='#' class='btn btn-outline-primary'>Questions about program</a>
+(this should probably be visible only for people who submited a proposal)
+</p>
+{% endcomment %}
+
+{% endblock conversations_content %}

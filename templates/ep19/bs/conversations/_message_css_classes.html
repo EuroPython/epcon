@@ -1,0 +1,7 @@
+{# NOTE(artcz): This should probably be inline django template tag instead #}
+{# going with simple template because I'm importing from jinja-based template structure and it's faster to do it this way #}
+
+{% if message.is_user_question %}user_question{% endif %}
+{% if message.is_staff_reply %}staff_reply{% endif %}
+{% if message.is_internal_note %}internal_note{% endif %}
+{% if message.is_public_note %}public_note{% endif %}

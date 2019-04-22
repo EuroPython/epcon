@@ -1,0 +1,10 @@
+{% extends "ep19/bs/conversations/staff_thread_view.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='{% url "staff_helpdesk:all_threads" %}'>Staff Helpdesk</a></li>
+{% if thread.is_actionable %}
+<li class='breadcrumb-item active'><a href='{% url "staff_helpdesk:inbox" %}'>Inbox</a></li>
+{% endif %}
+<li class='breadcrumb-item active'><a href='#'>{{ thread.title }}</a></li>
+{% endblock breadcrumbs %}

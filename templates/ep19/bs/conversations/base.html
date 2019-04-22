@@ -1,0 +1,37 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block title %}Staff Panels{% endblock %}
+
+{% block content %}
+<style type="text/css">
+
+/* TODO - better names? color blind versions? */
+.status-bg-0 { padding: .5em; background-color: green; color: #fff; }
+.status-bg-1 { padding: .5em; background-color: green; color: yellow; }
+.status-bg-2 { padding: .5em; background-color: pink; }
+.status-bg-3 { padding: .5em; background-color: orange; }
+.status-bg-4 { padding: .5em; background-color: red; }
+.status-bg-5 { padding: .5em; background-color: grey; }
+
+.priority-bg-0 { padding: .5em; background-color: green; color: #fff; }
+.priority-bg-10 { padding: .5em; background-color: grey; color: yellow; }
+.priority-bg-100 { padding: .5em; background-color: red; color: yellow;}
+</style>
+<div id="staff_panel" class='page'>
+    <div class='container'>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class='breadcrumb-item'><a href="/">Home</a></li>
+                <li class='breadcrumb-item'>
+                    <a href="{% url "user_panel:dashboard" %}">My Account</a>
+                </li>
+                {% block breadcrumbs %}{% endblock breadcrumbs %}
+            </ol>
+        </nav>
+
+        {% block staff_content %}
+        {% endblock %}
+
+    </div>
+</div>
+{% endblock content %}

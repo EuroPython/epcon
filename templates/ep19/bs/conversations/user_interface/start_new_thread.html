@@ -1,0 +1,21 @@
+{% extends "ep19/bs/conversations/user_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='{% url "user_conversations:start_new_thread" %}'>Start new thread</a></li>
+{% endblock breadcrumbs %}
+
+{% block conversations_content %}
+
+<form method='POST' action='.'>
+    {% csrf_token %}
+
+    <table>
+    {{ new_support_request_form|crispy }}
+    </table>
+    <input type="submit" name="" value="Create new thread" class='btn btn-primary'>
+
+</form>
+{% endblock conversations_content %}
