@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Update an Attendify speakers XLSX file with the current list of
     speakers.
 
@@ -30,13 +30,8 @@ from django.core import urlresolvers
 from django.conf import settings
 from django.utils.html import strip_tags
 from conference import models as cmodels
-from conference import utils
 from p3 import models
 
-import datetime
-from collections import defaultdict
-from optparse import make_option
-import operator
 import markdown2
 import openpyxl
 
@@ -44,9 +39,6 @@ import openpyxl
 
 # Debug output ?
 _debug = 1
-
-# These must match the talk .type or .admin_type
-from accepted_talks import TYPE_NAMES
 
 ### Helpers
 
@@ -86,41 +78,47 @@ def add_speaker(data, speaker):
     # Skip speakers without public profile. Speaker profiles must be
     # public, but you never know. See conference/models.py
     if profile.visibility != 'p':
-        print ('Skipping profile %r - profile not public' % profile)
+        print('Skipping profile %r - profile not public' % profile)
         return
 
     # Collect data
     first_name = user.first_name.title()
     last_name = user.last_name.title()
+    full_name = first_name + ' ' + last_name
     company = profile.company
     position = profile.job_title
-    profile_text = (u'<a href="%s%s">Profile on EuroPython Website</a>' %
+    profile_text = ('<a href="%s%s">Profile on EuroPython Website</a>' %
                     (settings.DEFAULT_URL_PREFIX, profile_url(user)))
     twitter = p3profile.twitter
     if twitter.startswith(('https://twitter.com/', 'http://twitter.com/')):
         twitter = twitter.split('/')[-1]
 
     # Skip special entries
-    full_name = first_name + u' ' + last_name
-    if full_name in (u'To Be Announced', u'Tobey Announced'):
+    #
+    # Note: When filtering special entries here, we also have to
+    # filter them in the speaker_listing() in the schedule script,
+    # since when using speaker names in the Attendify schedule,
+    # Attendify complains if it cannot find the speakers listed for an
+    # event.
+    if full_name in ('To Be Announced', 'Tobey Announced'):
         return
    
     # UID
-    uid = u''
+    uid = ''
     
     data.append((
         first_name,
         last_name,
         company,
         position,
-        u'', # group
+        '', # group
         profile_text,
-        u'', # email: not published
-        u'', # phone: not published
+        '', # email: not published
+        '', # phone: not published
         twitter,
-        u'', # facebook
-        u'', # linkedin
-        u'', # google+
+        '', # facebook
+        '', # linkedin
+        '', # google+
         uid))
 
 # Start row of data in spreadsheet (Python 0-based index)
@@ -136,14 +134,14 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
 
     # Load workbook
     wb = openpyxl.load_workbook(speakers_xlsx)
-    assert wb.sheetnames == [u'Instructions', u'Speakers', u'System']
+    assert wb.sheetnames == ['Instructions', 'Speakers', 'System']
     ws = wb['Speakers']
 
     # Extract data values
     ws_data = list(ws.values)[SPEAKERS_WS_START_DATA:]
-    print ('read %i data lines' % len(ws_data))
-    print ('first line: %r' % ws_data[:1])
-    print ('last line: %r' % ws_data[-1:])
+    print('read %i data lines' % len(ws_data))
+    print('first line: %r' % ws_data[:1])
+    print('last line: %r' % ws_data[-1:])
 
     # Reconcile UIDs / talks
     uids = {}
@@ -158,8 +156,8 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
     for line in new_data:
         key = tuple(line[:SPEAKERS_UNIQUE_COLS])
         if key not in uids:
-            print ('New speaker %s found' % (key,))
-            uid = u''
+            print('New speaker %s found' % (key,))
+            uid = ''
         else:
             uid = uids[key]
         line = tuple(line[:SPEAKERS_UID_COLUMN]) + (uid,)
@@ -169,13 +167,13 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
     # Replace old data with new data
     old_data_rows = len(ws_data)
     new_data_rows = len(new_data)
-    print ('new data: %i data lines' % new_data_rows)
+    print('new data: %i data lines' % new_data_rows)
     offset = SPEAKERS_WS_START_DATA + 1
-    print ('new_data = %i rows' % len(new_data))
+    print('new_data = %i rows' % len(new_data))
     for j, row in enumerate(ws[offset: offset + new_data_rows - 1]):
         new_row = new_data[j]
         if _debug:
-            print ('updating row %i with %r' % (j, new_row))
+            print('updating row %i with %r' % (j, new_row))
         if len(row) > len(new_row):
             row = row[:len(new_row)]
         for i, cell in enumerate(row):
@@ -186,7 +184,7 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
         for j, row in enumerate(ws[offset + new_data_rows + 1:
                                    offset + old_data_rows + 1]):
             if _debug:
-                print ('clearing row %i' % (j,))
+                print('clearing row %i' % (j,))
             for i, cell in enumerate(row):
                 cell.value = None
 

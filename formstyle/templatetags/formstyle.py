@@ -1,9 +1,13 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 from django import forms
 from django import template
 from django.utils.safestring import mark_safe
+from django.template.loader import render_to_string
+
+
 
 register = template.Library()
+
 
 @register.filter
 def form_field(field, classes=None):
@@ -13,10 +17,6 @@ def form_field(field, classes=None):
     instance_name = '{}.{}'.format(field.form.__class__.__name__, field.name)
     field_name = field.field.__class__.__name__
     widget_name = field.field.widget.__class__.__name__
-    tpl =template.loader.select_template((
-        'formstyle/{}.html'.format(instance_name.lower()),
-        'formstyle/{}.html'.format(widget_name.lower()),
-        'formstyle/base.html'))
 
     if not classes:
         classes = ""
@@ -24,11 +24,18 @@ def form_field(field, classes=None):
         classes = ' '.join(classes)
     classes += " field {} {}".format(widget_name.lower(), field_name.lower())
 
-    ctx = template.Context({
-        'field': field,
-        'classes': classes
-    })
-    return tpl.render(ctx)
+    return render_to_string(
+        template_name=[
+            'formstyle/{}.html'.format(instance_name.lower()),
+            'formstyle/{}.html'.format(widget_name.lower()),
+            'formstyle/base.html'
+        ],
+        context={
+            'field': field,
+            'classes': classes
+        },
+    )
+
 
 @register.filter
 def form_errors(form, classes=None):
@@ -36,9 +43,6 @@ def form_errors(form, classes=None):
         return ''
 
     form_name = form.__class__.__name__
-    tpl =template.loader.select_template((
-        'formstyle/form_{}_errors.html'.format(form_name.lower()),
-        'formstyle/form_errors.html'))
 
     if not classes:
         classes = ""
@@ -46,8 +50,13 @@ def form_errors(form, classes=None):
         classes = ' '.join(classes)
     classes += form_name
 
-    ctx = template.Context({
-        'form': form,
-        'classes': classes
-    })
-    return tpl.render(ctx)
+    return render_to_string(
+        template_name=[
+            'formstyle/form_{}_errors.html'.format(form_name.lower()),
+            'formstyle/form_errors.html',
+        ],
+        context={
+            'form': form,
+            'classes': classes
+        },
+    )

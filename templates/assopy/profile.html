@@ -36,10 +36,6 @@
             <li class="active"><a data-toggle="tab" href="#account-personal-data">{% trans "Personal data" %}</a></li>
             <li><a data-toggle="tab" href="#account-email-contact">{% trans "Email contact" %}</a></li>
             <li><a data-toggle="tab" href="#account-spam-control">{% trans "Privacy settings" %}</a></li>
-<!-- MAL: This doesn't work, because we haven't set up a Janrain account
-          yet...
-            <li><a data-toggle="tab" href="#account-login-options">{% trans "Login options" %}</a></li>
--->
             <li><a data-toggle="tab" href="#account-orders">{% trans "Orders, invoices &amp; coupons" %}</a></li>
         </ul>
 
@@ -166,7 +162,7 @@
             <a class="btn btn-small btn-centered" href="{% url "conference-profile" slug=profile.slug %}">{% trans "View your public profile" %}</a>
         </div>
         <div class="slot">
-            <a class="btn btn-small btn-centered" href="{% url "password_change" %}">{% trans "Change your password" %}</a>
+            <a class="btn btn-small btn-centered" href="{% url "user_panel:password_change" %}">{% trans "Change your password" %}</a>
         </div>
     </div>
    </div><!-- /grid -->

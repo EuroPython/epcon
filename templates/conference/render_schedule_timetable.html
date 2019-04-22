@@ -80,7 +80,7 @@
                     by 
                     {% get_talk_speakers ref.talk as speakers %}
                     {% for ts in speakers %}
-                    <a href="{% url "conference-speaker" slug=ts.speaker.slug %}">{{ ts.speaker.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                    <a href="{% url "conference-speaker" slug=ts.speaker.slug %}">{{ ts.speaker.name }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                     {% endif %}
                     <div class="tools">

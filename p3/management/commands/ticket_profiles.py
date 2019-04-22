@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+
 """ Print a json file with the participants information for their badges."""
 
 import json
 import logging as log
 from optparse import make_option
-from collections import OrderedDict
 
 from django.core.management.base import BaseCommand, CommandError
-
-from assopy import models as assopy_models
 
 from ...utils import (
     get_profile_company,
@@ -96,8 +93,6 @@ class Command(BaseCommand):
                 if options['raise']:
                     #raise AttributeError(msg)
                     log.error(msg)
-                    import ipdb
-                    ipdb.set_trace()
                 else:
                     log.error(msg)
 

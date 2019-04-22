@@ -1,6 +1,6 @@
-# -*- coding: UTF-8 -*-
+
 import logging
-import models
+from . import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.listeners import fare_price, fare_tickets
@@ -67,7 +67,7 @@ purchase_completed.connect(on_purchase_completed)
 def on_ticket_for_user(sender, **kwargs):
     from p3 import dataaccess
     tickets = dataaccess.user_tickets(sender.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
-    map(kwargs['tickets'].append, tickets)
+    list(map(kwargs['tickets'].append, tickets))
 
 ticket_for_user.connect(on_ticket_for_user)
 
@@ -83,7 +83,7 @@ def on_user_created(sender, **kw):
         # The user has been created using email+password form, I won't get other data
         AttendeeProfile.objects.getOrCreateForUser(sender.user)
     else:
-        # The user has been created using janrain, I don't create the profile now
+        # The user has been created, I don't create the profile now
         # waiting for the first identity
         pass
 
@@ -232,33 +232,3 @@ def _on_attendees_connected(sender, **kw):
         to=[scanned.email]
     ).send()
 attendees_connected.connect(_on_attendees_connected)
-
-
-def _on_event_booked(sender, **kw):
-    from conference.dataaccess import event_data
-    from hcomments.models import ThreadSubscription
-
-    try:
-        talk_id = event_data(kw['event_id'])['talk']['id']
-    except Exception:
-        return
-
-    talk = Talk.objects.get(id=talk_id)
-    user = User.objects.get(id=kw['user_id'])
-
-    booked = kw['booked']
-    if booked:
-        log.info(
-            "\"%s\" has booked the event \"%s\", automatically subscribed to the talk's comments",
-            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
-    else:
-        log.info(
-            "\"%s\" has cancelled the reservation for the event \"%s\", automatically unsubscribed to the talk's comments",
-            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
-
-    if booked:
-        ThreadSubscription.objects.subscribe(talk, user)
-    else:
-        ThreadSubscription.objects.unsubscribe(talk, user)
-
-event_booked.connect(_on_event_booked)

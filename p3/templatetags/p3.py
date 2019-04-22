@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
+
+
 import mimetypes
 import os
 import os.path
 import re
 import random
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from collections import defaultdict
 from datetime import datetime
 from itertools import groupby
@@ -14,7 +14,6 @@ from itertools import groupby
 from django import template
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.template import Context
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -101,7 +100,7 @@ def box_didyouknow(context):
 def box_googlemaps(context, what='', zoom=13):
     what = ','.join([ "'%s'" % w for w in what.split(',') ])
     return {
-        'rand': random.randint(0, sys.maxint - 1),
+        'rand': random.randint(0, sys.maxsize - 1),
         'what': what,
         'zoom': zoom
     }
@@ -123,7 +122,7 @@ def box_talks_conference(context, talks):
 
 @register.inclusion_tag('p3/box_latest_tweets.html', takes_context=True)
 def box_latest_tweets(context):
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'screen_name': settings.P3_TWITTER_USER,
     })
@@ -196,7 +195,7 @@ def render_ticket(context, ticket):
     else:
         form = forms.FormTicketPartner(instance=ticket, prefix='t%d' % (ticket.id,))
         blocked = False
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'ticket': ticket,
         'form': form,
@@ -205,17 +204,15 @@ def render_ticket(context, ticket):
     })
     return ctx
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def fares_available(context, fare_type, sort=None):
     """
     Restituisce l'elenco delle tariffe attive in questo momento per la
     tipologia specificata.
     """
     assert fare_type in ('all', 'conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
-    if not settings.P3_FARES_ENABLED(context['user']):
-        return []
 
-    fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
+    fares_list = [f for f in cdataaccess.fares(settings.CONFERENCE_CONFERENCE) if f['valid']]
     if fare_type == 'conference':
         fares = [ f for f in fares_list if f['code'][0] == 'T' and f['ticket_type'] == 'conference' ]
     elif fare_type == 'hotel-room-sharing':
@@ -235,7 +232,7 @@ def fares_available(context, fare_type, sort=None):
 @register.simple_tag(takes_context=True)
 def render_cart_rows(context, fare_type, form):
     assert fare_type in ('conference', 'goodies', 'partner', 'hotel-room', 'hotel-room-sharing', 'other')
-    ctx = Context(context)
+    ctx = context.flatten()
     request = ctx['request']
     try:
         company = request.user.assopy_user.account_type == 'c'
@@ -248,7 +245,7 @@ def render_cart_rows(context, fare_type, form):
         'company': company,
     })
 
-    fares_list = filter(lambda f: f['valid'], cdataaccess.fares(settings.CONFERENCE_CONFERENCE))
+    fares_list = [f for f in cdataaccess.fares(settings.CONFERENCE_CONFERENCE) if f['valid']]
     if fare_type == 'conference':
         tpl = 'p3/fragments/render_cart_conference_ticket_row.html'
         # rendering "conference" tickets is a bit complex; each row in
@@ -324,7 +321,7 @@ def render_cart_rows(context, fare_type, form):
             if f['ticket_type'] in ('other', 'event') and f['code'][0] != 'H':
                 columns.add(f['recipient_type'])
                 fares[f['name']][f['recipient_type']] = f
-        ctx['fares'] = fares.values()
+        ctx['fares'] = list(fares.values())
         ctx['recipient_types'] = sorted(columns, key=lambda v: order.index(v))
     elif fare_type == 'partner':
         tpl = 'p3/fragments/render_cart_partner_ticket_row.html'
@@ -352,7 +349,7 @@ def render_partner_program(context, conference=None):
     from conference.templatetags.conference import fare_blob
     fares = [ x for x in dataaccess.fares(conference) if x['ticket_type'] == 'partner' and x['valid'] ]
     fares.sort(key=lambda x: (slugify(x['name']), fare_blob(x, 'date')))
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'fares': [ (k, list(v)) for k, v in groupby(fares, key=lambda x: slugify(x['name'])) ],
     })
@@ -426,7 +423,7 @@ def com_com_registration(user):
     params['username'] = name.lower().replace(' ', '').replace('.', '')[:12]
     for k, v in params.items():
         params[k] = v.encode('utf-8')
-    return url + urllib.urlencode(params)
+    return url + urllib.parse.urlencode(params)
 
 @register.inclusion_tag('p3/box_next_events.html', takes_context=True)
 def box_next_events(context):
@@ -464,26 +461,26 @@ def box_next_events(context):
             'current': c,
             'next': (n, n_time),
         }
-    events = sorted(tracks.items(), key=lambda x: x[0].order)
-    ctx = Context(context)
+    events = sorted(list(tracks.items()), key=lambda x: x[0].order)
+    ctx = context.flatten()
     ctx.update({
         'events': events,
     })
     return ctx
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_profile_data(uid):
     return dataaccess.profile_data(uid)
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_profiles_data(uids):
     return dataaccess.profiles_data(uids)
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_talk_data(tid):
     return dataaccess.talk_data(tid)
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_form(context, name, bound="auto", bound_field=None):
     if '.' in name:
         from conference.utils import dotted_import
@@ -515,7 +512,7 @@ def get_form(context, name, bound="auto", bound_field=None):
         form.is_valid()
     return form
 
-@register.assignment_tag()
+@register.simple_tag()
 def pending_email_change(user):
     try:
         t = amodels.Token.objects.get(ctype='e', user=user)
@@ -523,7 +520,7 @@ def pending_email_change(user):
         return None
     return t.payload
 
-@register.assignment_tag()
+@register.simple_tag()
 def admin_ticketroom_overall_status():
     status = models.TicketRoom.objects.overall_status()
 
@@ -544,10 +541,10 @@ def admin_ticketroom_overall_status():
             r['days'].append(dst)
     return {
         'days': days,
-        'rooms': rooms.values(),
+        'rooms': list(rooms.values()),
     }
 
-@register.assignment_tag()
+@register.simple_tag()
 def warmup_conference_cache(conference=None):
     """
     """
@@ -578,7 +575,7 @@ def frozen_reason(ticket):
         return ''
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def all_user_tickets(context, uid=None, conference=None,
                      status="complete", fare_type="conference"):
     if uid is None:
@@ -587,16 +584,16 @@ def all_user_tickets(context, uid=None, conference=None,
         conference = settings.CONFERENCE_CONFERENCE
     tickets = dataaccess.all_user_tickets(uid, conference)
     if status == 'complete':
-        tickets = filter(lambda x: x[3], tickets)
+        tickets = [x for x in tickets if x[3]]
     elif status == 'incomplete':
-        tickets = filter(lambda x: not x[3], tickets)
+        tickets = [x for x in tickets if not x[3]]
     if fare_type != "all":
-        tickets = filter(lambda x: x[1] == fare_type, tickets)
+        tickets = [x for x in tickets if x[1] == fare_type]
 
     return tickets
 
 
-@register.assignment_tag()
+@register.simple_tag()
 def p3_tags():
     return dataaccess.tags()
 
@@ -606,7 +603,7 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
         conference = settings.CONFERENCE_CONFERENCE
     if isinstance(profile, int):
         profile = dataaccess.profile_data(profile)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'profile': profile,
         'conference': conference,
@@ -616,7 +613,7 @@ def render_profile_box(context, profile, conference=None, user_message="auto"):
 
 @register.inclusion_tag('p3/fragments/archive.html', takes_context=True)
 def render_archive(context, conference):
-    ctx = Context(context)
+    ctx = context.flatten()
 
     def match(e, exclude_tags=set(('partner0', 'partner1', 'sprint1', 'sprint2', 'sprint3'))):
         if e['tags'] & exclude_tags:
@@ -635,7 +632,7 @@ def render_archive(context, conference):
 
     ctx.update({
         'conference': conference,
-        'talks': sorted(talks.values(), key=lambda x: x['title']),
+        'talks': sorted(list(talks.values()), key=lambda x: x['title']),
     })
     return ctx
 

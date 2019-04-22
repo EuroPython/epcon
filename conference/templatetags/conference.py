@@ -1,25 +1,24 @@
-# -*- coding: UTF-8 -*-
-from __future__ import absolute_import
+
+
 import mimetypes
 import os
 import os.path
 import re
 from django.utils.translation import get_language_from_request
-import httplib2
 import random
 import sys
-import simplejson
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from django import template
 from django.conf import settings as dsettings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.template import defaultfilters, Context
+from django.template import defaultfilters
 from django.template.loader import render_to_string
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from common.jsonify import json_dumps
 from conference import dataaccess
 from conference import models
 from conference import utils
@@ -28,15 +27,17 @@ from conference.settings import MIMETYPE_NAME_CONVERSION_DICT as mimetype_conver
 from conference.signals import timetable_prepare
 from conference.utils import TimeTable
 
-from tagging.models import Tag, TaggedItem
+from tagging.models import Tag
 from tagging.utils import parse_tag_input
 
 mimetypes.init()
 
 register = template.Library()
 
+
 def _lang(ctx, full=False):
     return get_language_from_request(ctx['request'], check_path=True)
+
 
 def _request_cache(request, key):
     """
@@ -50,6 +51,7 @@ def _request_cache(request, key):
     except AttributeError:
         request._conf_cache = {key: {}}
     return request._conf_cache[key]
+
 
 @register.simple_tag(takes_context=True)
 def get_deadlines(context, limit=None, not_expired=True):
@@ -73,9 +75,11 @@ def get_deadlines(context, limit=None, not_expired=True):
         output = output[:limit]
     return output
 
+
 @register.simple_tag(takes_context=True)
 def navigation(context, page_type):
     return dataaccess.navigation(_lang(context, full=True), page_type)
+
 
 @register.tag
 def stuff_info(parser, token):
@@ -129,6 +133,7 @@ def stuff_info(parser, token):
 
     return StuffInfoNode(fpath, var_name)
 
+
 @register.tag
 def conference_speakers(parser, token):
     """
@@ -179,6 +184,7 @@ def conference_speakers(parser, token):
             return ''
     return SpeakersNode(conference, limit, random, var_name)
 
+
 class TNode(template.Node):
     def _set_var(self, v):
         if not v:
@@ -194,11 +200,12 @@ class TNode(template.Node):
         except AttributeError:
             return v
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def conference_talks(conference=None, status="accepted", tag=None, type=None):
     if conference is None:
         conference = [settings.CONFERENCE]
-    elif isinstance(conference, basestring):
+    elif isinstance(conference, str):
         conference = [ conference ]
     qs = models.Talk.objects\
         .filter(conference__in=conference)\
@@ -213,6 +220,7 @@ def conference_talks(conference=None, status="accepted", tag=None, type=None):
 
     return dataaccess.talks_data(qs)
 
+
 @register.inclusion_tag('conference/render_talk_report.html', takes_context=True)
 def render_talk_report(context, speaker, conference, tags):
     context.update({
@@ -221,6 +229,7 @@ def render_talk_report(context, speaker, conference, tags):
         'tags': tags,
     })
     return context
+
 
 # XXX - remove
 def schedule_context(schedule):
@@ -369,7 +378,7 @@ def schedule_context(schedule):
     # (more work in less for the template)
     timetable = sorted(timetable.items())
     offset = 0
-    for ix, v in list(enumerate(timetable[:-1])):
+    for ix, v in enumerate(timetable[:-1]):
         t, row = v
         if 'end' in row['class']:
             # arbitrary padding
@@ -387,6 +396,7 @@ def schedule_context(schedule):
 
     return timetable
 
+
 @register.inclusion_tag('conference/render_schedule.html', takes_context = True)
 def render_schedule(context, schedule):
     """
@@ -394,7 +404,7 @@ def render_schedule(context, schedule):
     """
     if isinstance(schedule, int):
         sid = schedule
-    elif isinstance(schedule, basestring):
+    elif isinstance(schedule, str):
         try:
             c, s = schedule.split('/')
         except ValueError:
@@ -408,9 +418,11 @@ def render_schedule(context, schedule):
         'timetable': utils.TimeTable2.fromSchedule(sid),
     }
 
+
 @register.filter
 def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))
+
 
 # XXX - remove
 @register.simple_tag(takes_context=True)
@@ -474,6 +486,7 @@ def schedule_timetable(context, schedule, start=None, end=None):
 
     return tt
 
+
 # XXX - remove
 @register.simple_tag(takes_context=True)
 def render_schedule_timetable(context, schedule, timetable, start=None, end=None, collapse='auto'):
@@ -487,13 +500,14 @@ def render_schedule_timetable(context, schedule, timetable, start=None, end=None
         end = None
     if start or end:
         timetable = timetable.slice(start, end)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'schedule': schedule,
         'timetable': timetable,
         'collapse': collapse,
     })
     return render_to_string('conference/render_schedule_timetable.html', ctx)
+
 
 # XXX - remove
 @register.simple_tag(takes_context=True)
@@ -508,12 +522,13 @@ def render_schedule_timetable_as_list(context, schedule, timetable, start=None, 
         end = None
     if start or end:
         timetable = timetable.slice(start, end)
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update({
         'schedule': schedule,
         'timetable': timetable,
     })
     return render_to_string('conference/render_schedule_timetable_as_list.html', ctx)
+
 
 @register.simple_tag(takes_context=True)
 def overbooked_events(context, conference):
@@ -530,6 +545,7 @@ def overbooked_events(context, conference):
         c['items'] = data
     return c['items']
 
+
 @register.simple_tag(takes_context=True)
 def get_event_track(context, event):
     """
@@ -541,20 +557,24 @@ def get_event_track(context, event):
         if t in dbtracks:
             return dbtracks[t]
 
+
 @register.filter
 def event_has_track(event, track):
     return track in set(parse_tag_input(event.track))
+
 
 @register.simple_tag()
 def event_row_span(timetable, event):
     ix = timetable.rows.index(event.row)
     return timetable.rows[ix:ix+event.rows]
 
+
 @register.simple_tag()
 def event_time_span(timetable, event, time_slot=15):
     start = datetime.combine(date.today(), event.time)
     end = start + timedelta(minutes=time_slot * event.columns)
     return start.time(), end.time()
+
 
 # XXX - remove
 @register.tag
@@ -587,21 +607,25 @@ def conference_schedule(parser, token):
 
     return ScheduleNode(conference, schedule, var_name)
 
+
 @register.filter
 def add_number(value, arg):
     return value + float(arg)
+
 
 @register.filter
 def split(value, arg):
     return value.split(arg)
 
+
 @register.filter
 def splitonspace(value):
     return value.split(' ')
 
+
 @register.filter
 def image_resized(value, size='resized'):
-    if isinstance(value, basestring):
+    if isinstance(value, str):
         url = value
         if not url.startswith(dsettings.DEFAULT_URL_PREFIX + dsettings.MEDIA_URL):
             return url
@@ -617,37 +641,41 @@ def image_resized(value, size='resized'):
     else:
         return dirname + '/%s/%s' % (size, os.path.splitext(basename)[0] + '.jpg')
 
+
 @register.filter
 def intersected(value, arg):
     if not isinstance(arg, (list, tuple)):
         arg = [ arg ]
     return set(value) & set(arg)
 
+
 @register.filter
 def splitbysize(value, arg):
-    from itertools import izip
+    
     def grouper(n, iterable, fillvalue=None):
         "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
         args = [iter(iterable)] * n
-        return list(izip(*args))
+        return list(zip(*args))
     arg = int(arg)
     value = list(value)
     if len(value) % arg:
         value += [ None ] * (arg - (len(value) % arg))
     return grouper(arg, value)
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
     if conference is None:
         conference = settings.CONFERENCE
     data = dataaccess.sponsor(conference)
     if only_tags:
         t = set((only_tags,))
-        data = filter(lambda x: len(x['tags'] & t)>0, data)
+        data = [x for x in data if len(x['tags'] & t)>0]
     if exclude_tags:
         t = set((exclude_tags,))
-        data = filter(lambda x: len(x['tags'] & t)==0, data)
+        data = [x for x in data if len(x['tags'] & t)==0]
     return data
+
 
 @register.tag
 def conference_mediapartner(parser, token):
@@ -679,6 +707,7 @@ def conference_mediapartner(parser, token):
             context[self.var_name] = partner
             return ''
     return MediaPartnerNode(conference, var_name)
+
 
 @register.tag
 def render_page_template(parser, token):
@@ -713,6 +742,7 @@ def render_page_template(parser, token):
                 return ''
 
     return TemplateRenderer(arg, var_name)
+
 
 @register.tag
 def conference_multilingual_attribute(parser, token):
@@ -776,7 +806,7 @@ def conference_multilingual_attribute(parser, token):
                         elif dlang_single in contents:
                             value = contents[dlang_single]
                         else:
-                            value = contents.values()[0]
+                            value = list(contents.values())[0]
             if self.var_name:
                 context[self.var_name] = value
                 return ''
@@ -784,6 +814,7 @@ def conference_multilingual_attribute(parser, token):
                 return value.body if value else ''
 
     return AttributeNode(instance, attribute, var_name, fallback)
+
 
 @register.simple_tag()
 def video_cover_url(event, type='front', thumb=False):
@@ -798,12 +829,13 @@ def video_cover_url(event, type='front', thumb=False):
         url += '.jpg'
     return url
 
-@register.assignment_tag(takes_context=True)
+
+@register.simple_tag(takes_context=True)
 def embed_video(context, value, args=""):
     """
     {{ talk|embed_video:"source=[youtube, viddler, download, url.to.oembed.endpoint],width=XXX,height=XXX" }}
     """
-    args = dict( map(lambda _: _.strip(), x.split('=')) for x in args.split(',') if '=' in x )
+    args = dict( [_.strip() for _ in x.split('=')] for x in args.split(',') if '=' in x )
     video_url = video_path = None
 
     if isinstance(value, models.Talk):
@@ -877,6 +909,7 @@ def embed_video(context, value, args=""):
         output['html'] = mark_safe(output['html'])
     return output
 
+
 @register.tag
 def conference_quotes(parser, token):
     """
@@ -905,15 +938,18 @@ def conference_quotes(parser, token):
             return ''
     return QuotesNode(limit, var_name)
 
+
 @register.filter
 def full_url(url):
     if not url.startswith(dsettings.DEFAULT_URL_PREFIX):
         url = dsettings.DEFAULT_URL_PREFIX + url
     return url
 
+
 @register.filter
 def full_name(u):
     return "%s %s" % (u.first_name, u.last_name)
+
 
 @register.filter
 def fare_blob(fare, field):
@@ -926,6 +962,7 @@ def fare_blob(fare, field):
     if match:
         return match.group(1).strip()
     return ''
+
 
 @register.simple_tag()
 def voting_data(conference):
@@ -949,6 +986,7 @@ def voting_data(conference):
         'groups': dict(groups),
     }
 
+
 @register.filter
 def convert_twitter_links(text, args=None):
     text = re.sub(r'(https?://[^\s]*)', r'<a href="\1">\1</a>', text)
@@ -956,9 +994,11 @@ def convert_twitter_links(text, args=None):
     text = re.sub(r'([^&])#([^\s]*)', r'\1<a href="http://twitter.com/search?q=%23\2">#\2</a>', text)
     return mark_safe(text)
 
+
 @register.simple_tag()
 def randint():
-    return random.randint(0, sys.maxint)
+    return random.randint(0, sys.maxsize)
+
 
 @register.filter
 def truncate_chars(text, length):
@@ -966,6 +1006,7 @@ def truncate_chars(text, length):
         return text[:length-3] + '...'
     else:
         return text
+
 
 # XXX - remove
 @register.filter
@@ -988,6 +1029,7 @@ def timetable_columns(timetable):
         collapse = cells == flex_times
         output.append((c, events, collapse))
     return output
+
 
 # XXX - remove
 @register.simple_tag()
@@ -1096,36 +1138,17 @@ def timetable_cells(timetable, width, height, outer_width=None, outer_height=Non
         'schedule_size': 'width: %dpx; height: %dpx' % (max_size[0], max_size[1]),
     }
 
+
 @register.simple_tag(takes_context=True)
 def render_fb_like(context, href=None, ref="", show_faces="true", width="100%", action="recommend", font="", colorscheme="light"):
     if not href:
         href = context['CURRENT_URL']
     data = dict(locals())
     data.pop('context')
-    ctx = Context(context)
+    ctx = context.flatten()
     ctx.update(data)
     return render_to_string('conference/render_fb_like.html', ctx)
 
-@register.filter
-def name_abbrv(name):
-    whitelist = set(('de', 'di', 'der', 'van', 'mc', 'mac', 'le', 'cotta'))
-
-    parts = name.split()
-    if len(parts) == 1:
-        return name
-
-    parts.reverse()
-    last_name = ''
-    for part in parts:
-        if not last_name:
-            last_name = part
-            continue
-        if part.lower() in whitelist:
-            last_name = part + ' ' + last_name
-        else:
-            break
-
-    return '%s. %s' % (name[0], last_name)
 
 @register.filter
 def main_event(events):
@@ -1133,11 +1156,13 @@ def main_event(events):
         if not 'teaser' in e.tags:
             return e
 
+
 @register.filter
 def teaser_event(events):
     for e in events:
         if event_has_track(e, 'teaser'):
             return e
+
 
 # XXX - remove
 @register.simple_tag(takes_context=True)
@@ -1168,6 +1193,7 @@ def current_events(context, time=None):
     else:
         output = {}
     return output
+
 
 # XXX - remove
 @register.simple_tag(takes_context=True)
@@ -1212,26 +1238,29 @@ def next_events(context, time=None):
 
     return output
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def current_conference():
     return models.Conference.objects.current()
 
+
 @register.simple_tag()
 def conference_fares(conf=settings.CONFERENCE):
-    return filter(lambda f: f['valid'], dataaccess.fares(conf))
+    return [f for f in dataaccess.fares(conf) if f['valid']]
+
 
 @register.simple_tag(takes_context=True)
 def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
-    ctx = Context(context)
+    ctx = context.flatten()
 
     events = dataaccess.events(conf=conference)
     if exclude_tags:
         exclude = set(exclude_tags.split(','))
-        events = filter(lambda x: len(x['tags'] & exclude) == 0, events)
+        events = [x for x in events if len(x['tags'] & exclude) == 0]
 
     if exclude_tracks:
         exclude = set(exclude_tracks.split(','))
-        events = filter(lambda x: len(set(x['tracks']) & exclude) == 0, events)
+        events = [x for x in events if len(set(x['tracks']) & exclude) == 0]
 
     grouped = defaultdict(list)
     for e in events:
@@ -1269,6 +1298,7 @@ def tags_for_talks(context, conference=None, status="accepted"):
         status = None
     return dataaccess.tags_for_talks(conference=conference, status=status)
 
+
 @register.filter
 def group_tags(tags):
     groups = defaultdict(list)
@@ -1276,9 +1306,11 @@ def group_tags(tags):
         groups[t.category].append(t)
     return sorted(groups.items())
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def talk_data(tid):
     return dataaccess.talk_data(tid)
+
 
 @register.simple_tag()
 def event_data(eid):
@@ -1286,34 +1318,40 @@ def event_data(eid):
     event.update({'schedule':dataaccess.schedule_data(event['schedule_id'])})
     return event
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def talks_data(tids, conference=None):
     data = dataaccess.talks_data(tids)
     if conference:
-        data = filter(lambda x: x['conference'] == conference, data)
+        data = [x for x in data if x['conference'] == conference]
     return data
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def schedule_data(sid):
     return dataaccess.schedule_data(sid)
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def schedules_data(sids):
     return dataaccess.schedules_data(sids)
+
 
 @register.filter
 def content_type(id):
     return ContentType.objects.get(id=id)
 
+
 @register.filter
 def field_label(value, fieldpath):
     mname, fname = fieldpath.split('.')
     model = getattr(models, mname)
-    field = model._meta.get_field_by_name(fname)[0]
+    field = model._meta.get_field(fname)
     for k, v in field.choices:
         if k == value:
             return v
     return None
+
 
 @register.simple_tag()
 def admin_urlname_fromct(ct, action, id=None):
@@ -1327,13 +1365,16 @@ def admin_urlname_fromct(ct, action, id=None):
     except:
         return None
 
+
 @register.simple_tag()
 def profile_data(uid):
     return dataaccess.profile_data(uid)
 
+
 @register.simple_tag()
 def profiles_data(uids):
     return dataaccess.profiles_data(uids)
+
 
 @register.filter
 def beautify_url(url):
@@ -1350,6 +1391,7 @@ def beautify_url(url):
         url = url[:-1]
     return url
 
+
 @register.filter
 def ordered_talks(talks, criteria="conference"):
     """
@@ -1362,7 +1404,8 @@ def ordered_talks(talks, criteria="conference"):
     grouped = defaultdict(list)
     for t in talks:
         grouped[t['conference']].append(t)
-    return sorted(grouped.items(), reverse=True)
+    return sorted(list(grouped.items()), reverse=True)
+
 
 #XXX: rimuovere, gli stessi dati sono presenti nella cache ritornata da profile_data
 @register.simple_tag()
@@ -1379,14 +1422,15 @@ def visible_talks(talks, filter_="all"):
     if isinstance(talks[0], int):
         talks = dataaccess.talks_data(talks)
     if filter_ == "accepted":
-        return filter(lambda x: x['status'] == 'accepted', talks)
+        return [x for x in talks if x['status'] == 'accepted']
     else:
-        return  filter(lambda x: x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE, talks)
+        return  [x for x in talks if x['status'] == 'accepted' or x['conference'] == settings.CONFERENCE]
+
 
 @register.filter
 def json_(val):
-    from common.jsonify import json_dumps
     return mark_safe(json_dumps(val))
+
 
 @register.filter
 def eval_(x, code):
@@ -1394,6 +1438,7 @@ def eval_(x, code):
         return eval(code, {'x': x})
     except:
         return None
+
 
 @register.filter
 def attrib_(ob, attrib):
@@ -1409,6 +1454,7 @@ def attrib_(ob, attrib):
         else:
             return [ attrib_(x, attrib) for x in ob ]
 
+
 @register.filter
 def escape_amp(data):
     """
@@ -1421,9 +1467,11 @@ def escape_amp(data):
     """
     return re.sub('&(?!amp;)', '&amp;', data)
 
+
 @register.filter
 def contains_(it, key):
     return key in it
+
 
 @register.filter
 def remove_duplicates(val, attr=None):
@@ -1445,17 +1493,19 @@ def remove_duplicates(val, attr=None):
             check.add(k)
     return output
 
+
 @register.simple_tag(takes_context=True)
 def assign_(context, varname, value):
     context[varname] = value
     return ""
+
 
 @register.simple_tag(takes_context=True)
 def sum_(context, varname, *args):
     if not args:
         r = None
     else:
-        args = filter(None, args)
+        args = [_f for _f in args if _f]
         try:
             r = sum(args[1:], args[0])
         except Exception:
@@ -1463,11 +1513,13 @@ def sum_(context, varname, *args):
     context[varname] = r
     return ""
 
+
 @register.filter
 def as_datetime(value, format="%Y/%m/%d"):
     return datetime.strptime(value, format)
 
-@register.assignment_tag(takes_context=True)
+
+@register.simple_tag(takes_context=True)
 def user_votes(context, uid=None, conference=None, talk_id=None):
     if uid is None:
         uid = context['request'].user.id
@@ -1479,7 +1531,8 @@ def user_votes(context, uid=None, conference=None, talk_id=None):
     else:
         return votes
 
-@register.assignment_tag(takes_context=True)
+
+@register.simple_tag(takes_context=True)
 def user_events_interest(context, uid=None, conference=None, event_id=None):
     if uid is None:
         uid = context['request'].user.id
@@ -1492,6 +1545,7 @@ def user_events_interest(context, uid=None, conference=None, event_id=None):
     else:
         return ei
 
+
 @register.simple_tag(takes_context=True)
 def conference_booking_status(context, conference=None, event_id=None):
     if conference is None:
@@ -1501,6 +1555,7 @@ def conference_booking_status(context, conference=None, event_id=None):
         return status.get(event_id)
     else:
         return status
+
 
 @register.simple_tag()
 def conference_js_data(tags=None):
@@ -1514,7 +1569,7 @@ def conference_js_data(tags=None):
     cts = dict(ContentType.objects.all().values_list('id', 'model'))
     items = {}
     for t, objects in tags.items():
-        key = t.name.encode('utf-8')
+        key = t.name
         if key not in items:
             items[key] = {}
         for ctid, oid in objects:
@@ -1525,11 +1580,12 @@ def conference_js_data(tags=None):
 
     tdata = defaultdict(list)
     for x in tags:
-        tdata[x.category.encode('utf-8')].append(x.name.encode('utf-8'))
+        tdata[x.category].append(x.name)
 
     data = {
         'tags': dict(tdata),
         'taggeditems': items,
     }
 
-    return 'window.conference = %s;' % json_(data)
+    return mark_safe('window.conference = {};'.format(json_dumps(data)))
+

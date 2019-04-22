@@ -5,9 +5,10 @@ import factory.django
 import factory.fuzzy
 from faker import Faker
 
+from django.conf import settings
+
 fake = Faker()
 
-from factory import lazy_attribute
 
 class ConferenceTagFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -27,13 +28,13 @@ class ConferenceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'conference.Conference'
 
-    code = factory.Sequence(lambda x: 'CONF%05d' % x)
+    code = settings.CONFERENCE_CONFERENCE
     name = factory.Faker('sentence', nb_words=6, variable_nb_words=True)
 
     cfp_start = factory.LazyAttribute(lambda conf: conf.conference_start - datetime.timedelta(days=50))
     cfp_end = factory.LazyAttribute(lambda conf: conf.cfp_start + datetime.timedelta(days=+20))
 
-    @lazy_attribute
+    @factory.lazy_attribute
     def conference_start(self):
         return fake.date_time_this_decade(before_now=True, after_now=True).date()
     # conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)

@@ -1,37 +1,26 @@
-# -*- coding: UTF-8 -*-
-from __future__ import with_statement
 
-from datetime import date
-from decimal import Decimal
+
+
 import os.path
 import random
+from datetime import date
+from decimal import Decimal
 
-from django import forms
-from django import http
+from django import forms, http
 from django.conf import settings as dsettings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
-from django.shortcuts import render
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 
 from common.decorators import render_to_json
 from common.decorators import render_to_template
-from conference import dataaccess
-from conference import models
-from conference import settings
-from conference import utils
+from conference import dataaccess, models, settings, utils
 from conference.decorators import speaker_access, talk_access, profile_access
-from conference.forms import AttendeeLinkDescriptionForm
-from conference.forms import OptionForm
-from conference.forms import SpeakerForm
-from conference.forms import TalkForm
+from conference.forms import AttendeeLinkDescriptionForm, OptionForm, SpeakerForm, TalkForm
 
 
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
@@ -71,6 +60,7 @@ def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm
         'talks': talks,
         'accepted': talks.filter(status='accepted'),
     }
+
 
 @speaker_access
 @render_to_template('conference/speaker.xml')
@@ -119,6 +109,7 @@ def talk(request, slug, talk, full_access, talk_form=None):
         'cfp': conf.cfp(),
         'voting': conf.voting(),
     }
+
 
 @render_to_template('conference/talk_preview.html')
 @talk_access
@@ -185,6 +176,7 @@ def talk_video(request, slug):  # pragma: no cover
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
 
+
 @render_to_template('conference/conference.xml')
 def conference_xml(request, conference):
     conference = get_object_or_404(models.Conference, code=conference)
@@ -199,6 +191,7 @@ def conference_xml(request, conference):
         'schedules': schedules,
     }
 
+
 def talk_report(request):  # pragma: no cover
     conference = request.GET.getlist('conference')
     tags = request.GET.getlist('tag')
@@ -207,7 +200,8 @@ def talk_report(request):  # pragma: no cover
             'conference': conference,
             'tags': tags,
         },
-        context_instance = RequestContext(request))
+    )
+
 
 @render_to_template('conference/schedule.html')
 def schedule(request, conference, slug):
@@ -215,6 +209,7 @@ def schedule(request, conference, slug):
     return {
         'schedule': sch,
     }
+
 
 @login_required
 @render_to_json
@@ -240,6 +235,7 @@ def schedule_event_interest(request, conference, slug, eid):
             val = 0
     return { 'interest': val }
 
+
 @login_required
 @render_to_json
 def schedule_event_booking(request, conference, slug, eid):
@@ -261,7 +257,7 @@ def schedule_event_booking(request, conference, slug, eid):
                     pass
         else:
             try:
-                msg = unicode(form.errors['value'][0])
+                msg = str(form.errors['value'][0])
             except:
                 msg = ""
             return http.HttpResponseBadRequest(msg)
@@ -272,17 +268,19 @@ def schedule_event_booking(request, conference, slug, eid):
         'user': request.user.id in status['booked'],
     }
 
+
 @render_to_json
 def schedule_events_booking_status(request, conference):
     data = dataaccess.conference_booking_status(conference)
-    uid = request.user.id if request.user.is_authenticated() else 0
+    uid = request.user.id if request.user.is_authenticated else 0
     for k, v in data.items():
         if uid and uid in v['booked']:
             v['user'] = True
         else:
             v['user'] = False
         del v['booked']
-    return data
+    return dat
+    a
 
 @render_to_template('conference/schedule.xml')
 def schedule_xml(request, conference, slug):
@@ -292,46 +290,6 @@ def schedule_xml(request, conference, slug):
         'timetable': utils.TimeTable2.fromSchedule(sch.id),
     }
 
-
-@render_to_json
-def places(request):
-    """
-    Returns a json special places and hotels.
-    """
-    places = []
-    for h in models.SpecialPlace.objects.filter(visible = True):
-        places.append({
-            'id': h.id,
-            'name': h.name,
-            'address': h.address,
-            'type': h.type,
-            'url': h.url,
-            'email': h.email,
-            'telephone': h.telephone,
-            'note': h.note,
-            'lng': h.lng,
-            'lat': h.lat,
-            'html': render_to_string('conference/render_place.html', {'p': h}),
-        })
-    for h in models.Hotel.objects.filter(visible = True):
-        places.append({
-            'id': h.id,
-            'name': h.name,
-            'type': 'hotel',
-            'telephone': h.telephone,
-            'url': h.url,
-            'email': h.email,
-            'availability': h.availability,
-            'price': h.price,
-            'note': h.note,
-            'affiliated': h.affiliated,
-            'lng': h.lng,
-            'lat': h.lat,
-            'modified': h.modified.isoformat(),
-            'html': render_to_string('conference/render_place.html', {'p': h}),
-        })
-
-    return places
 
 @render_to_json
 def sponsor_json(request, sponsor):
@@ -400,96 +358,17 @@ def paper_submission(request):
         else:
             form = fc()
 
-    return render_to_response('conference/paper_submission.html', {
+    return render(request, 'conference/paper_submission.html', {
         'speaker': speaker,
         'form': form,
         'proposed_talks': proposed,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def cfp_thank_you_for_proposal(request):
     return TemplateResponse(
         request, "conference/cfp/thank_you_for_proposal.html"
     )
-
-
-def filter_talks_in_context(request, talks, voting_allowed):
-    # Want to associate each talk with a "unique" number, easily find.
-    ordinal = dict()
-    for ix, t in enumerate(talks.order_by('created').values_list('id', flat=True)):
-        ordinal[t] = ix
-    user_votes = models.VotoTalk.objects.filter(user=request.user.id)
-    talks = talks.order_by('speakers__user__first_name', 'speakers__user__last_name')
-    if request.GET:
-        form = OptionForm(data=request.GET)
-        form.is_valid()
-        options = form.cleaned_data
-    else:
-        form = OptionForm()
-        options = {
-            'abstracts': 'not-voted',
-            'talk_type': '',
-            'language': '',
-            'tags': '',
-            'order': 'vote',
-        }
-    if options['abstracts'] != 'all':
-        talks = talks.exclude(id__in=user_votes.values('talk_id'))
-    if options['talk_type'] in ('s', 't', 'p'):
-        talks = talks.filter(type=options['talk_type'])
-    if options['language'] in ('en', 'it'):
-        talks = talks.filter(language=options['language'])
-    if options['tags']:
-        # if options['tags'] ends us a tag not associated with any talk.
-        # I have a query that results in zero results; to avoid this limit the usable
-        # tag as a filter to those associated with talk.
-        allowed = set()
-        ctt = ContentType.objects.get_for_model(models.Talk)
-        for t, usage in dataaccess.tags().items():
-            for cid, oid in usage:
-                if cid == ctt.id:
-                    allowed.add(t.name)
-                    break
-        tags = set(options['tags']) & allowed
-        if tags:
-            talks = talks.filter(id__in=models.ConferenceTaggedItem.objects \
-                                 .filter(
-                content_type__app_label='conference', content_type__model='talk',
-                tag__name__in=tags) \
-                                 .values('object_id')
-            )
-    talk_order = options['order']
-    votes = dict((x.talk_id, x) for x in user_votes)
-    # As talks are sorted by a linked model through a m2m can I have repeated
-    # the talk and distinct does not apply in these cases.
-    #
-    # I can only filter in Python, at this point I take this opportunity to
-    # engage votes user using a single loop.
-    dups = set()
-
-    def filter_vote(t):
-        if t['id'] in dups:
-            return False
-        dups.add(t['id'])
-        t['user_vote'] = votes.get(t['id'])
-        t['ordinal'] = ordinal[t['id']]
-        return True
-
-    talks = filter(filter_vote, talks.values('id'))
-    if talk_order != 'speaker':
-        def key(x):
-            if x['user_vote']:
-                return x['user_vote'].vote
-            else:
-                return Decimal('-99.99')
-
-        talks = reversed(sorted(reversed(talks), key=key))
-    ctx = {
-        'voting_allowed': voting_allowed,
-        'talks': list(talks),
-        'form': form,
-    }
-    return ctx
 
 
 def get_data_for_context(request):
@@ -514,7 +393,7 @@ def voting(request):
             return http.HttpResponseBadRequest('anonymous user not allowed')
 
         data = dict((x.id, x) for x in talks)
-        for k, v in filter(lambda x: x[0].startswith('vote-'), request.POST.items()):
+        for k, v in [x for x in request.POST.items() if x[0].startswith('vote-')]:
             try:
                 talk = data[int(k[5:])]
             except KeyError:
@@ -543,7 +422,7 @@ def voting(request):
         else:
             return HttpResponseRedirectSeeOther(reverse('conference-voting') + '?' + request.GET.urlencode())
     else:
-        from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioRenderer
+        from conference.forms import TagField, ReadonlyTagWidget, PseudoRadioSelectWidget
         class OptionForm(forms.Form):
             abstracts = forms.ChoiceField(
                 choices=(('not-voted', 'Not yet voted'),
@@ -551,20 +430,20 @@ def voting(request):
                          ),
                 required=False,
                 initial='not-voted',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             talk_type = forms.ChoiceField(
-                label=u'Session type',
+                label='Session type',
                 choices=(('all', 'All'),) + tuple(settings.TALK_TYPES_TO_BE_VOTED),
                 required=False,
                 initial='all',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             language = forms.ChoiceField(
                 choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
                 required=False,
                 initial='all',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             order = forms.ChoiceField(
                 choices=(('random', 'Random order'),
@@ -573,7 +452,7 @@ def voting(request):
                          ),
                 required=False,
                 initial='random',
-                widget=forms.RadioSelect(renderer=PseudoRadioRenderer),
+                widget=PseudoRadioSelectWidget(),
             )
             tags = TagField(
                 required=False,
@@ -650,7 +529,7 @@ def voting(request):
             t['user_vote'] = votes.get(t['id'])
             t['ordinal'] = ordinal[t['id']]
             return True
-        talks = filter(filter_vote, talks.values('id'))
+        talks = list(filter(filter_vote, talks.values('id')))
 
         # Fix talk order, if necessary
         if talk_order == 'vote':
@@ -677,6 +556,7 @@ def voting(request):
             tpl = 'conference/voting.html'
         return render(request, tpl, ctx)
 
+
 @render_to_template('conference/profile.html')
 @profile_access
 def user_profile(request, slug, profile=None, full_access=False):
@@ -699,14 +579,17 @@ def user_profile(request, slug, profile=None, full_access=False):
         'profile': profile,
     }
 
+
 @login_required
 def myself_profile(request):
     p = models.AttendeeProfile.objects.getOrCreateForUser(request.user)
     return redirect('conference-profile', slug=p.slug)
 
+
 @render_to_json
 def schedule_events_expected_attendance(request, conference):
     return dataaccess.expected_attendance(conference)
+
 
 def covers(request, conference):
     events = settings.VIDEO_COVER_EVENTS(conference)
@@ -746,6 +629,7 @@ def covers(request, conference):
     }
     return render(request, 'conference/covers.html', ctx)
 
+
 @login_required
 def user_profile_link(request, uuid):
     """
@@ -784,6 +668,7 @@ def user_profile_link(request, uuid):
     }
     return render(request, 'conference/profile_link.html', ctx)
 
+
 @login_required
 @render_to_json
 def user_profile_link_message(request, uuid):
@@ -803,6 +688,7 @@ def user_profile_link_message(request, uuid):
             link.message = form.cleaned_data['message']
             link.save()
     return {}
+
 
 @login_required
 def user_conferences(request):

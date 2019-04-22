@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
+
 """ Print accepted talks not scheduled and not accepted talks which have been
 scheduled.
 """
-from   collections  import defaultdict
 from   optparse     import make_option
-import operator
-
-import simplejson   as json
 
 from   django.core.management.base import BaseCommand, CommandError
-from   django.core  import urlresolvers
 from   conference   import models
-from   conference   import utils
-from   conference.models import TALK_TYPE, TALK_ADMIN_TYPE
 
 from ...utils import (talk_schedule,
                       talk_type,

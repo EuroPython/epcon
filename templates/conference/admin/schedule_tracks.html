@@ -1,0 +1,7 @@
+<form class="async" method="POST" action="{% url "admin:conference-schedule-tracks" sid tid %}">
+    {% csrf_token %}
+    <table>{{ form }}</table>
+    <div class="submit-row">
+        <input type="submit" />
+    </div>
+</form>

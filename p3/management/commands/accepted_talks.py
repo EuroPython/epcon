@@ -1,15 +1,9 @@
-# -*- coding: utf-8 -*-
+
 """ Print out a listing of accepted talks.
 
 """
 from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
 from conference import models
-from conference import utils
-
-from collections import defaultdict
-from optparse import make_option
-import operator
 
 from ...utils import (talk_title,
                       profile_url)
@@ -37,8 +31,8 @@ _check_talk_types(TYPE_NAMES)
 ### Helpers
 
 def speaker_listing(talk):
-    return u', '.join(
-        u'<a href="%s"><i>%s %s</i></a>' % (
+    return ', '.join(
+        '<a href="%s"><i>%s %s</i></a>' % (
             profile_url(speaker.user),
             speaker.user.first_name,
             speaker.user.last_name)
@@ -106,14 +100,13 @@ class Command(BaseCommand):
             # Sort by talk title using title case
             bag.sort(key=lambda talk: talk_title(talk).title())
             print ('')
-            print ('<h3>%s</h3>' % type_name)
+            print('<h3>%s</h3>' % type_name)
             if description:
-                print ('<p>%s</p>' % description)
+                print('<p>%s</p>' % description)
             print ('<ul>')
             for talk in bag:
-                print ((u'<li><a href="%s">%s</a> by %s</li>' % (
+                print('<li><a href="%s">%s</a> by %s</li>' % (
                     talk.get_absolute_url(),
                     talk_title(talk),
-                    speaker_listing(talk))
-                    ).encode('utf-8'))
+                    speaker_listing(talk)))
             print ('</ul>')

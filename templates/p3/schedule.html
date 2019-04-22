@@ -149,7 +149,7 @@
                         <div class="speakers">
                             <span class="maximized hhmm">{{ e.time|time:"H:i" }}</span>
                             {% for s in e.talk.speakers %}
-                            <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name|name_abbrv }}</a>{% if not forloop.last %}, {% endif %}
+                            <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </div>
                         <h3 class="name"><a href="{% url "conference-talk" slug=e.talk.slug %}">{{ e.name }}</a></h3>

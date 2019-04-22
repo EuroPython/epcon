@@ -1,6 +1,5 @@
 import unittest
 
-from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django_factory_boy import auth as auth_factories

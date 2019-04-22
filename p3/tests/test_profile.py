@@ -1,7 +1,7 @@
 import unittest
 
 import mock
-import simplejson
+import json
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
@@ -63,7 +63,7 @@ class TestView(TestCase):
         })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        json_content = simplejson.loads(response.content)
+        json_content = json.loads(response.content)
         dict_content = {
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
@@ -96,9 +96,9 @@ class TestView(TestCase):
         response = self.client.post(url, data={
             'subject': message.subject,
             'message': message.message,
-        })
+            })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.content, 'This user does not want to receive a message')
+        self.assertEqual(response.content, b'This user does not want to receive a message')
 
     def test_p3_profile_message_accept_message(self):
         # p3-profile-message -> p3.views.profile.p3_profile_message
@@ -120,4 +120,4 @@ class TestView(TestCase):
             })
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(simplejson.loads(response.content), 'OK')
+            self.assertEqual(json.loads(response.content), 'OK')

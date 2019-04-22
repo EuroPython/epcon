@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+
 import datetime
 import os.path
 from collections import defaultdict, OrderedDict
@@ -24,7 +24,7 @@ def group_required(*group_names):
         user has to be member of all listed groups.
     """
     def group_membership_check(user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user.is_superuser:
             return True
@@ -97,7 +97,7 @@ def conference_ticket_badge(tickets):
         else:
             tagline = p3c.tagline
             experience = p3c.python_experience
-            tdays = map(lambda x: datetime.date(*map(int, x.split('-'))), filter(None, p3c.days.split(',')))
+            tdays = [datetime.date(*list(map(int, x.split('-')))) for x in [_f for _f in p3c.days.split(',') if _f]]
             cdays = conferences[t.fare.conference]['days']
             days = ','.join(map(str,[cdays.index(x)+1 for x in tdays]))
             badge_image = p3c.badge_image.path if p3c.badge_image else None
@@ -129,29 +129,12 @@ def conference_ticket_badge(tickets):
             'profile-link': settings.DEFAULT_URL_PREFIX + reverse(
                 'conference-profile-link', kwargs={'uuid': profile.uuid}),
         })
-    return groups.values()
+    return list(groups.values())
 
-
-def gravatar(email, size=80, default='identicon', rating='r', protocol='https'):
-    import urllib, hashlib
-
-    if protocol == 'https':
-        host = 'https://secure.gravatar.com'
-    else:
-        host = 'http://www.gravatar.com'
-    gravatar_url = host + "/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({
-        'default': default,
-        'size': size,
-        'rating': rating,
-    })
-    return gravatar_url
 
 def spam_recruiter_by_conf(conf):
     """ Return a queryset with the User who have agreed to be
     contacted via email for the purpose of recruiting."""
-    from django.contrib.auth.models import User
-
     tickets = settings.CONFERENCE_TICKETS(conf, ticket_type='conference')
     owned = tickets.filter(p3_conference__assigned_to='')
     assigned = tickets.exclude(p3_conference__assigned_to='')
@@ -173,11 +156,11 @@ from django.utils.http import urlquote
 from hashlib import md5 as md5_constructor
 
 def template_cache_name(fragment_name, *variables):
-    args = md5_constructor(u':'.join([urlquote(var) for var in variables]))
+    args = md5_constructor(b':'.join([urlquote(var) for var in variables]))
     return 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
 
 def invalidate_template_cache(fragment_name, *variables):
-    args = md5_constructor(u':'.join([urlquote(var) for var in variables]))
+    args = md5_constructor(b':'.join([urlquote(var) for var in variables]))
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
     return
@@ -188,13 +171,7 @@ def conference2ical(conf, user=None, abstract=False):
     from datetime import timedelta
 
     curr = cmodels.Conference.objects.current()
-    try:
-        hotel = cmodels.SpecialPlace.objects.get(type='conf-hq')
-    except cmodels.SpecialPlace.DoesNotExist:
-        hotel = None
-    else:
-        if not hotel.lat or not hotel.lng:
-            hotel = None
+    hotel = None
 
     def altf(data, component):
         if component == 'calendar':
@@ -226,8 +203,7 @@ def conference2ical(conf, user=None, abstract=False):
             if abstract:
                 e = dataaccess.event_data(eid)
                 if e['talk']:
-                    from conference.templatetags.conference import name_abbrv
-                    speakers = [ name_abbrv(s['name']) for s in e['talk']['speakers'] ]
+                    speakers = [s['name'] for s in e['talk']['speakers'] ]
                     speakers = ", ".join(speakers)
                     data['summary'] = (data['summary'][0] + ' by ' + speakers, data['summary'][1])
                 ab = e['talk']['abstract'] if e['talk'] else e['abstract']
@@ -350,18 +326,18 @@ def group_all_talks_by_admin_type(conference, talk_status='accepted'):
 
 def speaker_listing(talk):
     """ Return a list of the speakers' names of the talk."""
-    return [u'{} {}'.format(speaker.user.first_name, speaker.user.last_name)
+    return ['{} {}'.format(speaker.user.first_name, speaker.user.last_name)
             for speaker in talk.get_all_speakers()]
 
 
 def speaker_emails(talk):
     """ Return a list of the speakers' emails of the talk."""
-    return [u'{}'.format(speaker.user.email) for speaker in talk.get_all_speakers()]
+    return ['{}'.format(speaker.user.email) for speaker in talk.get_all_speakers()]
 
 
 def speaker_twitters(talk):
     """ Return a list of the speakers' twitter handles of the talk."""
-    return [u'@{}'.format(speaker.user.attendeeprofile.p3_profile.twitter)
+    return ['@{}'.format(speaker.user.attendeeprofile.p3_profile.twitter)
             for speaker in talk.get_all_speakers()]
 
 

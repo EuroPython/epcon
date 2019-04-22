@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 This module handles all things related to creating a new invoice, including
 
@@ -9,9 +7,6 @@ This module handles all things related to creating a new invoice, including
 * stroing full copy in the Invoice model to be viewed later.
 * rendering PDFs of the invoice.
 """
-
-
-from __future__ import unicode_literals, absolute_import
 
 from collections import OrderedDict
 from decimal import Decimal
@@ -60,11 +55,13 @@ Contact Email: billing@europython.eu
 https://www.europython-society.org
 """.strip()
 
+EPS_19 = EPS_18
 
 ISSUER_BY_YEAR = {
     2016: ACPYSS_16,
     2017: PYTHON_ITALIA_17,
     2018: EPS_18,
+    2019: EPS_19,
 }
 
 LOCAL_CURRENCY_BY_YEAR = {
@@ -72,18 +69,21 @@ LOCAL_CURRENCY_BY_YEAR = {
     2016: "EUR",
     2017: "EUR",
     2018: "GBP",
+    2019: "CHF",
 }
 
 EP_CITY_FOR_YEAR = {
     2016: "Bilbao",
     2017: "Rimini",
     2018: "Edinburgh",
+    2019: "Basel",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {
     2016: "",
     2017: "",
     2018: "assopy/invoices/_additional_text_for_2018.html",
+    2019: "assopy/invoices/_additional_text_for_2019.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"
@@ -147,6 +147,22 @@ def next_invoice_code_for_year(prefix, year):
     return template % {'year_two_digits': year % 1000, 'sequential_id': '0001'}
 
 
+def extract_customer_info(order):
+    assert isinstance(order, Order)
+
+    customer = []
+    customer.append(order.card_name)
+    customer.append(order.address)
+    if order.cf_code:
+        customer.append(order.cf_code)
+    if order.vat_number:
+        customer.append(order.vat_number)
+    if order.billing_notes:
+        customer.append(order.billing_notes)
+
+    return '\n'.join(customer)
+
+
 def create_invoices_for_order(order, force_placeholder=False):
     assert isinstance(order, Order)
 
@@ -188,11 +204,14 @@ def create_invoices_for_order(order, force_placeholder=False):
                         'using_exrate_date': emit_date,
                     }
 
+                customer = extract_customer_info(order)
+
                 invoice, _ = Invoice.objects.update_or_create(
                     order=order,
                     code=code,
                     defaults={
                         'issuer':         ISSUER_BY_YEAR[emit_date.year],
+                        'customer':       customer,
                         'vat':            vat_item['vat'],
                         'price':          gross_price,
                         'payment_date':   payment_date,
@@ -240,7 +259,7 @@ def render_invoice_as_html(invoice):
     # base64 them.
 
     order = invoice.order
-    address = '%s, %s' % (order.address, unicode(order.country))
+    address = '%s, %s' % (order.address, str(order.country))
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
@@ -250,9 +269,11 @@ def render_invoice_as_html(invoice):
         "bank_info": "",
         "currency": invoice.local_currency,
         'document': ('Fattura N.', 'Invoice N.'),
-        'title': unicode(invoice),
+        'title': str(invoice),
         'code': invoice.code,
         'emit_date': invoice.emit_date,
+        # TODO: possibly we need to stare it as separate date
+        'time_of_supply': invoice.payment_date,
         'order': {
             'card_name': order.card_name,
             'address': address,

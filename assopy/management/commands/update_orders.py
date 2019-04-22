@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+
 from django.db import transaction
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
@@ -57,7 +57,7 @@ class Command(BaseCommand):
         older_than = {}
         for rule in options['older_than'].split(';'):
             if ':' in rule:
-                days, method = map(lambda x: x.strip(), rule.split(':', 1))
+                days, method = [x.strip() for x in rule.split(':', 1)]
             else:
                 days = rule
                 method = None

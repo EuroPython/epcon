@@ -56,7 +56,7 @@ class P3ProfileModelTestCase(TestCase):
         url = self.p3_profile.profile_image_url()
         self.assertEqual(url, dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR)
 
-        with mock.patch('p3.utils.gravatar') as mock_gravatar:
+        with mock.patch('conference.gravatar.gravatar') as mock_gravatar:
             mock_gravatar.return_value = 'http://www.mockgravatar.com/'
             self.p3_profile.image_gravatar = True
             url = self.p3_profile.profile_image_url()

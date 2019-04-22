@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import functools
 from decimal import Decimal
@@ -15,6 +15,7 @@ from conference.models import FARE_PAYMENT_TYPE
 from conference.models import FARE_TICKET_TYPES
 from conference.models import FARE_TYPES
 from conference.models import TICKET_TYPE
+from conference.tests.factories.conference import ConferenceFactory
 
 fake = Faker()
 Iterator = functools.partial(factory.Iterator, getter=lambda x: x[0])
@@ -48,6 +49,17 @@ class SponsorFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'conference.Sponsor'
 
-    sponsor = factory.LazyAttribute(lambda x: fake.sentence(nb_words=6, variable_nb_words=True)[:50])
+    sponsor = factory.Faker('company')
     slug = factory.LazyAttribute(lambda sponsor: slugify(sponsor.sponsor))
     url = factory.Faker('url')
+    # By default the ImageField will create a mono-colour square.
+    logo = factory.django.ImageField(width=190, height=90, color='green', format='PNG')
+
+
+class SponsorIncomeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'conference.SponsorIncome'
+
+    sponsor = factory.SubFactory(SponsorFactory)
+    conference = factory.SubFactory(ConferenceFactory)
+    income = factory.LazyAttribute(lambda f: randint(1000, 10000))

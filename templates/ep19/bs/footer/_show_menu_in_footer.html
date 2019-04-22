@@ -1,0 +1,20 @@
+{% load menu_tags %}
+
+{% for child in children %}
+{% if not child.parent %}
+<div class='col-md-2'>
+    <h4>{{ child.get_menu_title }}</h4>
+{% else %}
+    <li class="cms_menu_child">
+        <a href="{{ child.attr.redirect_url|default:child.get_absolute_url }}">{{ child.get_menu_title }}</a>
+{% endif %}{# not child.ancestor #}
+
+    {% if child.children %}
+    <ul>
+		{% show_menu from_level to_level extra_inactive extra_active template "" "" child %}
+    </ul>
+    {% endif %}{# child.children #}
+{% if not child.parent %}
+</div>
+{% endif %}
+{% endfor %}

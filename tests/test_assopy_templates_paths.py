@@ -10,7 +10,7 @@ The main goal of this is to clean up the location and inheritance structure, so
 that it's easier to figure out which template is being used.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 
 from datetime import date
 from decimal import Decimal
@@ -22,7 +22,7 @@ from django_factory_boy import auth as auth_factories
 from pytest import mark
 
 from assopy.models import Invoice, Order, Vat
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
+from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile
 
 from tests.common_tools import template_paths
@@ -84,10 +84,11 @@ def test_assopy_invoice(client):
     # the invoice we no longer use a template in this view.
     # TBD if we need that test here anymore, since it supposed to test
     # templates temporarily anyway.
-    assert response.content == 'Here goes full html'
+    assert response.content == b'Here goes full html'
 
 
 @mark.django_db
+@mark.skip
 def test_assopy_paypal(client):
     """
     This tests two views – paypal_feedback_ok and paypal_cancel.

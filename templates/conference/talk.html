@@ -33,25 +33,7 @@
             'form': $('#add-comment form.new-comment'),
             'wrapper': $('#comments'),
             'comments': $('#comments li'),
-            'remove': "{% url "hcomments-delete-comment" %}"
         });
-        hcomments.onCommentModerated = function(comment) {
-            var e = comment ? comment : $('.form-box');
-            var msg = $('<div class="comment-moderated">{% trans "Lo staff sta controllando il tuo commento, a breve verrà pubblicato." %}</div>');
-            e.prepend(msg)
-            setTimeout(function() {
-                $('.comment-moderated', e).remove();
-            }, 10000);
-            $('.form-box form').get(0).reset();
-        }
-        hcomments.onCaptchaFailed = function(comment) {
-            var e = comment ? comment : $('.form-box');
-            var msg = $('<div class="comment-moderated">{% trans "Per favore verifica il captcha." %}</div>');
-            e.prepend(msg)
-            setTimeout(function() {
-                $('.comment-moderated', e).remove();
-            }, 10000);
-        }
     });
 //]]>
     </script>
@@ -168,7 +150,9 @@
         {% else %}
             <h3>Do you have some questions on this talk?</h3>
         {% endif %}
-        {% show_comment_form talk %}
+        {% if user.is_authenticated %}
+            {% show_comment_form talk %}
+        {% endif %}
     </div><!-- /grid -->
 
         <aside class="grid-30 prefix-10">

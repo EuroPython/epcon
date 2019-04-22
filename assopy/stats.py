@@ -1,7 +1,6 @@
-# -*- coding: UTF-8 -*-
+
 from assopy import models
 from conference import models as cmodels
-from django.db.models import Q
 from collections import defaultdict
 from decimal import Decimal
 
@@ -193,7 +192,7 @@ def prezzo_biglietti_ricalcolato(**kw):
     # Replace prices dicts with sorted lists
     for code in tcp.keys():
         prices_list = [entry
-                       for price, entry in sorted(tcp[code]['prices'].items(),
+                       for price, entry in sorted(list(tcp[code]['prices'].items()),
                                                   reverse=True)]
         tcp[code]['prices'] = prices_list
     # Create list sorted by fare code

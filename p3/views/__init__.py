@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django import forms
 from django import http
 from django.conf import settings
@@ -76,18 +76,18 @@ def _assign_ticket(ticket, email):
     if recipient is None:
         log.info('No user found for the email "%s"; time to create a new one', email)
         just_created = True
-        u = amodels.User.objects.create_user(email=email, token=True, send_mail=False)
+        u = amodels.AssopyUser.objects.create_user(email=email, token=True)
         recipient = u.user
         name = email
     else:
-        log.info('Found a local user (%s) for the email "%s"', unicode(recipient).encode('utf-8'), email.encode('utf-8'))
+        log.info('Found a local user (%s) for the email "%s"', str(recipient).encode('utf-8'), email.encode('utf-8'))
         just_created = False
         try:
             auser = recipient.assopy_user
-        except amodels.User.DoesNotExist:
+        except amodels.AssopyUser.DoesNotExist:
             # doh... this django user is not an assopy user, surely something
             # coming from before the introduction of assopy app.
-            auser = amodels.User(user=recipient)
+            auser = amodels.AssopyUser(user=recipient)
             auser.save()
         if not auser.token:
             recipient.assopy_user.token = str(uuid.uuid4())
@@ -252,12 +252,13 @@ def ticket(request, tid):
     tpl = Template('{% load p3 %}{% render_ticket t %}')
     return http.HttpResponse(tpl.render(RequestContext(request, {'t': t})))
 
+
 def user(request, token):
     """
     view che logga automaticamente un utente (se il token è valido) e lo
     ridirige alla pagine dei tickets
     """
-    u = get_object_or_404(amodels.User, token=token)
+    u = get_object_or_404(amodels.AssopyUser, token=token)
     log.info('autologin (via token url) for "%s"', u.user)
     if not u.user.is_active:
         u.user.is_active = True
@@ -267,93 +268,6 @@ def user(request, token):
     auth.login(request, user)
     return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
 
-@login_required
-@render_to_template('p3/sprint_submission.html')
-def sprint_submission(request):
-    if request.method == 'POST':
-        form = p3forms.FormSprint(data=request.POST)
-        if form.is_valid():
-            s = form.save(commit=False)
-            s.user = request.user.assopy_user
-            s.conference_id = settings.CONFERENCE_CONFERENCE
-            s.save()
-            messages.info(request, 'Your sprint has been submitted, thank you!')
-            return HttpResponseRedirectSeeOther(reverse('p3-sprint-submission'))
-
-    else:
-        form = p3forms.FormSprint()
-    return {
-        'form': form,
-    }
-
-@render_to_template('p3/sprints.html')
-def sprints(request):
-    events = []
-    attendees = defaultdict(list)
-    for sp in models.SprintPresence.objects\
-                .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
-                .select_related('user__user'):
-        attendees[sp.sprint_id].append(sp.user)
-    if request.user.is_authenticated():
-        user_attends = set(
-           x['sprint'] for x in
-           models.SprintPresence.objects\
-                .filter(sprint__conference=settings.CONFERENCE_CONFERENCE)\
-                .values('sprint')\
-                .filter(user=request.user)\
-        )
-    else:
-        user_attends = set()
-    for e in models.Sprint.objects.filter(conference=settings.CONFERENCE_CONFERENCE).order_by('title'):
-        if request.user.is_superuser or request.user == e.user:
-            form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
-        else:
-            form = None
-        events.append({
-            'object': e,
-            'form': form,
-            'attendees': attendees.get(e.id, []),
-            'user_attend': e.id in user_attends,
-        })
-    return {
-        'events': events,
-    }
-
-@login_required
-@render_to_template('p3/render_single_sprint.html')
-def sprint(request, sid):
-    e = get_object_or_404(models.Sprint, pk=sid)
-    if request.method == 'POST':
-        if 'user-attend' in request.POST:
-            try:
-                p = models.SprintPresence.objects.get(sprint=e, user=request.user.assopy_user)
-            except models.SprintPresence.DoesNotExist:
-                models.SprintPresence(sprint=e, user=request.user.assopy_user).save()
-            else:
-                p.delete()
-        else:
-            if request.user != e.user and not request.user.is_superuser:
-                return http.HttpResponseForbidden()
-
-            form = p3forms.FormSprint(instance=e, data=request.POST, prefix='f%d' % (e.id,))
-            if form.is_valid():
-                form.save()
-            else:
-                return http.HttpResponseBadRequest(repr(form.errors))
-
-    if request.user.is_superuser or request.user == e.user:
-        form = p3forms.FormSprint(instance=e, prefix='f%d' % e.id)
-    else:
-        form = None
-    attendees = list(x.user for x in models.SprintPresence.objects.filter(sprint=e).select_related('user__user'))
-    return {
-        'data': {
-            'object': e,
-            'form': form,
-            'attendees': attendees,
-            'user_attend': request.user.id in set(x.user.id for x in attendees),
-        },
-    }
 
 def whos_coming(request, conference=None):
     if conference is None:
@@ -361,7 +275,7 @@ def whos_coming(request, conference=None):
     # profiles can be public or only visible for participants, in the second
     # case only who has a ticket can see them
     access = ('p',)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         t = dataaccess.all_user_tickets(request.user.id, conference)
         if any(tid for tid, _, _, complete in t if complete):
             access = ('m', 'p')

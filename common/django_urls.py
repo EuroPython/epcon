@@ -1,10 +1,10 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 # see: http://code.google.com/p/django-urls/
 # see: http://code.djangoproject.com/wiki/ReplacingGetAbsoluteUrl
 
 from django.conf import settings
-import urlparse
+import urllib.parse
 
 class UrlMixin(object):  # pragma: no cover
     
@@ -28,7 +28,7 @@ class UrlMixin(object):  # pragma: no cover
             url = self.get_url()
         except NotImplemented:
             raise
-        bits = urlparse.urlparse(url)
-        return urlparse.urlunparse(('', '') + bits[2:])
+        bits = urllib.parse.urlparse(url)
+        return urllib.parse.urlunparse(('', '') + bits[2:])
     get_url_path.dont_recurse = True
 

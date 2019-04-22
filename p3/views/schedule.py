@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+
 import datetime
 from collections import defaultdict
 
@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from common.decorators import render_to_json
 from conference import models as cmodels
 from conference.utils import TimeTable2
 
@@ -91,16 +90,16 @@ def _build_timetables(schedules, events=None, partner=None):
     # Remove empty timetables
     def not_empty(o):
         tt = o[1]
-        events = tt.events.values()
+        events = list(tt.events.values())
         return bool(events and events[0])
-    tts = filter(not_empty, tts)
+    tts = list(filter(not_empty, tts))
 
     # Sort timetables by date
     def key(o):
         # timetable has an indirect reference to the day, I need to get it
         # from one of the events.
         tt = o[1]
-        events = tt.events.values()
+        events = list(tt.events.values())
         ev0 = events[0][0]
         return ev0['time']
     tts.sort(key=key)
@@ -137,7 +136,7 @@ def schedule(request, conference):
 
 def schedule_ics(request, conference, mode='conference'):
     if mode == 'my-schedule':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise http.Http404()
         uid = request.user.id
     else:
@@ -154,7 +153,7 @@ def schedule_list(request, conference):
     ctx = {
         'conference': conference,
         'sids': sids,
-        'timetables': zip(sids, map(TimeTable2.fromSchedule, sids)),
+        'timetables': list(zip(sids, list(map(TimeTable2.fromSchedule, sids)))),
     }
     return render(request, 'p3/schedule_list.html', ctx)
 
@@ -190,7 +189,7 @@ def my_schedule(request, conference):
     pfares = [ f for f in fares(conference) if f['id'] in qs ]
     partner = _partner_as_event(pfares)
 
-    schedules = schedules_data(events.keys())
+    schedules = schedules_data(list(events.keys()))
     tts = _build_timetables(schedules, events=events, partner=partner)
     ctx = {
         'conference': conference,

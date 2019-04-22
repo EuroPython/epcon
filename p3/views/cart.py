@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -58,26 +58,10 @@ class P3BillingDataCompany(P3BillingData):
         self.fields['card_name'].label = _('Company Name')
         self.fields['address'].required = True
 
-#    def clean_vat_number(self):
-#        # I can verify only european ids using vies
-#        vat = self.cleaned_data['vat_number']
-#        country = self.instance.country
-#        if vat and country and country.vat_company_verify == 'v':
-#            from assopy.clients import vies
-#            try:
-#                check = vies.check_vat(country.pk, vat)
-#            except Exception:
-#                # VIES servicy may fail for unknown reasons, I don't want
-#                # to lose an order because of that.
-#                pass
-#            else:
-#                if not check:
-#                    raise forms.ValidationError('According to VIES, this is not a valid vat number')
-#        return vat
 
 def cart(request):
     u = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             u = request.user.assopy_user
         except AttributeError:
@@ -89,7 +73,7 @@ def cart(request):
     # a valid POST request
     request.session.pop('user-cart', None)
     if request.method == 'POST':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponseRedirectSeeOther(reverse('p3-cart'))
         form = p3forms.P3FormTickets(data=request.POST, user=u)
         if form.is_valid():
@@ -103,7 +87,7 @@ def cart(request):
     for f in form.available_fares():
         if not f.code.startswith('_'):
             fares[f.code] = f
-    fares_ordered = sorted(fares.values(), key=lambda x: x.name)
+    fares_ordered = sorted(list(fares.values()), key=lambda x: x.name)
     ctx = {
         'form': form,
         'fares': fares,
@@ -137,15 +121,11 @@ def calculator(request):
                 coupons.append(data['coupon'])
             totals = amodels.Order\
                 .calculator(items=data['tickets'], coupons=coupons, user=request.user.assopy_user)
-            if 0:
-                # We no longer support HotelBookings
-                try:
-                    booking = models.HotelBooking.objects\
-                        .get(conference=settings.CONFERENCE_CONFERENCE)
-                except models.HotelBooking.DoesNotExist:
-                    booking = None
-            else:
-                booking = None
+
+            # NOTE(artcz)(2018-09-05) this was related to hotel bookings. left
+            # here for compatibility below. probably not needed and can be
+            # removed
+            booking = None
 
             def _fmt(x):
                 if x == 0:
@@ -164,7 +144,7 @@ def calculator(request):
                 params = row[1]
                 if 'period' in params:
                     start = booking.booking_start
-                    params['period'] = map(lambda x: (x-start).days, params['period'])
+                    params['period'] = [(x-start).days for x in params['period']]
                 tickets.append((fcode, params, _fmt(total)))
                 grand_total += total
             output['tickets'] = tickets
@@ -259,7 +239,7 @@ def billing(request):
                 return HttpResponseRedirectSeeOther(
                     reverse(
                         urlname,
-                        kwargs={'code': unicode(o.code).replace('/', '-')}))
+                        kwargs={'code': str(o.code).replace('/', '-')}))
             elif o.payment_url:
                 return HttpResponseRedirectSeeOther(o.payment_url)
             else:

@@ -1,14 +1,10 @@
-import unittest
-
-from django.contrib.auth.models import User as AuthUser
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from mock import Mock
 from mock import patch
 from django_factory_boy import auth as auth_factories
 
-from assopy.models import User, Order
-import assopy.models
+from assopy.models import AssopyUser, Order
 from assopy.tests.factories.order import CreditCardOrderFactory
 
 
@@ -19,7 +15,7 @@ class StripeViewTestCase(TestCase):
                                       password='demo')
         self.assertTrue(is_logged)
 
-        self.user = assopy.models.User.objects.create(user=auth_user)
+        self.user = AssopyUser.objects.create(user=auth_user)
 
     @patch('assopy.stripe.views.StripeCheckoutView.get_object')
     @patch('stripe.Charge.create')

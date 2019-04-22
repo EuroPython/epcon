@@ -1,7 +1,7 @@
-# -*- coding: UTF-8 -*-
+
 import os.path
 import subprocess
-import urlparse
+import urllib.parse
 from optparse import make_option
 
 from django.conf import settings
@@ -32,7 +32,7 @@ class Command(BaseCommand):
         except IndexError:
             raise CommandError('codice conferenza non specificato')
 
-        oids = map(int, args[1:])
+        oids = list(map(int, args[1:]))
 
         from django.db.models import Q
         qs = models.OrderItem.objects\
@@ -44,15 +44,15 @@ class Command(BaseCommand):
         for item in qs:
             name = item.ticket.name or item.order.user.name()
 
-            fname = '%s - %s (%s).pdf' % (name, unicode(item.ticket), item.ticket.id)
+            fname = '%s - %s (%s).pdf' % (name, str(item.ticket), item.ticket.id)
             fpath = os.path.join(options['output'], fname.encode('utf-8'))
 
             upath = reverse('assopy-orderitem-voucher', kwargs={'order_id': item.order_id, 'item_id': item.id})
-            url = urlparse.urljoin(settings.DEFAULT_URL_PREFIX, upath)
+            url = urllib.parse.urljoin(settings.DEFAULT_URL_PREFIX, upath)
             cmdline = [ 'wkhtmltopdf', '--print-media-type' ]
             if options['session_id']:
                 cmdline += [ '--cookie', settings.SESSION_COOKIE_NAME, options['session_id'] ]
             cmdline += [ url, fpath ]
-            print fpath
+            print(fpath)
             p = subprocess.Popen(cmdline, close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p.communicate()

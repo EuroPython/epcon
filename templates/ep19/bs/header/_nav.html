@@ -1,0 +1,64 @@
+{% load cms_tags %}
+<nav class="navbar navbar-expand-lg">
+    <div class='container'>
+        <a class="navbar-brand" href="/" >
+            <img src="/static/img/tmplogo-small.png" width=30 height=30>
+            EuroPython 2019
+        </a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#epNavbar" aria-controls="epNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse collapse" id="epNavbar" style="">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "news" %}">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% page_url 'program' %}">Program</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% page_url "speakers" %}">Speakers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% page_url 'location' %}">Location</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% page_url 'sponsor' %}">Sponsor</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% page_url 'about' %}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% page_url 'faq' %}">FAQ</a>
+                </li>
+                {% if 0 %}
+                NOTE(artcz): Disabled because we will open ticket sales a bit later after launch
+                <li class="nav-item">
+                    <a class="nav-link" id="tickets-link-header" href="{% page_url "tickets" %}">Tickets</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" id="cfp-link-header" href="{% page_url "submit-proposal" %}">Proposals</a>
+                </li>
+            </ul>
+            <div class="my-2 my-md-0">
+                {% if user.is_authenticated %}
+                <span style='font-size: .8em'>Logged in as
+                    {% if user.first_name or user.last_name %}
+                    <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                    {% else %}
+                    <strong>{{ user.username }}</strong>
+                    {% endif %}{# firstname or lastname #}
+                </span>
+                <a class='nav-link btn btn-outline-light' href='{% url "user_panel:dashboard" %}'>My Account</a>
+                {% else %}
+                <a class='nav-link btn btn-outline-light' href='{% url "accounts:login" %}'>
+                    <i class='fas fa-sign-in-alt'></i>
+                    Log in or sign up
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

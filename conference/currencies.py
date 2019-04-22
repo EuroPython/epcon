@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 ------------------------------------------------------------------------------
 THIS WHOLE MODULE ASSUMES WE'RE BASING EVERYTHING IN EUROS,
@@ -29,8 +27,6 @@ THIS WHOLE MODULE ASSUMES WE'RE BASING EVERYTHING IN EUROS,
 AND CONVERT EITHER TO OR FROM EUROS. KEEP THAT IN MIND.
 ------------------------------------------------------------------------------
 """
-
-from __future__ import unicode_literals, absolute_import, print_function
 
 from datetime import datetime, date
 from decimal import Decimal
@@ -63,12 +59,13 @@ EXAMPLE_ECB_DAILY_XML = """
             <Cube currency="USD" rate="1.2411"/>
             <Cube currency="JPY" rate="131.84"/>
             <Cube currency="GBP" rate="0.89165"/>
+            <Cube currency="CHF" rate="1.15372"/>
         </Cube>
     </Cube>
 </gesmes:Envelope>
 """.strip()
 
-SUPPORTED_CURRENCIES = ["GBP"]
+SUPPORTED_CURRENCIES = ["GBP", "CHF"]
 
 
 class CurrencyNotSupported(Exception):

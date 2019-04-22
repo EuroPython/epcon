@@ -1,7 +1,6 @@
-# -*- coding: UTF-8 -*-
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import ugettext as _
 
 try:
     CONFERENCE = settings.CONFERENCE_CONFERENCE
@@ -122,7 +121,7 @@ TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', Fals
 import os.path
 import conference
 TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG',
-                            os.path.join(os.path.dirname(conference.__file__), 'utils', 'ticket_badge.py'))
+                            os.path.join(os.path.dirname(conference.__file__), 'tools', 'ticket_badge.py'))
 TICKET_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '1', '-n', '6'])
 TICKET_BADGE_PROG_ARGS_ADMIN = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '0', '-p', 'A4', '-n', '2'])
 TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION', lambda tickets: [])

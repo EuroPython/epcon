@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
     Build Ticket Search App
     -----------------------
@@ -31,16 +31,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from conference import models as cmodels
-from conference import utils
-from p3 import models
-
-from collections import defaultdict
-from optparse import make_option
-import operator
 
 ### Globals
 
-TEMPLATE = u"""\
+TEMPLATE = """\
 <!DOCTYPE html>
 <html>
 <title>EuroPython %(year)s Ticket Search App</title>
@@ -49,6 +43,14 @@ TEMPLATE = u"""\
 <head>
 <meta charset=utf-8 />
 <title>EuroPython %(year)s Ticket Search App</title>
+<style>
+.training {
+    color: blue;
+}
+.conference {
+    color: red;
+}
+</style>
 </head>
 <body>
 
@@ -105,7 +107,7 @@ def attendee_name(ticket, profile=None):
 
     # Determine user name from profile, if available
     if profile is not None:
-        name = u'%s %s' % (
+        name = '%s %s' % (
             profile.user.first_name,
             profile.user.last_name)
     else:
@@ -119,7 +121,7 @@ def attendee_name(ticket, profile=None):
         name = ticket.name.strip()
         
     # Convert to title case, if not an email address
-    if u'@' not in name:
+    if '@' not in name:
         name = name.title()
 
     # Use email address if no ticket name set
@@ -181,38 +183,46 @@ def create_app_file(conference, output_file):
             email)
 
     # Prepare list
-    attendee_list = attendee_dict.items()
+    attendee_list = list(attendee_dict.items())
     attendee_list.sort(key=attendee_list_key)
 
     # Print list of attendees
-    l = [u'<table class="striped">',
-         u'<thead>',
-         u'<tr>'
-         u'<th data-field="name">Name</th>',
-         u'<th data-field="email" class="hide-on-small-only">Email</th>',
-         u'<th data-field="tid">TID</th>',
-         u'<th data-field="tcode" class="hide-on-small-only">Code</th>',
-         u'</tr>'
-         u'</thead>',
-         u'<tbody class="list">',
+    l = ['<table class="striped">',
+         '<thead>',
+         '<tr>'
+         '<th data-field="name">Name</th>',
+         '<th data-field="email" class="hide-on-small-only">Email</th>',
+         '<th data-field="tid">TID</th>',
+         '<th data-field="tcode" class="hide-on-small-only">Code</th>',
+         '</tr>'
+         '</thead>',
+         '<tbody class="list">',
          ]
     for id, (ticket, profile, name, email) in attendee_list:
-        l.append((u'<tr>'
-                  u'<td class="name">%s</td>'
-                  u'<td class="email hide-on-small-only">%s</td>'
-                  u'<td class="tid">%s</td>'
-                  u'<td class="tcode hide-on-small-only">%s</td>'
-                  u'</tr>' %
+        code = ticket.fare.code
+        if ticket.fare.code.startswith('TRT'):
+            ticket_class = 'training'
+        else:
+            ticket_class = 'conference'
+        l.append(('<tr>'
+                  '<td class="name">%s</td>'
+                  '<td class="email hide-on-small-only">%s</td>'
+                  '<td class="tid %s">%s</td>'
+                  '<td class="tcode hide-on-small-only">%s</td>'
+                  '</tr>' %
                   (name,
                    email,
+                   ticket_class,
                    id,
                    ticket.fare.code)))
-    l.extend([u'</tbody>',
-              u'</table>',
-              u'<p>%i attendees in total.</p>' % len(attendee_list),
+    l.extend(['</tbody>',
+              '</table>',
+              '<p>%i tickets in total. '
+              'Color coding: <span class="training">TID</span> = Training Pass. '
+              '<span class="conference">TID</span> = Conference Ticket.</p>' % len(attendee_list),
               ])
     output.write((TEMPLATE % {
-                      'listing': u'\n'.join(l),
+                      'listing': '\n'.join(l),
                       'year': conference[2:],
                   }).encode('utf-8'))
 

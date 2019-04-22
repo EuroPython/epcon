@@ -1,9 +1,8 @@
-# -*- coding: UTF-8 -*-
+
 
 from django.core.management.base import BaseCommand, CommandError
 
 from conference import models
-from p3.models import TicketConference
 
 import csv
 import sys
@@ -37,7 +36,7 @@ class Command(BaseCommand):
             COL_NAME, COL_TITLE, COL_BIO,
         )
         writer = csv.DictWriter(sys.stdout, columns)
-        writer.writerow(dict(zip(columns, columns)))
+        writer.writerow(dict(list(zip(columns, columns))))
         def utf8(d):
             d = dict(d)
             for k, v in d.items():

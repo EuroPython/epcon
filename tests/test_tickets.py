@@ -1,22 +1,19 @@
 # coding: utf-8
 
-from __future__ import unicode_literals
+
 
 from datetime import date
-# from httplib import OK as HTTP_OK_200
 
+import responses
+from freezegun import freeze_time
 from pytest import mark
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
 
-# from django_factory_boy import auth as auth_factories
-from freezegun import freeze_time
-import responses
-
 from assopy.models import Vat, Order, Country, Refund, Invoice
-# from assopy.tests.factories.user import UserFactory as AssopyUserFactory
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
@@ -216,7 +213,7 @@ class TestBuyingTickets(TestCase):
             assert order.total() == 630  # because 210 per ticket
             assert not order._complete
 
-            order.confirm_order(date.today())
+            order.confirm_order(timezone.now())
             assert order._complete
 
             invoice = Invoice.objects.get()
@@ -363,7 +360,7 @@ class TestTicketManagementScenarios(TestCase):
 
     def test_assign_ticket_to_another_user_case_insensitive(self):
         # we need to confirm the order for the tickets to display in the profile
-        self.order.confirm_order(date.today())
+        self.order.confirm_order(timezone.now())
 
         other_user = make_user(self.OTHER_USER_EMAIL)
 
@@ -419,8 +416,6 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.diet              == 'other'
         assert self.tc.shirt_size        == 'fm'
         assert self.tc.python_experience == 5
-
-
 
     def test_reclaim_ticket(self):
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
@@ -522,7 +517,7 @@ class TestTicketManagementScenarios(TestCase):
 
         assert Invoice.objects.all().count() == 0
 
-        self.order.confirm_order(timezone.now().date())
+        self.order.confirm_order(timezone.now())
 
         assert Invoice.objects.all().count() == 1
 
