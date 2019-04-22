@@ -11,9 +11,9 @@ from conference.models import Speaker, TalkSpeaker, Conference
 def user_dashboard(request):
     proposals = get_proposals_for_current_conference(request.user)
 
-    return TemplateResponse(request, "ep19/bs/user_panel/dashboard.html", {
-        'proposals': proposals,
-    })
+    return TemplateResponse(
+        request, "ep19/bs/user_panel/dashboard.html", {"proposals": proposals}
+    )
 
 
 def get_proposals_for_current_conference(user):
@@ -29,8 +29,7 @@ def get_proposals_for_current_conference(user):
         return None
 
     talkspeakers = TalkSpeaker.objects.filter(
-        speaker=speaker,
-        talk__conference=Conference.objects.current().code,
+        speaker=speaker, talk__conference=Conference.objects.current().code
     )
 
     return [ts.talk for ts in talkspeakers]
@@ -38,7 +37,6 @@ def get_proposals_for_current_conference(user):
 
 urlpatterns = [
     url(r"^$", user_dashboard, name="dashboard"),
-
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
     # class based PasswordChange{,Done}View
@@ -47,8 +45,9 @@ urlpatterns = [
         auth_views.password_change,
         kwargs={
             "template_name": "ep19/bs/user_panel/password_change.html",
-            "post_change_redirect":
-            reverse_lazy("user_panel:password_change_done"),
+            "post_change_redirect": reverse_lazy(
+                "user_panel:password_change_done"
+            ),
         },
         name="password_change",
     ),
