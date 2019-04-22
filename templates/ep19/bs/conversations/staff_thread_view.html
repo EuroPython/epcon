@@ -1,0 +1,128 @@
+{% extends "ep19/bs/conversations/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block staff_content %}
+<style type="text/css">
+/* temporary style for readability */
+div.message {
+    border: 1px solid #aaa;
+    margin: 1em 0;
+    padding: 2em;
+    border-radius: 7px;
+}
+
+div.message.user_question {
+    margin-right: 5em;
+}
+
+div.message.staff_reply {
+    background: #eee;
+    margin-left: 5em;
+}
+div.message.internal_note {
+    background: #f93;
+    padding: 1em;
+}
+
+div.message.public_note {
+    padding: .5em;
+    background: #39f;
+}
+</style>
+
+<h3>{{ thread.title }}</h3>
+
+<div class='mv3'>
+    Status: <span class="status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span>
+
+    <form method='POST' action='.' style='display: inline'>
+        {% csrf_token %}
+        <input type='hidden' name='{{ ThreadActions.change_priority }}'>
+        {{ change_priority_form }}
+        <input type='submit' value='update priority'>
+    </form>
+</div>
+
+
+<p class='mv3'>
+started
+<strong title="{{ thread.created }}">{{ thread.created|timesince }} ago</strong>, last activity
+<em title="{{ thread.last_message_date }}">
+    {{ thread.last_message_date|timesince }} ago
+</em>
+</p>
+
+{% if thread.metadata %}
+    {% include "ep19/bs/conversations/_thread_metadata_as_table.html" with thread=thread %}
+{% endif %}
+
+{% block additional_metadata %}{% endblock %}
+
+
+{% for message in thread.messages.all %}
+{# TODO: include proper module here #}
+{# TODO(artcz): This should be a template tag instead #}
+<div class='message {% include "ep19/bs/conversations/_message_css_classes.html" with message=message %}'>
+
+{{ message.content }}
+
+
+{% if message.attachments.all %}
+<p>
+<strong>Attachments!</strong>
+{% for at in message.attachments.all %}
+<a href='{{ at.file.url }}'>{{ at.file.name }}</a><br>
+{% endfor %}
+{% endif %}
+
+<br>
+by <strong>@{{ message.created_by }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
+</div>
+{% endfor %}
+
+<hr>
+<h3>Internal note?</h3>
+<form method='POST' action=".">
+    <input type='hidden' name='{{ ThreadActions.submit_internal_note }}'>
+    {% csrf_token %}
+    {{ internal_note_form|crispy }}
+    <input class="btn btn-danger" type="submit" name="" value="Submit internal note">
+</form>
+
+
+<hr>
+{% if thread.status != thread.STATUS.COMPLETED %}
+<h1>Reply to this thread</h1>
+<form method='POST' action=".">
+    <input type='hidden' name='{{ ThreadActions.submit_reply_to_thread }}'>
+    {% csrf_token %}
+    <table>
+    {{ reply_form|crispy }}
+    </table>
+    <input class="btn btn-primary btn-lg" type="submit" name="" value="Submit reply">
+</form>
+{% else %}
+<p>
+You can't reply any more to this thread, as it is marked as completed.
+If you really want to reply to this thread, please reopen the thread using button at the bottom of this page.
+</p>
+{% endif %}
+
+
+<hr style='margin-top: 2em'>
+<form method='POST' action='.' class='text-right'>
+    <h5>Manage this thread</h5>
+    <input type='hidden' name='{{ ThreadActions.submit_thread_management }}'>
+    {% csrf_token %}
+    {% if thread.status != thread.STATUS.COMPLETED %}
+    <input class="btn btn-danger" type="submit" name="{{ ThreadActions.complete_thread }}" value="Mark as completed">
+    {% endif %}
+
+    {% if thread.status == thread.STATUS.COMPLETED %}
+    <input class="btn btn-warning" type="submit" name="{{ ThreadActions.reopen_thread }}" value="Reopen">
+    {% endif %}
+    <a href='#'>
+</form>
+
+{% endblock staff_content %}

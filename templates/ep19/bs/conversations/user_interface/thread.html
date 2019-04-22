@@ -1,0 +1,107 @@
+{% extends "ep19/bs/conversations/user_base.html" %}
+
+{% load crispy_forms_tags %}
+{# TODO: different extends #}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='{{ thread.get_user_url }}'>{{ thread.title }}</a></li>
+{% endblock breadcrumbs %}
+
+{% block conversations_content %}
+<style type="text/css">
+/* temporary style for readability */
+div.message {
+    border: 1px solid #aaa;
+    margin: 1em 0;
+    padding: 2em;
+    border-radius: 7px;
+}
+
+div.message.user_question {
+    margin-right: 5em;
+}
+
+div.message.staff_reply {
+    background: #eee;
+    margin-left: 5em;
+}
+div.message.internal_note {
+    background: #f93;
+    padding: 1em;
+}
+
+div.message.public_note {
+    padding: .5em;
+    background: #39f;
+}
+</style>
+
+<h3>{{ thread.title }}</h3>
+
+<p>Status: <span class="status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span></p>
+started
+<strong title="{{ thread.created }}">{{ thread.created|timesince }} ago</strong>, last activity
+<em title="{{ thread.last_message_date }}">
+    {{ thread.last_message_date|timesince }} ago
+</em>
+
+{% if thread.metadata %}
+    {% include "ep19/conversations/_thread_metadata_as_table.html" %}
+{% endif %}
+
+<hr>
+
+{% for message in thread.user_visible_messages %}
+{# TODO: include proper module here #}
+<div class='message
+{% if not message.is_user_question %}user_question{% endif %}
+{% if message.is_staff_reply %}staff_reply{% endif %}
+{% if message.is_internal_note %}internal_note{% endif %}
+{% if message.is_public_note %}public_note{% endif %}
+'>
+
+
+{{ message.content }}
+
+
+{% if message.attachments.all %}
+<p>
+<strong>Attachments!</strong>
+{% for at in message.attachments.all %}
+<a href='{{ at.file.url }}'>{{ at.file.name }}</a><br>
+{% endfor %}
+{% endif %}
+
+<br>
+by <strong>@{{ message.created_by }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
+</div>
+{% endfor %}
+
+<hr>
+<h1>Reply to this thread</h1>
+<form method='POST' action=".">
+    <input type='hidden' name='{{ ThreadActions.submit_reply_to_thread }}'>
+    {% csrf_token %}
+    {{ user_reply_form|crispy }}
+    <input class="btn btn-primary" type="submit" name="" value="Submit reply">
+</form>
+
+
+<hr>
+<h5>Manage this thread</h5>
+<form method='POST' action='.'>
+    <input type='hidden' name='{{ ThreadActions.submit_thread_management }}'>
+    {% csrf_token %}
+    {% if thread.status != thread.STATUS.COMPLETED %}
+    Is this discsussion already over? If you don't expect any replies, please mark this thread as completed.
+    <input class="btn btn-warning" type="submit" name="{{ ThreadActions.complete_thread }}" value="Mark as completed">
+    {% endif %}
+
+    {% if thread.status == thread.STATUS.COMPLETED %}
+    <input class="btn btn-warning" type="submit" name="{{ ThreadActions.reopen_thread }}" value="Reopen">
+    {% endif %}
+    <a href='#'>
+</form>
+
+{% endblock conversations_content %}

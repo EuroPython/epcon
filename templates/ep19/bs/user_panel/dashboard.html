@@ -52,6 +52,14 @@
 
     </div>
     <div class="col-md-4">
+        <h2>Got questions?</h2>
+        You can ask them in our helpdesk
+        NOTE(artcz) Fix styling, this is temporary location
+
+        <a href='{% url "user_conversations:threads" %}' class='btn btn-outline-primary btn-block'>Helpdesk</a>
+
+        <a href='{% url "staff_helpdesk:inbox" %}' class='btn btn-outline-primary btn-block'>Staff Helpdesk Inbox</a>
+
     </div>
 </div>
 {% endblock %}

@@ -1,48 +1,11 @@
 {% macro message_css_classes(message) -%}
-    {% if message.is_user_question() %}user_question{% endif %}
-    {% if message.is_staff_reply %}staff_reply{% endif %}
-    {% if message.is_internal_note %}internal_note{% endif %}
-    {% if message.is_public_note %}public_note{% endif %}
 {%- endmacro %}
 
 
 {% macro staff_threads_table(ThreadFilters, threads) -%}
 {# TODO: make this table nice with material design #}
-    <table>
-        <tr>
-            <th>id</th>
-            <th>title</th>
-            <th><a href='?{{ ThreadFilters.order_by_status }}'>status</a></th>
-            <th><a href='?{{ ThreadFilters.order_by_priority }}'>priority</a></th>
-            <th><a href='?{{ ThreadFilters.order_by_last_message }}'>last message</a></th>
-            <th>people</th>
-        </tr>
-
-        {% for thread in threads %}
-        <tr>
-            <td>{{ thread.id }}</td>
-            <td><a href='{{ thread.get_staff_url() }}'>{{ thread.title }}</a></td>
-            <td class='status-bg-{{ thread.status }}'>{{ thread.get_status_display() }}</td>
-            <td class='priority-bg-{{ thread.priority }}'>{{ thread.get_priority_display() }}</td>
-            <td title="{{ thread.last_message_date }}">{{ timesince(thread.last_message_date) }} ago</td>
-            <td>
-                {% for user in thread.people_involved() %}
-                {{ user }},
-                {% endfor %}
-            </td>
-        </tr>
-        {% endfor %}{# thread in threads #}
-    </table>
 {%- endmacro %}
 
 
 {% macro thread_metadata_as_table(thread) -%}
-    <table>
-    {% for k, v in thread.json_metadata().items() %}
-    <tr>
-        <td>{{ k }}</td>
-        <td>{{ v }}</td>
-    </tr>
-    {% endfor %}
-    </table>
 {%- endmacro %}

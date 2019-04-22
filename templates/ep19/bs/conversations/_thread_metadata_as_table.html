@@ -1,0 +1,8 @@
+<table class='table'>
+    {% for k, v in thread.json_metadata.items %}
+    <tr>
+        <td>{{ k }}</td>
+        <td>{{ v }}</td>
+    </tr>
+    {% endfor %}
+</table>

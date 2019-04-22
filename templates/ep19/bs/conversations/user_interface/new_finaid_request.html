@@ -1,0 +1,23 @@
+{% extends "ep19/conversations/user_base.html" %}
+{# TODO: different inheritance #}
+
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block conversations_content %}
+
+<form method='POST' action='.'>
+    {{ csrf_input }}
+
+    {% if new_finaid_request_form.errors %}
+    <div class='errors'>
+        {{ new_finaid_request_form.errors }}
+    </div>
+    {% endif %}
+    <table>
+    {{ new_finaid_request_form.as_table() }}
+    </table>
+    <input class="text" type="submit" name="" value="Create new finaid request">
+
+</form>
+{% endblock conversations_content %}
