@@ -84,3 +84,18 @@ a.navbar-brand:hover{
     padding: 1em 0;
     border-bottom: 1px dashed #eee;
 }
+
+.table-of-contents-H2 {
+    list-style-type: None;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 1em
+}
+.table-of-contents-H3 {
+    margin-left: 2.5em;
+    margin-top: .5em
+}
+.table-of-contents-H4 {
+    margin-top: .5em;
+    margin-left: 5em;
+}
