@@ -1,23 +1,20 @@
-{% extends "ep19/conversations/user_base.html" %}
-{# TODO: different inheritance #}
+{% extends "ep19/bs/conversations/user_base.html" %}
+
+{% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='#'>New Finaid Request</a></li>
 {% endblock breadcrumbs %}
 
 {% block conversations_content %}
 
 <form method='POST' action='.'>
-    {{ csrf_input }}
+    {% csrf_token %}
 
-    {% if new_finaid_request_form.errors %}
-    <div class='errors'>
-        {{ new_finaid_request_form.errors }}
-    </div>
-    {% endif %}
-    <table>
-    {{ new_finaid_request_form.as_table() }}
-    </table>
-    <input class="text" type="submit" name="" value="Create new finaid request">
+    {{ new_finaid_request_form|crispy }}
+
+    <input class="btn btn-outline-primary" type="submit" name="" value="Create new finaid request">
 
 </form>
 {% endblock conversations_content %}

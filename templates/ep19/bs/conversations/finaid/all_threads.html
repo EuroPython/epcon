@@ -1,0 +1,14 @@
+{% extends "ep19/bs/conversations/base.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='{% url "staff_finaid:all_finaid_threads" %}'>Finaid threads</a></li>
+{% endblock breadcrumbs %}
+
+{% block staff_content %}
+<h4>All finaid threads</h4>
+<p>Want to see only actionable threads? Go to <a href='{% url "staff_finaid:inbox" %}'>helpdesk inbox</a></p>
+
+{% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=all_threads %} 
+
+{% endblock staff_content %}

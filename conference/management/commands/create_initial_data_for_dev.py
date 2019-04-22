@@ -45,9 +45,13 @@ class Command(BaseCommand):
             cfp_end=timezone.now() + timedelta(days=3),
         )
 
-        print("Creating an admin user")
+        print("Creating first admin user")
         admin = AssopyUser.objects.create_superuser(
             username="admin", email="admin@admin.com", password="europython"
+        )
+        print("Creating second admin user")
+        admin = AssopyUser.objects.create_superuser(
+            username="root", email="root@example.com", password="europython"
         )
 
         print("Creating regular users")

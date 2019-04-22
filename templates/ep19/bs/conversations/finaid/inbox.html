@@ -1,0 +1,20 @@
+{% extends "ep19/bs/conversations/base.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item active'><a href='{% url "staff_finaid:all_finaid_threads" %}'>Staff Finaid</a></li>
+<li class='breadcrumb-item active'><a href='{% url "staff_finaid:inbox" %}'>Finaid Inbox</a></li>
+{% endblock breadcrumbs %}
+
+{% block staff_content %}
+<h4>Finaid Inbox</h4>
+<p>These are actionable threads – it means either new or replied by the user and waiting for our response/action</p>
+
+{% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=actionable %} 
+{# conversations.staff_threads_table(ThreadFilters, actionable) #}
+
+<p>
+Can't see the thread you're looking for?
+Check <a href='{% url "staff_finaid:all_finaid_threads" %}'>All threads</a>
+</p>
+{% endblock staff_content %}

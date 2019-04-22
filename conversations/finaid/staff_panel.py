@@ -23,7 +23,7 @@ def staff_finaid_inbox(request):
     actionable = apply_ordering(actionable, request)
 
     return TemplateResponse(
-        request, "ep19/conversations/finaid/inbox.html", {
+        request, "ep19/bs/conversations/finaid/inbox.html", {
             'ThreadFilters': ThreadFilters,
             'actionable': actionable,
         }
@@ -38,7 +38,7 @@ def staff_finaid_threads(request):
     threads = apply_ordering(threads, request)
 
     return TemplateResponse(
-        request, "ep19/conversations/finaid/all_threads.html", {
+        request, "ep19/bs/conversations/finaid/all_threads.html", {
             'ThreadFilters': ThreadFilters,
             'all_threads': threads,
         }
@@ -51,7 +51,7 @@ def staff_finaid_single_thread(request, thread_uuid):
     return staff_thread(
         request,
         thread_uuid,
-        template_name='ep19/conversations/finaid/thread.html'
+        template_name='ep19/bs/conversations/finaid/thread.html'
     )
 
 

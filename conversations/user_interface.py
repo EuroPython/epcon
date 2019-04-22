@@ -163,7 +163,6 @@ VOLUNTEER_CHOICES = Choices(
 
 
 class UserNewFinaidRequest(forms.Form):
-    given_name = forms.CharField(label="First name")
     full_name = forms.CharField(label="Full name")
 
     type_of_grant = forms.MultipleChoiceField(
@@ -182,12 +181,12 @@ class UserNewFinaidRequest(forms.Form):
     )
 
     profession = forms.CharField()
-    affilication = forms.CharField()
+    affiliation = forms.CharField()
     country_of_residence = forms.CharField()
     date_of_birth = forms.DateField()
     gender = forms.CharField()
     motivation = forms.CharField(
-        help_text="Why do you want/need to attend EP19"
+        help_text="Why do you want/need to attend EuroPython2019"
     )
     involvement = forms.CharField(
         help_text=(
@@ -208,7 +207,7 @@ class UserNewFinaidRequest(forms.Form):
         )
     )
 
-    how_do_you_use_python = forms.CharField(label="How do yo use Python?")
+    how_do_you_use_python = forms.CharField(label="How do you use Python?")
     first_time_europython = forms.ChoiceField(
         label="Is this your first time attending EuroPython conference?",
         choices=FIRST_TIME_EUROPYTHON,
@@ -223,4 +222,7 @@ class UserNewFinaidRequest(forms.Form):
         choices=VOLUNTEER_CHOICES,
     )
 
-    supplements = forms.CharField(widget=forms.Textarea)
+    supplements = forms.CharField(
+        widget=forms.Textarea,
+        help_text=("Any additional information that might be helpful")
+    )
