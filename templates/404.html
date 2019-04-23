@@ -1,31 +1,34 @@
-{% extends "p3/base.html" %}
-{% load p3 i18n %}
+{% extends "ep19/bs/base.html" %}
 
-{% block PAGE_TITLE %}{% trans 'Cannot find the requested page' %}{% endblock %}
+{% block title %}Cannot find the request page{% endblock title %}
 
-{% block MAIN_CONTENT %}
-<section class="full-page-height">
-    <div class="grid-container">
-    <div class="grid-100">
+{% block content %}
+<div id="content_page">
+    <div class="container">
+        <div class='row'>
 
-        <h1>{% trans 'Cannot find the requested page' %}</h1>
-        
-        <div class="page-summary">
-            <p>Oops! We are sorry, the page you requested does not exist.</p>
-        </div>
+            <div class='col-md-9'>
+                <div id="content" class='epcms_content'>
+                    <div class="page-summary">
+                        <p>Oops! We are sorry, the page you requested does not exist.</p>
+                    </div>
 
-        <p>Here are a few useful links:</p>
-        <ul>
-            <li>Our <a href="http://blog.europython.eu/">blog</a></li>
-            <li>The <a href="/events/sessions/">conference session list</a></li>
-            <li>Our <a href="/sponsor/">sponsorship opportunities</a></li>
-            <li><a href="/faq/">Frequently asked questions</a> (F.A.Q.)</li>
-            <li>... or get back to the <a href="/">EuroPython Home Page</a></li>
-        </ul>
+                    <p>Here are a few useful links:</p>
+                    <ul>
+                        <li>Our <a href="http://blog.europython.eu/">blog</a></li>
+                        <li>The <a href="/events/sessions/">conference session list</a></li>
+                        <li>Our <a href="/sponsor/">sponsorship opportunities</a></li>
+                        <li><a href="/faq/">Frequently asked questions</a> (F.A.Q.)</li>
+                        <li>... or get back to the <a href="/">EuroPython Home Page</a></li>
+                    </ul>
 
-    </div> <!-- /grid -->
-    </div><!-- /grid-container -->
-</section>
+                </div>
+            </div>
+
+            <div class='col-md-3' id="sidebar">
+            </div>
+
+        </div><!-- .row -->
+    </div>
+</div>
 {% endblock %}
-
-
