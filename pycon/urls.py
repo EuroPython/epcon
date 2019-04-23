@@ -2,7 +2,6 @@
 
 from django.conf import settings
 from django.conf.urls import include, url
-from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.views import defaults, static
 
@@ -72,9 +71,9 @@ if settings.DEBUG:
         url(r'^400/$', defaults.bad_request),
     ]
 
-urlpatterns += i18n_patterns(
+urlpatterns += [
     url(r'^', include('cms.urls')),
-)
+]
 
 if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
     # XXX this code would be better in settings.py, unfortunately there
