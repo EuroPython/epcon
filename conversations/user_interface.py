@@ -1,22 +1,22 @@
-
+from django import forms
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from django.template.response import TemplateResponse
 from django.http import Http404
 from django.shortcuts import redirect
-from django import forms
-
+from django.template.response import TemplateResponse
 from model_utils import Choices
 
 from conference.models import Conference
-from conversations.models import Thread
 from conversations.common_actions import (
-    ThreadFilters,
     ThreadActions,
+    ThreadFilters,
+    mark_thread_as_completed,
+    reopen_thread,
     user_reply_to_thread,
 )
-from conversations.helpdesk.api import create_new_support_request
 from conversations.finaid.api import create_new_finaid_request
+from conversations.helpdesk.api import create_new_support_request
+from conversations.models import Thread
 
 
 @login_required
@@ -94,6 +94,15 @@ def user_thread(request, thread_uuid):
     user_reply_form = UserReplyForm()
 
     if request.method == "POST":
+
+        if ThreadActions.submit_thread_management in request.POST:
+            if ThreadActions.complete_thread in request.POST:
+                mark_thread_as_completed(thread, request.user)
+
+            if ThreadActions.reopen_thread in request.POST:
+                reopen_thread(thread, request.user)
+
+            return redirect('.')
 
         if ThreadActions.submit_reply_to_thread in request.POST:
             user_reply_form = UserReplyForm(

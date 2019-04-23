@@ -7,7 +7,7 @@
 {% endblock breadcrumbs %}
 
 {% block staff_content %}
-<h4>Helpdesk Inbox</h4>
+<h2>Helpdesk Inbox</h2>
 <p>These are actionable threads – it means either new or replied by the user and waiting for our response/action</p>
 
 {% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=actionable %} 

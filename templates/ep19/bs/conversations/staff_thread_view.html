@@ -3,37 +3,9 @@
 {% load crispy_forms_tags %}
 
 {% block staff_content %}
-<style type="text/css">
-/* temporary style for readability */
-div.message {
-    border: 1px solid #aaa;
-    margin: 1em 0;
-    padding: 2em;
-    border-radius: 7px;
-}
+<h2>{{ thread.title }}</h2>
 
-div.message.user_question {
-    margin-right: 5em;
-}
-
-div.message.staff_reply {
-    background: #eee;
-    margin-left: 5em;
-}
-div.message.internal_note {
-    background: #f93;
-    padding: 1em;
-}
-
-div.message.public_note {
-    padding: .5em;
-    background: #39f;
-}
-</style>
-
-<h3>{{ thread.title }}</h3>
-
-<div class='mv3'>
+<div style='margin: 2em 0'>
     Status: <span class="status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span>
 
     <form method='POST' action='.' style='display: inline'>
@@ -77,7 +49,7 @@ started
 {% endif %}
 
 <br>
-by <strong>@{{ message.created_by }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
+by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
 </div>
 {% endfor %}
 
