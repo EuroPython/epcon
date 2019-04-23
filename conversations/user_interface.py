@@ -151,8 +151,7 @@ class UserCreateHelpdeskRequestForm(forms.Form):
 
 FINAID_GRANT_CHOICES = Choices(
     ("TICKET", "Ticket"),
-    ("TRAVEL", "Travel"),
-    ("ACCOMODATION", "Accomodation"),
+    ("TRAVEL_AND_ACCOMODATION", "Travel and/or Accommodation"),
 )
 
 FIRST_TIME_EUROPYTHON = Choices(("YES", "Yes"), ("NO", "No"))
@@ -192,7 +191,7 @@ class UserNewFinaidRequest(forms.Form):
     profession = forms.CharField()
     affiliation = forms.CharField()
     country_of_residence = forms.CharField()
-    date_of_birth = forms.DateField()
+    date_of_birth = forms.DateField(help_text="Format YYYY-MM-DD")
     gender = forms.CharField()
     motivation = forms.CharField(
         help_text="Why do you want/need to attend EuroPython2019"
@@ -217,18 +216,33 @@ class UserNewFinaidRequest(forms.Form):
     )
 
     how_do_you_use_python = forms.CharField(label="How do you use Python?")
-    first_time_europython = forms.ChoiceField(
+
+    #
+    # Disabled based on feedback from Darya
+    #
+    # first_time_europython = forms.ChoiceField(
+    #     label="Is this your first time attending EuroPython conference?",
+    #     choices=FIRST_TIME_EUROPYTHON,
+    # )
+    # speaker_or_coach = forms.ChoiceField(
+    #     label="Are you a Speaker/Coach at EuroPython 2019?",
+    #     choices=SPEAKER_OR_COACH_CHOICES,
+    # )
+
+    # did_you_volunteer = forms.ChoiceField(
+    #     label="Did you join a volunteer initiative last years?",
+    #     choices=VOLUNTEER_CHOICES,
+    # )
+
+    first_time_europython = forms.CharField(
         label="Is this your first time attending EuroPython conference?",
-        choices=FIRST_TIME_EUROPYTHON,
     )
-    speaker_or_coach = forms.ChoiceField(
+    speaker_or_coach = forms.CharField(
         label="Are you a Speaker/Coach at EuroPython 2019?",
-        choices=SPEAKER_OR_COACH_CHOICES,
     )
 
-    did_you_volunteer = forms.ChoiceField(
+    did_you_volunteer = forms.CharField(
         label="Did you join a volunteer initiative last years?",
-        choices=VOLUNTEER_CHOICES,
     )
 
     supplements = forms.CharField(
