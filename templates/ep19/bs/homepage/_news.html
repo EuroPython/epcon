@@ -5,7 +5,7 @@
 
         <div class="row">
             <div class="col-md-12">
-            <h1 class='text-center'>latest news</h1>
+            <h1 class='text-center'>Latest News</h1>
             </div>
         </div>
         
@@ -14,7 +14,7 @@
             <div class="col-md-4">
                 <h3>{{ news.title }}</h3>
                 <small title="{{ news.published_date }}">{{ news.published_date|timesince }} ago</small>
-                <p style='margin-bottom: 3em'>{{ news.content }}</p>
+                <p style='margin-bottom: 3em'>{{ news.content|safe }}</p>
             </div>
             {% endfor %}
 

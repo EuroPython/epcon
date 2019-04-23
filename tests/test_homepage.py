@@ -17,6 +17,18 @@ def test_get_homepage(db, client):
     assert b'EuroPython 2019' in response.content
 
 
+def test_homepage_contains_last_3_news_for_current_conference(db, client):
+    ...
+
+
+def test_homepage_doesnt_display_news_from_non_current_conference(db, client):
+    ...
+
+
+def test_homepage_news_supports_html_tags(db, client):
+    ...
+
+
 def test_homepage_doesnt_contain_sponsor_if_no_income(
     db, client
 ):
