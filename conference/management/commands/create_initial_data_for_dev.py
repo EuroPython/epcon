@@ -136,8 +136,7 @@ class Command(BaseCommand):
 
         location_page = new_page("location", "Location")
         for rev_id, title in [
-            ("conference-venue", "Conference Venue"),
-            ("workshops-and-sprints-venue", "Workshops & Sprints Venue"),
+            ("venue", "Venue"),
             ("basel", "Basel"),
             ("travel", "Travel"),
             ("accommodation", "Accommodation"),
@@ -147,7 +146,7 @@ class Command(BaseCommand):
 
         sponsor_page = new_page("sponsor", "Sponsor")
         for rev_id, title in [
-            ("become-a-sponsor", "Become a Sponsor"),
+            ("sponsor-europython", "Become a Sponsor"),
             ("sponsor-packages", "Packages"),
             ("sponsor-options", "Additional Options"),
             ("sponsor-information", "Additional Information"),
