@@ -21,7 +21,7 @@
                 <!--    <a class="nav-link" href="{% page_url "speakers" %}">Speakers</a>-->
                 <!--</li>                                                                -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{% page_url "venue" %}">Location</a>
+                    <a class="nav-link" href="{% page_url "location" %}">Location</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% page_url 'sponsor-europython' %}">Sponsor</a>
@@ -44,7 +44,7 @@
             </ul>
             <div class="my-2 my-md-0">
                 {% if user.is_authenticated %}
-                <span style='font-size: .8em'>Logged in as
+                <span style='font-size: .8em; color: white'>Logged in as
                     {% if user.first_name or user.last_name %}
                     <strong>{{ user.first_name }} {{ user.last_name }}</strong>
                     {% else %}
