@@ -17,7 +17,10 @@ BCC_OSM_URL = (
 
 
 def homepage(request):
-    latest_3_news = News.objects.filter(status=News.STATUS.PUBLISHED)[:3]
+    latest_3_news = News.objects.filter(
+        status=News.STATUS.PUBLISHED,
+        conference__code=settings.CONFERENCE_CONFERENCE,
+    )[:3]
     sponsors = Sponsor.objects.filter(
         sponsorincome__conference=settings.CONFERENCE_CONFERENCE
     )

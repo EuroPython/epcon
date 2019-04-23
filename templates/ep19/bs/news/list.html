@@ -15,14 +15,14 @@
 
         <div class="row">
             <div class="col-md-12">
-                <h1>latest news</h1>
+                <h1>Latest News</h1>
             </div>
 
             {% for n in news %}
             <div class="col-md-4">
                 <h3>{{ n.title }}</h3>
                 <small title="{{ n.published_date }}">{{ n.published_date|timesince }} ago</small>
-                <p style='margin-bottom: 3em'>{{ n.content }}</p>
+                <p style='margin-bottom: 3em'>{{ n.content|safe }}</p>
             </div>
             {% endfor %}
 
