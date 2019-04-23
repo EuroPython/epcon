@@ -9,37 +9,9 @@
 {% endblock breadcrumbs %}
 
 {% block conversations_content %}
-<style type="text/css">
-/* temporary style for readability */
-div.message {
-    border: 1px solid #aaa;
-    margin: 1em 0;
-    padding: 2em;
-    border-radius: 7px;
-}
+<h2>{{ thread.title }}</h2>
 
-div.message.user_question {
-    margin-right: 5em;
-}
-
-div.message.staff_reply {
-    background: #eee;
-    margin-left: 5em;
-}
-div.message.internal_note {
-    background: #f93;
-    padding: 1em;
-}
-
-div.message.public_note {
-    padding: .5em;
-    background: #39f;
-}
-</style>
-
-<h3>{{ thread.title }}</h3>
-
-<p>Status: <span class="status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span></p>
+<p>Status: <span class="status-bg status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span></p>
 started
 <strong title="{{ thread.created }}">{{ thread.created|timesince }} ago</strong>, last activity
 <em title="{{ thread.last_message_date }}">
@@ -54,12 +26,7 @@ started
 
 {% for message in thread.user_visible_messages %}
 {# TODO: include proper module here #}
-<div class='message
-{% if not message.is_user_question %}user_question{% endif %}
-{% if message.is_staff_reply %}staff_reply{% endif %}
-{% if message.is_internal_note %}internal_note{% endif %}
-{% if message.is_public_note %}public_note{% endif %}
-'>
+<div class='message {% include "ep19/bs/conversations/_message_css_classes.html" %} '>
 
 
 {{ message.content }}
@@ -74,12 +41,12 @@ started
 {% endif %}
 
 <br>
-by <strong>@{{ message.created_by }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
+by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ message.created }} -- {{ message.uuid }}">{{ message.created|timesince }} ago</span>
 </div>
 {% endfor %}
 
 <hr>
-<h1>Reply to this thread</h1>
+<h3>Reply to this thread</h3>
 <form method='POST' action=".">
     <input type='hidden' name='{{ ThreadActions.submit_reply_to_thread }}'>
     {% csrf_token %}

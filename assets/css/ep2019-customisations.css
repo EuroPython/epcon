@@ -100,3 +100,29 @@ a.navbar-brand:hover{
     margin-top: .5em;
     margin-left: 5em;
 }
+
+
+/* Helpdesk */
+div.message {
+    border: 1px solid #ddd;
+    margin: 1em 0;
+    padding: 1em;
+}
+
+div.message.user_question {
+}
+
+div.message.staff_reply {
+    background: #eee;
+    margin-left: 5em;
+}
+div.message.internal_note {
+    background: #f93;
+    padding: 1em;
+}
+
+div.message.public_note {
+    border: 0;
+    padding: 1em;
+    background: #acf;
+}

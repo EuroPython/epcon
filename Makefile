@@ -59,4 +59,7 @@ server-dev:
 shell:
 	DEBUG=True ./manage.py shell_plus
 
+shell-dev:
+	DJANGO_SETTINGS_MODULE="pycon.dev_settings" DEBUG=True ./manage.py shell_plus
+
 -include Makefile.local

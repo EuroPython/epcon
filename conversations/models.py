@@ -120,7 +120,7 @@ class Message(TimeStampedModel):
     content = models.TextField()
 
     def __str__(self):
-        return 'Message(uuid={self.uuid})'
+        return f'Message(uuid={self.uuid})'
 
     def is_user_question(self):
         """This is an ugly wrapper around other types of booleans"""

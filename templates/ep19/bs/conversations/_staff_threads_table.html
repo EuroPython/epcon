@@ -10,14 +10,14 @@
 
     {% for thread in threads %}
     <tr>
-        <td>{{ thread.id }}</td>
+        <td>#{{ thread.id }}</td>
         <td><a href='{{ thread.get_staff_url }}'>{{ thread.title }}</a></td>
         <td class='status-bg-{{ thread.status }}'>{{ thread.get_status_display }}</td>
         <td class='priority-bg-{{ thread.priority }}'>{{ thread.get_priority_display }}</td>
         <td title="{{ thread.last_message_date }}">{{ thread.last_message_date|timesince }} ago</td>
         <td>
             {% for user in thread.people_involved %}
-            {{ user }},
+            {{ user.assopy_user.name }},
             {% endfor %}
         </td>
     </tr>
