@@ -154,7 +154,7 @@ class Command(BaseCommand):
         ]:
             new_page(rev_id, title, parent=sponsor_page)
 
-        about_europython_page = new_page("about", "About")
+        about_europython_page = new_page("about-europython", "About")
         for rev_id, title in [
             ("social-media", "Social Media"),
             ("code-of-conduct", "Code of Conduct"),
