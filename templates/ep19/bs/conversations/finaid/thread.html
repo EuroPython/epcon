@@ -10,16 +10,15 @@
 {% endblock breadcrumbs %}
 
 {% block additional_metadata %}
-<h3 style='margin-top: 2em'>Additional info (at the moment of rendering this page):</h3>
+<h3>Additional info:</h3>
+<p>(at the moment of rendering this page: {% now "Y-m-d H:i" %})</p>
 <table class='table'>
     <tr>
         <td>User joined</td>
         <td title='{{ thread.created_by.date_joined }}'>{{ thread.created_by.date_joined|timesince }} ago</td>
     </tr>
-
     {# TODO: things like a link to this year's ticket, etc #}
     {# Any contextual information that might be useful when processing the request #}
 </table>
 
-<h3 style='margin-top: 2em'>Conversation</h3> {# note: this should be put somewhere else... #}
 {% endblock %}

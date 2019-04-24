@@ -1,5 +1,6 @@
-<table class='table'>
-    <tr>
+{% load conversations_badges %}
+<table class='table' style='margin-top: 2em'>
+    <tr style='font-size: .9em'>
         <th>id</th>
         <th>title</th>
         <th><a href='?{{ ThreadFilters.order_by_status }}'>status</a></th>
@@ -12,12 +13,12 @@
     <tr>
         <td>#{{ thread.id }}</td>
         <td><a href='{{ thread.get_staff_url }}'>{{ thread.title }}</a></td>
-        <td class='status-bg-{{ thread.status }}'>{{ thread.get_status_display }}</td>
-        <td class='priority-bg-{{ thread.priority }}'>{{ thread.get_priority_display }}</td>
+        <td><span class='badge badge-{% status_badge_class thread.status %}'>{{ thread.get_status_display }}</td>
+        <td><span class='badge badge-{% priority_badge_class thread.priority %}'>{{ thread.get_priority_display }}</td>
         <td title="{{ thread.last_message_date }}">{{ thread.last_message_date|timesince }} ago</td>
         <td>
             {% for user in thread.people_involved %}
-            {{ user.assopy_user.name }},
+            <span class='avatar-badge {% if user.is_staff %}avatar-badge-staff{% endif %}' style='background-color: {{ user.assopy_user.color }}' title="{{ user.assopy_user.name }}">{{ user.assopy_user.initials }}</span>
             {% endfor %}
         </td>
     </tr>

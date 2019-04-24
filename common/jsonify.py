@@ -5,7 +5,7 @@ import functools
 from django.utils.deprecation import CallableBool
 
 
-class MyEncode(json.JSONEncoder):  # pragma: no cover
+class CustomEPEncode(json.JSONEncoder):  # pragma: no cover
     def default(self, obj):
 
         if isinstance(obj, datetime.datetime):
@@ -28,4 +28,4 @@ class MyEncode(json.JSONEncoder):  # pragma: no cover
         return json.JSONEncoder.default(self, obj)
 
 
-json_dumps = functools.partial(json.dumps, cls=MyEncode)
+json_dumps = functools.partial(json.dumps, cls=CustomEPEncode)

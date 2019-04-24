@@ -5,14 +5,16 @@ from pytest import mark
 
 # from conversations.models import Message
 from conference.models import Conference
-from conversations.common_actions import mark_thread_as_completed
-from conversations.helpdesk import (
-    Thread,
-    get_actionable_helpdesk_threads,
-    create_new_support_request,
+from conversations.common_actions import (
+    mark_thread_as_completed,
     staff_reply_to_thread,
     user_reply_to_thread,
 )
+from conversations.helpdesk.api import (
+    get_actionable_helpdesk_threads,
+    create_new_support_request,
+)
+from conversations.models import Thread
 
 from .common_tools import sequence_equals, make_user
 
@@ -152,6 +154,6 @@ def test_completed_threads_are_not_actionable():
         [thread]
     )
 
-    mark_thread_as_completed(thread)
+    mark_thread_as_completed(thread, user)
 
     assert sequence_equals(get_actionable_helpdesk_threads(conference), [])

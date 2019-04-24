@@ -8,15 +8,21 @@
 {% endblock breadcrumbs %}
 
 {% block conversations_content %}
+<div class='row'>
+    <div class='col-md-12'>
+        <h1>Finaid Request Form for EuroPython 2019</h1>
+    </div>
+    <div class='col-md-6'>
 
-<h2>Finaid Request Form for EuroPython 2019</h2>
+        <form method='POST' action='.' style='margin-top: 2em'>
+            {% csrf_token %}
 
-<form method='POST' action='.'>
-    {% csrf_token %}
+            {{ new_finaid_request_form|crispy }}
 
-    {{ new_finaid_request_form|crispy }}
+            <input class="btn btn-outline-primary" type="submit" name="" value="Create new finaid request">
 
-    <input class="btn btn-outline-primary" type="submit" name="" value="Create new finaid request">
+        </form>
+    </div>
+</div>
 
-</form>
 {% endblock conversations_content %}

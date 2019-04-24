@@ -149,28 +149,13 @@ class UserCreateHelpdeskRequestForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea)
 
 
-FINAID_GRANT_CHOICES = Choices(
-    ("TICKET", "Ticket"),
-    ("TRAVEL_AND_ACCOMODATION", "Travel and/or Accommodation"),
-)
-
-FIRST_TIME_EUROPYTHON = Choices(("YES", "Yes"), ("NO", "No"))
-
-SPEAKER_OR_COACH_CHOICES = Choices(
-    ("YES", "Yes"),
-    ("NO", "No"),
-    ("DONTKNOW_YET", "I have applied but don't know yet"),
-)
-
-VOLUNTEER_CHOICES = Choices(
-    ("YES", "Yes"),
-    # ('YES_SESSION', "Yes - as session chair"),
-    # ('YES_WG', "Yes - as as work group member"),
-    ("NO", "No"),
-)
-
-
 class UserNewFinaidRequest(forms.Form):
+
+    FINAID_GRANT_CHOICES = Choices(
+        ("TICKET", "Ticket"),
+        ("TRAVEL_AND_ACCOMODATION", "Travel and/or Accommodation"),
+    )
+
     full_name = forms.CharField(label="Full name")
 
     type_of_grant = forms.MultipleChoiceField(
@@ -217,28 +202,13 @@ class UserNewFinaidRequest(forms.Form):
 
     how_do_you_use_python = forms.CharField(label="How do you use Python?")
 
-    #
-    # Disabled based on feedback from Darya
-    #
-    # first_time_europython = forms.ChoiceField(
-    #     label="Is this your first time attending EuroPython conference?",
-    #     choices=FIRST_TIME_EUROPYTHON,
-    # )
-    # speaker_or_coach = forms.ChoiceField(
-    #     label="Are you a Speaker/Coach at EuroPython 2019?",
-    #     choices=SPEAKER_OR_COACH_CHOICES,
-    # )
-
-    # did_you_volunteer = forms.ChoiceField(
-    #     label="Did you join a volunteer initiative last years?",
-    #     choices=VOLUNTEER_CHOICES,
-    # )
-
     first_time_europython = forms.CharField(
         label="Is this your first time attending EuroPython conference?",
+        help_text="Yes/No",
     )
     speaker_or_coach = forms.CharField(
         label="Are you a Speaker/Coach at EuroPython 2019?",
+        help_text="Yes/No/I have applied but don't know yet",
     )
 
     did_you_volunteer = forms.CharField(
@@ -247,5 +217,5 @@ class UserNewFinaidRequest(forms.Form):
 
     supplements = forms.CharField(
         widget=forms.Textarea,
-        help_text=("Any additional information that might be helpful")
+        help_text="Any additional information that might be helpful"
     )

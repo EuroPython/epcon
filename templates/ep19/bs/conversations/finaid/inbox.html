@@ -7,13 +7,25 @@
 {% endblock breadcrumbs %}
 
 {% block staff_content %}
-<h4>Finaid Inbox</h4>
+
+<ul class='nav nav-pills nav-fill'>
+    <li class='nav-item'>
+        <a class='nav-link active' href='{% url "staff_finaid:inbox" %}'>Inbox</a>
+    </li>
+    <li class='nav-item'>
+        <a class='nav-link ' href='{% url "staff_finaid:all_finaid_threads" %}'>All Requests</a>
+    </li>
+</ul>
+
+
+
+<h1 style='margin-top: 1em'>Finaid Inbox</h1>
+
 <p>These are actionable threads – it means either new or replied by the user and waiting for our response/action</p>
 
 {% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=actionable %} 
-{# conversations.staff_threads_table(ThreadFilters, actionable) #}
 
-<p>
+<p style='margin-top: 5em'>
 Can't see the thread you're looking for?
 Check <a href='{% url "staff_finaid:all_finaid_threads" %}'>All threads</a>
 </p>

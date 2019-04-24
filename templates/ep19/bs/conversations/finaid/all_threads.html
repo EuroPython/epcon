@@ -6,8 +6,22 @@
 {% endblock breadcrumbs %}
 
 {% block staff_content %}
-<h4>All finaid threads</h4>
-<p>Want to see only actionable threads? Go to <a href='{% url "staff_finaid:inbox" %}'>helpdesk inbox</a></p>
+<ul class='nav nav-pills nav-fill'>
+    <li class='nav-item'>
+        <a class='nav-link' href='{% url "staff_finaid:inbox" %}'>Inbox</a>
+    </li>
+    <li class='nav-item'>
+        <a class='nav-link active' href='{% url "staff_finaid:all_finaid_threads" %}'>All Requests</a>
+    </li>
+</ul>
+
+
+
+<h1 style='margin-top: 1em'>All requests</h1>
+
+<div class='text-right'>
+    <a href='{% url "staff_finaid:all_finaid_export_to_csv" %}' class='btn btn-primary'><i class='fa fa-download'></i> Export metadata to CSV</a>
+</div>
 
 {% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=all_threads %} 
 

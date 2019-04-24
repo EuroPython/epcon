@@ -150,3 +150,14 @@ div.message.public_note {
     padding: 1em;
     background: #acf;
 }
+
+/* helpdesk avatar-like badges */
+.avatar-badge {
+    display: inline-block;
+    padding: .3em .7em;
+    border: 3px solid white;
+}
+
+.avatar-badge-staff {
+    border: 3px solid red;
+}

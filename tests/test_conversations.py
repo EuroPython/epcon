@@ -8,12 +8,7 @@ from django.conf import settings
 from conference.models import Conference
 from conversations.models import Thread
 from conversations.common_actions import ThreadActions
-from conversations.user_interface import (
-    FINAID_GRANT_CHOICES,
-    FIRST_TIME_EUROPYTHON,
-    SPEAKER_OR_COACH_CHOICES,
-    VOLUNTEER_CHOICES,
-)
+from conversations.user_interface import UserNewFinaidRequest
 from tests.common_tools import make_user, redirects_to, template_used
 
 
@@ -79,27 +74,32 @@ def test_user_can_create_new_finaid_request(db, client):
     _setup(client)
     new_finaid_url = reverse("user_conversations:new_finaid_request")
 
-    response = client.post(new_finaid_url, {
-        "full_name": "Joe Doe",
-        "type_of_grant": [FINAID_GRANT_CHOICES.TICKET,
-                          FINAID_GRANT_CHOICES.TRAVEL],
-        "travel_amount": 123,
-        "accommodation_amount": 0,
-        "profession": "IT",
-        "affiliation": "EPS",
-        "country_of_residence": "Poland",
-        "date_of_birth": "2000-01-01",
-        "gender": "Prefer not to disclose",
-        "motivation": "because it's great",
-        "involvement": "github.com/europython/epcon",
-        "expectations": "Learn more and network",
-        "portfolio": "github.com/europython",
-        "how_do_you_use_python": "automation",
-        "first_time_europython": FIRST_TIME_EUROPYTHON.YES,
-        "speaker_or_coach": SPEAKER_OR_COACH_CHOICES.YES,
-        "did_you_volunteer": VOLUNTEER_CHOICES.YES,
-        "supplements": "My keyboard doesn't do `n` very well :("
-    })
+    response = client.post(
+        new_finaid_url,
+        {
+            "full_name": "Joe Doe",
+            "type_of_grant": [
+                UserNewFinaidRequest.FINAID_GRANT_CHOICES.TICKET,
+                UserNewFinaidRequest.FINAID_GRANT_CHOICES.TRAVEL_AND_ACCOMODATION, # NOQA
+            ],
+            "travel_amount": 123,
+            "accommodation_amount": 0,
+            "profession": "IT",
+            "affiliation": "EPS",
+            "country_of_residence": "Poland",
+            "date_of_birth": "2000-01-01",
+            "gender": "Prefer not to disclose",
+            "motivation": "because it's great",
+            "involvement": "github.com/europython/epcon",
+            "expectations": "Learn more and network",
+            "portfolio": "github.com/europython",
+            "how_do_you_use_python": "automation",
+            "first_time_europython": "yes",
+            "speaker_or_coach": "yes",
+            "did_you_volunteer": "yes",
+            "supplements": "My keyboard doesn't do `n` very well :(",
+        },
+    )
 
     assert response.status_code == 302
     thread = Thread.objects.get()  # implies there's only one
@@ -148,7 +148,7 @@ def test_user_threads_is_empty_if_there_are_no_threads(db, client):
         response, "ep19/bs/conversations/user_interface/threads.html"
     )
 
-    assert "Yay, no questions so far" in response.content.decode()
+    assert "No questions so far" in response.content.decode()
 
 
 def test_user_threads_contains_link_to_creating_new_thread(db, client):
