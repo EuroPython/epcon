@@ -27,6 +27,10 @@ from conference.models import (
 )
 
 
+# TODO: this should have a better location
+ADD_CO_SPEAKER = 'add_co_speaker'
+
+
 @login_required
 def submit_proposal_step1_talk_info(request):
     """
@@ -144,10 +148,28 @@ def preview_proposal(request, talk_slug):
     talk = get_object_or_404(Talk, slug=talk_slug)
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
     conf = Conference.objects.current()
+
+    # This might not be best place to do it...
+    if request.method == 'POST':
+        if ADD_CO_SPEAKER in request.POST:
+            speaker, _ = Speaker.objects.get_or_create(user=request.user)
+            add_speaker_to_talk(speaker, talk)
+            messages.success(request, "Succesfully added as co-speaker")
+
+        print("Nope", request.POST)
+        return redirect('.')
+
+    current_user_is_speaker = (
+        request.user.id
+        in talk.speakers.all().values_list('user_id', flat=True)
+    )
+
     return TemplateResponse(request, "ep19/bs/cfp/preview.html", {
         "talk": talk,
         "talk_as_dict": talk_as_dict,
         "cfp_is_open": conf.cfp(),
+        "ADD_CO_SPEAKER": ADD_CO_SPEAKER,
+        "current_user_is_speaker": current_user_is_speaker,
     })
 
 

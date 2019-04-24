@@ -67,6 +67,10 @@ class Command(BaseCommand):
             active=True,
         )
 
+        print("setting user_profiles")
+        for user in alice, bob, cesar:
+            get_or_create_attendee_profile_for_new_user(user.user)
+
         print("Making some talk proposals")
         for user in alice, bob, cesar:
             speaker, _ = Speaker.objects.get_or_create(user=user.user)
@@ -75,7 +79,6 @@ class Command(BaseCommand):
             talk.created_by = user.user
             talk.save()
             add_speaker_to_talk(speaker, talk)
-            get_or_create_attendee_profile_for_new_user(user.user)
 
         def new_page(rev_id, title, **kwargs):
             try:

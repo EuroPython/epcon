@@ -302,6 +302,10 @@ def test_preview_page_doesnt_contain_edit_link_if_cfp_is_closed_and_user_is_auth
     assert edit_link not in response.content.decode()
 
 
+def test_preview_can_add_co_speaker(db, client):
+    ...
+
+
 @mark.django_db
 def test_regular_user_cant_access_program_wg_download(user_client):
     LOGIN_REQUIRED_302 = 302

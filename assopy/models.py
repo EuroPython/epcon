@@ -145,10 +145,10 @@ class AssopyUserManager(models.Manager):
             user.assopy_id = assopy_id
         user.save()
 
-        user_created.send(
-            sender=user,
-            profile_complete=(password is not None) or (token is not None),
-        )
+        # user_created.send(
+        #     sender=user,
+        #     profile_complete=(password is not None) or (token is not None),
+        # )
 
         return user
 

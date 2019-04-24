@@ -42,7 +42,16 @@
                 {% if user.is_staff %}
                 <a href='{% url "admin:conference_talk_change" talk.id %}' class='btn btn-outline-danger'>See in Admin</a>
                 {% endif %}
+
             </div>
+
+            {% if not current_user_is_speaker %}
+            <form method='POST' action='.'>
+                {% csrf_token %}
+                <input name="{{ ADD_CO_SPEAKER }}" type="hidden" value="true">
+                <button class='btn btn-primary'>Add yourself as co-speaker</button>
+            </form>
+            {% endif %}{# current_user_is_speaker #}
         </div>
 
         <div class='col-md-4'>
