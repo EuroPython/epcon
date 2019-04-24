@@ -1,6 +1,8 @@
 {% extends "ep19/bs/conversations/user_base.html" %}
 {# TODO: different inheritance #}
 
+{% load conversations_badges %}
+
 {% block breadcrumbs %}
 {{ block.super }}
 {% endblock breadcrumbs %}
@@ -16,9 +18,9 @@ No questions so far.
 {% else %}
 <table class='table' style='margin-top: 2em'>
     <tr>
-        <th>id</th>
-        <th>category</th>
-        <th>title</th>
+        <th style='width: 5%'>id</th>
+        <th style='width: 10%'>category</th>
+        <th style='width: 50%'>title</th>
         <th><a href='?{{ ThreadFilters.order_by_status }}'>status</a></th>
         <th><a href='?{{ ThreadFilters.order_by_last_message }}'>last message</a></th>
     </tr>
@@ -28,7 +30,7 @@ No questions so far.
         <td>{{ thread.id }}</td>
         <td>{{ thread.category }}</td>
         <td><a href='{% url "user_conversations:user_thread" thread.uuid %}'>{{ thread.title }}</a></td>
-        <td class='status-bg-{{ thread.status }}'>{{ thread.get_status_display }}</td>
+        <td><span class='badge badge-{% status_badge_class thread.status %}'>{{ thread.get_status_display }}</td>
         <td title="{{ thread.last_message_date }}">{{ thread.last_message_date|timesince }} ago</td>
     </tr>
     {% endfor %}{# thread in actionble #}

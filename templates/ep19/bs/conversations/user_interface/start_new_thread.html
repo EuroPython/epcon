@@ -1,6 +1,6 @@
 {% extends "ep19/bs/conversations/user_base.html" %}
 
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags cms_tags %}
 
 {% block breadcrumbs %}
 {{ block.super }}
@@ -8,6 +8,10 @@
 {% endblock breadcrumbs %}
 
 {% block conversations_content %}
+
+<h1>Ask a question</h1>
+<p>... but please keep in mind that helpdesk is staffed by volunteers only and it may take some time for us to reply</p>
+<p>Make sure you checked <a href='{% page_url 'faq' %}'>FAQ page</a> because maybe you'll find your answer there already</p>
 
 <form method='POST' action='.'>
     {% csrf_token %}
