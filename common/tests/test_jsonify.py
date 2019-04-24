@@ -6,7 +6,7 @@ import json
 from common.jsonify import json_dumps
 
 
-class MyEncodeTestCase(unittest.TestCase):
+class CustomEPEncodeTestCase(unittest.TestCase):
     def test_datetime(self):
         now = datetime.datetime.now()
         obj = {
@@ -24,7 +24,7 @@ class MyEncodeTestCase(unittest.TestCase):
         }
 
         self.assertDictEqual(json.loads(json_dumps(obj)), {
-            'date': now.strftime('%d/%m/%Y')
+            'date': now.strftime('%Y-%m-%d')
         })
 
     def test_time(self):

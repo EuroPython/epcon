@@ -1,12 +1,14 @@
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf.urls import url
+from django.http import HttpResponse
 from django.template.response import TemplateResponse
 
 from conference.models import Conference
 from conversations.finaid.api import (
     get_actionable_finaid_threads,
     get_all_finaid_threads,
+    export_metadata_of_all_finaid_threads_for_conference_to_csv,
 )
 from conversations.staff_interface import staff_thread, apply_ordering
 from conversations.common_actions import ThreadFilters
@@ -55,9 +57,30 @@ def staff_finaid_single_thread(request, thread_uuid):
     )
 
 
+@finaid_staff_access
+def staff_finaid_export_to_csv(request):
+    conference = Conference.objects.current()
+
+    response = HttpResponse(content_type="text/csv")
+    response[
+        "Content-Disposition"
+    ] = 'attachment; filename="export-finaid.csv"'
+
+    export_metadata_of_all_finaid_threads_for_conference_to_csv(
+        response, conference
+    )
+
+    return response
+
+
 urlpatterns = [
     url(r"^inbox/$", staff_finaid_inbox, name="inbox"),
     url(r"^all-requests/$", staff_finaid_threads, name="all_finaid_threads"),
+    url(
+        r"^all-requests/csv/$",
+        staff_finaid_export_to_csv,
+        name="all_finaid_export_to_csv",
+    ),
     url(
         r"^request/(?P<thread_uuid>[\w-]+)/$",
         staff_finaid_single_thread,

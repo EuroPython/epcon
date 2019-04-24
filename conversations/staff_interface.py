@@ -79,11 +79,16 @@ def staff_thread(
 
 
 class InternalNoteForm(forms.Form):
-    content = forms.CharField()
+    content = forms.CharField(
+        label="Internal comment",
+        help_text=(
+            "This will be visible to other staff members but not to the user"
+        )
+    )
 
 
 class ReplyForm(forms.Form):
-    content = forms.CharField(widget=forms.Textarea)
+    content = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}))
 
 
 class ChangePriorityForm(forms.ModelForm):

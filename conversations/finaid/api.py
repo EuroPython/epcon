@@ -3,6 +3,8 @@ import uuid
 from django.db import transaction
 from django.utils import timezone
 
+import unicodecsv as csv
+
 from conference.models import Conference
 from common.jsonify import json_dumps
 
@@ -71,3 +73,20 @@ def get_all_finaid_threads(conference):
         conference=conference,
         category=Thread.CATEGORIES.FINAID,
     ).order_by('status')
+
+
+def export_metadata_of_all_finaid_threads_for_conference_to_csv(
+    target, conference
+):
+    """
+    NOTE: name needs some more work...
+    :target: file like object (could be StringIO or HttpResponse)
+    """
+    threads = get_all_finaid_threads(conference)
+    metadata = [thread.json_metadata() for thread in threads]
+
+    writer = csv.DictWriter(target, metadata[0].keys(), quoting=csv.QUOTE_ALL)
+    writer.writeheader()
+
+    for row in metadata:
+        writer.writerow(row)

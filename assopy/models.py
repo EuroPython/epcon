@@ -259,6 +259,42 @@ class AssopyUser(models.Model):
         else:
             return name.strip()
 
+    def initials(self):
+        """
+        This is used mostly in helpdesk, but can be used for other avatar-like
+        initials
+        """
+        words = self.name().split()
+        if len(words) == 1:
+            return words[0][0].upper()
+
+        return f'{words[0][0]}{words[-1][0]}'.upper()
+
+    def color(self):
+        """
+        Stable color based on the user id.
+        """
+        SUPPORTED_COLORS = [
+            # generated with random generator
+            "#008B8B",  # Dark Cyan
+            "#AFEEEE",  # Pale Turquoise
+            "#B0E0E6",  # Powder Blue
+            "#D3D3D3",  # Light Grey
+            "#008080",  # Teal
+            "#DA70D6",  # Orchid
+            "#FFE4B5",  # Moccasin
+            "#FAEBD7",  # Antique White
+            "#FFA07A",  # Light Salmon
+            "#808080",  # Gray
+            "#CD5C5C",  # Indian Red
+            "#800000",  # Maroon
+            "#FAF0E6",  # Linen
+            "#6495ED",  # Cornflower Blue
+            "#B0C4DE",  # Light Steel Blue
+            "#C71585",  # Medium Violet Red
+        ]
+        return SUPPORTED_COLORS[self.user.id % len(SUPPORTED_COLORS)]
+
     def get_orders(self):
         """
         Temporary wrapper method for Issue #592, to easily disable old

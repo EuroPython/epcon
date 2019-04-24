@@ -1,12 +1,12 @@
 {% extends "ep19/bs/conversations/base.html" %}
 
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags conversations_badges %}
 
 {% block staff_content %}
 <h2>{{ thread.title }}</h2>
 
 <div style='margin: 2em 0'>
-    Status: <span class="status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span>
+    <span class="badge badge-{% status_badge_class thread.staus %}">{{ thread.get_status_display }}</span>
 
     <form method='POST' action='.' style='display: inline'>
         {% csrf_token %}
@@ -25,41 +25,50 @@ started
 </em>
 </p>
 
-{% if thread.metadata %}
-    {% include "ep19/bs/conversations/_thread_metadata_as_table.html" with thread=thread %}
-{% endif %}
+<div class='row'>
+    <div class='col-md-6'>
+        {% if thread.metadata %}
+        <h3>{% if thread.category == thread.CATEGORIES.FINAID %}Finaid form data{% else %}Metadata{% endif %}</h3>
+        {% include "ep19/bs/conversations/_thread_metadata_as_table.html" with thread=thread %}
+        {% endif %}
+    </div>
 
-{% block additional_metadata %}{% endblock %}
+    <div class='col-md-6'>
+        {% block additional_metadata %}{% endblock %}
+    </div>
+</div>
 
+
+<h3 style='margin-top: 2em'>Conversation</h3>
 
 {% for message in thread.messages.all %}
 {# TODO: include proper module here #}
 {# TODO(artcz): This should be a template tag instead #}
 <div class='message {% include "ep19/bs/conversations/_message_css_classes.html" with message=message %}'>
 
-{{ message.content }}
+    {{ message.content }}
 
 
-{% if message.attachments.all %}
-<p>
-<strong>Attachments!</strong>
-{% for at in message.attachments.all %}
-<a href='{{ at.file.url }}'>{{ at.file.name }}</a><br>
-{% endfor %}
-{% endif %}
+    {% if message.attachments.all %}
+    <p>
+    <strong>Attachments!</strong>
+    {% for at in message.attachments.all %}
+    <a href='{{ at.file.url }}'>{{ at.file.name }}</a><br>
+    {% endfor %}
+    {% endif %}
 
-<br>
-by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
+    <p style='margin-top: 3em'>
+    by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ message.created }}">{{ message.created|timesince }} ago</span>
+    </p>
 </div>
 {% endfor %}
 
 <hr>
-<h3>Internal note?</h3>
-<form method='POST' action=".">
+<form method='POST' action="." style='background: #ddd; padding: .5em'>
     <input type='hidden' name='{{ ThreadActions.submit_internal_note }}'>
     {% csrf_token %}
     {{ internal_note_form|crispy }}
-    <input class="btn btn-danger" type="submit" name="" value="Submit internal note">
+    <button class="btn btn-danger fotm-control" type="submit" name="">Submit internal note</button>
 </form>
 
 
@@ -70,7 +79,7 @@ by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ me
     <input type='hidden' name='{{ ThreadActions.submit_reply_to_thread }}'>
     {% csrf_token %}
     <table>
-    {{ reply_form|crispy }}
+        {{ reply_form|crispy }}
     </table>
     <input class="btn btn-primary btn-lg" type="submit" name="" value="Submit reply">
 </form>
