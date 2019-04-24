@@ -23,10 +23,11 @@
 
 <p>These are actionable threads – it means either new or replied by the user and waiting for our response/action</p>
 
-{% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=actionable %} 
+{% if not actionable %}
+    <h3 style='margin-top: 2em'>Looks like inbox is empty!</h3>
+    <p>If you're looking for a specific thread check <a href='{% url 'staff_finaid:all_finaid_threads' %}'>All Requests</a></p>
+{% else %}
+    {% include "ep19/bs/conversations/_staff_threads_table.html" with ThreadFilters=ThreadFilters threads=actionable %} 
+{% endif %}
 
-<p style='margin-top: 5em'>
-Can't see the thread you're looking for?
-Check <a href='{% url "staff_finaid:all_finaid_threads" %}'>All threads</a>
-</p>
 {% endblock staff_content %}
