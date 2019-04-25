@@ -51,7 +51,7 @@ class ConferenceTag(TagBase):
     category = models.CharField(max_length=50, default='', blank=True)
 
     class Meta:
-        ordering = ['category']
+        ordering = ['name']
 
     def save(self, **kw):
         if not self.pk:
