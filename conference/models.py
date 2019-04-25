@@ -45,6 +45,9 @@ class ConferenceTagQuerySet(models.QuerySet):
         key = 'usage' if asc else '-usage'
         return self.annotate_with_usage().order_by(key)
 
+    def all(self):
+        return self.order_by_usage()
+
 
 class ConferenceTag(TagBase):
     objects = ConferenceTagQuerySet.as_manager()
