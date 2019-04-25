@@ -62,3 +62,6 @@ django-model-utils==3.1.1
 # version we need in other dependency
 WeasyPrint==0.29
 unicodecsv==0.14.1
+cairocffi==0.8.1
+cffi==1.11.5
+CairoSVG==1.0.22
