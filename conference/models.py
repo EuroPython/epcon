@@ -50,6 +50,9 @@ class ConferenceTag(TagBase):
     objects = ConferenceTagQuerySet.as_manager()
     category = models.CharField(max_length=50, default='', blank=True)
 
+    class Meta:
+        ordering = ['name']
+
     def save(self, **kw):
         if not self.pk:
             try:
