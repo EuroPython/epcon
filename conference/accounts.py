@@ -148,11 +148,16 @@ def social_connect_profile(backend, user, response, *args, **kwargs) -> None:
 
 
 def get_or_create_attendee_profile_for_new_user(user):
-    attendee, created = AttendeeProfile.objects.get_or_create(user=user)
-    if created:
-        attendee.slug = slug_for_user(user)
-        attendee.uuid = shortuuid.ShortUUID().random(length=7)
+    try:
+        attendee = AttendeeProfile.objects.get(user=user)
+    except AttendeeProfile.DoesNotExist:
+        attendee = AttendeeProfile(
+            user=user,
+            slug=slug_for_user(user),
+            uuid=shortuuid.ShortUUID().random(length=7),
+        )
         attendee.save()
+        # needed because it creates a separate object in db.
         attendee.setBio('bio')
     return attendee
 
