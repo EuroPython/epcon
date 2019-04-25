@@ -45,13 +45,13 @@ class ConferenceTagQuerySet(models.QuerySet):
         key = 'usage' if asc else '-usage'
         return self.annotate_with_usage().order_by(key)
 
-    def all(self):
-        return self.order_by_usage()
-
 
 class ConferenceTag(TagBase):
     objects = ConferenceTagQuerySet.as_manager()
     category = models.CharField(max_length=50, default='', blank=True)
+
+    class Meta:
+        ordering = ['category']
 
     def save(self, **kw):
         if not self.pk:
