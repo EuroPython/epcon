@@ -91,6 +91,7 @@ def debug_panel_index(request):
         'PROJECT_DIR',
         'DEFAULT_FROM_EMAIL',
         'SERVER_EMAIL',
+        'ALLOWED_HOSTS',
         'CONFERENCE_CONFERENCE',
     ]
 
