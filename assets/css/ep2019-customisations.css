@@ -22,6 +22,8 @@
 #footer ul { list-style-type: none; padding-left: 0}
 #footer ul li { margin: .5em 0; }
 #homepage_news { background: #007d8a; padding: 2em 0; margin 0:}
+#homepage_news a { color: #fff; text-decoration: underline;}
+#homepage_news a:hover { color: #f8c48f; text-decoration: underline;}
 .news-card { height: 300px; }
 
 #homepage_venue { background: #d87a00; padding: 1em 0; margin: 0}
