@@ -253,11 +253,21 @@ class AssopyUser(models.Model):
         return 'Assopy user: %s (%s)' % (name, self.id)
 
     def name(self):
-        name = '%s %s' % (self.user.first_name, self.user.last_name)
+        # NOTE(artcz)
+        # This is a very ugly fix. We should merge those fields and move to a
+        # single unified 'full_name' field, but that's too much migration for
+        # now. New signup flow uses single first-name field for both, this hack
+        # is here to fix display in numerous places where we have old accounts
+        # that have value for last_name in the database already.
+        if self.user.first_name.endswith(self.user.last_name):
+            name = self.user.first_name
+        else:
+            name = '%s %s' % (self.user.first_name, self.user.last_name)
+
         if not name.strip():
             return self.user.email
-        else:
-            return name.strip()
+
+        return name.strip()
 
     def get_orders(self):
         """
