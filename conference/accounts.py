@@ -166,10 +166,11 @@ def slug_for_user(user) -> str:
     name = f'{user.first_name} {user.last_name}'
     slug = slugify(name)
 
-    if AttendeeProfile.objects.filter(slug=slug).exists():
-        # add random 4 digit number
-        noise = random.randint(1e3, 1e4)
-        return f'{slug}-{noise}'
+    while AttendeeProfile.objects.filter(slug=slug).exists():
+        # add random 6 digit number as long as clashes occur
+        noise = random.randint(1e5, 1e6)
+        slug = f'{slug}-{noise}'
+
     return slug
 
 
