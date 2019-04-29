@@ -1,15 +1,17 @@
 from django import forms
+from django.conf import settings
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse_lazy
-from django.views.generic import RedirectView
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
-from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import RedirectView
 
 from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
@@ -51,11 +53,37 @@ def submit_proposal_step1_talk_info(request):
                     request,
                     "Proposal added, now add information about speaker",
                 )
+                send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
 
     return TemplateResponse(request, "ep19/bs/cfp/step1_talk_info.html", {
         "proposal_form": proposal_form,
     })
+
+
+def send_talk_details_to_backup_email(talk: Talk):
+    """
+    This is just to double check if we're not loosing any proposals, based on
+    the feedback we've seen on telegram
+    """
+    SEND_CFP_BACKUP_TO = ['czepiel.artur+europython@gmail.com']
+
+    content = f"""
+    aitle: {talk.title}
+    author: {talk.created_by.id}
+    type_display: {talk.get_type_display()}
+    subtitle: {talk.sub_title},
+    abstract_short: {talk.abstract_short}
+    abstract: {talk.getAbstract().body}
+    abstract_extra: {talk.abstract_extra}
+    """
+
+    send_mail(
+        subject="New Proposal for EP CFP",
+        message=content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=SEND_CFP_BACKUP_TO,
+    )
 
 
 @login_required
