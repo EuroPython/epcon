@@ -1,0 +1,7 @@
+{% if messages %}
+<ul class="container messagelist">
+    {% for message in messages %}
+    <li class="text-center {% if message.tags %} alert alert-{{ message.tags }}{% endif %}">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}

@@ -3,6 +3,7 @@ import random
 from datetime import timedelta
 from io import StringIO
 
+import factory
 from cms.api import add_plugin, create_page, publish_page
 from django.conf import settings
 from django.core.exceptions import FieldError
@@ -75,7 +76,13 @@ class Command(BaseCommand):
             talk.created_by = user.user
             talk.save()
             add_speaker_to_talk(speaker, talk)
-            get_or_create_attendee_profile_for_new_user(user.user)
+            profile = get_or_create_attendee_profile_for_new_user(user.user)
+            if not profile.getBio():
+                profile.setBio(
+                    factory.Faker(
+                        "sentence", nb_words=20, variable_nb_words=True
+                    ).generate({})
+                )
 
         def new_page(rev_id, title, **kwargs):
             try:
@@ -110,7 +117,6 @@ class Command(BaseCommand):
         program_page = new_page("faq", "FAQ")
         for rev_id, title in [
             ("tickets", "Buy Tickets"),
-            ("submit-proposal", "Submit Proposal"),
             ("tips-for-attendees", "Tips for Attendees"),
             ("volunteers", "Volunteers"),
             ("sign-up-as-session-chair", "Sign up as Session Chair"),
@@ -121,6 +127,7 @@ class Command(BaseCommand):
 
         program_page = new_page("program", "Program")
         for rev_id, title in [
+            ("submit-proposal", "Submit Proposal"),
             ("workshops", "Workshops"),
             ("trainings", "Trainings"),
             ("schedule", "Schedule"),
