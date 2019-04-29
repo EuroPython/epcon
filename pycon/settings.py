@@ -469,6 +469,12 @@ DJANGOCMS_GRID_CONFIG = {
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
+# Override the message class to get it to work with bootstrap styles.
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
+
 
 #
 # Session management

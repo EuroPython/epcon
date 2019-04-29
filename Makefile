@@ -1,4 +1,26 @@
 
+help:
+	@echo "\n[UTILS]"
+	@echo "dev-requirements - run pip compile and rebuild the dev requirements files"
+	@echo "install-dev - install dev dependencies"
+	@echo "deployment-requirements - run pip compile and rebuild the production requirements files"
+	@echo "install - install production dependencies"
+	@echo "install-system-dependencies-for-mac - install mac system dependencies"
+	@echo "install-system-dependencies-for-ubuntu - install ubuntu system dependencies"
+	@echo "pip-requirements - freeze both dev and production requirements files"
+	@echo "pip-tools - install pip and pip-tools"
+	@echo "\n[TEST]"
+	@echo "test - run all tests"
+	@echo "test-no-warnings - run tests without printing warning messages"
+	@echo "test-no-django-20-warnings - only disable django 20 deprecation warnings"
+	@echo "\n[RUN]"
+	@echo "db - create, migrate and load fixtures to the db"
+	@echo "drop_db - remove old db"
+	@echo "redo_db - drop_db && db"
+	@echo "shell - start a django shell (plus)"
+	@echo "urls - print url routes"
+	@echo "server-dev - start a dev server on port 37266"
+
 dev-requirements: pip-tools
 	pip-compile --upgrade \
 		requirements/base.in\
@@ -56,6 +78,9 @@ server-dev:
 	DJANGO_SETTINGS_MODULE="pycon.dev_settings" DEBUG=True ./manage.py runserver 0:37266
 
 shell:
-	DEBUG=True ./manage.py shell_plus
+	DJANGO_SETTINGS_MODULE="pycon.dev_settings" DEBUG=True ./manage.py shell_plus
+
+urls:
+	DJANGO_SETTINGS_MODULE="pycon.dev_settings" DEBUG=True ./manage.py show_urls
 
 -include Makefile.local
