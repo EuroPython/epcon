@@ -66,10 +66,10 @@ def send_talk_details_to_backup_email(talk: Talk):
     This is just to double check if we're not loosing any proposals, based on
     the feedback we've seen on telegram
     """
-    SEND_CFP_BACKUP_TO = ['czepiel.artur+europython@gmail.com']
+    SEND_CFP_BACKUP_TO = ['web-wg@europython.eu']
 
     content = f"""
-    aitle: {talk.title}
+    title: {talk.title}
     author: {talk.created_by.id}
     type_display: {talk.get_type_display()}
     subtitle: {talk.sub_title},
