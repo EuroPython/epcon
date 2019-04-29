@@ -79,7 +79,7 @@ def send_talk_details_to_backup_email(talk: Talk):
     """
 
     send_mail(
-        subject="New Proposal for EP CFP",
+        subject=f"New Proposal for EP CFP #{talk.id}",
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=SEND_CFP_BACKUP_TO,
