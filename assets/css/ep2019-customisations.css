@@ -108,14 +108,16 @@ a.navbar-brand:hover{
     margin-top: 12px;
 }
 
-/* Display dropdown on hover */
-.dropdown:hover>.dropdown-menu {
-  display: block;
+/* Highlight selected dropdown item */
+.dropdown-item:hover, .dropdown-item:focus {
+    text-decoration: none;
+    background-color: #8bb9e6;
 }
 
-/* Remove the margin between header and menu to avoid the dropdown disappearing */
-.dropdown>.dropdown-menu {
-  margin-top: 0;
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #007d8a;
 }
 
 /* Don't show carets in the dropdown menus */
