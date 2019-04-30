@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views import defaults, static
+from django.views.generic import RedirectView
 
 from filebrowser.sites import site as fsite
 
@@ -52,7 +53,8 @@ urlpatterns = [
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^markitup/', include('markitup.urls')),
 
-
+    # TODO umgelurgel: See if the django.auth.urls are used anywhere and if they can be removed
+    url(r'^login/', RedirectView.as_view(pattern_name='accounts:login', permanent=False)),
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('django.contrib.auth.urls', namespace='auth')),
 
