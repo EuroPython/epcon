@@ -108,6 +108,16 @@ a.navbar-brand:hover{
     margin-top: 12px;
 }
 
+/* Display dropdown on hover */
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+/* Remove the margin between header and menu to avoid the dropdown disappearing */
+.dropdown>.dropdown-menu {
+  margin-top: 0;
+}
+
 /* Don't show carets in the dropdown menus */
 a.nav-link.dropdown-toggle::after {
     display: none;
