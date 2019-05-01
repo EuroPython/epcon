@@ -1,4 +1,4 @@
-{% load cms_tags %}
+{% load cms_tags menu_tags %}
 <nav class="navbar navbar-expand-lg">
     <div class='container'>
         <a class="navbar-brand" href="/" >
@@ -9,35 +9,13 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
+
         <div class="navbar-collapse collapse" id="epNavbar" style="">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "news" %}">News</a>
                 </li>
-                <!--<li class="nav-item">                                              -->
-                <!--    <a class="nav-link" href="{% page_url 'program' %}">Program</a>-->
-                <!--</li>                                                              -->
-                <!--<li class="nav-item">                                                -->
-                <!--    <a class="nav-link" href="{% page_url "speakers" %}">Speakers</a>-->
-                <!--</li>                                                                -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% page_url "location" %}">Location</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% page_url 'sponsor-europython' %}">Sponsor</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% page_url "about-europython" %}">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% page_url 'faq' %}">FAQ</a>
-                </li>
-                {% if 0 %}
-                NOTE(artcz): Disabled because we will open ticket sales a bit later after launch
-                <li class="nav-item">
-                    <a class="nav-link" id="tickets-link-header" href="{% page_url "tickets" %}">Tickets</a>
-                </li>
-                {% endif %}
+                {% show_menu 0 100 100 100 "ep19/bs/header/_nav_menu.html" %}
                 <li class="nav-item">
                     <a class="nav-link" id="cfp-link-header" href="{% page_url "submit-proposal" %}">Submit Proposal</a>
                 </li>
