@@ -51,7 +51,7 @@ def submit_proposal_step1_talk_info(request):
                 talk = proposal_form.save(request.user)
                 messages.success(
                     request,
-                    "Proposal added, now add information about speaker",
+                    "Proposal added, now please add information about the speaker",
                 )
                 send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
@@ -109,7 +109,7 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
 
                 messages.success(
                     request,
-                    "Added speaker",
+                    "Speaker added successfully.",
                 )
                 return redirect("cfp:step3_thanks", talk_uuid=talk.uuid)
 
@@ -404,7 +404,6 @@ def validate_tags(tags):
     ).values_list("name", flat=True)
 
     tags_limited = valid_tags[:5]
-    tags = ", ".join(tags_limited)
 
     return tags_limited
 
