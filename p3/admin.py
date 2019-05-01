@@ -455,6 +455,7 @@ class TalkAdmin(admin.ModelAdmin):
     list_editable = ("status",)
     search_fields = [
         "title",
+        "uuid",
         "talkspeaker__speaker__user__last_name",
         "talkspeaker__speaker__user__first_name",
         "speakers__user__attendeeprofile__company",
@@ -462,6 +463,7 @@ class TalkAdmin(admin.ModelAdmin):
 
     list_display = (
         "title",
+        "uuid",
         "conference",
         "_speakers",
         "_company",
