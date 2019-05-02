@@ -53,9 +53,9 @@ urlpatterns = [
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^markitup/', include('markitup.urls')),
 
-    # TODO umgelurgel: See if the django.auth.urls are used anywhere and if they can be removed
-    url(r'^login/', RedirectView.as_view(pattern_name='accounts:login', permanent=False)),
     url('', include('social.apps.django_app.urls', namespace='social')),
+    # TODO umgelurgel: See if the django.auth.urls are used anywhere and if they can be removed
+    url(r'^login/', RedirectView.as_view(pattern_name='auth:login', permanent=False)),
     url('', include('django.contrib.auth.urls', namespace='auth')),
 
     # production debug panel, doesn't even have a name=
