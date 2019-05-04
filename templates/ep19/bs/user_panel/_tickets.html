@@ -2,13 +2,15 @@
     <tr>
         <th>ID</th>
         <th></th>
+        <th></th>
+
     </tr>
 
     {% for ticket in tickets %}
     <tr>
-        <td>{{ ticket.id }}</td>
+        <td><a href='{% url "user_panel:manage_ticket" ticket.id %}'>{{ ticket.id }}</a></td>
         <td>{{ ticket.fare }}</td>
-        <td></td>
+        <td>{{ ticket.orderitem.order }}</td>
     </tr>
     {% endfor %}{# ticket in tickets #}
 </table>

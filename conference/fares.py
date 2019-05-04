@@ -45,6 +45,10 @@ FARE_CODE_REGEXES = {
 }
 
 
+class FareIsNotAvailable(Exception):
+    pass
+
+
 def all_possible_fare_codes():
     fare_codes = {
         "T" + type_code + variant_code + group_code:

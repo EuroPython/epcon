@@ -1,4 +1,12 @@
+from datetime import timedelta
+
 from django.conf.urls import url
+from django.db.models import Q
+from django.db import transaction
+from django.contrib import messages
+from django import forms
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.core.urlresolvers import reverse_lazy
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
@@ -6,6 +14,7 @@ from django.contrib.auth import views as auth_views
 
 from conference.models import Speaker, TalkSpeaker, Conference, Ticket
 from assopy.models import Invoice, Order
+from p3.models import TicketConference
 
 
 @login_required
@@ -27,14 +36,85 @@ def user_dashboard(request):
     )
 
 
+@login_required
+def manage_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if ticket.user != request.user:
+        return HttpResponse("Can't do", status=403)
+
+    ticket_configuration, _ = TicketConference.objects.get_or_create(
+        ticket=ticket
+    )
+
+    ticket_configuration_form = TicketConfigurationForm(
+        instance=ticket_configuration
+    )
+
+    if request.method == 'POST':
+        ticket_configuration_form = TicketConfigurationForm(
+            request.POST, instance=ticket_configuration
+        )
+
+        if ticket_configuration_form.is_valid():
+            with transaction.atomic():
+                ticket_configuration_form.save()
+                messages.success(request, "Ticket configured!")
+                return redirect("user_panel:dashboard")
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/user_panel/configure_ticket.html",
+        {
+            "ticket_configuration_form": ticket_configuration_form,
+            'ticket': ticket,
+        },
+    )
+
+
+class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
+    def to_python(self, value):
+        return [val.rstrip().lstrip() for val in value.split(',')]
+
+    def clean(self, value):
+        return ",".join([val.rstrip().lstrip() for val in value])
+
+
+class TicketConfigurationForm(forms.ModelForm):
+
+    days = CommaStringMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(), required=False
+    )
+
+    class Meta:
+        model = TicketConference
+        fields = ['diet', 'shirt_size', 'tagline', 'days']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['days'].choices = self.conference_days()
+
+    def conference_days(self):
+        conference = Conference.objects.current()
+        choices = []
+        date = conference.conference_start
+        while date <= conference.conference_end:
+            choices.append((str(date), date.strftime("%A %d %B %Y")))
+            date += timedelta(days=1)
+        return choices
+
+
 def get_tickets_for_current_conference(user):
-    # FIXME: filter
-    return Ticket.objects.all()
+    return Ticket.objects.filter(
+        Q(orderitem__order___complete=True) & Q(user=user)
+    )
 
 
 def get_invoices_for_current_conference(user):
-    # FIXME: filter
-    return Invoice.objects.all()
+    return Invoice.objects.filter(
+        # HACK
+        emit_date__year=Conference.objects.current().conference_start.year
+    )
 
 
 def get_proposals_for_current_conference(user):
@@ -65,6 +145,11 @@ def get_orders_for_current_conference(user):
 
 urlpatterns = [
     url(r"^$", user_dashboard, name="dashboard"),
+    url(
+        r"^manage-ticket/(?P<ticket_id>\d+)/$",
+        manage_ticket,
+        name="manage_ticket",
+    ),
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
     # class based PasswordChange{,Done}View

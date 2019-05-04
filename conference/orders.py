@@ -9,7 +9,7 @@ from django.utils import timezone
 from assopy.models import Order, OrderItem, Coupon
 from conference.models import Ticket, Conference
 
-from .fares import get_available_fares_as_dict
+from .fares import get_available_fares_as_dict, FareIsNotAvailable
 
 
 ORDER_CODE_PREFIX = "O/"
@@ -143,6 +143,9 @@ def calculate_order_price_including_discount(
 
     full_total = 0
     for fare_code, amount_of_tickets in fares_info.items():
+        if fare_code not in fares:
+            raise FareIsNotAvailable(fare_code)
+
         full_total += fares[fare_code].price * amount_of_tickets
 
     if not coupon:

@@ -1,0 +1,24 @@
+{% extends "ep19/bs/user_panel/base.html" %}
+
+{% load cms_tags crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<!--<li class='breadcrumb-item active'><a href=''>Dashboard</a></li>-->
+{% endblock breadcrumbs %}
+
+{% block user_content %}
+<div class='row' style='margin-top: 3em'>
+
+    <div class="col-md-8">
+        <h1>Configure ticket #{{ ticket.id }}</h1>
+
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{ ticket_configuration_form | crispy }}
+            <input type="submit" class="btn btn-primary" value="Save">
+        </form>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+{% endblock %}

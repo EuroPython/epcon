@@ -7,6 +7,7 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
+from django.http import HttpResponse
 from django import forms
 
 from conference.models import StripePayment
@@ -20,7 +21,12 @@ from .orders import (
     Order,
     OrderCalculation,
 )
-from .fares import FARE_CODE_GROUPS, FARE_CODE_REGEXES, get_available_fares
+from .fares import (
+    FARE_CODE_GROUPS,
+    FARE_CODE_REGEXES,
+    get_available_fares,
+    FareIsNotAvailable,
+)
 
 from .payments import charge_for_payment, PaymentError
 
@@ -65,12 +71,15 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         )
         context['fares_info'] = fares_info
 
-        calculation, coupon = calculate_order_price_including_discount(
-            for_user=request.user,
-            for_date=timezone.now().date(),
-            fares_info=fares_info,
-            discount_code=discount_code,
-        )
+        try:
+            calculation, coupon = calculate_order_price_including_discount(
+                for_user=request.user,
+                for_date=timezone.now().date(),
+                fares_info=fares_info,
+                discount_code=discount_code,
+            )
+        except FareIsNotAvailable:
+            return HttpResponse("Fare is not available", status=403)
 
         if CartActions.apply_discount_code in request.POST:
             context['calculation'] = calculation
