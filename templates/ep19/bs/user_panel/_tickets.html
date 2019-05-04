@@ -3,6 +3,7 @@
         <th>ID</th>
         <th></th>
         <th></th>
+        <th></th>
 
     </tr>
 
@@ -11,6 +12,7 @@
         <td><a href='{% url "user_panel:manage_ticket" ticket.id %}'>{{ ticket.id }}</a></td>
         <td>{{ ticket.fare }}</td>
         <td>{{ ticket.orderitem.order }}</td>
+        <td><a href='{% url "user_panel:assign_ticket" ticket.id %}'>assign ticket</a>
     </tr>
     {% endfor %}{# ticket in tickets #}
 </table>

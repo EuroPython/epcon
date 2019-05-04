@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.conf.urls import url
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
 from django.contrib import messages
@@ -13,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 
 from conference.models import Speaker, TalkSpeaker, Conference, Ticket
+from conference.tickets import assign_ticket_to_user, reset_ticket_settings
 from assopy.models import Invoice, Order
 from p3.models import TicketConference
 
@@ -70,6 +72,54 @@ def manage_ticket(request, ticket_id):
             'ticket': ticket,
         },
     )
+
+
+@login_required
+def assign_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if ticket.user != request.user:
+        return HttpResponse("Can't do", status=403)
+
+    assignment_form = AssignTicketForm()
+
+    if request.method == 'POST':
+        assignment_form = AssignTicketForm(request.POST)
+
+        if assignment_form.is_valid():
+            user = assignment_form.get_user()
+            with transaction.atomic():
+                assign_ticket_to_user(ticket, user)
+                reset_ticket_settings(ticket)
+
+            messages.success(
+                request, "Ticket successfuly reassigned to %s" % user.email
+            )
+            return redirect("user_panel:dashboard")
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/user_panel/assign_ticket.html",
+        {"ticket": ticket, "assignment_form": assignment_form},
+    )
+
+
+class AssignTicketForm(forms.Form):
+    email = forms.EmailField()
+
+    def clean_email(self):
+        try:
+            self.get_user()
+        except User.DoesNotExist:
+            raise forms.ValidationError(
+                "Sorry, user does not exist in our system. "
+                "Please ask them to create an account first"
+            )
+
+        return self.cleaned_data['email']
+
+    def get_user(self):
+        return User.objects.get(email=self.cleaned_data['email'])
 
 
 class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
@@ -149,6 +199,11 @@ urlpatterns = [
         r"^manage-ticket/(?P<ticket_id>\d+)/$",
         manage_ticket,
         name="manage_ticket",
+    ),
+    url(
+        r"^assign-ticket/(?P<ticket_id>\d+)/$",
+        assign_ticket,
+        name="assign_ticket",
     ),
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
