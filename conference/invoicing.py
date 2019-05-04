@@ -20,6 +20,7 @@ from django.db import transaction
 
 from assopy.models import Invoice, Order
 
+from conference.models import Conference
 from conference.currencies import (
     convert_from_EUR_using_latest_exrates,
     normalize_price
@@ -69,7 +70,9 @@ LOCAL_CURRENCY_BY_YEAR = {
     2016: "EUR",
     2017: "EUR",
     2018: "GBP",
-    2019: "CHF",
+    # Using EUR here because we don't need to do conversion to CHF on our own,
+    # nor put it on the invoices.
+    2019: "EUR",
 }
 
 EP_CITY_FOR_YEAR = {
@@ -254,6 +257,8 @@ def render_invoice_as_html(invoice):
             item['price'] / (1 + invoice.vat.value / 100)
         )
 
+    conference = Conference.objects.current()
+
     # TODO this is copied as-is from assopy/views.py, but can be simplified
     # TODO: also if there are any images included in the invoice make sure to
     # base64 them.
@@ -292,7 +297,10 @@ def render_invoice_as_html(invoice):
         'is_real_invoice': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
         "invoice": invoice,
-        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year]
+        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year],
+        "conference_start": conference.conference_start,
+        "conference_end": conference.conference_end,
+
     }
 
     return render_to_string('assopy/invoice.html', ctx)

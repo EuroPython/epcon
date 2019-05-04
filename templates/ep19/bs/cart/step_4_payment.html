@@ -9,20 +9,20 @@
 
 <div class='container page'>
     <div class='row'>
-        <div class='col-md-12'>
-            <h1>Payment</h1>
+        <div class='col-md-8'>
+            <h1>Step 4: Payment</h1>
             <div>
                 <h4>Order summary</h4>
                 <table class='table'>
                     {% for item in order.orderitem_set.all %}
                     <tr>
                         <td>{{ item.description }}</td>
-                        <td>{{ item.price }}</td>
+                        <td>{{ item.price }} EUR</td>
                     </tr>
                     {% endfor %}{# item in items.all #}
                 </table>
 
-                <p>Total to pay: {{ order.total }} EUR</p>
+                <p style='font-size: 1.5em; font-weight: bold; margin-top: 2em'>Total to pay: {{ order.total }} EUR</p>
 
                 {% if payments %}
                 <h4 style='margin-top: 2em'>Payment history</h4>

@@ -28,6 +28,8 @@
                             <input type=number min=0 max="{{ global_max_per_fare_type }}" class='fare form-control text-right' data-price="{{ fare.price }}" name="{{ fare.code }}" value="{{ fares_info|get_item:fare.code }}">
                         </td>
                     </tr>
+                    {% empty %}
+                    No tickets available
                     {% endfor %}
                 </table>
 

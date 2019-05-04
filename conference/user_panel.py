@@ -4,19 +4,37 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 
-from conference.models import Speaker, TalkSpeaker, Conference
-from assopy.models import Order
+from conference.models import Speaker, TalkSpeaker, Conference, Ticket
+from assopy.models import Invoice, Order
 
 
 @login_required
 def user_dashboard(request):
     proposals = get_proposals_for_current_conference(request.user)
     orders = get_orders_for_current_conference(request.user)
+    invoices = get_invoices_for_current_conference(request.user)
+    tickets = get_tickets_for_current_conference(request.user)
 
-    return TemplateResponse(request, "ep19/bs/user_panel/dashboard.html", {
-        'proposals': proposals,
-        'orders': orders,
-    })
+    return TemplateResponse(
+        request,
+        "ep19/bs/user_panel/dashboard.html",
+        {
+            'proposals': proposals,
+            'orders': orders,
+            'invoices': invoices,
+            "tickets": tickets,
+        },
+    )
+
+
+def get_tickets_for_current_conference(user):
+    # FIXME: filter
+    return Ticket.objects.all()
+
+
+def get_invoices_for_current_conference(user):
+    # FIXME: filter
+    return Invoice.objects.all()
 
 
 def get_proposals_for_current_conference(user):
@@ -32,8 +50,7 @@ def get_proposals_for_current_conference(user):
         return None
 
     talkspeakers = TalkSpeaker.objects.filter(
-        speaker=speaker,
-        talk__conference=Conference.objects.current().code,
+        speaker=speaker, talk__conference=Conference.objects.current().code
     )
 
     return [ts.talk for ts in talkspeakers]
@@ -48,7 +65,6 @@ def get_orders_for_current_conference(user):
 
 urlpatterns = [
     url(r"^$", user_dashboard, name="dashboard"),
-
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
     # class based PasswordChange{,Done}View

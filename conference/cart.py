@@ -35,7 +35,7 @@ def cart_step1_choose_type_of_order(request):
     """
 
     return TemplateResponse(
-        request, "ep19/bs/cart/step_1_choose_type_of_order.html", {},
+        request, "ep19/bs/cart/step_1_choose_type_of_order.html", {}
     )
 
 
@@ -85,8 +85,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
                 coupon=coupon,
             )
             return redirect(
-                "cart:step3_add_billing_info",
-                order_uuid=order.uuid,
+                "cart:step3_add_billing_info", order_uuid=order.uuid
             )
 
     return TemplateResponse(
@@ -118,9 +117,7 @@ def cart_step3_add_billing_info(request, order_uuid):
             return redirect("cart:step4_payment", order_uuid=order.uuid)
 
     return TemplateResponse(
-        request, "ep19/bs/cart/step_3_add_billing_info.html", {
-            'form': form,
-        }
+        request, "ep19/bs/cart/step_3_add_billing_info.html", {'form': form}
     )
 
 
@@ -151,8 +148,7 @@ def cart_step4_payment(request, order_uuid):
                 # TODO send_confirmation_email()
 
                 return redirect(
-                    'cart:step5_congrats_order_complete',
-                    order_uuid=order.uuid
+                    'cart:step5_congrats_order_complete', order_uuid=order.uuid
                 )
         except PaymentError:
             # Redirect to the same page, show information about failed
@@ -160,11 +156,13 @@ def cart_step4_payment(request, order_uuid):
             return redirect('.')
 
     return TemplateResponse(
-        request, "ep19/bs/cart/step_4_payment.html", {
+        request,
+        "ep19/bs/cart/step_4_payment.html",
+        {
             'order': order,
             'payments': payments,
             'total_for_stripe': total_for_stripe,
-        }
+        },
     )
 
 
@@ -172,9 +170,9 @@ def cart_step4_payment(request, order_uuid):
 def cart_step5_congrats_order_complete(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     return TemplateResponse(
-        request, "ep19/bs/cart/step_5_congrats_order_complete.html", {
-            'order': order,
-        }
+        request,
+        "ep19/bs/cart/step_5_congrats_order_complete.html",
+        {'order': order},
     )
 
 
@@ -192,7 +190,6 @@ def extract_order_parameters_from_request(post_data):
             except ValueError:
                 pass
 
-    print(fares_info)
     return discount_code, fares_info
 
 
@@ -226,20 +223,18 @@ def get_available_fares_for_type(type_of_tickets):
     if type_of_tickets == TicketType.student:
         regex_group = FARE_CODE_GROUPS.STUDENT
 
-    fares = fares.filter(
-        code__regex=FARE_CODE_REGEXES["groups"][regex_group]
-    )
+    fares = fares.filter(code__regex=FARE_CODE_REGEXES["groups"][regex_group])
 
     return fares
 
 
 class PersonalBillingForm(forms.ModelForm):
-
     class Meta:
         model = Order
         fields = ['card_name', 'country', 'address', 'billing_notes']
         widgets = {
-            'address': forms.Textarea(),
+            'address': forms.Textarea(attrs={'rows': 3}),
+            'billing_notes': forms.Textarea(attrs={'rows': 3}),
         }
 
 
@@ -251,28 +246,38 @@ class BusinessBillingForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = [
-            'card_name', 'country', 'address', 'billing_notes', 'vat_number'
+            'card_name',
+            'country',
+            'address',
+            'billing_notes',
+            'vat_number',
         ]
         widgets = {
-            'address': forms.Textarea(),
+            'address': forms.Textarea(attrs={'rows': 3}),
+            'billing_notes': forms.Textarea(attrs={'rows': 3}),
         }
 
 
 urlpatterns_ep19 = [
     url(r'^$', cart_step1_choose_type_of_order, name="step1_choose_type"),
-    url(r'^(?P<type_of_tickets>\w+)/$',
+    url(
+        r'^(?P<type_of_tickets>\w+)/$',
         cart_step2_pick_tickets,
-        name="step2_pick_tickets"),
-
-    url(r'^add-billing/(?P<order_uuid>[\w-]+)/$',
+        name="step2_pick_tickets",
+    ),
+    url(
+        r'^add-billing/(?P<order_uuid>[\w-]+)/$',
         cart_step3_add_billing_info,
-        name="step3_add_billing_info"),
-
-    url(r'^payment/(?P<order_uuid>[\w-]+)/$',
+        name="step3_add_billing_info",
+    ),
+    url(
+        r'^payment/(?P<order_uuid>[\w-]+)/$',
         cart_step4_payment,
-        name="step4_payment"),
-
-    url(r'^thanks/(?P<order_uuid>[\w-]+)/$',
+        name="step4_payment",
+    ),
+    url(
+        r'^thanks/(?P<order_uuid>[\w-]+)/$',
         cart_step5_congrats_order_complete,
-        name="step5_congrats_order_complete"),
+        name="step5_congrats_order_complete",
+    ),
 ]
