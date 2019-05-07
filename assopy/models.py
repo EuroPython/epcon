@@ -589,7 +589,7 @@ class Vat(models.Model):
     fares = models.ManyToManyField(Fare,
                                    through='VatFare',
                                    null=True, blank=True)
-    value = models.DecimalField(max_digits=2, decimal_places=0)
+    value = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.CharField(null=True, blank=True, max_length=125)
     invoice_notice = models.TextField(null=True, blank=True)
 
